@@ -1,0 +1,165 @@
+
+:i $pro_team_members$ = :a{
+	:i :s{$pro$ = $burnquist$$movie_text$ = %s(8,"Burnquis")$text$ = %s(9,"Burnquist"):s}
+	:i :s{$pro$ = $hawk$$movie_text$ = %s(4,"Hawk")$text$ = %s(4,"Hawk"):s}
+	:i :s{$pro$ = $koston$$movie_text$ = %s(6,"Koston")$text$ = %s(6,"Koston"):s}
+	:i :s{$pro$ = $lasek$$movie_text$ = %s(5,"Lasek")$text$ = %s(5,"Lasek"):s}
+	:i :s{$pro$ = $margera$$movie_text$ = %s(7,"Margera")$text$ = %s(7,"Margera"):s}
+	:i :s{$pro$ = $mullen$$movie_text$ = %s(6,"Mullen")$text$ = %s(6,"Mullen"):s}
+	:i :s{$pro$ = $muska$$movie_text$ = %s(5,"Muska")$text$ = %s(5,"Muska"):s}
+	:i :s{$pro$ = $reynolds$$movie_text$ = %s(8,"Reynolds")$text$ = %s(8,"Reynolds"):s}
+	:i :s{$pro$ = $rodriguez$$movie_text$ = %s(8,"Rodrigue")$text$ = %s(9,"Rodriguez"):s}
+	:i :s{$pro$ = $rowley$$movie_text$ = %s(6,"Rowley")$text$ = %s(6,"Rowley"):s}
+	:i :s{$pro$ = $saari$$movie_text$ = %s(5,"Saari")$text$ = %s(5,"Saari"):s}
+	:i :s{$pro$ = $thomas$$movie_text$ = %s(6,"Thomas")$text$ = %s(6,"Thomas"):s}
+	:i :s{$pro$ = $vallely$$movie_text$ = %s(7,"Vallely")$text$ = %s(7,"Vallely"):s}
+	:i :a}
+:i function $goal_team_select_init$
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$team_pro$
+		:i if  (%GLOBAL%$team_pro$ = $none$) 
+			:i $RemoveParameter$$team_pro$
+		:i endif
+	:i endif
+	:i if $GotParam$$last_start_was_quick_start$
+		:i if  (%GLOBAL%$last_start_was_quick_start$ = %i(1,00000001)) 
+			:i if $GotParam$$team_pro$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $GetCurrentChapter$
+	:i if  (%GLOBAL%$chapter$ > %i(25,00000019)) 
+		:i return
+		
+	:i endif
+	:i $Skater$.$Hide$
+	:i $PauseGame$
+	:i $PauseSkaters$
+	:i $GoalManager_GetTeam$
+	:i if $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+		:i if $GotParam$$team_pro$
+			:i if $ObjectExists$$id$ = $pause_deck$
+				:i $script_assert$%s(26,"pause deck shouldn't exist")
+				:i $kill_pause_deck$
+				:i %GLOBAL%$deck_already_paused$ = %i(1,00000001)
+			:i endif
+			:i $load_pro_skater$$name$ = %GLOBAL%$team_pro$
+			:i if $GotParam$$deck_already_paused$
+			:i endif
+			:i $UnPauseGame$
+			:i $UnpauseSkaters$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if  ( ($GotParam$$horse$)  OR  ($GotParam$$tour$) ) 
+	:i endif
+	:i $GoalManager_PauseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $PauseSkaters$
+	:i $Skater$.$Hide$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if $ScreenElementExists$$id$ = $team_menu$
+		:i $DestroyScreenElement$$id$ = $team_menu$
+	:i endif
+	:i $make_new_themed_sub_menu$$title$ = %s(15,"SELECT TEAMMATE")
+	:i $pause_menu_gradient$$on$
+	:i $GetArraySize$$pro_team_members$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i %GLOBAL%$num_so_far$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$pro_name$ =  ( ($pro_team_members$:a{%GLOBAL%$index$:a}) ->$pro$) 
+		:i if $StructureContains$$structure$ = %GLOBAL%$team$%GLOBAL%$pro_name$
+			:i if  (%GLOBAL%$team$->%GLOBAL%$pro_name$ = %i(1,00000001)) 
+				:i %GLOBAL%$not_focusable$ = $not_focusable$
+				:i %GLOBAL%$rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(75,0000004b):a}
+			:i else 
+				:i $RemoveParameter$$not_focusable$
+				:i $RemoveParameter$$rgba$
+			:i endif
+			:i if  (%GLOBAL%$num_so_far$ = %i(4,00000004)) 
+				:i $last_menu_item$ = $last_menu_item$
+			:i endif
+			:i $theme_menu_add_item$:s{
+				:i $text$ =  ( ($pro_team_members$:a{%GLOBAL%$index$:a}) ->$text$) 
+				:i $pad_choose_script$ = $goal_team_select_member_chosen$
+				:i $pad_choose_params$ = :s{$pro$ = %GLOBAL%$pro_name$$goal_id$ = %GLOBAL%$goal_id$$restart_node$ = %GLOBAL%$restart_node$:s}
+				:i $not_focusable$ = %GLOBAL%$not_focusable$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $last_menu_item$ = %GLOBAL%$last_menu_item$
+				:i $centered$
+			:i :s}
+			:i %GLOBAL%$num_so_far$ =  (%GLOBAL%$num_so_far$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $finish_themed_sub_menu$$time$ = %f(0.200000)
+	:i $create_helper_text$$generic_helper_text_no_back$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $WaitForEvent$$type$ = $goal_select_team_member_done$
+	:i $pause_menu_gradient$$off$
+:i endfunction
+:i function $goal_team_select_member_chosen$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $DeBounce$$X$$time$ = %f(0.500000)
+	:i if $GotParam$$goal_id$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$team_pro$ = %GLOBAL%$pro$:s}
+	:i endif
+	:i $Skater$.$StatsManager_DeactivateGoals$
+	:i $load_pro_skater$$name$ = %GLOBAL%$pro$
+	:i $UnPauseGame$
+	:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+	:i $GoalManager_UnPauseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_ShowGoalPoints$
+	:i $GoalManager_ShowPoints$
+	:i $root_window$.$SetTags$$menu_state$ = $off$
+	:i $restore_start_key_binding$
+	:i $FireEvent$$type$ = $goal_select_team_member_done$
+:i endfunction
+:i function $goal_team_select_deactivate$
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$quick_start$
+		:i return
+		
+	:i endif
+	:i $Skater$.$Vibrate$$off$
+	:i if $ObjectExists$$id$ = $pause_deck$
+		:i $script_assert$%s(26,"pause deck shouldn't exist")
+		:i $kill_pause_deck$
+		:i %GLOBAL%$deck_already_paused$ = %i(1,00000001)
+	:i endif
+	:i $load_pro_skater$$name$ = $custom$
+	:i if $GotParam$$deck_already_paused$
+	:i endif
+	:i $Skater$.$StatsManager_ActivateGoals$
+	:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+	:i $MakeSkaterGoto$$HandBrake$
+	:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+		:i if NOT $GotParam$$just_won_goal$
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$team_pro$ = $none$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_team_select_success$
+	:i if $GotParam$$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if $GotParam$$team_pro$
+			:i $GoalManager_SetTeamMember$$pro$ = %GLOBAL%$team_pro$$mark_used$
+		:i endif
+	:i endif
+:i endfunction
+:i :end

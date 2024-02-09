@@ -1,0 +1,1942 @@
+
+:i function $SK3_KillSkater$
+	:i if $Obj_FlagNotSet$$FLAG_SKATER_KILLING$
+		:i $Obj_SetFlag$$FLAG_SKATER_KILLING$
+		:i $InBail$
+		:i if $GotParam$$DeathSound$
+			:i $PlaySound$%GLOBAL%$DeathSound$
+		:i else 
+			:i $PlaySound$$BailBodyPunch01_11$
+			:i $PlaySound$$BailSlap01$
+			:i $PlaySound$$BailBodyFall01$
+		:i endif
+		:i if NOT $GotParam$$NoMessage$
+			:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+				:i if NOT $InSplitScreenGame$
+					:i if $GotParam$$Message1$
+						:i $Create_Panel_Message$:s{
+							:i $style$ = $panel_message_death$
+							:i $id$ = $death_message$
+							:i $text$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3)
+								
+								:i  :POS(0) %GLOBAL%$Message1$
+								:i 
+							:BREAKTO(4)
+								 :POS(1) %GLOBAL%$message2$
+								:i 
+							:BREAKTO(4)
+								 :POS(2) %GLOBAL%$message3$
+								:i 
+							:BREAKTO(4)
+								 :POS(3) %GLOBAL%$message4$
+								:i  :POS(4) 
+						:i :s}
+					:i else 
+						:i if $Driving$
+							:i $Create_Panel_Message$:s{
+								:i $style$ = $panel_message_death$
+								:i $id$ = $death_message$
+								:i $text$ = select(2f,3, 01 00 01 00 02 00) :OFFSET(5):OFFSET(6):OFFSET(7)
+									
+									:i  :POS(5) %s(22,"Don't drink and drive!")
+									:i 
+								:BREAKTO(8)
+									 :POS(6) %s(15,"Learn to drive!")
+									:i 
+								:BREAKTO(8)
+									 :POS(7) %s(14,"Out of bounds!")
+									:i  :POS(8) 
+							:i :s}
+						:i else 
+							:i $Create_Panel_Message$:s{
+								:i $style$ = $panel_message_death$
+								:i $id$ = $death_message$
+								:i $text$ = select(2f,10, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 04 00) :OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12):OFFSET(13):OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18)
+									
+									:i  :POS(9) %s(9,"You suck!")
+									:i 
+								:BREAKTO(19)
+									 :POS(10) %s(15,"Don't do drugs!")
+									:i 
+								:BREAKTO(19)
+									 :POS(11) %s(15,"Stay in school!")
+									:i 
+								:BREAKTO(19)
+									 :POS(12) %s(28,"This is your brain on drugs!")
+									:i 
+								:BREAKTO(19)
+									 :POS(13) %s(9,"Nice one!")
+									:i 
+								:BREAKTO(19)
+									 :POS(14) %s(9,"Good one!")
+									:i 
+								:BREAKTO(19)
+									 :POS(15) %s(9,"Hmmmmm...")
+									:i 
+								:BREAKTO(19)
+									 :POS(16) %s(6,"Loser!")
+									:i 
+								:BREAKTO(19)
+									 :POS(17) %s(26,"Who loaned you that board?")
+									:i 
+								:BREAKTO(19)
+									 :POS(18) %s(14,"Out of bounds!")
+									:i  :POS(19) 
+							:i :s}
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $SK3_Killskater_Finish$ isNull 
+	:i endif
+:i endfunction
+:i function $SK3_KillSkater_Water$
+	:i if $Obj_FlagNotSet$$FLAG_SKATER_KILLING$
+		:i $Obj_SetFlag$$FLAG_SKATER_KILLING$
+		:i if $GotParam$$DeathSound$
+			:i $PlaySound$%GLOBAL%$DeathSound$
+		:i else 
+			:i $PlaySound$$FallWater$
+		:i endif
+		:i if NOT $InSplitScreenGame$
+			:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+				:i if $GotParam$$Message1$
+					:i $Create_Panel_Message$:s{
+						:i $style$ = $panel_message_death$
+						:i $id$ = $death_message$
+						:i $text$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(20):OFFSET(21):OFFSET(22):OFFSET(23)
+							
+							:i  :POS(20) %GLOBAL%$Message1$
+							:i 
+						:BREAKTO(24)
+							 :POS(21) %GLOBAL%$message2$
+							:i 
+						:BREAKTO(24)
+							 :POS(22) %GLOBAL%$message3$
+							:i 
+						:BREAKTO(24)
+							 :POS(23) %GLOBAL%$message4$
+							:i  :POS(24) 
+					:i :s}
+				:i else 
+					:i $Create_Panel_Message$:s{
+						:i $style$ = $panel_message_death$
+						:i $id$ = $death_message$
+						:i $text$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(25):OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29):OFFSET(30)
+							
+							:i  :POS(25) %s(7,"All wet")
+							:i 
+						:BREAKTO(31)
+							 :POS(26) %s(13,"You big drip!")
+							:i 
+						:BREAKTO(31)
+							 :POS(27) %s(15,"WATER... BAAAD!")
+							:i 
+						:BREAKTO(31)
+							 :POS(28) %s(11,"No swimming")
+							:i 
+						:BREAKTO(31)
+							 :POS(29) %s(16,"You're drowning!")
+							:i 
+						:BREAKTO(31)
+							 :POS(30) %s(13,"You're hosed!")
+							:i  :POS(31) 
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+		:i $SK3_Killskater_Finish$$water$$r$ = %i(100,00000064)$g$ = %i(100,00000064)$b$ = %i(200,000000c8) isNull 
+	:i endif
+:i endfunction
+:i function $SK3_KillSkater_Pungee$
+	:i if $Obj_FlagNotSet$$FLAG_SKATER_KILLING$
+		:i $Obj_SetFlag$$FLAG_SKATER_KILLING$
+		:i $PlaySound$$FallPungee_11$
+		:i if NOT $InSplitScreenGame$
+			:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+				:i if NOT $GotParam$$Lava$
+					:i $Create_Panel_Message$:s{
+						:i $style$ = $panel_message_death$
+						:i $id$ = $death_message$
+						:i $text$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35):OFFSET(36)
+							
+							:i  :POS(32) %s(15,"You got shafted")
+							:i 
+						:BREAKTO(37)
+							 :POS(33) %s(16,"Who built that?!")
+							:i 
+						:BREAKTO(37)
+							 :POS(34) %s(18,"Serve, set, spike!")
+							:i 
+						:BREAKTO(37)
+							 :POS(35) %s(12,"Shish kabob?")
+							:i 
+						:BREAKTO(37)
+							 :POS(36) %s(25,"Don't build this at home!")
+							:i  :POS(37) 
+					:i :s}
+				:i else 
+					:i $Create_Panel_Message$:s{
+						:i $style$ = $panel_message_death$
+						:i $id$ = $death_message$
+						:i $text$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(38):OFFSET(39):OFFSET(40):OFFSET(41):OFFSET(42)
+							
+							:i  :POS(38) %s(13,"Toasted toes!")
+							:i 
+						:BREAKTO(43)
+							 :POS(39) %s(17,"Burnt to a crisp!")
+							:i 
+						:BREAKTO(43)
+							 :POS(40) %s(22,"Grilled to perfection!")
+							:i 
+						:BREAKTO(43)
+							 :POS(41) %s(5,"Ouch!")
+							:i 
+						:BREAKTO(43)
+							 :POS(42) %s(18,"Death by hot lava!")
+							:i  :POS(43) 
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+		:i $SK3_Killskater_Finish$$r$ = %i(150,00000096)$g$ = %i(50,00000032)$b$ = %i(50,00000032) isNull 
+	:i endif
+:i endfunction
+:i function $SK4_Hide_Death_Message$
+	:i if $ObjectExists$$id$ = $death_message$
+		:i $SetScreenElementProps$$id$ = $death_message$$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i endif
+:i endfunction
+:i function $SK3_Killskater_Finish$$r$ = %i(255,000000ff)$g$ = %i(255,000000ff)$b$ = %i(255,000000ff)
+	:i if NOT $Driving$
+		:i $Obj_GetID$
+		:i $LaunchEvent$$type$ = $KillingSkater$$target$ = %GLOBAL%$objId$
+	:i endif
+	:i $DisablePlayerInput$
+	:i if $GotParam$$Bail$
+		:i if $Skating$
+			:i $MakeSkaterGoto$$Killskater_Bail$
+		:i endif
+	:i endif
+	:i $pulse_blur$$start$ = %i(0,00000000)$end$ = %i(255,000000ff)$speed$ = %i(4,00000004)
+	:i if $GotParam$$nodename$
+		:i $change$$kill_skater_nodename$ = %GLOBAL%$nodename$
+	:i endif
+	:i $OnExitRun$$SK3_Killskater_Finish2$
+	:i if $GotParam$$water$
+		:i $SkaterSplashOn$
+		:i $PausePhysics$
+		:i $Hide$
+		:i if $ObjectExists$$id$ = $PlayerVehicle$
+			:i $PlayerVehicle$.$Hide$
+		:i endif
+		:i $wait$%f(0.500000)$seconds$
+	:i else 
+		:i $wait$%f(0.250000)$seconds$
+	:i endif
+	:i $OnExitRun$
+	:i $SK3_Killskater_Finish3$ isNull 
+:i endfunction
+:i $kill_skater_nodename$ = %i(0,00000000)
+:i function $SK3_Killskater_Finish2$
+	:i if $InSplitScreenGame$
+		:i $Obj_GetID$
+		:i if $ObjectExists$%GLOBAL%$objId$
+			:i $MakeSkaterGoto$$SK3_Killskater_Finish3$$params$ = :s{$nodename$ =  ($kill_skater_nodename$) :s}
+		:i endif
+	:i else 
+		:i $MakeSkaterGoto$$SK3_Killskater_Finish3$$params$ = :s{$nodename$ =  ($kill_skater_nodename$) :s}
+	:i endif
+:i endfunction
+:i function $SK3_Killskater_Finish3$
+	:i $ClearTrickQueues$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $BlendPeriodOut$%i(0,00000000)
+	:i $ClearEventBuffer$
+	:i $BailSkaterTricks$
+	:i if NOT $Driving$
+		:i if $GotParam$$nodename$
+			:i $KillSkater$$node$ = %GLOBAL%$nodename$
+		:i else 
+			:i $KillSkater$
+		:i endif
+	:i else 
+		:i $PlayerVehicle$.$Vehicle_MoveToRestart$%GLOBAL%$nodename$
+		:i $PlayerVehicleCamera$.$VehicleCamera_Reset$
+		:i $PlayerVehicle$.$Unhide$
+		:i if $PlayerVehicle$.$Vehicle_IsSkaterVisible$
+			:i $Unhide$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if $GameModeEquals$$is_goal_attack$
+			:i if NOT $GameIsOver$
+				:i $speech_box_exit$
+			:i endif
+		:i endif
+	:i else 
+		:i $speech_box_exit$
+	:i endif
+	:i $Obj_KillSpawnedScript$$name$ = $ForceToWalk$
+	:i if $IsForceWalkOn$
+		:i $KillForceToWalk$
+	:i endif
+	:i $ResetSkaterParticleSystems$
+	:i $pulse_blur$$start$ = %i(255,000000ff)$end$ = %i(0,00000000)$speed$ = %i(4,00000004)
+	:i $wait$%f(0.750000)$seconds$
+	:i $NotInBail$
+	:i $Obj_ClearFlag$$FLAG_SKATER_KILLING$
+	:i if $GoalManager_HasActiveGoals$
+		:i if $GoalManager_GetActiveGoalId$
+			:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+			:i if $GotParam$$horse$
+				:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $panel_message_death$
+	:i $off_set$ = %vec2(0.000000,20.000000)
+	:i $Domorph$$time$ = %i(0,00000000)$scale$ = %f(1.100000)$pos$ =  (%vec2(320.000000,100.000000) + %GLOBAL%$off_set$) $alpha$ = %i(1,00000001)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(323.000000,103.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)$rot_angle$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i $Domorph$$pos$ =  (%vec2(317.000000,97.000000) + %GLOBAL%$off_set$) $time$ = %f(0.050000)$rot_angle$ = %i(0,00000000)$scale$ = %f(1.300000)$alpha$ = %i(1,00000001)
+	:i $Domorph$$time$ = %f(0.130000)$pos$ =  (%vec2(320.000000,140.000000) + %GLOBAL%$off_set$) $rot_angle$ = %i(4294967286,fffffff6)
+	:i $Domorph$$alpha$ = %i(0,00000000)$time$ = %f(0.170000)$pos$ =  (%vec2(320.000000,260.000000) + %GLOBAL%$off_set$) $rot_angle$ = %i(4294967251,ffffffd3)
+	:i $Die$
+:i endfunction
+:i function $Killskater_Bail$
+	:i $PlayAnim$$Anim$ = $Bail_Spin_FWD_Regular$$BlendPeriod$ = %f(0.300000)
+:i endfunction
+:i function $SK3_TeleportToNode$
+	:i $TeleportSkaterToNode$ isNull 
+:i endfunction
+:i function $TeleportSkaterToNode$$r$ = %i(255,000000ff)$g$ = %i(255,000000ff)$b$ = %i(255,000000ff)
+	:i if $GotParam$$Message1$
+		:i $LaunchPanelMessage$$properties$ = $panel_message_death$select(2f,1, 01 00) :OFFSET(44)
+				
+			:i  :POS(44) %GLOBAL%$Message1$
+		:i else 
+			:i $LaunchPanelMessage$$properties$ = $panel_message_death$%s(12,"On the Move!")
+		:i endif
+		:i if $GotParam$$vertair$
+		:i endif
+		:i if $GotParam$$nodename$
+			:i $printf$%s(37,"Got the nodename ....................")
+			:i if $Skating$
+				:i if $OnRail$
+					:i $ClearEventBuffer$
+					:i $ClearTrickQueue$
+					:i $KillExtraTricks$
+					:i $ClearExtraGrindTrick$
+					:i $StopBalanceTrick$
+					:i $MakeSkaterGoto$$GroundGone$
+				:i endif
+			:i endif
+			:i $pulse_blur$$start$ = %i(255,000000ff)$speed$ = %i(5,00000005)
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$nodename$$Orient$$NoReset$
+		:i else 
+			:i $LaunchPanelMessage$$properties$ = $panel_message_death$%s(31,"ERROR! Please pass in nodename=")
+		:i endif
+		:i if $Walking$
+			:i $GetCameraId$
+			:i %GLOBAL%$CameraId$.$WalkCamera_Reset$
+			:i if $Walk_Hang$
+				:i $Walk_ForceToAirFromHang$
+			:i endif
+			:i $Walk_SetForwardControlLock$$On$
+			:i $wait$%f(0.300000)$seconds$
+			:i $Walk_SetForwardControlLock$$Off$
+		:i endif
+	:i endfunction
+	:i function $PrepareSkaterForMove$
+		:i if $Skating$
+			:i $SetState$$AIR$
+			:i $CleanUpSpecialItems$
+			:i $StopBalanceTrick$
+			:i $MakeSkaterGoto$$GroundGone$
+			:i $LandSkaterTricks$
+			:i $ClearEventBuffer$
+		:i endif
+	:i endfunction
+	:i $FLAG_TRAFFICLIGHT_GREEN$ = %i(0,00000000)
+	:i $FLAG_TRAFFICLIGHT_YELLOW$ = %i(1,00000001)
+	:i $FLAG_TRAFFICLIGHT_RED$ = %i(2,00000002)
+	:i $FLAG_CAR_GENERIC_STOPPED$ = %i(3,00000003)
+	:i $FLAG_CAR_GENERIC_NOSOUND$ = %i(4,00000004)
+	:i $FLAG_CAR_SOUND_FRANTICSTOP$ = %i(5,00000005)
+	:i $FLAG_CAR_SKITCH$ = %i(7,00000007)
+	:i $FLAG_CAR_TYPE_BUS$ = %i(30,0000001e)
+	:i $FLAG_CAR_TYPE_HPRV$ = %i(31,0000001f)
+	:i $FLAG_CAR_GENERIC_STOPPED_SKATER$ = %i(8,00000008)
+	:i function $Car_Generic01$:s{
+			:i $TurnDist$ = %i(20,00000014)
+			:i $DefaultSpeed$ = %i(40,00000028)
+			:i $SkitchSpeed$ = %i(60,0000003c)
+			:i $CarLoopSFX$ = $CarLoop$
+			:i $SkaterCheckOffset$ = %vec3(0.000000,0.000000,5.500000)
+			:i $SkaterCheckWidth$ = %i(15,0000000f)
+			:i $SkaterCheckHeight$ = %i(25,00000019)
+		:i :s}
+		:i $Obj_GetID$
+		:i $SetTags$$DefaultSpeed$ = %GLOBAL%$DefaultSpeed$$Tag_TurnDist$ = %GLOBAL%$TurnDist$$CarLoopSFX$ = %GLOBAL%$CarLoopSFX$
+		:i $GetTags$
+		:i $Obj_SetPathTurnDist$%GLOBAL%$Tag_TurnDist$
+		:i $Obj_FollowPathLinked$
+		:i $Obj_SetPathAcceleration$%i(10,0000000a)$mphps$
+		:i $Obj_SetPathDeceleration$%i(10,0000000a)$mphps$
+		:i $Obj_SetPathMinStopVel$%i(5,00000005)
+		:i $Obj_SetPathVelocity$%GLOBAL%$DefaultSpeed$$mph$
+		:i if NOT $GotParam$$AllowSlow$
+			:i if  (%GLOBAL%$DefaultSpeed$ < %i(20,00000014)) 
+				:i $printf$%s(45,"### CAR SPEED TOO SLOW! CHANGING TO 20mph ###")
+				:i $printstruct$%GLOBAL%$DefaultSpeed$
+				:i %GLOBAL%$DefaultSpeed$ = %i(20,00000014)
+				:i $printstruct$%GLOBAL%$DefaultSpeed$
+			:i endif
+		:i endif
+		:i if $GotParam$$Bus$
+			:i $Obj_SetFlag$$FLAG_CAR_TYPE_BUS$
+		:i endif
+		:i if $GotParam$$HPRV$
+			:i $Obj_SetFlag$$FLAG_CAR_TYPE_HPRV$
+		:i endif
+		:i if $GotParam$$SkaterDebugBox$
+			:i %GLOBAL%$SkaterDebugBox$ = $debug$
+		:i endif
+		:i if $GotParam$$CarDebugBox$
+			:i %GLOBAL%$CarDebugBox$ = $debug$
+		:i endif
+		:i if $GotParam$$NoSound$
+			:i $Obj_SetFlag$$FLAG_CAR_GENERIC_NOSOUND$
+		:i else 
+			:i $Obj_PlaySound$%GLOBAL%$CarLoopSFX$$dropoff_function$ = $exponential$
+		:i endif
+		:i if $GotParam$$StickToGround$
+			:i $Obj_StickToGround$$On$$DistAbove$ = %i(2,00000002)$DistBelow$ = %i(2,00000002)
+		:i endif
+		:i if $GotParam$$NoSkater$
+		:i else 
+			:i $Obj_SpawnScript$$Car_CheckForSkater01$$params$ =  isNull 
+		:i endif
+		:i if $GotParam$$skitch$
+			:i $Obj_SetException$$ex$ = $Skitched$$scr$ = %GLOBAL%$skitch$
+		:i endif
+		:i $Obj_SpawnScript$$Car_CheckForOtherCar01$$params$ =  isNull 
+	:i endfunction
+	:i $Car_CheckForSkater_Pause$ = %i(1,00000001)
+	:i function $Car_CheckForSkater01$
+		:i $p1$ = :s{
+			:i $dist$ =  (%GLOBAL%$DefaultSpeed$ * %f(1.500000)) 
+			:i $width$ = %GLOBAL%$SkaterCheckWidth$
+			:i $height$ = %GLOBAL%$SkaterCheckHeight$
+			:i $type$ = $skater$
+			:i $offset$ = %GLOBAL%$SkaterCheckOffset$
+			:i %GLOBAL%$SkaterDebugBox$
+		:i :s}
+		:i $change$$Car_CheckForSkater_Pause$ =  ($Car_CheckForSkater_Pause$ + %i(1,00000001)) 
+		:i if  ($Car_CheckForSkater_Pause$ > %i(10,0000000a)) 
+			:i $change$$Car_CheckForSkater_Pause$ = %i(1,00000001)
+		:i endif
+		:i $wait$$Car_CheckForSkater_Pause$$gameframes$
+		:i while
+			
+			:i $wait$%i(10,0000000a)$gameframes$
+			:i if $LocalSkaterExists$
+				:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED$
+					:i if $Obj_ObjectInRect$%GLOBAL%$p1$
+						:i $KillSpawnedScript$$id$ = $CarAccelSound$
+						:i $Obj_AdjustSound$:s{
+							:i %GLOBAL%$CarLoopSFX$
+							:i $volumePercent$ = %i(50,00000032)
+							:i $volumeStep$ = %f(1.500000)
+							:i $pitchPercent$ = %i(40,00000028)
+							:i $pitchStep$ = %f(1.500000)
+						:i :s}
+						:i $Car_Sound_FranticStop01$
+						:i $Obj_StopAlongPath$%i(8,00000008)
+						:i $Obj_SetFlag$$FLAG_CAR_GENERIC_STOPPED_SKATER$
+						:i while
+							
+							:i $wait$%i(90,0000005a)$gameframes$
+							:i if $Obj_ObjectInRect$%GLOBAL%$p1$
+								:i $KillSpawnedScript$$id$ = $CarAccelSound$
+								:i $wait$%i(60,0000003c)$gameframes$
+								:i $Car_Sound_RandomHonk01$
+							:i else 
+								:i $SpawnSound$$Car_Sound_Accel01$$id$ = $CarAccelSound$
+								:i $Obj_StartAlongPath$
+								:i $Obj_ClearFlag$$FLAG_CAR_GENERIC_STOPPED_SKATER$
+								:i continue
+								
+							:i endif
+						:i loop_to 
+					:i else 
+						:i if $skater$.$Skitching$
+							:i $Obj_GetSpeed$
+							:i if $Obj_FlagNotSet$$FLAG_CAR_SKITCH$
+								:i $Obj_SetFlag$$FLAG_CAR_SKITCH$
+								:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+									:i $SpawnSound$$Auto_SFX_Car_Tire_Squeal$
+								:i endif
+								:i $Obj_SetPathVelocity$%GLOBAL%$SkitchSpeed$$mph$
+							:i endif
+						:i else 
+							:i if $Obj_FlagSet$$FLAG_CAR_SKITCH$
+								:i $Obj_ClearFlag$$FLAG_CAR_SKITCH$
+								:i if NOT $GotParam$$NoSkitchStop$
+									:i $Obj_SetFlag$$FLAG_CAR_GENERIC_STOPPED$
+									:i $Obj_StopAlongPath$%i(15,0000000f)$feet$
+									:i $wait$%i(1,00000001)$second$
+									:i $Obj_ClearFlag$$FLAG_CAR_GENERIC_STOPPED$
+									:i $Obj_StartAlongPath$
+								:i endif
+								:i $Obj_SetPathVelocity$%GLOBAL%$DefaultSpeed$$mph$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i loop_to 
+	:i endfunction
+	:i $Car_CheckForOtherCar_Pause$ = %i(1,00000001)
+	:i function $Car_CheckForOtherCar01$
+		:i $p1$ = :s{
+			:i $dist$ =  (%GLOBAL%$DefaultSpeed$ * %f(1.500000)) 
+			:i $width$ = %i(20,00000014)
+			:i $height$ = %i(20,00000014)
+			:i $offset$ = %vec3(0.000000,0.000000,5.000000)
+			:i %GLOBAL%$CarDebugBox$
+		:i :s}
+		:i $p2$ = :s{
+			:i $dist$ = %GLOBAL%$DefaultSpeed$
+			:i $width$ = %i(20,00000014)
+			:i $height$ = %i(20,00000014)
+			:i $offset$ = %vec3(0.000000,0.000000,5.000000)
+			:i %GLOBAL%$CarDebugBox$
+		:i :s}
+		:i $change$$Car_CheckForOtherCar_Pause$ =  ($Car_CheckForOtherCar_Pause$ + %i(1,00000001)) 
+		:i if  ($Car_CheckForOtherCar_Pause$ > %i(10,0000000a)) 
+			:i $change$$Car_CheckForOtherCar_Pause$ = %i(1,00000001)
+		:i endif
+		:i $wait$$Car_CheckForOtherCar_Pause$$gameframes$
+		:i while
+			
+			:i $wait$%i(10,0000000a)$gameframes$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED$
+				:i $CarGeneric_GetNextObjOnPath_Decel$ isNull 
+				:i $GetTags$
+				:i $Obj_GetNextObjOnPath$$Range$ = %GLOBAL%$LookAheadCheckDist_Decel$
+				:i if $GotParam$$Ob$
+					:i $Obj_SpawnScript$$Car_DecelForOtherCar01$$params$ =  isNull 
+					:i if $IsAlive$$name$ = %GLOBAL%$Ob$
+						:i $CarGeneric_GetNextObjOnPath_Stop$ isNull 
+						:i $GetTags$
+						:i $Obj_GetNextObjOnPath$$Range$ = %GLOBAL%$LookAheadCheckDist$
+					:i endif
+					:i if $GotParam$$Ob$
+						:i $Car_StopForOtherCar01$ isNull 
+					:i endif
+				:i endif
+			:i endif
+		:i loop_to 
+	:i endfunction
+	:i function $Car_StopForOtherCar01$
+		:i $KillSpawnedScript$$id$ = $CarAccelSound$
+		:i $Obj_SetFlag$$FLAG_CAR_GENERIC_STOPPED$
+		:i $Obj_StopAlongPath$%i(7,00000007)
+		:i $GetTags$
+		:i if $Obj_FlagSet$$FLAG_CAR_TYPE_BUS$
+			:i $printf$%s(50,"### distance ahead bus looked before stopping = %d")$d$ = %GLOBAL%$LookAheadCheckDist$
+		:i endif
+		:i if $Obj_FlagSet$$FLAG_CAR_TYPE_HPRV$
+			:i $printf$%s(51,"### distance ahead HPRV looked before stopping = %d")$d$ = %GLOBAL%$LookAheadCheckDist$
+		:i endif
+		:i $Car_Sound_Stop01$
+		:i while
+			
+			:i $Car_Sound_RandomHonk01$
+			:i if $IsAlive$$name$ = %GLOBAL%$Ob$
+				:i $CarGeneric_GetNextObjOnPath_Stop$ isNull 
+				:i $GetTags$
+				:i $Obj_GetNextObjOnPath$$Range$ = %GLOBAL%$LookAheadCheckDist$
+			:i endif
+			:i if NOT $GotParam$$Ob$
+				:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED_SKATER$
+					:i $Car_StartForOtherCar01$ isNull 
+					:i continue
+					
+				:i endif
+			:i endif
+			:i $wait$%i(60,0000003c)$gameframes$
+		:i loop_to 
+	:i endfunction
+	:i function $Car_StartForOtherCar01$
+		:i $SpawnSound$$Car_Sound_Accel01$$id$ = $CarAccelSound$
+		:i $Obj_ClearFlag$$FLAG_CAR_GENERIC_STOPPED$
+		:i $wait$%i(20,00000014)$gameframes$
+		:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED_SKATER$
+			:i $Obj_SetPathVelocity$%i(30,0000001e)$mph$
+			:i $Obj_StartAlongPath$
+		:i endif
+	:i endfunction
+	:i function $CarGeneric_GetNextObjOnPath_Decel$
+		:i $LookAheadCheckDist_Decel$ = %i(45,0000002d)
+		:i if $GotParam$$Bus$
+			:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ + %i(20,00000014)) 
+		:i else 
+			:i if $GotParam$$HPRV$
+				:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ + %i(20,00000014)) 
+			:i else 
+				:i if $GotParam$$scooter$
+					:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ - %i(20,00000014)) 
+				:i else 
+					:i if $GotParam$$truck$
+						:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ + %i(10,0000000a)) 
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $SetTags$$LookAheadCheckDist_Decel$ = %GLOBAL%$LookAheadCheckDist_Decel$
+	:i endfunction
+	:i function $CarGeneric_GetNextObjOnPath_Stop$
+		:i $LookAheadCheckDist$ = %i(37,00000025)
+		:i if $GotParam$$Bus$
+			:i $LookAheadCheckDist$ =  (%GLOBAL%$LookAheadCheckDist$ + %i(20,00000014)) 
+		:i else 
+			:i if $GotParam$$HPRV$
+				:i $LookAheadCheckDist$ =  (%GLOBAL%$LookAheadCheckDist$ + %i(20,00000014)) 
+			:i else 
+				:i if $GotParam$$scooter$
+					:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ - %i(20,00000014)) 
+				:i else 
+					:i if $GotParam$$truck$
+						:i $LookAheadCheckDist_Decel$ =  (%GLOBAL%$LookAheadCheckDist_Decel$ + %i(10,0000000a)) 
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i if $Queryflag$$name$ = %GLOBAL%$Ob$$FLAG_CAR_TYPE_BUS$
+			:i $LookAheadCheckDist$ =  (%GLOBAL%$LookAheadCheckDist$ + %i(10,0000000a)) 
+		:i endif
+		:i if $Queryflag$$name$ = %GLOBAL%$Ob$$FLAG_CAR_TYPE_HPRV$
+			:i $printf$%s(42,"#### vehicle ahead of me %o is a HPRV ####")$o$ = %GLOBAL%$objId$
+			:i $LookAheadCheckDist$ =  (%GLOBAL%$LookAheadCheckDist$ + %i(50,00000032)) 
+		:i endif
+		:i $SetTags$$LookAheadCheckDist$ = %GLOBAL%$LookAheadCheckDist$
+	:i endfunction
+	:i function $Car_Sound_Accel01$
+		:i $GetTags$
+		:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+			:i $Obj_AdjustSound$:s{
+				:i %GLOBAL%$CarLoopSFX$
+				:i $volumePercent$ = %i(40,00000028)
+				:i $volumeStep$ = %f(0.750000)
+				:i $pitchPercent$ = random%vec2(83.000000,87.000000)
+				:i $pitchStep$ = random%vec2(0.600000,0.900000)
+			:i :s}
+			:i $wait$random%vec2(0.900000,1.500000)$seconds$
+			:i $Obj_AdjustSound$:s{
+				:i %GLOBAL%$CarLoopSFX$
+				:i $volumePercent$ = %i(30,0000001e)
+				:i $volumeStep$ = %i(3,00000003)
+				:i $pitchPercent$ = random%vec2(48.000000,52.000000)
+				:i $pitchStep$ = random%vec2(4.000000,5.500000)
+			:i :s}
+			:i $wait$random%vec2(0.150000,0.400000)$seconds$
+			:i $GetTags$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED$
+				:i $Obj_AdjustSound$:s{
+					:i %GLOBAL%$CarLoopSFX$
+					:i $volumePercent$ = %i(40,00000028)
+					:i $volumeStep$ = %f(0.500000)
+					:i $pitchPercent$ = random%vec2(77.000000,81.000000)
+					:i $pitchStep$ = random%vec2(0.400000,0.600000)
+				:i :s}
+				:i $wait$random%vec2(1.200000,1.900000)$seconds$
+				:i $Obj_AdjustSound$:s{
+					:i %GLOBAL%$CarLoopSFX$
+					:i $volumePercent$ = %i(27,0000001b)
+					:i $volumeStep$ = %i(4,00000004)
+					:i $pitchPercent$ = random%vec2(42.000000,47.000000)
+					:i $pitchStep$ = random%vec2(0.400000,0.500000)
+				:i :s}
+				:i $wait$random%vec2(0.150000,0.400000)$seconds$
+			:i endif
+			:i $GetTags$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED$
+				:i $Obj_AdjustSound$:s{
+					:i %GLOBAL%$CarLoopSFX$
+					:i $volumePercent$ = %i(40,00000028)
+					:i $volumeStep$ = %f(0.400000)
+					:i $pitchPercent$ = %i(73,00000049)
+					:i $pitchStep$ = %f(0.400000)
+				:i :s}
+				:i $wait$%f(2.000000)$seconds$
+				:i $Obj_AdjustSound$:s{
+					:i %GLOBAL%$CarLoopSFX$
+					:i $volumePercent$ = %i(25,00000019)
+					:i $volumeStep$ = %i(5,00000005)
+					:i $pitchPercent$ = %i(45,0000002d)
+					:i $pitchStep$ = %i(5,00000005)
+				:i :s}
+				:i $wait$random%vec2(0.150000,0.400000)$seconds$
+			:i endif
+			:i $GetTags$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_STOPPED$
+				:i $Obj_AdjustSound$:s{
+					:i %GLOBAL%$CarLoopSFX$
+					:i $volumePercent$ = %i(40,00000028)
+					:i $volumeStep$ = %f(0.300000)
+					:i $pitchPercent$ = %i(60,0000003c)
+					:i $pitchStep$ = %f(0.300000)
+				:i :s}
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $Car_Sound_Decel01$
+		:i $KillSpawnedScript$$id$ = $CarAccelSound$
+		:i $GetTags$
+		:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+			:i $Obj_AdjustSound$:s{
+				:i %GLOBAL%$CarLoopSFX$
+				:i $volumePercent$ = %i(40,00000028)
+				:i $volumeStep$ = %i(2,00000002)
+				:i $pitchPercent$ = random%vec2(40.000000,50.000000)
+				:i $pitchStep$ = %i(1,00000001)
+			:i :s}
+			:i $wait$%i(1,00000001)$second$
+			:i $SpawnSound$$Auto_SFX_CarBrakeSqueal$
+		:i endif
+	:i endfunction
+	:i function $Car_Sound_Stop01$
+		:i $KillSpawnedScript$$id$ = $CarAccelSound$
+		:i $GetTags$
+		:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+			:i $Obj_AdjustSound$:s{
+				:i %GLOBAL%$CarLoopSFX$
+				:i $volumePercent$ = %i(25,00000019)
+				:i $volumeStep$ = %f(1.500000)
+				:i $pitchPercent$ = %i(30,0000001e)
+				:i $pitchStep$ = %f(1.500000)
+			:i :s}
+			:i $SpawnSound$$Auto_SFX_CarBrakeSqueal$
+		:i endif
+	:i endfunction
+	:i function $Car_Sound_FranticStop01$
+		:i $KillSpawnedScript$$id$ = $CarAccelSound$
+		:i $GetTags$
+		:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_SOUND_FRANTICSTOP$
+				:i $SpawnSound$$Auto_SFX_Car_Tire_Squeal$
+				:i select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(45):OFFSET(46):OFFSET(47):OFFSET(48)
+					 :POS(45) 
+				:BREAKTO(49)
+					 :POS(46) 
+				:BREAKTO(49)
+					 :POS(47) 
+					:i 
+				:BREAKTO(49)
+					 :POS(48) $SpawnSound$$Auto_SFX_Car_Horn_Stream$ :POS(49) 
+				:i endif
+			:i endif
+			:i $Obj_SpawnScript$$Car_Counter_FranticStop01$
+		:i endfunction
+		:i function $Car_Counter_FranticStop01$
+			:i $Obj_SetFlag$$FLAG_CAR_SOUND_FRANTICSTOP$
+			:i $KillSpawnedScript$$id$ = $CarAccelSound$
+			:i $wait$%i(120,00000078)$gameframes$
+			:i $Obj_ClearFlag$$FLAG_CAR_SOUND_FRANTICSTOP$
+		:i endfunction
+		:i function $Car_Sound_RandomHonk01$
+			:i if $Obj_FlagNotSet$$FLAG_CAR_GENERIC_NOSOUND$
+				:i select(2f,2, 14 00 01 00) :OFFSET(50):OFFSET(51)
+					 :POS(50) 
+					:i 
+				:BREAKTO(52)
+					 :POS(51) $SpawnSound$$Auto_SFX_Car_Horn_Stream$ :POS(52) 
+				:i endif
+			:i endfunction
+			:i function $Car_Accel01$
+				:i if $Obj_FlagSet$$FLAG_CAR_SKITCH$
+				:i else 
+					:i $GetTags$
+					:i $GetRandomValue$$name$ = $AccelSpeed$$a$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.900000)) $b$ =  (%GLOBAL%$DefaultSpeed$ * %f(1.200000)) 
+					:i $Obj_SetPathVelocity$%GLOBAL%$AccelSpeed$$mph$
+					:i $SpawnSound$$Car_Sound_Accel01$$id$ = $CarAccelSound$
+					:i if $GotParam$$printstruct$
+						:i $printf$%s(17,"##### ACCEL #####")
+						:i $printstruct$ isNull 
+					:i endif
+				:i endif
+				:i if $GotParam$$StickToGround$
+					:i $Obj_StickToGround$$On$$DistAbove$ = %i(2,00000002)$DistBelow$ = %i(2,00000002)
+				:i else 
+					:i if $GotParam$$NoStickToGround$
+						:i $Obj_StickToGround$$Off$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Car_AccelAfterDecelForCar01$
+				:i if $Obj_FlagSet$$FLAG_CAR_SKITCH$
+				:i else 
+					:i $GetTags$
+					:i $GetRandomValue$$name$ = $AccelSpeed$$a$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.900000)) $b$ =  (%GLOBAL%$DefaultSpeed$ * %f(1.200000)) 
+					:i $Obj_SetPathVelocity$%GLOBAL%$AccelSpeed$$mph$
+					:i $SpawnSound$$Car_Sound_Accel01$$id$ = $CarAccelSound$
+				:i endif
+			:i endfunction
+			:i function $Car_Decel01$
+				:i if $Obj_FlagSet$$FLAG_CAR_SKITCH$
+				:i else 
+					:i $KillSpawnedScript$$id$ = $CarAccelSound$
+					:i $GetTags$
+					:i $GetRandomValue$$name$ = $DecelSpeed$$a$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.600000)) $b$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.700000)) 
+					:i $Obj_SetPathVelocity$%GLOBAL%$DecelSpeed$$mph$
+					:i if $GotParam$$printstruct$
+						:i $printf$%s(17,"##### DECEL #####")
+						:i $printstruct$ isNull 
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Car_DecelForTurn01$
+				:i if $Obj_FlagSet$$FLAG_CAR_SKITCH$
+				:i else 
+					:i $KillSpawnedScript$$id$ = $CarAccelSound$
+					:i $SetTags$$Tag_TurnDist$ = %GLOBAL%$TurnDist$
+					:i $GetTags$
+					:i $GetRandomValue$$name$ = $DecelSpeed$$a$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.600000)) $b$ =  (%GLOBAL%$DefaultSpeed$ * %f(0.700000)) 
+					:i if  (%GLOBAL%$DecelSpeed$ < %i(20,00000014)) 
+						:i %GLOBAL%$DecelSpeed$ = %i(20,00000014)
+					:i endif
+					:i $Obj_SetPathVelocity$%GLOBAL%$DecelSpeed$$mph$
+					:i $Obj_SetPathTurnDist$%GLOBAL%$Tag_TurnDist$
+					:i $Car_Sound_Decel01$
+					:i if $GotParam$$printstruct$
+						:i $printf$%s(26,"##### DECEL FOR TURN #####")
+						:i $printstruct$ isNull 
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Car_DecelForOtherCar01$
+				:i $KillSpawnedScript$$id$ = $CarAccelSound$
+				:i $Car_Decel01$ isNull 
+				:i $wait$%i(120,00000078)$gameframes$
+				:i $Car_AccelAfterDecelForCar01$ isNull 
+			:i endfunction
+			:i function $Car_Start01$
+				:i $wait$random%vec2(800.000000,1200.000000)
+				:i $Obj_ClearFlag$$FLAG_CAR_GENERIC_STOPPED$
+				:i $Obj_StartAlongPath$
+				:i $SpawnSound$$Car_Sound_Accel01$$id$ = $CarAccelSound$
+			:i endfunction
+			:i function $Ped_StopAtNode01$
+				:i $Obj_SetAnimCycleMode$$Off$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $WalkToIdle$
+				:i $wait$%i(2,00000002)$gameframes$
+				:i $Obj_StopAlongPath$
+				:i $Obj_WaitAnimFinished$
+			:i endfunction
+			:i function $Ped_WalkToNextNode01$
+				:i select(2f,2, 01 00 01 00) :OFFSET(53):OFFSET(54)
+					
+					:i  :POS(53) $Obj_SetPathVelocity$%i(4,00000004)
+					:i $Obj_StartAlongPath$
+					:i $Obj_CycleAnim$$Anim$ = $IdleToWalk$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Walk1$$cycle$
+					:i 
+				:BREAKTO(55)
+					 :POS(54) $Obj_SetPathVelocity$%i(4,00000004)
+					:i $Obj_StartAlongPath$
+					:i $Obj_CycleAnim$$Anim$ = $IdleToWalk$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Walk2$$cycle$
+					:i  :POS(55) 
+			:i endfunction
+			:i function $Ped_RandomWaitAtNode01$
+				:i $Ped_StopAtNode01$
+				:i $Obj_CycleAnim$$Anim$ = $Idle$
+				:i while
+					
+					:i select(2f,2, 01 00 01 00) :OFFSET(56):OFFSET(57)
+						
+						:i  :POS(56) $Ped_Idle01$
+						:i 
+					:BREAKTO(58)
+						 :POS(57) $goto$$Ped_WalkToNextNode01$
+						:i  :POS(58) 
+				:i loop_to 
+			:i endfunction
+			:i function $Ped_Idle01$
+				:i select(2f,13, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(59):OFFSET(60):OFFSET(61):OFFSET(62):OFFSET(63):OFFSET(64):OFFSET(65):OFFSET(66):OFFSET(67):OFFSET(68):OFFSET(69):OFFSET(70):OFFSET(71)
+					
+					:i  :POS(59) $Obj_CycleAnim$$Anim$ = $ScratchChin$
+					:i 
+				:BREAKTO(72)
+					 :POS(60) $Obj_CycleAnim$$Anim$ = $LookAtWatch$
+					:i 
+				:BREAKTO(72)
+					 :POS(61) $Obj_CycleAnim$$Anim$ = $LookLeftRight$
+					:i 
+				:BREAKTO(72)
+					 :POS(62) $Obj_CycleAnim$$Anim$ = $LookRight$
+					:i 
+				:BREAKTO(72)
+					 :POS(63) $Obj_CycleAnim$$Anim$ = $LookLeftDown$
+					:i 
+				:BREAKTO(72)
+					 :POS(64) $Obj_CycleAnim$$Anim$ = $Talk$
+					:i 
+				:BREAKTO(72)
+					 :POS(65) $Obj_CycleAnim$$Anim$ = $Talk2$
+					:i 
+				:BREAKTO(72)
+					 :POS(66) $Obj_CycleAnim$$Anim$ = $Idle$
+					:i 
+				:BREAKTO(72)
+					 :POS(67) $Obj_CycleAnim$$Anim$ = $Idle$
+					:i 
+				:BREAKTO(72)
+					 :POS(68) $Obj_CycleAnim$$Anim$ = $Idle$
+					:i 
+				:BREAKTO(72)
+					 :POS(69) $Obj_CycleAnim$$Anim$ = $Idle$
+					:i 
+				:BREAKTO(72)
+					 :POS(70) $Obj_CycleAnim$$Anim$ = $IdleToIdle2$
+					:i $Obj_CycleAnim$$Anim$ = $Idle2$
+					:i $Obj_CycleAnim$$Anim$ = $Idle2ToIdle$
+					:i 
+				:BREAKTO(72)
+					 :POS(71) $Obj_CycleAnim$$Anim$ = $IdleToIdle3$
+					:i $Obj_CycleAnim$$Anim$ = $Idle3$
+					:i $Obj_CycleAnim$$Anim$ = $Idle3ToIdle$
+					:i  :POS(72) 
+			:i endfunction
+			:i function $Team_Flag$
+				:i $Obj_SetInnerRadius$%i(10,0000000a)
+				:i if $GameModeEquals$$is_lobby$
+					:i $printf$%s(18,"Creating team flag")
+					:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Team_Flag_Trigger$$params$ = :s{ isNull :s}
+				:i else 
+					:i if $GameModeEquals$$is_ctf$
+						:i $printf$%s(17,"Creating CTF flag")
+						:i if $OnServer$
+							:i $printf$%s(46,"Setting CTF flag exception : AnyObjectInRadius")
+							:i $Obj_SetException$$ex$ = $AnyObjectInRadius$$scr$ = $CTF_Team_Flag_Trigger$$params$ = :s{ isNull :s}
+						:i endif
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Team_Flag_Trigger$
+				:i $GetNumTeams$
+				:i if $GotParam$$blue$
+					:i $JoinTeam$$blue$
+					:i $kill$$name$ = $TRG_Flag_Red$
+					:i $kill$$name$ = $TRG_Flag_Green$
+					:i $kill$$name$ = $TRG_Flag_Yellow$
+					:i $create$$name$ = $TRG_Flag_Red$
+					:i switch %GLOBAL%$num_teams$
+						:i case %i(3,00000003)
+							:i $create$$name$ = $TRG_Flag_Green$
+							:i endcase
+						case %i(4,00000004)
+							:i $create$$name$ = $TRG_Flag_Green$
+							:i $create$$name$ = $TRG_Flag_Yellow$
+							:i end_switch
+					
+					:i $Die$
+				:i endif
+				:i if $GotParam$$red$
+					:i $JoinTeam$$red$
+					:i $kill$$name$ = $TRG_Flag_Blue$
+					:i $kill$$name$ = $TRG_Flag_Green$
+					:i $kill$$name$ = $TRG_Flag_Yellow$
+					:i $create$$name$ = $TRG_Flag_Blue$
+					:i switch %GLOBAL%$num_teams$
+						:i case %i(3,00000003)
+							:i $create$$name$ = $TRG_Flag_Green$
+							:i endcase
+						case %i(4,00000004)
+							:i $create$$name$ = $TRG_Flag_Green$
+							:i $create$$name$ = $TRG_Flag_Yellow$
+							:i end_switch
+					
+					:i $Die$
+				:i endif
+				:i if $GotParam$$green$
+					:i $JoinTeam$$green$
+					:i $kill$$name$ = $TRG_Flag_Blue$
+					:i $kill$$name$ = $TRG_Flag_Red$
+					:i $kill$$name$ = $TRG_Flag_Yellow$
+					:i $create$$name$ = $TRG_Flag_Blue$
+					:i $create$$name$ = $TRG_Flag_Red$
+					:i switch %GLOBAL%$num_teams$
+						:i case %i(4,00000004)
+							:i $create$$name$ = $TRG_Flag_Yellow$
+							:i end_switch
+					
+					:i $Die$
+				:i endif
+				:i if $GotParam$$yellow$
+					:i $JoinTeam$$yellow$
+					:i $kill$$name$ = $TRG_Flag_Blue$
+					:i $kill$$name$ = $TRG_Flag_Red$
+					:i $kill$$name$ = $TRG_Flag_Green$
+					:i $create$$name$ = $TRG_Flag_Blue$
+					:i $create$$name$ = $TRG_Flag_Red$
+					:i $create$$name$ = $TRG_Flag_Green$
+					:i $Die$
+				:i endif
+			:i endfunction
+			:i function $CTF_Team_Base_Trigger$
+				:i if $GotParam$$red$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(0,00000000)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(0,00000000)) 
+							:i if $PlayerHasFlag$ isNull 
+								:i if $TeamFlagTaken$ isNull 
+									:i $DisplayFlagBaseWarning$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$blue$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(1,00000001)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(1,00000001)) 
+							:i if $PlayerHasFlag$ isNull 
+								:i if $TeamFlagTaken$ isNull 
+									:i $DisplayFlagBaseWarning$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$green$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(2,00000002)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(2,00000002)) 
+							:i if $PlayerHasFlag$ isNull 
+								:i if $TeamFlagTaken$ isNull 
+									:i $DisplayFlagBaseWarning$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$yellow$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(3,00000003)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(3,00000003)) 
+							:i if $PlayerHasFlag$ isNull 
+								:i if $TeamFlagTaken$ isNull 
+									:i $DisplayFlagBaseWarning$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $display_flag_base_warning$
+				:i $create_net_panel_message$$msg_time$ = %i(2000,000007d0)$text$ = $net_message_flag_base_warning$
+			:i endfunction
+			:i function $CTF_Team_Flag_Trigger$
+				:i $printf$%s(46,"*** In Exception Handler CTF_Team_Flag_Trigger")
+				:i $wait$%i(1,00000001)$gameframe$
+				:i if $JustStartedNetGame$
+					:i $printf$%s(81,"*** Leaving Exception Handler CTF_Team_Flag_Trigger because the game just started")
+					:i return
+					
+				:i endif
+				:i $printf$%s(54,"*** Processing Exception Handler CTF_Team_Flag_Trigger")
+				:i if $GotParam$$red$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(0,00000000)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(0,00000000)) 
+							:i $PlayerCapturedFlag$$flag_team$ = %i(0,00000000) isNull 
+						:i else 
+							:i $PlayerTookFlag$$flag_team$ = %i(0,00000000) isNull 
+							:i $Obj_ClearExceptions$
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$blue$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(1,00000001)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(1,00000001)) 
+							:i $PlayerCapturedFlag$$flag_team$ = %i(1,00000001) isNull 
+						:i else 
+							:i $PlayerTookFlag$$flag_team$ = %i(1,00000001) isNull 
+							:i $Obj_ClearExceptions$
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$green$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(2,00000002)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(2,00000002)) 
+							:i $PlayerCapturedFlag$$flag_team$ = %i(2,00000002) isNull 
+						:i else 
+							:i $PlayerTookFlag$$flag_team$ = %i(2,00000002) isNull 
+							:i $Obj_ClearExceptions$
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$yellow$
+					:i $GetCollidingPlayerAndTeam$$exclude_team$ = %i(3,00000003)$radius$ = %i(10,0000000a)
+					:i if  (%GLOBAL%$player$ = %i(4294967295,ffffffff)) 
+					:i else 
+						:i if  (%GLOBAL%$team$ = %i(3,00000003)) 
+							:i $PlayerCapturedFlag$$flag_team$ = %i(3,00000003) isNull 
+						:i else 
+							:i $PlayerTookFlag$$flag_team$ = %i(3,00000003) isNull 
+							:i $Obj_ClearExceptions$
+						:i endif
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Kill_Team_Flags$
+				:i if $NodeExists$$TRG_Flag_Red$
+					:i $kill$$name$ = $TRG_Flag_Red$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Blue$
+					:i $kill$$name$ = $TRG_Flag_Blue$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Green$
+					:i $kill$$name$ = $TRG_Flag_Green$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Yellow$
+					:i $kill$$name$ = $TRG_Flag_Yellow$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Red_Base$
+					:i $kill$$name$ = $TRG_Flag_Red_Base$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Blue_Base$
+					:i $kill$$name$ = $TRG_Flag_Blue_Base$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Green_Base$
+					:i $kill$$name$ = $TRG_Flag_Green_Base$
+				:i endif
+				:i if $NodeExists$$TRG_Flag_Yellow_Base$
+					:i $kill$$name$ = $TRG_Flag_Yellow_Base$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Red$
+					:i $kill$$name$ = $TRG_CTF_Red$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Red_Base$
+					:i $kill$$name$ = $TRG_CTF_Red_Base$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Blue$
+					:i $kill$$name$ = $TRG_CTF_Blue$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Blue_Base$
+					:i $kill$$name$ = $TRG_CTF_Blue_Base$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Green$
+					:i $kill$$name$ = $TRG_CTF_Green$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Green_Base$
+					:i $kill$$name$ = $TRG_CTF_Green_Base$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Yellow$
+					:i $kill$$name$ = $TRG_CTF_Yellow$
+				:i endif
+				:i if $NodeExists$$TRG_CTF_Yellow_Base$
+					:i $kill$$name$ = $TRG_CTF_Yellow_Base$
+				:i endif
+			:i endfunction
+			:i function $Create_Team_Flags$
+				:i if $GameModeEquals$$is_lobby$
+					:i switch %GLOBAL%$num_teams$
+						:i case %i(1,00000001)
+							:i if $NodeExists$$TRG_Flag_Red$
+								:i $create$$name$ = $TRG_Flag_Red$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Red_Base$
+								:i $create$$name$ = $TRG_Flag_Red_Base$
+							:i endif
+							:i endcase
+						case %i(2,00000002)
+							:i if $NodeExists$$TRG_Flag_Red$
+								:i $create$$name$ = $TRG_Flag_Red$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue$
+								:i $create$$name$ = $TRG_Flag_Blue$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Red_Base$
+								:i $create$$name$ = $TRG_Flag_Red_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue_Base$
+								:i $create$$name$ = $TRG_Flag_Blue_Base$
+							:i endif
+							:i endcase
+						case %i(3,00000003)
+							:i if $NodeExists$$TRG_Flag_Red$
+								:i $create$$name$ = $TRG_Flag_Red$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue$
+								:i $create$$name$ = $TRG_Flag_Blue$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Green$
+								:i $create$$name$ = $TRG_Flag_Green$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Red_Base$
+								:i $create$$name$ = $TRG_Flag_Red_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue_Base$
+								:i $create$$name$ = $TRG_Flag_Blue_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Green_Base$
+								:i $create$$name$ = $TRG_Flag_Green_Base$
+							:i endif
+							:i endcase
+						case %i(4,00000004)
+							:i if $NodeExists$$TRG_Flag_Red$
+								:i $create$$name$ = $TRG_Flag_Red$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue$
+								:i $create$$name$ = $TRG_Flag_Blue$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Green$
+								:i $create$$name$ = $TRG_Flag_Green$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Yellow$
+								:i $create$$name$ = $TRG_Flag_Yellow$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Red_Base$
+								:i $create$$name$ = $TRG_Flag_Red_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Blue_Base$
+								:i $create$$name$ = $TRG_Flag_Blue_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Green_Base$
+								:i $create$$name$ = $TRG_Flag_Green_Base$
+							:i endif
+							:i if $NodeExists$$TRG_Flag_Yellow_Base$
+								:i $create$$name$ = $TRG_Flag_Yellow_Base$
+							:i endif
+							:i end_switch
+					
+				:i else 
+					:i $GetNumPlayersOnTeam$$team$ = %i(0,00000000)
+					:i if  (%GLOBAL%$num_members$ = %i(0,00000000)) 
+					:i else 
+						:i if $NodeExists$$TRG_CTF_Red$
+							:i $create$$name$ = $TRG_CTF_Red$
+						:i endif
+						:i if $NodeExists$$TRG_CTF_Red_Base$
+							:i $create$$name$ = $TRG_CTF_Red_Base$
+						:i endif
+					:i endif
+					:i $GetNumPlayersOnTeam$$team$ = %i(1,00000001)
+					:i if  (%GLOBAL%$num_members$ = %i(0,00000000)) 
+					:i else 
+						:i if $NodeExists$$TRG_CTF_Blue$
+							:i $create$$name$ = $TRG_CTF_Blue$
+						:i endif
+						:i if $NodeExists$$TRG_CTF_Blue_Base$
+							:i $create$$name$ = $TRG_CTF_Blue_Base$
+						:i endif
+					:i endif
+					:i $GetNumPlayersOnTeam$$team$ = %i(2,00000002)
+					:i if  (%GLOBAL%$num_members$ = %i(0,00000000)) 
+					:i else 
+						:i if $NodeExists$$TRG_CTF_Green$
+							:i $create$$name$ = $TRG_CTF_Green$
+						:i endif
+						:i if $NodeExists$$TRG_CTF_Green_Base$
+							:i $create$$name$ = $TRG_CTF_Green_Base$
+						:i endif
+					:i endif
+					:i $GetNumPlayersOnTeam$$team$ = %i(3,00000003)
+					:i if  (%GLOBAL%$num_members$ = %i(0,00000000)) 
+					:i else 
+						:i if $NodeExists$$TRG_CTF_Yellow$
+							:i $create$$name$ = $TRG_CTF_Yellow$
+						:i endif
+						:i if $NodeExists$$TRG_CTF_Yellow_Base$
+							:i $create$$name$ = $TRG_CTF_Yellow_Base$
+						:i endif
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Team_Flag_Base$
+				:i $Obj_SetInnerRadius$%i(10,0000000a)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $CTF_Team_Base_Trigger$$params$ = :s{ isNull :s}
+			:i endfunction
+			:i function $BouncyShadow_Kill$
+				:i $FormatText$$TextName$ = $ShadowName$%s(9,"%o_shadow")$o$ = %GLOBAL%$ObjectName$
+				:i $printf$%GLOBAL%$ShadowName$
+				:i $kill$$prefix$ = %GLOBAL%$ShadowName$
+			:i endfunction
+			:i function $Pigeon_Generic$
+				:i $Obj_ShadowOff$
+				:i if $GotParam$$perched$
+					:i $Pigeon_Generic_Idle_Perched$
+				:i else 
+					:i $Pigeon_Generic_Idle$
+				:i endif
+			:i endfunction
+			:i function $Pigeon_Generic_Idle_Perched$
+				:i $Obj_ClearExceptions$
+				:i $Obj_SetInnerRadius$%i(15,0000000f)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Pigeon_Generic_SkaterNear_Perched$
+				:i $SpawnSound$$NY_SFX_PigeonIdle$
+				:i while
+					
+					:i $Obj_CycleAnim$$Anim$ = $Idle$$NumCycles$ = random%vec2(1.000000,3.000000)
+					:i $Obj_CycleAnim$$Anim$ = $preen$
+				:i loop_to 
+			:i endfunction
+			:i function $Pigeon_Generic_SkaterNear_Perched$
+				:i $Obj_ClearExceptions$
+				:i $SpawnSound$$NY_SFX_PigeonFlyUp$
+				:i $Obj_CycleAnim$$Anim$ = $FlyHop$
+				:i $goto$$Pigeon_Generic_Idle_Perched$
+			:i endfunction
+			:i function $Pigeon_Generic_Idle$
+				:i $Obj_ClearExceptions$
+				:i $Obj_SetInnerRadius$%i(15,0000000f)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Pigeon_Generic_SkaterNear$
+				:i $SpawnSound$$NY_SFX_PigeonIdle$
+				:i while
+					
+					:i $Obj_CycleAnim$$Anim$ = $Idle$$NumCycles$ = random%vec2(1.000000,3.000000)
+					:i $Obj_CycleAnim$$Anim$ = $peckfromidle$
+					:i while
+						
+						:i $Obj_RotY$$speed$ = %i(25,00000019)
+						:i $Obj_CycleAnim$$Anim$ = $peck$
+						:i $Obj_StopRotating$
+					:i loop_to $NumCycles$random%vec2(1.000000,5.000000)
+					:i $Obj_CycleAnim$$Anim$ = $pecktoidle$
+					:i $Obj_CycleAnim$$Anim$ = $Idle$
+					:i $Obj_CycleAnim$$Anim$ = $preen$
+				:i loop_to 
+			:i endfunction
+			:i function $Pigeon_Generic_SkaterNear$
+				:i $Obj_ClearExceptions$
+				:i $Obj_GetRandomLink$
+				:i $Obj_MoveToLink$$speed$ = %i(8,00000008)$LinkNum$ = %GLOBAL%$link$
+				:i $Obj_LookAtNodeLinked$$time$ = %f(0.200000)$LinkNum$ = %GLOBAL%$link$
+				:i $Obj_SetInnerRadius$%i(5,00000005)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Pigeon_Generic_SkaterReallyNear$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $run$$cycle$
+				:i $Obj_WaitMove$
+				:i $Obj_SetAnimCycleMode$$Off$
+				:i $Obj_WaitAnimFinished$
+				:i $Obj_CycleAnim$$Anim$ = $runtoidle$
+				:i $Obj_SetInnerRadius$%i(15,0000000f)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Pigeon_Generic_SkaterNear$
+				:i $goto$$Pigeon_Generic_Idle$
+			:i endfunction
+			:i function $Pigeon_Generic_SkaterReallyNear$
+				:i $Obj_ClearExceptions$
+				:i $SpawnSound$$NY_SFX_PigeonFlyUp$
+				:i $Obj_CycleAnim$$Anim$ = $FlyHop$
+				:i $Obj_WaitMove$
+				:i $Obj_SetInnerRadius$%i(15,0000000f)
+				:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Pigeon_Generic_SkaterNear$
+				:i $goto$$Pigeon_Generic_Idle$
+			:i endfunction
+			:i function $Gap_Gen_Rail2Rail$
+				:i $Gap_Gen_RailHop$ isNull 
+			:i endfunction
+			:i function $Gap_Gen_Ledge2Ledge$
+				:i $Gap_Gen_LedgeHop$ isNull 
+			:i endfunction
+			:i function $Gap_Gen_Rail2Ledge$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(12,"Rail 2 Ledge")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Rail2Bench$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(12,"Rail 2 Bench")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Ledge2Rail$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(12,"Ledge 2 Rail")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Ledge2Bench$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(13,"Ledge 2 Bench")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Wire2Ledge$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(12,"Wire 2 Ledge")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Bench2Rail$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(12,"Bench 2 Rail")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Bench2Ledge$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(13,"Bench 2 Ledge")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_WireHop$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(8,"Wire hop")$score$ = %i(25,00000019) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_BenchHop$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(9,"Bench hop")$score$ = %i(25,00000019) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_RailHop$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(8,"Rail hop")$score$ = %i(25,00000019) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_LedgeHop$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(9,"Ledge hop")$score$ = %i(25,00000019) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_AcrossTheStreet$
+				:i if $GotParam$$start$
+					:i $Gap_Gen_Rail$ isNull 
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(17,"Across the street")$score$ = %i(50,00000032) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_HighLip$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = :a{
+							:i $REQUIRE_LIP$
+							:i $CANCEL_GROUND$
+							:i $CANCEL_WALL$
+							:i $CANCEL_MANUAL$
+							:i $CANCEL_RAIL$
+							:i $CANCEL_WALLPLANT$
+							:i $CANCEL_HANG$
+							:i $CANCEL_LADDER$
+							:i :a}
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i $wait$%i(1,00000001)$frame$
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(8,"High lip")$score$ = %i(100,00000064) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_RampTransfer$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = $PURE_AIR$
+						:i  isNull :s}
+				:i else 
+					:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %s(13,"Ramp Transfer")$score$ = %i(100,00000064) isNull 
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Rail$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = :a{
+							:i $CANCEL_GROUND$
+							:i $CANCEL_MANUAL$
+							:i $CANCEL_WALL$
+							:i $CANCEL_LIP$
+							:i $CANCEL_WALLPLANT$
+							:i $CANCEL_HANG$
+							:i $CANCEL_LADDER$
+							:i :a}
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i if $GotParam$$end$
+						:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %GLOBAL%$text$$score$ = %GLOBAL%$score$ isNull 
+					:i else 
+						:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Lip$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = :a{
+							:i $REQUIRE_LIP$
+							:i $CANCEL_GROUND$
+							:i $CANCEL_WALL$
+							:i $CANCEL_MANUAL$
+							:i $CANCEL_RAIL$
+							:i $CANCEL_WALLPLANT$
+							:i $CANCEL_HANG$
+							:i $CANCEL_LADDER$
+							:i :a}
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i if $GotParam$$end$
+						:i $wait$%i(1,00000001)$frame$
+						:i $EndGap$:s{
+							:i $GapID$ = %GLOBAL%$GapID$
+							:i $text$ = %GLOBAL%$text$
+							:i $score$ = %GLOBAL%$score$
+						:i :s}
+					:i else 
+						:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Transfer$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = $PURE_AIR$
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i if $GotParam$$end$
+						:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %GLOBAL%$text$$score$ = %GLOBAL%$score$ isNull 
+					:i else 
+						:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_PureAir$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = $PURE_AIR$
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i if $GotParam$$end$
+						:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %GLOBAL%$text$$score$ = %GLOBAL%$score$ isNull 
+					:i else 
+						:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_Manual$
+				:i if $GotParam$$start$
+					:i $StartGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $flags$ = $PURE_MANUAL$
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i if $GotParam$$end$
+						:i $Gap_Gen_End$$GapID$ = %GLOBAL%$GapID$$text$ = %GLOBAL%$text$$score$ = %GLOBAL%$score$ isNull 
+					:i else 
+						:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Gap_Gen_End$
+				:i if $GotParam$$end$
+					:i $EndGap$:s{
+						:i $GapID$ = %GLOBAL%$GapID$
+						:i $text$ = %GLOBAL%$text$
+						:i $score$ = %GLOBAL%$score$
+						:i  isNull 
+					:i :s}
+				:i else 
+					:i $printf$%s(56,"### NO GAP TYPE SET FOR ID %g.  MUST BE START OR END ###")$g$ = %GLOBAL%$GapID$
+				:i endif
+			:i endfunction
+			:i function $Gap_CarHop$$gapscript$ = $CarHopGapScript$
+				:i $StartGap$:s{$GapID$ = %GLOBAL%$StartGapID$$flags$ = $PURE_AIR$:s}
+				:i $EndGap$:s{$GapID$ = %GLOBAL%$EndGapID$$text$ = %s(7,"Car hop")$score$ = %i(100,00000064)$gapscript$ = %GLOBAL%$gapscript$:s}
+			:i endfunction
+			:i function $CarHopGapScript$
+				:i $BroadcastEvent$$type$ = $SkaterCarHop$
+			:i endfunction
+			:i function $Collect_Hover$
+				:i $Obj_RotY$$speed$ = %i(150,00000096)
+				:i $Obj_Hover$$Amp$ = %i(10,0000000a)$Freq$ = %i(1,00000001)
+			:i endfunction
+			:i function $ShatterAndDie$:s{$area$ = %i(1000,000003e8)
+					:i $variance$ = %f(4.600000)
+					:i $vel_x$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(73):OFFSET(74):OFFSET(75)
+						 :POS(73) %f(0.000000)
+					:BREAKTO(76)
+						 :POS(74) %i(30,0000001e)
+					:BREAKTO(76)
+						 :POS(75) %i(4294967266,ffffffe2) :POS(76) 
+						:i $vel_y$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(77):OFFSET(78):OFFSET(79)
+							 :POS(77) %i(10,0000000a)
+						:BREAKTO(80)
+							 :POS(78) %i(30,0000001e)
+						:BREAKTO(80)
+							 :POS(79) %i(50,00000032) :POS(80) 
+							:i $vel_z$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(81):OFFSET(82):OFFSET(83)
+								 :POS(81) %i(0,00000000)
+							:BREAKTO(84)
+								 :POS(82) %i(30,0000001e)
+							:BREAKTO(84)
+								 :POS(83) %i(4294967266,ffffffe2) :POS(84) 
+								:i $spread$ = %f(1.000000)
+								:i $texture_swap$ = $BA_APM_brokenglass01$
+							:i :s}
+							:i $kill$$name$ = %GLOBAL%$name$
+							:i if $GotParam$$OldStyle$
+								:i $Shatter$:s{
+									:i $name$ = %GLOBAL%$name$
+									:i $area$ = %GLOBAL%$area$
+									:i $variance$ = %GLOBAL%$variance$
+									:i $vel_x$ = %GLOBAL%$vel_x$
+									:i $vel_y$ = %GLOBAL%$vel_y$
+									:i $vel_z$ = %GLOBAL%$vel_z$
+									:i $spread$ = %GLOBAL%$spread$
+									:i  isNull 
+								:i :s}
+							:i else 
+								:i $Shatter$:s{
+									:i $name$ = %GLOBAL%$name$
+									:i $texture_swap$ = %GLOBAL%$texture_swap$
+									:i $area$ = %GLOBAL%$area$
+									:i $variance$ = %GLOBAL%$variance$
+									:i $vel_x$ = %GLOBAL%$vel_x$
+									:i $vel_y$ = %GLOBAL%$vel_y$
+									:i $vel_z$ = %GLOBAL%$vel_z$
+									:i $spread$ = %GLOBAL%$spread$
+									:i  isNull 
+								:i :s}
+							:i endif
+							:i if $GotParam$$Vibrate$
+								:i $GetSingleTag$$state$
+								:i if NOT  ( (%GLOBAL%$state$ = $Skater_OnRail$)  OR  (%GLOBAL%$state$ = $Skater_InManual$) ) 
+									:i $Vibrate$$actuator$ = %i(0,00000000)$percent$ = %i(100,00000064)
+									:i $wait$%i(5,00000005)$gameframes$
+									:i $Vibrate$$Off$
+								:i endif
+							:i endif
+						:i endfunction
+						:i function $CarTOD_TurnOffHeadlights$
+							:i $printf$%s(26,"### turning off headlights")
+							:i $RunScriptOnComponentType$:s{
+								:i $component$ = $model$
+								:i $target$ = $Obj_ReplaceTexture$
+								:i $params$ = :s{
+									:i $src$ = %s(31,"JKU_LightCircle_Transparent.png")$dest$ = %s(41,"textures/cars/JKU_LightCircle_Transparent")
+								:i :s}
+							:i :s}
+							:i $RunScriptOnComponentType$:s{
+								:i $component$ = $model$
+								:i $target$ = $Obj_ReplaceTexture$
+								:i $params$ = :s{
+									:i $src$ = %s(33,"JKU_HeadlightGlow_Transparent.png")$dest$ = %s(43,"textures/cars/JKU_HeadlightGlow_Transparent")
+								:i :s}
+							:i :s}
+						:i endfunction
+						:i function $CarTOD_TurnOnHeadlights$
+							:i $printf$%s(25,"### turning on headlights")
+							:i $RunScriptOnComponentType$:s{
+								:i $component$ = $model$
+								:i $target$ = $Obj_ReplaceTexture$
+								:i $params$ = :s{
+									:i $src$ = %s(31,"JKU_LightCircle_Transparent.png")$dest$ = %s(29,"textures/cars/JKU_LightCircle")
+								:i :s}
+							:i :s}
+							:i $RunScriptOnComponentType$:s{
+								:i $component$ = $model$
+								:i $target$ = $Obj_ReplaceTexture$
+								:i $params$ = :s{
+									:i $src$ = %s(33,"JKU_HeadlightGlow_Transparent.png")$dest$ = %s(31,"textures/cars/JKU_HeadlightGlow")
+								:i :s}
+							:i :s}
+						:i endfunction
+						:i function $FirstSwap_VO$
+							:i $Get_Current_Skater_name$
+							:i switch %GLOBAL%$name$
+								:i case $BenFranklin$
+									:i $printf$%s(11,"Benfranklin")
+									:i $TRG_Ped_BenFranklin_Intro$.$Obj_PlayFam$$Ped_BenFranklin_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Bullfighter$
+									:i $printf$%s(11,"Bullfighter")
+									:i $TRG_Ped_Bullfighter_Intro$.$Obj_PlayFam$$Ped_Bullfighter_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Burnquist$
+									:i $printf$%s(9,"Burnquist")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Burnquist_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $chainsawskater$
+									:i $printf$%s(14,"chainsawskater")
+									:i $TRG_Ped_Bigfoot_Intro$.$Obj_PlayFam$$Ped_Bigfoot_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $graffititagger$
+									:i $printf$%s(14,"graffititagger")
+									:i $TRG_Ped_Tagger_Intro$.$Obj_PlayFam$$Ped_GraffitiSkater_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Hawk$
+									:i $printf$%s(4,"Hawk")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Hawk_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Jester$
+									:i $printf$%s(6,"Jester")
+									:i $TRG_Ped_Jester_Intro$.$Obj_PlayFam$$Ped_Jester_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Margera$
+									:i $printf$%s(7,"Margera")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Margera_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $mechbullrider$
+									:i $printf$%s(13,"mechbullrider")
+									:i $TRG_Ped_SteveO_Intro$.$Obj_PlayFam$$SteveO_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $MinikartDriver$
+									:i $printf$%s(14,"MinikartDriver")
+									:i $TRG_Ped_MiniKart_Intro$.$Obj_PlayFam$$Minikartguy_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Mullen$
+									:i $printf$%s(6,"Mullen")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Mullen_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Muska$
+									:i $printf$%s(5,"Muska")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Muska_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Paulie$
+									:i $printf$%s(6,"Paulie")
+									:i $PlayStream$$Paulie_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Sheckler$
+									:i $printf$%s(8,"Sheckler")
+									:i $TRG_Ped_Sheckler_Intro$.$Obj_PlayFam$$Sheckler_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $segwayrider$
+									:i $printf$%s(11,"segwayrider")
+									:i $TRG_Ped_Segway_Intro$.$Obj_PlayFam$$Ped_JesseJames_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $shrimpvendor$
+									:i $printf$%s(12,"shrimpvendor")
+									:i $TRG_Ped_ShrimpVendor_Intro$.$Obj_PlayFam$$Ped_ShrimpVendor_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Vallely$
+									:i $printf$%s(7,"Vallely")
+									:i $TRG_Ped_TeammateIntroPro$.$Obj_PlayFam$$Vallely_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i endcase
+								case $Voodoo$
+									:i $printf$%s(6,"Voodoo")
+									:i $TRG_Ped_Voodoo_Intro$.$Obj_PlayFam$$Ped_WitchDoctor_FirstSwap_Lip$$vol$ =  ($GlobalHintVOVol$) $priority$ = $StreamPriorityHighest$
+									:i end_switch
+							
+						:i endfunction
+						:i function $Takeover_VO$
+							:i $view_goals_reminder_create$
+							:i $Get_Current_Skater_name$
+							:i $printf$%s(26,"!!!!!!!!!!!!!!!!!!!!!!!!%n")$n$ = %GLOBAL%$name$
+							:i switch %GLOBAL%$name$
+								:i case $BenFranklin$
+									:i $printf$%s(11,"Benfranklin")
+									:i $TakeOverVoicePrefix$ = %s(8,"Franklin")
+									:i endcase
+								case $Bullfighter$
+									:i $printf$%s(11,"Bullfighter")
+									:i $TakeOverVoicePrefix$ = %s(7,"Fighter")
+									:i endcase
+								case $Burnquist$
+									:i $printf$%s(9,"Burnquist")
+									:i $TakeOverVoicePrefix$ = %s(9,"Burnquist")
+									:i endcase
+								case $chainsawskater$
+									:i $printf$%s(14,"Chainsawskater")
+									:i $TakeOverVoicePrefix$ = %s(7,"Bigfoot")
+									:i endcase
+								case $custom$
+									:i $printf$%s(6,"custom")
+									:i $TakeOverVoicePrefix$ = %s(8,"customm1")
+									:i endcase
+								case $Hawk$
+									:i $printf$%s(4,"Hawk")
+									:i $TakeOverVoicePrefix$ = %s(4,"Hawk")
+									:i endcase
+								case $Jester$
+									:i $printf$%s(6,"jester")
+									:i $TakeOverVoicePrefix$ = %s(6,"Jester")
+									:i endcase
+								case $Margera$
+									:i $printf$%s(7,"Margera")
+									:i $TakeOverVoicePrefix$ = %s(7,"Margera")
+									:i endcase
+								case $mechbullrider$
+									:i $printf$%s(13,"Mechbullrider")
+									:i $TakeOverVoicePrefix$ = %s(9,"Bullrider")
+									:i endcase
+								case $MinikartDriver$
+									:i $printf$%s(14,"Minikartdriver")
+									:i $TakeOverVoicePrefix$ = %s(11,"Minikartguy")
+									:i endcase
+								case $Mullen$
+									:i $printf$%s(6,"Mullen")
+									:i $TakeOverVoicePrefix$ = %s(6,"Mullen")
+									:i endcase
+								case $Muska$
+									:i $printf$%s(5,"Muska")
+									:i $TakeOverVoicePrefix$ = %s(5,"Muska")
+									:i endcase
+								case $Paulie$
+									:i $printf$%s(6,"Paulie")
+									:i $TakeOverVoicePrefix$ = %s(6,"Paulie")
+									:i endcase
+								case $Sheckler$
+									:i $printf$%s(8,"Sheckler")
+									:i $TakeOverVoicePrefix$ = %s(8,"Sheckler")
+									:i endcase
+								case $segwayrider$
+									:i $printf$%s(11,"segwayrider")
+									:i $TakeOverVoicePrefix$ = %s(10,"JesseJames")
+									:i endcase
+								case $shrimpvendor$
+									:i $printf$%s(12,"shrimpvendor")
+									:i $TakeOverVoicePrefix$ = %s(12,"shrimpvendor")
+									:i endcase
+								case $Vallely$
+									:i $printf$%s(7,"Vallely")
+									:i $TakeOverVoicePrefix$ = %s(7,"Vallely")
+									:i endcase
+								case $Voodoo$
+									:i $printf$%s(6,"Voodoo")
+									:i $TakeOverVoicePrefix$ = %s(11,"Witchdoctor")
+									:i endcase
+								case $graffititagger$
+									:i $printf$%s(6,"Tagger")
+									:i $TakeOverVoicePrefix$ = %s(14,"GraffitiSkater")
+									:i end_switch
+							
+							:i while
+								
+								:i %GLOBAL%$TakeOverNumber$ = select(41,9, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(85):OFFSET(86):OFFSET(87):OFFSET(88):OFFSET(89):OFFSET(90):OFFSET(91):OFFSET(92):OFFSET(93)
+									 :POS(85) %i(1,00000001)
+								:BREAKTO(94)
+									 :POS(86) %i(2,00000002)
+								:BREAKTO(94)
+									 :POS(87) %i(3,00000003)
+								:BREAKTO(94)
+									 :POS(88) %i(4,00000004)
+								:BREAKTO(94)
+									 :POS(89) %i(5,00000005)
+								:BREAKTO(94)
+									 :POS(90) %i(6,00000006)
+								:BREAKTO(94)
+									 :POS(91) %i(7,00000007)
+								:BREAKTO(94)
+									 :POS(92) %i(8,00000008)
+								:BREAKTO(94)
+									 :POS(93) %i(9,00000009) :POS(94) 
+									:i $FormatText$$checksumname$ = $TakeOverStream$%s(14,"%t_TakeOver0%n")$t$ = %GLOBAL%$TakeOverVoicePrefix$$n$ = %GLOBAL%$TakeOverNumber$
+									:i if NOT $StreamExists$%GLOBAL%$TakeOverStream$
+										:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+											:i $printf$%s(48,"Stream doesn't exist...going to look for another")
+										:i endif
+									:i else 
+										:i continue
+										
+									:i endif
+									:i $wait$%f(0.001000)$seconds$
+								:i loop_to %i(9,00000009)
+								:i if  (%GLOBAL%$TakeOverVoicePrefix$ = %s(8,"customm1")) 
+									:i $PlaySkaterStream$$type$ = %s(8,"takeover")
+								:i else 
+									:i if NOT $StreamExists$%GLOBAL%$TakeOverStream$
+										:i $printf$%s(0,"")
+										:i $printf$%s(44,"############################################")
+										:i $printf$%s(44,"##  Trying to play a takeover stream...   ##")
+										:i $printf$%s(44,"##                                        ##")
+										:i $printf$%s(44,"##                                        ##")
+										:i $printf$%s(44,"##  ...BUT IT DOESN'T EXIST!!!!           ##")
+										:i $printf$%s(44,"##                                        ##")
+										:i $printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+										:i $printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+										:i $printf$%s(44,"##         ...NOW PLAYING ANNOYING SOUND  ##")
+										:i $printf$%s(44,"##                                        ##")
+										:i $printf$%s(44,"############################################")
+										:i $printf$%s(0,"")
+										:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+											:i while
+												
+												:i $PlaySound$$GUI_buzzer01$$vol$ = %i(200,000000c8)
+												:i $wait$%f(0.200000)$seconds$
+											:i loop_to %i(10,0000000a)
+										:i endif
+									:i else 
+										:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+											:i $printf$%s(32,"######  Good, the ped's TakeOver")
+											:i $printf$%s(24,"######  stream is there.")
+										:i endif
+										:i if NOT $IsStreamPlaying$$ProSwitch$
+											:i $PlayStream$%GLOBAL%$TakeOverStream$$id$ = $ProSwitch$$vol$ = %i(200,000000c8)$priority$ = $StreamPriorityHigh$
+										:i endif
+									:i endif
+								:i endif
+							:i endfunction
+							:i function $CAG_Boundary$
+							:i endfunction
+							:i :end
+							

@@ -1,0 +1,404 @@
+
+:i function $Ped_Utils_SetupHintSpeech$:s{
+		:i $hint_text$ = %s(5,"Hint!")
+		:i $hint_text_time$ = %i(3,00000003)
+		:i $inner_radius$ = %i(8,00000008)
+		:i $outer_radius$ = %i(24,00000018)
+		:i $activation_script$ = $ped_utils_default_hint_dialog$
+	:i :s}
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofRadius$
+	:i $Obj_SetInnerRadius$%GLOBAL%$inner_radius$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$params$ = :s{ isNull $activation_script_params$ =  isNull :s}
+:i endfunction
+:i function $Ped_Utils_CancelHintSpeech$
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofRadius$
+:i endfunction
+:i function $ped_utils_default_hint_dialog$
+	:i if $ObjectExists$$id$ = %GLOBAL%$ped_id$
+		:i %GLOBAL%$ped_id$.$Ped_SetLogicState$$STATE_standing$
+	:i endif
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i $UnPauseSkaters$
+	:i $create_speech_box$:s{
+		:i $anchor_id$ = $ped_hint_dialog$
+		:i $text$ = %GLOBAL%$hint_text$
+		:i $no_pad_choose$
+		:i $no_pad_start$
+		:i $bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+		:i $text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $pos$ = %vec2(320.000000,400.000000)
+		:i $bg_x_scale$ = %f(1.400000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i if $GotParam$$VO$
+		:i if $ObjectExists$$id$ = %GLOBAL%$ped_id$
+			:i %GLOBAL%$ped_id$.$Obj_StopStream$$ThisPedHintStream$
+			:i $wait$%i(1,00000001)$gameframe$
+			:i if $StreamExists$%GLOBAL%$VO$
+				:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+					:i $Printf$%s(43,"##########  Good, the hint stream is there.")
+				:i endif
+				:i if $GotParam$$Volume$
+					:i $Printf$%s(23,"Have a volume parameter")
+					:i %GLOBAL%$ped_id$.$Obj_PlayStream$%GLOBAL%$VO$$vol$ = %GLOBAL%$Volume$$priority$ = %i(101,00000065)$dropoff$ = $GlobalHintVODropoff$$id$ = $ThisPedHintStream$
+				:i else 
+					:i $Printf$%s(52,"Don't have a volume parameter, using GlobalHintVOVol")
+					:i %GLOBAL%$ped_id$.$Obj_PlayStream$%GLOBAL%$VO$$vol$ = $GlobalHintVOVol$$priority$ = %i(101,00000065)$dropoff$ = $GlobalHintVODropoff$$id$ = $ThisPedHintStream$
+				:i endif
+			:i else 
+				:i $Printf$%s(0,"")
+				:i $Printf$%s(44,"############################################")
+				:i $Printf$%s(44,"##  Trying to play a hint ped stream...   ##")
+				:i $Printf$%s(44,"##                                        ##")
+				:i $Printf$%s(6,"##  %v")$v$ = %GLOBAL%$stream$
+				:i $Printf$%s(44,"##                                        ##")
+				:i $Printf$%s(44,"##  ...BUT IT DOESN'T EXIST!!!!           ##")
+				:i $Printf$%s(44,"##                                        ##")
+				:i $Printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+				:i $Printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+				:i $Printf$%s(44,"##         ...NOW PLAYING ANNOYING SOUND  ##")
+				:i $Printf$%s(44,"##                                        ##")
+				:i $Printf$%s(44,"############################################")
+				:i $Printf$%s(0,"")
+				:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+					:i while
+						
+						:i $PlaySound$$GUI_buzzer01$$vol$ = %i(200,000000c8)
+						:i $wait$%f(0.200000)$seconds$
+					:i loop_to %i(10,0000000a)
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$hint_text_script$
+		:i if $ObjectExists$$id$ = %GLOBAL%$ped_id$
+			:i %GLOBAL%$ped_id$.$Obj_SpawnScript$%GLOBAL%$hint_text_script$$params$ =  isNull 
+		:i endif
+	:i endif
+	:i $wait$%GLOBAL%$hint_text_time$$seconds$
+	:i if $ObjectExists$$id$ = %GLOBAL%$ped_id$
+		:i %GLOBAL%$ped_id$.$Ped_Utils_SetMiscEventHandlers$
+		:i %GLOBAL%$ped_id$.$Ped_StateLogic_SetDefaultState$
+	:i endif
+	:i if $ObjectExists$$id$ = $ped_hint_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_hint_dialog$
+	:i endif
+:i endfunction
+:i function $ped_utils_hint_dialog_refuse$
+	:i if $ObjectExists$$id$ = %GLOBAL%$ped_id$
+		:i %GLOBAL%$ped_id$.$Ped_Utils_SetMiscEventHandlers$
+	:i endif
+	:i if $ObjectExists$$id$ = $ped_hint_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_hint_dialog$
+	:i endif
+:i endfunction
+:i function $Ped_Utils_SetCollisionResponse$$Type$ = $ignore$
+	:i $GetArraySize$ ($Ped_StateLogic_CollisionTypes$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$Type$ =  ($Ped_StateLogic_CollisionTypes$:a{%GLOBAL%$index$:a}->$Tag$) ) 
+			:i $SetTags$$collision_mode$ =  ($Ped_StateLogic_CollisionTypes$:a{%GLOBAL%$index$:a}->$Set_mode$) 
+			:i $ClearEventHandler$$ObjectInAvoidRadius$
+			:i $Obj_SetInnerAvoidRadius$%i(0,00000000)
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $ped_initialize_collision_exceptions$
+:i endfunction
+:i function $Ped_Utils_SetMiscEventHandlers$
+	:i $GetTags$
+	:i $GetArraySize$ ($Ped_StateLogic_EventHandlers$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $GotParam$ ($Ped_StateLogic_EventHandlers$:a{%GLOBAL%$index$:a}->$Tag$) 
+			:i $SetEventHandler$:s{
+				:i $ex$ =  ($Ped_StateLogic_EventHandlers$:a{%GLOBAL%$index$:a}->$Hook_event$) 
+				:i $scr$ =  ($Ped_StateLogic_EventHandlers$:a{%GLOBAL%$index$:a}->$scr$) 
+				:i $params$ = :s{
+					:i $SetState$ =  ($Ped_StateLogic_EventHandlers$:a{%GLOBAL%$index$:a}->$State$) 
+					:i $event$ =  ($Ped_StateLogic_EventHandlers$:a{%GLOBAL%$index$:a}->$Hook_event$) 
+				:i :s}
+			:i :s}
+			:i $Obj_SetAttentionRadius$%i(30,0000001e)$ifZero$
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $Ped_Utils_EventHandler$
+	:i $PED_DEBUGEVENT$:s{$params$ =  isNull :s}
+	:i if NOT $GotParam$$SetState$
+		:i $script_assert$%s(24,"Missing <SetState> param")
+	:i endif
+	:i if $GotParam$$event$
+		:i $ClearEventHandler$%GLOBAL%$event$
+	:i endif
+	:i $Ped_SetLogicState$%GLOBAL%$SetState$$StateParams$ =  isNull 
+:i endfunction
+:i function $Ped_Utils_PlayStream$
+	:i if $GotParam$$Type$
+		:i if $Ped_GetVoicePrefix$
+			:i while
+				
+				:i %GLOBAL%$which$ = select(41,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6)
+					 :POS(0) %i(1,00000001)
+				:BREAKTO(7)
+					 :POS(1) %i(2,00000002)
+				:BREAKTO(7)
+					 :POS(2) %i(3,00000003)
+				:BREAKTO(7)
+					 :POS(3) %i(4,00000004)
+				:BREAKTO(7)
+					 :POS(4) %i(5,00000005)
+				:BREAKTO(7)
+					 :POS(5) %i(6,00000006)
+				:BREAKTO(7)
+					 :POS(6) %i(7,00000007) :POS(7) 
+					:i switch %GLOBAL%$Type$
+						:i case $Avoid$
+							:i $FormatText$$checksumname$ = $stream$%s(11,"%p_Avoid0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i $FormatText$$textname$ = $streams_text_name$%s(11,"%p_Avoid0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i endcase
+						case $Far$
+							:i $FormatText$$checksumname$ = $stream$%s(9,"%p_Far0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i $FormatText$$textname$ = $streams_text_name$%s(9,"%p_Far0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i endcase
+						case $TrickBail$
+							:i $FormatText$$checksumname$ = $stream$%s(15,"%p_TrickBail0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i $FormatText$$textname$ = $streams_text_name$%s(15,"%p_TrickBail0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i endcase
+						case $TrickPositive$
+							:i $FormatText$$checksumname$ = $stream$%s(19,"%p_TrickPositive0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i $FormatText$$textname$ = $streams_text_name$%s(19,"%p_TrickPositive0%w")$p$ = %GLOBAL%$VoicePrefix$$w$ = %GLOBAL%$which$
+							:i end_switch
+					
+					:i if NOT $StreamExists$%GLOBAL%$stream$
+					:i else 
+						:i continue
+						
+					:i endif
+					:i $wait$%f(0.001000)$seconds$
+				:i loop_to %i(7,00000007)
+				:i if NOT $StreamExists$%GLOBAL%$stream$
+					:i $Printf$%s(0,"")
+					:i $Printf$%s(44,"############################################")
+					:i $Printf$%s(44,"##  Trying to play a hint ped stream...   ##")
+					:i $Printf$%s(44,"##                                        ##")
+					:i $Printf$%s(6,"##  %v")$v$ = %GLOBAL%$streams_text_name$
+					:i $Printf$%s(44,"##                                        ##")
+					:i $Printf$%s(44,"##  ...BUT IT DOESN'T EXIST!!!!           ##")
+					:i $Printf$%s(44,"##                                        ##")
+					:i $Printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+					:i $Printf$%s(44,"##  CHECK THE PROFILE!!!!!                ##")
+					:i $Printf$%s(44,"##         ...NOW PLAYING ANNOYING SOUND  ##")
+					:i $Printf$%s(44,"##                                        ##")
+					:i $Printf$%s(44,"############################################")
+					:i $Printf$%s(0,"")
+					:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+						:i while
+							
+							:i $PlaySound$$GUI_buzzer01$$vol$ = %i(200,000000c8)
+							:i $wait$%f(0.200000)$seconds$
+						:i loop_to %i(10,0000000a)
+					:i endif
+				:i else 
+					:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+						:i $Printf$%s(50,"######  Good, the ped's far, avoid, trickpositive,")
+						:i $Printf$%s(37,"######  or trickbail stream is there.")
+						:i $Printf$%s(26,"######  Stream's name = %s")$s$ = %GLOBAL%$streams_text_name$
+					:i endif
+					:i switch %GLOBAL%$Type$
+						:i case $Avoid$
+							:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+								:i $Printf$%s(29,"######  Playing an AVOID line")
+							:i endif
+							:i $Obj_StopStream$$InGamePedObjStreamLine$
+							:i $Obj_StopStream$$ThisPedHintStream$
+							:i select(40,2, 04 00 01 00) :OFFSET(8):OFFSET(9)
+								
+								:i  :POS(8) 
+							:i 
+						:BREAKTO(10)
+							 :POS(9) $Obj_PlayStream$%GLOBAL%$stream$$vol$ = $GlobalAvoidVOVol$$dropoff$ = $GlobalAvoidVODropoff$$id$ = $InGamePedObjStreamLine$$priority$ = $StreamPriorityLowMid$
+							:i  :POS(10) 
+						:i endcase
+					case $Far$
+						:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+							:i $Printf$%s(26,"######  Playing a FAR line")
+						:i endif
+						:i if NOT $IsStreamPlaying$$ThisPedHintStream$
+							:i if NOT $IsStreamPlaying$$InGamePedObjStreamLine$
+								:i $Obj_PlayStream$%GLOBAL%$stream$$vol$ = $GlobalFarVOVol$$dropoff$ = $GlobalFarVODropoff$$id$ = $InGamePedObjStreamLine$$priority$ = $StreamPriorityLow$
+							:i endif
+						:i endif
+						:i endcase
+					case $TrickBail$
+						:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+							:i $Printf$%s(33,"######  Playing a TRICK BAIL line")
+						:i endif
+						:i if NOT $IsStreamPlaying$$ThisPedHintStream$
+							:i $Obj_StopStream$$InGamePedObjStreamLine$
+							:i $Obj_PlayStream$%GLOBAL%$stream$$vol$ = $GlobalTrickBailVOVol$$dropoff$ = $GlobalTrickBailVODropoff$$id$ = $InGamePedObjStreamLine$$priority$ = $StreamPriorityLowMid$
+						:i endif
+						:i endcase
+					case $TrickPositive$
+						:i if  ($CheckForPedStreamExistence$ = %i(1,00000001)) 
+							:i $Printf$%s(37,"######  Playing a TRICK POSITIVE line")
+						:i endif
+						:i if NOT $IsStreamPlaying$$ThisPedHintStream$
+							:i $Obj_StopStream$$InGamePedObjStreamLine$
+							:i $Obj_PlayStream$%GLOBAL%$stream$$vol$ = $GlobalTrickPositiveVOVol$$dropoff$ = $GlobalTrickPositiveVODropoff$$id$ = $InGamePedObjStreamLine$$priority$ = $StreamPriorityLowMid$
+						:i endif
+						:i end_switch
+				
+			:i endif
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$name$
+			:i $script_assert$%s(20,"Missing <name> param")
+		:i endif
+		:i $GetSingleTag$$VO_Types$
+		:i if NOT $GotParam$$VO_Types$
+			:i $AddParams$$default_M_audio_assets$
+		:i endif
+		:i if $GotParam$$VO_Types$
+			:i if $StructureContains$%GLOBAL%$name$$structure$ = %GLOBAL%$VO_Types$
+				:i if $IsArray$ (%GLOBAL%$VO_Types$->%GLOBAL%$name$) 
+					:i if $GotParam$$index$
+						:i $Obj_PlayStream$ (%GLOBAL%$VO_Types$->%GLOBAL%$name$:a{%GLOBAL%$index$:a}) $vol$ = %i(200,000000c8)
+					:i else 
+						:i $GetRandomArrayElement$ (%GLOBAL%$VO_Types$->%GLOBAL%$name$) 
+						:i $Obj_PlayStream$ (%GLOBAL%$element$) $vol$ = %i(200,000000c8)
+					:i endif
+				:i else 
+					:i $Obj_PlayStream$ (%GLOBAL%$VO_Types$->%GLOBAL%$name$) $vol$ = %i(200,000000c8)
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $Ped_Utils_GetAnimName$
+	:i if NOT $GotParam$$Type$
+		:i $script_assert$%s(20,"Missing <Type> Param")
+	:i endif
+	:i if $GetSingleTag$$Anim_Types$
+		:i if $StructureContains$%GLOBAL%$Type$$structure$ =  (%GLOBAL%$Anim_Types$) 
+			:i %GLOBAL%$AnimAssets$ =  (%GLOBAL%$Anim_Types$->%GLOBAL%$Type$) 
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$AnimAssets$
+		:i $Ped_GetGender$
+		:i $GetSingleTag$$move_type$
+		:i if  (%GLOBAL%$move_type$ = $skate$) 
+			:i if $StructureContains$%GLOBAL%$Type$$structure$ =  ($default_M_skater_anim_assets$->$Anim_Types$) 
+				:i %GLOBAL%$AnimAssets$ =  ($default_M_skater_anim_assets$->$Anim_Types$->%GLOBAL%$Type$) 
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i if $StructureContains$%GLOBAL%$Type$$structure$ =  ($default_M_anim_assets$->$Anim_Types$) 
+					:i %GLOBAL%$AnimAssets$ =  ($default_M_anim_assets$->$Anim_Types$->%GLOBAL%$Type$) 
+				:i endif
+			:i else 
+				:i if $StructureContains$%GLOBAL%$Type$$structure$ =  ($default_F_anim_assets$->$Anim_Types$) 
+					:i %GLOBAL%$AnimAssets$ =  ($default_F_anim_assets$->$Anim_Types$->%GLOBAL%$Type$) 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i %GLOBAL%$AnimName$ = $default$
+	:i if $GotParam$$AnimAssets$
+		:i if $IsArray$ (%GLOBAL%$AnimAssets$) 
+			:i if $GotParam$$index$
+				:i %GLOBAL%$AnimName$ =  (%GLOBAL%$AnimAssets$:a{%GLOBAL%$index$:a}) 
+			:i else 
+				:i $GetRandomArrayElement$ (%GLOBAL%$AnimAssets$) 
+				:i %GLOBAL%$AnimName$ = %GLOBAL%$element$
+			:i endif
+		:i else 
+			:i %GLOBAL%$AnimName$ = %GLOBAL%$AnimAssets$
+		:i endif
+	:i endif
+	:i if $GotParam$$index$
+		:i return
+		$AnimName$ = %GLOBAL%$AnimName$$index$ = %GLOBAL%$index$
+	:i endif
+	:i return
+	$AnimName$ = %GLOBAL%$AnimName$
+:i endfunction
+:i function $Ped_Utils_GetStateAnimName$$Table$ = $Ped_StateLogic_Table$
+	:i if NOT $GotParam$$Type$
+		:i $script_assert$%s(20,"Missing <Type> Param")
+	:i endif
+	:i $GetSingleTag$$move_type$
+	:i if  ($move_type$ = $skater$) 
+		:i %GLOBAL%$m_assets$ = $skater$
+	:i else 
+		:i $Ped_GetGender$
+		:i if  (%GLOBAL%$Gender$ = $male$) 
+			:i %GLOBAL%$m_assets$ = $male$
+			:i if  (%GLOBAL%$move_type$ = $stand$) 
+				:i %GLOBAL%$m_stand_assets$ = $male_stand$
+			:i endif
+		:i else 
+			:i %GLOBAL%$m_assets$ = $female$
+			:i if  (%GLOBAL%$move_type$ = $stand$) 
+				:i %GLOBAL%$m_stand_assets$ = $female_stand$
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$LogicState$
+		:i $Ped_GetLogicState$
+	:i endif
+	:i if $StructureContains$ (%GLOBAL%$LogicState$) $structure$ =  (%GLOBAL%$Table$) 
+		:i if $StructureContains$ ($anim_assets$) $structure$ =  (%GLOBAL%$Table$->%GLOBAL%$LogicState$) 
+			:i $Printf$%s(17,"Got custom assets")
+			:i if $StructureContains$ (%GLOBAL%$m_assets$) $structure$ =  (%GLOBAL%$Table$->%GLOBAL%$LogicState$->$anim_assets$) 
+				:i %GLOBAL%$state_assets$ =  (%GLOBAL%$Table$->%GLOBAL%$LogicState$->$anim_assets$->%GLOBAL%$m_assets$) 
+				:i $Printf$%s(19,"Got assets for male")
+				:i if $StructureContains$ ($Anim_Types$) $structure$ =  (%GLOBAL%$state_assets$) 
+					:i if $StructureContains$ (%GLOBAL%$Type$) $structure$ =  (%GLOBAL%$state_assets$->$Anim_Types$) 
+						:i %GLOBAL%$AnimName$ =  (%GLOBAL%$state_assets$->$Anim_Types$->%GLOBAL%$Type$) 
+						:i $FormatText$$textname$ = $msg$%s(26,"Got <AnimName>=%s for male")$s$ = %GLOBAL%$AnimName$
+						:i $Printf$%GLOBAL%$msg$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i return
+	%GLOBAL%$AnimName$
+:i endfunction
+:i function $Ped_Utils_BeginPlayerChase$$MaxHomeDist$ = %i(0,00000000)$CatchScript$ = $NullScript$$Table$ = $Ped_StateLogic_Table$
+	:i %GLOBAL%$MaxHomeDist$ =  (%GLOBAL%$MaxHomeDist$ * %i(12,0000000c)) 
+	:i $Ped_StateLogic_RegisterTempDefaultState$:s{$State$ = $STATE_chase$$Table$ = %GLOBAL%$Table$:s}
+	:i $SetTags$$MaxHomeDist$ = %GLOBAL%$MaxHomeDist$$CatchScript$ = %GLOBAL%$CatchScript$
+	:i $Ped_SetLogicState$$STATE_chase$
+:i endfunction
+:i function $Ped_Utils_EndPlayerChase$
+	:i $RemoveTags$$Tags$ = :a{$CatchScript$:a}
+	:i $Ped_StateLogic_UnregisterTempDefaultState$
+	:i $goto$$Ped_Utils_BeginReturnHome$
+:i endfunction
+:i function $Ped_Utils_BeginReturnHome$
+	:i $Ped_StateLogic_RegisterTempDefaultState$:s{$State$ = $STATE_gohome$$Table$ = $Ped_StateLogic_Table$:s}
+	:i $Ped_SetLogicState$$STATE_gohome$
+:i endfunction
+:i function $Ped_Utils_EndReturnHome$
+	:i $Ped_StateLogic_UnregisterTempDefaultState$
+	:i $Ped_StateLogic_SetDefaultState$
+:i endfunction
+:i function $Ped_Utils_GetVectorToPlayer$
+	:i $skater$.$Obj_GetPosition$
+	:i %GLOBAL%$VecToPlayer$ = %GLOBAL%$pos$
+	:i $Obj_GetPosition$
+	:i %GLOBAL%$VecToPlayer$ =  (%GLOBAL%$VecToPlayer$ - %GLOBAL%$pos$) 
+	:i $NormalizeVector$%GLOBAL%$VecToPlayer$
+	:i return
+	$VecToPlayer$ = %GLOBAL%$norm$
+:i endfunction
+:i :end

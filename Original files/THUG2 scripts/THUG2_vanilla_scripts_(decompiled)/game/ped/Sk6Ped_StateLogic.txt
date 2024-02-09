@@ -1,0 +1,1272 @@
+
+:i function $PED_DEBUGEVENT$
+	:i if  ($DEBUG_PEDLOGIC$ = %i(1,00000001)) 
+		:i $Obj_GetID$
+		:i if  ($DEBUG_PED_OBJID$ = %i(0,00000000) OR $DEBUG_PED_OBJID$ = %GLOBAL%$objID$) 
+			:i $printf$%s(0,"")
+			:i $printf$%s(27,"~~ EventHandler() for ID=%i")$i$ = %GLOBAL%$objID$
+			:i if $GotParam$$params$
+				:i $printf$%s(20,"~~~~~~ Event Params:")
+				:i $printstruct$%GLOBAL%$params$
+			:i endif
+			:i $printf$%s(21,"~~ EventHandler() end")
+		:i endif
+	:i endif
+:i endfunction
+:i $Ped_StateLogic_UpdateTypes$ = :s{
+	:i $no_move_update$
+	:i $generic_move_update$
+	:i $skater_move_update$
+	:i $lip_trick_update$
+	:i $blocker_move_update$
+	:i $chase_move_update$
+	:i $gohome_move_update$
+:i :s}
+:i $Ped_StateLogic_ExitActions$ = :s{
+	:i $wait_anim_finished$
+:i :s}
+:i $Ped_StateLogic_DefaultStates$ = :a{
+	:i :s{$Tag$ = $Sitting$$State$ = $STATE_Sitting$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Vending$$State$ = $STATE_Vending$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Corner$$State$ = $STATE_Corner$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Arcade$$State$ = $STATE_Arcade$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $LookAt$$State$ = $STATE_LookAt$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Wait$$State$ = $STATE_Wait$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Talk$$State$ = $STATE_Talk$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $Chick$$State$ = $STATE_Chick$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :s{$Tag$ = $skater$$State$ = $STATE_skating$$Table$ = $SkaterPed_StateTable$:s}
+	:i :s{$Tag$ = $stand$$State$ = $STATE_standing$$Table$ = $Ped_StateLogic_Table$:s}
+	:i :a}
+:i $Ped_StateLogic_CollisionTypes$ = :a{
+	:i :s{$Tag$ = $avoid$$Set_mode$ = $avoid$:s}
+	:i :s{$Tag$ = $fall$$Set_mode$ = $fall$:s}
+	:i :s{$Tag$ = $shot$$Set_mode$ = $shot$:s}
+	:i :s{$Tag$ = $knock$$Set_mode$ = $knock$:s}
+	:i :s{$Tag$ = $bump$$Set_mode$ = $bump$:s}
+	:i :s{$Tag$ = $ignore$$Set_mode$ = $ignore$:s}
+	:i :a}
+:i $Ped_StateLogic_EventHandlers$ = :a{
+	:i :s{$Tag$ = $GetAttention$$Hook_event$ = $ObjectInAttentionRadius$$State$ = $STATE_getattention$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :s{$Tag$ = $Blocker$$Hook_event$ = $ObjectInAttentionRadius$$State$ = $STATE_blockerwait$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :s{$Tag$ = $Blocker$$Hook_event$ = $BlockerStand$$State$ = $STATE_blockerstand$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :s{$Tag$ = $Blocker$$Hook_event$ = $BlockerShuffle$$State$ = $STATE_blockershuffle$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :s{$Tag$ = $Blocker$$Hook_event$ = $BlockerRun$$State$ = $STATE_blockerrun$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :s{$Tag$ = $Blocker$$Hook_event$ = $BlockerBumpPlayer$$State$ = $STATE_blockerbump$$Scr$ = $Ped_Utils_EventHandler$:s}
+	:i :a}
+:i $Ped_StateLogic_Table$ = :s{
+	:i $STATE_DEFAULT$ = :s{
+		:i $script_ped_state$ = $Ped_StateLogic_SetDefaultState$
+	:i :s}
+	:i $STATE_RESET_EVENTS$ = :s{
+		:i $script_ped_state$ = $ped_return_to_precollision_state$
+	:i :s}
+	:i $STATE_DELAY_waitanim$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_DELAY_waitanim$
+	:i :s}
+	:i $STATE_walking$ = :s{
+		:i $ped_update_type$ = $generic_move_update$
+		:i $script_ped_state$ = $STATECONTROL_walking$
+	:i :s}
+	:i $STATE_standing$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_standidle$
+	:i :s}
+	:i $STATE_Chick$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_chick$
+	:i :s}
+	:i $STATE_shot$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_shot$
+	:i :s}
+	:i $STATE_fall$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_fall$
+	:i :s}
+	:i $STATE_getup$ = :s{
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_getup$
+	:i :s}
+	:i $STATE_disgust$ = :s{
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_disgust$
+	:i :s}
+	:i $STATE_knockdown$ = :s{
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_knockdown$
+	:i :s}
+	:i $STATE_avoidstop$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_avoidstop$
+	:i :s}
+	:i $STATE_avoidinit$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_avoidinit$
+	:i :s}
+	:i $STATE_avoidjump$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_avoidjump$
+	:i :s}
+	:i $STATE_avoidland$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_avoidland$
+	:i :s}
+	:i $STATE_avoidknockdown$ = :s{
+		:i $high_priority$
+		:i $hide_boardgeom$
+		:i $script_ped_state$ = $STATECONTROL_avoidknockdown$
+	:i :s}
+	:i $STATE_trickpositive$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_trickpositive$
+	:i :s}
+	:i $STATE_trickbail$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_trickbail$
+	:i :s}
+	:i $STATE_getattention$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_getattention$
+		:i $exit_state_action$ = $wait_anim_finished$
+	:i :s}
+	:i $STATE_blockerwait$ = :s{
+		:i $ped_update_type$ = $blocker_move_update$
+		:i $script_ped_state$ = $STATECONTROL_blockerwait$
+	:i :s}
+	:i $STATE_blockerstand$ = :s{
+		:i $ped_update_type$ = $blocker_move_update$
+		:i $script_ped_state$ = $STATECONTROL_blockerstand$
+	:i :s}
+	:i $STATE_blockershuffle$ = :s{
+		:i $ped_update_type$ = $blocker_move_update$
+		:i $script_ped_state$ = $STATECONTROL_blockershuffle$
+	:i :s}
+	:i $STATE_blockerrun$ = :s{
+		:i $ped_update_type$ = $blocker_move_update$
+		:i $script_ped_state$ = $STATECONTROL_blockerrun$
+	:i :s}
+	:i $STATE_blockerbump$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_blockerbump$
+	:i :s}
+	:i $STATE_chase$ = :s{
+		:i $ped_update_type$ = $chase_move_update$
+		:i $script_ped_state$ = $STATECONTROL_chase$
+	:i :s}
+	:i $STATE_chasepause$ = :s{
+		:i $ped_update_type$ = $chase_move_update$
+		:i $script_ped_state$ = $STATECONTROL_chasepause$
+	:i :s}
+	:i $STATE_chasecatch$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_chasecatch$
+	:i :s}
+	:i $STATE_gohome$ = :s{
+		:i $ped_update_type$ = $gohome_move_update$
+		:i $script_ped_state$ = $STATECONTROL_gohome$
+	:i :s}
+	:i $STATE_Sitting$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Sitting$
+	:i :s}
+	:i $STATE_Vending$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Vending$
+	:i :s}
+	:i $STATE_Corner$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Corner$
+	:i :s}
+	:i $STATE_Arcade$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Arcade$
+	:i :s}
+	:i $STATE_LookAt$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_LookAt$
+	:i :s}
+	:i $STATE_Wait$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Wait$
+	:i :s}
+	:i $STATE_Talk$ = :s{
+		:i $ped_update_type$ = $no_move_update$
+		:i $script_ped_state$ = $STATECONTROL_Talk$
+	:i :s}
+	:i $STATE_Explode$ = :s{
+		:i $script_ped_state$ = $STATECONTROL_Explode$
+	:i :s}
+:i :s}
+:i function $Ped_StateLogic_SetDefaultState$
+	:i $GetTags$
+	:i if $GotParam$$TempDefaultState$
+		:i $Ped_SetLogicState$%GLOBAL%$TempDefaultState$$Table$ = %GLOBAL%$TempDefaultTable$
+		:i return
+		
+	:i endif
+	:i $GetArraySize$ ($Ped_UniqueStateLogic_DefaultStates$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $GotParam$ ($Ped_UniqueStateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$Tag$) 
+			:i %GLOBAL%$State$ =  ($Ped_UniqueStateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$State$) 
+			:i %GLOBAL%$Table$ =  ($Ped_UniqueStateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$Table$) 
+			:i $SetTags$$UniqueStateTable$ = %GLOBAL%$Table$
+			:i $Ped_SetLogicState$%GLOBAL%$State$$Table$ = %GLOBAL%$Table$
+			:i return
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetArraySize$ ($Ped_StateLogic_DefaultStates$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $GotParam$ ($Ped_StateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$Tag$) 
+			:i %GLOBAL%$State$ =  ($Ped_StateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$State$) 
+			:i %GLOBAL%$Table$ =  ($Ped_StateLogic_DefaultStates$:a{%GLOBAL%$index$:a}->$Table$) 
+			:i $Ped_SetLogicState$%GLOBAL%$State$$Table$ = %GLOBAL%$Table$
+			:i return
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $Ped_SetLogicState$$STATE_walking$$Table$ = $Ped_StateLogic_Table$
+:i endfunction
+:i function $Ped_StateLogic_RegisterTempDefaultState$
+	:i if NOT $GotParam$$State$
+		:i $script_assert$%s(21,"Missing <State> param")
+	:i endif
+	:i if NOT $GotParam$$Table$
+		:i $script_assert$%s(21,"Missing <Table> param")
+	:i endif
+	:i $SetTags$$TempDefaultState$ = %GLOBAL%$State$$TempDefaultTable$ = %GLOBAL%$Table$
+:i endfunction
+:i function $Ped_StateLogic_UnregisterTempDefaultState$
+	:i $RemoveTags$$Tags$ = :a{$TempDefaultState$$TempDefaultTable$:a}
+:i endfunction
+:i function $STATECONTROL_null$
+:i endfunction
+:i function $STATECONTROL_DELAY_waitanim$
+	:i $Obj_SetAnimCycleMode$$off$
+	:i $Obj_WaitAnimFinished$
+	:i if $GetSingleTag$$DelayedState$
+		:i $GetSingleTag$$DelayedTable$
+		:i $Ped_SetLogicState$%GLOBAL%$DelayedState$$Table$ = %GLOBAL%$DelayedTable$
+		:i $RemoveTags$$Tags$ = :a{$DelayedState$$DelayedTable$:a}
+		:i return
+		
+	:i endif
+	:i $Ped_StateLogic_SetDefaultState$
+:i endfunction
+:i function $STATECONTROL_walking$
+	:i $ped_initialize_collision_exceptions$
+	:i $Ped_Utils_GetAnimName$$Type$ = $IdleToWalk$
+	:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+	:i $Obj_WaitAnimFinished$
+	:i $Ped_Utils_GetAnimName$$Type$ = $WalkAnims$
+	:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$$UseAnimTags$
+	:i if $GetSingleTag$$animTags$
+		:i $ped_adjust_speed_to_match_anim$%GLOBAL%$animTags$
+	:i endif
+:i endfunction
+:i function $STATECONTROL_standidle$
+	:i $printf$%s(18,"I'm standing now!!")
+	:i if $AnimEquals$:a{$Ped_M_FalldownA$$Ped_M_FalldownB$$Ped_M_FalldownC$$Ped_M_FalldownD$$Ped_M_FalldownE$:a}
+		:i $printf$%s(7,"Falling")
+		:i $Obj_WaitAnimFinished$
+		:i if $AnimEquals$$Ped_M_FalldownA$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpA$
+		:i else 
+			:i if $AnimEquals$$Ped_M_FalldownB$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpB$
+			:i else 
+				:i if $AnimEquals$$Ped_M_FalldownC$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpC$
+				:i else 
+					:i if $AnimEquals$$Ped_M_FalldownD$
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpD$
+					:i else 
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpE$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $Obj_WaitAnimFinished$
+	:i endif
+	:i if $AnimEquals$:a{$Ped_M_LayIdleA$$Ped_M_LayIdleB$$Ped_M_LayIdleC$$Ped_M_LayIdleD$$Ped_M_LayIdleE$:a}
+		:i $printf$%s(13,"On the Ground")
+		:i if $AnimEquals$$Ped_M_LayIdleA$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpA$
+		:i else 
+			:i if $AnimEquals$$Ped_M_LayIdleB$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpB$
+			:i else 
+				:i if $AnimEquals$$Ped_M_LayIdleC$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpC$
+				:i else 
+					:i if $AnimEquals$$Ped_M_LayIdleD$
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpD$
+					:i else 
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpE$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $Obj_WaitAnimFinished$
+	:i endif
+	:i if NOT $GetSingleTag$$should_look_at_skater$
+		:i %GLOBAL%$should_look_at_skater$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$should_look_at_skater$ = %i(1,00000001)) 
+		:i $ped_standing_look_at_skater$
+	:i endif
+	:i while
+		
+		:i $GetRandomValue$:s{$name$ = $speed$$resolution$ = %f(0.100000)$a$ = %f(0.750000)$b$ = %f(1.250000):s}
+		:i $Ped_Utils_GetAnimName$$Type$ = $StandAnims$
+		:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$speed$ = %GLOBAL%$speed$
+		:i $Obj_WaitAnimFinished$
+		:i $Ped_Utils_GetAnimName$$Type$ = $StandAnims$$index$ = %i(0,00000000)
+		:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$
+		:i $Wait$random%vec2(3.000000,6.000000)$seconds$
+		:i $Obj_SetAnimCycleMode$$off$
+		:i $Obj_WaitAnimFinished$
+	:i loop_to 
+:i endfunction
+:i function $STATECONTROL_chick$
+	:i while
+		
+		:i $GetRandomValue$:s{$name$ = $speed$$resolution$ = %f(0.100000)$a$ = %f(0.750000)$b$ = %f(1.250000):s}
+		:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1$$speed$ = %GLOBAL%$speed$
+		:i $Obj_WaitAnimFinished$
+		:i select(2f,3, 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2)
+			
+			:i  :POS(0) $printf$%s(4,"Idle")
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1$$speed$ = %GLOBAL%$speed$
+			:i 
+		:BREAKTO(3)
+			 :POS(1) $printf$%s(5,"Idle2")
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1ToIdle2$$speed$ = %GLOBAL%$speed$
+			:i $Obj_WaitAnimFinished$
+			:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(1,00000001)$b$ = %i(4,00000004)$resolution$ = %i(4,00000004)$Integer$
+			:i while
+				
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle2$$speed$ = %GLOBAL%$speed$
+				:i $Obj_WaitAnimFinished$
+			:i loop_to %GLOBAL%$RepeatCount$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle2ToIdle1$$speed$ = %GLOBAL%$speed$
+			:i 
+		:BREAKTO(3)
+			 :POS(2) $printf$%s(5,"Idle3")
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1ToIdle3$$speed$ = %GLOBAL%$speed$
+			:i $Obj_WaitAnimFinished$
+			:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(1,00000001)$b$ = %i(4,00000004)$resolution$ = %i(4,00000004)$Integer$
+			:i while
+				
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle3$$speed$ = %GLOBAL%$speed$
+				:i $Obj_WaitAnimFinished$
+			:i loop_to %GLOBAL%$RepeatCount$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1ToIdle3$$speed$ = %GLOBAL%$speed$$backwards$
+			:i  :POS(3) 
+		:i $Obj_WaitAnimFinished$
+	:i loop_to 
+:i endfunction
+:i function $STATECONTROL_shot$
+	:i $ped_play_falldown_anim$
+	:i $Obj_SetOuterAvoidRadius$%i(10,0000000a)
+	:i $SetEventHandler$:s{
+		:i $ex$ = $ObjectOutofAvoidRadius$
+		:i $Scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_getup$$event$ = $ObjectOutofAvoidRadius$:s}
+	:i :s}
+	:i while
+		
+		:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(4):OFFSET(5):OFFSET(6)
+			 :POS(4) %i(10,0000000a)
+		:BREAKTO(7)
+			 :POS(5) %i(60,0000003c)
+		:BREAKTO(7)
+			 :POS(6) %i(90,0000005a) :POS(7) $frames$
+			:i $ped_play_layidle_anim$
+		:i loop_to 
+	:i endfunction
+	:i function $STATECONTROL_fall$
+		:i if $SkaterSpeedLessThan$%i(1,00000001)
+			:i while
+				
+				:i select(2f,2, 03 00 01 00) :OFFSET(8):OFFSET(9)
+					
+					:i  :POS(8) $ped_play_idle_anim$
+					:i 
+				:BREAKTO(10)
+					 :POS(9) $ped_play_disgust_anim$$no_block$
+					:i  :POS(10) 
+				:i $Obj_WaitAnimFinished$
+				:i $Obj_GetDistanceToObject$$skater$
+				:i if  (%GLOBAL%$objectDistance$ < %f(3.000000)) 
+					:i continue
+					
+				:i endif
+				:i if  (%GLOBAL%$objectDistance$ > %f(4.000000)) 
+					:i $goto$$ped_return_to_precollision_state$
+				:i endif
+			:i loop_to 
+		:i endif
+		:i if $GotParam$$colObjId$
+			:i %GLOBAL%$colObjId$.$Obj_GetType$
+			:i if  (%GLOBAL%$ObjType$ = $OBJECT_TYPE_SKATER$) 
+				:i %GLOBAL%$colObjId$.$Vibrate$$port$ = %i(0,00000000)$actuator$ = %i(1,00000001)$percent$ = %i(100,00000064)$duration$ = %f(0.150000)
+			:i endif
+		:i endif
+		:i $GetSingleTag$$pissed$
+		:i %GLOBAL%$pissed$ =  (%GLOBAL%$pissed$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$pissed$ > %i(3,00000003)) 
+			:i $SetTags$$pissed$ = %GLOBAL%$pissed$
+			:i $Ped_SetLogicState$$STATE_knockdown$$Table$ = $Ped_StateLogic_Table$
+		:i endif
+		:i $Temp_Ped_Fall_Sound$
+		:i $Ped_Utils_PlayStream$$Type$ = $avoid$
+		:i $ped_play_falldown_anim$
+		:i $Obj_SetOuterAvoidRadius$%i(10,0000000a)
+		:i $SetEventHandler$:s{
+			:i $ex$ = $ObjectOutofAvoidRadius$
+			:i $Scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_getup$$event$ = $ObjectOutofAvoidRadius$:s}
+		:i :s}
+		:i while
+			
+			:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(11):OFFSET(12):OFFSET(13)
+				 :POS(11) %i(10,0000000a)
+			:BREAKTO(14)
+				 :POS(12) %i(60,0000003c)
+			:BREAKTO(14)
+				 :POS(13) %i(90,0000005a) :POS(14) $frames$
+				:i $ped_play_layidle_anim$
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_getup$
+			:i $printf$%s(16,"Getting Up STATE")
+			:i $ped_play_getup_anim$
+			:i $Ped_SetLogicState$$STATE_disgust$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_disgust$
+			:i $ped_initialize_projectile_exceptions$
+			:i $GetSingleTag$$should_look_at_skater$
+			:i if  (%GLOBAL%$should_look_at_skater$ = %i(1,00000001)) 
+				:i $ped_rotate_to_skater_from_idle$
+			:i endif
+			:i $ped_play_disgust_anim$
+			:i $ped_initialize_movement$
+			:i $goto$$ped_return_to_precollision_state$
+		:i endfunction
+		:i function $STATECONTROL_knockdown$
+			:i $Obj_LookAtObject$$Type$ = $skater$$time$ = %f(0.050000)
+			:i $ped_play_attack_anim$$no_block$
+			:i $Wait$%i(10,0000000a)$gameframes$
+			:i if $GoalManager_CanStartGoal$
+				:i $Ped_Utils_GetVectorToPlayer$
+				:i $MakeSkaterGoto$$PedKnockDown$$params$ = :s{$SetVelDir$ = %GLOBAL%$VecToPlayer$$SetVelSpeed$ = %i(350,0000015e):s}
+			:i endif
+			:i $Obj_WaitAnimFinished$
+			:i $ped_rotate_to_skater_from_idle$
+			:i $Ped_SetLogicState$$STATE_disgust$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_avoidstop$
+			:i $Obj_SetInnerAvoidRadius$%i(4,00000004)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $Scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_avoidinit$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i $Ped_Utils_GetAnimName$$Type$ = $StandAnims$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$
+			:i $Wait$%i(1,00000001)$gameframe$
+			:i $GetSingleTag$$should_look_at_skater$
+			:i if  (%GLOBAL%$should_look_at_skater$ = %i(0,00000000)) 
+				:i $Ped_StateLogic_SetDefaultState$
+				:i return
+				
+			:i endif
+			:i while
+				
+				:i $ped_rotate_to_skater_from_idle$
+				:i select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18)
+					
+					:i  :POS(15) $ped_play_idle_anim$
+					:i 
+				:BREAKTO(19)
+					 :POS(16) $ped_play_idle_anim$
+					:i 
+				:BREAKTO(19)
+					 :POS(17) $ped_play_idle_anim$
+					:i 
+				:BREAKTO(19)
+					 :POS(18) $ped_play_wave_anim$
+					:i  :POS(19) 
+				:i $Obj_WaitAnimFinished$
+				:i $Obj_GetDistanceToObject$$skater$
+				:i if  (%GLOBAL%$objectDistance$ > %f(12.000000)) 
+					:i $ped_initialize_movement$
+					:i $goto$$ped_return_to_precollision_state$
+				:i endif
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_avoidinit$
+			:i $ClearEventHandler$$ObjectInAttentionRadius$
+			:i $SetTags$$pissed$ = %i(0,00000000)
+			:i $Ped_RememberNextWaypoint$
+			:i $Ped_RememberCurrentPosition$
+			:i $Obj_StorePos$
+			:i $Ped_RememberStickToGround$
+			:i $Ped_SetLogicState$$STATE_avoidjump$
+		:i endfunction
+		:i function $STATECONTROL_avoidjump$
+			:i $GetSingleTag$$pissed$
+			:i $SetTags$$pissed$ =  (%GLOBAL%$pissed$ + %i(1,00000001)) 
+			:i $Ped_Utils_GetAnimName$$Type$ = $AvoidAnims$
+			:i if NOT $Ped_SelectAvoidPoint$%GLOBAL%$AnimName$
+				:i $GetSingleTag$$move_type$
+				:i if NOT  ($move_type$ = $stand$) 
+					:i $Ped_SetLogicState$$STATE_avoidknockdown$$Table$ = $Ped_StateLogic_Table$
+				:i endif
+			:i endif
+			:i $Ped_Utils_PlayStream$$Type$ = $avoid$
+			:i while
+				
+				:i $Ped_MoveTowardsAvoidPoint$
+				:i $Obj_StickToGround$
+				:i if $Ped_AvoidPointReached$
+					:i continue
+					
+				:i endif
+				:i $Wait$%i(1,00000001)$gameframe$
+			:i loop_to 
+			:i $Ped_SetLogicState$$STATE_avoidland$
+		:i endfunction
+		:i function $STATECONTROL_avoidland$
+			:i %GLOBAL%$maxPissedCount$ = random%vec2(2.000000,4.000000)
+			:i $GetSingleTag$$pissed$
+			:i if  (%GLOBAL%$pissed$ > %GLOBAL%$maxPissedCount$) 
+				:i $Obj_SetInnerAvoidRadius$%i(4,00000004)
+				:i $SetEventHandler$:s{
+					:i $ex$ = $ObjectInAvoidRadius$
+					:i $Scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_avoidknockdown$$event$ = $ObjectInAvoidRadius$:s}
+				:i :s}
+			:i else 
+				:i $Obj_SetInnerAvoidRadius$%i(4,00000004)
+				:i $SetEventHandler$:s{
+					:i $ex$ = $ObjectInAvoidRadius$
+					:i $Scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_avoidjump$$event$ = $ObjectInAvoidRadius$:s}
+				:i :s}
+			:i endif
+			:i if $SkaterSpeedLessThan$%i(1,00000001)
+				:i %GLOBAL%$stopped$ = %i(1,00000001)
+			:i else 
+				:i %GLOBAL%$stopped$ = %i(0,00000000)
+			:i endif
+			:i $GetSingleTag$$move_type$
+			:i while
+				
+				:i $Obj_GetDistanceToObject$$skater$
+				:i if  (%GLOBAL%$objectDistance$ > %f(6.000000)) 
+					:i %GLOBAL%$stopped$ = %i(0,00000000)
+				:i endif
+				:i if  (%GLOBAL%$stopped$ = %i(1,00000001)) 
+					:i $ped_rotate_to_skater_from_idle$
+					:i select(2f,3, 01 00 01 00 01 00) :OFFSET(20):OFFSET(21):OFFSET(22)
+						
+						:i  :POS(20) $ped_play_disgust_anim$
+						:i 
+					:BREAKTO(23)
+						 :POS(21) $ped_play_idle_anim$
+						:i 
+					:BREAKTO(23)
+						 :POS(22) $ped_play_idle_anim$
+						:i  :POS(23) 
+				:i else 
+					:i if NOT  (%GLOBAL%$move_type$ = $stand$) 
+						:i $ped_rotate_to_node_from_idle$
+					:i endif
+					:i continue
+					
+				:i endif
+			:i loop_to 
+			:i while
+				
+				:i $Obj_GetDistanceToObject$$skater$
+				:i if  (%GLOBAL%$objectDistance$ > %f(20.000000)) 
+					:i $printf$%s(17,"returning to idle")
+					:i continue
+					
+				:i endif
+				:i $Wait$%i(1,00000001)$gameframe$
+			:i loop_to 
+			:i $ped_initialize_movement$
+			:i $Ped_RestoreStickToGround$
+			:i $goto$$ped_return_to_precollision_state$
+		:i endfunction
+		:i function $STATECONTROL_avoidknockdown$
+			:i $ped_rotate_to_skater_from_idle$
+			:i $ped_play_attack_anim$$no_block$
+			:i $Wait$%i(10,0000000a)$gameframes$
+			:i $Obj_GetOrientationToObject$$skater$
+			:i if  (%GLOBAL%$dotProd$ < %f(0.500000)) 
+				:i if  (%GLOBAL%$dotProd$ > %f(-0.500000)) 
+					:i $Obj_GetDistanceToObject$$skater$
+					:i if  (%GLOBAL%$objectDistance$ < %f(6.000000)) 
+						:i $Ped_Utils_GetVectorToPlayer$
+						:i $MakeSkaterGoto$$PedKnockDown$$params$ = :s{$SetVelDir$ = %GLOBAL%$VecToPlayer$$SetVelSpeed$ = %i(350,0000015e):s}
+						:i $Obj_WaitAnimFinished$
+					:i endif
+				:i endif
+			:i endif
+			:i $ped_initialize_movement$
+			:i $Ped_RestoreStickToGround$
+			:i $goto$$ped_return_to_precollision_state$
+		:i endfunction
+		:i function $STATECONTROL_getattention$
+			:i $printf$%s(21,"I'm in get attention!")
+			:i if $AnimEquals$:a{$Ped_M_FalldownA$$Ped_M_FalldownB$$Ped_M_FalldownC$$Ped_M_FalldownD$$Ped_M_FalldownE$:a}
+				:i $printf$%s(7,"Falling")
+				:i $Obj_WaitAnimFinished$
+				:i if $AnimEquals$$Ped_M_FalldownA$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpA$
+				:i else 
+					:i if $AnimEquals$$Ped_M_FalldownB$
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpB$
+					:i else 
+						:i if $AnimEquals$$Ped_M_FalldownC$
+							:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpC$
+						:i else 
+							:i if $AnimEquals$$Ped_M_FalldownD$
+								:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpD$
+							:i else 
+								:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpE$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i $Obj_WaitAnimFinished$
+			:i endif
+			:i if $AnimEquals$:a{$Ped_M_LayIdleA$$Ped_M_LayIdleB$$Ped_M_LayIdleC$$Ped_M_LayIdleD$$Ped_M_LayIdleE$:a}
+				:i $printf$%s(13,"On the Ground")
+				:i if $AnimEquals$$Ped_M_LayIdleA$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpA$
+				:i else 
+					:i if $AnimEquals$$Ped_M_LayIdleB$
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpB$
+					:i else 
+						:i if $AnimEquals$$Ped_M_LayIdleC$
+							:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpC$
+						:i else 
+							:i if $AnimEquals$$Ped_M_LayIdleD$
+								:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpD$
+							:i else 
+								:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_GetUpE$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i $Obj_WaitAnimFinished$
+			:i endif
+			:i $SetEventHandler$:s{
+				:i $ex$ = $SkaterLanded$
+				:i $Scr$ = $Ped_TrickPos_EventHandler$
+			:i :s}
+			:i $SetEventHandler$:s{
+				:i $ex$ = $SkaterBailed$
+				:i $Scr$ = $Ped_TrickBail_EventHandler$
+			:i :s}
+			:i while
+				
+				:i if NOT $Obj_ObjectInAttentionRadius$
+					:i $Ped_Utils_SetMiscEventHandlers$
+					:i $Ped_StateLogic_SetDefaultState$
+					:i return
+					
+				:i endif
+				:i $GetSingleTag$$should_look_at_skater$
+				:i if NOT  (%GLOBAL%$should_look_at_skater$ = %i(0,00000000)) 
+					:i $Obj_LookAtObject$$Type$ = $skater$$time$ = %f(0.300000)
+				:i endif
+				:i $Ped_Utils_PlayStream$$Type$ = $Far$
+				:i $Ped_Utils_GetAnimName$$Type$ = $GetAttentionAnims$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+				:i $Obj_WaitAnimFinished$
+				:i while
+					
+					:i $Ped_Utils_GetAnimName$$Type$ = $IdleAnims$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+					:i $Obj_WaitAnimFinished$
+				:i loop_to random%vec2(1.000000,3.000000)
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_trickpositive$
+			:i if $Obj_ObjectInAttentionRadius$
+				:i $Ped_Utils_PlayStream$$Type$ = $trickpositive$
+				:i $ped_rotate_to_skater_from_idle$
+				:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(4,00000004)$b$ = %i(10,0000000a)$Integer$
+				:i while
+					
+					:i $Obj_LookAtObject$$Type$ = $skater$$time$ = %f(0.300000)
+					:i $Obj_WaitRotate$
+					:i $Ped_Utils_GetAnimName$$Type$ = $ImpressedAnims$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %GLOBAL%$RepeatCount$
+			:i endif
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $STATECONTROL_trickbail$
+			:i if $Obj_ObjectInAttentionRadius$
+				:i $Ped_Utils_PlayStream$$Type$ = $trickbail$
+				:i $ped_rotate_to_skater_from_idle$
+				:i $Ped_Utils_GetAnimName$$Type$ = $DisgustAnims$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+				:i $Obj_WaitAnimFinished$
+			:i endif
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $Ped_TrickPos_EventHandler$
+			:i if $SkaterLastScoreLandedGreaterThan$$ped_min_notice_TrickScore$
+				:i if  (random%vec2(0.000000,100.000000) > %i(4294967295,ffffffff)) 
+					:i $Ped_SetLogicState$$STATE_trickpositive$
+					:i return
+					
+				:i endif
+			:i endif
+			:i $SetEventHandler$:s{
+				:i $ex$ = $SkaterLanded$
+				:i $Scr$ = $Ped_TrickPos_EventHandler$
+			:i :s}
+		:i endfunction
+		:i function $Ped_TrickBail_EventHandler$
+			:i if  (random%vec2(0.000000,100.000000) > %i(4294967295,ffffffff)) 
+				:i $Ped_SetLogicState$$STATE_trickbail$
+				:i return
+				
+			:i endif
+			:i $SetEventHandler$:s{
+				:i $ex$ = $SkaterBailed$
+				:i $Scr$ = $Ped_TrickBail_EventHandler$
+			:i :s}
+		:i endfunction
+		:i function $STATECONTROL_blockerwait$
+			:i $OBJ_EnableAnimBlending$$enabled$ = %i(1,00000001)
+			:i if $LevelIs$$load_bo$
+				:i %GLOBAL%$stream$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(24):OFFSET(25):OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29):OFFSET(30)
+					
+					:i  :POS(24) $Ped_Attendant_Gap7_Block01$
+					:i 
+				:BREAKTO(31)
+					 :POS(25) $Ped_Attendant_Gap7_Block02$
+					:i 
+				:BREAKTO(31)
+					 :POS(26) $Ped_Attendant_Gap7_Block03$
+					:i 
+				:BREAKTO(31)
+					 :POS(27) $Ped_Attendant_Gap7_Block04$
+					:i 
+				:BREAKTO(31)
+					 :POS(28) $Ped_Attendant_Gap7_Block05$
+					:i 
+				:BREAKTO(31)
+					 :POS(29) $Ped_Attendant_Gap7_Block06$
+					:i 
+				:BREAKTO(31)
+					 :POS(30) $Ped_Attendant_Gap7_Block07$
+					:i  :POS(31) 
+				:i if NOT $IsStreamPlaying$$BostonDoctorStream$
+					:i $Obj_PlayStream$%GLOBAL%$stream$$vol$ = %i(200,000000c8)$dropoff$ = %i(160,000000a0)$priority$ = $StreamPriorityHigh$$id$ = $BostonDoctorStream$
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $STATECONTROL_blockerstand$
+			:i $Wait$%i(10,0000000a)$gameframes$
+			:i $Obj_SetAnimCycleMode$$off$
+			:i $Obj_WaitAnimFinished$
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $ClearEventHandler$$BlockerStand$
+			:i $ClearEventHandler$$ObjectInAttentionRadius$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Blocker_BlockA_idle$$Cycle$$BlendPeriod$ = %f(0.010000)
+			:i %GLOBAL%$count$ = %i(60,0000003c)
+			:i %GLOBAL%$toggle$ = %i(0,00000000)
+			:i while
+				
+				:i if NOT $Obj_ObjectInAttentionRadius$
+					:i $Ped_Utils_SetMiscEventHandlers$
+					:i $Ped_StateLogic_SetDefaultState$
+					:i return
+					
+				:i endif
+				:i %GLOBAL%$count$ =  (%GLOBAL%$count$ - %i(1,00000001)) 
+				:i if  (%GLOBAL%$count$ = %i(0,00000000)) 
+					:i %GLOBAL%$toggle$ =  (%i(1,00000001) - %GLOBAL%$toggle$) 
+					:i if  (%GLOBAL%$toggle$ = %i(0,00000000)) 
+						:i %GLOBAL%$count$ =  (random%vec2(3.000000,6.000000) * %i(60,0000003c)) 
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Blocker_BlockA_idle$$Cycle$
+					:i else 
+						:i %GLOBAL%$count$ =  (%i(2,00000002) * %i(60,0000003c)) 
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Blocker_BlockB_idle$$Cycle$
+					:i endif
+				:i endif
+				:i $Wait$%i(1,00000001)$gameframe$
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_blockershuffle$
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $ClearEventHandler$$BlockerShuffle$
+			:i $ClearEventHandler$$ObjectInAttentionRadius$
+			:i if  (%GLOBAL%$Dir$ = $left$) 
+				:i if $Obj_AnimEquals$$name$ = $Ped_Blocker_ShuffleBlockLeft$
+					:i $Obj_SetAnimCycleMode$$on$
+				:i else 
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Blocker_ShuffleBlockLeft$$Cycle$$BlendPeriod$ = %f(0.010000)$speed$ = %f(1.400000)
+				:i endif
+			:i else 
+				:i if $Obj_AnimEquals$$name$ = $Ped_Blocker_ShuffleBlockRight$
+					:i $Obj_SetAnimCycleMode$$on$
+				:i else 
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Blocker_ShuffleBlockRight$$Cycle$$BlendPeriod$ = %f(0.010000)$speed$ = %f(1.400000)
+				:i endif
+			:i endif
+			:i while
+				
+				:i if NOT $Obj_ObjectInAttentionRadius$
+					:i $Ped_Utils_SetMiscEventHandlers$
+					:i $Ped_StateLogic_SetDefaultState$
+					:i return
+					
+				:i endif
+				:i $Wait$%i(1,00000001)$gameframe$
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_blockerrun$
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $ClearEventHandler$$BlockerRun$
+			:i $ClearEventHandler$$ObjectInAttentionRadius$
+			:i $Ped_Utils_GetAnimName$$Type$ = $RunAnims$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$$BlendPeriod$ = %f(0.200000)
+			:i while
+				
+				:i if NOT $Obj_ObjectInAttentionRadius$
+					:i $Ped_Utils_SetMiscEventHandlers$
+					:i $Ped_StateLogic_SetDefaultState$
+					:i return
+					
+				:i endif
+				:i $Wait$%i(1,00000001)$gameframe$
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_blockerbump$
+			:i $ped_play_attack_anim$$no_block$
+			:i $MakeSkaterGoto$$PedKnockDown$$params$ = :s{$SetVelDir$ = %GLOBAL%$VelDir$$SetVelSpeed$ = %i(700,000002bc):s}
+			:i $Obj_WaitAnimFinished$
+			:i $Ped_Utils_SetMiscEventHandlers$
+			:i $Ped_SetLogicState$$STATE_blockerstand$
+		:i endfunction
+		:i function $STATECONTROL_chase$
+			:i $Ped_Utils_GetAnimName$$Type$ = $RunAnims$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$
+		:i endfunction
+		:i function $STATECONTROL_chasepause$
+			:i while
+				
+				:i $Ped_Utils_GetAnimName$$Type$ = $StandAnims$$index$ = %i(0,00000000)
+				:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(1,00000001)$b$ = %i(3,00000003)$Integer$
+				:i while
+					
+					:i $ped_rotate_to_skater_from_idle$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %GLOBAL%$RepeatCount$
+				:i $ped_rotate_to_skater_from_idle$
+				:i $Ped_Utils_GetAnimName$$Type$ = $DisgustAnims$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$
+				:i $Obj_WaitAnimFinished$
+			:i loop_to 
+		:i endfunction
+		:i function $STATECONTROL_chasecatch$
+			:i $ped_play_attack_anim$$no_block$
+			:i $printf$%s(9,"I gotcha!")
+			:i if $GetSingleTag$$CatchScript$
+				:i $goto$%GLOBAL%$CatchScript$
+			:i else 
+				:i $Wait$%i(3,00000003)$seconds$
+				:i $Ped_SetLogicState$$STATE_chase$
+			:i endif
+		:i endfunction
+		:i function $STATECONTROL_gohome$
+			:i $Ped_StateLogic_RegisterTempDefaultState$:s{$State$ = $STATE_gohome$$Table$ = $Ped_StateLogic_Table$:s}
+			:i $Ped_Utils_GetAnimName$$Type$ = $WalkAnims$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$$UseAnimTags$
+		:i endfunction
+		:i function $PEDAI_Sitting_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Sitting$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Sitting$
+			:i $printf$%s(7,"SITTING")
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i $Ped_Utils_GetAnimName$$Type$ = $TurnAnims$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = %GLOBAL%$AnimName$$Cycle$
+			:i $Obj_WaitRotate$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_STND2SIT$
+			:i $Obj_WaitAnimFinished$
+			:i while
+				
+				:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(5,00000005)$b$ = %i(15,0000000f)$resolution$ = %i(10,0000000a)$Integer$
+				:i select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35):OFFSET(36)
+					
+					:i  :POS(32) $GetRandomValue$$name$ = $RepeatIdle$$a$ = %i(5,00000005)$b$ = %i(50,00000032)$resolution$ = %i(45,0000002d)$Integer$
+					:i $OBJ_cycleanim$$Anim$ = $Ped_SIT_Idle$$NumCycles$ = %GLOBAL%$ReapeatIdle$
+					:i 
+				:BREAKTO(37)
+					 :POS(33) $PlayAnimWithPartialAnimIfExists$$Anim$ = $PED_SIT_Tap$
+					:i 
+				:BREAKTO(37)
+					 :POS(34) $PlayAnimWithPartialAnimIfExists$$Anim$ = $PED_SIT_LookR$
+					:i 
+				:BREAKTO(37)
+					 :POS(35) $PlayAnimWithPartialAnimIfExists$$Anim$ = $PED_SIT_LookL$
+					:i 
+				:BREAKTO(37)
+					 :POS(36) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_SIt2SITB$
+					:i $Obj_WaitAnimFinished$
+					:i while
+						
+						:i select(2f,3, 01 00 01 00 01 00) :OFFSET(38):OFFSET(39):OFFSET(40)
+							
+							:i  :POS(38) $GetRandomValue$$name$ = $RepeatIdleB$$a$ = %i(2,00000002)$b$ = %i(10,0000000a)$resolution$ = %i(8,00000008)$Integer$
+							:i $OBJ_cycleanim$$Anim$ = $Ped_sitB_idle$$NumCycles$ = %GLOBAL%$ReapeatIdleB$
+							:i 
+						:BREAKTO(41)
+							 :POS(39) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitB_lookL$
+							:i 
+						:BREAKTO(41)
+							 :POS(40) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitB_LookR$
+							:i  :POS(41) 
+						:i $Obj_WaitAnimFinished$
+					:i loop_to %i(5,00000005)
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_SItB2SITBL$
+					:i $Obj_WaitAnimFinished$
+					:i while
+						
+						:i select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(42):OFFSET(43):OFFSET(44):OFFSET(45):OFFSET(46)
+							
+							:i  :POS(42) $GetRandomValue$$name$ = $RepeatIdleBL$$a$ = %i(2,00000002)$b$ = %i(10,0000000a)$resolution$ = %i(8,00000008)$Integer$
+							:i $OBJ_cycleanim$$Anim$ = $Ped_sitBL_idle$$NumCycles$ = %GLOBAL%$ReapeatIdleBL$
+							:i 
+						:BREAKTO(47)
+							 :POS(43) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitBL_lookL$
+							:i 
+						:BREAKTO(47)
+							 :POS(44) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitBL_Shake$
+							:i 
+						:BREAKTO(47)
+							 :POS(45) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitBL_Shake$
+							:i 
+						:BREAKTO(47)
+							 :POS(46) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_sitBL_Tap$
+							:i  :POS(47) 
+						:i $Obj_WaitAnimFinished$
+					:i loop_to %i(5,00000005)
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_SITBL2SIT$
+					:i  :POS(37) 
+				:i $Obj_WaitAnimFinished$
+			:i loop_to %GLOBAL%$RepeatCount$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_SIT2STND$
+			:i $Obj_WaitAnimFinished$
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $PEDAI_Vending_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Vending$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Vending$
+			:i $Ped_GetGender$
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1ToIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_IdletoATM$
+				:i $Obj_WaitAnimFinished$
+				:i while
+					
+					:i select(2f,2, 01 00 01 00) :OFFSET(48):OFFSET(49)
+						
+						:i  :POS(48) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ATM1$
+						:i 
+					:BREAKTO(50)
+						 :POS(49) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ATM2$
+						:i  :POS(50) 
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %i(5,00000005)
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ATMtoIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1FromIdle$
+				:i $Obj_WaitAnimFinished$
+			:i else 
+				:i $PEDAI_Female_StopWayPoint$
+			:i endif
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $PEDAI_Corner_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Corner$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Corner$
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i $Ped_GetGender$
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i while
+					
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_LookLeftDown$
+					:i $Obj_WaitAnimFinished$
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Lookright$
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %i(2,00000002)
+			:i else 
+				:i $PEDAI_Female_StopWayPoint$
+			:i endif
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $PEDAI_Arcade_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Arcade$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Arcade$
+			:i $Ped_GetGender$
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1ToIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Idle1toArcade$
+				:i $Obj_WaitAnimFinished$
+				:i while
+					
+					:i select(2f,3, 01 00 01 00 01 00) :OFFSET(51):OFFSET(52):OFFSET(53)
+						
+						:i  :POS(51) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ArcadeIdle$
+						:i 
+					:BREAKTO(54)
+						 :POS(52) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Arcade1$
+						:i 
+					:BREAKTO(54)
+						 :POS(53) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Arcade2$
+						:i  :POS(54) 
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %i(5,00000005)
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ArcadetoIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1FromIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $Ped_StateLogic_SetDefaultState$
+			:i else 
+				:i $PEDAI_Female_StopWayPoint$
+			:i endif
+		:i endfunction
+		:i function $PEDAI_LookAt_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_LookAt$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_LookAt$
+			:i $Ped_GetGender$
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1ToIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_IdletoObserve$
+				:i $Obj_WaitAnimFinished$
+				:i while
+					
+					:i select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(55):OFFSET(56):OFFSET(57):OFFSET(58)
+						
+						:i  :POS(55) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ObserveIdle$
+						:i 
+					:BREAKTO(59)
+						 :POS(56) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ObserveScratch$
+						:i 
+					:BREAKTO(59)
+						 :POS(57) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ObserveWipe$
+						:i 
+					:BREAKTO(59)
+						 :POS(58) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Observe02$
+						:i  :POS(59) 
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %i(5,00000005)
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_ObservetoIdle$
+				:i $Obj_WaitAnimFinished$
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1FromIdle$
+				:i $Obj_WaitAnimFinished$
+			:i else 
+				:i $PEDAI_Female_StopWayPoint$
+			:i endif
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $PEDAI_Wait_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Wait$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Wait$
+			:i $Ped_GetGender$
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i if  (%GLOBAL%$Gender$ = $male$) 
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1ToIdle$
+				:i $Obj_WaitAnimFinished$
+				:i while
+					
+					:i select(2f,2, 01 00 01 00) :OFFSET(60):OFFSET(61)
+						
+						:i  :POS(60) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_LookAtWatch$
+						:i 
+					:BREAKTO(62)
+						 :POS(61) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_LookAtWatch2$
+						:i  :POS(62) 
+					:i $Obj_WaitAnimFinished$
+				:i loop_to %i(5,00000005)
+				:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Walk1FromIdle$
+				:i $Obj_WaitAnimFinished$
+			:i else 
+				:i $PEDAI_Female_StopWayPoint$
+			:i endif
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $PEDAI_TALK_StopWayPoint$
+			:i $Ped_StopMoving$
+			:i $Ped_GetCurrentNodeNames$
+			:i $Obj_MoveToNode$$name$ = %GLOBAL%$node_from$$speed$ = %i(5,00000005)$mph$
+			:i $Obj_WaitMove$
+			:i $Ped_StartMoving$
+			:i $Ped_SetLogicState$$STATE_Talk$$Table$ = $Ped_StateLogic_Table$
+		:i endfunction
+		:i function $STATECONTROL_Talk$
+			:i $printf$%s(4,"Talk")
+			:i $Ped_TurnToCurrentWaypointOrientation$$time$ = %f(0.750000)
+			:i while
+				
+				:i select(2f,14, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(63):OFFSET(64):OFFSET(65):OFFSET(66):OFFSET(67):OFFSET(68):OFFSET(69):OFFSET(70):OFFSET(71):OFFSET(72):OFFSET(73):OFFSET(74):OFFSET(75):OFFSET(76)
+					
+					:i  :POS(63) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_Idle$
+					:i 
+				:BREAKTO(77)
+					 :POS(64) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_Idle2$
+					:i 
+				:BREAKTO(77)
+					 :POS(65) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_RightHere$
+					:i 
+				:BREAKTO(77)
+					 :POS(66) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_MixIt$
+					:i 
+				:BREAKTO(77)
+					 :POS(67) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_SureThing$
+					:i 
+				:BREAKTO(77)
+					 :POS(68) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_Maybe$
+					:i 
+				:BREAKTO(77)
+					 :POS(69) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_WhatDoYouThink$
+					:i 
+				:BREAKTO(77)
+					 :POS(70) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_OfCourse$
+					:i 
+				:BREAKTO(77)
+					 :POS(71) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_BackThere$
+					:i 
+				:BREAKTO(77)
+					 :POS(72) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_RoundAndRound$
+					:i 
+				:BREAKTO(77)
+					 :POS(73) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_UpAbove$
+					:i 
+				:BREAKTO(77)
+					 :POS(74) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_KnowWhatIMean$
+					:i 
+				:BREAKTO(77)
+					 :POS(75) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_GoAhead$
+					:i 
+				:BREAKTO(77)
+					 :POS(76) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_M_Talk2_TheyllTellYou$
+					:i  :POS(77) 
+				:i $Obj_WaitAnimFinished$
+			:i loop_to 
+		:i endfunction
+		:i function $PEDAI_Female_StopWayPoint$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_WalkToIdle1$
+			:i $Obj_WaitAnimFinished$
+			:i while
+				
+				:i select(2f,2, 01 00 01 00) :OFFSET(78):OFFSET(79)
+					
+					:i  :POS(78) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1$
+					:i 
+				:BREAKTO(80)
+					 :POS(79) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle1ToIdle2$
+					:i $Obj_WaitAnimFinished$
+					:i while
+						
+						:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle2$
+						:i $Obj_WaitAnimFinished$
+					:i loop_to %i(3,00000003)
+					:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_Idle2ToIdle1$
+					:i  :POS(80) 
+				:i $Obj_WaitAnimFinished$
+			:i loop_to %i(5,00000005)
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_F_WalkFromIdle1$
+			:i $Obj_WaitAnimFinished$
+			:i $Ped_StateLogic_SetDefaultState$
+		:i endfunction
+		:i function $STATECONTROL_Explode$
+			:i if $LevelIs$$load_no$
+				:i $Zombie_SFX_Die$
+			:i endif
+			:i $BroadcastEvent$$Type$ = $Zombie_Explode$
+			:i $PlayAnimWithPartialAnimIfExists$$Anim$ = $default$
+			:i $dismember$$bone$ = $bone_head$$MaxVel$ = %i(50,00000032)$MaxRotVel$ = %i(2,00000002)
+			:i $CreateFlexibleParticleSystem$$name$ = $ZombieFlareUp$$params_script$ = $JEG_Zombie_FlareUp_particle_params$
+			:i $CreateFlexibleParticleSystem$$name$ = $ZombieBurst$$params_script$ = $JEG_Zombie_burst_particle_params$
+			:i $Wait$%i(2,00000002)$gameframes$
+			:i $dismember$$bone$ = $Bone_Knee_R$$MaxVel$ = %i(40,00000028)$MaxRotVel$ = %i(6,00000006)
+			:i $dismember$$bone$ = $Bone_Knee_L$$MaxVel$ = %i(50,00000032)$MaxRotVel$ = %i(5,00000005)
+			:i $dismember$$bone$ = $Bone_Forearm_R$$MaxVel$ = %i(30,0000001e)$MaxRotVel$ = %i(4,00000004)
+			:i $dismember$$bone$ = $Bone_Forearm_L$$MaxVel$ = %i(50,00000032)$MaxRotVel$ = %i(3,00000003)
+			:i $Wait$%i(1,00000001)$gameframes$
+			:i $dismember$$bone$ = $bone_bicep_R$$MaxVel$ = %i(40,00000028)$MaxRotVel$ = %i(6,00000006)
+			:i $dismember$$bone$ = $bone_bicep_L$$MaxVel$ = %i(50,00000032)$MaxRotVel$ = %i(5,00000005)
+			:i $dismember$$bone$ = $Bone_Thigh_R$$MaxVel$ = %i(30,0000001e)$MaxRotVel$ = %i(4,00000004)
+			:i $dismember$$bone$ = $Bone_Thigh_L$$MaxVel$ = %i(50,00000032)$MaxRotVel$ = %i(3,00000003)
+			:i $Wait$%i(1,00000001)$gameframes$
+			:i $dismember$$bone$ = $bone_pelvis$
+			:i $Wait$%i(180,000000b4)$gameframes$
+			:i $DestroyFlexibleParticleSystem$$name$ = $ZombieFlareUp$
+			:i $DestroyFlexibleParticleSystem$$name$ = $ZombieBurst$
+			:i $Obj_GetID$
+			:i %GLOBAL%$objID$.$Die$
+		:i endfunction
+		:i :end
+		

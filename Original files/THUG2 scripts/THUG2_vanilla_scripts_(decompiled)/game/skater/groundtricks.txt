@@ -1,0 +1,740 @@
+
+:i $TRICK_PRELOAD_TIME$ = %i(160,000000a0)
+:i $Jumptricks0$ = 
+:i :a{:s{$Trigger$ = :s{$PressAndRelease$;$Up$;$X$;%i(300,0000012c):s}$Scr$ = $NoComply$$Params$ = :s{$Name$ = %sc(9,"No Comply")$Score$ = %i(100,00000064):s}:s}:a}
+:i $Jumptricks$ = 
+:i :a{:s{$Trigger$ = :s{$TapTwiceRelease$;$Up$;$X$;%i(500,000001f4):s}$TrickSlot$ = $JumpSlot$:s}:a}
+:i $Trick_Boneless$ = :s{$Scr$ = $Boneless$$Params$ = :s{$Name$ = %sc(8,"Boneless")$Anim$ = $Boneless$$Score$ = %i(250,000000fa):s}:s}
+:i $Trick_Fastplant$ = :s{$Scr$ = $Boneless$$Params$ = :s{$Name$ = %sc(9,"Fastplant")$Anim$ = $Fastplant$$Score$ = %i(250,000000fa):s}:s}
+:i $Trick_Beanplant$ = :s{$Scr$ = $Boneless$$Params$ = :s{$Name$ = %sc(9,"Beanplant")$Anim$ = $Beanplant$$Score$ = %i(250,000000fa):s}:s}
+:i $GroundTricks$ = 
+:i :a{
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $Down$;$b$ = $Down$;$R1$;%i(500,000001f4):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+	:i :s{$Trigger$ = :s{$PressAndRelease$;$Up$;$X$;%i(300,0000012c):s}$Scr$ = $NoComply$$Params$ = :s{$Name$ = %sc(9,"No Comply")$Score$ = %i(100,00000064):s}:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $L1$;$b$ = $L1$;$Triangle$;%i(500,000001f4):s}$Scr$ = $Props$$Params$ = :s{$string_id$ = $props_string$:s}:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $L1$;$b$ = $L1$;$Square$;%i(500,000001f4):s}$Scr$ = $Taunt$$Params$ = :s{$Anim$ = $Taunt1$$string_id$ = $your_daddy_string$:s}:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $L1$;$b$ = $L1$;$Circle$;%i(500,000001f4):s}$Scr$ = $Taunt$$Params$ = :s{$Anim$ = $Taunt2$$string_id$ = $no_way_string$:s}:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $L1$;$b$ = $L1$;$X$;%i(500,000001f4):s}$Scr$ = $Taunt$$Params$ = :s{$Anim$ = $Taunt3$$string_id$ = $get_some_string$:s}:s}
+	:i :s{$Trigger$ = :s{$Press$;$L2$;%i(20,00000014):s}$Scr$ = $ToggleNollieRegular$$NGC_Trigger$ = :s{$TripleInOrderSloppy$;$a$ = $left$;$b$ = $right$;$R1$;%i(400,00000190):s}:s}
+	:i :s{$Trigger$ = :s{$Release$;$L2$;%i(20,00000014):s}$Scr$ = $ToggleNollieRegular$$NGC_Trigger$ = :s{$TripleInOrderSloppy$;$a$ = $Up$;$b$ = $Up$;$R1$;%i(400,00000190):s}$Params$ = :s{$Nollie$ = %i(1,00000001):s}:s}
+	:i :s{$Trigger$ = :s{$Press$;$R2$;%i(20,00000014):s}$Scr$ = $ToggleSwitchRegular$$NGC_Trigger$ = :s{$Press$;$R1$;%i(20,00000014):s}:s}
+	:i :a}
+:i $WalkToSkateTransition_GroundTricks$ = 
+:i :a{
+	:i :s{$Trigger$ = :s{$PressAndRelease$;$Up$;$X$;%i(300,0000012c):s}$Scr$ = $NoComply$$Params$ = :s{$Name$ = %sc(9,"No Comply")$Score$ = %i(100,00000064):s}:s}
+	:i :a}
+:i $NoTricks$ = 
+:i :a{
+	:i :a}
+:i $Reverts$ = 
+:i :a{
+	:i :s{$Trigger$ = :s{$Press$;$R2$;%i(200,000000c8):s}$TrickSlot$ = $ExtraSlot1$$NGC_Trigger$ = :s{$Press$;$R1$;%i(200,000000c8):s}:s}
+	:i :s{$Trigger$ = :s{$Press$;$L2$;%i(200,000000c8):s}$TrickSlot$ = $ExtraSlot2$$NGC_Trigger$ = :s{$Press$;$L1$;%i(200,000000c8):s}:s}
+	:i :a}
+:i function $SetExtraTricks_Reverts$$duration$ = %i(20,00000014)
+	:i if NOT $GetGlobalFlag$$flag$ = $FLAG_EXPERT_MODE_NO_REVERTS$
+		:i if NOT  ( ($inNetGame$)  AND  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$) ) 
+			:i $SetExtraTricks$$tricks$ = $Reverts$$duration$ = %GLOBAL%$duration$
+		:i endif
+	:i endif
+:i endfunction
+:i function $Revert$$FSName$ = %sc(9,"FS Revert")$BSName$ = %sc(9,"BS Revert")$FSAnim$ = $RevertFS$$BSAnim$ = $RevertBS$
+	:i if $IsSkaterOnVehicle$
+		:i $Goto$$vehicle_revert$
+	:i endif
+	:i if $IsOnMotoSkateboard$
+		:i $FSAnim$ = $RevertFS$
+		:i $BSAnim$ = $RevertBS$
+	:i endif
+	:i $OnExitRun$$ExitRevert$
+	:i $InRevert$
+	:i $ClearLipCombos$
+	:i $KillExtraTricks$
+	:i $SetTrickScore$%i(100,00000064)
+	:i $OnGroundExceptions$$NoEndRun$
+	:i $LaunchStateChangeEvent$$State$ = $Skater_InRevert$
+	:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+		:i $Obj_SpawnScript$$CessTrail$$Params$ = :s{$repeat_times$ = %i(10,0000000a):s}
+		:i $PlayCessSound$
+		:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$duration$ = %f(0.500000)
+		:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+	:i endif
+	:i $ClearException$$Ollied$
+	:i $SetSpecialFriction$:a{%i(0,00000000);%i(0,00000000);%i(5,00000005);%i(10,0000000a);%i(15,0000000f);%i(25,00000019):a}$duration$ = %f(0.667000)
+	:i $CanKickOff$
+	:i $SetQueueTricks$$SkateToWalkTricks$
+	:i $SetSkaterAirManualTricks$
+	:i $NollieOff$
+	:i $PressureOff$
+	:i if $Obj_FlagSet$$FLAG_SKATER_REVERTFS$
+		:i $Obj_ClearFlag$$FLAG_SKATER_REVERTFS$
+		:i $PlayAnim$$Anim$ = %GLOBAL%$FSAnim$
+		:i $SetTrickName$%GLOBAL%$FSName$
+	:i else 
+		:i if $Obj_FlagSet$$FLAG_SKATER_REVERTBS$
+			:i $Obj_ClearFlag$$FLAG_SKATER_REVERTBS$
+			:i $PlayAnim$$Anim$ = %GLOBAL%$BSAnim$
+			:i $SetTrickName$%GLOBAL%$BSName$
+		:i else 
+			:i if $LastSpinWas$$Frontside$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$FSAnim$
+				:i $SetTrickName$%GLOBAL%$FSName$
+			:i else 
+				:i $PlayAnim$$Anim$ = %GLOBAL%$BSAnim$
+				:i $SetTrickName$%GLOBAL%$BSName$
+			:i endif
+		:i endif
+	:i endif
+	:i $Display$$Blockspin$
+	:i if NOT $IsOnMotoSkateboard$
+		:i $FlipAfter$
+		:i $BoardRotateAfter$
+	:i endif
+	:i $BlendPeriodOut$%f(0.000000)
+	:i $Wait$%f(0.100000)$seconds$
+	:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$
+	:i $ResetLandedFromVert$
+	:i $Obj_WaitAnimFinished$
+	:i $CanKickOn$
+	:i $DoNextManualTrick$$FromAir$
+	:i $DoNextTrick$
+	:i $OnGroundExceptions$
+	:i $LandSkaterTricks$
+	:i $ClearEventBuffer$
+	:i $PlayAnim$$Anim$ = $CrouchIdle$$BlendPeriod$ = %f(0.300000)
+	:i $WaitAnimWhilstChecking$$AndManuals$
+	:i $Goto$$OnGroundAI$
+:i endfunction
+:i function $ExitRevert$
+	:i $OutRevert$
+	:i $CanKickOn$
+	:i $SetTrickName$%sc(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+:i endfunction
+:i function $ToggleSwitchRegular$
+	:i if $IsOnMotoSkateboard$
+		:i $Goto$$OnGroundAI$
+	:i endif
+	:i $OnGroundExceptions$
+	:i $SetQueueTricks$$NoTricks$
+	:i $ClearTrickQueues$
+	:i $GetSpeed$
+	:i $start_speed$ = %GLOBAL%$speed$
+	:i if NOT $GoalManager_GoalShouldExpire$
+		:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$$Params$ = :s{$NoDoNextTrick$:s}
+	:i endif
+	:i $PressureOff$
+	:i $NollieOff$
+	:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+		:i $Obj_SpawnScript$$CessTrail$$Params$ = :s{$delay$ = %i(3,00000003):s}
+		:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$duration$ = %f(0.500000)
+		:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+	:i endif
+	:i $LandSkaterTricks$$DontKillFocus$
+	:i if $GotParam$$PowerSlide$
+		:i $Rotate$$y$ = %i(180,000000b4)$duration$ = %f(0.300000)$seconds$
+		:i if $LeftPressed$
+			:i if $Flipped$
+				:i $slide_anim$ = $FSPowerslide$
+			:i else 
+				:i $slide_anim$ = $BSPowerslide$
+			:i endif
+		:i else 
+			:i if $RightPressed$
+				:i if $Flipped$
+					:i $slide_anim$ = $BSPowerslide$
+				:i else 
+					:i $slide_anim$ = $FSPowerslide$
+				:i endif
+			:i else 
+				:i $slide_anim$ = $FSPowerslide$
+			:i endif
+		:i endif
+	:i else 
+		:i if $LeftPressed$
+			:i if $Flipped$
+				:i if NOT $crouched$
+					:i $slide_anim$ = select(2f,2, 01 00 01 00) :OFFSET(0):OFFSET(1)
+						 :POS(0) $CessSlide180_FS$
+					:BREAKTO(2)
+						 :POS(1) $CessSlide180_FS2$ :POS(2) 
+					:i endif
+				:i else 
+					:i $backside$ = %i(1,00000001)
+					:i if NOT $crouched$
+						:i $slide_anim$ = $CessSlide180_BS$
+					:i endif
+				:i endif
+			:i else 
+				:i if $RightPressed$
+					:i if $Flipped$
+						:i $backside$ = %i(1,00000001)
+						:i if NOT $crouched$
+							:i $slide_anim$ = $CessSlide180_BS$
+						:i endif
+					:i else 
+						:i if NOT $crouched$
+							:i $slide_anim$ = select(2f,2, 01 00 01 00) :OFFSET(3):OFFSET(4)
+								 :POS(3) $CessSlide180_FS$
+							:BREAKTO(5)
+								 :POS(4) $CessSlide180_FS2$ :POS(5) 
+							:i endif
+						:i endif
+					:i else 
+						:i if NOT $crouched$
+							:i $slide_anim$ = select(2f,2, 01 00 01 00) :OFFSET(6):OFFSET(7)
+								 :POS(6) $CessSlide180_FS$
+							:BREAKTO(8)
+								 :POS(7) $CessSlide180_FS2$ :POS(8) 
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if NOT $GotParam$$slide_anim$
+					:i if $GotParam$$backside$
+						:i $init$ = $bs_powerslide_init$
+						:i $idle$ = $bs_powerslide_idle$
+						:i $out$ = $bs_powerslide_out$
+						:i $out2$ = $bs_powerslide_180_out$
+					:i else 
+						:i $init$ = $fs_powerslide_init$
+						:i $idle$ = $fs_powerslide_idle$
+						:i $out$ = $fs_powerslide_out$
+						:i $out2$ = $fs_powerslide_180_out$
+					:i endif
+				:i endif
+				:i if $GotParam$$PowerSlide$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$slide_anim$
+				:i else 
+					:i if NOT $crouched$
+						:i $PlayAnim$$Anim$ = %GLOBAL%$slide_anim$
+					:i else 
+						:i $PlayAnim$$Anim$ = %GLOBAL%$init$
+						:i $LockVelocityDirection$$On$
+						:i $EnterPowerslide$
+						:i $OnExitRun$$UnLockVelocityDirection$
+						:i $count$ = %i(0,00000000)
+						:i if NOT  (%GLOBAL%$start_speed$ < %i(100,00000064)) 
+							:i while
+								
+								:i $button_held$ = %i(0,00000000)
+								:i if $isNGC$
+									:i if $Held$$R1$
+										:i $button_held$ = %i(1,00000001)
+									:i endif
+								:i else 
+									:i if $Held$$R2$
+										:i $button_held$ = %i(1,00000001)
+									:i endif
+								:i endif
+								:i if  (%GLOBAL%$button_held$ = %i(1,00000001)) 
+									:i $Wait$%i(1,00000001)$frame$
+									:i $GetSpeed$
+									:i if $AnimFinished$
+										:i $SetRollingFriction$%i(25,00000019)
+										:i $PlayAnim$$Anim$ = %GLOBAL%$idle$$cycle$
+									:i endif
+									:i if NOT  (%GLOBAL%$speed$ = %i(0,00000000)) 
+										:i $CessTrail$$repeat_times$ = %i(1,00000001)
+									:i endif
+									:i if  (%GLOBAL%$speed$ < %i(100,00000064)) 
+										:i continue
+										
+									:i endif
+									:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+								:i else 
+									:i continue
+									
+								:i endif
+							:i loop_to 
+						:i endif
+						:i $ExitPowerslide$
+						:i $Obj_StopSound$$RevertConc$
+						:i $Obj_StopSound$$RevertConc$
+						:i if  (%GLOBAL%$count$ > %i(15,0000000f)) 
+							:i $PlayAnim$$Anim$ = %GLOBAL%$out$$blend$ = %f(0.100000)
+							:i $Obj_WaitAnimFinished$
+							:i $Goto$$OnGroundAI$
+						:i else 
+							:i $UnLockVelocityDirection$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$out2$
+						:i endif
+					:i endif
+				:i endif
+				:i $WaitAnim$%i(30,0000001e)$Percent$
+				:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+					:i $PlayCessSound$
+				:i endif
+				:i $WaitAnim$%i(35,00000023)$Percent$
+				:i $SetSkaterGroundTricks$
+				:i $FlipAfter$
+				:i $BoardRotateAfter$
+				:i $BlendPeriodOut$%f(0.000000)
+				:i $WaitAnimWhilstChecking$$AndManuals$
+				:i if NOT $GotParam$$PowerSlide$
+					:i if $CanKick$
+						:i $PlayAnim$$Anim$ = $PushCycle$$cycle$$BlendPeriod$ = %f(0.000000)
+					:i else 
+						:i if $AnimFinished$
+							:i if NOT $crouched$
+								:i $PlayAnim$$Anim$ = $idle$$cycle$$BlendPeriod$ = %f(0.000000)
+							:i else 
+								:i if NOT $AnimEquals$:a{$CrouchCessSlide180_FS$$CrouchCessSlide180_BS$:a}
+									:i $PlayAnim$$Anim$ = $CrouchIdle$$cycle$$BlendPeriod$ = %f(0.200000)
+								:i else 
+									:i $PlayAnim$$Anim$ = $CrouchIdle$$cycle$$BlendPeriod$ = %f(0.000000)
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i else 
+					:i $PlayAnim$$Anim$ = $CrouchIdle$$cycle$$BlendPeriod$ = %f(0.000000)
+				:i endif
+				:i $ClearTrickQueue$
+				:i $Goto$$OnGroundAI$
+			:i endfunction
+			:i function $UnLockVelocityDirection$
+				:i $LockVelocityDirection$$off$
+				:i $ExitPowerslide$
+				:i $SetRollingFriction$$default$
+			:i endfunction
+			:i function $CessTrail$$repeat_times$ = %i(20,00000014)
+				:i if $SpeedGreaterThan$%i(200,000000c8)
+					:i if $GotParam$$delay$
+						:i $Wait$%GLOBAL%$delay$$frames$
+					:i endif
+					:i while
+						
+						:i if NOT $onground$
+							:i continue
+							
+						:i else 
+							:i if $IsXbox$
+								:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Tail$$Name$ = $skidtrail$$trail$$lifetime$ = %i(15,0000000f)
+								:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Nose$$Name$ = $skidtrail$$trail$$lifetime$ = %i(15,0000000f)
+							:i else 
+								:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Tail$$Name$ = $skidtrail_ps2$$trail$$lifetime$ = %i(15,0000000f)
+								:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Nose$$Name$ = $skidtrail_ps2$$trail$$lifetime$ = %i(15,0000000f)
+							:i endif
+						:i endif
+						:i $Wait$%i(1,00000001)
+						$game$$frame$
+					:i loop_to %GLOBAL%$repeat_times$
+				:i endif
+			:i endfunction
+			:i function $ToggleNollieRegular$
+				:i $OnGroundExceptions$
+				:i $ClearTrickQueues$
+				:i $ApplyStanceToggle$$Nollie$ = %GLOBAL%$Nollie$
+				:i if NOT $InNollie$
+					:i if NOT $InPressure$
+						:i if NOT $GoalManager_GoalShouldExpire$
+							:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$
+						:i endif
+						:i if $crouched$
+							:i $PlayAnim$$Anim$ = $CrouchToNollie$$BlendPeriod$ = %f(0.100000)$Backwards$
+						:i else 
+							:i $PlayAnim$$Anim$ = $SkatingToNollie$$BlendPeriod$ = %f(0.100000)$Backwards$
+						:i endif
+					:i else 
+						:i if NOT $GoalManager_GoalShouldExpire$
+							:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$
+						:i endif
+						:i if $crouched$
+							:i $PlayAnim$$Anim$ = $CrouchToPressure$$BlendPeriod$ = %f(0.100000)
+						:i else 
+							:i $PlayAnim$$Anim$ = $SkateToPressure$$BlendPeriod$ = %f(0.100000)
+						:i endif
+					:i endif
+				:i else 
+					:i if NOT $GoalManager_GoalShouldExpire$
+						:i $SetException$$Ex$ = $Ollied$$Scr$ = $Nollie$
+					:i endif
+					:i if $crouched$
+						:i $PlayAnim$$Anim$ = $CrouchToNollie$$BlendPeriod$ = %f(0.100000)
+					:i else 
+						:i $PlayAnim$$Anim$ = $SkatingToNollie$$BlendPeriod$ = %f(0.100000)
+					:i endif
+				:i endif
+				:i $WaitAnimWhilstChecking$$AndManuals$
+				:i if $InNollie$
+					:i $Goto$$OnGroundNollieAI$
+				:i else 
+					:i $Goto$$OnGroundAI$
+				:i endif
+			:i endfunction
+			:i function $ApplyStanceToggle$
+				:i if $isNGC$
+					:i if $GotParam$$Nollie$
+						:i if $InNollie$
+							:i $NollieOff$
+							:i $PressureOff$
+						:i else 
+							:i $NollieOn$
+							:i $PressureOff$
+						:i endif
+					:i else 
+						:i if $InPressure$
+							:i $PressureOff$
+							:i $NollieOff$
+						:i else 
+							:i $PressureOn$
+							:i $NollieOff$
+						:i endif
+					:i endif
+				:i else 
+					:i if $InNollie$
+						:i if $GotParam$$Nollie$
+							:i $PressureOff$
+							:i $NollieOff$
+						:i endif
+					:i else 
+						:i if $GotParam$$Nollie$
+							:i $PressureOff$
+							:i $NollieOn$
+						:i else 
+							:i $NollieOff$
+							:i $PressureOn$
+						:i endif
+					:i endif
+				:i endif
+				:i if $onground$
+					:i if $CurrentScorePotGreaterThan$%i(0,00000000)
+						:i $LandSkaterTricks$
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $Nollie$
+				:i if $GotParam$$NoDoNextTrick$
+				:i else 
+					:i $DoNextTrick$
+				:i endif
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $Jump$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$duration$ = %f(0.050000)
+				:i $NollieOn$
+				:i $PlayAnim$$Anim$ = $Nollie$$BlendPeriod$ = %f(0.100000)
+				:i if $ProfileEquals$$stance$ = $regular$
+					:i if $Flipped$
+						:i $SetTrickName$%sc(6,"Nollie")
+						:i $SetTrickScore$%i(200,000000c8)
+					:i else 
+						:i $SetTrickName$%sc(11,"Fakie Ollie")
+						:i $SetTrickScore$%i(200,000000c8)
+					:i endif
+				:i else 
+					:i if $Flipped$
+						:i $SetTrickName$%sc(11,"Fakie Ollie")
+						:i $SetTrickScore$%i(200,000000c8)
+					:i else 
+						:i $SetTrickName$%sc(6,"Nollie")
+						:i $SetTrickScore$%i(200,000000c8)
+					:i endif
+				:i endif
+				:i $Display$
+				:i $BailOff$
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $NollieNoDisplay$$OutSpeed$ = %i(1,00000001)
+				:i $StopBalanceTrick$
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $SetTrickName$%sc(6,"Nollie")
+				:i $SetTrickScore$%i(100,00000064)
+				:i $Display$$Deferred$
+				:i $Jump$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.050000)
+				:i $NollieOn$
+				:i if $GotParam$$OutAnim$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$OutAnim$$BlendPeriod$ = %f(0.300000)$speed$ = %GLOBAL%$OutSpeed$
+				:i else 
+					:i $PlayAnim$$Anim$ = $Nollie$$BlendPeriod$ = %f(0.100000)
+				:i endif
+				:i if $GotParam$$BoardRotate$
+					:i $BlendPeriodOut$%i(0,00000000)
+					:i $BoardRotateAfter$
+				:i endif
+				:i $BailOff$
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i $Dpad$ = :a{$Up$$Down$$left$$right$$Upright$$UpLeft$$DownRight$$DownLeft$:a}
+			:i function $Ollie$$OutSpeed$ = %i(1,00000001)
+				:i $StopBalanceTrick$
+				:i $StopSkitch$
+				:i if $GotParam$$NoDoNextTrick$
+				:i else 
+					:i $DoNextTrick$
+				:i endif
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $ClearEventBuffer$$Buttons$ = :a{$X$:a}$OlderThan$ = %i(0,00000000)
+				:i if NOT $GotParam$$JumpSpeed$
+					:i $Jump$
+				:i else 
+					:i $Jump$$speed$ = %GLOBAL%$JumpSpeed$
+				:i endif
+				:i $InAirExceptions$
+				:i if $InPressure$
+					:i $SetTrickName$%sc(8,"Pressure")
+					:i $SetTrickScore$%i(200,000000c8)
+					:i $Display$
+				:i endif
+				:i if $InNollie$
+					:i if $ProfileEquals$$stance$ = $regular$
+						:i if $Flipped$
+							:i $SetTrickName$%sc(6,"Nollie")
+							:i $SetTrickScore$%i(200,000000c8)
+						:i else 
+							:i $SetTrickName$%sc(11,"Fakie Ollie")
+							:i $SetTrickScore$%i(200,000000c8)
+						:i endif
+					:i else 
+						:i if $Flipped$
+							:i $SetTrickName$%sc(11,"Fakie Ollie")
+							:i $SetTrickScore$%i(200,000000c8)
+						:i else 
+							:i $SetTrickName$%sc(6,"Nollie")
+							:i $SetTrickScore$%i(200,000000c8)
+						:i endif
+					:i endif
+					:i $Display$
+				:i else 
+					:i $SetTrickName$%sc(5,"Ollie")
+					:i $SetTrickScore$%i(75,0000004b)
+					:i $Display$$Deferred$
+				:i endif
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$duration$ = %f(0.050000)
+				:i if $GotParam$$FromLip$
+					:i $printf$%s(31,"came from lip==================")
+					:i $PlayAnim$$Anim$ = %GLOBAL%$OutAnim$$BlendPeriod$ = %f(0.000000)
+					:i $BlendPeriodOut$%i(0,00000000)
+				:i else 
+					:i if $GotParam$$OutAnim$
+						:i if $GotParam$$SyncOutAnimToPreviousAnim$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$OutAnim$$BlendPeriod$ = %f(0.300000)$speed$ = %GLOBAL%$OutSpeed$$SyncToPreviousAnim$
+						:i else 
+							:i if $GotParam$$NoBlend$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$OutAnim$$BlendPeriod$ = %f(0.000000)$speed$ = %GLOBAL%$OutSpeed$
+							:i else 
+								:i $PlayAnim$$Anim$ = %GLOBAL%$OutAnim$$BlendPeriod$ = %f(0.300000)$speed$ = %GLOBAL%$OutSpeed$
+							:i endif
+						:i endif
+					:i else 
+						:i if $InNollie$
+							:i $PlayAnim$$Anim$ = $Nollie$$BlendPeriod$ = %f(0.100000)
+						:i else 
+							:i $PlayAnim$$Anim$ = $Ollie$$BlendPeriod$ = %f(0.000000)$NoRestart$
+						:i endif
+					:i endif
+				:i endif
+				:i if $GotParam$$BoardRotate$
+					:i $BlendPeriodOut$%i(0,00000000)
+					:i $BoardRotateAfter$
+				:i endif
+				:i if $GotParam$$RotateAfter$
+					:i $RotateAfter$
+				:i endif
+				:i if $GotParam$$FlipAfter$
+					:i $printf$%s(37,"=========flipping the skater in Ollie")
+					:i $FlipAfter$
+				:i endif
+				:i if $GotParam$$NoBlend$
+					:i $BlendPeriodOut$%i(0,00000000)
+				:i endif
+				:i if $GotParam$$WaitOnOlliePercent$
+					:i $BailOn$
+					:i $WaitAnim$%GLOBAL%$WaitOnOlliePercent$$Percent$
+				:i endif
+				:i $BailOff$
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $NoComply$
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $Jump$
+				:i $NollieOff$
+				:i $PressureOff$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.050000)
+				:i $SetTrickName$%GLOBAL%$Name$
+				:i $SetTrickScore$%GLOBAL%$Score$
+				:i $Display$
+				:i $BailOff$
+				:i $PlayAnim$$Anim$ = $NoComply$$BlendPeriod$ = %f(0.200000)
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $Beanplant$
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $Jump$$BonelessHeight$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i $PlaySound$$boneless09$$pitch$ = %i(85,00000055)
+				:i $SetTrickName$%GLOBAL%$Name$
+				:i $SetTrickScore$%GLOBAL%$Score$
+				:i $Display$
+				:i $PlayAnim$$Anim$ = $Beanplant$$BlendPeriod$ = %f(0.200000)
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $Fastplant$
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $Jump$$BonelessHeight$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i $SetTrickName$%GLOBAL%$Name$
+				:i $SetTrickScore$%GLOBAL%$Score$
+				:i $Display$
+				:i $PlayAnim$$Anim$ = $Fastplant$$BlendPeriod$ = %f(0.200000)
+				:i $BailOff$
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $Boneless$$Anim$ = $Boneless$$Name$ = %sc(8,"Boneless")$Score$ = %i(250,000000fa)
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$$Buttons$ = $Dpad$$OlderThan$ = $TRICK_PRELOAD_TIME$
+				:i $Jump$$BonelessHeight$
+				:i $NollieOff$
+				:i $PressureOff$
+				:i $InAirExceptions$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i $PlaySound$$boneless09$$pitch$ = %i(85,00000055)
+				:i $SetTrickName$%GLOBAL%$Name$
+				:i $SetTrickScore$%GLOBAL%$Score$
+				:i if NOT $SkaterIsNamed$$vallely$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$Anim$$BlendPeriod$ = %f(0.200000)
+				:i else 
+					:i $PlayAnim$$Anim$ = $_540Boneless$$BlendPeriod$ = %f(0.100000)$speed$ = %f(1.250000)$from$ = %i(10,0000000a)
+					:i $SetTrickScore$%i(300,0000012c)
+					:i $SetTrickName$%s(14,"MikeV Boneless")
+					:i $FlipAfter$
+				:i endif
+				:i $Display$
+				:i $BailOff$
+				:i $WaitAnimWhilstChecking$
+				:i $Goto$$Airborne$
+			:i endfunction
+			:i function $SendTauntMessage$
+				:i $GetPreferenceString$$pref_type$ = $Taunt$%GLOBAL%$string_id$
+				:i $SendChatMessage$$string$ = %GLOBAL%$ui_string$
+			:i endfunction
+			:i function $Taunt$
+				:i $LandSkaterTricks$
+				:i $ClearException$$Ollied$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$Anim$$BlendPeriod$ = %f(0.300000)
+				:i $GetPreferenceString$$pref_type$ = $Taunt$%GLOBAL%$string_id$
+				:i if $inNetGame$
+					:i $SendChatMessage$$string$ = %GLOBAL%$ui_string$
+				:i endif
+				:i $Wait$%i(10,0000000a)
+				$game$$frame$
+				:i $OnGroundExceptions$
+				:i if $SpeedLessThan$%i(1,00000001)
+					:i $SetRollingFriction$%i(100,00000064)
+					:i $WaitAnimWhilstChecking$$AndManuals$
+					:i $Goto$$Handbrake$
+				:i else 
+					:i $WaitAnimWhilstChecking$$AndManuals$
+					:i $Goto$$OnGroundAI$
+				:i endif
+			:i endfunction
+			:i function $Props$
+				:i $LandSkaterTricks$
+				:i $OnGroundExceptions$
+				:i $PlayAnim$select(2f,2, 01 00 01 00) :OFFSET(9):OFFSET(10)
+					 :POS(9) $Anim$ = $Prop$
+				:BREAKTO(11)
+					 :POS(10) $Anim$ = $Cheer1$ :POS(11) $BlendPeriod$ = %f(0.300000)
+					:i $GetPreferenceString$$pref_type$ = $Taunt$%GLOBAL%$string_id$
+					:i if $inNetGame$
+						:i $SendChatMessage$$string$ = %GLOBAL%$ui_string$
+					:i endif
+					:i if $SpeedLessThan$%i(1,00000001)
+						:i $SetRollingFriction$%i(100,00000064)
+						:i $WaitAnimWhilstChecking$$AndManuals$
+						:i $Goto$$Handbrake$
+					:i else 
+						:i $WaitAnimWhilstChecking$$AndManuals$
+						:i $Goto$$OnGroundAI$
+					:i endif
+				:i endfunction
+				:i $SkitchExceptionTable$ = :a{
+					:i :s{$Event$$Ex$ = $MadeOtherSkaterBail$$Scr$ = $MadeOtherSkaterBail_Called$:s}
+					:i :s{$Exception$$Ex$ = $OffMeterTop$$Scr$ = $SkitchOut$:s}
+					:i :s{$Exception$$Ex$ = $OffMeterBottom$$Scr$ = $SkitchOut$:s}
+					:i :s{$Exception$$Ex$ = $CarBail$$Scr$ = $CarBail$:s}
+					:i :s{$Exception$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$:s}
+					:i :a}
+				:i function $Skitch$
+					:i $StopBalanceTrick$
+					:i $ResetLandedFromVert$
+					:i $KillExtraTricks$
+					:i if $CancelRotateDisplayandUpdateMatrix$
+						:i $change$$flip_backwards_dont_blend$ = %i(1,00000001)
+					:i endif
+					:i $OnExceptionRun$
+					:i $ResetEventHandlersFromTable$$SkitchExceptionTable$
+					:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$$Params$ = :s{ isNull :s}
+					:i $LaunchStateChangeEvent$$State$ = $Skater_Skitching$
+					:i $ClearTrickQueue$
+					:i $SetQueueTricks$$NoTricks$
+					:i $ClearManualTrick$
+					:i $SetManualTricks$$NoTricks$
+					:i $StartSkitch$
+					:i $StartBalanceTrick$
+					:i $PlayAnim$$Anim$ = $SkitchInit$
+					:i $Obj_WaitAnimFinished$
+					:i $change$$flip_backwards_dont_blend$ = %i(0,00000000)
+					:i $PlaySound$$Hud_jumpgap$
+					:i $SetTrickName$%s(14,"\c2Skitchin\C0")
+					:i $SetTrickScore$%i(500,000001f4)
+					:i $Display$$Blockspin$
+					:i $DoBalanceTrick$$ButtonA$ = $right$$ButtonB$ = $left$$Type$ = $Skitch$$Tweak$ = %i(5,00000005)
+					:i $PlayAnim$$Anim$ = $SkitchRange$$wobble$
+					:i $SetEventHandler$$Ex$ = $SkitchLeft$$Scr$ = $SkitchAnimLeft$
+					:i $SetEventHandler$$Ex$ = $SkitchRight$$Scr$ = $SkitchAnimRight$
+					:i while
+						
+						:i $overridelimits$$max$ = %i(1750,000006d6)$friction$ = %i(0,00000000)$time$ = %i(5,00000005)$gravity$ = %i(0,00000000)
+						:i if $AnimFinished$
+							:i $PlayAnim$$Anim$ = $SkitchRange$$wobble$$NoRestart$
+						:i endif
+						:i if $Held$$Down$
+							:i $Obj_SpawnScript$$NoBrake_Timer$
+							:i $Goto$$SkitchOut$
+						:i endif
+						:i $Waitonegameframe$
+					:i loop_to 
+				:i endfunction
+				:i function $SkitchAnimLeft$
+					:i $PlayAnim$$Anim$ = $SkitchMoveLeft$$from$ = %i(20,00000014)$NoRestart$$speed$ = %i(2,00000002)$BlendPeriod$ = %f(0.100000)
+				:i endfunction
+				:i function $SkitchAnimRight$
+					:i $PlayAnim$$Anim$ = $SkitchMoveRight$$from$ = %i(20,00000014)$NoRestart$$speed$ = %i(2,00000002)$BlendPeriod$ = %f(0.100000)
+				:i endfunction
+				:i function $SkitchOut$
+					:i $StopSkitch$
+					:i $StopBalanceTrick$
+					:i $PlayAnim$$Anim$ = $SkitchInit$$Backwards$
+					:i $OnGroundExceptions$
+					:i $ClearException$$Skitched$
+					:i $LandSkaterTricks$
+					:i $Obj_WaitAnimFinished$
+					:i $Goto$$OnGroundAI$
+				:i endfunction
+				:i function $NoBrake_Timer$
+					:i $CanBrakeOff$
+					:i $Wait$%f(0.500000)$seconds$
+					:i $CanBrakeOn$
+				:i endfunction
+				:i :end
+				

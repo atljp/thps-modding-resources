@@ -1,0 +1,416 @@
+
+:i function $startup_loading_screen$
+	:i $intro_movie$ = %s(12,"movies\intro")
+	:i if $IsPal$
+		:i if NOT $English$
+			:i $intro_movie$ = %s(13,"movies\introf")
+		:i endif
+	:i endif
+	:i if NOT $Bootstrap$
+		:i if $IsPS2$
+			:i if $CD$
+				:i $Displayloadingscreen$$blank$
+				:i $PlayMovie$%s(11,"movies\atvi")
+				:i $PlayMovie$%s(13,"movies\nslogo")
+				:i $PlayMovie$%s(19,"movies\Beenox_Shift")
+				:i $PlayMovie$%GLOBAL%$intro_movie$
+			:i endif
+		:i endif
+	:i endif
+	:i if $IsXbox$
+		:i if $CD$
+			:i if NOT $IsInternetGameHost$
+				:i if NOT $IsJoiningInternetGame$
+					:i $PlayMovie$%s(18,"movies\Intel_intro")
+					:i $PlayMovie$%s(20,"movies\Dolby_Digital")
+					:i $PlayMovie$%s(11,"movies\atvi")
+					:i $PlayMovie$%s(13,"movies\nslogo")
+					:i $PlayMovie$%s(19,"movies\Beenox_Shift")
+					:i $PlayMovie$%GLOBAL%$intro_movie$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $IsNgc$
+		:i if $CD$
+			:i $PlayMovie$%s(11,"movies\atvi")
+			:i $PlayMovie$%s(13,"movies\nslogo")
+			:i $PlayMovie$%s(19,"movies\Beenox_Shift")
+			:i $PlayMovie$%GLOBAL%$intro_movie$
+		:i endif
+	:i endif
+	:i if $Bootstrap$
+		:i $Displayloadingscreen$%s(13,"loadscrn_demo")
+	:i else 
+		:i if $IsXbox$
+			:i $Displayloadingscreen$%s(8,"loadscrn")
+		:i endif
+		:i if $IsNgc$
+			:i $Displayloadingscreen$%s(12,"loadscrn_ngc")
+		:i endif
+		:i if $IsPS2$
+		:i endif
+	:i endif
+:i endfunction
+:i $ANY_LEVEL_LOADED_YET$ = %i(0,00000000)
+:i $loadscreen_last_game_mode$ = $career$
+:i $parked_loading_screen_in_use$ = %i(0,00000000)
+:i function $parked_loading_screen_show$
+	:i if NOT $IsXbox$
+		:i return
+		
+	:i endif
+	:i if NOT $LevelIs$$load_sk5ed$
+		:i if NOT $LevelIs$$load_sk5ed_gameplay$
+			:i return
+			
+		:i endif
+	:i endif
+	:i switch %GLOBAL%$level$
+		:i case $load_tr$
+			:i $level_struct$ = $level_tr$
+			:i endcase
+		case $load_bo$
+			:i $level_struct$ = $level_bo$
+			:i endcase
+		case $load_ba$
+			:i $level_struct$ = $level_ba$
+			:i endcase
+		case $load_be$
+			:i $level_struct$ = $level_be$
+			:i endcase
+		case $load_au$
+			:i $level_struct$ = $level_au$
+			:i endcase
+		case $load_no$
+			:i $level_struct$ = $level_no$
+			:i endcase
+		case $load_st$
+			:i $level_struct$ = $level_st$
+			:i endcase
+		case $load_se$
+			:i $level_struct$ = $level_se$
+			:i endcase
+		case $load_se2$
+			:i $level_struct$ = $level_se2$
+			:i endcase
+		case $load_dj$
+			:i $level_struct$ = $level_dj$
+			:i endcase
+		case $load_ap$
+			:i $level_struct$ = $level_ap$
+			:i endcase
+		case $load_ca$
+			:i $level_struct$ = $level_ca$
+			:i endcase
+		case $load_ph$
+			:i $level_struct$ = $level_ph$
+			:i endcase
+		case $load_la$
+			:i $level_struct$ = $level_la$
+			:i endcase
+		case $load_sc$
+			:i $level_struct$ = $level_sc$
+			:i endcase
+		case $load_mainmenu$
+			:i $level_struct$ = $level_mainmenu$
+			:i endcase
+		case $load_sk5ed$
+			:i endcase
+		case $load_sk5ed_gameplay$
+			:i $GetEditorTheme$
+			:i $GenerateLevelStructureNameFromTheme$$theme$ = %GLOBAL%$theme$
+			:i $level_struct$ = %GLOBAL%$structure_name$
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$level$$b$ = $load_sk5ed$
+				:i $screen$ = %s(17,"loadscrn_editor_x")
+			:i else 
+				:i $screen$ = %s(16,"loadscrn_created")
+			:i endif
+			:i endcase
+		default 
+			:i $printstruct$ isNull 
+			:i $script_assert$%s(48,"UPDATE THE SWITCH IN parked_loading_screen_show!")
+			:i $screen$ = %s(16,"loadscrn_generic")
+			:i end_switch
+	
+	:i if NOT $GotParam$$screen$
+		:i $screen$ =  (%GLOBAL%$level_struct$->$loading_screen$) 
+		:i if NOT $GotParam$$screen$
+			:i $screen$ = %s(17,"loadscrn_editor_x")
+		:i endif
+	:i endif
+	:i $time$ =  (%GLOBAL%$level_struct$->$loading_time_xbox$) 
+	:i if NOT $GotParam$$time$
+		:i $time$ =  ( (%GLOBAL%$level_struct$->$loading_time$)  * %f(0.600000)) 
+	:i endif
+	:i $Sk6Ed_GetParkEdExtraLoadtime$
+	:i $printstruct$ isNull 
+	:i $Displayloadingscreen$%GLOBAL%$screen$ (%GLOBAL%$time$ + %GLOBAL%$ExtraTime$) 
+	:i $change$$parked_loading_screen_in_use$ = %i(1,00000001)
+:i endfunction
+:i function $parked_loading_screen_clear$
+	:i $change$$parked_loading_screen_in_use$ = %i(0,00000000)
+:i endfunction
+:i function $load_level_handle_loading_screen$
+	:i if $IsTrue$$parked_loading_screen_in_use$
+		:i $parked_loading_screen_clear$
+		:i return
+		
+	:i endif
+	:i if $IsXbox$
+		:i if $GotParam$$loading_time_xbox$
+			:i %GLOBAL%$loading_time$ = %GLOBAL%$loading_time_xbox$
+		:i else 
+			:i %GLOBAL%$loading_time$ =  (%GLOBAL%$loading_time$ * %f(0.600000)) 
+		:i endif
+	:i else 
+		:i if  ($ANY_LEVEL_LOADED_YET$ = %i(0,00000000)) 
+			:i %GLOBAL%$loading_time$ =  (%GLOBAL%$loading_time$ + %i(0,00000000)) 
+		:i endif
+	:i endif
+	:i $GetGameMode$
+	:i if $IsTrue$$Bootstrap_build$
+		:i %GLOBAL%$loading_screen$ = %s(22,"loadscrn_demo_controls")
+		:i %GLOBAL%$loading_time$ = %i(27,0000001b)
+	:i else 
+		:i if $GotParam$$loading_screen$
+			:i if $EnteringNetGame$
+				:i %GLOBAL%$GameMode$ = $net$
+				:i if $OnServer$
+					:i if $IsXbox$
+						:i %GLOBAL%$loading_screen$ = %s(22,"loadscrn_system_link_x")
+					:i else 
+						:i %GLOBAL%$loading_screen$ = %s(15,"loadscrn_Online")
+					:i endif
+				:i else 
+					:i if $IsXbox$
+						:i %GLOBAL%$loading_screen$ = %s(17,"loadscrn_system_x")
+					:i else 
+						:i %GLOBAL%$loading_screen$ = %s(16,"loadscrn_Online2")
+					:i endif
+				:i endif
+			:i else 
+				:i if $InSplitScreenGame$
+					:i %GLOBAL%$loading_screen$ = %s(16,"loadscrn_2player")
+				:i else 
+					:i switch %GLOBAL%$load_script$
+						:i case $load_mainmenu$
+							:i if  ($ANY_LEVEL_LOADED_YET$ = %i(1,00000001)) 
+								:i if $IsPS2$
+									:i switch  ($loadscreen_last_game_mode$) 
+										:i case $career$
+											:i %GLOBAL%$random_screen_num$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5)
+												 :POS(0) %i(1,00000001)
+											:BREAKTO(6)
+												 :POS(1) %i(3,00000003)
+											:BREAKTO(6)
+												 :POS(2) %i(4,00000004)
+											:BREAKTO(6)
+												 :POS(3) %i(5,00000005)
+											:BREAKTO(6)
+												 :POS(4) %i(6,00000006)
+											:BREAKTO(6)
+												 :POS(5) %i(7,00000007) :POS(6) 
+												:i endcase
+											case $classic$
+												:i %GLOBAL%$random_screen_num$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(7):OFFSET(8):OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12)
+													 :POS(7) %i(1,00000001)
+												:BREAKTO(13)
+													 :POS(8) %i(2,00000002)
+												:BREAKTO(13)
+													 :POS(9) %i(3,00000003)
+												:BREAKTO(13)
+													 :POS(10) %i(4,00000004)
+												:BREAKTO(13)
+													 :POS(11) %i(5,00000005)
+												:BREAKTO(13)
+													 :POS(12) %i(6,00000006) :POS(13) 
+													:i endcase
+												case $singlesession$
+													:i %GLOBAL%$random_screen_num$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19):OFFSET(20)
+														 :POS(14) %i(1,00000001)
+													:BREAKTO(21)
+														 :POS(15) %i(2,00000002)
+													:BREAKTO(21)
+														 :POS(16) %i(3,00000003)
+													:BREAKTO(21)
+														 :POS(17) %i(4,00000004)
+													:BREAKTO(21)
+														 :POS(18) %i(5,00000005)
+													:BREAKTO(21)
+														 :POS(19) %i(6,00000006)
+													:BREAKTO(21)
+														 :POS(20) %i(7,00000007) :POS(21) 
+														:i endcase
+													case $net$
+														:i %GLOBAL%$random_screen_num$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(22):OFFSET(23):OFFSET(24):OFFSET(25):OFFSET(26):OFFSET(27)
+															 :POS(22) %i(1,00000001)
+														:BREAKTO(28)
+															 :POS(23) %i(2,00000002)
+														:BREAKTO(28)
+															 :POS(24) %i(3,00000003)
+														:BREAKTO(28)
+															 :POS(25) %i(5,00000005)
+														:BREAKTO(28)
+															 :POS(26) %i(6,00000006)
+														:BREAKTO(28)
+															 :POS(27) %i(7,00000007) :POS(28) 
+															:i endcase
+														case $creategoals$
+															:i %GLOBAL%$random_screen_num$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(29):OFFSET(30):OFFSET(31):OFFSET(32)
+																 :POS(29) %i(2,00000002)
+															:BREAKTO(33)
+																 :POS(30) %i(3,00000003)
+															:BREAKTO(33)
+																 :POS(31) %i(4,00000004)
+															:BREAKTO(33)
+																 :POS(32) %i(7,00000007) :POS(33) 
+																:i end_switch
+														
+													:i else 
+														:i switch  ($loadscreen_last_game_mode$) 
+															:i case $career$
+																:i %GLOBAL%$random_screen_num$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(34):OFFSET(35):OFFSET(36):OFFSET(37):OFFSET(38)
+																	 :POS(34) %i(1,00000001)
+																:BREAKTO(39)
+																	 :POS(35) %i(3,00000003)
+																:BREAKTO(39)
+																	 :POS(36) %i(5,00000005)
+																:BREAKTO(39)
+																	 :POS(37) %i(6,00000006)
+																:BREAKTO(39)
+																	 :POS(38) %i(7,00000007) :POS(39) 
+																	:i endcase
+																case $classic$
+																	:i %GLOBAL%$random_screen_num$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(40):OFFSET(41):OFFSET(42):OFFSET(43):OFFSET(44)
+																		 :POS(40) %i(1,00000001)
+																	:BREAKTO(45)
+																		 :POS(41) %i(2,00000002)
+																	:BREAKTO(45)
+																		 :POS(42) %i(3,00000003)
+																	:BREAKTO(45)
+																		 :POS(43) %i(5,00000005)
+																	:BREAKTO(45)
+																		 :POS(44) %i(6,00000006) :POS(45) 
+																		:i endcase
+																	case $singlesession$
+																		:i %GLOBAL%$random_screen_num$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(46):OFFSET(47):OFFSET(48):OFFSET(49):OFFSET(50):OFFSET(51)
+																			 :POS(46) %i(1,00000001)
+																		:BREAKTO(52)
+																			 :POS(47) %i(2,00000002)
+																		:BREAKTO(52)
+																			 :POS(48) %i(3,00000003)
+																		:BREAKTO(52)
+																			 :POS(49) %i(5,00000005)
+																		:BREAKTO(52)
+																			 :POS(50) %i(6,00000006)
+																		:BREAKTO(52)
+																			 :POS(51) %i(7,00000007) :POS(52) 
+																			:i endcase
+																		case $net$
+																			:i %GLOBAL%$random_screen_num$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(53):OFFSET(54):OFFSET(55):OFFSET(56):OFFSET(57):OFFSET(58)
+																				 :POS(53) %i(1,00000001)
+																			:BREAKTO(59)
+																				 :POS(54) %i(2,00000002)
+																			:BREAKTO(59)
+																				 :POS(55) %i(3,00000003)
+																			:BREAKTO(59)
+																				 :POS(56) %i(5,00000005)
+																			:BREAKTO(59)
+																				 :POS(57) %i(6,00000006)
+																			:BREAKTO(59)
+																				 :POS(58) %i(7,00000007) :POS(59) 
+																				:i endcase
+																			case $creategoals$
+																				:i %GLOBAL%$random_screen_num$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(60):OFFSET(61):OFFSET(62)
+																					 :POS(60) %i(2,00000002)
+																				:BREAKTO(63)
+																					 :POS(61) %i(3,00000003)
+																				:BREAKTO(63)
+																					 :POS(62) %i(7,00000007) :POS(63) 
+																					:i end_switch
+																			
+																		:i endif
+																		:i if $GotParam$$random_screen_num$
+																			:i $FormatText$$textname$ = $loading_screen$%s(19,"loadscrn_generic_%i")$i$ = %GLOBAL%$random_screen_num$
+																		:i endif
+																	:i endif
+																	:i endcase
+																case $Load_Default$
+																	:i endcase
+																case $Load_EmptyDefault$
+																	:i endcase
+																case $Load_TestLevel$
+																	:i $printf$%s(22,"Generic loading screen")
+																	:i endcase
+																default 
+																	:i if NOT $StringEquals$$a$ = %GLOBAL%$loading_screen$$b$ = %s(16,"loadscrn_generic")
+																		:i switch %GLOBAL%$GameMode$
+																			:i case $career$
+																				:i $GetCurrentChapterInfo$
+																				:i if  (%GLOBAL%$load_script$ = $load_se$) 
+																					:i $level$ = $load_se$
+																				:i endif
+																				:i if  (%GLOBAL%$load_script$ = %GLOBAL%$level$) 
+																					:i %GLOBAL%$loading_screen$ =  (%GLOBAL%$loading_screen$ + %s(6,"_story")) 
+																				:i endif
+																				:i endcase
+																			case $classic$
+																				:i %GLOBAL%$loading_screen$ =  (%GLOBAL%$loading_screen$ + %s(8,"_classic")) 
+																				:i endcase
+																			default 
+																				:i end_switch
+																		
+																	:i endif
+																	:i end_switch
+															
+															:i if  ($launch_to_createatrick$ = %i(1,00000001)) 
+																:i if $IsXbox$
+																	:i %GLOBAL%$loading_screen$ = %s(16,"loadscrn_trick_x")
+																:i else 
+																	:i if $IsNgc$
+																		:i %GLOBAL%$loading_screen$ = %s(18,"loadscrn_trick_ngc")
+																	:i else 
+																		:i %GLOBAL%$loading_screen$ = %s(14,"loadscrn_trick")
+																	:i endif
+																:i endif
+															:i endif
+														:i endif
+													:i endif
+												:i else 
+													:i %GLOBAL%$loading_screen$ = %s(16,"loadscrn_generic")
+													:i $RemoveParameter$$loading_time$
+												:i endif
+											:i endif
+											:i $Displayloadingscreen$%GLOBAL%$loading_screen$%GLOBAL%$loading_time$
+											:i $change$$ANY_LEVEL_LOADED_YET$ = %i(1,00000001)
+											:i $change$$loadscreen_last_game_mode$ = %GLOBAL%$GameMode$
+										:i endfunction
+										:i function $Bootstrap_displayscreen$$screen$ = %s(22,"loadscrn_demo_controls")
+											:i if $ObjectExists$$id$ = $startup_menu$
+												:i $DestroyScreenElement$$id$ = $startup_menu$
+											:i endif
+											:i if $ObjectExists$$id$ = $ns_rules$
+												:i $DestroyScreenElement$$id$ = $ns_rules$
+											:i endif
+											:i $make_new_menu$$menu_id$ = $screen_menu$
+											:i $SetScreenElementProps$:s{
+												:i $id$ = $root_window$
+												:i $event_handlers$ = :a{:s{$pad_start$$exit_screen_menu$:s}:a}
+												:i $replace_handlers$
+											:i :s}
+											:i $SetScreenElementProps$:s{
+												:i $id$ = $screen_menu$
+												:i $event_handlers$ = :a{:s{$pad_start$$exit_screen_menu$:s}
+													:i :s{$pad_choose$$exit_screen_menu$:s}
+													:i :s{$pad_back$$exit_screen_menu$:s}
+													:i :s{$pad_circle$$exit_screen_menu$:s}
+													:i :s{$pad_square$$exit_screen_menu$:s}
+													:i :a}
+												:i $replace_handlers$
+											:i :s}
+											:i $FireEvent$$type$ = $focus$$target$ = $screen_menu$
+											:i $Displayloadingscreen$%GLOBAL%$screen$
+										:i endfunction
+										:i :end
+										

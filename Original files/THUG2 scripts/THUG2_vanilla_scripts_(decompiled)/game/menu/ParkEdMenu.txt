@@ -1,0 +1,477 @@
+
+:i function $parked_menu_blink_arrow$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$menu_blink_arrow$
+	:i endif
+:i endfunction
+:i $parked_helper_text_pos$ = %vec2(320.000000,405.000000)
+:i function $parked_make_piece_menu$:s{
+		:i $total_dims$ = %vec2(430.000000,60.000000)
+		:i $separation$ = %i(60,0000003c)
+	:i :s}
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $border_rgba$
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i if $ObjectExists$$id$ = $piece_menu_container$
+		:i $DestroyScreenElement$$id$ = $piece_menu_container$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $id$ = $piece_menu_container$
+		:i $type$ = $ContainerElement$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$parked_menu_left$$parked_scroll_sideways_sound$$params$ = :s{:s}:s}
+			:i :s{$parked_menu_right$$parked_scroll_sideways_sound$$params$ = :s{:s}:s}
+			:i :s{$parked_menu_left$$parked_menu_blink_arrow$$params$ = :s{$id$ = $piece_menu_left_arrow$:s}:s}
+			:i :s{$parked_menu_right$$parked_menu_blink_arrow$$params$ = :s{$id$ = $piece_menu_right_arrow$:s}:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $piece_menu_container$
+		:i $type$ = $HScrollingMenu$
+		:i $id$ = $piece_menu_scrolling$
+		:i $just$ = :a{$left$$bottom$:a}
+		:i $pos$ = %vec2(235.000000,141.000000)
+		:i $dims$ = %GLOBAL%$total_dims$
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $num_items_to_show$ = %i(6,00000006)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $piece_menu_scrolling$
+		:i $type$ = $HMenu$
+		:i $id$ = $piece_menu_hmenu$
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(30.000000,0.000000)
+		:i $dims$ = %GLOBAL%$total_dims$
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $regular_space_amount$ = %GLOBAL%$separation$
+		:i $disable_pad_handling$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $piece_menu_container$
+		:i $id$ = $piece_menu_name_text$
+		:i $font$ = $dialog$
+		:i $text$ = %s(11,"Monkey Stew")
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(417.000000,85.000000)
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $scale$ = %f(0.850000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $piece_slider_container$
+		:i $parent$ = $piece_menu_container$
+		:i $dims$ = %vec2(320.000000,50.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(230.000000,70.000000)
+		:i $scale$ = %vec2(1.100000,1.500000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $piece_slider_orange$
+		:i $parent$ = $piece_slider_container$
+		:i $dims$ = %vec2(4.000000,4.000000)
+		:i $scale$ = %vec2(26.000000,1.500000)
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $alpha$ = %f(1.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $piece_slider_gray$
+		:i $parent$ = $piece_slider_container$
+		:i $dims$ = %vec2(4.000000,4.000000)
+		:i $scale$ = %vec2(95.000000,1.200000)
+		:i $rgba$ = :a{%i(31,0000001f)%i(31,0000001f)%i(31,0000001f)%i(128,00000080):a}
+		:i $alpha$ = %f(1.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $piece_menu_container$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(55.000000,0.500000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(230.000000,74.000000)
+		:i $rgba$ = %GLOBAL%$border_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $piece_menu_container$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(55.000000,0.500000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(230.000000,95.000000)
+		:i $rgba$ = %GLOBAL%$border_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $piece_menu_container$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(55.000000,2.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(230.000000,85.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+:i endfunction
+:i function $parked_destroy_piece_menu$
+	:i if $ObjectExists$$id$ = $piece_menu_container$
+		:i $DestroyScreenElement$$id$ = $piece_menu_container$
+	:i endif
+:i endfunction
+:i function $parked_make_piece_menu_item$:s{
+		:i $item_dims$ = %vec2(50.000000,50.000000)
+		:i $item_midpoint$ = %vec2(30.000000,25.000000)
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $piece_menu_hmenu$$Off$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $piece_menu_hmenu$
+		:i $type$ = $ContainerElement$
+		:i $id$ = %GLOBAL%$metapiece_id$
+		:i $dims$ = %GLOBAL%$item_dims$
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$parked_piece_focus_script$:s}
+			:i :s{$unfocus$$parked_piece_unfocus_script$:s}
+			:i :a}
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $Theme_GetHighlightBarColor$$return_value$ = $on_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$metapiece_id$
+		:i $texture$ = $parked_piece_frame$
+		:i $scale$ = %vec2(0.859000,0.859000)
+		:i $alpha$ = %i(0,00000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %GLOBAL%$item_midpoint$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if $GotParam$$ClipBoardIndex$
+		:i $FormatText$$TextName$ = $text$%s(2,"%d")$d$ = %GLOBAL%$ClipBoardIndex$
+		:i $CreateScreenElement$:s{
+			:i $parent$ = %GLOBAL%$metapiece_id$
+			:i $type$ = $TextElement$
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$text$
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(30.000000,37.500000)
+			:i $scale$ = %i(1,00000001)
+			:i $heap$ = %GLOBAL%$heap$
+		:i :s}
+	:i else 
+		:i if $GotParam$$EmptyClipBoard$
+			:i $CreateScreenElement$:s{
+				:i $parent$ = %GLOBAL%$metapiece_id$
+				:i $type$ = $TextElement$
+				:i $font$ = $dialog$
+				:i $text$ = %sc(4,"None")
+				:i $just$ = :a{$center$$center$:a}
+				:i $pos$ = %vec2(30.000000,37.500000)
+				:i $scale$ = %i(1,00000001)
+				:i $heap$ = %GLOBAL%$heap$
+			:i :s}
+		:i else 
+			:i $CreateScreenElement$:s{
+				:i $parent$ = %GLOBAL%$metapiece_id$
+				:i $type$ = $Element3d$
+				:i $Sector$ = %GLOBAL%$Sector$
+				:i $Sectors$ = %GLOBAL%$Sectors$
+				:i $pos$ =  (%GLOBAL%$item_midpoint$ + %vec2(5.500000,9.000000)) 
+				:i $dims$ = %GLOBAL%$item_dims$
+				:i $just$ = :a{$center$$center$:a}
+				:i $CameraZ$ = %i(4294967290,fffffffa)
+				:i $scale$ = %f(0.850000)
+				:i $anglex$ = %f(0.500000)
+				:i $angley$ = %f(0.785000)
+				:i $scale_to_screen_dims$
+				:i $heap$ = %GLOBAL%$heap$
+			:i :s}
+		:i endif
+	:i endif
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $arrow_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$metapiece_id$
+		:i $local_id$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(-5.000000,37.500000)
+		:i $scale$ = %f(0.800000)
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(55,00000037)
+		:i $rgba$ = %GLOBAL%$arrow_rgba$
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$metapiece_id$
+		:i $local_id$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(65.000000,37.500000)
+		:i $scale$ = %f(0.800000)
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(55,00000037)
+		:i $rgba$ = %GLOBAL%$arrow_rgba$
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+:i endfunction
+:i function $parked_piece_focus_script$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $scale$ = %f(1.200000)
+		:i $time$ = %f(0.250000)
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ = %f(1.275000)$alpha$ = %f(0.550000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $left_arrow$:s}$alpha$ = %i(1,00000001)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $right_arrow$:s}$alpha$ = %i(1,00000001)
+	:i $AssignAlias$$id$ = :s{%GLOBAL%$id$$child$ = $right_arrow$:s}$alias$ = $piece_menu_right_arrow$
+	:i $AssignAlias$$id$ = :s{%GLOBAL%$id$$child$ = $left_arrow$:s}$alias$ = $piece_menu_left_arrow$
+:i endfunction
+:i function $parked_piece_unfocus_script$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $scale$ = %f(0.850000)
+		:i $time$ = %f(0.250000)
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ = %f(1.275000)$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $left_arrow$:s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $right_arrow$:s}$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $parked_set_helper_text_mode$
+	:i if NOT $ObjectExists$$id$ = $piece_menu_container$
+		:i $AddParams$$failed$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementLock$$id$ = $piece_menu_container$$Off$
+	:i switch %GLOBAL%$mode$
+		:i case $regular$
+			:i if $isps2$
+				:i $create_helper_text$$park_editor_helper_text$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+			:i else 
+				:i if $isxbox$
+					:i $create_helper_text$$park_editor_helper_text_xbox$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+				:i else 
+					:i $create_helper_text$$park_editor_helper_text_ngc$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+				:i endif
+			:i endif
+			:i endcase
+		case $gap_regular$
+			:i if $isps2$
+				:i $create_helper_text$$gap_regular_helper_text$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+			:i else 
+				:i if $isxbox$
+					:i $create_helper_text$$gap_regular_helper_text_xbox$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+				:i else 
+					:i $create_helper_text$$gap_regular_helper_text_ngc$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %f(0.900000)
+				:i endif
+			:i endif
+			:i endcase
+		case $gap_adjust$
+			:i if $isps2$
+				:i $create_helper_text$$gap_adjust_helper_text$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$
+			:i else 
+				:i if $isxbox$
+					:i $create_helper_text$$gap_adjust_helper_text_xbox$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$
+				:i else 
+					:i $create_helper_text$$gap_adjust_helper_text_ngc$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$
+				:i endif
+			:i endif
+			:i endcase
+		case $rail_placement$
+			:i $helper_text$ = $park_editor_helper_text$
+			:i $RailEditor$.$GetEditingMode$
+			:i %GLOBAL%$scale$ = %f(0.900000)
+			:i switch %GLOBAL%$mode$
+				:i case $FreeRoaming$
+					:i $helper_text$ = $rail_editor_free_roam_helper_text$
+					:i %GLOBAL%$scale$ = %f(0.800000)
+					:i endcase
+				case $RailLayout$
+					:i $helper_text$ = $rail_editor_layout_helper_text$
+					:i %GLOBAL%$scale$ = %f(0.900000)
+					:i endcase
+				case $Grab$
+					:i $helper_text$ = $rail_editor_grab_helper_text$
+					:i %GLOBAL%$scale$ = %f(0.900000)
+					:i end_switch
+			
+			:i if $isxbox$
+				:i switch %GLOBAL%$mode$
+					:i case $FreeRoaming$
+						:i $helper_text$ = $rail_editor_free_roam_helper_text_xbox$
+						:i %GLOBAL%$scale$ = %f(0.800000)
+						:i endcase
+					case $RailLayout$
+						:i $helper_text$ = $rail_editor_layout_helper_text_xbox$
+						:i %GLOBAL%$scale$ = %f(0.900000)
+						:i endcase
+					case $Grab$
+						:i $helper_text$ = $rail_editor_grab_helper_text_xbox$
+						:i %GLOBAL%$scale$ = %f(0.900000)
+						:i end_switch
+				
+			:i endif
+			:i if $isNGC$
+				:i switch %GLOBAL%$mode$
+					:i case $FreeRoaming$
+						:i $helper_text$ = $rail_editor_free_roam_helper_text_ngc$
+						:i %GLOBAL%$scale$ = %f(0.800000)
+						:i endcase
+					case $RailLayout$
+						:i $helper_text$ = $rail_editor_layout_helper_text_ngc$
+						:i %GLOBAL%$scale$ = %f(0.900000)
+						:i endcase
+					case $Grab$
+						:i $helper_text$ = $rail_editor_grab_helper_text_ngc$
+						:i %GLOBAL%$scale$ = %f(0.900000)
+						:i end_switch
+				
+			:i endif
+			:i $create_helper_text$%GLOBAL%$helper_text$$parent$ = $piece_menu_container$$helper_pos$ = $parked_helper_text_pos$$scale$ = %GLOBAL%$scale$
+			:i endcase
+		default 
+			:i end_switch
+	
+	:i $SetScreenElementLock$$id$ = $piece_menu_container$$on$
+:i endfunction
+:i function $parked_create_percent_bar$
+	:i if $ScreenElementExists$$id$ = $percent_bar$
+		:i $DestroyScreenElement$$id$ = $percent_bar$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $texture$ = $white2$
+		:i $id$ = $percent_bar$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(20.000000,413.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(100,00000064):a}
+		:i $scale$ = %vec2(75.000000,1.500000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $percent_bar$
+		:i $texture$ = $white2$
+		:i $id$ = $percent_bar_colored_part$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $parked_update_percent_bar$
+	:i if NOT $ScreenElementExists$$id$ = $percent_bar_colored_part$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$park_full$
+		:i $SetScreenElementProps$$id$ = $percent_bar_colored_part$$rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i else 
+		:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+		:i $SetScreenElementProps$$id$ = $percent_bar_colored_part$$rgba$ = %GLOBAL%$on_rgba$
+	:i endif
+	:i $DoScreenElementMorph$$id$ = $percent_bar_colored_part$$scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$park_percent$ + %vec2(0.000000,1.000000)) $relative_scale$
+:i endfunction
+:i function $parked_make_set_menu$:s{
+		:i $corner_pos$ = %vec2(10.000000,30.000000)
+		:i $top_arrow_pos$ = %vec2(100.000000,8.000000)
+		:i $bottom_arrow_pos$ = %vec2(100.000000,85.000000)
+		:i $item_spacing$ = %i(19,00000013)
+		:i $menu_offset_from_top$ = %vec2(33.000000,5.000000)
+	:i :s}
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i if $ObjectExists$$id$ = $set_menu_container$
+	:i else 
+		:i $make_new_menu$:s{
+			:i $menu_id$ = $set_menu_container$
+			:i $type$ = $VScrollingMenu$
+			:i $scrolling_menu_id$ = $set_menu_scrolling$
+			:i $scrolling_menu_offset$ = %vec2(0.000000,0.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(62.000000,42.000000)
+			:i $dims$ = %vec2(150.000000,120.000000)
+			:i $vmenu_id$ = $set_menu_vertical$
+			:i $regular_space_amount$ = %GLOBAL%$item_spacing$
+			:i $internal_scale$ = %f(0.500000)
+			:i $dont_allow_wrap$ = %i(1,00000001)
+			:i $num_items_to_show$ = %i(5,00000005)
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $set_menu_container$
+			:i $event_handlers$ = :a{
+				:i :s{$parked_menu_up$$generic_menu_up_or_down_sound$$params$ = :s{$Up$:s}:s}
+				:i :s{$parked_menu_down$$generic_menu_up_or_down_sound$$params$ = :s{$Down$:s}:s}
+				:i :s{$parked_menu_up$$parked_menu_blink_arrow$$params$ = :s{$id$ = $set_menu_up_arrow$:s}:s}
+				:i :s{$parked_menu_down$$parked_menu_blink_arrow$$params$ = :s{$id$ = $set_menu_down_arrow$:s}:s}
+				:i :a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $set_menu_container$
+			:i $id$ = $set_menu_up_arrow$
+			:i $texture$ = $up_arrow$
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(130.000000,30.000000)
+			:i $scale$ = %f(0.800000)
+			:i $rgba$ = %GLOBAL%$on_rgba$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $set_menu_container$
+			:i $id$ = $set_menu_down_arrow$
+			:i $texture$ = $down_arrow$
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(130.000000,138.000000)
+			:i $scale$ = %f(0.800000)
+			:i $rgba$ = %GLOBAL%$on_rgba$
+		:i :s}
+		:i $theme_background$:s{
+			:i $parent$ = $set_menu_container$
+			:i $id$ = $set_bg$
+			:i $width$ = %f(1.150000)
+			:i $pos$ = %vec2(130.000000,20.000000)
+			:i $num_parts$ = %f(3.000000)
+		:i :s}
+	:i endif
+	:i $parked_create_percent_bar$
+	:i $SetScreenElementLock$$id$ = $root_window$$on$
+	:i $wait$%f(0.200000)$seconds$
+:i endfunction
+:i function $parked_make_set_menu_item$
+	:i $SetScreenElementLock$$id$ = $current_menu$$Off$
+	:i $theme_menu_add_item$$text$ = %GLOBAL%$set_name$$text_just$ = :a{$center$$center$:a}$no_choose_sound$$no_bg$$highlight_bar_scale$ = %vec2(1.500000,0.700000)
+	:i $SetScreenElementLock$$id$ = $current_menu$$on$
+:i endfunction
+:i function $parked_destroy_set_menu$
+	:i if $ObjectExists$$id$ = $set_menu_container$
+		:i $DestroyScreenElement$$id$ = $set_menu_container$
+	:i endif
+	:i if $ObjectExists$$id$ = $percent_bar$
+		:i $DestroyScreenElement$$id$ = $percent_bar$
+	:i endif
+:i endfunction
+:i function $parked_lock_piece_and_set_menus$
+	:i $SetScreenElementLock$$id$ = $piece_menu_hmenu$$on$
+	:i $SetScreenElementLock$$id$ = $piece_menu_scrolling$$on$
+	:i $SetScreenElementLock$$id$ = $set_menu_scrolling$$on$
+	:i $SetScreenElementLock$$id$ = $set_menu_vertical$$on$
+	:i $FireEvent$$type$ = $unfocus$$target$ = :s{$set_menu_vertical$$child$ = %GLOBAL%$last_set_number$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = :s{$set_menu_vertical$$child$ = %GLOBAL%$set_number$:s}
+:i endfunction
+:i :end

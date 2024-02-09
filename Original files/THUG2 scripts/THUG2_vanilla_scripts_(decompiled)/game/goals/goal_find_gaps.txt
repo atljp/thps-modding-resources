@@ -1,0 +1,47 @@
+
+:i $Goal_FindGaps_GenericParams$ = :s{
+	:i $goal_text$ = %s(12,"Find X gaps!")
+	:i $view_goals_text$ = %s(22,"Generic find gaps text")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_find_gaps_init$
+	:i $uninit$ = $goal_uninit$
+	:i $active$ = $goal_find_gaps_active$
+	:i $activate$ = $goal_find_gaps_activate$
+	:i $deactivate$ = $goal_find_gaps_deactivate$
+	:i $expire$ = $goal_find_gaps_expire$
+	:i $fail$ = $goal_find_gaps_fail$
+	:i $success$ = $goal_find_gaps_success$
+	:i $restart_node$ = $TRG_G_FINDGAPS_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_FINDGAPS_Pro$
+	:i $record_type$ = $time$
+	:i $findGaps$
+:i :s}
+:i function $goal_find_gaps_init$
+	:i $goal_init$ isNull 
+:i endfunction
+:i function $goal_find_gaps_activate$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ =  isNull 
+	:i $goal_start$ isNull 
+:i endfunction
+:i function $goal_find_gaps_active$
+	:i if  (%GLOBAL%$num_gaps_found$ >  (%GLOBAL%$num_gaps_to_find$ - %i(1,00000001)) ) 
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_find_gaps_deactivate$
+	:i $goal_deactivate$ isNull 
+:i endfunction
+:i function $goal_find_gaps_expire$
+	:i $goal_expire$ isNull 
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_find_gaps_fail$
+	:i $goal_fail$ isNull 
+:i endfunction
+:i function $goal_find_gaps_success$
+	:i $goal_success$ isNull 
+:i endfunction
+:i function $goal_find_gaps_found_gap$
+	:i $goal_update_counter$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

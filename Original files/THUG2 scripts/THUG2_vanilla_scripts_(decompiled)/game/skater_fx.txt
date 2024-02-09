@@ -1,0 +1,183 @@
+
+:i function $Dismember$$Bone$ = $Bone_head$$MaxVel$ = %i(200,000000c8)$MaxRotVel$ = %i(4,00000004)
+	:i $Obj_GetId$
+	:i $BodyChunkName$ =  (%GLOBAL%$Bone$ + %GLOBAL%$ObjId$) 
+	:i if $CompositeObjectExists$$name$ = %GLOBAL%$BodyChunkName$
+		:i %GLOBAL%$BodyChunkName$.$Die$
+	:i endif
+	:i $Obj_GetPosition$
+	:i $Obj_GetBonePosition$$Bone$ = %GLOBAL%$Bone$
+	:i $ModelOffset$ =  (%GLOBAL%$Pos$ - %GLOBAL%$X$ * %vec3(1.000000,0.000000,0.000000) - %GLOBAL%$Y$ * %vec3(0.000000,1.000000,0.000000) - %GLOBAL%$Z$ * %vec3(0.000000,0.000000,1.000000)) 
+	:i $Obj_GetQuat$
+	:i $CreateCompositeObject$$Components$ = $BodyChunkComponents$$Params$ = :s{
+		:i $name$ = %GLOBAL%$BodyChunkName$
+		:i $Pos$ = %GLOBAL%$Pos$
+		:i $Orientation$ = %GLOBAL%$Quat$
+		:i $CloneFrom$ = %GLOBAL%$ObjId$
+		:i $CopySkeletonFrom$ = %GLOBAL%$ObjId$
+		:i $model_offset$ = %GLOBAL%$ModelOffset$
+	:i :s}
+	:i $Vel$ =  (%GLOBAL%$MaxVel$ * random%vec2(-1.100000,1.100000) * %vec3(1.000000,0.000000,0.000000)
+	:i  + %GLOBAL%$MaxVel$ * random%vec2(0.000000,1.100000) * %vec3(0.000000,1.000000,0.000000)
+	:i  + %GLOBAL%$MaxVel$ * random%vec2(-1.100000,1.100000) * %vec3(0.000000,0.000000,1.000000)
+	:i ) 
+	:i $RotVel$ =  (%GLOBAL%$MaxRotVel$ * random%vec2(-1.100000,1.100000) * %vec3(1.000000,0.000000,0.000000)
+	:i  + %GLOBAL%$MaxRotVel$ * random%vec2(-1.100000,1.100000) * %vec3(0.000000,1.000000,0.000000)
+	:i  + %GLOBAL%$MaxRotVel$ * random%vec2(-1.100000,1.100000) * %vec3(0.000000,0.000000,1.000000)
+	:i ) 
+	:i %GLOBAL%$BodyChunkName$.$RigidBody_Kick$$Vel$ = %GLOBAL%$Vel$$RotVel$ = %GLOBAL%$RotVel$
+	:i %GLOBAL%$BodyChunkName$.$Obj_SetBoneScale$$Bone$ = %GLOBAL%$Bone$$scale$ = %f(0.000000)$propagate_reverse$$force_update$
+	:i $Obj_SetBoneScale$$Bone$ = %GLOBAL%$Bone$$scale$ = %f(0.000000)$propagate$
+	:i %GLOBAL%$BodyChunkName$.$Obj_UpdateModel$
+:i endfunction
+:i $BodyChunkComponents$ = :a{
+	:i :s{
+		:i $Component$ = $Suspend$
+	:i :s}
+	:i :s{
+		:i $Component$ = $WaitAndDie$
+		:i $Lifetime$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $Component$ = $RigidBody$
+		:i $Box$
+		:i $Dimensions$ = %vec3(20.000000,20.000000,20.000000)
+	:i :s}
+	:i :s{
+		:i $Component$ = $Skeleton$
+	:i :s}
+	:i :s{
+		:i $Component$ = $Model$
+	:i :s}
+	:i :a}
+:i function $make_skater_explode$$frames$ = %i(5,00000005)
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterNumber$
+	:i $stored_scales$ = :a{
+		:i :s{$group$ = $head_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $headtop_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Nose_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Jaw_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $stomach_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $torso_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $upper_arm_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $lower_arm_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $hands_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $upper_leg_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $lower_leg_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $feet_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $board_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :a}
+	:i $GetArraySize$%GLOBAL%$stored_scales$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $scalingmenu_get_xyz$$part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+		:i $SetArrayElement$$ArrayName$ = $stored_scales$$index$ = %GLOBAL%$index$$newvalue$ = :s{$group$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) $X$ = %GLOBAL%$X$$Y$ = %GLOBAL%$Y$$Z$ = %GLOBAL%$Z$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $OnExitRun$$make_skater_explode_exit$
+	:i $Obj_SpawnScript$$make_skater_explode_cleanup$$Params$ =  isNull 
+	:i $Dismember$$Bone$ = $Bone_head$
+	:i $Dismember$$Bone$ = $bone_bicep_R$
+	:i $Dismember$$Bone$ = $bone_bicep_L$
+	:i $Dismember$$Bone$ = $Bone_Thigh_R$
+	:i $Dismember$$Bone$ = $Bone_Thigh_L$
+	:i $wait$%GLOBAL%$frames$$gameframes$
+	:i $Dismember$$Bone$ = $bone_pelvis$
+	:i $wait$%i(2,00000002)$seconds$
+:i endfunction
+:i function $make_skater_explode_exit$
+	:i $Obj_GetId$
+	:i $FireEvent$$type$ = $CleanupSkaterExplode$$target$ = %GLOBAL%$ObjId$
+:i endfunction
+:i function $make_skater_explode_cleanup$
+	:i $WaitForEvent$$type$ = $CleanupSkaterExplode$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $SetPlayerAppearanceScale$:s{
+			:i $player$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+			:i $X$ =  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$X$) 
+			:i $Y$ =  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$Y$) 
+			:i $Z$ =  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$Z$) 
+		:i :s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $RefreshSkaterScale$$skater$ = %GLOBAL%$skaternumber$$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $make_skater_explode_cleanup_all_parts$
+	:i $Obj_GetId$
+	:i $bones$ = :a{$Bone_head$;$bone_pelvis$;$Bone_Thigh_R$;$Bone_Thigh_L$;$bone_bicep_R$;$bone_bicep_L$:a}
+	:i $GetArraySize$%GLOBAL%$bones$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $BodyChunkName$ =  ( (%GLOBAL%$bones$:a{%GLOBAL%$index$:a})  + %GLOBAL%$ObjId$) 
+		:i if $ObjectExists$$id$ = %GLOBAL%$BodyChunkName$
+			:i %GLOBAL%$BodyChunkName$.$Die$
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $make_skater_lose_head$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterNumber$
+	:i $stored_scales$ = :a{
+		:i :s{$group$ = $head_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $headtop_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Nose_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Jaw_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :a}
+	:i $GetArraySize$%GLOBAL%$stored_scales$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $scalingmenu_get_xyz$$part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+		:i $SetArrayElement$$ArrayName$ = $stored_scales$$index$ = %GLOBAL%$index$$newvalue$ = :s{$group$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) $X$ = %GLOBAL%$X$$Y$ = %GLOBAL%$Y$$Z$ = %GLOBAL%$Z$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $OnExitRun$$make_skater_lose_head_exit$
+	:i $Obj_SpawnScript$$make_skater_lose_head_cleanup$$Params$ =  isNull 
+	:i $Dismember$$Bone$ = $Bone_head$
+	:i $Obj_WaitAnimFinished$
+	:i $FireEvent$$type$ = $SkaterLoseHeadCleanup$
+	:i $OnExitRun$
+	:i $PlayAnim$$anim$ = $WStandIdle3$$speed$ = %f(2.000000)
+:i endfunction
+:i function $make_skater_lose_head_exit$
+	:i $Obj_GetId$
+	:i $FireEvent$$type$ = $SkaterLoseHeadCleanup$$target$ = %GLOBAL%$ObjId$
+:i endfunction
+:i function $make_skater_lose_head_cleanup$
+	:i $WaitForEvent$$type$ = $SkaterLoseHeadCleanup$
+	:i $scale$ = %f(0.000000)
+	:i while
+		
+		:i $scale$ =  (%GLOBAL%$scale$ + %f(0.020000)) 
+		:i if  (%GLOBAL%$scale$ > %f(1.000000)) 
+			:i $scale$ = %f(1.000000)
+		:i endif
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $SetPlayerAppearanceScale$:s{
+				:i $player$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+				:i $X$ =  (%GLOBAL%$scale$ *  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$X$) ) 
+				:i $Y$ =  (%GLOBAL%$scale$ *  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$Y$) ) 
+				:i $Z$ =  (%GLOBAL%$scale$ *  ( (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}) ->$Z$) ) 
+			:i :s}
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $RefreshSkaterScale$$skater$ = %GLOBAL%$skaternumber$$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i if  (%GLOBAL%$scale$ = %f(1.000000)) 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframes$
+	:i loop_to 
+	:i $Obj_WaitAnimFinished$
+:i endfunction
+:i :end

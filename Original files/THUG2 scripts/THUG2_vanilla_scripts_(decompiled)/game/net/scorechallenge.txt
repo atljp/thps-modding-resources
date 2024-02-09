@@ -1,0 +1,117 @@
+
+:i $goal_scorechallenge_genericParams$ = :s{
+	:i $goal_text$ = %s(38,"You must score the most points to win!")
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $score$ = %i(1000000,000f4240)
+	:i $net$
+	:i $init$ = $goal_scorechallenge_init$
+	:i $activate$ = $goal_scorechallenge_activate$
+	:i $active$ = $goal_scorechallenge_active$
+	:i $deactivate$ = $goal_scorechallenge_deactivate$
+	:i $goal_description$ = %s(16,"Score Challenge!")
+:i :s}
+:i function $goal_scorechallenge_init$
+:i endfunction
+:i function $goal_scorechallenge_activate$
+	:i if $InSplitScreenGame$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ = %vec2(620.000000,27.000000)
+	:i endif
+	:i if $InNetGame$
+		:i switch %GLOBAL%$score$
+			:i case %i(100000,000186a0)
+				:i $score_string$ = %s(11,"100,000 pts")
+				:i endcase
+			case %i(250000,0003d090)
+				:i $score_string$ = %s(11,"250,000 pts")
+				:i endcase
+			case %i(500000,0007a120)
+				:i $score_string$ = %s(11,"500,000 pts")
+				:i endcase
+			case %i(1000000,000f4240)
+				:i $score_string$ = %s(13,"1,000,000 pts")
+				:i endcase
+			case %i(2000000,001e8480)
+				:i $score_string$ = %s(13,"2,000,000 pts")
+				:i endcase
+			case %i(5000000,004c4b40)
+				:i $score_string$ = %s(13,"5,000,000 pts")
+				:i endcase
+			case %i(10000000,00989680)
+				:i $score_string$ = %s(14,"10,000,000 pts")
+				:i endcase
+			case %i(50000000,02faf080)
+				:i $score_string$ = %s(14,"50,000,000 pts")
+				:i endcase
+			case %i(100000000,05f5e100)
+				:i $score_string$ = %s(15,"100,000,000 pts")
+				:i end_switch
+		
+		:i if $InTeamGame$
+			:i $FormatText$$TextName$ = $msg_text$%s(40,"\c3Score \n\c3Challenge:\n\c0%s \nto win")$s$ = %GLOBAL%$score_string$
+		:i else 
+			:i $FormatText$$TextName$ = $msg_text$%s(40,"\c3Score \n\c3Challenge:\n\c0%s \nto win")$s$ = %GLOBAL%$score_string$
+		:i endif
+		:i $create_panel_block$$id$ = $sc_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$
+	:i endif
+	:i $printf$%s(63,"************** ACTIVATING SCORECHALLENGE **********************")
+	:i $ResetScore$
+:i endfunction
+:i function $goal_scorechallenge_active$
+	:i if $AnySkaterTotalScoreAtLeast$%GLOBAL%$score$
+		:i if $OnServer$
+			:i if $CalculateFinalScores$
+				:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+				:i $goal_scorechallenge_finished$
+			:i endif
+		:i else 
+			:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+			:i $goal_scorechallenge_finished$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_scorechallenge_deactivate$
+	:i $destroy_goal_panel_messages$
+	:i if $ObjectExists$$id$ = $sc_goal_text$
+		:i $DestroyScreenElement$$id$ = $sc_goal_text$
+	:i endif
+:i endfunction
+:i function $goal_scorechallenge_finished$
+	:i $destroy_goal_panel_messages$
+	:i if $ObjectExists$$id$ = $sc_goal_text$
+		:i $DestroyScreenElement$$id$ = $sc_goal_text$
+	:i endif
+	:i $printf$%s(30,"goal_scorechallenge_deactivate")
+	:i $ResetScorePot$
+	:i if $OnServer$
+		:i if $InInternetMode$
+			:i $ReportStats$$final$
+		:i endif
+	:i endif
+	:i $create_rankings$
+:i endfunction
+:i function $AddGoal_scorechallenge$
+	:i $GoalManager_AddGoal$$name$ = $scorechallenge$:s{
+		:i $params$ = :s{$goal_scorechallenge_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_scorechallenge$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $scorechallenge$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $scorechallenge$
+:i endfunction
+:i :end

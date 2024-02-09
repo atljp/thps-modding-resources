@@ -1,0 +1,2171 @@
+
+:i $ParseNodeArrayIgnoreGaps$ = %i(0,00000000)
+:i $block_proxim_node_updates$ = %i(0,00000000)
+:i $check_for_unplugged_controllers$ = %i(0,00000000)
+:i $TimeOfDayDebug$ = %i(0,00000000)
+:i $main_menu_ok_to_go$ = %i(0,00000000)
+:i $DebugPausedObjects$ = %i(0,00000000)
+:i $DebugPausedObjectsComponentToCheck$ = $animblender$
+:i $scripts_to_kill_when_changing_levels$ = :a{
+	:i $SK3_KillSkater$
+	:i $SK3_KillSkater_Finish$
+	:i $SK3_KillSkater_Finish3$
+	:i $SK3_KillSkater_Water$
+	:i $SK3_KillSkater_Pungee$
+	:i $BA_Goal_Catapult720_EnterGrab$
+	:i $BA_Goal_Catapult720_Counter$
+	:i $BA_Goal_Catapult720_SpinChecker$
+	:i :a}
+:i function $PrintState$
+	:i if $InAir$
+		:i $printf$%s(6,"In air")
+	:i endif
+	:i if $OnGround$
+		:i $printf$%s(9,"On ground")
+	:i endif
+	:i if $OnWall$
+		:i $printf$%s(7,"On wall")
+	:i endif
+	:i if $OnLip$
+		:i $printf$%s(6,"On lip")
+	:i endif
+	:i if $OnRail$
+		:i $printf$%s(6,"OnRail")
+	:i endif
+:i endfunction
+:i function $DefaultGapScript$
+	:i if $IsSoundPlaying$$MainGapSound$
+		:i $StopSound$$MainGapSound$
+	:i endif
+	:i $PlaySound$$HUD_jumpgap$$id$ = $MainGapSound$
+	:i if $Skating$
+		:i if $OnGround$
+			:i $LandGapsImmediately$ = %i(1,00000001)
+		:i endif
+	:i else 
+		:i if $Walking$
+			:i $LandGapsImmediately$ = %i(1,00000001)
+		:i else 
+			:i if $Driving$
+				:i $LandGapsImmediately$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$LandGapsImmediately$
+		:i $GetNumberOfNonGapTricks$
+		:i if  (%GLOBAL%$NumberOfNonGapTricks$ = %i(0,00000000)) 
+			:i $LandSkaterTricks$
+		:i endif
+	:i endif
+:i endfunction
+:i function $SetAllStats$$value$ = %i(3,00000003)
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i $printf$%s(25,"* Clearing Stats Override")
+	:i else 
+		:i $printf$%s(24,"* Overriding Stats to %d")$d$ = %GLOBAL%$value$
+	:i endif
+	:i $SetStatOverride$%GLOBAL%$value$
+:i endfunction
+:i function $ToggleMinMetrics$
+	:i $ToggleMetricItem$$item$ = $METRIC_TIME$
+	:i $ToggleMetricItem$$item$ = $METRIC_TOTALPOLYS$
+	:i $ToggleMetricItem$$item$ = $METRIC_VERTS$
+	:i $ToggleMetricItem$$item$ = $METRIC_RESOURCEALLOCS$
+	:i $ToggleMetricItem$$item$ = $METRIC_TEXTUREUPLOADS$
+	:i $ToggleMetricItem$$item$ = $METRIC_VU1$
+	:i $ToggleMetricItem$$item$ = $METRIC_DMA1$
+	:i $ToggleMetricItem$$item$ = $METRIC_DMA2$
+	:i $ToggleMetricItem$$item$ = $METRIC_IHANDLERTIME$
+	:i $ToggleMetricItem$$item$ = $METRIC_SKYCACHE$
+	:i $ToggleMetricItem$$item$ = $METRIC_VIDEOMODE$
+	:i $ToggleMetricItem$$item$ = $METRIC_MEMFREE$
+	:i $ToggleMetricItem$$item$ = $METRIC_REGIONINFO$
+:i endfunction
+:i function $WaitOneGameFrame$
+	:i $Wait$%i(1,00000001)$gameframes$
+:i endfunction
+:i function $WaitAnimWhilstChecking$
+	:i while
+		
+		:i $DoNextTrick$
+		:i if $GotParam$$AndManuals$
+			:i $DoNextManualTrick$
+		:i endif
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $Wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+:i endfunction
+:i function $WaitAnimFinished$
+	:i $printf$%s(67,"WaitAnimFinished is deprecated...  use Obj_WaitanimFinished instead")
+	:i $Obj_WaitAnimFinished$
+:i endfunction
+:i function $WaitWhilstChecking$
+	:i $GetStartTime$
+	:i while
+		
+		:i $DoNextTrick$
+		:i if $GotParam$$AndManuals$
+			:i $DoNextManualTrick$
+		:i endif
+		:i $Wait$%i(1,00000001)$GameFrame$
+		:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+		:i if  (%GLOBAL%$ElapsedTime$ > %GLOBAL%$Duration$) 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $Reverse$
+	:i $PlayAnim$$Anim$ = $Current$$From$ = $Current$$To$ = %i(0,00000000)
+:i endfunction
+:i $main_menu_jump_to_cas$ = %i(0,00000000)
+:i function $CheckForInvalidLevels$
+	:i $change$$main_menu_jump_to_cas$ = %i(0,00000000)
+	:i if  (%GLOBAL%$level$ = $load_cas$) 
+		:i $change$$main_menu_jump_to_cas$ = %i(1,00000001)
+		:i $level$ = $Load_MainMenu$
+	:i endif
+	:i if  (%GLOBAL%$level$ = $load_skateshop$) 
+		:i $printf$%s(72,"!!! Warning !!! 'load_skateshop' is obsolete. Please use 'load_mainmenu'")
+		:i %GLOBAL%$level$ = $Load_MainMenu$
+	:i endif
+	:i return
+	$level$ = %GLOBAL%$level$
+:i endfunction
+:i function $autolaunch$
+	:i if NOT $CD$
+		:i $change$$entered_from_autolaunch$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$game$
+		:i $SetGameType$%GLOBAL%$game$
+	:i else 
+		:i $SetGameType$$career$
+	:i endif
+	:i $SetCurrentGameType$
+	:i if $GameModeEquals$$is_career$
+		:i $SetChapterOnLevel$$level$ = %GLOBAL%$level$
+	:i endif
+	:i $CheckForInvalidLevels$$level$ = %GLOBAL%$level$
+	:i $request_level$$level$ = %GLOBAL%$level$
+	:i $cleanup_before_loading_level$
+	:i $load_requested_level$
+:i endfunction
+:i function $change_level$
+	:i $parked_loading_screen_show$$level$ = %GLOBAL%$level$
+	:i $Skater$.$Vibrate$$Off$
+	:i if $InSplitScreenGame$
+		:i if $ObjectExists$$id$ = $Skater2$
+			:i $Skater2$.$Vibrate$$Off$
+		:i endif
+	:i endif
+	:i $GetArraySize$$scripts_to_kill_when_changing_levels$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $KillSpawnedScript$$name$ =  ($scripts_to_kill_when_changing_levels$:a{%GLOBAL%$index$:a}) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $change$$is_changing_levels$ = %i(1,00000001)
+	:i $change$$tod_manager_inactive$ = %i(0,00000000)
+	:i $CheckForInvalidLevels$$level$ = %GLOBAL%$level$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $load_cas_textures_to_main_memory$$unload$$dont_assert$
+		:i $load_mainmenu_textures_to_main_memory$$unload$$dont_assert$
+	:i endif
+	:i if $LevelIs$$load_sk5ed$
+		:i $SwitchOffRailEditor$
+	:i endif
+	:i $ResetScore$
+	:i $SetMusicLooping$%i(0,00000000)
+	:i $SFX_Music_Volume_Box_Kill_State$
+	:i if NOT $IsObserving$
+		:i $Skater$.$reset_model_lights$
+	:i endif
+	:i if $ObjectExists$$id$ = $Skater2$
+		:i $Skater2$.$reset_model_lights$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i if $GotParam$$next_level_script$
+		:i $change$$next_level_script$ = %GLOBAL%$next_level_script$
+	:i endif
+	:i if NOT $IsObserving$
+		:i $Skater$.$ClearPanel_Landed$
+	:i endif
+	:i if NOT $GotParam$$no_levelUnload$
+		:i $printf$%s(22,"performing LevelUnload")
+		:i $GoalManager_LevelUnload$
+	:i endif
+	:i $ResetScore$
+	:i $ResetScorePot$
+	:i $hide_console_window$
+	:i $GoalManager_LevelUnload$
+	:i $GoalManager_DeactivateAllGoals$
+	:i if NOT $IsObserving$
+		:i $Skater$.$StatsManager_DeactivateGoals$
+	:i endif
+	:i $ScreenElementSystemCleanup$
+	:i if NOT $inNetGame$
+		:i $hide_everything$
+	:i endif
+	:i $kill_blur$
+	:i if $InSplitScreenGame$
+		:i $launch_two_player$
+	:i endif
+	:i if $IsXbox$
+		:i $DisplayLoadingScreen$$freeze$
+	:i endif
+	:i $ChangeLevel$ isNull 
+:i endfunction
+:i function $QuickScript$
+	:i $printf$%s(23,"Running quickscript....")
+	:i $ReloadNodeArray$
+	:i if $ScriptExists$$LoadAllParticleTextures$
+		:i $LoadAllParticleTextures$
+	:i endif
+	:i $Retry$
+:i endfunction
+:i function $ReloadScene$
+	:i $Skater$.$SetCustomRestart$$Set$
+	:i if $GotParam$$scene$
+		:i if $UnloadScene$ isNull 
+			:i $Cleanup$
+			:i if NOT $inNetGame$
+				:i $AllocatePathManMemory$
+			:i endif
+			:i $FormatText$$ChecksumName$ = $struct_name$%s(8,"level_%s")$s$ = %GLOBAL%$scene$
+			:i $AddParams$%GLOBAL%$struct_name$
+			:i if $GotParam$$sky$
+				:i $LoadScene$$scene$ = %GLOBAL%$sky$
+			:i endif
+			:i $LoadScene$ isNull 
+			:i if $GotParam$$level_name$
+				:i $SetLevelName$%GLOBAL%$level_name$
+			:i else 
+				:i $SetLevelName$%GLOBAL%$level$
+			:i endif
+			:i if $GotParam$$qb$
+				:i $NodeArrayManLoad$%GLOBAL%$qb$
+			:i endif
+			:i if $GotParam$$qb$
+				:i $PreloadModels$
+			:i endif
+			:i $menu3d_load_assets$$structure_name$ = %GLOBAL%$structure_name$
+			:i if $GotParam$$level_qb$
+				:i $LoadQB$%GLOBAL%$level_qb$$LevelSpecific$
+			:i endif
+			:i if $GotParam$$level_sfx_qb$
+				:i $LoadQB$%GLOBAL%$level_sfx_qb$$LevelSpecific$
+			:i endif
+			:i if $GotParam$$more_level_qbs$
+				:i if NOT $IsArray$%GLOBAL%$more_level_qbs$
+					:i $script_assert$%s(30,"more_level_qbs is not an array")
+				:i endif
+				:i $GetArraySize$%GLOBAL%$more_level_qbs$
+				:i %GLOBAL%$index$ = %i(0,00000000)
+				:i while
+					
+					:i %GLOBAL%$curr_level_qb$ =  (%GLOBAL%$more_level_qbs$:a{%GLOBAL%$index$:a}) 
+					:i $UnloadQB$%GLOBAL%$curr_level_qb$
+					:i $LoadQB$%GLOBAL%$curr_level_qb$$LevelSpecific$
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i endif
+			:i $LoadTerrain$
+			:i if $GotParam$$temp_script$
+				:i %GLOBAL%$temp_script$
+			:i endif
+			:i if NOT $inNetGame$
+				:i $PushMemProfile$%s(20,"Level Specific Anims")
+				:i $load_level_anims$
+				:i $PopMemProfile$
+			:i endif
+			:i $PushMemProfile$%s(13,"Level Cameras")
+			:i $LoadCameras$
+			:i $PopMemProfile$
+			:i if $ScriptExists$$LoadObjectAnims$
+				:i $PushMemProfile$%s(12,"Object Anims")
+				:i $LoadObjectAnims$
+				:i $PopMemProfile$
+			:i endif
+			:i if $ScriptExists$$LoadAllParticleTextures$
+				:i $LoadAllParticleTextures$
+			:i endif
+			:i if $GotParam$$startup_script$
+				:i %GLOBAL%$startup_script$
+			:i endif
+			:i $GoalManager_GetLevelPrefix$
+			:i $FormatText$$ChecksumName$ = $loading_sounds_script$%s(16,"%i_LoadingSounds")$i$ = %GLOBAL%$level_prefix$
+			:i if $ScriptExists$%GLOBAL%$loading_sounds_script$
+				:i %GLOBAL%$loading_sounds_script$
+			:i endif
+			:i $LoadCollision$ isNull 
+			:i $ParseNodeArray$
+			:i if $GotParam$$setup_script$
+				:i %GLOBAL%$setup_script$
+			:i endif
+			:i $TODManager_GetCurrentTODParams$
+			:i $TODManager_SetTODInstant$ (%GLOBAL%$tod_params$->$current_state_name$) 
+			:i $refresh_poly_count$
+			:i if  ($SHOWPOLYS_ONQUICKVIEW$) 
+				:i if  ($poly_count_on$ = %i(0,00000000)) 
+					:i $show_poly_count$
+				:i endif
+			:i endif
+		:i else 
+			:i $autolaunch$$level$ = %GLOBAL%$scene$
+		:i endif
+	:i else 
+		:i $script_assert$%s(42,"No scene param specified for autolaunching")
+	:i endif
+	:i $Skater$.$SkipToCustomRestart$
+	:i if $IsTrue$$TimeOfDayDebug$
+		:i $set_all_light_values$$level_only$
+	:i endif
+:i endfunction
+:i function $AddToScene$
+	:i if $GotParam$$add$
+	:i else 
+		:i $add$%s(6,"update")
+	:i endif
+	:i if $GotParam$$scene$
+		:i $AddScene$$scene$ = %GLOBAL%$scene$$add$ = %GLOBAL%$add$
+		:i $AddCollision$$scene$ = %GLOBAL%$scene$$add$ = %GLOBAL%$add$
+	:i else 
+		:i $script_assert$%s(42,"No scene param specified for autolaunching")
+	:i endif
+:i endfunction
+:i $CANCEL_GROUND$ = %i(1,00000001)
+:i $CANCEL_AIR$ = %i(2,00000002)
+:i $CANCEL_RAIL$ = %i(4,00000004)
+:i $CANCEL_WALL$ = %i(8,00000008)
+:i $CANCEL_LIP$ = %i(16,00000010)
+:i $CANCEL_WALLPLANT$ = %i(32,00000020)
+:i $CANCEL_MANUAL$ = %i(64,00000040)
+:i $CANCEL_HANG$ = %i(128,00000080)
+:i $CANCEL_LADDER$ = %i(256,00000100)
+:i $PURE_GROUND$ = %i(510,000001fe)
+:i $PURE_AIR$ = %i(509,000001fd)
+:i $PURE_RAIL$ = %i(507,000001fb)
+:i $PURE_WALL$ = %i(503,000001f7)
+:i $PURE_LIP$ = %i(495,000001ef)
+:i $PURE_WALLPLANT$ = %i(479,000001df)
+:i $PURE_MANUAL$ = %i(447,000001bf)
+:i $PURE_HANG$ = %i(383,0000017f)
+:i $PURE_LADDER$ = %i(255,000000ff)
+:i $REQUIRE_GROUND$ = %i(65536,00010000)
+:i $REQUIRE_AIR$ = %i(131072,00020000)
+:i $REQUIRE_RAIL$ = %i(262144,00040000)
+:i $REQUIRE_WALL$ = %i(524288,00080000)
+:i $REQUIRE_LIP$ = %i(1048576,00100000)
+:i $REQUIRE_WALLPLANT$ = %i(2097152,00200000)
+:i $REQUIRE_MANUAL$ = %i(4194304,00400000)
+:i $REQUIRE_HANG$ = %i(8388608,00800000)
+:i $REQUIRE_LADDER$ = %i(16777216,01000000)
+:i $CANCEL_SKATE$ = %i(512,00000200)
+:i $CANCEL_WALK$ = %i(1024,00000400)
+:i $CANCEL_DRIVE$ = %i(2048,00000800)
+:i $REQUIRE_SKATE$ = %i(33554432,02000000)
+:i $REQUIRE_WALK$ = %i(67108864,04000000)
+:i $REQUIRE_DRIVE$ = %i(134217728,08000000)
+:i $mFD_SKATABLE$ = %i(1,00000001)
+:i $mFD_NOT_SKATABLE$ = %i(2,00000002)
+:i $mFD_WALL_RIDABLE$ = %i(4,00000004)
+:i $mFD_VERT$ = %i(8,00000008)
+:i $mFD_NON_COLLIDABLE$ = %i(16,00000010)
+:i $mFD_LIGHT_MODULATION_ONLY$ = %i(32,00000020)
+:i $mFD_TRIGGER$ = %i(64,00000040)
+:i $mFD_CAMERA_NON_COLLIDABLE$ = %i(128,00000080)
+:i $mFD_NO_SKATER_SHADOW$ = %i(256,00000100)
+:i $mFD_SKATER_SHADOW$ = %i(512,00000200)
+:i $mFD_NO_SKATER_SHADOW_WALL$ = %i(1024,00000400)
+:i $mFD_UNDER_OK$ = %i(2048,00000800)
+:i $mFD_INVISIBLE$ = %i(4096,00001000)
+:i $mFD_NOT_TAGGABLE$ = %i(8192,00002000)
+:i function $show_all$
+	:i $DebugRenderIgnore$
+:i endfunction
+:i function $show_vert$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_VERT$
+:i endfunction
+:i function $show_wallride$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_WALL_RIDABLE$
+:i endfunction
+:i function $show_wall_ridable$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_WALL_RIDABLE$
+:i endfunction
+:i function $show_trigger$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_TRIGGER$
+:i endfunction
+:i function $show_invisible$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_INVISIBLE$
+:i endfunction
+:i function $show_triggers$
+	:i $show_trigger$
+:i endfunction
+:i function $show_CAMERA$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_NON_CAMERA_COLLIDABLE$
+:i endfunction
+:i function $show_CAMERA_COLLIDE$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_CAMERA_NON_COLLIDABLE$
+:i endfunction
+:i function $show_skatable$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_SKATABLE$
+:i endfunction
+:i function $show_not_skatable$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_NOT_SKATABLE$
+:i endfunction
+:i function $show_no_skater_shadow$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_NO_SKATER_SHADOW$
+:i endfunction
+:i function $show_skater_shadow$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_SKATER_SHADOW$
+:i endfunction
+:i function $show_no_skater_shadow_wall$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_NO_SKATER_SHADOW_WALL$
+:i endfunction
+:i function $show_non_collidable$
+	:i $DebugRenderIgnore$$ignore_0$ = $mFD_NON_COLLIDABLE$
+:i endfunction
+:i function $show_collidable$
+	:i $DebugRenderIgnore$$ignore_1$ = $mFD_NON_COLLIDABLE$
+:i endfunction
+:i function $JumpSkaterToNode$
+	:i $MakeSkaterGoto$$JumpToNode$$Params$ = :s{$NodeName$ = %GLOBAL%$NodeName$ isNull :s}
+:i endfunction
+:i function $JumpToNode$
+	:i if $NodeExists$%GLOBAL%$NodeName$
+		:i $StopBalanceTrick$
+		:i $SetSpeed$%i(0,00000000)
+		:i if $GotParam$$MoveUpABit$
+			:i $Move$$y$ = %i(10,0000000a)
+		:i endif
+		:i $Obj_MoveToNode$$name$ = %GLOBAL%$NodeName$$Orient$$NoReset$
+		:i $Goto$$GroundGone$
+	:i endif
+:i endfunction
+:i function $ScreenElementSystemCleanup$
+	:i $printf$%s(47,"************ CLEANING UP SYSTEM ***************")
+	:i if $ObjectExists$$id$ = $root_window$
+		:i $DestroyScreenElement$$id$ = $root_window$
+		:i $ScreenElementSystemInit$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_start$$handle_start_pressed$:s}
+				:i :a}
+			:i $replace_handlers$
+			:i $tags$ = :s{$menu_state$ = $Off$:s}
+		:i :s}
+		:i $FireEvent$$type$ = $focus$$target$ = $root_window$
+		:i if NOT $GotParam$$no_panel_stuff$
+			:i $create_panel_stuff$
+		:i endif
+	:i endif
+	:i if $IsXbox$
+		:i $SetButtonEventMappings$$unblock_menu_input$
+	:i endif
+:i endfunction
+:i function $KillElement3d$
+	:i $Wait$%i(1,00000001)$GameFrame$
+	:i $Die$
+:i endfunction
+:i function $setup_ped_speech$:s{
+		:i $inner_radius$ = %i(12,0000000c)
+		:i $speed$ = %i(20,00000014)
+		:i $pad_choose_script$ = $ped_speech_exit$
+	:i :s}
+	:i %GLOBAL%$ped_id$.$Obj_SetInnerRadius$%GLOBAL%$inner_radius$
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofRadius$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+:i endfunction
+:i function $ped_speech_got_trigger$
+	:i if NOT %GLOBAL%$colObjId$.$IsLocalSkater$
+		:i return
+		
+	:i endif
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i %GLOBAL%$should_destroy$ = %i(0,00000000)
+		:i if $Skater$.$IsInBail$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if %GLOBAL%$colObjId$.$DoingTrick$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if NOT $GoalManager_CanStartGoal$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if $GoalManager_IsInCompetition$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$should_destroy$ = %i(1,00000001)) 
+			:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+		:i endif
+		:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+	:i else 
+		:i if $ObjectExists$$id$ = $root_window$
+			:i $root_window$.$GetTags$
+			:i if $GotParam$$menu_state$
+				:i if  (%GLOBAL%$menu_state$ = $on$) 
+					:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT $GoalManager_CanStartGoal$
+			:i if NOT $inNetGame$
+				:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+				:i return
+				
+			:i endif
+		:i endif
+		:i if $GoalManager_IsInCompetition$
+			:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+			:i return
+			
+		:i endif
+		:i if %GLOBAL%$colObjId$.$OnGround$
+			:i if NOT %GLOBAL%$colObjId$.$IsInBail$
+				:i if NOT %GLOBAL%$colObjId$.$DoingTrick$
+					:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+						:i $Obj_SetOuterRadius$%GLOBAL%$inner_radius$
+						:i $SetEventHandler$$ex$ = $ObjectOutofRadius$$scr$ = $ped_speech_refuse$$Params$ =  isNull 
+						:i if NOT $GotParam$$accept_text$
+							:i if NOT $GotParam$$display_name$
+								:i %GLOBAL%$display_name$ = %s(3,"Ped")
+							:i endif
+							:i $FormatText$$TextName$ = $accept_text$%s(16,"%s: \m5 to talk.")$s$ = %GLOBAL%$display_name$
+						:i endif
+						:i if $ObjectExists$$id$ = $ped_speech_dialog$
+							:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+						:i endif
+						:i $create_speech_box$:s{
+							:i $anchor_id$ = $ped_speech_dialog$
+							:i $text$ = %GLOBAL%$accept_text$
+							:i $no_pad_choose$
+							:i $no_pad_start$
+							:i $pad_circle_script$ = $ped_speech_accept$
+							:i $pad_circle_params$ =  isNull 
+							:i $bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+							:i $text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+							:i $pos$ = %vec2(320.000000,400.000000)
+							:i $z_priority$ = %i(5,00000005)
+						:i :s}
+						:i $ped_speech_dialog$.$Obj_SpawnScript$$ped_speech_die_with_trigger$$Params$ = :s{$ped_id$ = %GLOBAL%$ped_id$:s}
+					:i else 
+						:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+						:i return
+						
+					:i endif
+				:i else 
+					:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+					:i return
+					
+				:i endif
+			:i else 
+				:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+				:i return
+				
+			:i endif
+		:i else 
+			:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$Params$ =  isNull 
+			:i return
+			
+		:i endif
+	:i endif
+:i endfunction
+:i function $ped_speech_accept$
+	:i if %GLOBAL%$colObjId$.$IsInBail$
+		:i return
+		
+	:i endif
+	:i if %GLOBAL%$colObjId$.$DoingTrick$
+		:i return
+		
+	:i endif
+	:i $speech_box_exit$
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$ped_id$
+		:i return
+		
+	:i endif
+	:i $DeBounce$$X$$time$ = %f(0.500000)
+	:i if %GLOBAL%$colObjId$.$OnGround$
+		:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i $Wait$%i(5,00000005)$frame$
+			:i if %GLOBAL%$colObjId$.$OnGround$
+				:i $ped_speech_accept2$ isNull 
+			:i else 
+				:i if NOT %GLOBAL%$colObjId$.$RightPressed$
+					:i if NOT %GLOBAL%$colObjId$.$LeftPressed$
+						:i if NOT %GLOBAL%$colObjId$.$UpPressed$
+							:i if NOT %GLOBAL%$colObjId$.$DownPressed$
+								:i $ped_speech_accept2$ isNull 
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i if NOT %GLOBAL%$colObjId$.$RightPressed$
+			:i if NOT %GLOBAL%$colObjId$.$LeftPressed$
+				:i if NOT %GLOBAL%$colObjId$.$UpPressed$
+					:i if NOT %GLOBAL%$colObjId$.$DownPressed$
+						:i $ped_speech_accept2$ isNull 
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $ped_speech_accept2$
+	:i if NOT $GotParam$$dont_deactivate_goals$
+		:i if NOT $GameModeEquals$$is_singlesession$
+			:i if NOT $GameModeEquals$$is_classic$
+				:i $GoalManager_DeactivateAllGoals$
+			:i endif
+		:i endif
+	:i endif
+	:i $PauseSkaters$
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i if $GotParam$$swap_skaters$
+		:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+		:i $kill_start_key_binding$
+		:i $SpawnScript$$TemporarilyDisableInput$$Params$ = :s{$time$ = %i(250,000000fa):s}
+		:i $Skater$.$Obj_SpawnScript$$swap_skaters$$Params$ = %GLOBAL%$swap_skaters_params$
+	:i endif
+	:i if $GotParam$$activation_script$
+		:i %GLOBAL%$colObjId$.$Obj_SpawnScript$%GLOBAL%$activation_script$$Params$ = :s{$ped_id$ = %GLOBAL%$ped_id$%GLOBAL%$activation_script_params$:s}
+	:i endif
+	:i if $GotParam$$cam_anim$
+		:i $PlaySkaterCamAnim$$name$ = %GLOBAL%$cam_anim$
+	:i endif
+	:i if $GotParam$$text$
+		:i $create_speech_box$ isNull $no_pad_start$
+	:i endif
+:i endfunction
+:i function $ped_speech_refuse$
+	:i if $GotParam$$intId$
+		:i if $GotParam$$outIntId$
+			:i if NOT  (%GLOBAL%$outIntId$ = %GLOBAL%$intId$) 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$hint_text$
+		:i $ped_utils_hint_dialog_refuse$ isNull 
+	:i endif
+	:i $ClearEventHandler$$ObjectOutofRadius$
+	:i $speech_box_exit$$anchor_id$ = $ped_speech_dialog$
+	:i $ped_speech_reset$ isNull 
+:i endfunction
+:i function $ped_speech_reset$
+	:i if $GotParam$$outer_radius_script$
+		:i %GLOBAL%$outer_radius_script$%GLOBAL%$outer_radius_params$
+	:i endif
+	:i if NOT $GotParam$$no_repeat$
+		:i $setup_ped_speech$ isNull 
+	:i endif
+:i endfunction
+:i function $ped_speech_exit$
+	:i $UnPauseSkaters$
+	:i $speech_box_exit$
+:i endfunction
+:i function $ped_speech_die_with_trigger$
+	:i if NOT $GotParam$$ped_id$
+		:i return
+		
+	:i endif
+	:i $alive$ = %i(1,00000001)
+	:i while
+		
+		:i if NOT $NodeExists$%GLOBAL%$ped_id$
+			:i $alive$ = %i(0,00000000)
+		:i endif
+		:i if NOT $IsAlive$$name$ = %GLOBAL%$ped_id$
+			:i $alive$ = %i(0,00000000)
+		:i endif
+		:i if  (%GLOBAL%$alive$ = %i(0,00000000)) 
+			:i $FireEvent$$type$ = $speech_box_destroyed$
+			:i $Die$
+			:i return
+			
+		:i endif
+		:i $Wait$%i(1,00000001)$gameframes$
+	:i loop_to 
+:i endfunction
+:i function $script_assert$ isNull 
+	:i $printf$%s(15,"ASSERT MESSAGE:")
+	:i $ScriptAssert$ isNull 
+:i endfunction
+:i function $GetStackedScreenElementPos$
+	:i if $GotParam$$XY$
+		:i $GetStackedScreenElementPosOnXY$ isNull 
+	:i else 
+		:i if $GotParam$$X$
+			:i if $GotParam$$y$
+				:i $GetStackedScreenElementPosOnXY$ isNull 
+			:i else 
+				:i $GetStackedScreenElementPosOnX$ isNull 
+			:i endif
+		:i else 
+			:i if $GotParam$$y$
+				:i $GetStackedScreenElementPosOnY$ isNull 
+			:i else 
+				:i $script_assert$%s(49,"GetStackedScreenElementPos called without an axis")
+			:i endif
+		:i endif
+	:i endif
+	:i return
+	$pos$ = %GLOBAL%$pos$
+:i endfunction
+:i function $GetStackedScreenElementPosOnX$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i %GLOBAL%$unit_pair$ = %vec2(1.000000,0.000000)
+	:i if $GotParam$$negative$
+		:i %GLOBAL%$unit_pair$ = %vec2(-1.000000,0.000000)
+	:i endif
+	:i if $GotParam$$offset$
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$unit_pair$ * %GLOBAL%$width$ + %GLOBAL%$offset$) ) 
+	:i else 
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$unit_pair$ * %GLOBAL%$width$) ) 
+	:i endif
+:i endfunction
+:i function $GetStackedScreenElementPosOnY$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i %GLOBAL%$unit_pair$ = %vec2(0.000000,1.000000)
+	:i if $GotParam$$negative$
+		:i %GLOBAL%$unit_pair$ = %vec2(0.000000,-1.000000)
+	:i endif
+	:i if $GotParam$$offset$
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$unit_pair$ * %GLOBAL%$height$ + %GLOBAL%$offset$) ) 
+	:i else 
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$unit_pair$ * %GLOBAL%$height$) ) 
+	:i endif
+:i endfunction
+:i function $GetStackedScreenElementPosOnXY$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i %GLOBAL%$x_unit_pair$ = %vec2(1.000000,0.000000)
+	:i %GLOBAL%$y_unit_pair$ = %vec2(0.000000,1.000000)
+	:i if $GotParam$$negative$
+		:i %GLOBAL%$x_unit_pair$ = %vec2(-1.000000,0.000000)
+		:i %GLOBAL%$y_unit_pair$ = %vec2(0.000000,-1.000000)
+	:i endif
+	:i if $GotParam$$offset$
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$y_unit_pair$ * %GLOBAL%$height$ + %GLOBAL%$x_unit_pair$ * %GLOBAL%$width$ + %GLOBAL%$offset$) ) 
+	:i else 
+		:i return
+		$pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%GLOBAL%$y_unit_pair$ * %GLOBAL%$height$ + %GLOBAL%$x_unit_pair$ * %GLOBAL%$width$) ) 
+	:i endif
+:i endfunction
+:i function $kill_blur$
+	:i if NOT $InSplitScreenGame$
+		:i $KillSpawnedScript$$name$ = $pulse_blur_script_down$
+		:i $KillSpawnedScript$$name$ = $pulse_blur_script_up$
+		:i $SetScreenBlur$%GLOBAL%$start$
+	:i endif
+:i endfunction
+:i function $pulse_blur$$start$ = %i(200,000000c8)$end$ = %i(0,00000000)$speed$ = %i(4,00000004)
+	:i $KillSpawnedScript$$name$ = $pulse_blur_script_down$
+	:i $KillSpawnedScript$$name$ = $pulse_blur_script_up$
+	:i if  (%GLOBAL%$start$ > %GLOBAL%$end$) 
+		:i $SpawnScript$$pulse_blur_script_down$$Params$ =  isNull 
+	:i else 
+		:i $SpawnScript$$pulse_blur_script_up$$Params$ =  isNull 
+	:i endif
+:i endfunction
+:i function $pulse_blur_script_down$
+	:i if $GotParam$$force_pulse$
+		:i while
+			
+			:i if  (%GLOBAL%$start$ < %GLOBAL%$end$) 
+				:i $SetScreenBlur$%GLOBAL%$end$
+				:i continue
+				
+			:i endif
+			:i $SetScreenBlur$%GLOBAL%$start$
+			:i %GLOBAL%$start$ =  (%GLOBAL%$start$ - %GLOBAL%$speed$) 
+			:i $Wait$%i(1,00000001)$GameFrame$
+		:i loop_to 
+		:i return
+		
+	:i endif
+	:i if NOT $InSplitScreenGame$
+		:i while
+			
+			:i if  (%GLOBAL%$start$ < %GLOBAL%$end$) 
+				:i $SetScreenBlur$%GLOBAL%$end$
+				:i continue
+				
+			:i endif
+			:i $SetScreenBlur$%GLOBAL%$start$
+			:i %GLOBAL%$start$ =  (%GLOBAL%$start$ - %GLOBAL%$speed$) 
+			:i $Wait$%i(1,00000001)$GameFrame$
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $pulse_blur_script_up$
+	:i if $GotParam$$force_pulse$
+		:i while
+			
+			:i if  (%GLOBAL%$start$ > %GLOBAL%$end$) 
+				:i $SetScreenBlur$%GLOBAL%$end$
+				:i continue
+				
+			:i endif
+			:i $SetScreenBlur$%GLOBAL%$start$
+			:i %GLOBAL%$start$ =  (%GLOBAL%$start$ + %GLOBAL%$speed$) 
+			:i $Wait$%i(1,00000001)$GameFrame$
+		:i loop_to 
+		:i return
+		
+	:i endif
+	:i if NOT $InSplitScreenGame$
+		:i while
+			
+			:i if  (%GLOBAL%$start$ > %GLOBAL%$end$) 
+				:i $SetScreenBlur$%GLOBAL%$end$
+				:i continue
+				
+			:i endif
+			:i $SetScreenBlur$%GLOBAL%$start$
+			:i %GLOBAL%$start$ =  (%GLOBAL%$start$ + %GLOBAL%$speed$) 
+			:i $Wait$%i(1,00000001)$GameFrame$
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $NullScript$
+:i endfunction
+:i function $mark_first_input_received$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterId$
+	:i if $GotParam$$device_num$
+		:i %GLOBAL%$controller_index$ = %GLOBAL%$device_num$
+	:i else 
+		:i %GLOBAL%$controller_index$ = %GLOBAL%$controller$
+	:i endif
+	:i $BindControllerToSkater$$skater_heap_index$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$controller_index$
+	:i $SpawnScript$$mark_first_input_received_spawned$$Params$ =  isNull 
+	:i $FirstInputReceived$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $mark_first_input_received_spawned$
+	:i $BindFrontEndToController$$front_end_pad$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$controller_index$
+:i endfunction
+:i function $lighting$$target$ = %i(8421504,00808080)$percent$ = %i(0,00000000)
+	:i if $GotParam$$lights$
+		:i if $GotParam$$id$
+			:i $FakeLights$$percent$ = %GLOBAL%$lights$$id$ = %GLOBAL%$id$$prefix$ = %GLOBAL%$prefix$
+		:i else 
+			:i if $GotParam$$prefix$
+				:i $FakeLights$$percent$ = %GLOBAL%$lights$$prefix$ = %GLOBAL%$prefix$
+			:i else 
+				:i $FakeLights$$percent$ = %GLOBAL%$lights$$prefix$ = $TRG_LevelLight$
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$color$
+		:i if NOT $GotParam$$sky$
+			:i %GLOBAL%$sky$ = %GLOBAL%$color$
+		:i endif
+		:i $SetSceneColor$$color$ = %GLOBAL%$color$$sky$ = %GLOBAL%$sky$$lightgroup$ = %GLOBAL%$lightgroup$
+	:i endif
+:i endfunction
+:i function $DumpMetrics$
+	:i $GetMetrics$
+	:i $printf$
+	:i $printf$%s(25,"Dumping Metrics Structure")
+	:i $PrintStruct$ isNull 
+:i endfunction
+:i $dummy_metrics_struct$ = :s{
+	:i $mainscene$ = %i(0,00000000)
+	:i $skyscene$ = %i(0,00000000)
+	:i $metrics$ = %i(0,00000000)
+	:i $Sectors$ = %i(0,00000000)
+	:i $ColSectors$ = %i(0,00000000)
+	:i $Verts$ = %i(0,00000000)
+	:i $BasePolys$ = %i(0,00000000)
+	:i $TextureMemory$ = %i(0,00000000)
+:i :s}
+:i $test_letter_a$ = :s{
+	:i $model$ = %s(39,"gameobjects\skate\letter_a\letter_a.mdl")
+:i :s}
+:i $proximobj_composite_structure$ = :a{
+	:i :s{$component$ = $sound$:s}
+	:i :s{$component$ = $stream$:s}
+	:i :a}
+:i $gameobj_composite_structure$ = :a{
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $objectproximity$:s}
+	:i :s{$component$ = $sound$:s}
+	:i :a}
+:i function $bouncyobj_add_components$
+	:i $CreateComponentFromStructure$$component$ = $suspend$ isNull 
+	:i $CreateComponentFromStructure$$component$ = $rigidbody$ isNull 
+	:i if $GotParam$$FireSkaterProximityEvents$
+		:i $CreateComponentFromStructure$$component$ = $objectproximity$
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i $CreateComponentFromStructure$$component$ = $sound$ isNull 
+	:i if $GotParam$$UseLockObjComponent$
+		:i $CreateComponentFromStructure$$component$ = $lockobj$
+	:i endif
+:i endfunction
+:i $particle_composite_structure$ = :a{
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $particle$:s}
+	:i :a}
+:i $moving_particle_composite_structure$ = :a{
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $particle$:s}
+	:i :a}
+:i $skatercam_composite_structure$ = :a{
+	:i :s{$component$ = $cameralookaround$:s}
+	:i :s{$component$ = $skatercamera$:s}
+	:i :s{$component$ = $walkcamera$:s}
+	:i :s{$component$ = $camera$:s}
+	:i :s{$component$ = $input$:s}
+	:i :a}
+:i $viewercam_composite_structure$ = :a{
+	:i :s{$component$ = $camera$:s}
+	:i :a}
+:i $parkedcam_composite_structure$ = :a{
+	:i :s{$component$ = $camera$:s}
+	:i :a}
+:i $menucam_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $camera$:s}
+	:i :a}
+:i $explosion_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $particle$:s}
+	:i :a}
+:i $fireball_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $velocity$:s}
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $collideanddie$:s}
+	:i :s{$component$ = $particle$:s}
+	:i :a}
+:i function $Restore_skater_camera$
+	:i if NOT  ($view_mode$ = %i(0,00000000)) 
+		:i $SetActiveCamera$$id$ = $viewer_cam$
+		:i return
+		
+	:i endif
+	:i if $IsObserving$
+		:i $SetActiveCamera$$id$ = $SkaterCam0$
+	:i else 
+		:i if NOT $LocalSkaterExists$
+			:i $SetActiveCamera$$id$ = $SkaterCam0$
+		:i else 
+			:i if NOT $Skater$.$Driving$
+				:i $SetActiveCamera$$id$ = $SkaterCam0$
+			:i else 
+				:i $SetActiveCamera$$id$ = $PlayerVehicleCamera$
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $LevelIs$$load_cas$
+			:i if NOT $IsObserving$
+				:i if $LocalSkaterExists$
+					:i $Skater$.$Obj_EnableScaling$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $disable_skater_scaling$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $LevelIs$$load_cas$
+			:i if NOT $IsObserving$
+				:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_KID$
+					:i $Skater$.$Obj_DisableScaling$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_menu_camera$
+	:i if NOT $ObjectExists$$id$ = $menu_cam$
+		:i $MemPushContext$$FrontEndHeap$
+		:i $printf$%s(33,"Creating camera on front end heap")
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $menucam_composite_structure$
+			:i $Params$ = :s{$name$ = $menu_cam$:s}
+		:i :s}
+		:i $MemPopContext$
+	:i endif
+:i endfunction
+:i function $GetSkaterCam$
+	:i $camera_object$ = $SkaterCam0$
+	:i if $InSplitScreenGame$
+		:i if $IsObjectScript$
+			:i $Obj_GetId$
+			:i if NOT $ChecksumEquals$$a$ = %GLOBAL%$ObjId$$b$ = %i(0,00000000)
+				:i $camera_object$ = $skatercam1$
+			:i endif
+		:i endif
+	:i endif
+	:i return
+	$skatercam$ = %GLOBAL%$camera_object$
+:i endfunction
+:i function $SetSkaterCamOverride$
+	:i $GetSkaterCam$
+	:i %GLOBAL%$skatercam$.$SC_SetSkaterCamOverride$ isNull 
+:i endfunction
+:i function $ClearSkaterCamOverride$
+	:i $GetSkaterCam$
+	:i %GLOBAL%$skatercam$.$SC_ClearSkaterCamOverride$ isNull 
+:i endfunction
+:i function $ShakeCamera$
+	:i $GetSkaterCam$
+	:i %GLOBAL%$skatercam$.$SC_ShakeCamera$ isNull 
+:i endfunction
+:i function $empty_script$
+:i endfunction
+:i function $HideSkaterAndMiscSkaterEffects$
+	:i $KillAllTextureSplats$
+	:i $Skater$.$SparksOff$
+	:i $Skater$.$SwitchOnBoard$
+	:i $Skater$.$RemoveSkaterFromWorld$
+:i endfunction
+:i function $ResetLookAround$
+	:i $printf$%s(45,"ResetLookAround is not currently working.....")
+:i endfunction
+:i function $toggle_framerate$
+	:i switch $lock_framerate$
+		:i case %i(0,00000000)
+			:i $change$$lock_framerate$ = %i(2,00000002)
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$lock_framerate$ = %i(2,00000002)
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$lock_framerate$ = %i(1,00000001)
+			:i end_switch
+	
+:i endfunction
+:i function $CalcPosRelative$$ob$ = $Skater$$dx$ = %i(0,00000000)$dy$ = %i(0,00000000)$dz$ = %i(0,00000000)
+	:i %GLOBAL%$ob$.$Obj_GetPosition$
+	:i %GLOBAL%$ob$.$Obj_GetOrientation$
+	:i $unit_z$ =  (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$X$ + %vec3(0.000000,1.000000,0.000000) * %GLOBAL%$y$ + %vec3(0.000000,0.000000,1.000000) * %GLOBAL%$z$) 
+	:i $unit_x$ =  (%vec3(0.000000,1.000000,0.000000) * %GLOBAL%$unit_z$) 
+	:i $unit_y$ =  (%GLOBAL%$unit_z$ * %GLOBAL%$unit_x$) 
+	:i $pos$ =  (%GLOBAL%$pos$ + %GLOBAL%$dx$ * %GLOBAL%$unit_x$ + %GLOBAL%$dy$ * %GLOBAL%$unit_y$ + %GLOBAL%$dz$ * %GLOBAL%$unit_z$) 
+	:i return
+	$X$ =  (%GLOBAL%$pos$->%vec3(1.000000,0.000000,0.000000)) $y$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) $z$ =  (%GLOBAL%$pos$->%vec3(0.000000,0.000000,1.000000)) $pos$ = %GLOBAL%$pos$
+:i endfunction
+:i function $Forced_Create$
+	:i if $GotParam$$prefix$
+		:i $kill$$prefix$ = %GLOBAL%$prefix$
+		:i $create$$prefix$ = %GLOBAL%$prefix$
+	:i else 
+		:i if $GotParam$$name$
+			:i if $NodeExists$%GLOBAL%$name$
+				:i $kill$$name$ = %GLOBAL%$name$
+				:i $create$$name$ = %GLOBAL%$name$
+			:i else 
+				:i $printf$%s(36,"### Forced_Create: %n does not exist")$n$ = %GLOBAL%$name$
+			:i endif
+		:i else 
+			:i $printf$%s(49,"### Forced_Create: Must specifiy a name or prefix")
+		:i endif
+	:i endif
+:i endfunction
+:i $skater_special_index$ = %i(0,00000000)
+:i $have_loaded_permanent$ = %i(0,00000000)
+:i $have_loaded_unloadable$ = %i(0,00000000)
+:i $have_loaded_net$ = %i(0,00000000)
+:i function $do_load_permanent$
+	:i if  ($have_loaded_permanent$) 
+	:i else 
+		:i if $IsNGC$
+			:i $LoadPreFile$%s(9,"anims.pre")
+			:i $PushMemProfile$%s(15,"Permanent Anims")
+			:i $MemPushContext$$TopDownHeap$
+			:i $load_permanent_anims$
+			:i $MemPopContext$
+			:i $PopMemProfile$
+			:i $UnloadPreFile$%s(9,"anims.pre")
+		:i else 
+			:i $do_unload_unloadable$
+			:i $PushMemProfile$%s(15,"Permanent Anims")
+			:i $MemPushContext$$TopDownHeap$
+			:i $SetDefaultPermanent$%i(1,00000001)
+			:i $PushMemProfile$%s(25,"Permanent Anim Pipped PRE")
+			:i $LoadPipPre$%s(9,"anims.pre")
+			:i $PopMemProfile$
+			:i $load_permanent_anims$$use_pip$
+			:i $SetDefaultPermanent$%i(0,00000000)
+			:i $MemPopContext$
+			:i $PopMemProfile$
+		:i endif
+		:i $change$$have_loaded_permanent$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $do_unload_permanent$
+	:i if NOT $IsNGC$
+		:i if  ($have_loaded_permanent$) 
+			:i $load_permanent_anims$$LoadFunction$ = $UnloadAnim$
+			:i $printf$%s(42," ------------------ UnloadPipPre anims.pre")
+			:i if NOT $UnloadPipPre$%s(9,"anims.pre")
+				:i $script_assert$%s(23,"couldn't unload pip pre")
+			:i endif
+			:i $change$$have_loaded_permanent$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $do_load_unloadable$$load_peds$ = %i(1,00000001)
+	:i $printf$%s(47,"**************************** do_load_unloadable")
+	:i if $inNetGame$
+		:i $load_peds$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$load_peds$ = %i(1,00000001)) 
+		:i if  ($have_loaded_unloadable$) 
+		:i else 
+			:i if  ($have_loaded_net$) 
+				:i $do_unload_unloadable$
+			:i endif
+			:i $do_load_permanent$
+			:i if $IsNGC$
+				:i $LoadPreFile$%s(19,"unloadableanims.pre")
+				:i $PushMemProfile$%s(16,"Unloadable Anims")
+				:i $MemPushContext$$TopDownHeap$
+				:i $load_unloadable_anims$
+				:i $MemPopContext$
+				:i $PopMemProfile$
+				:i $UnloadPreFile$%s(19,"unloadableanims.pre")
+			:i else 
+				:i $PushMemProfile$%s(16,"Unloadable Anims")
+				:i $MemPushContext$$TopDownHeap$
+				:i $PushMemProfile$%s(27,"Unloadable Anims Pipped PRE")
+				:i $LoadPipPre$%s(19,"unloadableanims.pre")
+				:i $PopMemProfile$
+				:i $SetDefaultPermanent$%i(1,00000001)
+				:i $load_unloadable_anims$$use_pip$
+				:i $SetDefaultPermanent$%i(0,00000000)
+				:i $MemPopContext$
+				:i $PopMemProfile$
+			:i endif
+			:i $change$$have_loaded_unloadable$ = %i(1,00000001)
+		:i endif
+	:i else 
+		:i if NOT $IsNGC$
+			:i if  ($have_loaded_net$) 
+			:i else 
+				:i if  ($have_loaded_unloadable$) 
+					:i $do_unload_unloadable$
+				:i endif
+				:i $do_unload_permanent$
+				:i $PushMemProfile$%s(9,"Net Anims")
+				:i $MemPushContext$$TopDownHeap$
+				:i $LoadPipPre$%s(12,"Netanims.pre")
+				:i $SetDefaultPermanent$%i(1,00000001)
+				:i $load_net_anims$$use_pip$
+				:i $SetDefaultPermanent$%i(0,00000000)
+				:i $MemPopContext$
+				:i $PopMemProfile$
+				:i $change$$have_loaded_net$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $do_unload_unloadable$
+	:i if NOT $IsNGC$
+		:i if  ($have_loaded_unloadable$) 
+			:i $load_unloadable_anims$$LoadFunction$ = $UnloadAnim$
+			:i if NOT $UnloadPipPre$%s(19,"unloadableanims.pre")
+			:i endif
+			:i $change$$have_loaded_unloadable$ = %i(0,00000000)
+		:i endif
+		:i if  ($have_loaded_net$) 
+			:i $load_net_anims$$LoadFunction$ = $UnloadAnim$
+			:i if NOT $UnloadPipPre$%s(12,"netanims.pre")
+				:i $script_assert$%s(23,"couldn't unload pip pre")
+			:i endif
+			:i $change$$have_loaded_net$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $what_is_loaded$
+	:i if  ($have_loaded_permanent$) 
+		:i $printf$%s(9,"PERMANENT")
+	:i endif
+	:i if  ($have_loaded_unloadable$) 
+		:i $printf$%s(10,"UNLOADABLE")
+	:i endif
+	:i if  ($have_loaded_net$) 
+		:i $printf$%s(3,"NET")
+	:i endif
+:i endfunction
+:i function $SetObjectColor_CurrentTOD$
+	:i $TODManager_GetCurrentTODParams$
+	:i %GLOBAL%$lev_red$ =  (%GLOBAL%$tod_params$->$lev_red$) 
+	:i %GLOBAL%$lev_green$ =  (%GLOBAL%$tod_params$->$lev_green$) 
+	:i %GLOBAL%$lev_blue$ =  (%GLOBAL%$tod_params$->$lev_blue$) 
+	:i $SetObjectColor$ isNull $color$ =  ($lev_red$ +  ($lev_green$ * %i(256,00000100))  +  ($lev_blue$ * %i(65536,00010000)) ) 
+:i endfunction
+:i function $KillCreateSponsorGeo$
+	:i $GoalManager_GetSponsor$
+	:i if $GotParam$$sponsor_kill_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$sponsor_kill_prefix$
+	:i else 
+		:i $printf$%s(74," >>>>>>>> WARNING: NO GEO PREFIX SENT TO KillCreateSponsorGeo >>>>>>>>>>> ")
+		:i return
+		
+	:i endif
+	:i if $GotParam$$nosponsor_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$nosponsor_prefix$
+	:i endif
+	:i switch %GLOBAL%$sponsor$
+		:i case $sponsor_birdhouse$
+			:i $printf$%s(17,"I'm on Birdhouse!")
+			:i $create$$prefix$ = %GLOBAL%$sponsor_birdhouse_prefix$
+			:i endcase
+		case $sponsor_element$
+			:i $printf$%s(15,"I'm on Element!")
+			:i $create$$prefix$ = %GLOBAL%$sponsor_element_prefix$
+			:i endcase
+		case $sponsor_flip$
+			:i $printf$%s(12,"I'm on Flip!")
+			:i $create$$prefix$ = %GLOBAL%$sponsor_flip_prefix$
+			:i endcase
+		case $sponsor_girl$
+			:i $printf$%s(12,"I'm on Girl!")
+			:i $create$$prefix$ = %GLOBAL%$sponsor_girl_prefix$
+			:i endcase
+		case $sponsor_zero$
+			:i $printf$%s(12,"I'm on Zero!")
+			:i $create$$prefix$ = %GLOBAL%$sponsor_zero_prefix$
+			:i endcase
+		default 
+			:i if $GotParam$$nosponsor_prefix$
+				:i $create$$prefix$ = %GLOBAL%$nosponsor_prefix$
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i function $GetNetworkNumPlayers$
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$num_players$
+	:i switch %GLOBAL%$checksum$
+		:i case $num_2$
+			:i return
+			$num_players$ = %i(2,00000002)
+			:i endcase
+		case $num_3$
+			:i return
+			$num_players$ = %i(3,00000003)
+			:i endcase
+		case $num_4$
+			:i return
+			$num_players$ = %i(4,00000004)
+			:i endcase
+		case $num_5$
+			:i return
+			$num_players$ = %i(5,00000005)
+			:i endcase
+		case $num_6$
+			:i return
+			$num_players$ = %i(6,00000006)
+			:i endcase
+		case $num_7$
+			:i return
+			$num_players$ = %i(7,00000007)
+			:i endcase
+		case $num_8$
+			:i return
+			$num_players$ = %i(8,00000008)
+			:i endcase
+		default 
+			:i return
+			$num_players$ = %i(1,00000001)
+			:i end_switch
+	
+:i endfunction
+:i function $trigger_speed_boost$$multi$ = %f(7.500000)
+	:i $SpawnSound$$SK6_SFX_Roll_Booster_Sound$$Params$ = :s{$DefBoostSound$ = %GLOBAL%$DefBoostSound$$DefSkaterVO$ = %GLOBAL%$DefSkaterVO$:s}
+	:i if $GotParam$$max_speed$
+		:i $GetSpeed$
+		:i if  ( (%GLOBAL%$speed$ * %GLOBAL%$multi$)  > %GLOBAL%$max_speed$) 
+			:i if  (%GLOBAL%$speed$ < %GLOBAL%$max_speed$) 
+				:i %GLOBAL%$new_speed$ = %GLOBAL%$max_speed$
+			:i else 
+				:i return
+				
+			:i endif
+		:i else 
+			:i %GLOBAL%$new_speed$ =  (%GLOBAL%$speed$ * %GLOBAL%$multi$) 
+		:i endif
+		:i $SetSkaterVelocity$%GLOBAL%$new_speed$
+	:i else 
+		:i if $GotParam$$speed$
+			:i $SetSkaterVelocity$%GLOBAL%$speed$
+		:i else 
+			:i $GetSkaterVelocity$
+			:i $SetSkaterVelocity$$vel_x$ =  (%GLOBAL%$vel_x$ * %GLOBAL%$multi$) $vel_y$ =  (%GLOBAL%$vel_y$ * %GLOBAL%$multi$) $vel_z$ =  (%GLOBAL%$vel_z$ * %GLOBAL%$multi$) 
+		:i endif
+	:i endif
+:i endfunction
+:i function $trigger_jump_boost$$multi$ = %f(7.500000)
+	:i $SpawnSound$$SK6_SFX_Jump_Booster_Sound$
+	:i $GetSkaterVelocity$
+	:i if $GotParam$$speed$
+		:i $SetSkaterVelocity$$vel_x$ = %GLOBAL%$vel_x$$vel_y$ = %GLOBAL%$speed$$vel_z$ = %GLOBAL%$vel_z$
+	:i else 
+		:i $SetSkaterVelocity$$vel_x$ = %GLOBAL%$vel_x$$vel_y$ =  (%GLOBAL%$vel_y$ * %GLOBAL%$multi$) $vel_z$ = %GLOBAL%$vel_z$
+	:i endif
+:i endfunction
+:i function $ForceToWalk$
+	:i $printf$%s(11,"ForceToWalk")
+	:i if $IsSkaterOnVehicle$
+		:i return
+		
+	:i endif
+	:i $SetForceWalk$
+	:i $Wait$%i(1,00000001)$GameFrame$
+	:i $TantrumOff$
+	:i if $IsInBail$
+		:i $waitforevent$$type$ = $finished_bailing$
+	:i endif
+	:i if NOT $Walking$
+		:i $MakeSkaterGoto$$Switch_OnGroundAI$$Params$ = :s{$NewScript$ = $Walking_OnGroundAI$:s}
+	:i else 
+		:i $ClearTrickQueues$
+		:i $SetWalkingAirTricks$
+		:i $SetWalkingGroundTricks$
+	:i endif
+	:i $SwitchOnBoard$
+:i endfunction
+:i function $KillForceToWalk$
+	:i $printf$%s(15,"KillForceToWalk")
+	:i if $IsSkaterOnVehicle$
+		:i return
+		
+	:i endif
+	:i $UnSetForceWalk$
+	:i $SwitchOnBoard$
+	:i $ClearTrickQueues$
+	:i $SetWalkingAirTricks$
+	:i $SetWalkingGroundTricks$
+:i endfunction
+:i function $GetTriggerArray$
+	:i if $GotParam$$array$
+		:i $GetTriggerArrays$$array$ = %GLOBAL%$array$
+		:i return
+		$trigger_array$ = %GLOBAL%$trigger_array$
+	:i endif
+	:i $array$ = :a{%i(4294967295,ffffffff);%i(4294967295,ffffffff);%i(4294967295,ffffffff):a}
+	:i $index$ = %i(0,00000000)
+	:i $value1$ = $NULL$
+	:i $value2$ = $NULL$
+	:i $value3$ = $NULL$
+	:i if $GotParam$$walk$
+		:i $value1$ = %i(14,0000000e)
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$skate$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(1,00000001)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(1,00000001)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$jump$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(2,00000002)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(2,00000002)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(2,00000002)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$onto$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(3,00000003)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(3,00000003)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(3,00000003)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i else 
+		:i if $GotParam$$on$
+			:i switch %GLOBAL%$index$
+				:i case %i(0,00000000)
+					:i $value1$ = %i(3,00000003)
+					:i endcase
+				case %i(1,00000001)
+					:i $value2$ = %i(3,00000003)
+					:i endcase
+				case %i(2,00000002)
+					:i $value3$ = %i(3,00000003)
+					:i end_switch
+			
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i if $GotParam$$Off$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(4,00000004)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(4,00000004)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(4,00000004)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$offedge$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(5,00000005)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(5,00000005)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(5,00000005)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$wallplant$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(6,00000006)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(6,00000006)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(6,00000006)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$lip$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(7,00000007)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(7,00000007)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(7,00000007)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$land$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(8,00000008)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(8,00000008)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(8,00000008)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$bonk$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(9,00000009)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(9,00000009)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(9,00000009)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$climb$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(10,0000000a)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(10,0000000a)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(10,0000000a)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i else 
+		:i if $GotParam$$hang$
+			:i switch %GLOBAL%$index$
+				:i case %i(0,00000000)
+					:i $value1$ = %i(10,0000000a)
+					:i endcase
+				case %i(1,00000001)
+					:i $value2$ = %i(10,0000000a)
+					:i endcase
+				case %i(2,00000002)
+					:i $value3$ = %i(10,0000000a)
+					:i end_switch
+			
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i if $GotParam$$graffiti$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(11,0000000b)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(11,0000000b)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(11,0000000b)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$spin$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(12,0000000c)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(12,0000000c)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(12,0000000c)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$grind$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(13,0000000d)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(13,0000000d)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(13,0000000d)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if $GotParam$$projectile$
+		:i switch %GLOBAL%$index$
+			:i case %i(0,00000000)
+				:i $value1$ = %i(14,0000000e)
+				:i endcase
+			case %i(1,00000001)
+				:i $value2$ = %i(14,0000000e)
+				:i endcase
+			case %i(2,00000002)
+				:i $value3$ = %i(14,0000000e)
+				:i end_switch
+		
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if NOT  (%GLOBAL%$value1$ = $NULL$) 
+		:i $SetArrayElement$$ArrayName$ = $array$$index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$value1$
+	:i endif
+	:i if NOT  (%GLOBAL%$value2$ = $NULL$) 
+		:i $SetArrayElement$$ArrayName$ = $array$$index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$value2$
+	:i endif
+	:i if NOT  (%GLOBAL%$value3$ = $NULL$) 
+		:i $SetArrayElement$$ArrayName$ = $array$$index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$value3$
+	:i endif
+	:i return
+	$trigger_array$ = %GLOBAL%$array$
+:i endfunction
+:i function $GetTriggerArrays$
+	:i if NOT $GotParam$$array$
+		:i $printf$%s(19,"Where's your array?")
+	:i endif
+	:i $output_array$ = :a{:a{%i(15,0000000f);%i(4,00000004);%i(3,00000003):a};:a{%i(15,0000000f);%i(4,00000004);%i(3,00000003):a};:a{%i(15,0000000f);%i(4,00000004);%i(3,00000003):a}:a}
+	:i $GetArraySize$%GLOBAL%$array$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $GetTriggerArray$ (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) 
+		:i $SetArrayElement$$ArrayName$ = $output_array$$index$ = %GLOBAL%$index$$NewValue$ = %GLOBAL%$trigger_array$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$trigger_array$ = %GLOBAL%$output_array$
+:i endfunction
+:i function $StopParticleObject$
+	:i if $GotParam$$Debug$
+		:i $printf$%s(38,"### stopping particle object name = %n")$n$ = %GLOBAL%$name$
+	:i endif
+	:i %GLOBAL%$name$.$setemitrate$%i(0,00000000)
+	:i if NOT $GotParam$$StayAlive$
+		:i while
+			
+			:i if NOT %GLOBAL%$name$.$IsEmitting$
+				:i $kill$$name$ = %GLOBAL%$name$
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(30,0000001e)$gameframes$
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $restore_start_key_binding$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$handle_start_pressed$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if  ($enable_view_goals_select_shortcut$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{:s{$pad_select$$create_view_goals_shortcut$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $kill_start_key_binding$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$null_script$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if  ($enable_view_goals_select_shortcut$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{:s{$pad_select$$null_script$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $ShowUIMem$
+	:i %GLOBAL%$profile_names$ = :a{
+		:i %s(17,"Fonts and Bitmaps")
+		:i %s(27,"Sprites - Fonts and Bitmaps")
+		:i :a}
+	:i $GetMemProfileSize$$profile_names$ = %GLOBAL%$profile_names$
+	:i %GLOBAL%$usage_2d$ = %GLOBAL%$profile_size$
+	:i $GetMemProfileSize$$profile_name$ = %s(7,"Menu 3D")
+	:i %GLOBAL%$usage_3d$ = %GLOBAL%$profile_size$
+	:i if  ( (%GLOBAL%$usage_2d$ > %i(4294967295,ffffffff))  AND  (%GLOBAL%$usage_3d$ > %i(4294967295,ffffffff)) ) 
+		:i $printf$%s(0,"")
+		:i $printf$%s(34,"**********************************")
+		:i $printf$%s(17,"	UI Memory Usage:")
+		:i $printf$%s(9,"	2D - %iK")$i$ =  (%GLOBAL%$usage_2d$ / %i(1024,00000400)) 
+		:i $printf$%s(9,"	3D - %jK")$j$ =  (%GLOBAL%$usage_3d$ / %i(1024,00000400)) 
+		:i $printf$%s(34,"**********************************")
+		:i $printf$%s(0,"")
+	:i else 
+		:i $printf$%s(63,"Mem Profiler not active, probably overflowed, try restarting...")
+	:i endif
+:i endfunction
+:i function $ShowAnimMem$
+	:i %GLOBAL%$profile_names$ = :a{
+		:i %s(15,"Permanent Anims")
+		:i %s(32,"Permanent & semi-permanent anims")
+		:i :a}
+	:i $GetMemProfileSize$$profile_names$ = %GLOBAL%$profile_names$
+	:i %GLOBAL%$usage_permanent$ = %GLOBAL%$profile_size$
+	:i $GetMemProfileSize$$profile_name$ = %s(20,"Level Specific Anims")
+	:i %GLOBAL%$usage_levelspecific$ = %GLOBAL%$profile_size$
+	:i if  (%GLOBAL%$profile_size$ > %i(4294967295,ffffffff)) 
+		:i $printf$%s(0,"")
+		:i $printf$%s(34,"**********************************")
+		:i $printf$%s(19,"	Anim Memory Usage:")
+		:i $printf$%s(16,"	Permanent - %iK")$i$ =  (%GLOBAL%$usage_permanent$ / %i(1024,00000400)) 
+		:i $printf$%s(21,"	Level-Specific - %jK")$j$ =  (%GLOBAL%$usage_levelspecific$ / %i(1024,00000400)) 
+		:i $printf$%s(34,"**********************************")
+		:i $printf$%s(0,"")
+	:i else 
+		:i $printf$%s(63,"Mem Profiler not active, probably overflowed, try restarting...")
+	:i endif
+:i endfunction
+:i function $make_new_menu$:s{$menu_title$ = %s(0,"")
+		:i $padding_scale$ = %f(1.150000)
+		:i $internal_scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(230.000000,109.000000)
+		:i $dims$ = %vec2(200.000000,100.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $parent$ = $root_window$
+		:i $just$ = :a{$center$$center$:a}
+		:i $scrolling_menu_offset$ = %vec2(0.000000,10.000000)
+	:i :s}
+	:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,12.000000)) 
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$Off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$menu_id$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $scale$ = %i(1,00000001)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $focusable_child$ = %GLOBAL%$vmenu_id$
+	:i :s}
+	:i switch %GLOBAL%$type$
+		:i case $VScrollingMenu$
+			:i if $GotParam$$scrolling_menu_title_id$
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = %GLOBAL%$menu_id$
+					:i $id$ = %GLOBAL%$scrolling_menu_title_id$
+					:i $font$ = $testtitle$
+					:i $text$ = %GLOBAL%$menu_title$
+					:i $scale$ = %f(1.400000)
+					:i $pos$ = %GLOBAL%$pos$
+					:i $just$ = :a{$left$$top$:a}
+					:i $rgba$ = $MENU_TITLE_COLOR$
+					:i $not_focusable$
+				:i :s}
+				:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$id$$offset$ = %GLOBAL%$scrolling_menu_offset$
+			:i endif
+			:i $CreateScreenElement$:s{
+				:i $type$ = $VScrollingMenu$
+				:i $parent$ = %GLOBAL%$menu_id$
+				:i $id$ = %GLOBAL%$scrolling_menu_id$
+				:i $pos$ = %GLOBAL%$pos$
+				:i $just$ = :a{$left$$top$:a}
+				:i $dims$ = %GLOBAL%$dims$
+				:i $scale$ = %GLOBAL%$scale$
+				:i $internal_just$ = :a{$left$$top$:a}
+				:i $num_items_to_show$ = %GLOBAL%$num_items_to_show$
+			:i :s}
+			:i %GLOBAL%$vscrolling_menu_id$ = %GLOBAL%$id$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $VMenu$
+				:i $parent$ = %GLOBAL%$vscrolling_menu_id$
+				:i $id$ = %GLOBAL%$vmenu_id$
+				:i $dims$ = %GLOBAL%$dims$
+				:i $font$ = $small$
+				:i $just$ = :a{$left$$top$:a}
+				:i $pos$ = %vec2(0.000000,0.000000)
+				:i $scale$ = %GLOBAL%$scale$
+				:i $regular_space_amount$ = %GLOBAL%$regular_space_amount$
+				:i $padding_scale$ = %GLOBAL%$padding_scale$
+				:i $internal_scale$ = %GLOBAL%$internal_scale$
+				:i $internal_just$ = %GLOBAL%$internal_just$
+				:i %GLOBAL%$dont_allow_wrap$
+				:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+					:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		default 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $VMenu$
+				:i $parent$ = %GLOBAL%$menu_id$
+				:i $id$ = %GLOBAL%$vmenu_id$
+				:i $font$ = $small$
+				:i $just$ = :a{$left$$top$:a}
+				:i $pos$ = %GLOBAL%$pos$
+				:i $padding_scale$ = %GLOBAL%$padding_scale$
+				:i $internal_scale$ = %GLOBAL%$internal_scale$
+				:i $internal_just$ = %GLOBAL%$internal_just$
+				:i %GLOBAL%$dont_allow_wrap$
+				:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+					:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+					:i :a}
+			:i :s}
+			:i if NOT $GotParam$$no_menu_title$
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = %GLOBAL%$vmenu_id$
+					:i $font$ = $testtitle$
+					:i $text$ = %GLOBAL%$menu_title$
+					:i $scale$ = %f(1.400000)
+					:i $rgba$ = $MENU_TITLE_COLOR$
+					:i $not_focusable$
+				:i :s}
+			:i endif
+			:i end_switch
+	
+	:i if NOT $GotParam$$no_alias$
+		:i $AssignAlias$$id$ = %GLOBAL%$menu_id$$alias$ = $current_menu_anchor$
+	:i endif
+	:i $AssignAlias$$id$ = %GLOBAL%$vmenu_id$$alias$ = $current_menu$
+	:i if $GotParam$$helper_text$
+		:i $create_helper_text$%GLOBAL%$helper_text$
+	:i endif
+:i endfunction
+:i function $make_text_sprite$$pos$ = %vec2(215.000000,15.000000)$just$ = :a{$center$$center$:a}$scale$ = %f(0.450000)
+	:i if $GotParam$$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $id$ = %GLOBAL%$id$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+			:i $just$ = %GLOBAL%$just$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+	:i else 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+			:i $just$ = %GLOBAL%$just$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $make_text_sub_menu_item$:s{$focus_script$ = $do_scale_up$
+		:i $unfocus_script$ = $do_scale_down$
+		:i $pad_choose_script$ = $NullScript$
+		:i $font_face$ = $small$
+		:i $parent_menu_id$ = $current_menu$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+	:i :s}
+	:i if $GotParam$$not_focusable$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$parent_menu_id$
+			:i $id$ = %GLOBAL%$id$
+			:i $text$ = %GLOBAL%$text$
+			:i $font$ = %GLOBAL%$font_face$
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$%GLOBAL%$focus_script$$Params$ = %GLOBAL%$focus_params$:s}
+				:i :s{$unfocus$%GLOBAL%$unfocus_script$$Params$ = %GLOBAL%$unfocus_params$:s}
+				:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :a}
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i if $GotParam$$no_choose_sound$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$parent_menu_id$
+				:i $id$ = %GLOBAL%$id$
+				:i $text$ = %GLOBAL%$text$
+				:i $font$ = %GLOBAL%$font_face$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $scale$ = %GLOBAL%$scale$
+				:i $event_handlers$ = :a{
+					:i :s{$focus$%GLOBAL%$focus_script$$Params$ = %GLOBAL%$focus_params$:s}
+					:i :s{$unfocus$%GLOBAL%$unfocus_script$$Params$ = %GLOBAL%$unfocus_params$:s}
+					:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+					:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$parent_menu_id$
+				:i $id$ = %GLOBAL%$id$
+				:i $text$ = %GLOBAL%$text$
+				:i $font$ = %GLOBAL%$font_face$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $scale$ = %GLOBAL%$scale$
+				:i $event_handlers$ = :a{
+					:i :s{$focus$%GLOBAL%$focus_script$$Params$ = %GLOBAL%$focus_params$:s}
+					:i :s{$unfocus$%GLOBAL%$unfocus_script$$Params$ = %GLOBAL%$unfocus_params$:s}
+					:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+					:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+					:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+					:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$pad_circle_script$
+		:i $SetScreenElementProps$:s{$id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_circle$%GLOBAL%$pad_circle_script$$Params$ = %GLOBAL%$pad_circle_params$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $SafeCallback$
+	:i if NOT $GotParam$$callback$
+		:i return
+		
+	:i endif
+	:i $old_callback$ = %GLOBAL%$callback$
+	:i $RemoveParameter$$callback$
+	:i %GLOBAL%$old_callback$ isNull 
+:i endfunction
+:i function $get_current_skater_name$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	$name$ = %GLOBAL%$name$
+:i endfunction
+:i function $AwardNewSpecialTrickToProfile$
+	:i if $GotParam$$all_profiles$
+		:i if $GotParam$$name$
+			:i $profile$ = %GLOBAL%$name$
+		:i else 
+			:i $ForEachSkaterName$$do$ = $AwardNewSpecialTrickToProfile$$Params$ = :s{ isNull $dont_replace_trick_text$:s}
+			:i $GoalManager_ReplaceTrickText$$all$
+			:i return
+			
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$profile$
+			:i $script_assert$%s(51,"AwardNewSpecialTrickToProfile needs a profile param")
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$trick$
+		:i $script_assert$%s(49,"AwardNewSpecialTrickToProfile needs a trick param")
+	:i endif
+	:i if NOT $GotParam$$key_combo$
+		:i $script_assert$%s(53,"AwardNewSpecialTrickToProfile needs a key_combo param")
+	:i endif
+	:i $AwardSpecialTrickSlot$$profile$ = %GLOBAL%$profile$
+	:i if $GoalManager_GetTrickFromKeyCombo$$profile$ = %GLOBAL%$profile$$special$$key_combo$ = %GLOBAL%$key_combo$
+		:i $printf$%s(70,"AwardNewSpecialTrickToProfile - key combo bound already for profile %p")$p$ = %GLOBAL%$profile$
+		:i $BindTrickToKeyCombo$:s{
+			:i $profile$ = %GLOBAL%$profile$
+			:i $special$
+			:i $index$ = %GLOBAL%$current_index$
+			:i $key_combo$ = $Unassigned$
+			:i $trick$ = $Unassigned$
+			:i $update_mappings$ = %i(1,00000001)
+		:i :s}
+		:i %GLOBAL%$index$ = %GLOBAL%$current_index$
+	:i endif
+	:i if $GetKeyComboBoundToTrick$$profile$ = %GLOBAL%$profile$$special$$trick$ = %GLOBAL%$trick$$cat_num$ = %GLOBAL%$trick$
+		:i $printf$%s(66,"AwardNewSpecialTrickToProfile - trick bound already for profile %p")$p$ = %GLOBAL%$profile$
+		:i $BindTrickToKeyCombo$:s{
+			:i $profile$ = %GLOBAL%$profile$
+			:i $special$
+			:i $index$ = %GLOBAL%$current_index$
+			:i $key_combo$ = $Unassigned$
+			:i $trick$ = $Unassigned$
+			:i $update_mappings$ = %i(1,00000001)
+		:i :s}
+		:i %GLOBAL%$index$ = %GLOBAL%$current_index$
+	:i endif
+	:i $GetSkaterProfileInfoByName$$name$ = %GLOBAL%$profile$
+	:i if NOT $GotParam$$index$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$max_specials$ - %i(1,00000001)) 
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $profile$ = %GLOBAL%$profile$
+		:i $special$
+		:i $index$ = %GLOBAL%$index$
+		:i $key_combo$ = %GLOBAL%$key_combo$
+		:i $trick$ = %GLOBAL%$trick$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i if NOT $GotParam$$dont_replace_trick_text$
+		:i $GoalManager_ReplaceTrickText$$all$
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $UpdateTrickMappings$$Skater$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $TurnOffLevelParticles$
+	:i if $LevelIs$$load_BO$
+		:i $BO_AllParticlesOff$
+	:i endif
+:i endfunction
+:i function $flip_skating_backwards$
+	:i if NOT $DoingBalanceTrick$
+		:i $Flip$
+	:i else 
+		:i $Flip$
+		:i $BoardRotate$
+		:i if $InNollie$
+			:i if $IsLatestTrick$$TrickText$ = %s(20,"One Foot Nose Manual")
+				:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(15,"One Foot Manual")$Score$ = %i(100,00000064)$blend$ = %f(0.100000)$BalanceAnim$ = $OneFootManual_Range$$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $ManualBail$$ExtraTricks$ = $ManualBranches$$ExtraTricks2$ = $FlatlandBranches$$IsExtra$:s}
+			:i else 
+				:i if $IsLatestTrick$$TrickText$ = %s(11,"Anti Casper")
+					:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(6,"Casper")$Score$ = %i(100,00000064)$blend$ = %f(0.100000)$BalanceAnim$ = $Casper_Range$$OutAnim$ = $Casper_out$$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$Friction$ = %f(0.500000)$BoardRotate$$ExtraTricks$ = $FlatlandBranches$$ExtraTricks2$ = $CasperBranches$:s}
+				:i else 
+					:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(6,"Manual")$Score$ = %i(100,00000064)$blend$ = %f(0.100000)$BalanceAnim$ = $Manual_Range$$BalanceAnim2$ = $Manual_Range2$$BalanceAnim3$ = $Manual_Range3$$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$ExtraTricks2$ = $ManualBranches$$ExtraTricks$ = $FlatlandBranches$$CheckCheese$$AllowWallpush$:s}
+				:i endif
+			:i endif
+		:i else 
+			:i if $IsLatestTrick$$TrickText$ = %s(15,"One Foot Manual")
+				:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(20,"One Foot Nose Manual")$Score$ = %i(100,00000064)$blend$ = %i(0,00000000)$BalanceAnim$ = $OneFootNoseManual_Range$$Nollie$$OffMeterTop$ = $NoseManualBail$$OffMeterBottom$ = $ManualLand$$IsExtra$$ExtraTricks$ = $NoseManualBranches$$ExtraTricks2$ = $FlatlandBranches$:s}
+			:i else 
+				:i if $IsLatestTrick$$TrickText$ = %s(6,"Casper")
+					:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(11,"Anti Casper")$Score$ = %i(100,00000064)$blend$ = %i(0,00000000)$BalanceAnim$ = $AntiCasper_Range$$OutAnim$ = $AntiCasper_out$$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$Friction$ = %f(0.500000)$BoardRotate$$Nollie$$ExtraTricks$ = $FlatlandBranches$$ExtraTricks2$ = $AntiCasperBranches$:s}
+				:i else 
+					:i $MakeSkaterGoto$$ManualLink$$Params$ = :s{$name$ = %sc(11,"Nose Manual")$Score$ = %i(100,00000064)$blend$ = %i(0,00000000)$BalanceAnim$ = $NoseManual_Range$$BalanceAnim2$ = $NoseManual_Range2$$Nollie$$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$ExtraTricks2$ = $NoseManualBranches$$ExtraTricks$ = $FlatlandBranches$$CheckCheese$$AllowWallpush$:s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $SetDepthOfFieldParams$$front_start$ = %f(0.000000)$back_start$ = %f(200.000000)$front_strength$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032):a}$back_strength$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032):a}
+	:i if $GotParam$$Off$
+		:i $on$ = %i(0,00000000)
+	:i else 
+		:i $on$ = %i(1,00000001)
+	:i endif
+	:i $SetScreenEffectsDOFParams$:s{
+		:i $on$ = %GLOBAL%$on$
+		:i $FrontBlurStart$ = %GLOBAL%$front_start$
+		:i $BackBlurStart$ = %GLOBAL%$back_start$
+		:i $FrontStrenth$ = %GLOBAL%$front_strength$
+		:i $BackStrength$ = %GLOBAL%$back_strength$
+	:i :s}
+:i endfunction
+:i function $fam_play_stream$$vol$ = %i(190,000000be)
+	:i if $GotParam$$streamId$
+		:i while
+			
+			:i if $PreLoadStreamDone$%GLOBAL%$streamId$
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(1,00000001)$frame$
+		:i loop_to 
+	:i endif
+	:i if $GotParam$$play_anim$
+		:i $RemoveAnimController$$id$ = $jawRotation$
+		:i $AddAnimController$:s{
+			:i $type$ = $partialAnim$
+			:i $id$ = $jawRotation$
+			:i $animName$ = %GLOBAL%$stream_checksum$
+			:i $From$ = $start$
+			:i $To$ = $end$
+			:i $speed$ = %f(1.000000)
+		:i :s}
+	:i endif
+	:i if $GotParam$$streamId$
+		:i $StartPreloadedStream$:s{
+			:i $streamId$ = %GLOBAL%$streamId$
+			:i $volume$ = %GLOBAL%$vol$
+		:i :s}
+	:i else 
+		:i $Obj_PlayStream$:s{
+			:i %GLOBAL%$stream_checksum$
+			:i $vol$ = %GLOBAL%$vol$
+			:i $dropoff$ = %i(300,0000012c)
+			:i $use_pos_info$ = %GLOBAL%$use_pos_info$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $reset_balance_indicator$
+	:i $SpawnScript$$reset_balance_indicator2$
+:i endfunction
+:i function $reset_balance_indicator2$
+	:i $SetScreenElementLock$$Off$$id$ = $root_window$
+	:i if NOT $ScreenElementExists$$id$ = $balance_indicator$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $id$ = $balance_indicator$
+			:i $texture$ = $heart$
+			:i $parent$ = $root_window$
+			:i $pos$ = %vec2(570.000000,240.000000)
+			:i $scale$ = %vec2(1.000000,1.000000)
+			:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $id$ = $balance_indicator3$
+			:i $texture$ = $white2$
+			:i $parent$ = $root_window$
+			:i $pos$ = %vec2(569.000000,220.000000)
+			:i $scale$ = %vec2(0.500000,4.750000)
+			:i $rgba$ = :a{%i(100,00000064)%i(0,00000000)%i(0,00000000)%i(100,00000064):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $id$ = $balance_indicator2$
+			:i $texture$ = $white2$
+			:i $parent$ = $root_window$
+			:i $pos$ = %vec2(568.000000,220.000000)
+			:i $scale$ = %vec2(0.750000,5.000000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(100,00000064):a}
+		:i :s}
+		:i $Wait$%f(0.500000)$seconds$
+		:i if $ScreenElementExists$$id$ = $balance_indicator$
+			:i $DestroyScreenElement$$id$ = $balance_indicator$
+			:i $DestroyScreenElement$$id$ = $balance_indicator2$
+			:i $DestroyScreenElement$$id$ = $balance_indicator3$
+		:i endif
+	:i endif
+:i endfunction
+:i function $Vibrate_Controller_Safe$$actuator$ = %i(1,00000001)$percent$ = %i(95,0000005f)
+	:i $GetSkaterNumber$
+	:i if $ControllerBoundToSkater$$controller$ = %i(0,00000000)$Skater$ = %GLOBAL%$skaternumber$
+		:i $VibrateController$$port$ = %i(0,00000000)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+	:i else 
+		:i if $ControllerBoundToSkater$$controller$ = %i(1,00000001)$Skater$ = %GLOBAL%$skaternumber$
+			:i $VibrateController$$port$ = %i(1,00000001)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+		:i else 
+			:i if $ControllerBoundToSkater$$controller$ = %i(2,00000002)$Skater$ = %GLOBAL%$skaternumber$
+				:i $VibrateController$$port$ = %i(2,00000002)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+			:i else 
+				:i if $ControllerBoundToSkater$$controller$ = %i(3,00000003)$Skater$ = %GLOBAL%$skaternumber$
+					:i $VibrateController$$port$ = %i(3,00000003)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $Vibrate_Controller_Safe_Explicit$$actuator$ = %i(1,00000001)$percent$ = %i(95,0000005f)$skaternumber$ = %i(0,00000000)
+	:i if $ControllerBoundToSkater$$controller$ = %i(0,00000000)$Skater$ = %GLOBAL%$skaternumber$
+		:i $VibrateController$$port$ = %i(0,00000000)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+	:i else 
+		:i if $ControllerBoundToSkater$$controller$ = %i(1,00000001)$Skater$ = %GLOBAL%$skaternumber$
+			:i $VibrateController$$port$ = %i(1,00000001)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+		:i else 
+			:i if $ControllerBoundToSkater$$controller$ = %i(2,00000002)$Skater$ = %GLOBAL%$skaternumber$
+				:i $VibrateController$$port$ = %i(2,00000002)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+			:i else 
+				:i if $ControllerBoundToSkater$$controller$ = %i(3,00000003)$Skater$ = %GLOBAL%$skaternumber$
+					:i $VibrateController$$port$ = %i(3,00000003)$actuator$ = %GLOBAL%$actuator$$percent$ = %GLOBAL%$percent$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i :end

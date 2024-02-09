@@ -1,0 +1,980 @@
+function $download_stats$
+	:i $printf$%s(15,"download stats.")
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $NeedToRetrieveTopStats$
+		:i $RetrieveTopStats$$file$ = %i(0,00000000)
+		:i $dialog_box_exit$
+		:i $create_dialog_box$:s{$title$ = $net_status_msg$
+			:i $text$ = %s(17,"Retrieving stats.")
+			:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_download_stats$:s}
+				:i :a}
+			:i $no_animate$
+		:i :s}
+	:i else 
+		:i $create_online_stats_menu$
+	:i endif
+:i endfunction
+:i function $cancel_download_stats$
+	:i $dialog_box_exit$
+	:i $CancelFileTransfer$
+	:i $online_stats_exit$
+:i endfunction
+:i function $download_more_stats$
+	:i $RetrieveTopStats$
+:i endfunction
+:i function $StatsRetrievalFailed$
+	:i $printf$%s(16,"transfer failed.")
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(15,"Transfer Failed")
+		:i $text$ = %s(71,"Could not retrieve stats. Try again later or check your network cables.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $online_stats_exit$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $stats_retrieval_complete$
+	:i $create_online_stats_menu$
+:i endfunction
+:i function $create_online_stats_menu$
+	:i $dialog_box_exit$
+	:i $pulse_blur$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $stats_bg_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $stats_bg_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$$generic_helper_text_up_down_left_right$
+	:i $build_theme_sub_title$$title$ = %s(12,"ONLINE STATS")$no_grad_bar$
+	:i $build_top_and_bottom_blocks$$bot_z$ = %i(15,0000000f)$no_lines$
+	:i $make_mainmenu_3d_plane$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $stats_bg_anchor$
+		:i $id$ = $stats_menu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,840.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $stats_menu_anchor$$alias$ = $current_menu_anchor$
+	:i $theme_background$$width$ = %i(7,00000007)$pos$ = %vec2(320.000000,65.000000)$num_parts$ = %i(10,0000000a)$static$ = $static$$dark_menu$ = $dark_menu$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.300003,8.000000)
+		:i $pos$ = %vec2(35.000000,67.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $subtitle$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %f(1.400000)
+		:i $font$ = $small$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(170.000000,89.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(30,0000001e)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $scale$ = %vec2(1.000000,1.000000)
+		:i $pos$ = %vec2(60.000000,87.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(30,0000001e)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $scale$ = %vec2(1.000000,1.000000)
+		:i $pos$ = %vec2(280.000000,87.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(36.000000,5.000000)
+		:i $pos$ = %vec2(34.000000,35.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(36.500000,5.000000)
+		:i $pos$ = %vec2(32.000000,35.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(26,0000001a)%i(43,0000002b)%i(84,00000054)%i(128,00000080):a}
+		:i $z_priority$ = %f(1.500000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $stats_bg_anchor$
+		:i $id$ = $timetext$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %f(1.400000)
+		:i $font$ = $small$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(170.000000,77.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $top_hmenu$
+		:i $pos$ = %vec2(300.000000,66.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $padding_scale$ = %f(0.750000)
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $online_stats_exit$:s}:s}
+			:i :s{$pad_left$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_right$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+	:i :s}
+	:i $GetArraySize$$online_stats_categories$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $online_stats_hmenu_add_item$$index$ = %GLOBAL%$index$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $stats_bg_anchor$
+		:i $id$ = $globe$
+		:i $texture$ = $globe$
+		:i $scale$ = %f(1.300000)
+		:i $pos$ = %vec2(320.000000,560.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.300000)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $stats_bg_anchor$
+		:i $z_priority$ = %i(100,00000064)
+		:i $pos$ = %vec2(132.000000,42.000000)
+		:i $texture$ = $gslogo$$scale$ = %f(1.100000)
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i $RunScriptOnScreenElement$$id$ = $stats_menu_anchor$$online_stats_animate_in$
+	:i $FireEvent$$type$ = $focus$$target$ = $top_hmenu$
+:i endfunction
+:i function $online_stats_animate_in$$id$ = $stats_menu_anchor$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,255.000000)
+	:i else 
+		:i if $ScreenElementExists$$id$ = $top_bar_anchor$
+			:i $DoScreenElementMorph$$id$ = $top_bar_anchor$$time$ = %f(0.200000)$pos$ = %vec2(0.000000,62.000000)
+		:i endif
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,265.000000)
+	:i endif
+:i endfunction
+:i function $online_stats_exit$
+	:i $KillSpawnedScript$$name$ = $create_online_stat_scores_menu$
+	:i $KillSpawnedScript$$name$ = $create_online_stat_players_menu$
+	:i $KillSpawnedScript$$name$ = $create_online_stat_personal_menu$
+	:i if $ScreenElementExists$$id$ = $stats_bg_anchor$
+		:i $DestroyScreenElement$$id$ = $stats_bg_anchor$
+	:i endif
+	:i $create_internet_options$
+:i endfunction
+:i function $online_stats_hmenu_add_item$
+	:i $icon$ =  ($online_stats_categories$:a{%GLOBAL%$index$:a}->$icon$) 
+	:i $text$ =  ($online_stats_categories$:a{%GLOBAL%$index$:a}->$text$) 
+	:i $time$ =  ($online_stats_categories$:a{%GLOBAL%$index$:a}->$time$) 
+	:i $array$ =  ($online_stats_categories$:a{%GLOBAL%$index$:a}->$array$) 
+	:i $menu_type$ =  ($online_stats_categories$:a{%GLOBAL%$index$:a}->$menu_type$) 
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $top_hmenu$
+		:i $texture$ = %GLOBAL%$icon$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(0.700000)
+		:i $z_priority$ = %i(3,00000003)
+		:i $event_handlers$ = :a{:s{$focus$$online_stats_hmenu_focus$$params$ = :s{$text$ = %GLOBAL%$text$$menu_type$ = %GLOBAL%$menu_type$$time$ = %GLOBAL%$time$$array$ = %GLOBAL%$array$$warned$ = $no$:s}:s}
+			:i :s{$unfocus$$online_stats_hmenu_unfocus$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $online_stats_hmenu_focus$
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+	:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$rgba$ = %GLOBAL%$rgba$
+	:i $SetScreenElementProps$$id$ = $subtitle$$text$ = %GLOBAL%$text$
+	:i $GetTextElementString$$id$ = $timetext$
+	:i if  (%GLOBAL%$time$ = $all$) 
+		:i if NOT  (%GLOBAL%$string$ = %s(8,"All Time")) 
+			:i $RunScriptOnScreenElement$$online_stats_swap_time_text$$id$ = $timetext$$params$ = :s{$text$ = %s(8,"All Time"):s}
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$time$ = $week$) 
+		:i if NOT  (%GLOBAL%$string$ = %s(6,"Recent")) 
+			:i $RunScriptOnScreenElement$$online_stats_swap_time_text$$id$ = $timetext$$params$ = :s{$text$ = %s(6,"Recent"):s}
+		:i endif
+	:i endif
+	:i $KillSpawnedScript$$name$ = $create_online_stat_scores_menu$
+	:i $KillSpawnedScript$$name$ = $create_online_stat_players_menu$
+	:i $KillSpawnedScript$$name$ = $create_online_stat_personal_menu$
+	:i if  (%GLOBAL%$menu_type$ = $scores$) 
+		:i $SpawnScript$$create_online_stat_scores_menu$$params$ = :s{$array$ = %GLOBAL%$array$:s}
+	:i endif
+	:i if  (%GLOBAL%$menu_type$ = $players$) 
+		:i $SpawnScript$$create_online_stat_players_menu$$params$ = :s{$array$ = %GLOBAL%$array$:s}
+	:i endif
+	:i if  (%GLOBAL%$menu_type$ = $personal$) 
+		:i if NOT $ProfileLoggedIn$
+			:i if  (%GLOBAL%$warned$ = $no$) 
+				:i $FireEvent$$type$ = $unfocus$$target$ = $top_hmenu$
+				:i $create_dialog_box$:s{$title$ = %s(8,"No Stats")
+					:i $text$ = %s(92,"You are not logged into GameSpy.\n You must be logged into GameSpy in order to record stats.")
+					:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $ok_no_personal_stats$:s}
+						:i :a}
+					:i $text_dims$ = %vec2(380.000000,0.000000)
+					:i $no_bg$
+					:i $pad_left_script$ = $dialog_box_exit$
+					:i $pad_right_script$ = $dialog_box_exit$
+				:i :s}
+				:i $SetTags$$warned$ = $yes$
+			:i endif
+		:i endif
+		:i $GetRank$
+		:i $GetPreferenceString$$pref_type$ = $network$$network_id$
+		:i $SpawnScript$$create_online_stat_personal_menu$$params$ = :s{$array$ = %GLOBAL%$array$$name$ = %GLOBAL%$ui_string$$rank$ = %GLOBAL%$rank$:s}
+	:i endif
+:i endfunction
+:i function $ok_no_personal_stats$
+	:i $dialog_box_exit$
+	:i $wait$%i(2,00000002)$frames$
+	:i $FireEvent$$type$ = $focus$$target$ = $top_hmenu$
+:i endfunction
+:i function $online_stats_swap_time_text$$time$ = %f(0.200000)
+	:i $DoScreenElementMorph$$id$ = $timetext$$scale$ = %vec2(0.000000,1.000000)$relative_scale$$time$ = %GLOBAL%$time$
+	:i $wait$ (%GLOBAL%$time$ + %f(0.100000)) $seconds$
+	:i $SetScreenElementProps$$id$ = $timetext$$text$ = %GLOBAL%$text$
+	:i $DoScreenElementMorph$$id$ = $timetext$$scale$ = %vec2(1.000000,1.000000)$relative_scale$$time$ = %GLOBAL%$time$
+:i endfunction
+:i function $online_stats_hmenu_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $rgba$
+	:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$rgba$ = %GLOBAL%$rgba$
+:i endfunction
+:i $online_stats_categories$ = :a{
+	:i :s{$text$ = %s(11,"Best Scores")$icon$ = $stat_scores$$menu_type$ = $scores$$time$ = $week$$array$ = $high_scores_array_monthly$:s}
+	:i :s{$text$ = %s(11,"Best Combos")$icon$ = $stat_combos$$menu_type$ = $scores$$time$ = $week$$array$ = $best_combos_array_monthly$:s}
+	:i :s{$text$ = %s(11,"Top Players")$icon$ = $stat_players$$menu_type$ = $players$$time$ = $all$$array$ = $top_players_array$:s}
+	:i :s{$text$ = %s(11,"Best Scores")$icon$ = $stat_scores$$menu_type$ = $scores$$time$ = $all$$array$ = $high_scores_array_all_time$:s}
+	:i :s{$text$ = %s(11,"Best Combos")$icon$ = $stat_combos$$menu_type$ = $scores$$time$ = $all$$array$ = $best_combos_array_all_time$:s}
+	:i :s{$text$ = %s(14,"Personal Stats")$icon$ = $stat_personal$$menu_type$ = $personal$$time$ = $all$$array$ = $personal_stats_array$:s}
+	:i :a}
+:i $high_scores_array_all_time$ = :a{:a}
+:i $best_combos_array_all_time$ = :a{:a}
+:i $high_scores_array_monthly$ = :a{:a}
+:i $best_combos_array_monthly$ = :a{:a}
+:i $top_players_array$ = :a{:a}
+:i $personal_stats_array$ = :a{:a}
+:i function $create_online_stat_scores_menu$
+	:i if $ScreenElementExists$$id$ = $online_stats_submenu_anchor$
+		:i $DestroyScreenElement$$id$ = $online_stats_submenu_anchor$
+	:i endif
+	:i $wait$%i(5,00000005)$gameframes$
+	:i $SetScreenElementLock$$off$$id$ = $stats_menu_anchor$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $stats_menu_anchor$
+		:i $id$ = $online_stats_submenu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,244.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(4,"Name")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(90.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,115.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,345.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.299999)
+		:i $pos$ = %vec2(320.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(5,"Level")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(325.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.299999)
+		:i $pos$ = %vec2(450.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(5,"Score")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(480.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vscrollingmenu$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $bottom_scrolling_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(600.000000,210.000000)
+		:i $pos$ = %vec2(100.000000,135.000000)
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vmenu$
+		:i $parent$ = $bottom_scrolling_menu$
+		:i $id$ = $bottom_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $FillStatsArrays$$array$ = %GLOBAL%$array$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i $pulse_blur$
+	:i $SetScreenElementProps$$id$ = $bottom_scrolling_menu$$reset_window_top$
+	:i $DoScreenElementMorph$$id$ = $bottom_scrolling_menu$$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $focus$$target$ = $bottom_vmenu$
+:i endfunction
+:i function $add_stat_score_menu_item$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $bottom_vmenu$
+		:i $dims$ = %vec2(400.000000,15.000000)
+		:i $event_handlers$ = :a{:s{$focus$$online_stats_generic_focus$:s}
+			:i :s{$unfocus$$online_stats_generic_unfocus$:s}
+			:i :a}
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $DE_highlight_bar$
+		:i $scale$ = %vec2(4.450000,0.450000)
+		:i $pos$ = %vec2(-65.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $FormatText$$checksumname$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = %GLOBAL%$rank_icon$
+		:i $scale$ = %f(0.700000)
+		:i $pos$ = %vec2(-60.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$name$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$level$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(235.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $FormatText$$textname$ = $score_text$%s(2,"%i")$i$ = %GLOBAL%$score$$UseCommas$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(490.000000,0.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+:i endfunction
+:i function $add_stat_header_menu_item$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $bottom_vmenu$
+		:i $dims$ = %vec2(400.000000,15.000000)
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(70.000000,2.000000)
+		:i $pos$ = %vec2(-55.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$text$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$on_rgba$
+	:i :s}
+:i endfunction
+:i function $online_stats_generic_focus$
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(1,00000001)
+	:i $index$ = %i(2,00000002)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}$rgba$ = %GLOBAL%$on_rgba$
+		:i else 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+:i endfunction
+:i function $online_stats_generic_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(0,00000000)
+	:i $index$ = %i(2,00000002)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}$rgba$ = %GLOBAL%$off_rgba$
+		:i else 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+:i endfunction
+:i function $create_online_stat_players_menu$
+	:i if $ScreenElementExists$$id$ = $online_stats_submenu_anchor$
+		:i $DestroyScreenElement$$id$ = $online_stats_submenu_anchor$
+	:i endif
+	:i $wait$%i(5,00000005)$gameframes$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $SetScreenElementLock$$off$$id$ = $stats_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $stats_menu_anchor$
+		:i $id$ = $online_stats_submenu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,244.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(4,"Name")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(90.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,115.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,345.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.299999)
+		:i $pos$ = %vec2(320.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(6,"Rating")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(330.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.299999)
+		:i $pos$ = %vec2(405.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(13,"Highest Score")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(415.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vscrollingmenu$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $bottom_scrolling_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(600.000000,210.000000)
+		:i $pos$ = %vec2(100.000000,135.000000)
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vmenu$
+		:i $parent$ = $bottom_scrolling_menu$
+		:i $id$ = $bottom_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $FillStatsArrays$$array$ = %GLOBAL%$array$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i $pulse_blur$
+	:i $SetScreenElementProps$$id$ = $bottom_scrolling_menu$$reset_window_top$
+	:i $DoScreenElementMorph$$id$ = $bottom_scrolling_menu$$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $focus$$target$ = $bottom_vmenu$
+:i endfunction
+:i function $add_stat_player_menu_item$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $bottom_vmenu$
+		:i $dims$ = %vec2(400.000000,15.000000)
+		:i $event_handlers$ = :a{:s{$focus$$online_stats_generic_focus$:s}
+			:i :s{$unfocus$$online_stats_generic_unfocus$:s}
+			:i :a}
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $DE_highlight_bar$
+		:i $scale$ = %vec2(4.450000,0.450000)
+		:i $pos$ = %vec2(-65.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $FormatText$$checksumname$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = %GLOBAL%$rank_icon$
+		:i $scale$ = %f(0.700000)
+		:i $pos$ = %vec2(-60.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$name$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $FormatText$$textname$ = $rating_text$%s(2,"%i")$i$ = %GLOBAL%$rating$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$rating_text$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(295.000000,0.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $FormatText$$textname$ = $score_text$%s(2,"%i")$i$ = %GLOBAL%$score$$UseCommas$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(490.000000,0.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+:i endfunction
+:i function $create_online_stat_personal_menu$$name_text$ = %s(0,"")
+	:i if $ScreenElementExists$$id$ = $online_stats_submenu_anchor$
+		:i $DestroyScreenElement$$id$ = $online_stats_submenu_anchor$
+	:i endif
+	:i $wait$%i(5,00000005)$gameframes$
+	:i $SetScreenElementLock$$off$$id$ = $stats_menu_anchor$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $stats_menu_anchor$
+		:i $id$ = $online_stats_submenu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,268.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.300003,4.000000)
+		:i $pos$ = %vec2(35.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.300003,0.100000)
+		:i $pos$ = %vec2(35.000000,132.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(5,"Name:")
+		:i $scale$ = %f(0.800000)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $alpha$ = %f(0.500000)
+		:i $pos$ = %vec2(50.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $name_value$
+		:i $text$ = %GLOBAL%$name$
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $pos$ = %vec2(105.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i if NOT $GotParam$$rank$
+		:i $rank$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$textname$ = $rank_text$%s(2,"%i")$i$ = %GLOBAL%$rank$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(7,"Rating:")
+		:i $scale$ = %f(0.800000)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $alpha$ = %f(0.500000)
+		:i $pos$ = %vec2(300.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $rating_value$
+		:i $text$ = %GLOBAL%$rank_text$
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $pos$ = %vec2(380.000000,115.000000)
+		:i $just$ = :a{$right$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(3,"/10")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $pos$ = %vec2(415.000000,115.000000)
+		:i $just$ = :a{$right$$center$:a}
+	:i :s}
+	:i $FormatText$$checksumname$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $rating_icon$
+		:i $texture$ = %GLOBAL%$rank_icon$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(425.000000,115.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(5,"Score")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(180.000000,145.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,145.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,322.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.299999)
+		:i $pos$ = %vec2(320.000000,127.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $text$ = %s(5,"Level")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(330.000000,145.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vscrollingmenu$
+		:i $parent$ = $online_stats_submenu_anchor$
+		:i $id$ = $bottom_scrolling_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(600.000000,158.000000)
+		:i $pos$ = %vec2(100.000000,165.000000)
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $vmenu$
+		:i $parent$ = $bottom_scrolling_menu$
+		:i $id$ = $bottom_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $FillStatsArrays$$array$ = %GLOBAL%$array$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i $pulse_blur$
+	:i $SetScreenElementProps$$id$ = $bottom_scrolling_menu$$reset_window_top$
+	:i $DoScreenElementMorph$$id$ = $bottom_scrolling_menu$$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $focus$$target$ = $bottom_vmenu$
+:i endfunction
+:i function $add_stat_personal_menu_item$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $bottom_vmenu$
+		:i $dims$ = %vec2(400.000000,15.000000)
+		:i $event_handlers$ = :a{:s{$focus$$online_stats_generic_focus$:s}
+			:i :s{$unfocus$$online_stats_generic_unfocus$:s}
+			:i :a}
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $DE_highlight_bar$
+		:i $scale$ = %vec2(4.450000,0.450000)
+		:i $pos$ = %vec2(-65.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $black$
+		:i $scale$ = %f(0.000000)
+		:i $pos$ = %vec2(-60.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $FormatText$$textname$ = $score_text$%s(2,"%i")$i$ = %GLOBAL%$score$$UseCommas$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(200.000000,0.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$level$
+		:i $font$ = $dialog$
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(235.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+:i endfunction
+:i $stats_level_names$ = :a{
+	:i :s{$text$ = %s(8,"Training")$level$ = $load_TR$:s}
+	:i :s{$text$ = %s(6,"Boston")$level$ = $load_BO$:s}
+	:i :s{$text$ = %s(9,"Barcelona")$level$ = $load_BA$:s}
+	:i :s{$text$ = %s(6,"Berlin")$level$ = $load_BE$:s}
+	:i :s{$text$ = %s(9,"Australia")$level$ = $load_AU$:s}
+	:i :s{$text$ = %s(11,"New Orleans")$level$ = $load_NO$:s}
+	:i :s{$text$ = %s(8,"Skatopia")$level$ = $load_ST$:s}
+	:i :s{$text$ = %s(10,"Pro Skater")$level$ = $load_SE$:s}
+	:i :s{$text$ = %s(12,"The Triangle")$level$ = $load_SE2$:s}
+	:i :s{$text$ = %s(6,"School")$level$ = $load_sc$:s}
+	:i :s{$text$ = %s(6,"Philly")$level$ = $load_ph$:s}
+	:i :s{$text$ = %s(12,"Downhill Jam")$level$ = $load_dj$:s}
+	:i :s{$text$ = %s(11,"Los Angeles")$level$ = $load_la$:s}
+	:i :s{$text$ = %s(6,"Canada")$level$ = $load_ca$:s}
+	:i :s{$text$ = %s(7,"Airport")$level$ = $load_ap$:s}
+	:i :a}
+:i :end

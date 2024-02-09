@@ -1,0 +1,381 @@
+
+:i function $GetSkaterTantrumMeterAnchor$
+	:i if NOT $GotParam$$ObjId$
+		:i if NOT $IsObjectScript$
+			:i $script_assert$%s(28,"Needs to be an object script")
+		:i endif
+		:i $Obj_GetID$
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$ObjId$$b$ = %i(0,00000000)
+		:i $id$ = $player1_tantrum_meter$
+	:i else 
+		:i $id$ = $player2_tantrum_meter$
+	:i endif
+	:i return
+	$tantrum_meter_anchor$ = %GLOBAL%$id$
+:i endfunction
+:i function $TantrumMessageHide$
+	:i if $ScreenElementExists$$id$ = $player1_tantrum_meter$
+		:i $DoScreenElementMorph$$id$ = $player1_tantrum_meter$$scale$ = %i(0,00000000)$time$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $player2_tantrum_meter$
+		:i $DoScreenElementMorph$$id$ = $player2_tantrum_meter$$scale$ = %i(0,00000000)$time$ = %i(0,00000000)$relative_scale$
+	:i endif
+:i endfunction
+:i function $TantrumMessageKill$
+	:i if $ScreenElementExists$$id$ = $player1_tantrum_meter$
+		:i $DestroyScreenElement$$id$ = $player1_tantrum_meter$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $player2_tantrum_meter$
+		:i $DestroyScreenElement$$id$ = $player2_tantrum_meter$
+	:i endif
+:i endfunction
+:i function $TantrumMessageShow$
+	:i if $ScreenElementExists$$id$ = $player1_tantrum_meter$
+		:i $DoScreenElementMorph$$id$ = $player1_tantrum_meter$$scale$ = %i(1,00000001)$time$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $player2_tantrum_meter$
+		:i $DoScreenElementMorph$$id$ = $player2_tantrum_meter$$scale$ = %i(1,00000001)$time$ = %i(0,00000000)$relative_scale$
+	:i endif
+:i endfunction
+:i function $tantrum_meter_update_tags$
+	:i $GetSkaterTantrumMeterAnchor$
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$:s{
+		:i $tantrum_heartbeat_frequency$ = %i(1,00000001)
+		:i $tantrum_heartbeat_amplitude$ =  ( (%GLOBAL%$spazzfactor$ * %f(0.150000))  + %f(1.500000)) 
+	:i :s}
+:i endfunction
+:i function $tantrum_draw_meter$
+	:i $GetSkaterTantrumMeterAnchor$
+	:i if $GotParam$$die$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+			:i if NOT %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$dead$
+				:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$$dead$
+				:i if %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$in_the_zone$
+					:i $SFX_KILL_HEART_BEAT$
+				:i endif
+				:i $DoScreenElementMorph$$id$ = %GLOBAL%$tantrum_meter_anchor$$alpha$ = %i(0,00000000)$time$ = %f(0.400000)
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$tantrum_meter_anchor$$panel_message_wait_and_die$$params$ = :s{$time$ = %i(500,000001f4):s}
+			:i endif
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$tantrum_meter_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $scale$ = %i(1,00000001)
+	:i $pos$ = %vec2(224.500000,130.000000)
+	:i if $InSplitScreenGame$
+		:i $Obj_GetID$
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $pos$ = %vec2(240.000000,130.000000)
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$ObjId$$b$ = %i(0,00000000)
+					:i $pos$ =  (%GLOBAL%$pos$ - %vec2(150.000000,0.000000)) 
+				:i else 
+					:i $pos$ =  (%GLOBAL%$pos$ + %vec2(160.000000,0.000000)) 
+				:i endif
+				:i $scale$ = %f(0.800000)
+				:i endcase
+			case $split_horizontal$
+				:i $pos$ = %vec2(240.000000,130.000000)
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$ObjId$$b$ = %i(0,00000000)
+					:i $pos$ =  (%GLOBAL%$pos$ - %vec2(0.000000,60.000000)) 
+				:i else 
+					:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,160.000000)) 
+				:i endif
+				:i $scale$ = %f(0.800000)
+				:i end_switch
+		
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %vec2(12.000000,1.000000)
+		:i $texture$ = $spazzbody$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $pos$ = %vec2(191.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $texture$ = $spazztip$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $pos$ = %vec2(0.000000,-14.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.200000,1.000000)
+		:i $texture$ = $heart$
+		:i $z_priority$ = %i(20,00000014)
+	:i :s}
+	:i if $IsXbox$
+		:i $freak_text$ = %s(22,"PRESS \m2 TO FREAK OUT")
+	:i else 
+		:i $freak_text$ = %s(20,"HIT \m2 TO FREAK OUT")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $text$ = %GLOBAL%$freak_text$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+		:i $pos$ = %vec2(15.000000,21.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $small$
+		:i $z_priority$ = %i(30,0000001e)
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$tantrum_meter_anchor$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$tantrum_meter_anchor$$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$:s{
+		:i $tantrum_heartbeat_amplitude$ = %f(1.500000)
+		:i $tantrum_heartbeat_frequency$ = %i(0,00000000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$tantrum_meter_anchor$$tantrum_heartbeat$
+:i endfunction
+:i function $tantrum_meter_maybe_play_sound$
+	:i $GetSkaterTantrumMeterAnchor$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i if NOT %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$dead$
+			:i if NOT %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$in_the_zone$
+				:i %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$sound_pitch$
+				:i $Playsound$$SK6_Menu_Move$$vol$ = %i(150,00000096)$pitch$ = %GLOBAL%$sound_pitch$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $tantrum_heartbeat_beat$
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$scale$ = %GLOBAL%$tantrum_heartbeat_amplitude$$relative_scale$$time$ = %f(0.300000)$pos$ = %vec2(0.000000,-20.000000)
+	:i $DoMorph$$alpha$ = %i(0,00000000)$scale$ = %i(1,00000001)$relative_scale$$time$ = %f(0.200000)
+	:i $die$
+:i endfunction
+:i function $tantrum_heartbeat$
+	:i $GetSingleTag$$id$
+	:i $anchor$ = %GLOBAL%$id$
+	:i $counter$ = %i(0,00000000)
+	:i while
+		
+		:i $GetSingleTag$$tantrum_heartbeat_frequency$
+		:i $tantrum_heartbeat_frequency$ =  (%GLOBAL%$tantrum_heartbeat_frequency$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$tantrum_heartbeat_frequency$ > %i(40,00000028)) 
+			:i $tantrum_heartbeat_frequency$ = %i(40,00000028)
+		:i endif
+		:i if  (%GLOBAL%$tantrum_heartbeat_frequency$ < %i(5,00000005)) 
+			:i $tantrum_heartbeat_frequency$ = %i(5,00000005)
+		:i endif
+		:i $SetTags$$tantrum_heartbeat_frequency$ = %GLOBAL%$tantrum_heartbeat_frequency$
+		:i if  (%GLOBAL%$counter$ > %GLOBAL%$tantrum_heartbeat_frequency$) 
+			:i $counter$ = %i(0,00000000)
+			:i $SetScreenElementLock$$id$ = %GLOBAL%$anchor$$off$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i $pos$ = %vec2(0.000000,-14.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $scale$ = %vec2(1.200000,1.000000)
+				:i $texture$ = $heart$
+				:i $z_priority$ = %i(15,0000000f)
+			:i :s}
+			:i $GetSingleTag$$tantrum_heartbeat_amplitude$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$tantrum_heartbeat_beat$$params$ = :s{$tantrum_heartbeat_amplitude$ = %GLOBAL%$tantrum_heartbeat_amplitude$:s}
+		:i endif
+		:i $counter$ =  (%GLOBAL%$counter$ + %i(1,00000001)) 
+		:i $wait$%i(1,00000001)$gameframes$
+	:i loop_to 
+:i endfunction
+:i function $tantrum_explosion_explode$
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$alpha$ = %f(0.500000)$scale$ = %f(2.500000)$relative_scale$$time$ = %f(0.050000)$rot_angle$ = %i(0,00000000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$scale$ = %f(3.500000)$relative_scale$$time$ = %f(0.300000)$rot_angle$ = %i(25,00000019)
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %f(0.200000)$scale$ = %i(4,00000004)$rot_angle$ = %i(40,00000028)
+	:i $die$
+:i endfunction
+:i function $tantrum_explosion$
+	:i $GetSkaterTantrumMeterAnchor$
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$tantrum_meter_anchor$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(30,0000001e)%i(128,00000080):a}
+		:i $pos$ = %vec2(191.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $texture$ = $spazzburst$
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$tantrum_explosion_explode$
+	:i $wait$%f(0.200000)$seconds$
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$tantrum_meter_anchor$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(30,0000001e)%i(128,00000080):a}
+		:i $pos$ = %vec2(191.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $texture$ = $spazzburst$
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$tantrum_explosion_explode$
+:i endfunction
+:i function $tantrum_draw_and_update_spazzfactors$:s{$min$ = %f(3.000000)
+		:i $max$ = %f(7.500000)
+		:i $start_pos$ = %vec2(0.000000,0.000000)
+		:i $end_pos$ = %vec2(200.000000,0.000000)
+	:i :s}
+	:i $GetSkaterTantrumMeterAnchor$
+	:i $GetArraySize$$tantrum_array$
+	:i $spazz_interval$ =  ( (%GLOBAL%$max$ - %GLOBAL%$min$)  /  (%GLOBAL%$array_size$%f(-1.000000)) ) 
+	:i $begin_pos$ =  ( (%GLOBAL%$end_pos$ / %GLOBAL%$max$)  * %GLOBAL%$min$) 
+	:i $draw_interval$ =  ( (%GLOBAL%$end_pos$ - %GLOBAL%$begin_pos$)  /  (%GLOBAL%$array_size$%f(-1.000000)) ) 
+	:i %GLOBAL%$local_array$ = $tantrum_array$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $SetArrayElement$$ArrayName$ = $local_array$$index$ = %GLOBAL%$index$$newvalue$ = :s{$name$ =  ( ($tantrum_array$:a{%GLOBAL%$index$:a}) ->$name$) 
+			:i $spazzfactor$ =  (%GLOBAL%$index$ * %GLOBAL%$spazz_interval$ + %GLOBAL%$min$) 
+		:i :s}
+		:i if NOT  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) ) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i $pos$ =  (%GLOBAL%$index$ * %GLOBAL%$draw_interval$ + %GLOBAL%$begin_pos$) 
+				:i $just$ = :a{$center$$center$:a}
+				:i $scale$ = %i(1,00000001)
+				:i $texture$ = $spazznotch$
+				:i $z_priority$ = %i(30,0000001e)
+			:i :s}
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $GetHighestTantrumReached$
+	:i if NOT $GotParam$$spazzfactor$
+		:i return
+		
+	:i endif
+	:i $GetArraySize$$tantrum_array$
+	:i $index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+	:i while
+		
+		:i if NOT  (%GLOBAL%$spazzfactor$ <  ( ($tantrum_array$:a{%GLOBAL%$index$:a}) ->$spazzfactor$) ) 
+			:i return
+			$tantrum$ = %GLOBAL%$index$
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$tantrum$ = %i(4294967295,ffffffff)
+:i endfunction
+:i function $tantrum_update_meter$$current$ = %i(5,00000005)$max$ = %i(10,0000000a)
+	:i $GetSkaterTantrumMeterAnchor$
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$tantrum_meter_anchor$
+		:i return
+		
+	:i endif
+	:i if %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$dead$
+		:i return
+		
+	:i endif
+	:i $percent$ =  ( (%GLOBAL%$current$ / %GLOBAL%$max$)  * %i(100,00000064)) 
+	:i if NOT $ScreenElementExists$$id$ = :s{%GLOBAL%$tantrum_meter_anchor$$child$ = $spazz_blood$:s}
+		:i $SetScreenElementLock$$id$ = %GLOBAL%$tantrum_meter_anchor$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+			:i $local_id$ = $spazz_blood$
+			:i $rgba$ = :a{%i(110,0000006e)%i(11,0000000b)%i(11,0000000b)%i(110,0000006e):a}
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %i(1,00000001)
+			:i $texture$ = $blood$
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$tantrum_meter_anchor$
+			:i $local_id$ = $spazz_blood_tip$
+			:i $rgba$ = :a{%i(110,0000006e)%i(11,0000000b)%i(11,0000000b)%i(110,0000006e):a}
+			:i $pos$ = %vec2(191.000000,0.000000)
+			:i $just$ = :a{$right$$center$:a}
+			:i $scale$ = %vec2(1.000000,0.900000)
+			:i $texture$ = $bloodtip$
+			:i $z_priority$ = %i(11,0000000b)
+		:i :s}
+	:i endif
+	:i if  (%GLOBAL%$current$ >  ($tantrum_array$:a{%i(0,00000000):a}->$spazzfactor$) ) 
+		:i if NOT %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$in_the_zone$
+			:i %GLOBAL%$tantrum_meter_anchor$.$Obj_SpawnScript$$SFX_TANTRUM_THERM_RANGE$
+			:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$$in_the_zone$
+		:i endif
+	:i else 
+		:i if %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$in_the_zone$
+			:i %GLOBAL%$tantrum_meter_anchor$.$SFX_KILL_HEART_BEAT$
+		:i endif
+		:i %GLOBAL%$tantrum_meter_anchor$.$RemoveTags$$tags$ = :a{$in_the_zone$:a}
+		:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$$sound_pitch$ =  ( (%GLOBAL%$current$ * %i(8,00000008))  + %i(80,00000050)) 
+	:i endif
+	:i if $GotParam$$maxedOut$
+		:i $percent$ = %i(100,00000064)
+		:i if NOT %GLOBAL%$tantrum_meter_anchor$.$GetSingleTag$$tantrum_explosion_tripped$
+			:i %GLOBAL%$tantrum_meter_anchor$.$SetTags$$tantrum_explosion_tripped$
+			:i $tantrum_explosion$
+		:i endif
+	:i else 
+		:i %GLOBAL%$tantrum_meter_anchor$.$RemoveTags$$tags$ = :a{$tantrum_explosion_tripped$:a}
+		:i if  (%GLOBAL%$percent$ < %i(0,00000000)) 
+			:i $percent$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$tantrum_meter_anchor$$child$ = $spazz_blood$:s}$scale$ =  (%GLOBAL%$percent$ * %vec2(0.122000,0.000000) + %vec2(0.000000,0.900000)) $time$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$tantrum_meter_anchor$$child$ = $spazz_blood_tip$:s}$pos$ =  (%GLOBAL%$percent$ * %vec2(2.030000,0.000000)) $time$ = %i(0,00000000)
+:i endfunction
+:i function $SFX_TANTRUM_THERM_RANGE$
+	:i $printf$%s(42,"Playing Heart Beat while above spazz line!")
+	:i while
+		
+		:i $Playsound$$SK6_BulletHeart_11$$pitch$ = %i(150,00000096)$vol$ = %i(150,00000096)
+		:i $wait$%f(0.350000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $SFX_KILL_HEART_BEAT$
+	:i $printf$%s(54,"Killing Heart Beat - dropped below, or ended animation")
+	:i $Obj_KillSpawnedScript$$name$ = $SFX_TANTRUM_THERM_RANGE$
+:i endfunction
+:i :end

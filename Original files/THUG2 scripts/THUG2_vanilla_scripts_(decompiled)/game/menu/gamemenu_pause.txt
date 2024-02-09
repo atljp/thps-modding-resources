@@ -1,0 +1,460 @@
+
+:i function $create_pause_menu$
+	:i if $GotParam$$no_exit$
+		:i $set_pause_menu_allow_continue$$off$
+	:i else 
+		:i if $root_window$.$GetSingleTag$$no_exit_pause_menu$
+			:i $no_exit$ = $no_exit$
+		:i endif
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i $SetParkEditorPauseMode$$pause$
+	:i endif
+	:i if NOT $GotParam$$no_sound$
+	:i endif
+	:i $unhide_root_window$
+	:i if  ($inside_pause$ = %i(1,00000001)) 
+	:i endif
+	:i $hide_all_hud_items$
+	:i $unhide_current_goal$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i $Skater$.$NetDisablePlayerInput$
+		:i endif
+	:i else 
+		:i if $CustomParkMode$$editing$
+			:i $parked_setup_main_menu$
+			:i $PauseMusicAndStreams$%i(1,00000001)
+			:i $build_pause_menu_parts$
+			:i return
+			
+		:i endif
+		:i if $CustomParkMode$$testing$
+			:i $parked_setup_test_play_menu$
+			:i $PauseMusicAndStreams$%i(1,00000001)
+			:i $build_pause_menu_parts$
+			:i return
+			
+		:i endif
+		:i if $InSplitScreenGame$
+			:i $create_mp_pause_menu$
+			:i $PauseMusicAndStreams$%i(1,00000001)
+			:i $build_pause_menu_parts$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if  ($inside_pause$ = %i(0,00000000)) 
+		:i if $MusicIsPaused$
+			:i $change$$music_was_paused$ = %i(1,00000001)
+		:i else 
+			:i $change$$music_was_paused$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $PauseMusicAndStreams$%i(1,00000001)
+	:i $pause_rain$
+	:i if  ($in_cat_preview_mode$ = %i(1,00000001)) 
+		:i $create_CAT_pause_menu$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$no_exit$
+		:i $helper$ = $generic_helper_text$
+	:i else 
+		:i $helper$ = $generic_helper_text_no_back$
+	:i endif
+	:i if $GotParam$$no_exit$
+		:i $make_new_roundbar_menu$:s{
+			:i $menu_id$ = $pause_menu$
+			:i $vmenu_id$ = $pause_vmenu$
+			:i $pad_back_script$ = $nullscript$
+			:i $pos$ = %vec2(250.000000,95.000000)
+			:i $dims$ = %vec2(250.000000,480.000000)
+			:i $internal_text_just$ = $right$
+			:i $helper_text$ = %GLOBAL%$helper$
+			:i $add_3d_bg$
+		:i :s}
+	:i else 
+		:i $make_new_roundbar_menu$:s{
+			:i $menu_id$ = $pause_menu$
+			:i $vmenu_id$ = $pause_vmenu$
+			:i $pad_back_script$ = $handle_start_pressed$
+			:i $pos$ = %vec2(250.000000,95.000000)
+			:i $dims$ = %vec2(250.000000,480.000000)
+			:i $internal_text_just$ = $right$
+			:i $helper_text$ = %GLOBAL%$helper$
+			:i $add_3d_bg$
+		:i :s}
+	:i endif
+	:i $do_localized_pause_title$$pos$ = %vec2(500.000000,95.000000)
+	:i $kill_start_key_binding$
+	:i $pause_menu_gradient$$right$
+	:i $add_music_track_text$$pos$ = %vec2(575.000000,320.000000)
+	:i if $GameModeEquals$$is_singlesession$
+		:i $add_roundbar_menu_item$:s{$text$ = %s(8,"CONTINUE")
+			:i $id$ = $menu_continue$
+			:i $pad_choose_script$ = $handle_pause_continue$
+			:i $pad_choose_sound$ = $generic_pause_exit_sound$
+		:i :s}
+		:i if $GoalManager_goalIsActive$$name$ = $TrickAttack$
+			:i $add_roundbar_menu_item$:s{
+				:i $text$ = %s(20,"RETRY HIGH SCORE RUN")
+				:i $id$ = $menu_retry_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$stop_streams$$menu_select_script$ = $RetryCurrentGoal$:s}
+			:i :s}
+			:i $add_roundbar_menu_item$:s{
+				:i $text$ = %s(18,"END HIGH SCORE RUN")
+				:i $id$ = $menu_end_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$menu_select_script$ = $end_high_score_run$:s}
+			:i :s}
+		:i else 
+			:i $add_roundbar_menu_item$:s{
+				:i $text$ = %s(20,"START HIGH SCORE RUN")
+				:i $id$ = $menu_start_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$menu_select_script$ = $TrickAttack_MenuStartRun$:s}
+			:i :s}
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$no_exit$
+			:i $add_roundbar_menu_item$:s{$text$ = %s(8,"CONTINUE")
+				:i $id$ = $menu_continue$
+				:i $pad_choose_script$ = $handle_pause_continue$
+				:i $pad_choose_sound$ = $generic_pause_exit_sound$
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_goal_attack$
+		:i if NOT $IsObserving$
+			:i $GetGoalsMode$
+			:i if  (%GLOBAL%$goals$ = $goals_created$) 
+				:i if $GoalManager_CanRetryGoal$
+					:i if $GoalManager_GetLastGoalId$
+						:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+							:i $add_roundbar_menu_item$$text$ = %s(15,"RETRY LAST GOAL")$id$ = $menu_retry_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$stop_vibration$$menu_select_script$ = $RetryCurrentGoal$:s}
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $add_roundbar_menu_item$$text$ = %s(10,"VIEW GOALS")$id$ = $menu_view_goals$$pad_choose_script$ = $create_view_selected_goals_menu$$pad_choose_params$ = :s{$from_pause$:s}
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $goal_id$ =  ($goal_utility_allow_end_goal_name$) 
+		:i if NOT $ChecksumEquals$$a$ = %GLOBAL%$goal_id$$b$ = $null$
+			:i if $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+				:i if $GoalManager_goalIsActive$$name$ = %GLOBAL%$goal_id$
+					:i $add_roundbar_menu_item$$text$ = %s(15,"END CURRENT RUN")$id$ = $menu_end_run$$pad_choose_script$ = $arcade_machine_end_run$$pad_choose_params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+				:i endif
+			:i endif
+		:i endif
+		:i if $GoalManager_CanRetryGoal$
+			:i $add_roundbar_menu_item$$text$ = %s(15,"RETRY LAST GOAL")$id$ = $menu_retry_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$stop_vibration$$stop_streams$$menu_select_script$ = $RetryCurrentGoal$:s}
+		:i endif
+		:i if NOT $LevelIs$$load_se$
+			:i $add_roundbar_menu_item$$text$ = %s(10,"VIEW GOALS")$id$ = $menu_chapters$$pad_choose_script$ = $view_goals_menu_create$
+		:i endif
+		:i $add_roundbar_menu_item$$text$ = %s(13,"TEXT MESSAGES")$id$ = $menu_pager$$pad_choose_script$ = $pager_window_create$
+	:i else 
+		:i if $GameModeEquals$$is_creategoals$
+			:i if $GoalManager_HasActiveGoals$
+				:i $add_roundbar_menu_item$$text$ = %s(16,"END CURRENT GOAL")$id$ = $menu_end_current_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $end_current_goal_run$:s}
+			:i endif
+			:i $add_roundbar_menu_item$$text$ = %s(10,"VIEW GOALS")$id$ = $menu_view_goals$$pad_choose_script$ = $view_created_goals_menu_create$
+			:i if NOT $LevelIs$$load_sk5ed_gameplay$
+				:i $add_roundbar_menu_item$$text$ = %s(13,"CREATE A GOAL")$id$ = $menu_create_a_goal$$pad_choose_script$ = $create_existing_goals_menu$
+			:i endif
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $classic_mode_menu_add_pause_options$
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i if NOT $LevelIs$$load_sk5ed_gameplay$
+			:i $add_roundbar_menu_item$$text$ = %s(10,"LOAD GOALS")$id$ = $menu_load_goals$$pad_choose_script$ = $prompt_launch_cag_pause_load$
+			:i $GoalEditor$.$GetNumEditedGoals$$ExcludeParkEditorGoals$
+			:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+				:i $no_edited_goals$ = %i(1,00000001)
+			:i endif
+			:i $add_roundbar_menu_item$$text$ = %s(10,"SAVE GOALS")$id$ = $menu_save_goals$$pad_choose_script$ = $launch_pause_menu_save_created_goals$$not_focusable$ = %GLOBAL%$no_edited_goals$
+		:i endif
+	:i endif
+	:i $display_level_select$ = %i(1,00000001)
+	:i if $InNetGame$
+		:i $display_level_select$ = %i(0,00000000)
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i if NOT $GotParam$$no_exit$
+			:i $display_level_select$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$display_level_select$ = %i(1,00000001)) 
+		:i $add_roundbar_menu_item$:s{$text$ = %s(12,"CHANGE LEVEL")
+			:i $id$ = $menu_level_select$
+			:i $pad_choose_script$ = $launch_level_select_menu$
+			:i $tag_grid_x$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GameModeEquals$$is_lobby$
+				:i if NOT $NetworkGamePending$
+					:i if NOT $ChangeLevelPending$
+						:i $add_roundbar_menu_item$$text$ = %s(10,"START GAME")$id$ = $menu_network_start_select$$pad_choose_script$ = $network_game_options_selected$
+					:i endif
+				:i endif
+			:i else 
+				:i $add_roundbar_menu_item$$text$ = %s(16,"END CURRENT GAME")$id$ = $menu_network_end_select$$pad_choose_script$ = $network_end_game_selected$
+			:i endif
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $NetworkGamePending$
+			:i if $OnServer$
+				:i if $OnXbox$
+					:i $add_roundbar_menu_item$$text$ = %s(12,"HOST OPTIONS")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+				:i else 
+					:i $add_roundbar_menu_item$$text$ = %s(14,"SERVER OPTIONS")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+				:i endif
+			:i endif
+			:i if $IsHost$
+				:i if $GameModeEquals$$is_lobby$
+					:i if NOT $OnServer$
+						:i if $OnXbox$
+							:i $add_roundbar_menu_item$$text$ = %s(12,"HOST OPTIONS")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+						:i else 
+							:i $add_roundbar_menu_item$$text$ = %s(14,"SERVER OPTIONS")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i %GLOBAL%$game_active$ = %i(0,00000000)
+			:i if $GoalManager_HasActiveGoals$$count_all$
+				:i %GLOBAL%$game_active$ = %i(1,00000001)
+			:i endif
+			:i if  (%GLOBAL%$game_active$ = %i(1,00000001)) 
+				:i %GLOBAL%$trick_text$ = %s(11,"VIEW TRICKS")
+				:i %GLOBAL%$trick_helper$ = $view_tricks_helper_desc$
+			:i else 
+				:i if NOT $GoalManager_HasActiveGoals$
+					:i %GLOBAL%$trick_text$ = %s(11,"EDIT TRICKS")
+					:i %GLOBAL%$trick_helper$ = $edit_tricks_helper_desc$
+				:i else 
+					:i %GLOBAL%$trick_text$ = %s(11,"VIEW TRICKS")
+					:i %GLOBAL%$trick_helper$ = $view_tricks_helper_desc$
+				:i endif
+			:i endif
+			:i $add_roundbar_menu_item$$text$ = %GLOBAL%$trick_text$$id$ = $menu_cas$$pad_choose_script$ = $create_edit_tricks_menu$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GameModeEquals$$is_lobby$
+				:i if NOT $NetworkGamePending$
+					:i if NOT $ChangeLevelPending$
+						:i $add_roundbar_menu_item$$text$ = %s(12,"CHANGE LEVEL")$id$ = $menu_level_select$$pad_choose_script$ = $launch_level_select_menu$$pad_choose_params$ = :s{$show_warning$:s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i if $OnXbox$
+			:i if $IsTrue$$bootstrap_build$
+				:i $add_roundbar_menu_item$$text$ = %s(11,"PLAYER LIST")$id$ = $menu_network_remove_select$$pad_choose_script$ = $launch_remove_players_menu$$not_focusable$ = $not_focusable$
+			:i else 
+				:i $add_roundbar_menu_item$$text$ = %s(11,"PLAYER LIST")$id$ = $menu_network_player_list_select$$pad_choose_script$ = $launch_player_list_menu$
+				:i if $ProfileLoggedIn$
+					:i $add_roundbar_menu_item$$text$ = %s(10,"HOMIE LIST")$id$ = $menu_network_homie_list_select$$pad_choose_script$ = $launch_homie_list$
+					:i if $AnyBuddyMessagesLeft$
+						:i $add_roundbar_menu_item$$text$ = %s(13,"VIEW MESSAGES")$id$ = $menu_network_homie_list_view$$pad_choose_script$ = $view_buddy_messages$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i if $GameModeEquals$$is_career$
+			:i $GetChapterSelectableProCount$
+			:i if  (%GLOBAL%$selectable_pro_count$ > %i(1,00000001)) 
+				:i $GetCurrentSkaterProfileIndex$
+				:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$skater_family$$b$ = $family_pro$
+					:i if $Skater$.$IsInBail$
+						:i $pro_focus_param$ = $not_focusable$
+					:i else 
+						:i $pro_focus_param$ = :s{:s}
+					:i endif
+					:i $add_roundbar_menu_item$$text$ = %s(10,"CHANGE PRO")$id$ = $menu_change_pro$$pad_choose_script$ = $create_select_pro_menu$%GLOBAL%$pro_focus_param$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i $add_roundbar_menu_item$$text$ = %s(12,"YOUR OPTIONS")$id$ = $menu_your_options$$pad_choose_script$ = $create_your_options_menu$
+	:i endif
+	:i $add_roundbar_menu_item$$text$ = %s(12,"GAME OPTIONS")$id$ = $menu_game_options$$pad_choose_script$ = $create_options_menu$
+	:i if NOT $CD$
+		:i if  ($main_menu_jump_to_cas$ = %i(1,00000001)) 
+			:i $add_roundbar_menu_item$$text$ = %s(11,"BACK TO CAS")$id$ = $debug_cas_menu$$pad_choose_script$ = $create_pre_cas_menu$$pad_choose_params$ = :s{$load_assets$ = %i(1,00000001):s}
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i $add_roundbar_menu_item$$text$ = %s(12,"CHAT MESSAGE")$id$ = $menu_chat$$pad_choose_script$ = $launch_chat_keyboard$
+		:i if NOT $OnServer$
+			:i if NOT $IsObserving$
+				:i if $InInternetMode$
+					:i if $IsTrue$$bootstrap_build$
+						:i if NOT $GoalManager_HasActiveGoals$
+							:i $add_roundbar_menu_item$$text$ = %s(7,"OBSERVE")$id$ = $menu_network_observe_select$$pad_choose_script$ = $chose_observe$$not_focusable$ = $not_focusable$
+						:i endif
+					:i else 
+						:i if NOT $GoalManager_HasActiveGoals$
+							:i $add_roundbar_menu_item$$text$ = %s(7,"OBSERVE")$id$ = $menu_network_observe_select$$pad_choose_script$ = $chose_observe$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $add_roundbar_menu_item$$text$ = %s(4,"QUIT")$id$ = $menu_quit$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $launch_quit_game_dialog$:s}
+	:i else 
+		:i if $CustomParkMode$$testing$
+			:i $printf$%s(26,"PARK EDITOR TEST PLAY MENU")
+			:i $add_roundbar_menu_item$$text$ = %s(14,"BACK TO EDITOR")$id$ = $menu_skateshop$$pad_choose_script$ = $menu_confirm_quit$$pad_choose_params$ = :s{$yes_script$ = $exit_test_play$:s}
+		:i else 
+			:i if $GameModeEquals$$is_classic$
+				:i $classic_mode_menu_add_quit_option$
+			:i else 
+				:i $add_roundbar_menu_item$:s{$text$ = %s(4,"QUIT")
+					:i $id$ = $menu_skateshop$
+					:i $pad_choose_script$ = $generic_menu_pad_choose$
+					:i $pad_choose_params$ = :s{$callback$ = $menu_confirm_quit$:s}
+					:i $tip_text$ = %s(6,"Seeya!")
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i $kill_blur$$start$ = %i(0,00000000)
+	:i if $root_window$.$GetSingleTag$$highlight_change_level$
+		:i $focus_data$ = :s{$grid_index$ = %i(1,00000001):s}
+		:i $root_window$.$RemoveTags$$tags$ = :a{$highlight_change_level$:a}
+	:i endif
+	:i $roundbar_menu_finish$$show_deck$ = $show_deck$$data$ = %GLOBAL%$focus_data$
+:i endfunction
+:i function $create_mp_pause_menu$
+	:i $SetButtonEventMappings$$unblock_menu_input$
+	:i $kill_start_key_binding$
+	:i $make_new_roundbar_menu$:s{
+		:i $menu_id$ = $pause_menu$
+		:i $vmenu_id$ = $pause_vmenu$
+		:i $pad_back_script$ = $handle_start_pressed$
+		:i $title$ = %s(6,"Paused")
+		:i $additional_create_script$ = $pause_create_tipbox$
+		:i $additional_focus_script$ = $pause_focus_tipbox$
+		:i $additional_unfocus_script$ = $pause_unfocus_tipbox$
+		:i $helper_text$ = %GLOBAL%$helper$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $add_roundbar_menu_item$$text$ = %s(8,"Continue")$id$ = $menu_continue$$pad_choose_script$ = $handle_start_pressed$
+	:i $add_roundbar_menu_item$$text$ = %s(16,"End Current Game")$id$ = $menu_network_end_select$$pad_choose_script$ = $network_end_game_selected$
+	:i $add_roundbar_menu_item$$text$ = %s(7,"Options")$id$ = $menu_mp_options$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $create_options_menu$:s}
+	:i $add_roundbar_menu_item$$text$ = %s(4,"Quit")$id$ = $menu_skateshop$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $menu_confirm_quit$:s}
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $do_localized_pause_title$$pos$ = %vec2(500.000000,40.000000)
+	:i if $IsPAL$
+		:i if NOT $English$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $current_menu_anchor$
+				:i $id$ = $localized_pause_title$
+				:i $font$ = $small$
+				:i $text$ = %s(6,"PAUSED")
+				:i $pos$ = %GLOBAL%$pos$
+				:i $just$ = :a{$right$$bottom$:a}
+				:i $scale$ = %i(2,00000002)
+				:i $rgba$ = :a{%i(128,00000080)%i(40,00000028)%i(10,0000000a)%i(128,00000080):a}
+				:i $shadow$
+				:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+				:i $shadow_offs$ = %vec2(3.000000,3.000000)
+				:i $z_priority$ = %i(50,00000032)
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $exit_pause_menu$$menu_id$ = $current_menu_anchor$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu_anchor$
+	:i endif
+	:i $ClearViewerObject$
+	:i $Debounce$$X$$time$ = %f(0.300000)
+	:i $Debounce$$Triangle$$time$ = %f(0.300000)
+	:i $pause_menu_gradient$$off$
+	:i $change$$inside_pause$ = %i(0,00000000)
+	:i $change$$no_focus_sound$ = %i(1,00000001)
+	:i if NOT $CD$
+		:i $change$$viewer_buttons_enabled$ = %i(1,00000001)
+	:i endif
+	:i $show_all_hud_items$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i if $ObjectExists$$id$ = $Skater$
+				:i $Skater$.$NetEnablePlayerInput$
+			:i endif
+		:i endif
+	:i endif
+	:i $UnpauseGame$
+	:i $possibly_add_temp_special_trick$
+	:i $PauseStream$%i(0,00000000)
+	:i if  ($music_was_paused$ = %i(0,00000000)) 
+		:i $PauseMusic$%i(0,00000000)
+	:i endif
+	:i if $root_window$.$GetSingleTag$$need_music_zone_refresh$
+		:i $root_window$.$RemoveTags$$tags$ = :a{$need_music_zone_refresh$:a}
+		:i $SpawnScript$$SFX_refresh_music_box_triggers$$params$ = :s{$wait$:s}
+	:i endif
+	:i $unpause_rain$
+	:i $GoalManager_UnPauseAllGoals$
+	:i if $ObjectExists$$id$ = %GLOBAL%$menu_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$menu_id$
+	:i endif
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $off$:s}
+	:i if $CustomParkMode$$editing$
+		:i if NOT $GotParam$$DoNotSwitchEditorState$
+			:i $SetParkEditorState$$state$ = $edit$
+			:i $SetParkEditorPauseMode$$unpause$
+			:i $SwitchToParkEditorCamera$
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$dont_restore_start_key_binding$
+		:i $restore_start_key_binding$
+	:i endif
+	:i $menu3d_hide$
+	:i if NOT $InNetGame$
+		:i if NOT $GameModeEquals$$is_horse$
+			:i $unpauseskaters$
+		:i endif
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $pause_launch_level$
+	:i $Skater$.$StatsManager_Reset$
+	:i if  ( (%GLOBAL%$level$ = $load_boardshop$)  OR  (%GLOBAL%$level$ = $load_cas$) ) 
+		:i $temp$ = %GLOBAL%$level$
+		:i $GetCurrentLevel$
+		:i $array$ = $return_to_level$
+		:i $SetArrayElement$$arrayname$ = $array$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$level$
+		:i $level$ = %GLOBAL%$temp$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $GoalManager_DeactivateAllGoals$
+		:i $Skater$.$ResetSkaterToCustom$
+	:i endif
+	:i $change_level$ isNull 
+:i endfunction
+:i :end

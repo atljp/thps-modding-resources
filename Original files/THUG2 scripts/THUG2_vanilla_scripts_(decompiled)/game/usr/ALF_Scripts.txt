@@ -1,0 +1,97 @@
+function $ALF_Placeholder$
+:i endfunction
+:i function $ALF_Ped_Generic$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $ALF_Ped_BailWhenSkaterClose$
+	:i $Obj_SetInnerRadius$%i(5,00000005)
+	:i $wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2)
+		 :POS(0) %i(5,00000005)$frames$
+	:BREAKTO(3)
+		 :POS(1) %i(10,0000000a)$frames$
+	:BREAKTO(3)
+		 :POS(2) %i(15,0000000f)$frames$ :POS(3) 
+		:i while
+			
+			:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle1$$numcycles$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7)
+					 :POS(4) %i(2,00000002)
+				:BREAKTO(8)
+					 :POS(5) %i(4,00000004)
+				:BREAKTO(8)
+					 :POS(6) %i(7,00000007)
+				:BREAKTO(8)
+					 :POS(7) %i(9,00000009) :POS(8) 
+				:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle1toIdle2$
+				:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle2$$numcycles$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(9):OFFSET(10):OFFSET(11)
+						 :POS(9) %i(1,00000001)
+					:BREAKTO(12)
+						 :POS(10) %i(2,00000002)
+					:BREAKTO(12)
+						 :POS(11) %i(3,00000003) :POS(12) 
+					:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle2toIdle3$
+					:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle3$$numcycles$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(13):OFFSET(14):OFFSET(15)
+							 :POS(13) %i(1,00000001)
+						:BREAKTO(16)
+							 :POS(14) %i(2,00000002)
+						:BREAKTO(16)
+							 :POS(15) %i(3,00000003) :POS(16) 
+						:i $Obj_CycleAnim$$anim$ = $Ped_M_Idle3toIdle1$
+					:i loop_to 
+				:i endfunction
+				:i function $ALF_Ped_BailWhenSkaterClose$
+					:i $Obj_ClearExceptions$
+					:i select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(17):OFFSET(18):OFFSET(19):OFFSET(20):OFFSET(21)
+						
+						:i  :POS(17) $Obj_CycleAnim$$anim$ = $Ped_M_FalldownA$
+						:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleA$$cycle$
+						:i $SetTags$$Bail$ = $A$
+						:i 
+					:BREAKTO(22)
+						 :POS(18) $Obj_CycleAnim$$anim$ = $Ped_M_FalldownB$
+						:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleB$$cycle$
+						:i $SetTags$$Bail$ = $B$
+						:i 
+					:BREAKTO(22)
+						 :POS(19) $Obj_CycleAnim$$anim$ = $Ped_M_FalldownC$
+						:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleC$$cycle$
+						:i $SetTags$$Bail$ = $C$
+						:i 
+					:BREAKTO(22)
+						 :POS(20) $Obj_CycleAnim$$anim$ = $Ped_M_FalldownD$
+						:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleD$$cycle$
+						:i $SetTags$$Bail$ = $D$
+						:i 
+					:BREAKTO(22)
+						 :POS(21) $Obj_CycleAnim$$anim$ = $Ped_M_FalldownE$
+						:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleE$$cycle$
+						:i $SetTags$$Bail$ = $E$ :POS(22) 
+						:i $Obj_SetException$$ex$ = $ObjectOutofRadius$$scr$ = $ALF_Ped_GetUpFromBail$
+						:i $Obj_SetOuterRadius$%i(10,0000000a)
+					:i endfunction
+					:i function $ALF_Ped_GetUpFromBail$
+						:i $Obj_ClearExceptions$
+						:i $GetTags$
+						:i $Obj_SetAnimCycleMode$$Off$
+						:i $Obj_WaitAnimFinished$
+						:i switch %GLOBAL%$Bail$
+							:i case $A$
+								:i $Obj_CycleAnim$$anim$ = $Ped_M_GetUpA$
+								:i endcase
+							case $B$
+								:i $Obj_CycleAnim$$anim$ = $Ped_M_GetUpB$
+								:i endcase
+							case $C$
+								:i $Obj_CycleAnim$$anim$ = $Ped_M_GetUpC$
+								:i endcase
+							case $D$
+								:i $Obj_CycleAnim$$anim$ = $Ped_M_GetUpD$
+								:i endcase
+							case $E$
+								:i $Obj_CycleAnim$$anim$ = $Ped_M_GetUpE$
+								:i endcase
+							default 
+								:i end_switch
+						
+						:i $goto$$ALF_Ped_Generic$
+					:i endfunction
+					:i :end
+					

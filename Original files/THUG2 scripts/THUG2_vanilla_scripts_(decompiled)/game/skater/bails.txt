@@ -1,0 +1,2396 @@
+
+:i function $DoingTrickBail$
+	:i $printf$%s(9,"TRICKBAIL")
+	:i $Goto$$YawBail$
+:i endfunction
+:i function $YawBail$
+	:i $printf$%s(35,"YawBail ---------------------------")
+	:i if $IsSkaterOnVehicle$
+		:i $Goto$$vehicle_bail$
+	:i endif
+	:i $dir$ = $forward$
+	:i $GetActualSpin$
+	:i if  (%i(0,00000000) > %GLOBAL%$spin$) 
+		:i $spin$ =  (%GLOBAL%$spin$ * %i(4294967295,ffffffff)) 
+	:i endif
+	:i if $LandedFromVert$
+		:i $spin$ =  (%GLOBAL%$spin$ + %i(180,000000b4)) 
+	:i endif
+	:i while
+		
+		:i if  (%GLOBAL%$spin$ > %i(360,00000168)) 
+			:i $spin$ =  (%GLOBAL%$spin$ - %i(360,00000168)) 
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i if  (%i(45,0000002d) > %GLOBAL%$spin$) 
+		:i $dir$ = $nose$
+	:i else 
+		:i if  (%GLOBAL%$spin$ > %i(135,00000087) AND %i(225,000000e1) > %GLOBAL%$spin$) 
+			:i $dir$ = $tail$
+		:i else 
+			:i if $YawingLeft$
+				:i $printf$%s(4,"left")
+				:i if $Flipped$
+					:i $dir$ = $face$
+				:i else 
+					:i $dir$ = $back$
+				:i endif
+			:i else 
+				:i $printf$%s(5,"right")
+				:i if $Flipped$
+					:i $dir$ = $back$
+				:i else 
+					:i $dir$ = $face$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i switch %GLOBAL%$dir$
+		:i case $nose$
+			:i $printf$%s(4,"nose")
+			:i $Goto$$Bail_spin_FWD$
+			:i endcase
+		case $tail$
+			:i $printf$%s(4,"tail")
+			:i $Goto$$Bail_Spin_BCK$
+			:i endcase
+		case $back$
+			:i $printf$%s(4,"back")
+			:i $Goto$$Bail_spin_CW$
+			:i endcase
+		case $face$
+			:i $printf$%s(4,"face")
+			:i $Goto$$Bail_spin_CCW$
+			:i end_switch
+	
+:i endfunction
+:i function $Bail_spin_FWD$
+	:i if $LandedFromVert$
+		:i $printf$%s(4,"Vert")
+		:i if $AirTimeLessThan$%f(1.250000)$second$
+			:i $printf$%s(16,"Regular, Ramp_Ft")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Ft$:a}
+		:i else 
+			:i $printf$%s(16,"Hard, Ramp_Ft_Hd")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Ft_Hd$:a}
+		:i endif
+	:i else 
+		:i if $SpeedLessThan$%i(500,000001f4)
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(7,"Runnout")
+				:i $Goto$$Runout$
+			:i endif
+		:i endif
+		:i if $SpeedLessThan$%i(600,00000258)
+			:i $printf$%s(4,"Slow")
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(15,"Regular Forward")
+				:i $GotoRandomScript$:a{$Bail_Spin_FWD_Regular$:a}
+			:i else 
+				:i $printf$%s(12,"Hard Forward")
+				:i $GotoRandomScript$:a{$Bail_Spin_FWD_Hard$:a}
+			:i endif
+		:i else 
+			:i $printf$%s(4,"Fast")
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(12,"Fast Forward")
+				:i $GotoRandomScript$:a{$Bail_Spin_FWD_Fast$:a}
+			:i else 
+				:i $printf$%s(12,"Hard Forward")
+				:i $GotoRandomScript$:a{$Bail_Spin_FWD_Hard$:a}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $Bail_Spin_BCK$
+	:i if $LandedFromVert$
+		:i $printf$%s(4,"Vert")
+		:i if $AirTimeLessThan$%f(1.250000)$second$
+			:i $printf$%s(17,"Regular - Ramp_Bk")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Bk$:a}
+		:i else 
+			:i $printf$%s(17,"Hard - Ramp_Bk_Hd")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Bk_Hd$:a}
+		:i endif
+	:i else 
+		:i if $SpeedLessThan$%i(500,000001f4)
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(7,"Runnout")
+				:i $Goto$$Runout$
+			:i endif
+		:i endif
+		:i if $SpeedLessThan$%i(650,0000028a)
+			:i $printf$%s(4,"Slow")
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(12,"Regular Back")
+				:i $GotoRandomScript$:a{$Bail_Spin_BCK_Regular$:a}
+			:i else 
+				:i $printf$%s(9,"Hard Back")
+				:i $GotoRandomScript$:a{$Bail_Spin_BCK_Hard$:a}
+			:i endif
+		:i else 
+			:i $printf$%s(4,"Fast")
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(9,"Fast Back")
+				:i $GotoRandomScript$:a{$Bail_Spin_BCK_Fast$:a}
+			:i else 
+				:i $printf$%s(9,"Hard Back")
+				:i $GotoRandomScript$:a{$Bail_Spin_BCK_Hard$:a}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $Bail_spin_CW$
+	:i if $LandedFromVert$
+		:i $printf$%s(4,"Vert")
+		:i if $AirTimeLessThan$%f(1.250000)$second$
+			:i $printf$%s(28,"Regular - ramp left or front")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Lt$$Bail_Ramp_Ft_Med$:a}
+		:i else 
+			:i $printf$%s(16,"Hard - ramp left")
+			:i $GotoRandomScript$:a{$Bail_Ramp_Lt_Med$$Bail_Ramp_Lt_Hd$:a}
+		:i endif
+	:i else 
+		:i if $SpeedLessThan$%i(500,000001f4)
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(7,"Runnout")
+				:i $Goto$$Runout$
+			:i endif
+		:i endif
+		:i if $SpeedLessThan$%i(600,00000258)
+			:i $printf$%s(4,"Slow")
+			:i if $AirTimeLessThan$%i(1,00000001)$second$
+				:i $printf$%s(7,"Regular")
+				:i select(2f,2, 04 00 01 00) :OFFSET(0):OFFSET(1)
+					 :POS(0) $Goto$$Bail_Spin_CW_Hard_A$
+					:BREAKTO(2)
+						 :POS(1) $Goto$$Nutsac$ :POS(2) 
+				:i else 
+					:i $printf$%s(4,"Hard")
+					:i $GotoRandomScript$:a{$Bail_Spin_CW_Hard_B$:a}
+				:i endif
+			:i else 
+				:i $printf$%s(4,"Fast")
+				:i if $AirTimeLessThan$%i(1,00000001)$second$
+					:i $printf$%s(7,"Regular")
+					:i select(2f,2, 04 00 01 00) :OFFSET(3):OFFSET(4)
+						 :POS(3) $Goto$$Bail_Spin_CW_Hard$
+						:BREAKTO(5)
+							 :POS(4) $Goto$$Nutsac$ :POS(5) 
+					:i else 
+						:i $printf$%s(4,"Hard")
+						:i $GotoRandomScript$:a{$Bail_Spin_CW_Hard_B$:a}
+					:i endif
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Bail_spin_CCW$
+			:i if $LandedFromVert$
+				:i $printf$%s(4,"Vert")
+				:i if $AirTimeLessThan$%f(1.250000)$second$
+					:i $printf$%s(51,"Regular - ramp front or right, or spin back regular")
+					:i $GotoRandomScript$:a{$Bail_Ramp_Ft$$Bail_Ramp_Rt$$Bail_Spin_BCK_Regular$:a}
+				:i else 
+					:i $printf$%s(21,"Hard - front or right")
+					:i $GotoRandomScript$:a{$Bail_Ramp_Ft_Hd$$Bail_Ramp_Rt_Hd$:a}
+				:i endif
+			:i else 
+				:i if $SpeedLessThan$%i(500,000001f4)
+					:i if $AirTimeLessThan$%i(1,00000001)$second$
+						:i $printf$%s(7,"Runnout")
+						:i $Goto$$Runout$
+					:i endif
+				:i endif
+				:i if $SpeedLessThan$%i(600,00000258)
+					:i $printf$%s(4,"Slow")
+					:i if $AirTimeLessThan$%i(1,00000001)$second$
+						:i $printf$%s(7,"Regular")
+						:i select(2f,2, 04 00 01 00) :OFFSET(6):OFFSET(7)
+							 :POS(6) $Goto$$Bail_Spin_CCW_Hard$
+							:BREAKTO(8)
+								 :POS(7) $Goto$$Nutsac$ :POS(8) 
+						:i else 
+							:i $printf$%s(4,"Hard")
+							:i $GotoRandomScript$:a{$Bail_Spin_CCW_Hard_B$:a}
+						:i endif
+					:i else 
+						:i $printf$%s(4,"Fast")
+						:i $GotoRandomScript$:a{$Bail_Spin_CCW_Hard_C$:a}
+					:i endif
+				:i endif
+			:i endfunction
+			:i function $PitchBail$
+				:i if $IsSkaterOnVehicle$
+					:i $Goto$$vehicle_bail$
+				:i endif
+				:i $tail_script$ = $Bail_Pitch_Tail$
+				:i $face_script$ = $Bail_Pitch_Face$
+				:i $back_script$ = $Bail_Pitch_Back$
+				:i $nose_script$ = $Bail_Pitch_Nose$
+				:i if NOT $InSplitscreenGame$
+					:i if $GetGlobalFlag$$Flag$ = $TAP_BUTTONS_EXPLAINED$
+						:i if NOT $GetGlobalFlag$$Flag$ = $RECOVERY_BUTTONS_EXPLAINED$
+							:i $Create_Panel_Message$:s{$text$ = %s(38,"Tip: press \ml in the air to level out")
+								:i $id$ = $skater_hint$
+								:i $style$ = $skater_hint_style$
+								:i $pos$ = %vec2(320.000000,170.000000)
+								:i $rgba$ = :a{%i(32,00000020)%i(75,0000004b)%i(102,00000066)%i(100,00000064):a}
+							:i :s}
+							:i $SetGlobalFlag$$Flag$ = $RECOVERY_BUTTONS_EXPLAINED$
+						:i endif
+					:i endif
+				:i endif
+				:i $TurnToFaceVelocity$
+				:i $GetLastGroundHeading$
+				:i $GetHeading$
+				:i $dif$ =  (%GLOBAL%$heading$ - %GLOBAL%$last_heading$) 
+				:i while
+					
+					:i if  (%GLOBAL%$dif$ > %i(180,000000b4)) 
+						:i $dif$ =  (%i(360,00000168) - %GLOBAL%$dif$) 
+					:i else 
+						:i if  (%i(4294967116,ffffff4c) > %GLOBAL%$dif$) 
+							:i $dif$ =  (%i(360,00000168) + %GLOBAL%$dif$) 
+						:i else 
+							:i continue
+							
+						:i endif
+					:i endif
+				:i loop_to 
+				:i $printf$%s(26,"heading=%i last_heading=%j")$i$ = %GLOBAL%$heading$$j$ = %GLOBAL%$last_heading$
+				:i $printf$%s(22,"dif =============== %k")$k$ = %GLOBAL%$dif$
+				:i if $Flipped$
+					:i if  (%i(0,00000000) > %GLOBAL%$dif$) 
+						:i $printf$%s(5,"flip1")
+						:i $Flip$
+						:i $flipped_skater$ = %i(1,00000001)
+					:i endif
+				:i else 
+					:i if  (%GLOBAL%$dif$ > %i(0,00000000)) 
+						:i $printf$%s(5,"flip2")
+						:i $Flip$
+						:i $flipped_skater$ = %i(1,00000001)
+					:i endif
+				:i endif
+				:i $GetPitchBailDir$
+				:i switch %GLOBAL%$pitch_bail_dir$
+					:i case $nose$
+						:i $pitch_script$ = %GLOBAL%$nose_script$
+						:i endcase
+					case $tail$
+						:i $pitch_script$ = %GLOBAL%$tail_script$
+						:i endcase
+					case $left$
+						:i if $Flipped$
+							:i $pitch_script$ = %GLOBAL%$back_script$
+						:i else 
+							:i $pitch_script$ = %GLOBAL%$face_script$
+						:i endif
+						:i endcase
+					case $right$
+						:i if $Flipped$
+							:i $pitch_script$ = %GLOBAL%$face_script$
+						:i else 
+							:i $pitch_script$ = %GLOBAL%$back_script$
+						:i endif
+						:i endcase
+					default 
+						:i $pitch_script$ = %GLOBAL%$face_script$
+						:i end_switch
+				
+				:i if $GotParam$$flipped_skater$
+					:i switch %GLOBAL%$pitch_script$
+						:i case %GLOBAL%$back_script$
+							:i $pitch_script$ = %GLOBAL%$face_script$
+							:i endcase
+						case %GLOBAL%$face_script$
+							:i $pitch_script$ = %GLOBAL%$back_script$
+							:i end_switch
+					
+				:i endif
+				:i if $GotParam$$pitch_script$
+					:i $MakeSkaterGoto$%GLOBAL%$pitch_script$
+				:i endif
+			:i endfunction
+			:i function $FiftyFiftyFall$
+				:i $printf$%s(16,"Grind Bail 50-50")
+				:i switch %GLOBAL%$dir$
+					:i case $forward$
+						:i $printf$%s(11,"bailed Left")
+						:i $GotoRandomScript$:a{$Bail_Falling_LT$:a}
+						:i endcase
+					case $backward$
+						:i $printf$%s(12,"bailed Right")
+						:i $GotoRandomScript$:a{$Bail_Falling_RT$:a}
+						:i endcase
+					default 
+						:i $printf$%s(7,"Default")
+						:i $GotoRandomScript$:a{$Bail_Falling_Fwd$:a}
+						:i end_switch
+				
+			:i endfunction
+			:i function $GrindFallLR$
+				:i if $Obj_GetCollision$$down$$distance$ = %i(0,00000000)$height$ = %i(0,00000000)$length$ = %f(2.500000)$shift$ = %f(0.500000)
+					:i $printf$%s(7,"too low")
+					:i $no_nutter$ = %i(1,00000001)
+				:i endif
+				:i if $Ledge$
+					:i $printf$%s(5,"Ledge")
+					:i $no_nutter$ = %i(1,00000001)
+				:i endif
+				:i if $GotParam$$no_nutter$
+					:i $Goto$$GrindBailFacingForwards$$params$ = :s{$dir$ = %GLOBAL%$dir$:s}
+				:i else 
+					:i select(2f,2, 01 00 03 00) :OFFSET(9):OFFSET(10)
+						 :POS(9) $Goto$$GrindBailFacingForwards$$params$ = :s{$dir$ = %GLOBAL%$dir$:s}
+						:BREAKTO(11)
+							 :POS(10) $Goto$$Nutter$ :POS(11) 
+					:i endif
+				:i endfunction
+				:i function $GrindBailFacingForwards$
+					:i $printf$%s(19,"Grind Bail Forwards")
+					:i switch %GLOBAL%$dir$
+						:i case $forward$
+							:i $printf$%s(11,"bailed left")
+							:i $GotoRandomScript$:a{$Bail_Falling_Slide_FWD_lt$:a}
+							:i endcase
+						case $backward$
+							:i $printf$%s(12,"bailed right")
+							:i $GotoRandomScript$:a{$Bail_Falling_Slide_FWD_rt$:a}
+							:i endcase
+						default 
+							:i $printf$%s(7,"Default")
+							:i $GotoRandomScript$:a{$Bail_Falling_Slide_FWD_lt$:a}
+							:i end_switch
+					
+				:i endfunction
+				:i function $BackwardsGrindBails$
+					:i if $Obj_GetCollision$$down$$distance$ = %i(0,00000000)$height$ = %i(0,00000000)$length$ = %f(2.500000)$shift$ = %f(0.500000)
+						:i $printf$%s(7,"too low")
+						:i $no_nutter$ = %i(1,00000001)
+					:i endif
+					:i if $Ledge$
+						:i $printf$%s(5,"Ledge")
+						:i $no_nutter$ = %i(1,00000001)
+					:i endif
+					:i if $GotParam$$no_nutter$
+						:i $Goto$$GrindBailFacingBackwards$$params$ = :s{$dir$ = %GLOBAL%$dir$:s}
+					:i else 
+						:i select(2f,2, 01 00 03 00) :OFFSET(12):OFFSET(13)
+							 :POS(12) $Goto$$GrindBailFacingBackwards$$params$ = :s{$dir$ = %GLOBAL%$dir$:s}
+							:BREAKTO(14)
+								 :POS(13) $Goto$$NutterBackwards$ :POS(14) 
+						:i endif
+					:i endfunction
+					:i function $GrindBailFacingBackwards$
+						:i $printf$%s(21,"Grind Bail Backwards ")
+						:i switch %GLOBAL%$dir$
+							:i case $forward$
+								:i $printf$%s(11,"bailed left")
+								:i $GotoRandomScript$:a{$Bail_Falling_Slide_BCK_lt$:a}
+								:i endcase
+							case $backward$
+								:i $printf$%s(12,"bailed right")
+								:i $GotoRandomScript$:a{$Bail_Falling_Slide_BCK_rt$:a}
+								:i endcase
+							default 
+								:i $printf$%s(7,"Default")
+								:i $GotoRandomScript$:a{$Bail_Falling_Slide_BCK_lt$:a}
+								:i end_switch
+						
+					:i endfunction
+					:i function $Nutter$
+						:i $printf$%s(15,"Nutter Forwards")
+						:i $GotoRandomScript$:a{$Bail_Nutter_FWD$:a}
+					:i endfunction
+					:i function $NutterBackwards$
+						:i $printf$%s(16,"Nutter Backwards")
+						:i $GotoRandomScript$:a{$Bail_Nutter_BCK$:a}
+					:i endfunction
+					:i function $Runout$
+						:i if $SpeedLessThan$%i(350,0000015e)
+							:i $printf$%s(12,"RunOut Quick")
+							:i $GotoRandomScript$:a{$RunOutQuick$:a}
+						:i else 
+							:i $printf$%s(14,"RunOut Regular")
+							:i select(2f,2, 02 00 01 00) :OFFSET(15):OFFSET(16)
+								 :POS(15) $Goto$$Bail_RunOut_New_A$
+								:BREAKTO(17)
+									 :POS(16) $Goto$$Bail_RunOut_Old$ :POS(17) 
+							:i endif
+						:i endfunction
+						:i function $ManualBail$
+							:i if $SpeedLessThan$%i(600,00000258)
+								:i $Goto$$ManualBailSlow$
+							:i else 
+								:i $Goto$$ManualBailFast$
+							:i endif
+						:i endfunction
+						:i function $NoseManualBail$
+							:i if $SpeedLessThan$%i(550,00000226)
+								:i $Goto$$NoseManualBailSlow$
+							:i else 
+								:i $Goto$$NoseManualBailFast$
+							:i endif
+						:i endfunction
+						:i $FallForwardAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Idle_FWD$$AnimFall2$ = $Bail_falling_hit_med_Fwd$$AnimFall2Hard$ = $Bail_falling_hit_hard_FWD$$AnimFallEnd$ = $Getup_HK_BK$
+							:i $Xmove$ = %i(150,00000096)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallBackwardAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Idle_BCK$$AnimFall2$ = $Bail_falling_hit_med_BCK$$AnimFall2Hard$ = $Bail_falling_hit_hard_BCK$$AnimFallEnd$ = $Getup_HK_BK$
+							:i $Xmove$ = %i(150,00000096)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallRightAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Idle_RT$$AnimFall2$ = $Bail_falling_hit_med$$AnimFall2Hard$ = $Bail_falling_hit_hard$$AnimFallEnd$ = $Getup_HK_Rt$
+							:i $Xmove$ = %i(150,00000096)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallLeftAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Idle_LT$$AnimFall2$ = $Bail_falling_hit_hard$$AnimFall2Hard$ = $Bail_falling_hit_hard$$AnimFallEnd$ = $Getup_HK_Lt$
+							:i $Xmove$ = %i(4294967131,ffffff5b)$moveframes$ = %i(30,0000001e)
+						:i :s}
+						:i $FallForwardRightAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Slide_Idle_RTf$$AnimFall2$ = $Bail_Falling_Slide_HitM_RTf$$AnimFall2Hard$ = $Bail_Falling_Slide_HitH_RTf$$AnimFallEnd$ = $Getup_HK_Lt$
+							:i $Xmove$ = %i(150,00000096)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallForwardLeftAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Slide_Idle_LTf$$AnimFall2$ = $Bail_Falling_Slide_HitM_LTf$$AnimFall2Hard$ = $Bail_Falling_Slide_HitH_LTf$$AnimFallEnd$ = $Getup_HK_Lt$
+							:i $Xmove$ = %i(4294967146,ffffff6a)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallBackwardLeftAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Slide_Idle_LTb$$AnimFall2$ = $Bail_Falling_Slide_HitM_LTb$$AnimFall2Hard$ = $Bail_Falling_Slide_HitH_LTb$$AnimFallEnd$ = $Getup_HK_Rt$
+							:i $Xmove$ = %i(4294967146,ffffff6a)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallBackwardRightAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Slide_Idle_RTb$$AnimFall2$ = $Bail_Falling_Slide_HitM_RTb$$AnimFall2Hard$ = $Bail_Falling_Slide_HitH_RTb$$AnimFallEnd$ = $Getup_HK_Rt$
+							:i $Xmove$ = %i(150,00000096)$moveframes$ = %i(60,0000003c)
+						:i :s}
+						:i $FallBackwardSlideAnims$ = :s{
+							:i $AnimFall1$ = $Bail_Falling_Slide_Idle_BCK$$AnimFall2$ = $Bail_Falling_Slide_HitM_BCK$$AnimFall2Hard$ = $Bail_Falling_Slide_HitH_BCK$$AnimFallEnd$ = $Getup_HK_FT$
+						:i :s}
+						:i $FallStandingAnims$ = :s{
+							:i $AnimFall1$ = $RunOut_Drop_Idle$$AnimFall2$ = $RunOut_Drop_Land_Med$$AnimFall2Hard$ = $RunOut_Drop_Land_Med$$AnimFallEnd$ = $Getup_HK_FT$
+							:i $SplatBloodFrame$ = %i(6,00000006)
+						:i :s}
+						:i $BAILSCRIPT$ = $Kneeslide$
+						:i function $RunOutQuick$
+							:i $GeneralBail$:s{$Anim1$ = $RunOutQuick$$IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(11,0000000b)$BoardAlwaysOn$$BashOff$$NoBlood$
+								:i $BoardAlwaysOn$
+								:i $Sound$ = $Bailrunoutflip$$NoScuff$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallStandingAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_RunOut_Old$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_RunOut_Old$$IntoAirFrame$ = %i(1,00000001)$SmackAnim$ = $Bail_Wall_FWD_Regular$$Friction$ = %i(13,0000000d)$BoardAlwaysOn$$BashOff$$NoBlood$
+								:i $BoardAlwaysOn$
+								:i $Sound$ = $Bailrunoutflip$$NoScuff$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallStandingAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_RunOut_New_A$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_RunOut_New_A$$IntoAirFrame$ = %i(1,00000001)$SmackAnim$ = $Bail_Wall_FWD_Regular$$Friction$ = %i(17,00000011)$BoardAlwaysOn$$BashOff$$NoBlood$
+								:i $BoardAlwaysOn$
+								:i $Sound$ = $Bailrunoutflip$$NoScuff$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(0.400000)
+								:i $FallStandingAnims$
+							:i :s}
+						:i endfunction
+						:i function $RunOut_Drop_Land_Med$
+							:i $GeneralBail$:s{$Anim1$ = $RunOut_Drop_Land_Med$$IntoAirFrame$ = %i(1,00000001)$SmackAnim$ = $Bail_Wall_FWD_Low$$Friction$ = %i(13,0000000d)$BoardAlwaysOn$$BashOff$
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(6,00000006)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallStandingAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Ft$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Ft$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(11,0000000b)$SmackAnim$ = $Bail_Wall_FWD_Regular$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Ft_Med$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Ft_Med$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(10,0000000a)$SmackAnim$ = $Bail_Wall_FWD_Regular$
+								:i $BoardOffFrame$ = %i(6,00000006)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(13,0000000d)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Ft_Hd$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Ft_Hd$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(6,00000006)$SmackAnim$ = $Bail_Wall_FWD_Regular$
+								:i $BoardOffFrame$ = %i(8,00000008)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(10,0000000a)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(0.750000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Bk$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Bk$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(17,00000011)$SmackAnim$ = $Bail_Wall_BCK_Regular$
+								:i $BoardOffFrame$ = %i(3,00000003)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(11,0000000b)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Bk_Hd$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Bk_Hd$$NoBlending$$Endpose$ = $Getup_HK_Rt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(14,0000000e)$SmackAnim$ = $Bail_Wall_BCK_Regular$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(12,0000000c)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Lt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Lt$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(16,00000010)$SmackAnim$ = $Bail_Wall_FWD_Regular$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.000000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Lt_Med$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Lt_Med$$NoBlending$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(16,00000010)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallLeftAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Lt_Hd$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Lt_Hd$$NoBlending$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(0,00000000)
+								:i $SmackAnim$ = $Bail_Wall_LT_Low$
+								:i $BoardOffFrame$ = %i(5,00000005)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(10,0000000a)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(19,00000013)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallLeftAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Rt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Rt$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_RT_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Rt_Med$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Rt_Med$$NoBlending$$Endpose$ = $Getup_HK_BK$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(1,00000001)$SmackAnim$ = $Bail_Wall_RT_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Ramp_Rt_Hd$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Ramp_Rt_Hd$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_RT_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CW_Hard$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CW_Hard$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(18,00000012)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CCW_Hard$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CCW_Hard$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CW_Hard_A$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CW_Hard_A$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(23,00000017)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(5,00000005)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(12,0000000c)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CCW_Hard_B$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CCW_Hard_B$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_RT_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(25,00000019)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CCW_Hard_C$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CCW_Hard_C$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %f(13.500000)$SmackAnim$ = $Bail_Wall_LT_Low$
+								:i $BoardOffFrame$ = %i(2,00000002)$BoardVel$ = %vec3(-30.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(25,00000019)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_CW_Hard_B$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_CW_Hard_B$$NoBlending$$Endpose$ = $Getup_HK_Rt$
+								:i $IntoAirFrame$ = %i(1,00000001)$HeavyFriction$ = %i(10,0000000a)$Friction$ = %i(10,0000000a)$Friction2$ = %f(17.500000)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(2,00000002)$BoardVel$ = %vec3(-30.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallRightAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_FWD_Regular$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_FWD_Regular$$NoBlending$$Endpose$ = $GetUp_Sit_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(14,0000000e)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(13,0000000d)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_FWD_Hard$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_FWD_Hard$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(18,00000012)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(24,00000018)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_FWD_Fast$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_FWD_Fast$$NoBlending$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(14,0000000e)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(12,0000000c)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_BCK_Regular$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_BCK_Regular$$NoBlending$$Endpose$ = $Getup_HK_BK$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(12,0000000c)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(5,00000005)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(0.300000)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_BCK_Hard$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_BCK_Hard$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(19,00000013)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(10,0000000a)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Spin_BCK_Fast$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Spin_BCK_Fast$$NoBlending$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction2$ = %i(10,0000000a)$Friction$ = %i(28,0000001c)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(4294967286,fffffff6)
+								:i $Sound$ = $bail_knee1$$FoleySound$$BloodFrame$ = %i(56,00000038)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Pitch_Back$
+							:i $printf$%s(15,"Bail_Pitch_Back")
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Pitch_Back$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(100,00000064)$SmackAnim$ = $Bail_Wall_BCK_Low$
+								:i $Sound$ = $Bail04$$FoleySound$$NoBlending$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(25.000000,150.000000,0.000000)$BoardRotVel$ = %vec3(0.500000,3.000000,2.000000)$BoardSkaterVel$ = %i(0,00000000)$BloodFrame$ = %i(8,00000008)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardSlideAnims$
+								:i $dont_face_vel$ = %GLOBAL%$dont_face_vel$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Pitch_Tail$
+							:i $printf$%s(15,"Bail_Pitch_Tail")
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Pitch_Tail$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(100,00000064)$SmackAnim$ = $Bail_Wall_BCK_Regular$
+								:i $Sound$ = $Bail04$$FoleySound$$NoBlending$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(25.000000,150.000000,0.000000)$BoardRotVel$ = %vec3(0.500000,3.000000,2.000000)$BoardSkaterVel$ = %i(0,00000000)$BloodFrame$ = %i(6,00000006)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Pitch_Face$
+							:i $printf$%s(15,"Bail_Pitch_Face")
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Pitch_Face$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$BloodFrame$ = %i(5,00000005)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(0,00000000)$BoardVel$ = %vec3(0.000000,100.000000,-300.000000)$BoardRotVel$ = %vec3(0.000000,5.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $Sound$ = $bail_knee1$$FoleySound$$NoBlending$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallForwardAnims$
+								:i $dont_face_vel$ = %GLOBAL%$dont_face_vel$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Pitch_Nose$
+							:i $printf$%s(15,"Bail_Pitch_Nose")
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Pitch_Nose$$NoBlending$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(20,00000014)$Friction$ = %i(100,00000064)$SmackAnim$ = $Bail_Wall_FWD_Low$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-100.000000,50.000000,-250.000000)$BoardRotVel$ = %vec3(10.000000,2.000000,-2.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $Sound$ = $BoardBail01$$FoleySound$$BloodFrame$ = %i(4,00000004)$NoBlending$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Nutsac$
+							:i $GeneralBail$:s{$Anim1$ = $Nutsac$$NoBlending$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(1,00000001)$Friction$ = %i(20,00000014)$SmackAnim$ = $Bail_Wall_RT_Low$
+								:i $BoardOffFrame$ = %i(43,0000002b)$BoardVel$ = %vec3(0.000000,50.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $Sound$ = $bail_knee1$$FoleySound$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Fwd$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Fwd$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(26,0000001a)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Bck$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Bck$$Endpose$ = $Getup_HK_BK$
+								:i $IntoAirFrame$ = %i(33,00000021)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_RT$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_RT$$Endpose$ = $Getup_HK_Rt$
+								:i $IntoAirFrame$ = %i(36,00000024)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_RT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallRightAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_LT$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_LT$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(16,00000010)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(7,00000007)$SmackAnim$ = $Bail_Wall_LT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallLeftAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Slide_BCK$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Slide_BCK$$Endpose$ = $Getup_HK_FT$
+								:i $IntoAirFrame$ = %i(28,0000001c)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(3,00000003)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardSlideAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Slide_BCK_lt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Slide_LTb$$Endpose$ = $Getup_HK_Rt$
+								:i $IntoAirFrame$ = %i(26,0000001a)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_LT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardLeftAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Slide_BCK_rt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Slide_RTb$$Endpose$ = $Getup_HK_Rt$
+								:i $IntoAirFrame$ = %i(34,00000022)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_RT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardRightAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Slide_FWD_lt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Slide_LTf$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(26,0000001a)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_LT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallForwardLeftAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Falling_Slide_FWD_rt$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Falling_Slide_RTf$$Endpose$ = $Getup_HK_Lt$
+								:i $IntoAirFrame$ = %i(26,0000001a)
+								$ForceFall$$Friction$ = %i(0,00000000)$BloodFrame$ = %i(50,00000032)$SmackAnim$ = $Bail_Wall_RT_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(-50.000000,20.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,-1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$FallBlendPeriod$ = %i(0,00000000)$SplatFriction$ = %i(20,00000014)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallForwardRightAnims$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Nutter_FWD$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Nutter_FWD$$Endpose$ = $Getup_HK_FT$$IntoAirFrame$ = %i(47,0000002f)$Friction$ = %i(0,00000000)$SmackAnim$ = $Bail_Wall_FWD_Regular$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(5,00000005)$BoardVel$ = %vec3(20.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$BonkSound$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $Nutter$
+							:i :s}
+						:i endfunction
+						:i function $Bail_Nutter_BCK$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Nutter_BCK$$Endpose$ = $Getup_HK_FT$$IntoAirFrame$ = %i(37,00000025)$Friction$ = %i(0,00000000)$SmackAnim$ = $Bail_Wall_BCK_Regular$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(20.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,1.000000,1.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $FoleySound$$BonkSound$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBackwardSlideAnims$
+								:i $Nutter$
+							:i :s}
+						:i endfunction
+						:i function $ManualBailSlow$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Manual_BK$$Endpose$ = $GetUp_Sit_FT$$IntoAirFrame$ = %i(30,0000001e)$Friction$ = %i(20,00000014)$NoBlending$$BloodFrame$ = %i(15,0000000f)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(6,00000006)$BoardVel$ = %vec3(0.000000,50.000000,400.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $ManualBailFast$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Manual_BK_fast$$Endpose$ = $Getup_HK_FT$$IntoAirFrame$ = %i(30,0000001e)$NoBlending$$Friction$ = %i(5,00000005)$BloodFrame$ = %i(15,0000000f)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(6,00000006)$BoardVel$ = %vec3(0.000000,50.000000,400.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $NoseManualBailSlow$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Manual_FT$$Endpose$ = $Getup_HK_FT$$IntoAirFrame$ = %i(30,0000001e)$NoBlending$$Friction$ = %i(10,0000000a)$BloodFrame$ = %i(13,0000000d)$SmackAnim$ = $Bail_Wall_FWD_Regular$$Sound$ = $BoardBail01$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(0.000000,50.000000,-400.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $NoseManualBailFast$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Manual_FT_fast$$Endpose$ = $Getup_HK_Lt$$IntoAirFrame$ = %i(30,0000001e)$NoBlending$$Friction$ = %i(10,0000000a)$BloodFrame$ = %i(15,0000000f)$SmackAnim$ = $Bail_Wall_FWD_Regular$$Sound$ = $BoardBail01$
+								:i $BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(0.000000,50.000000,-400.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $Trolley_BailB$
+							:i $GeneralBail$:s{$Anim1$ = $Trolley_BailB$$BoardOffFrame$ = %i(11,0000000b)$Anim2$ = $GetUpForwards$$IntoAirFrame$ = %i(20,00000014)$Friction$ = %i(15,0000000f)$SmackAnim$ = $Bail_Wall_FWD_Regular$
+								:i $Sound$ = $BoardBail01$$FoleySound$$BloodFrame$ = %i(20,00000014)
+								:i $FallBlendPeriod$ = %f(1.500000)
+								:i $FallForwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $GurneyBail$
+							:i $GeneralBail$:s{$Anim1$ = $Bail_Manual_BK$$Endpose$ = $GetUp_Sit_FT$$IntoAirFrame$ = %i(30,0000001e)$Friction$ = %i(20,00000014)$NoBlending$$BloodFrame$ = %i(15,0000000f)$SmackAnim$ = $Bail_Wall_BCK_Low$$Sound$ = $Bail04$
+								:i $BoardOffFrame$ = %i(1,00000001)$BoardVel$ = %vec3(0.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001)$gurney$ = $gurney$
+								:i $GroundGoneBail$ = $GroundGoneBail$
+								:i $FallBlendPeriod$ = %i(1,00000001)
+								:i $FallBackwardAnims$
+							:i :s}
+						:i endfunction
+						:i function $GeneralBail$$Friction$ = %i(18,00000012)$Friction2$ = %i(20,00000014)$HeavyFriction$ = %i(100,00000064)
+							:i $Obj_GetType$
+							:i if  (%GLOBAL%$ObjType$ = $OBJECT_TYPE_PED$) 
+								:i $Goto$$Ped_Skater_BeginBail$$params$ =  isNull 
+								:i return
+								
+							:i endif
+							:i $Obj_SetBoundingSphere$%i(100,00000064)
+							:i if $GotParam$$UnrotateBoardFirst$
+								:i if $BoardIsRotated$
+									:i $BoardRotate$
+								:i endif
+							:i endif
+							:i if $GotParam$$NoBailBoard$
+								:i $NoBailBoard$ = %i(1,00000001)
+							:i endif
+							:i $NollieOff$
+							:i $PressureOff$
+							:i $KillSpecial$
+							:i $created_trick_cleanup$
+							:i if NOT $GotParam$$NoScuff$
+								:i $PlaySkaterStream$$type$ = %s(4,"bail")
+							:i endif
+							:i $InBail$
+							:i $LaunchStateChangeEvent$$State$ = $Skater_InBail$
+							:i $SetExtraPush$$radius$ = %i(48,00000030)$speed$ = %i(100,00000064)$rotate$ = %i(6,00000006)
+							:i if NOT $GotParam$$dont_face_vel$
+								:i $TurnToFaceVelocity$
+							:i endif
+							:i if NOT $GotParam$$BoardAlwaysOn$
+								:i if NOT  ($nobails$ = %i(1,00000001)) 
+									:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %GLOBAL%$BoardOffFrame$$BoardVel$ = %GLOBAL%$BoardVel$$BoardRotVel$ = %GLOBAL%$BoardRotVel$$BoardSkaterVel$ = %GLOBAL%$BoardSkaterVel$$NoBailBoard$ = %GLOBAL%$NoBailBoard$$gurney$ = %GLOBAL%$gurney$:s}
+								:i endif
+							:i endif
+							:i $SparksOff$
+							:i $VibrateOff$
+							:i $ClearExceptions$
+							:i $DisablePlayerInput$$AllowCameraControl$
+							:i $BailSkaterTricks$
+							:i $StopBalanceTrick$
+							:i $SetException$$Ex$ = $CarBail$$Scr$ = $CarBail$
+							:i if  ($nobails$ = %i(1,00000001)) 
+								:i $Goto$$Baildone$
+							:i endif
+							:i if $GotParam$$Endpose$
+								:i $SetCurrentBailEndpose$%GLOBAL%$Endpose$
+							:i else 
+								:i $SetCurrentBailEndpose$
+							:i endif
+							:i if $GotParam$$GroundGoneBail$
+								:i $SetException$$Ex$ = $GroundGone$$Scr$ = %GLOBAL%$GroundGoneBail$$params$ = :s{ isNull :s}
+							:i endif
+							:i if $GotParam$$SmackAnim$
+								:i $SetException$$Ex$ = $FlailHitWall$$Scr$ = $BailSmack$$params$ = :s{$SmackAnim$ = %GLOBAL%$SmackAnim$:s}
+								:i $SetException$$Ex$ = $FlailLeft$$Scr$ = $BailSmack$$params$ = :s{$SmackAnim$ = %GLOBAL%$SmackAnim$:s}
+								:i $SetException$$Ex$ = $FlailRight$$Scr$ = $BailSmack$$params$ = :s{$SmackAnim$ = %GLOBAL%$SmackAnim$:s}
+							:i endif
+							:i if $InSlapGame$
+								:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$
+							:i else 
+								:i if $GameModeEquals$$is_firefight$
+									:i $SetEventHandler$$Ex$ = $SkaterCollideBail$$Scr$ = $Bail_FireFight_SkaterCollideBail$
+								:i endif
+							:i endif
+							:i if $GotParam$$Sound$
+							:i else 
+								:i $PlayBonkSound$
+							:i endif
+							:i if $GotParam$$NoBlending$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$Anim1$$NoRestart$$Blendperiod$ = %f(0.000000)
+							:i else 
+								:i $PlayAnim$$Anim$ = %GLOBAL%$Anim1$$NoRestart$$Blendperiod$ = %f(0.300000)
+							:i endif
+							:i if NOT $InSplitscreenGame$
+								:i if NOT $GetGlobalFlag$$Flag$ = $TAP_BUTTONS_EXPLAINED$
+									:i $Create_Panel_Message$:s{$text$ = %s(33,"Tip: tap buttons to get up faster")
+										:i $id$ = $skater_hint$
+										:i $style$ = $skater_hint_style$
+										:i $pos$ = %vec2(320.000000,170.000000)
+										:i $rgba$ = :a{%i(32,00000020)%i(75,0000004b)%i(102,00000066)%i(100,00000064):a}
+									:i :s}
+									:i $SetGlobalFlag$$Flag$ = $TAP_BUTTONS_EXPLAINED$
+								:i endif
+							:i endif
+							:i if $OnRail$
+								:i $Obj_Spawnscript$$FallOffRail$$params$ = :s{$Xmove$ = %GLOBAL%$Xmove$$moveframes$ = %GLOBAL%$moveframes$:s}
+								:i $WaitAnim$%GLOBAL%$IntoAirFrame$$frames$
+								:i $ClearException$$GroundGone$
+								:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+								:i if $GotParam$$BonkSound$
+									:i $PlayBonkSound$
+								:i endif
+								:i if $GotParam$$Nutter$
+									:i $GetSidewaysVector$
+									:i $SetSpeed$%i(0,00000000)
+									:i while
+										
+										:i if NOT $OnRail$
+											:i $SetState$$Air$
+											:i $Goto$$GroundGoneBail$$params$ = :s{ isNull :s}
+										:i endif
+										:i $wait$%i(1,00000001)$gameframe$
+									:i loop_to %i(20,00000014)
+									:i if $Flipped$
+										:i $boost$ = %i(4294967196,ffffff9c)
+									:i else 
+										:i $boost$ = %i(100,00000064)
+									:i endif
+									:i $SetSkaterVelocity$$vel_x$ =  (%GLOBAL%$vel_x$ * %GLOBAL%$boost$) $vel_y$ = %GLOBAL%$vel_y$$vel_z$ =  (%GLOBAL%$vel_z$ * %GLOBAL%$boost$) 
+								:i endif
+								:i $SetState$$Air$
+								:i $move$$y$ = %f(2.000000)
+								:i $rotate$$y$ = random%vec2(1.000000,20.000000)
+								:i if $GotParam$$ForceFall$
+									:i $Goto$$GroundGoneBail$$params$ = :s{ isNull :s}
+								:i endif
+							:i endif
+							:i $WaitOnGround$
+							:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+								:i if NOT $GotParam$$NoScuff$
+									:i $Scuff_skater$
+								:i endif
+								:i if $GotParam$$BloodFrame$
+									:i $WaitAnim$$frame$%GLOBAL%$BloodFrame$
+									:i $Obj_Spawnscript$$BloodSmall$
+									:i $Playsound$select(2f,3, 01 00 01 00 01 00) :OFFSET(18):OFFSET(19):OFFSET(20)
+										 :POS(18) $hitblood01$
+									:BREAKTO(21)
+										 :POS(19) $hitblood02$
+									:BREAKTO(21)
+										 :POS(20) $hitblood03$ :POS(21) 
+									:i endif
+								:i endif
+								:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+								:i $SetRollingFriction$%GLOBAL%$HeavyFriction$
+								:i if $GotParam$$HitBody$
+									:i $Spawnscript$$HitBody$$params$ = :s{ isNull :s}
+								:i endif
+								:i if NOT $GotParam$$BashOff$
+									:i $BashOn$
+									:i if NOT $GoalManager_GoalShouldExpire$
+										:i $TantrumOn$
+									:i endif
+								:i endif
+								:i $wait$%i(3,00000003)$frames$
+								:i $SetRollingFriction$%GLOBAL%$Friction$
+								:i $WaitAnim$%i(30,0000001e)$Percent$
+								:i $SpeedCheckStop$
+								:i $SetRollingFriction$%GLOBAL%$Friction2$
+								:i $WaitAnim$%i(50,00000032)$Percent$
+								:i $SpeedCheckStop$
+								:i if $GotParam$$BoardEarlyOn$
+									:i $BoardRotate$$normal$
+									:i $SwitchOnBoard$
+								:i endif
+								:i $WaitAnim$%i(75,0000004b)$Percent$
+								:i $SpeedCheckStop$
+								:i if $GotParam$$FoleySound$
+								:i endif
+								:i $Obj_WaitAnimFinished$
+								:i $SpeedCheckStop$
+								:i $NoQuickGetup$
+								:i if $GotParam$$Endpose$
+									:i $GetTags$
+									:i if $GotParam$$waitfortantrum$
+										:i $RemoveTags$$tags$ = :a{$waitfortantrum$:a}
+										:i return
+										
+									:i endif
+									:i $printf$%s(38,"No tantrum detected heading to endpose")
+									:i $TantrumOff$
+									:i $Goto$%GLOBAL%$Endpose$
+								:i endif
+								:i $Goto$$Baildone$
+							:i endfunction
+							:i function $GetSidewaysVector$
+								:i $GetSkaterVelocity$
+								:i if NOT  (%GLOBAL%$vel_x$ = %i(0,00000000)) 
+									:i $atan$ ( (%GLOBAL%$vel_z$ * %f(1.000000))  /  (%GLOBAL%$vel_x$ * %f(1.000000)) ) 
+									:i $angle$ = %GLOBAL%$atan$
+									:i $sin$ (%f(90.000000) - %GLOBAL%$angle$) 
+									:i $new_z$ = %GLOBAL%$sin$
+									:i $cos$ (%f(90.000000) - %GLOBAL%$angle$) 
+									:i $new_x$ = %GLOBAL%$cos$
+								:i else 
+									:i if NOT  (%GLOBAL%$vel_z$ = %i(0,00000000)) 
+										:i $new_z$ = %f(0.000000)
+										:i $new_x$ = %f(1.000000)
+									:i else 
+										:i $new_z$ = %f(0.000000)
+										:i $new_x$ = %f(0.000000)
+									:i endif
+								:i endif
+								:i $printstruct$ isNull 
+								:i return
+								:s{$vel_z$ = %GLOBAL%$new_z$$vel_x$ = %GLOBAL%$new_x$$vel_y$ = %GLOBAL%$vel_y$:s}
+							:i endfunction
+							:i function $bail_quick_getup$
+								:i $Obj_Spawnscript$$bail_quick_getup2$
+							:i endfunction
+							:i function $bail_quick_getup2$
+								:i $SetRollingFriction$%i(20,00000014)
+								:i $Obj_WaitAnimFinished$
+								:i $GetCurrentBailEndpose$
+								:i if NOT  (%GLOBAL%$current_bail_endpose$ = $none$) 
+									:i $SetCurrentBailEndpose$
+									:i $MakeSkaterGoto$%GLOBAL%$current_bail_endpose$$params$ = :s{$Quick$ = $True$:s}
+								:i endif
+							:i endfunction
+							:i function $TantrumOn$
+								:i $EnableInputEvents$
+								:i $Obj_Spawnscript$$TantrumCheck$
+							:i endfunction
+							:i $TANTRUM_PRESSES$ = %i(0,00000000)
+							:i function $TantrumCheck$$presses$ = %i(0,00000000)$triangle$ = %i(0,00000000)
+								:i if  ($GetGlobalFlag$$Flag$ = $TANTRUM_OFF$) 
+									:i return
+									
+								:i endif
+								:i $root_window$.$GetSingleTag$$menu_state$
+								:i if  (%GLOBAL%$menu_state$ = $on$) 
+									:i return
+									
+								:i endif
+								:i $max$ = %i(0,00000000)
+								:i $count$ = %i(0,00000000)
+								:i $total$ = %i(0,00000000)
+								:i $spazzfactor$ = %i(0,00000000)
+								:i $got_button$ = %i(0,00000000)
+								:i $GetCurrentBailEndpose$
+								:i if  (%GLOBAL%$current_bail_endpose$ = $none$) 
+									:i return
+									
+								:i endif
+								:i $tantrum_draw_meter$
+								:i $OnExitRun$$kill_tantrum_meter$
+								:i $min_spaz$ = %i(5,00000005)
+								:i $max_spaz$ = %i(10,0000000a)
+								:i $tantrum_draw_and_update_spazzfactors$$min$ = %GLOBAL%$min_spaz$$max$ = %GLOBAL%$max_spaz$
+								:i $cleared_bash$ = %i(0,00000000)
+								:i while
+									
+									:i $last_spazzfactor$ = %GLOBAL%$spazzfactor$
+									:i $GetSpazzFactor$
+									:i if NOT  (%GLOBAL%$last_spazzfactor$ = %GLOBAL%$spazzfactor$) 
+										:i $tantrum_meter_update_tags$$spazzfactor$ = %GLOBAL%$spazzfactor$
+									:i endif
+									:i if $Held$$triangle$
+										:i if NOT  (%GLOBAL%$got_button$ = %i(1,00000001)) 
+											:i $tantrum_meter_maybe_play_sound$
+											:i $got_button$ = %i(1,00000001)
+										:i endif
+										:i if  (%GLOBAL%$cleared_bash$ = %i(0,00000000)) 
+											:i $BashOff$
+											:i $cleared_bash$ = %i(1,00000001)
+										:i endif
+									:i else 
+										:i $got_button$ = %i(0,00000000)
+									:i endif
+									:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+									:i $total$ =  (%GLOBAL%$total$ + %GLOBAL%$spazzfactor$) 
+									:i $average$ =  ( (%GLOBAL%$total$ * %f(1.000000))  /  (%GLOBAL%$count$ * %f(1.000000)) ) 
+									:i $tantrum_update_meter$$current$ =  (%GLOBAL%$average$ * %f(2.000000)) $max$ = %GLOBAL%$max_spaz$
+									:i if  (%GLOBAL%$spazzfactor$ > %GLOBAL%$max$) 
+										:i $max$ = %GLOBAL%$spazzfactor$
+										:i $ShakeCamera$:s{$Duration$ = %f(0.100000)
+											:i $vert_amp$ = %f(3.000000)
+											:i $horiz_amp$ = %f(2.000000)
+											:i $vert_vel$ = %i(5,00000005)
+											:i $horiz_vel$ = %i(5,00000005)
+										:i :s}
+									:i endif
+									:i if  ( (%GLOBAL%$average$ * %f(2.000000))  > %GLOBAL%$max_spaz$) 
+										:i $SetTags$$waitfortantrum$ = %i(1,00000001)
+										:i $tantrum_update_meter$$current$ =  (%GLOBAL%$average$ * %f(2.000000)) $max$ = %GLOBAL%$max_spaz$$maxedOut$
+										:i $WaitAnimFinished$
+										:i continue
+										
+									:i endif
+									:i if $AnimFinished$
+										:i continue
+										
+									:i endif
+									:i $wait$%i(1,00000001)$gameframe$
+								:i loop_to 
+								:i $final_spazz$ =  (%GLOBAL%$average$ * %f(2.000000)) 
+								:i $GetHighestTantrumReached$$spazzfactor$ = %GLOBAL%$final_spazz$
+								:i if  (%GLOBAL%$final_spazz$ > %GLOBAL%$max_spaz$) 
+									:i if $SkaterLastScoreLandedGreaterThan$%i(100000,000186a0)
+									:i endif
+								:i endif
+								:i if NOT  (%GLOBAL%$tantrum$ < %i(0,00000000)) 
+									:i $Goto$$TantrumStart$$params$ = :s{$spazzfactor$ = %GLOBAL%$tantrum$:s}
+								:i endif
+							:i endfunction
+							:i function $kill_tantrum_meter$
+								:i $tantrum_draw_meter$$die$
+							:i endfunction
+							:i function $TantrumStart$
+								:i $printf$%s(12,"TantrumStart")
+								:i $BashOff$
+								:i $RemoveTags$$tags$ = :a{$waitfortantrum$:a}
+								:i if NOT $IsStreamPlaying$$tantrum_stream$
+								:i endif
+								:i $SpawnSound$$ALL_SFX_Wait_Before_Tantrum_Stream$
+								:i if NOT $IsStreamPlaying$$SK6_Teapot_Sign_Whistle$
+									:i $PlayStream$$SK6_Teapot_Sign_Whistle$$vol$ = %i(50,00000032)$priority$ = $StreamPriorityHigh$
+								:i endif
+								:i $ShakeCamera$:s{$Duration$ = %f(0.500000)
+									:i $vert_amp$ = %f(10.000000)
+									:i $horiz_amp$ = %f(10.000000)
+									:i $vert_vel$ = %i(5,00000005)
+									:i $horiz_vel$ = %i(5,00000005)
+								:i :s}
+								:i $SetSkaterCamOverride$$heading$ = %i(2,00000002)$tilt$ = %f(-0.300000)$time$ = %i(1,00000001)$zoom$ = %f(1.300000)
+								:i $Playsound$$GotStat04$$Pitch$ = %i(80,00000050)$vol$ = %i(500,000001f4)
+								:i if $SkaterLastScoreLandedLessThan$%i(5000,00001388)
+									:i $maxscore$ = %f(2000.000000)
+									:i $minscore$ = %f(1000.000000)
+								:i else 
+									:i $maxscore$ = %f(3500.000000)
+									:i $minscore$ = %f(2000.000000)
+								:i endif
+								:i if  (%GLOBAL%$spazzfactor$ = %i(99,00000063)) 
+									:i $GetArraySize$$tantrum_array$
+									:i $rank$ =  ($tantrum_array$:a{ (%GLOBAL%$array_size$%i(4294967295,ffffffff)) :a}->$spazzfactor$) 
+								:i else 
+									:i $rank$ = %GLOBAL%$spazzfactor$
+								:i endif
+								:i $score$ =  (%GLOBAL%$minscore$ +  ( (%GLOBAL%$rank$ / %f(5.000000))  *  (%GLOBAL%$maxscore$ - %GLOBAL%$minscore$) ) ) 
+								:i $CastToInteger$$score$
+								:i $SetTrickScore$%GLOBAL%$score$
+								:i $SetTrickName$ ($spazz_out_text$) 
+								:i $Display$$BlockSpin$
+								:i $SkaterGetScoreInfo$
+								:i if  (%GLOBAL%$scorepot$ > %i(3000,00000bb8)) 
+									:i $ForceSpecial$
+								:i endif
+								:i $GetCurrentBailEndpose$
+								:i if NOT  (%GLOBAL%$current_bail_endpose$ = $none$) 
+									:i $SetCurrentBailEndpose$
+									:i $MakeSkaterGoto$%GLOBAL%$current_bail_endpose$$params$ = :s{$tantrum$ = $True$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$scorepot$:s}
+								:i endif
+							:i endfunction
+							:i function $tantrum_maybe_force_land$
+								:i $Obj_Spawnscript$$tantrum_maybe_force_land2$$params$ = :s{$score$ = %GLOBAL%$score$:s}
+							:i endfunction
+							:i function $tantrum_maybe_force_land2$
+								:i while
+									
+									:i if $CurrentScorePotGreaterThan$%GLOBAL%$score$
+										:i return
+										
+									:i endif
+									:i if $DoingTrick$
+										:i return
+										
+									:i endif
+									:i $wait$%i(1,00000001)$gameframe$
+								:i loop_to %i(120,00000078)
+								:i $LandSkaterTricks$
+							:i endfunction
+							:i function $TantrumOff$
+								:i $Obj_GetId$
+								:i $TerminateObjectsScripts$$id$ = %GLOBAL%$Objid$$script_name$ = $TantrumCheck$
+								:i $ClearSkaterCamOverride$
+								:i $tantrum_draw_meter$$die$
+							:i endfunction
+							:i function $Getup_HK_FT$
+								:i $printf$%s(17,"Get up from HK_FT")
+								:i $NoQuickGetup$
+								:i if $GotParam$$Quick$
+									:i $printf$%s(24,"Got a Quick Getup Signal")
+									:i $Goto$$startskate$$params$ = :s{$Quick$ = $GetUp_HK_FT_Q$$rolling_Fr$ = %i(3,00000003)$wait_percent$ = %i(50,00000032):s}
+								:i endif
+								:i if $GotParam$$tantrum$
+									:i $Choose_Tantrum$$getup$ = $Ft$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$score$
+								:i endif
+								:i $printf$%s(17,"No Tantrum Signal")
+								:i $PlayAnim$$Anim$ = $Getup_HK_FT$$Blendperiod$ = %f(0.000000)
+								:i $Obj_WaitAnimFinished$
+								:i $Goto$$startskate$
+							:i endfunction
+							:i function $Getup_HK_BK$
+								:i $printf$%s(17,"Get up from HK_BK")
+								:i $NoQuickGetup$
+								:i if $GotParam$$Quick$
+									:i $printf$%s(24,"Got a Quick Getup Signal")
+									:i $Goto$$startskate$$params$ = :s{$Quick$ = $GetUp_HK_BK_Q$$rolling_Fr$ = %i(3,00000003)$wait_percent$ = %i(50,00000032):s}
+								:i endif
+								:i if $GotParam$$tantrum$
+									:i $Choose_Tantrum$$getup$ = $Bk$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$score$
+								:i endif
+								:i $printf$%s(17,"No Tantrum Signal")
+								:i $PlayAnim$$Anim$ = $Getup_HK_BK$$Blendperiod$ = %f(0.000000)
+								:i $Obj_WaitAnimFinished$
+								:i $Goto$$startskate$
+							:i endfunction
+							:i function $Getup_HK_Rt$
+								:i $printf$%s(17,"Get up from HK_RT")
+								:i $NoQuickGetup$
+								:i if $GotParam$$Quick$
+									:i $printf$%s(24,"Got a Quick Getup Signal")
+									:i $Goto$$startskate$$params$ = :s{$Quick$ = $GetUp_HK_RT_Q$$rolling_Fr$ = %i(3,00000003)$wait_percent$ = %i(50,00000032):s}
+								:i endif
+								:i if $GotParam$$tantrum$
+									:i $Choose_Tantrum$$getup$ = $Rt$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$score$
+								:i else 
+									:i $printf$%s(17,"No Tantrum Signal")
+									:i $PlayAnim$$Anim$ = $Getup_HK_Rt$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$
+								:i endif
+							:i endfunction
+							:i function $Getup_HK_Lt$
+								:i $printf$%s(17,"Get up from HK_LT")
+								:i $NoQuickGetup$
+								:i if $GotParam$$Quick$
+									:i $printf$%s(24,"Got a Quick Getup Signal")
+									:i $Goto$$startskate$$params$ = :s{$Quick$ = $GetUp_HK_LT_Q$$rolling_Fr$ = %i(3,00000003)$wait_percent$ = %i(50,00000032):s}
+								:i endif
+								:i if $GotParam$$tantrum$
+									:i $Choose_Tantrum$$getup$ = $Lt$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$score$
+								:i else 
+									:i $printf$%s(17,"No Tantrum Signal")
+									:i $PlayAnim$$Anim$ = $Getup_HK_Lt$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$
+								:i endif
+							:i endfunction
+							:i function $GetUp_Sit_FT$
+								:i $printf$%s(18,"Get up from Sit_Ft")
+								:i $NoQuickGetup$
+								:i if $GotParam$$Quick$
+									:i $printf$%s(24,"Got a Quick Getup Signal")
+									:i $Goto$$startskate$$params$ = :s{$Quick$ = $GetUp_Sit_Ft_Q$$rolling_Fr$ = %i(3,00000003)$wait_percent$ = %i(50,00000032):s}
+								:i endif
+								:i if $GotParam$$tantrum$
+									:i $Choose_Tantrum$$getup$ = $Sit_Ft$$spazzfactor$ = %GLOBAL%$spazzfactor$$score$ = %GLOBAL%$score$
+								:i else 
+									:i $printf$%s(17,"No Tantrum Signal")
+									:i $PlayAnim$$Anim$ = $GetUp_Sit_FT$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$
+								:i endif
+							:i endfunction
+							:i $StartSkateExceptionTable$ = :a{
+								:i :s{$Exception$$Ex$ = $FlailHitWall$$Scr$ = $FlailHitWall$:s}
+								:i :s{$Exception$$Ex$ = $GroundGone$$Scr$ = $BailGroundGone$:s}
+								:i :a}
+							:i function $startskate$
+								:i $printf$%s(12,"StartSkating")
+								:i $NoQuickGetup$
+								:i $TantrumOff$
+								:i $ExitTantrum$
+								:i $SwitchOnBoard$
+								:i $BoardRotate$$normal$
+								:i if $ObjectExists$$id$ = $BurnMoFo$
+									:i $BurnMoFo$.$Unhide$
+								:i endif
+								:i if $ObjectExists$$id$ = $SmokeyMoFo$
+									:i $SmokeyMoFo$.$Unhide$
+								:i endif
+								:i $OnExceptionRun$
+								:i $ResetEventHandlersFromTable$$StartSkateExceptionTable$
+								:i if $IsFacingWall$
+									:i $printf$%s(11,"Facing Wall")
+									:i $wall$ = %i(1,00000001)
+									:i $gotoBrake$ = $gotoBrake$
+								:i else 
+									:i if $Obj_GetCollision$$side$$height$ = %i(3,00000003)$length$ = %i(3,00000003)
+										:i $printf$%s(12,"Wall to side")
+										:i $wall$ = %i(1,00000001)
+										:i $gotoBrake$ = $gotoBrake$
+									:i endif
+								:i endif
+								:i if NOT $Obj_GetCollision$$down$$distance$ = %i(6,00000006)$height$ = %i(1,00000001)$length$ = %i(3,00000003)
+									:i $printf$%s(14,"Facing Dropoff")
+									:i $drop$ = %i(1,00000001)
+									:i $gotoBrake$ = $gotoBrake$
+								:i endif
+								:i if $ControllerPressed$$down$
+									:i $printf$%s(12,"User Braking")
+									:i $PlayAnim$$Anim$ = $GetUp_S_NoPushOff$$Blendperiod$ = %f(0.100000)
+									:i $rolling_Fr$ = %i(100,00000064)
+									:i $EnablePlayerInput$
+									:i $gotoBrake$ = $gotoBrake$
+								:i else 
+									:i if $GotParam$$Quick$
+										:i $printf$%s(14,"Starting Quick")
+										:i $PlayAnim$$Anim$ = %GLOBAL%$Quick$$Blendperiod$ = %f(0.000000)
+										:i $wait_percent$ = %GLOBAL%$wait_percent$
+										:i $rolling_Fr$ = %GLOBAL%$rolling_Fr$
+									:i else 
+										:i if $GotParam$$wall$
+											:i $PlayAnim$$Anim$ = $GetUp_S_NoPushOff$$Blendperiod$ = %f(0.000000)
+											:i $rolling_Fr$ = %i(15,0000000f)
+											:i $wait_percent$ = %i(66,00000042)
+										:i else 
+											:i if $GotParam$$drop$
+												:i $PlayAnim$$Anim$ = $GetUp_S_NoPushOff$$Blendperiod$ = %f(0.000000)
+												:i $rolling_Fr$ = %i(15,0000000f)
+											:i else 
+												:i if $IsFacingVert$
+													:i $printf$%s(11,"Facing Vert")
+													:i $PlayAnim$$Anim$ = $GetUp_S_RunJump$$Blendperiod$ = %f(0.000000)
+													:i $wait_percent$ = %i(30,0000001e)
+													:i $rolling_Fr$ = %i(6,00000006)
+												:i else 
+													:i $printf$%s(16,"Starting Regular")
+													:i select(40,3, 01 00 01 00 01 00) :OFFSET(22):OFFSET(23):OFFSET(24)
+														
+														:i  :POS(22) $PlayAnim$$Anim$ = $GetUp_S_RunJump$$Blendperiod$ = %f(0.000000)
+														:i $wait_percent$ = %i(40,00000028)
+														:i $rolling_Fr$ = %i(6,00000006)
+														:i 
+													:BREAKTO(25)
+														 :POS(23) $PlayAnim$$Anim$ = $GetUp_S_BoardFlip1$$Blendperiod$ = %f(0.000000)
+														:i $wait_percent$ = %i(95,0000005f)
+														:i $rolling_Fr$ = %i(6,00000006)
+														:i 
+													:BREAKTO(25)
+														 :POS(24) $PlayAnim$$Anim$ = $GetUp_S_BoardCatch1$$Blendperiod$ = %f(0.000000)
+														:i $wait_percent$ = %i(66,00000042)
+														:i $rolling_Fr$ = %i(6,00000006)
+														:i  :POS(25) 
+												:i endif
+											:i endif
+										:i endif
+									:i endif
+								:i endif
+								:i if $GotParam$$wait_percent$
+									:i $printf$%s(31,"Start Waiting wait_percent = %i")$i$ = %GLOBAL%$wait_percent$
+									:i $WaitAnim$%GLOBAL%$wait_percent$$Percent$
+									:i $printf$%s(11,"End Waiting")
+								:i else 
+									:i if $GotParam$$wait_frames$
+										:i $animfinished_or_waitedframes$$frames$ = %GLOBAL%$wait_frames$
+									:i else 
+										:i $Obj_WaitAnimFinished$
+									:i endif
+								:i endif
+								:i if $GotParam$$rolling_Fr$
+									:i $printf$%s(10,"Rolling_FR")
+									:i $SetRollingFriction$%GLOBAL%$rolling_Fr$
+								:i else 
+									:i $SetRollingFriction$$default$
+								:i endif
+								:i $VibrateOff$
+								:i $EnablePlayerInput$
+								:i $Obj_WaitAnimFinished$
+								:i if $GotParam$$tantrum_score$
+									:i $tantrum_maybe_force_land$$score$ = %GLOBAL%$tantrum_score$
+								:i endif
+								:i $Goto$$Baildone$$params$ = :s{$gotoBrake$ = %GLOBAL%$gotoBrake$:s}
+							:i endfunction
+							:i function $animfinished_or_waitedframes$
+								:i while
+									
+									:i if $AnimFinished$
+										:i continue
+										
+									:i endif
+									:i $wait$%i(1,00000001)$gameframe$
+								:i loop_to %GLOBAL%$frames$
+							:i endfunction
+							:i function $Choose_Tantrum$
+								:i $printf$%s(20,"Got a Tantrum Signal")
+								:i $EnterTantrum$
+								:i if NOT $GotParam$$spazzfactor$
+									:i $printf$%s(40,"Choose_Tantrum missing spazzfactor param")
+									:i return
+									
+								:i endif
+								:i switch %GLOBAL%$getup$
+									:i case $Ft$
+										:i $Anim1$ = $Getup_HK_FT$
+										:i $Anim2$ = $GetUp_HK_FT_T$
+										:i endcase
+									case $Bk$
+										:i $Anim1$ = $Getup_HK_BK$
+										:i $Anim2$ = $GetUp_HK_Bk_T$
+										:i endcase
+									case $Rt$
+										:i $Anim1$ = $Getup_HK_Rt$
+										:i $Anim2$ = $GetUp_HK_Rt_T$
+										:i endcase
+									case $Lt$
+										:i $Anim1$ = $Getup_HK_Lt$
+										:i $Anim2$ = $GetUp_HK_Lt_T$
+										:i endcase
+									case $Sit_Ft$
+										:i $Anim1$ = $GetUp_Sit_FT$
+										:i $Anim2$ = $GetUp_Sit_Ft_T$
+										:i endcase
+									default 
+										:i $printf$%s(34,"Choose_Tantrum missing getup param")
+										:i end_switch
+								
+								:i $printf$%s(31,"tantrum slot =============== %i")$i$ = %GLOBAL%$spazzfactor$
+								:i if  (%GLOBAL%$spazzfactor$ > %i(1,00000001)) 
+									:i $SwitchOnBoard$
+									:i $PlayAnim$$Anim$ = %GLOBAL%$Anim2$$Blendperiod$ = %f(0.000000)
+								:i else 
+									:i $PlayAnim$$Anim$ = %GLOBAL%$Anim1$$Blendperiod$ = %f(0.000000)
+								:i endif
+								:i $Obj_WaitAnimFinished$
+								:i $SwitchOnBoard$
+								:i $BoardRotate$$normal$
+								:i if  (%GLOBAL%$spazzfactor$ = %i(99,00000063)) 
+									:i $Goto$select(2f,2, 01 00 01 00) :OFFSET(26):OFFSET(27)
+										 :POS(26) $skaterExplode$
+									:BREAKTO(28)
+										 :POS(27) $skaterLoseHead$ :POS(28) $params$ = :s{$score$ = %GLOBAL%$score$:s}
+									:i else 
+										:i if $StructureContains$$structure$ =  ($tantrum_array$:a{%GLOBAL%$spazzfactor$:a}) $name$
+											:i $Goto$ ( ($tantrum_array$:a{%GLOBAL%$spazzfactor$:a}) ->$name$) $params$ = :s{$score$ = %GLOBAL%$score$:s}
+										:i endif
+									:i endif
+								:i endfunction
+								:i $tantrum_array$ = :a{:s{$name$ = $KickBoard$:s}
+									:i :s{$name$ = $BoardFocus$:s}
+									:i :s{$name$ = $Slingshot$:s}
+									:i :s{$name$ = $DiscusThrow$:s}
+									:i :s{$name$ = $PileDriver$:s}
+									:i :s{$name$ = $HeadButt$:s}
+									:i :a}
+								:i function $DiscusThrow$
+									:i $PlayAnim$$Anim$ = $Tantrum_DiscusStart$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $PlayAnim$$Anim$ = $Tantrum_DiscusFinish$$Blendperiod$ = %f(0.000000)
+									:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(38,00000026)$BoardVel$ = %vec3(0.000000,500.000000,1000.000000)$BoardRotVel$ = %vec3(0.000000,15.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $HeadButt$
+									:i if $SkaterIsNamed$$chainsawskater$
+										:i $Goto$$DiscusThrow$$params$ =  isNull 
+										:i return
+										
+									:i endif
+									:i $PlayAnim$$Anim$ = $Tantrum_HeadButt$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $PileDriver$
+									:i if $SkaterIsNamed$$chainsawskater$
+										:i $Goto$$Slingshot$$params$ =  isNull 
+										:i return
+										
+									:i endif
+									:i $PlayAnim$$Anim$ = $Tantrum_PileDriver$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $Slingshot$
+									:i $PlayAnim$$Anim$ = $Tantrum_slingshot$$Blendperiod$ = %f(0.000000)
+									:i if $Flipped$
+										:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(42,0000002a)$BoardVel$ = %vec3(-800.000000,400.000000,-600.000000)$BoardRotVel$ = %vec3(10.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i else 
+										:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(42,0000002a)$BoardVel$ = %vec3(800.000000,400.000000,-600.000000)$BoardRotVel$ = %vec3(-10.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i endif
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $BoardFocus$
+									:i if $SkaterIsNamed$$chainsawskater$
+										:i $Goto$$KickBoard$$params$ =  isNull 
+										:i return
+										
+									:i endif
+									:i $PlayAnim$$Anim$ = $Tantrum_BoardFocus$$Blendperiod$ = %f(0.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $KickBoard$
+									:i $PlayAnim$$Anim$ = $Tantrum_KickBoard$$Blendperiod$ = %f(0.000000)
+									:i $wait$%i(50,00000032)$gameframes$
+									:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(0,00000000)$BoardVel$ = %vec3(0.000000,500.000000,1000.000000)$BoardRotVel$ = %vec3(0.000000,15.000000,-10.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $skaterExplode$
+									:i $PlayAnim$$Anim$ = $WStandIdle1$$speed$ = %f(2.000000)
+									:i $Obj_WaitAnimFinished$
+									:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(0,00000000)$BoardVel$ = %vec3(0.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i $make_skater_explode$
+									:i $Obj_GetId$
+									:i $MangleChecksums$$a$ = $TantrumBoard$$b$ = %GLOBAL%$Objid$
+									:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+										:i %GLOBAL%$mangled_id$.$die$
+									:i endif
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $skaterLoseHead$
+									:i if $SkaterIsNamed$$chainsawskater$
+										:i $Goto$$skaterExplode$$params$ =  isNull 
+										:i return
+										
+									:i endif
+									:i $PlayAnim$$Anim$ = $Tantrum_HeadButt$
+									:i $WaitAnim$%i(22,00000016)$Percent$
+									:i $Obj_Spawnscript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(0,00000000)$BoardVel$ = %vec3(0.000000,0.000000,0.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(0,00000000)$tantrum$ = $tantrum$:s}
+									:i $make_skater_lose_head$
+									:i $Obj_GetId$
+									:i $MangleChecksums$$a$ = $TantrumBoard$$b$ = %GLOBAL%$Objid$
+									:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+										:i %GLOBAL%$mangled_id$.$die$
+									:i endif
+									:i $Goto$$startskate$$params$ = :s{$tantrum_score$ = %GLOBAL%$score$:s}
+								:i endfunction
+								:i function $FallOffRail$$Xmove$ = %i(5,00000005)$moveframes$ = %i(0,00000000)
+									:i while
+										
+										:i if $Flipped$
+											:i $length$ =  (%GLOBAL%$Xmove$ / %i(12,0000000c)) 
+										:i else 
+											:i $length$ =  (%i(4294967295,ffffffff) *  (%GLOBAL%$Xmove$ / %i(12,0000000c)) ) 
+										:i endif
+										:i if NOT $Obj_GetCollision$$height$ = %i(3,00000003)$length$ = %GLOBAL%$length$$side$
+											:i if NOT $Obj_GetCollision$$height$ = %f(0.500000)$length$ = %GLOBAL%$length$$side$
+												:i continue
+												
+											:i endif
+										:i endif
+										:i $Xmove$ =  (%GLOBAL%$Xmove$ / %i(2,00000002)) 
+										:i if  (%i(12,0000000c) > %GLOBAL%$Xmove$) 
+											:i return
+											
+										:i endif
+									:i loop_to 
+									:i $movetime$ =  (%GLOBAL%$moveframes$ * %f(1.000000)) 
+									:i if  (%GLOBAL%$moveframes$ > %i(0,00000000)) 
+										:i $slicedmove$ =  (%GLOBAL%$Xmove$ / %GLOBAL%$movetime$) 
+										:i if NOT $Flipped$
+											:i $slicedmove$ =  (%GLOBAL%$slicedmove$ * %f(-1.000000)) 
+										:i endif
+										:i while
+											
+											:i $move$$x$ = %GLOBAL%$slicedmove$
+											:i $wait$%i(1,00000001)$frame$
+										:i loop_to %GLOBAL%$moveframes$
+									:i else 
+										:i $move$$x$ = %GLOBAL%$Xmove$
+									:i endif
+								:i endfunction
+								:i function $Scuff_skater$
+									:i %GLOBAL%$scuffspot$ = random%vec2(0.000000,4.000000)
+									:i if  (%GLOBAL%$scuffspot$ > %i(3,00000003)) 
+									:i else 
+										:i if  (%GLOBAL%$scuffspot$ = %i(3,00000003)) 
+											:i $Scuff_DoReplacement$$src$ = %s(19,"CS_NH_scar_armR.png")$scuffspot$ = %GLOBAL%$scuffspot$
+										:i else 
+											:i if  (%GLOBAL%$scuffspot$ = %i(2,00000002)) 
+												:i $Scuff_DoReplacement$$src$ = %s(19,"CS_NH_scar_armL.png")$scuffspot$ = %GLOBAL%$scuffspot$
+											:i else 
+												:i if  (%GLOBAL%$scuffspot$ = %i(1,00000001)) 
+													:i $Scuff_DoReplacement$$src$ = %s(19,"CS_NH_scar_legR.png")$src2$ = %s(20,"CS_NH_scuff_legR.png")$scuffspot$ = %GLOBAL%$scuffspot$
+												:i else 
+													:i $Scuff_DoReplacement$$src$ = %s(19,"CS_NH_scar_legL.png")$src2$ = %s(20,"CS_NH_scuff_legL.png")$scuffspot$ = %GLOBAL%$scuffspot$
+												:i endif
+											:i endif
+										:i endif
+									:i endif
+								:i endfunction
+								:i function $Scuff_DoReplacement$$leftknee$ = %i(0,00000000)$rightknee$ = %i(0,00000000)$rightelbow$ = %i(0,00000000)$leftelbow$ = %i(0,00000000)
+									:i $GetTags$
+									:i switch %GLOBAL%$scuffspot$
+										:i case %i(0,00000000)
+											:i $leftknee$ =  (%GLOBAL%$leftknee$ + %i(1,00000001)) 
+											:i $bailcount$ = %GLOBAL%$leftknee$
+											:i endcase
+										case %i(1,00000001)
+											:i $rightknee$ =  (%GLOBAL%$rightknee$ + %i(1,00000001)) 
+											:i $bailcount$ = %GLOBAL%$rightknee$
+											:i endcase
+										case %i(2,00000002)
+											:i $leftelbow$ =  (%GLOBAL%$leftelbow$ + %i(1,00000001)) 
+											:i $bailcount$ = %GLOBAL%$leftelbow$
+											:i endcase
+										case %i(3,00000003)
+											:i $rightelbow$ =  (%GLOBAL%$rightelbow$ + %i(1,00000001)) 
+											:i $bailcount$ = %GLOBAL%$rightelbow$
+											:i end_switch
+									
+									:i $SetTags$$leftknee$ = %GLOBAL%$leftknee$$rightknee$ = %GLOBAL%$rightknee$$leftelbow$ = %GLOBAL%$leftelbow$$rightelbow$ = %GLOBAL%$rightelbow$
+									:i if $GetGlobalFlag$$Flag$ = $CHEAT_SUPER_BLOOD$
+										:i $bailcount$ =  (%GLOBAL%$bailcount$ + %i(5,00000005)) 
+									:i endif
+									:i if $GotParam$$src2$
+										:i if  (%GLOBAL%$bailcount$ > %i(4,00000004)) 
+											:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_06")
+										:i else 
+											:i if  (%GLOBAL%$bailcount$ > %i(10,0000000a)) 
+												:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_05")
+											:i else 
+												:i if  (%GLOBAL%$bailcount$ > %i(9,00000009)) 
+													:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_04")
+													:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(30,"textures/scuffs/CS_NH_scuff_05")
+												:i else 
+													:i if  (%GLOBAL%$bailcount$ > %i(7,00000007)) 
+														:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_03")
+													:i else 
+														:i if  (%GLOBAL%$bailcount$ > %i(6,00000006)) 
+															:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_02")
+														:i else 
+															:i if  (%GLOBAL%$bailcount$ > %i(5,00000005)) 
+																:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(30,"textures/scuffs/CS_NH_scuff_04")
+																:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_01")
+															:i else 
+																:i if  (%GLOBAL%$bailcount$ > %i(3,00000003)) 
+																	:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(30,"textures/scuffs/CS_NH_scuff_03")
+																:i else 
+																	:i if  (%GLOBAL%$bailcount$ > %i(1,00000001)) 
+																		:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(30,"textures/scuffs/CS_NH_scuff_02")
+																	:i else 
+																		:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src2$$dest$ = %s(30,"textures/scuffs/CS_NH_scuff_01")
+																	:i endif
+																:i endif
+															:i endif
+														:i endif
+													:i endif
+												:i endif
+											:i endif
+										:i endif
+									:i else 
+										:i if  (%GLOBAL%$bailcount$ > %i(11,0000000b)) 
+											:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_06")
+										:i else 
+											:i if  (%GLOBAL%$bailcount$ > %i(9,00000009)) 
+												:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_05")
+											:i else 
+												:i if  (%GLOBAL%$bailcount$ > %i(7,00000007)) 
+													:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_04")
+												:i else 
+													:i if  (%GLOBAL%$bailcount$ > %i(5,00000005)) 
+														:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_03")
+													:i else 
+														:i if  (%GLOBAL%$bailcount$ > %i(3,00000003)) 
+															:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_02")
+														:i else 
+															:i $Obj_ReplaceTexture$$src$ = %GLOBAL%$src$$dest$ = %s(29,"textures/scuffs/CS_NH_scar_01")
+														:i endif
+													:i endif
+												:i endif
+											:i endif
+										:i endif
+									:i endif
+								:i endfunction
+								:i function $CleanUp_Scuffs$
+									:i $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armR.png")$dest$ = %s(31,"textures/scuffs/CS_NH_scar_armR")
+									:i $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armL.png")$dest$ = %s(31,"textures/scuffs/CS_NH_scar_armL")
+									:i $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_legR.png")$dest$ = %s(31,"textures/scuffs/CS_NH_scar_legR")
+									:i $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_legL.png")$dest$ = %s(31,"textures/scuffs/CS_NH_scar_legL")
+									:i $Obj_ReplaceTexture$$src$ = %s(20,"CS_NH_scuff_legR.png")$dest$ = %s(32,"textures/scuffs/CS_NH_scuff_legR")
+									:i $Obj_ReplaceTexture$$src$ = %s(20,"CS_NH_scuff_legL.png")$dest$ = %s(32,"textures/scuffs/CS_NH_scuff_legL")
+									:i $Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_board_trans01")
+									:i $SetTags$$leftknee$ = %i(0,00000000)$rightknee$ = %i(0,00000000)$rightelbow$ = %i(0,00000000)$leftelbow$ = %i(0,00000000)
+								:i endfunction
+								:i function $DoBoardScuff$
+									:i switch %GLOBAL%$boardscuff$
+										:i case %i(10,0000000a)
+											:i $Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_boardscuff_01")
+											:i endcase
+										case %i(20,00000014)
+											:i $Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_boardscuff_02")
+											:i endcase
+										case %i(30,0000001e)
+											:i $Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_boardscuff_03")
+											:i endcase
+										case %i(40,00000028)
+											:i $Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_boardscuff_04")
+											:i endcase
+										default 
+											:i end_switch
+									
+								:i endfunction
+								:i function $BailBoardControl$$BoardOffFrame$ = %i(5,00000005)
+									:i $wait$%GLOBAL%$BoardOffFrame$$frames$
+									:i $SwitchOffBoard$
+									:i if $ObjectExists$$id$ = $BurnMoFo$
+										:i $BurnMoFo$.$Hide$
+									:i endif
+									:i if $ObjectExists$$id$ = $SmokeyMoFo$
+										:i $SmokeyMoFo$.$Hide$
+									:i endif
+									:i if NOT $GotParam$$NoBailBoard$
+										:i $CreateBailBoard$$vel$ = %GLOBAL%$BoardVel$$rotvel$ = %GLOBAL%$BoardRotVel$$object_vel_factor$ = %GLOBAL%$BoardSkaterVel$$gurney$ = %GLOBAL%$gurney$$tantrum$ = %GLOBAL%$tantrum$
+									:i endif
+								:i endfunction
+								:i function $SpeedCheckStop$
+									:i if $SpeedLessThan$%i(300,0000012c)
+										:i $SetRollingFriction$%i(100,00000064)
+									:i endif
+								:i endfunction
+								:i function $HitBody$$hitbodyframe$ = %i(15,0000000f)
+									:i $wait$%GLOBAL%$hitbodyframe$$frames$
+								:i endfunction
+								:i function $BailSmack$$SmackAnim$ = $Bail_Wall_FWD_Regular$$SmackFriction$ = %i(55,00000037)
+									:i $printf$%s(10,"Bail Smack")
+									:i if $InSlapGame$
+										:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$
+									:i else 
+										:i if $GameModeEquals$$is_firefight$
+											:i $SetEventHandler$$Ex$ = $SkaterCollideBail$$Scr$ = $Bail_FireFight_SkaterCollideBail$
+										:i endif
+									:i endif
+									:i $SwitchOffBoard$
+									:i $SetRollingFriction$%GLOBAL%$SmackFriction$
+									:i $PlayAnim$$Anim$ = %GLOBAL%$SmackAnim$$Blendperiod$ = %f(0.100000)
+									:i $Obj_Spawnscript$$BloodTiny$
+									:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+									:i $Obj_WaitAnimFinished$
+									:i switch %GLOBAL%$SmackAnim$
+										:i case $Bail_Wall_FWD_Regular$
+											:i $printf$%s(13,"WallSmack FWD")
+											:i $Goto$$GetUp_Sit_FT$
+											:i endcase
+										case $Bail_Wall_FWD_Low$
+											:i $printf$%s(17,"WallSmack FWD_Low")
+											:i $Goto$$Getup_HK_Rt$
+											:i endcase
+										case $Bail_Wall_BCK_Regular$
+											:i $printf$%s(13,"WallSmack BCK")
+											:i $Goto$$Getup_HK_BK$
+											:i endcase
+										case $Bail_Wall_BCK_Low$
+											:i $printf$%s(17,"WallSmack BCK_Low")
+											:i $Goto$$Getup_HK_BK$
+											:i endcase
+										case $Bail_Wall_LT_Low$
+											:i $printf$%s(12,"WallSmack LT")
+											:i $Goto$$Getup_HK_Lt$
+											:i endcase
+										case $Bail_Wall_RT_Low$
+											:i $printf$%s(12,"WallSmack RT")
+											:i $Goto$$Getup_HK_Rt$
+											:i end_switch
+									
+									:i $printf$%s(100,"*******************If you see this Tell Jason G YOu got an Old Smack Wall Anim**********************")
+									:i if $AnimEquals$$Smackwall$
+										:i $PlayAnim$$Anim$ = $GetUpFacesmash$$Blendperiod$ = %f(0.100000)
+									:i else 
+										:i if $AnimEquals$$Smackwallupright$
+											:i $PlayAnim$$Anim$ = $GetUpBackwards$$Blendperiod$ = %f(0.100000)
+										:i else 
+											:i $PlayAnim$$Anim$ = $GetUpFacing$$Blendperiod$ = %f(0.100000)
+										:i endif
+									:i endif
+									:i $SetRollingFriction$%i(15,0000000f)
+									:i $WaitAnim$%i(80,00000050)$Percent$
+									:i $SwitchOnBoard$
+									:i $BoardRotate$$normal$
+									:i $Obj_WaitAnimFinished$
+									:i $Goto$$Baildone$
+								:i endfunction
+								:i function $GroundGoneBail$$SplatFriction$ = %i(100,00000064)$FallBlendPeriod$ = %f(0.300000)
+									:i if NOT $GotParam$$AnimFall1$
+										:i $AnimFall1$ = $Bail_Falling_Idle_FWD$
+									:i endif
+									:i if NOT $GotParam$$AnimFall2$
+										:i $AnimFall2$ = $Bail_falling_hit_med_Fwd$
+									:i endif
+									:i $InBail$
+									:i $ClearExceptions$
+									:i if $InSlapGame$
+										:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$
+									:i else 
+										:i if $GameModeEquals$$is_firefight$
+											:i $SetEventHandler$$Ex$ = $SkaterCollideBail$$Scr$ = $Bail_FireFight_SkaterCollideBail$
+										:i endif
+									:i endif
+									:i $DisablePlayerInput$$AllowCameraControl$
+									:i $SetExtraPush$$radius$ = %i(48,00000030)$speed$ = %i(100,00000064)$rotate$ = %i(6,00000006)
+									:i $SwitchOffBoard$
+									:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall1$$NoRestart$$Blendperiod$ = %GLOBAL%$FallBlendPeriod$
+									:i while
+										
+										:i if $AnimFinished$
+											:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall1$$PingPong$$From$ = $End$$To$ = %i(20,00000014)$speed$ = %f(0.500000)$Blendperiod$ = %f(0.100000)
+										:i endif
+										:i if $OnGround$
+											:i continue
+											
+										:i endif
+										:i $WaitOneGameFrame$
+									:i loop_to 
+									:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+									:i $SetRollingFriction$%GLOBAL%$SplatFriction$
+									:i if $AirTimeLessThan$%f(0.850000)$second$
+										:i $printf$%s(12,"Soft Landing")
+										:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall2$$NoRestart$$Blendperiod$ = %f(0.100000)
+										:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+										:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+											:i if $GotParam$$SplatBloodFrame$
+												:i $WaitAnim$$frame$%GLOBAL%$SplatBloodFrame$
+											:i endif
+											:i $Obj_Spawnscript$$BloodSmall$
+											:i $Playsound$select(2f,3, 01 00 01 00 01 00) :OFFSET(29):OFFSET(30):OFFSET(31)
+												 :POS(29) $hitblood01$
+											:BREAKTO(32)
+												 :POS(30) $hitblood02$
+											:BREAKTO(32)
+												 :POS(31) $hitblood03$ :POS(32) 
+											:i endif
+										:i else 
+											:i $printf$%s(12,"Hard Landing")
+											:i if $GotParam$$AnimFall2Hard$
+												:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall2Hard$$NoRestart$$Blendperiod$ = %f(0.100000)
+											:i else 
+												:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall2$$NoRestart$$Blendperiod$ = %f(0.100000)
+											:i endif
+											:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.300000)
+											:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+												:i if $GotParam$$SplatBloodFrame$
+													:i $WaitAnim$$frame$%GLOBAL%$SplatBloodFrame$
+												:i endif
+												:i $Obj_Spawnscript$$BloodSmall$
+												:i $Playsound$select(2f,3, 01 00 01 00 01 00) :OFFSET(33):OFFSET(34):OFFSET(35)
+													 :POS(33) $hitblood01$
+												:BREAKTO(36)
+													 :POS(34) $hitblood02$
+												:BREAKTO(36)
+													 :POS(35) $hitblood03$ :POS(36) 
+												:i endif
+											:i endif
+											:i $BashOn$
+											:i if $GotParam$$AnimFallEnd$
+												:i $Obj_WaitAnimFinished$
+												:i $Goto$%GLOBAL%$AnimFallEnd$
+											:i endif
+											:i if $GotParam$$AnimFall3$
+												:i $printf$%s(117,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>--- If you see this tell Jason G you got an AnimFall3!!! ---<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+												:i $Obj_WaitAnimFinished$
+												:i $PlayAnim$$Anim$ = %GLOBAL%$AnimFall3$$NoRestart$$Blendperiod$ = %f(0.100000)
+											:i endif
+											:i $WaitAnim$%i(20,00000014)
+											$frames$$fromend$
+											:i $BoardRotate$$normal$
+											:i $SwitchOnBoard$
+											:i $Obj_WaitAnimFinished$
+											:i $Goto$$Baildone$
+										:i endfunction
+										:i function $Baildone$
+											:i $printf$%s(8,"BailDone")
+											:i $Obj_RestoreBoundingSphere$
+											:i $ClearLipCombos$
+											:i $NotifyBailDone$
+											:i $SetExtraPush$$radius$ = %i(0,00000000)
+											:i $SetRollingFriction$$default$
+											:i $ClearTrickQueue$
+											:i $ClearEventBuffer$
+											:i $ClearManualTrick$
+											:i $BashOff$
+											:i $ClearQuickGetup$
+											:i $TantrumOff$
+											:i $KillExtraTricks$
+											:i $EnablePlayerInput$
+											:i $NotInBail$
+											:i $ClearGapTricks$
+											:i $ClearSkaterFlags$
+											:i $LockVelocityDirection$$Off$
+											:i $RestoreAutoKick$
+											:i $CanBrakeOn$
+											:i $FireEvent$$type$ = $finished_bailing$
+											:i if NOT $Walking$
+												:i if $GotParam$$gotoBrake$
+													:i if NOT $OnGround$
+														:i $SetState$$Ground$
+													:i endif
+													:i $OnGroundExceptions$
+													:i $Goto$$HandBrake$$params$ = :s{$gotoBrake$ = %GLOBAL%$gotoBrake$:s}
+												:i else 
+													:i $Goto$$OnGroundAI$
+												:i endif
+											:i endif
+										:i endfunction
+										:i function $BloodOn$$size$ = %i(1,00000001)$radius$ = %i(1,00000001)$name$ = $blood_01$
+											:i $TextureSplat$$radius$ = random%vec2(1.000000,40.000000)$size$ = %GLOBAL%$size$$bone$ = $bone_head$$name$ = %GLOBAL%$name$$lifetime$ = %i(20,00000014)
+										:i endfunction
+										:i function $BloodOn_Down$$size$ = %i(1,00000001)$radius$ = %i(1,00000001)$name$ = $blood_01$
+											:i $TextureSplat$$radius$ = random%vec2(10.000000,300.000000)$size$ = %GLOBAL%$size$$bone$ = $bone_head$$name$ = %GLOBAL%$name$$dropdown_length$ = %i(100,00000064)$dropdown_vertical$$lifetime$ = %i(20,00000014)
+										:i endfunction
+										:i function $BloodCar$
+											:i $wait$%i(30,0000001e)$frames$
+											:i $TextureSplat$$radius$ = %i(2,00000002)$size$ = %i(20,00000014)$bone$ = $bone_head$$name$ = $blood_01$$lifetime$ = %i(20,00000014)
+										:i endfunction
+										:i function $BloodJackAss$
+											:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+												:i $wait$%i(30,0000001e)$frames$
+												:i $printf$%s(36,"MAKING SOME BIG BLOOD...............")
+												:i $BloodOn_Down$$size$ = random%vec2(8.000000,15.000000)
+												:i $BloodOn_Down$$size$ = random%vec2(8.000000,15.000000)
+												:i $wait$random%vec2(1.000000,8.000000)$frames$
+												:i $BloodOn_Down$ isNull $size$ = random%vec2(6.000000,12.000000)
+												:i $BloodOn_Down$ isNull $size$ = random%vec2(6.000000,12.000000)
+												:i $wait$random%vec2(1.000000,8.000000)$frames$
+												:i $BloodOn_Down$ isNull $size$ = random%vec2(4.000000,8.000000)
+												:i $BloodOn_Down$ isNull $size$ = random%vec2(4.000000,8.000000)
+												:i $wait$random%vec2(1.000000,8.000000)$frames$
+												:i $BloodOn_Down$$size$ = random%vec2(2.000000,6.000000)
+											:i endif
+										:i endfunction
+										:i function $BloodSmall$
+											:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+												:i if NOT $GetGlobalFlag$$Flag$ = $CHEAT_SUPER_BLOOD$
+													:i if $OnGround$
+														:i $Obj_Spawnscript$$BloodSplat$
+													:i endif
+													:i $wait$%i(14,0000000e)$frames$
+													:i $BloodOn$ isNull $size$ = random%vec2(8.000000,12.000000)$freq$ = %f(2.000000)$rnd_radius$ = %i(36,00000024)
+													:i $wait$random%vec2(1.000000,3.000000)$frames$
+													:i $BloodOn$ isNull $size$ = random%vec2(6.000000,10.000000)$freq$ = %f(2.000000)$rnd_radius$ = %i(36,00000024)
+													:i $wait$random%vec2(1.000000,3.000000)$frames$
+													:i $BloodOn$ isNull $size$ = random%vec2(4.000000,8.000000)$freq$ = %f(0.800000)$rnd_radius$ = %i(36,00000024)
+													:i $wait$random%vec2(1.000000,3.000000)$frames$
+													:i $BloodOn$$size$ = random%vec2(2.000000,6.000000)
+												:i else 
+													:i $Obj_Spawnscript$$BloodSplat$
+													:i $wait$%i(14,0000000e)$frames$
+													:i $Obj_Spawnscript$$BloodSplat$
+													:i $TextureSplat$$radius$ = random%vec2(20.000000,40.000000)$size$ = random%vec2(30.000000,40.000000)$bone$ = $bone_head$$name$ = $blood_01$$lifetime$ = %i(20,00000014)
+													:i $wait$%i(5,00000005)$frame$
+													:i $BloodOn$ isNull $size$ = random%vec2(15.000000,20.000000)
+													:i $wait$%i(4,00000004)$frame$
+													:i $BloodOn$ isNull $size$ = random%vec2(10.000000,15.000000)
+													:i $wait$%i(4,00000004)$frame$
+													:i $BloodOn$ isNull $size$ = random%vec2(10.000000,15.000000)
+													:i $wait$%i(3,00000003)$frames$
+													:i $BloodOn$$size$ = random%vec2(6.000000,10.000000)
+													:i $wait$%i(2,00000002)$frame$
+													:i $BloodOn$$size$ = random%vec2(6.000000,10.000000)
+													:i $wait$%i(1,00000001)$frame$
+													:i $BloodOn$$size$ = random%vec2(6.000000,10.000000)
+												:i endif
+											:i endif
+										:i endfunction
+										:i function $BloodTiny$
+											:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+												:i $Obj_Spawnscript$$BloodSplat$
+												:i $BloodOn$ isNull $size$ = %f(5.000000)$freq$ = %f(2.000000)$rnd_radius$ = %i(12,0000000c)
+												:i $wait$%i(4,00000004)$frames$
+												:i $BloodOn$ isNull $size$ = %f(2.000000)$freq$ = %f(0.800000)$rnd_radius$ = %i(12,0000000c)
+												:i $wait$%i(3,00000003)$frames$
+											:i endif
+										:i endfunction
+										:i function $BloodSuperTiny$
+											:i $Obj_Spawnscript$$BloodSplat$
+											:i $BloodOn$ isNull $size$ = %f(1.000000)$freq$ = %f(2.000000)$rnd_radius$ = %i(12,0000000c)
+											:i $wait$%i(4,00000004)$frames$
+											:i $BloodOn$ isNull $size$ = %f(0.500000)$freq$ = %f(0.800000)$rnd_radius$ = %i(12,0000000c)
+											:i $wait$%i(3,00000003)$frames$
+										:i endfunction
+										:i function $BloodSplat$
+											:i if NOT $GetGlobalFlag$$Flag$ = $BLOOD_OFF$
+												:i $BloodParticlesOn$$name$ = %s(11,"blood_1.png")$start_col$ = %i(4278190250,ff0000aa)$end_col$ = %i(570425514,220000aa)$num$ = %i(10,0000000a)$emit_w$ = %f(2.000000)$emit_h$ = %f(2.000000)$angle$ = %i(10,0000000a)$size$ = %f(2.000000)$bone$ = $bone_head$$growth$ = %f(1.500000)$time$ = %f(0.300000)$speed$ = %i(250,000000fa)$grav$ = %i(4294966396,fffffc7c)$life$ = %f(0.300000)
+											:i endif
+										:i endfunction
+										:i function $SwitchOnBoard$
+											:i if NOT $IsLocalSkater$
+												:i return
+												
+											:i endif
+											:i if $IsForceWalkOn$
+												:i $SwitchOnAtomic$$Board$
+											:i else 
+												:i if NOT $IsBoardMissing$
+													:i $SwitchOnAtomic$$Board$
+												:i else 
+													:i $SwitchOffBoard$
+												:i endif
+											:i endif
+											:i $Obj_GetId$
+											:i $MangleChecksums$$a$ = $BailBoard$$b$ = %GLOBAL%$Objid$
+											:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+												:i %GLOBAL%$mangled_id$.$die$
+											:i endif
+										:i endfunction
+										:i $BailBoardComponents$ = :a{
+											:i :s{
+												:i $component$ = $suspend$
+											:i :s}
+											:i :s{
+												:i $component$ = $rigidbody$
+												:i $coeff_friction$ = %f(0.700000)
+												:i $coeff_restitution$ = %f(0.150000)
+												:i $const_acc$ = %i(4294966796,fffffe0c)
+												:i $mass_over_moment$ = %f(0.007000)
+												:i $center_of_mass$ = %vec3(0.000000,3.000000,0.000000)
+												:i $spring_const$ = %i(10,0000000a)
+												:i $linear_velocity_sleep_point$ = %i(3,00000003)
+												:i $angular_velocity_sleep_point$ = %f(0.100000)
+												:i $skater_collision_radius$ = %i(28,0000001c)
+												:i $skater_collision_application_radius$ = %i(8,00000008)
+												:i $skater_collision_impulse_factor$ = %f(1.000000)
+												:i $contacts$ = :a{
+													:i %vec3(6.000000,7.000000,18.000000)
+													:i %vec3(6.000000,7.000000,-18.000000)
+													:i %vec3(-6.000000,7.000000,18.000000)
+													:i %vec3(-6.000000,7.000000,-18.000000)
+													:i %vec3(6.000000,0.000000,13.000000)
+													:i %vec3(6.000000,0.000000,-13.000000)
+													:i %vec3(-6.000000,0.000000,13.000000)
+													:i %vec3(-6.000000,0.000000,-13.000000)
+													:i :a}
+												:i $directed_friction$ = :a{
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :a}
+												:i $SoundType$ = $SkaterBoardWhenBail$
+											:i :s}
+											:i :s{
+												:i $component$ = $skeleton$
+												:i $skeletonName$ = $thps6_human$
+											:i :s}
+											:i :s{
+												:i $component$ = $model$
+												:i $UseModelLights$
+												:i $model$ = %s(31,"board_default/board_default.mdl")
+											:i :s}
+											:i :s{
+												:i $component$ = $modellightupdate$
+											:i :s}
+											:i :s{
+												:i $component$ = $Sound$
+											:i :s}
+											:i :a}
+										:i $BailGurneyComponents$ = :a{
+											:i :s{
+												:i $component$ = $motion$
+											:i :s}
+											:i :s{
+												:i $component$ = $suspend$
+											:i :s}
+											:i :s{
+												:i $component$ = $skeleton$
+												:i $skeletonName$ = $thps6_human$
+											:i :s}
+											:i :s{
+												:i $component$ = $model$
+												:i $UseModelLights$
+											:i :s}
+											:i :s{
+												:i $component$ = $animblender$
+												:i $AnimName$ = $animload_THPS6_human$
+												:i $skeletonName$ = $thps6_human$
+											:i :s}
+											:i :s{
+												:i $component$ = $rigidbody$
+												:i $coeff_friction$ = %f(0.700000)
+												:i $coeff_restitution$ = %f(0.050000)
+												:i $const_acc$ = %i(4294966796,fffffe0c)
+												:i $mass_over_moment$ = %f(0.007000)
+												:i $center_of_mass$ = %vec3(0.000000,0.000000,0.000000)
+												:i $spring_const$ = %i(10,0000000a)
+												:i $linear_velocity_sleep_point$ = %i(3,00000003)
+												:i $angular_velocity_sleep_point$ = %f(0.100000)
+												:i $skater_collision_radius$ = %i(28,0000001c)
+												:i $skater_collision_application_radius$ = %i(8,00000008)
+												:i $skater_collision_impulse_factor$ = %f(1.000000)
+												:i $contacts$ = :a{
+													:i %vec3(16.000000,40.000000,28.000000)
+													:i %vec3(16.000000,40.000000,-28.000000)
+													:i %vec3(-16.000000,40.000000,28.000000)
+													:i %vec3(-16.000000,40.000000,-28.000000)
+													:i %vec3(16.000000,0.000000,23.000000)
+													:i %vec3(16.000000,0.000000,-23.000000)
+													:i %vec3(-16.000000,0.000000,23.000000)
+													:i %vec3(-16.000000,0.000000,-23.000000)
+													:i :a}
+												:i $directed_friction$ = :a{
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{$none$:s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :s{%vec3(1.000000,0.000000,0.000000):s}
+													:i :a}
+												:i $SoundType$ = $SkaterBoardWhenBail$
+											:i :s}
+											:i :s{
+												:i $component$ = $modellightupdate$
+											:i :s}
+											:i :s{
+												:i $component$ = $Sound$
+											:i :s}
+											:i :a}
+										:i function $CreateBailBoard$$vel$ = %vec3(0.000000,0.000000,0.000000)$rotvel$ = %vec3(0.000000,0.000000,0.000000)$object_vel_factor$ = %i(1,00000001)
+											:i $Obj_GetId$
+											:i if $GotParam$$gurney$
+												:i $MangleChecksums$$a$ = $BailGurney$$b$ = %GLOBAL%$Objid$
+											:i else 
+												:i if $GotParam$$tantrum$
+													:i $MangleChecksums$$a$ = $TantrumBoard$$b$ = %GLOBAL%$Objid$
+												:i else 
+													:i $MangleChecksums$$a$ = $BailBoard$$b$ = %GLOBAL%$Objid$
+												:i endif
+											:i endif
+											:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+												:i %GLOBAL%$mangled_id$.$die$
+											:i endif
+											:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$Objid$$part$ = $Board$
+												:i $board_ok$ = %i(1,00000001)
+											:i endif
+											:i if $GotParam$$gurney$
+												:i $board_ok$ = %i(1,00000001)
+											:i endif
+											:i if $GotParam$$board_ok$
+												:i if $GotParam$$gurney$
+													:i $animload_THPS6_Veh_Gurney$
+													:i $Skeleton_SpawnCompositeObject$ isNull $offset$ = %vec3(0.000000,-3.000000,2.000000)$bone$ = $Bone_Board_Root$$components$ = $BailGurneyComponents$$params$ = :s{$name$ = %GLOBAL%$mangled_id$$XcloneFrom$ = %GLOBAL%$Objid$$Xgeoms$ = :a{$Board$:a}:s}
+													:i if NOT $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+														:i return
+														
+													:i endif
+												:i else 
+													:i $Skeleton_SpawnCompositeObject$ isNull $offset$ = %vec3(0.000000,-3.000000,2.000000)$bone$ = $Bone_Board_Root$$components$ = $BailBoardComponents$$params$ = :s{$name$ = %GLOBAL%$mangled_id$$cloneFrom$ = %GLOBAL%$Objid$$geoms$ = :a{$Board$:a}:s}
+													:i if NOT $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+														:i return
+														
+													:i endif
+												:i endif
+												:i %GLOBAL%$mangled_id$.$RigidBody_IgnoreSkater$%i(15,0000000f)$frames$
+												:i %GLOBAL%$mangled_id$.$RigidBody_Wake$
+												:i if $GotParam$$tantrum$
+													:i $Spawnscript$$waitandkilltantrumboard$$params$ = :s{$id$ = %GLOBAL%$mangled_id$:s}
+												:i endif
+											:i endif
+										:i endfunction
+										:i function $waitandkilltantrumboard$
+											:i $wait$%i(6,00000006)$seconds$
+											:i $BailBoard_cleanup$$id$ = %GLOBAL%$id$
+										:i endfunction
+										:i function $BailBoard_cleanup$$id$ = $BailBoard$
+											:i if $ObjectExists$$id$ = %GLOBAL%$id$
+												:i %GLOBAL%$id$.$die$
+											:i endif
+										:i endfunction
+										:i function $SwitchOffBoard$
+											:i $SwitchOffAtomic$$Board$
+										:i endfunction
+										:i function $CleanUpSpecialItems$
+											:i $SwitchOffAtomic$$special_item$
+											:i $SwitchOnAtomic$$special_item_2$
+										:i endfunction
+										:i function $skater_play_bail_stream$
+											:i $Obj_PlayStream$%GLOBAL%$stream_checksum$$vol$ = %i(200,000000c8)$priority$ = %i(49,00000031)
+										:i endfunction
+										:i function $skater_hint_style$
+											:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(0.000000,0.000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %vec2(2.500000,2.500000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %vec2(0.750000,0.750000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %vec2(1.300000,1.300000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %vec2(1.100000,1.100000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+											:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %vec2(2.500000,2.500000)
+											:i $DoMorph$$time$ = %f(0.200000)$scale$ = %vec2(12.000000,0.000000)$alpha$ = %i(0,00000000)
+											:i $die$
+										:i endfunction
+										:i function $skater_bail_style$
+											:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(0.000000,0.000000)$alpha$ = %i(0,00000000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.000000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+											:i $DoMorph$$time$ = %f(0.070000)$scale$ = %f(0.900000)$rot_angle$ = %i(4294967294,fffffffe)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.060000)$scale$ = %f(1.600000)$rot_angle$ = %i(3,00000003)
+											:i $DoMorph$$time$ = %f(0.030000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.030000)$scale$ = %f(1.250000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)$alpha$ = %f(0.800000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)$alpha$ = %f(0.700000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)$alpha$ = %f(0.800000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.210000)$rot_angle$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)$rot_angle$ = %i(0,00000000)
+											:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.700000)$rot_angle$ = %i(4294967293,fffffffd)
+											:i $DoMorph$$time$ = %f(0.300000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$rot_angle$ = %i(180,000000b4)
+											:i $die$
+										:i endfunction
+										:i :end
+										

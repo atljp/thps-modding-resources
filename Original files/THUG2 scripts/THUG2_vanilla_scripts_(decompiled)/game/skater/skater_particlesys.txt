@@ -1,0 +1,689 @@
+
+:i function $InitSkaterParticles$
+:i endfunction
+:i $SkaterParticleHandlerExceptionTable$ = :a{
+	:i :s{$Event$$Ex$ = $OnSkaterStateChange$$Scr$ = $SkaterParticles_OnSkaterStateChange$:s}
+	:i :s{$Event$$Ex$ = $OnSkaterPhysicsStateChange$$Scr$ = $SkaterParticles_OnSkaterPhysicsStateChange$:s}
+	:i :s{$Event$$Ex$ = $OnSkaterTerrainChange$$Scr$ = $SkaterParticles_OnSkaterTerrainChange$:s}
+	:i :a}
+:i function $set_skater_particle_handlers$
+	:i $ResetEventHandlersFromTable$$SkaterParticleHandlerExceptionTable$$group$ = $flexpartsys$
+:i endfunction
+:i function $destroy_particle_object$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = %GLOBAL%$a$$b$ = %GLOBAL%$objId$
+	:i if $GotParam$$b$
+		:i $MangleChecksums$$a$ = %GLOBAL%$mangled_id$$b$ = %GLOBAL%$b$
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i %GLOBAL%$mangled_id$.$DestroyParticles$
+		:i %GLOBAL%$mangled_id$.$Die$
+	:i else 
+		:i $printf$%s(32,"Couldn't find %s %a %b to delete")$s$ = %GLOBAL%$mangled_id$$a$ = %GLOBAL%$a$$b$ = %GLOBAL%$b$
+	:i endif
+:i endfunction
+:i function $DestroySkaterParticles$
+	:i $ResetSkaterParticleSystems$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objId$.$destroy_particle_object$$a$ = $skater_blood_system$$b$ = $bone_head$
+	:i $FlushDeadObjects$
+:i endfunction
+:i function $ResetSkaterParticleSystems$
+	:i $SkaterParticles_DestroySkatingGfx$
+	:i $SkaterParticles_DestroyStepGfx$
+	:i $SkaterParticles_DestroyGrindGfx$
+	:i $SkaterParticles_DestroySlideGfx$
+	:i $CleanUp_SpecialTrickParticles$
+	:i $BloodParticlesOff$
+	:i $SprayPaintOff$
+	:i $SkaterSplashOff$
+	:i $SparksOff$
+:i endfunction
+:i function $SkaterParticles_SparksOn$$type$ = $grind$
+	:i if  (%GLOBAL%$type$ = $grind$) 
+		:i $SkaterParticles_CreateGrindGfx$
+	:i else 
+		:i $SkaterParticles_CreateSlideGfx$
+	:i endif
+:i endfunction
+:i function $SkaterParticles_SparksOff$
+	:i $SkaterParticles_DestroyGrindGfx$
+	:i $SkaterParticles_DestroySlideGfx$
+:i endfunction
+:i function $SetSparksTruckFromNollie$
+	:i if $InNollie$
+		:i $SetSparksPos$$front$
+	:i else 
+		:i $SetSparksPos$$rear$
+	:i endif
+:i endfunction
+:i function $SkaterSplashOn$
+	:i $Obj_GetId$
+	:i $CreateFlexibleParticleSystem$$name$ = $skatersplash$$objId$ = %GLOBAL%$objId$$params_script$ = $apm_Skater_splash01_particle_params$
+	:i $CreateFastParticleSystem$$name$ = $skatersplash2$$attachObjId$ = %GLOBAL%$objId$$params_script$ = $apm_Skater_splash01f_fast_particle_params$
+	:i $CreateFastParticleSystem$$name$ = $skatersplash3$$attachObjId$ = %GLOBAL%$objId$$params_script$ = $apm_Skater_splash02f_fast_particle_params$
+:i endfunction
+:i function $SkaterSplashOff$
+	:i $Obj_GetId$
+	:i $DestroyFlexibleParticleSystem$$name$ = $skatersplash$$objId$ = %GLOBAL%$objId$
+	:i $DestroyFastParticleSystem$$name$ = $skatersplash2$$attachObjId$ = %GLOBAL%$objId$
+	:i $DestroyFastParticleSystem$$name$ = $skatersplash3$$attachObjId$ = %GLOBAL%$objId$
+:i endfunction
+:i function $SprayPaintOn$
+	:i $Obj_GetId$
+	:i $CreateFlexibleParticleSystem$$name$ = $skater_SprayPaint_system$$objId$ = %GLOBAL%$objId$$params_script$ = $apm_spray03_particle_params$$bone$ = %GLOBAL%$bone$
+:i endfunction
+:i function $SprayPaintOff$
+	:i $Obj_GetId$
+	:i $DestroyFlexibleParticleSystem$$name$ = $skater_SprayPaint_system$$objId$ = %GLOBAL%$objId$
+:i endfunction
+:i function $AcidParticlesOn$
+	:i if $IsSkaterOnVehicle$
+		:i return
+		
+	:i endif
+	:i while
+		
+		:i if $OnRail$
+			:i continue
+			
+		:i endif
+		:i if $Walking$
+			:i continue
+			
+		:i endif
+		:i if $OnGround$
+			:i $Obj_GetId$
+			:i $CreateFastParticleSystem$$name$ = $skater_acid_system02$$params_script$ = $apm_ACID_DROP02_fast_particle_params$$attachObjId$ = %GLOBAL%$objId$
+			:i $CreateFastParticleSystem$$name$ = $skater_acid_system03$$params_script$ = $apm_ACID_DROP03_fast_particle_params$$attachObjId$ = %GLOBAL%$objId$
+			:i $ShakeCamera$:s{
+				:i $duration$ = %f(0.250000)
+				:i $vert_amp$ = %i(25,00000019)
+				:i $horiz_amp$ = %i(10,0000000a)
+				:i $vert_vel$ = %i(10,0000000a)
+				:i $horiz_vel$ = %f(10.920000)
+			:i :s}
+			:i $Vibrate$$Actuator$ = %i(0,00000000);$Percent$ = %i(1,00000001);$duration$ = %i(1,00000001);
+			:i $Vibrate$$Actuator$ = %i(1,00000001);$Percent$ = %i(1,00000001);$duration$ = %i(1,00000001);
+			:i $wait$%i(2,00000002)$seconds$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $AcidParticlesOff$
+	:i $DestroyFlexibleParticleSystem$$name$ = $skater_acid_system$
+:i endfunction
+:i function $BloodParticlesOn$$bone$ = $bone_head$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $skater_blood_system$$b$ = %GLOBAL%$objId$
+	:i $MangleChecksums$$a$ = %GLOBAL%$mangled_id$$b$ = %GLOBAL%$bone$
+	:i $Obj_SpawnScript$$SkaterBloodOn$$params$ = :s{$name$ = %GLOBAL%$mangled_id$$num$ = %GLOBAL%$num$:s}
+:i endfunction
+:i function $SkaterBloodOn$$num$ = %i(10,0000000a)
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(17,"No name parameter")
+	:i endif
+	:i $alloc_blood_system$$name$ = %GLOBAL%$name$
+	:i if NOT $GetGlobalFlag$$Flag$ = $CHEAT_SUPER_BLOOD$
+		:i if $ObjectExists$$id$ = %GLOBAL%$name$
+			:i %GLOBAL%$name$.$SetEmitScript$$name$ = %GLOBAL%$name$$emitscript$ = $skater_blood_emit$
+		:i endif
+	:i else 
+		:i if $ObjectExists$$id$ = %GLOBAL%$name$
+			:i %GLOBAL%$name$.$SetEmitScript$$name$ = %GLOBAL%$name$$emitscript$ = $skater_blood_emit_super$
+		:i endif
+	:i endif
+	:i while
+		
+		:i if $ObjectExists$$id$ = %GLOBAL%$name$
+			:i %GLOBAL%$name$.$EmitOn$
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to %GLOBAL%$num$
+	:i if $ObjectExists$$id$ = %GLOBAL%$name$
+		:i %GLOBAL%$name$.$EmitOff$
+	:i endif
+:i endfunction
+:i function $BloodParticlesOff$$bone$ = $bone_head$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $skater_blood_system$$b$ = %GLOBAL%$objId$
+	:i $MangleChecksums$$a$ = %GLOBAL%$mangled_id$$b$ = $bone_head$
+	:i $SkaterBloodOff$$name$ = %GLOBAL%$mangled_id$
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i %GLOBAL%$mangled_id$.$EmptySystem$
+	:i endif
+:i endfunction
+:i function $SkaterBloodOff$
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(17,"No name parameter")
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$name$
+		:i %GLOBAL%$name$.$DestroyParticles$
+	:i endif
+:i endfunction
+:i function $alloc_blood_system$$bone$ = $bone_head$
+	:i $Obj_GetId$
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = :a{
+				:i :s{$component$ = $suspend$:s}
+				:i :s{$component$ = $lockobj$:s}
+				:i :s{$component$ = $FlexibleParticle$:s}
+				:i :a}
+			:i $params$ = :s{
+				:i $name$ = %GLOBAL%$name$
+				:i $LocalSpace$
+				:i $vel$ = %GLOBAL%$vel$
+				:i $params$ = :s{$objId$ = %GLOBAL%$objId$$bone$ = %GLOBAL%$bone$$name$ = %GLOBAL%$name$:s}
+				:i $max$ = %i(25,00000019)
+				:i $emitscript$ = $skater_blood_emit$
+				:i $texture$ = $particle_test02$
+				:i $blendmode$ = $blend$
+				:i $perm$ = %i(1,00000001)
+			:i :s}
+		:i :s}
+		:i %GLOBAL%$name$.$Obj_LockToObject$$bone$ = %GLOBAL%$bone$$id$ = %GLOBAL%$objId$$add_vel$
+	:i endif
+:i endfunction
+:i function $SkaterParticles_OnSkaterStateChange$
+	:i $SkaterParticles_DestroySkatingGfx$
+	:i $SkaterParticles_DestroyGrindGfx$
+	:i $SkaterParticles_DestroySlideGfx$
+	:i if $OnGround$
+		:i $SkaterParticles_CreateSkatingGfx$
+	:i endif
+:i endfunction
+:i function $SkaterParticles_OnSkaterPhysicsStateChange$
+	:i $SkaterParticles_DestroySkatingGfx$
+	:i $SkaterParticles_DestroyGrindGfx$
+	:i $SkaterParticles_DestroySlideGfx$
+	:i if $Skating$
+		:i $SkaterParticles_CreateSkatingGfx$
+	:i endif
+:i endfunction
+:i function $SkaterParticles_OnSkaterTerrainChange$
+	:i $SkaterParticles_DestroySkatingGfx$
+	:i if $Skating$
+		:i $SkaterParticles_CreateSkatingGfx$
+	:i endif
+:i endfunction
+:i function $SkaterParticles_OnRightFootstep$
+	:i $SkaterParticles_CreateStepGfx$$bone$ = $Bone_Ankle_R$
+:i endfunction
+:i function $SkaterParticles_OnLeftFootstep$
+	:i $SkaterParticles_CreateStepGfx$$bone$ = $Bone_Ankle_L$
+:i endfunction
+:i function $SkaterParticles_CreateSkatingGfx$
+	:i $Obj_GetId$
+	:i $GetTerrain$
+	:i if $GetTerrainTypeParam$$param$ = $TreadActions$$terrain_id$ = %GLOBAL%$terrain$
+		:i while
+			
+			:i if $GetNextArrayElement$ (%GLOBAL%$TreadActions$->$SkaterSkatingParticleParms$) 
+				:i $FormatText$$ChecksumName$ = $tag$%s(17,"terrain_skating%d")$d$ = %GLOBAL%$index$
+				:i $MangleChecksums$$a$ = %GLOBAL%$tag$$b$ = %GLOBAL%$objId$
+				:i %GLOBAL%$name$ = %GLOBAL%$mangled_id$
+				:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+					:i $MangleChecksums$$a$ = $terrain_skating$$b$ = %GLOBAL%$objId$
+					:i %GLOBAL%$groupID$ = %GLOBAL%$mangled_id$
+					:i %GLOBAL%$type$ = $flexible$
+					:i if $StructureContains$$structure$ =  (%GLOBAL%$element$) $Class$
+						:i if  ( (%GLOBAL%$element$->$Class$)  = $ParticleObject$) 
+							:i %GLOBAL%$type$ = $fast$
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$type$ = $flexible$) 
+						:i $alloc_flexible_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i else 
+						:i $alloc_fast_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$attachObjId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i endif
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $SkaterParticles_DestroySkatingGfx$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $terrain_skating$$b$ = %GLOBAL%$objId$
+	:i $DestroyParticlesByGroupID$$groupID$ = %GLOBAL%$mangled_id$
+:i endfunction
+:i function $SkaterParticles_CreateStepGfx$$bone$ = $Bone_Ankle_L$$SystemLifetime$ = %i(400,00000190)
+	:i $Obj_GetId$
+	:i $GetTerrain$
+	:i if $GetTerrainTypeParam$$param$ = $TreadActions$$terrain_id$ = %GLOBAL%$terrain$
+		:i while
+			
+			:i if $GetNextArrayElement$ (%GLOBAL%$TreadActions$->$SkaterStepParticleParms$) 
+				:i $GetUniqueCompositeObjectId$$PreferredId$ = $FootstepParticleSystem$
+				:i %GLOBAL%$name$ = %GLOBAL%$UniqueID$
+				:i $MangleChecksums$$a$ = $terrain_step$$b$ = %GLOBAL%$objId$
+				:i %GLOBAL%$groupID$ = %GLOBAL%$mangled_id$
+				:i %GLOBAL%$type$ = $flexible$
+				:i if $StructureContains$$structure$ =  (%GLOBAL%$element$) $Class$
+					:i if  ( (%GLOBAL%$element$->$Class$)  = $ParticleObject$) 
+						:i %GLOBAL%$type$ = $fast$
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$type$ = $flexible$) 
+					:i $alloc_flexible_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$$bone$ = %GLOBAL%$bone$
+				:i else 
+					:i if $StructureContains$$structure$ =  (%GLOBAL%$element$) $EmitDuration$
+						:i $SystemLifetime$ =  (%i(1000,000003e8) *  (%GLOBAL%$element$->$EmitDuration$) ) 
+						:i $CastToInteger$$SystemLifetime$
+					:i endif
+					:i $alloc_fast_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$groupID$ = %GLOBAL%$groupID$$bone$ = %GLOBAL%$bone$$SystemLifetime$ = %GLOBAL%$SystemLifetime$
+					:i $Orient$$Object$ = %GLOBAL%$UniqueID$$RelativeTo$ = %GLOBAL%$objId$$bone$ = %GLOBAL%$bone$
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $SkaterParticles_DestroyStepGfx$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $terrain_step$$b$ = %GLOBAL%$objId$
+	:i $DestroyParticlesByGroupID$$groupID$ = %GLOBAL%$mangled_id$
+:i endfunction
+:i function $SkaterParticles_CreateGrindGfx$
+	:i $Obj_GetId$
+	:i $GetTerrain$
+	:i if $GetTerrainTypeParam$$param$ = $TreadActions$$terrain_id$ = %GLOBAL%$terrain$
+		:i while
+			
+			:i if $GetNextArrayElement$ (%GLOBAL%$TreadActions$->$SkaterGrindParticleParms$) 
+				:i $FormatText$$ChecksumName$ = $tag$%s(15,"terrain_grind%d")$d$ = %GLOBAL%$index$
+				:i $MangleChecksums$$a$ = %GLOBAL%$tag$$b$ = %GLOBAL%$objId$
+				:i %GLOBAL%$name$ = %GLOBAL%$mangled_id$
+				:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+					:i $MangleChecksums$$a$ = $terrain_grind$$b$ = %GLOBAL%$objId$
+					:i %GLOBAL%$groupID$ = %GLOBAL%$mangled_id$
+					:i %GLOBAL%$type$ = $flexible$
+					:i if $StructureContains$$structure$ =  (%GLOBAL%$element$) $Class$
+						:i if  ( (%GLOBAL%$element$->$Class$)  = $ParticleObject$) 
+							:i %GLOBAL%$type$ = $fast$
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$type$ = $flexible$) 
+						:i $alloc_flexible_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i else 
+						:i $alloc_fast_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$attachObjId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i endif
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $SkaterParticles_DestroyGrindGfx$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $terrain_grind$$b$ = %GLOBAL%$objId$
+	:i $DestroyParticlesByGroupID$$groupID$ = %GLOBAL%$mangled_id$
+:i endfunction
+:i function $SkaterParticles_CreateSlideGfx$
+	:i $Obj_GetId$
+	:i $GetTerrain$
+	:i if $GetTerrainTypeParam$$param$ = $TreadActions$$terrain_id$ = %GLOBAL%$terrain$
+		:i while
+			
+			:i if $GetNextArrayElement$ (%GLOBAL%$TreadActions$->$SkaterSlideParticleParms$) 
+				:i $FormatText$$ChecksumName$ = $tag$%s(15,"terrain_slide%d")$d$ = %GLOBAL%$index$
+				:i $MangleChecksums$$a$ = %GLOBAL%$tag$$b$ = %GLOBAL%$objId$
+				:i %GLOBAL%$name$ = %GLOBAL%$mangled_id$
+				:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+					:i $MangleChecksums$$a$ = $terrain_slide$$b$ = %GLOBAL%$objId$
+					:i %GLOBAL%$groupID$ = %GLOBAL%$mangled_id$
+					:i %GLOBAL%$type$ = $flexible$
+					:i if $StructureContains$$structure$ =  (%GLOBAL%$element$) $Class$
+						:i if  ( (%GLOBAL%$element$->$Class$)  = $ParticleObject$) 
+							:i %GLOBAL%$type$ = $fast$
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$type$ = $flexible$) 
+						:i $alloc_flexible_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i else 
+						:i $alloc_fast_particle$$params_script$ =  (%GLOBAL%$element$) $name$ = %GLOBAL%$name$$attachObjId$ = %GLOBAL%$objId$$groupID$ = %GLOBAL%$groupID$
+					:i endif
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $SkaterParticles_DestroySlideGfx$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = $terrain_slide$$b$ = %GLOBAL%$objId$
+	:i $DestroyParticlesByGroupID$$groupID$ = %GLOBAL%$mangled_id$
+:i endfunction
+:i $skater_particle_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $particle$:s}
+	:i :s{$component$ = $lockobj$:s}
+	:i :a}
+:i function $CleanUp_SpecialTrickParticles$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = %GLOBAL%$objId$$b$ = $SpecialTrickParticles$
+	:i $particle_id$ = %GLOBAL%$mangled_id$
+	:i if $ObjectExists$$id$ = %GLOBAL%$particle_id$
+		:i %GLOBAL%$particle_id$.$Die$
+	:i endif
+:i endfunction
+:i function $Emit_SpecialTrickParticles$$bone$ = $bone_head$$specialtrick_particles$ = $barf_particles$
+	:i $Obj_SpawnScript$$Emit_SpecialTrickParticles2$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $Emit_SpecialTrickParticles2$
+	:i $Obj_GetId$
+	:i $MangleChecksums$$a$ = %GLOBAL%$objId$$b$ = $SpecialTrickParticles$
+	:i $particle_id$ = %GLOBAL%$mangled_id$
+	:i if $ObjectExists$$id$ = %GLOBAL%$particle_id$
+		:i %GLOBAL%$particle_id$.$Die$
+	:i endif
+	:i $wait$%i(1,00000001)
+	$game$$frame$
+	:i $printf$%s(42,"about to create ..........................")
+	:i if NOT $GotParam$$dont_orient_toskater$
+		:i $GetSkaterVelocity$
+		:i $vel$ =  (%GLOBAL%$vel_x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$vel_y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$vel_z$ * %vec3(0.000000,0.000000,1.000000)) 
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $skater_particle_composite_structure$
+			:i $params$ = :s{
+				:i $name$ = %GLOBAL%$particle_id$
+				:i $LocalSpace$
+				:i $EnableRotate$
+				:i $vel$ = %GLOBAL%$vel$
+				:i %GLOBAL%$specialtrick_particles$
+			:i :s}
+		:i :s}
+	:i else 
+		:i $printf$%s(5,"Here?")
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $skater_particle_composite_structure$
+			:i $params$ = :s{
+				:i $name$ = %GLOBAL%$particle_id$
+				:i $LocalSpace$
+				:i %GLOBAL%$specialtrick_particles$
+			:i :s}
+		:i :s}
+	:i endif
+	:i %GLOBAL%$particle_id$.$Obj_LockToObject$$bone$ = %GLOBAL%$bone$$id$ = %GLOBAL%$objId$
+	:i if $GotParam$$StopEmitAt$
+		:i $wait$%GLOBAL%$StopEmitAt$$seconds$
+		:i if $ObjectExists$$id$ = %GLOBAL%$particle_id$
+			:i %GLOBAL%$particle_id$.$SetEmitRate$%i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i $fire_particles$ = 
+:i :s{
+	:i $Class$ = $ParticleObject$
+	:i $type$ = $Default$
+	:i $BoxDimsStart$ = %vec3(20.419441,20.246090,0.351075)
+	:i $MidPosition$ = %vec3(-10.002134,-10.852689,-10.058679)
+	:i $BoxDimsMid$ = %vec3(20.419441,20.246090,0.351075)
+	:i $EndPosition$ = %vec3(-20.015867,-20.335335,-20.058680)
+	:i $BoxDimsEnd$ = %vec3(20.419441,20.246090,0.351075)
+	:i $texture$ = $dt_generic_particle01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $type$ = $NEWFLAT$
+	:i $blendmode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(160.000000)
+	:i $Lifetime$ = %f(0.400000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(7.000000)
+	:i $MidRadius$ = %f(5.000000)
+	:i $EndRadius$ = %f(3.500000)
+	:i $StartRadiusSpread$ = %f(1.000000)
+	:i $MidRadiusSpread$ = %f(1.000000)
+	:i $EndRadiusSpread$ = %f(1.000000)
+	:i $StartRGB$ = :a{%i(150,00000096);%i(72,00000048);%i(25,00000019):a}
+	:i $StartAlpha$ = %i(85,00000055)
+	:i $ColorMidTime$ = %i(50,00000032)
+	:i $MidRGB$ = :a{%i(150,00000096);%i(67,00000043);%i(18,00000012):a}
+	:i $MidAlpha$ = %i(85,00000055)
+	:i $EndRGB$ = :a{%i(150,00000096);%i(67,00000043);%i(18,00000012):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $barf_particles$ = 
+:i :s{
+	:i $Class$ = $ParticleObject$
+	:i $type$ = $Default$
+	:i $BoxDimsStart$ = %vec3(1.401378,1.401378,1.401378)
+	:i $MidPosition$ = %vec3(-0.009090,-17.076101,-0.034920)
+	:i $BoxDimsMid$ = %vec3(4.443864,4.443864,4.443864)
+	:i $EndPosition$ = %vec3(-0.064480,-64.399330,-0.034921)
+	:i $BoxDimsEnd$ = %vec3(6.667320,6.667320,6.667320)
+	:i $texture$ = $dt_barf02$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $type$ = $NEWFLAT$
+	:i $blendmode$ = $blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(100.000000)
+	:i $Lifetime$ = %f(0.300000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(1.000000)
+	:i $MidRadius$ = %f(2.000000)
+	:i $EndRadius$ = %f(3.000000)
+	:i $StartRadiusSpread$ = %f(1.000000)
+	:i $MidRadiusSpread$ = %f(1.000000)
+	:i $EndRadiusSpread$ = %f(1.000000)
+	:i $StartRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $StartAlpha$ = %i(122,0000007a)
+	:i $ColorMidTime$ = %i(50,00000032)
+	:i $MidRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $MidAlpha$ = %i(160,000000a0)
+	:i $EndRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $EndAlpha$ = %i(50,00000032)
+:i :s}
+:i $barf2_particles$ = 
+:i :s{
+	:i $Class$ = $ParticleObject$
+	:i $type$ = $Default$
+	:i $BoxDimsStart$ = %vec3(1.401378,1.401378,1.401378)
+	:i $MidPosition$ = %vec3(-0.009090,0.000000,-17.076101)
+	:i $BoxDimsMid$ = %vec3(1.401378,1.401378,1.401378)
+	:i $EndPosition$ = %vec3(-0.064480,0.000000,-34.399330)
+	:i $BoxDimsEnd$ = %vec3(1.401378,1.401378,1.401378)
+	:i $texture$ = $dt_barf02$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $type$ = $NEWFLAT$
+	:i $blendmode$ = $blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(100.000000)
+	:i $Lifetime$ = %f(0.300000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(1.000000)
+	:i $MidRadius$ = %f(2.000000)
+	:i $EndRadius$ = %f(3.000000)
+	:i $StartRadiusSpread$ = %f(1.000000)
+	:i $MidRadiusSpread$ = %f(1.000000)
+	:i $EndRadiusSpread$ = %f(1.000000)
+	:i $StartRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $StartAlpha$ = %i(122,0000007a)
+	:i $ColorMidTime$ = %i(50,00000032)
+	:i $MidRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $MidAlpha$ = %i(160,000000a0)
+	:i $EndRGB$ = :a{%i(105,00000069);%i(111,0000006f);%i(96,00000060):a}
+	:i $EndAlpha$ = %i(50,00000032)
+:i :s}
+:i $firebreath_particles$ = 
+:i :s{
+	:i $Class$ = $ParticleObject$
+	:i $type$ = $Default$
+	:i $BoxDimsStart$ = %vec3(0.700000,0.700000,0.700000)
+	:i $MidPosition$ = %vec3(-0.002138,10.166236,-0.058679)
+	:i $BoxDimsMid$ = %vec3(4.542354,4.542354,4.542354)
+	:i $EndPosition$ = %vec3(-0.015876,38.125256,-0.058676)
+	:i $BoxDimsEnd$ = %vec3(9.063875,9.063875,9.063875)
+	:i $texture$ = $dt_generic_particle01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $type$ = $NEWFLAT$
+	:i $blendmode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(250.000000)
+	:i $Lifetime$ = %f(0.200000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(4.000000)
+	:i $MidRadius$ = %f(4.000000)
+	:i $EndRadius$ = %f(6.000000)
+	:i $StartRadiusSpread$ = %f(1.000000)
+	:i $MidRadiusSpread$ = %f(1.000000)
+	:i $EndRadiusSpread$ = %f(1.000000)
+	:i $StartRGB$ = :a{%i(150,00000096);%i(93,0000005d);%i(59,0000003b):a}
+	:i $StartAlpha$ = %i(82,00000052)
+	:i $ColorMidTime$ = %i(50,00000032)
+	:i $MidRGB$ = :a{%i(150,00000096);%i(67,00000043);%i(18,00000012):a}
+	:i $MidAlpha$ = %i(109,0000006d)
+	:i $EndRGB$ = :a{%i(150,00000096);%i(67,00000043);%i(18,00000012):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i function $skater_blood_emit$
+	:i $setlife$$min$ = %f(0.250000)$max$ = %i(1,00000001)
+	:i $setanglespread$$spread$ = %f(0.100000)
+	:i $setspeedrange$$min$ = %i(4,00000004)$max$ = %i(8,00000008)
+	:i $setforce$$force$ = %vec3(0.000000,-0.500000,0.000000)
+	:i $setparticlesize$$sw$ = %i(2,00000002)$sh$ = %i(2,00000002)$ew$ = %i(2,00000002)$eh$ = %i(2,00000002)
+	:i $setcolor$$corner$ = %i(0,00000000)$sr$ = %i(100,00000064)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(80,00000050)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(1,00000001)$sr$ = %i(100,00000064)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(80,00000050)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(2,00000002)$sr$ = %i(100,00000064)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(80,00000050)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(3,00000003)$sr$ = %i(100,00000064)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(80,00000050)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i while
+		
+		:i if %GLOBAL%$name$.$ShouldEmit$
+			:i $emit$$num$ = %i(1,00000001)
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $skater_blood_emit_super$
+	:i $setlife$$min$ = %f(0.250000)$max$ = %i(1,00000001)
+	:i $setanglespread$$spread$ = %f(0.300000)
+	:i $setspeedrange$$min$ = %i(4,00000004)$max$ = %i(10,0000000a)
+	:i $setforce$$force$ = %vec3(0.000000,-0.500000,0.000000)
+	:i $setparticlesize$$sw$ = %i(2,00000002)$sh$ = %i(2,00000002)$ew$ = %i(6,00000006)$eh$ = %i(6,00000006)
+	:i $setcolor$$corner$ = %i(0,00000000)$sr$ = %i(50,00000032)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(50,00000032)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(1,00000001)$sr$ = %i(50,00000032)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(50,00000032)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(2,00000002)$sr$ = %i(50,00000032)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(50,00000032)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(3,00000003)$sr$ = %i(50,00000032)$sg$ = %i(0,00000000)$sb$ = %i(0,00000000)$sa$ = %i(255,000000ff)$er$ = %i(50,00000032)$eg$ = %i(0,00000000)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+	:i while
+		
+		:i if %GLOBAL%$name$.$ShouldEmit$
+			:i $emit$$num$ = %i(1,00000001)
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i $skater_sparks_params$ = :s{
+	:i $bone$ = $Bone_Board_Tail$
+	:i $LocalSpace$
+	:i $add_vel$
+	:i $max$ = %i(8,00000008)
+	:i $emitscript$ = $skater_sparks_emit$
+	:i $updatescript$ = $align_scale_size_to_vel_update$
+	:i $params$ = :s{$update_pos$ = %i(1,00000001)
+		:i $base_vel$ = %i(700,000002bc)
+		:i $pos_offset$ = %vec3(0.000000,-5.000000,0.000000)
+		:i $emit_offset$ = %vec3(0.000000,1.500000,0.000000)
+		:i $base_emit_rate$ = %i(60,0000003c)
+		:i $get_bone_script$ = $GetBoardGrindBone$
+	:i :s}
+	:i $type$ = $FlatRibbonTail$
+	:i $texture$ = $apm_spark_4$
+	:i $history$ = %i(3,00000003)
+	:i $blendmode$ = $Add$
+:i :s}
+:i function $skater_sparks_emit$
+	:i $setlife$$min$ = %f(0.010000)$max$ = %f(0.250000)
+	:i $setanglespread$$spread$ = %f(0.500000)
+	:i $setspeedrange$$min$ = %i(8,00000008)$max$ = %i(12,0000000c)
+	:i $setforce$$force$ = %vec3(0.000000,-0.750000,0.000000)
+	:i $setparticlesize$$sw$ = %i(1,00000001)$sh$ = %i(1,00000001)$ew$ = %f(0.250000)$eh$ = %f(0.250000)
+	:i $setcolor$$corner$ = %i(0,00000000)$sr$ = %i(255,000000ff)$sg$ = %i(100,00000064)$sb$ = %i(64,00000040)$sa$ = %i(255,000000ff)$ma$ = %i(255,000000ff)$er$ = %i(255,000000ff)$eg$ = %i(64,00000040)$eb$ = %i(0,00000000)$ea$ = %i(255,000000ff)
+	:i $setcolor$$corner$ = %i(1,00000001)$sr$ = %i(255,000000ff)$sg$ = %i(128,00000080)$sb$ = %i(64,00000040)$sa$ = %i(0,00000000)$ma$ = %i(255,000000ff)$er$ = %i(255,000000ff)$eg$ = %i(64,00000040)$eb$ = %i(0,00000000)$ea$ = %i(255,000000ff)
+	:i $setcolor$$corner$ = %i(2,00000002)$sr$ = %i(255,000000ff)$sg$ = %i(128,00000080)$sb$ = %i(64,00000040)$sa$ = %i(0,00000000)$ma$ = %i(255,000000ff)$er$ = %i(255,000000ff)$eg$ = %i(64,00000040)$eb$ = %i(0,00000000)$ea$ = %i(128,00000080)
+	:i $setcolor$$corner$ = %i(3,00000003)$sr$ = %i(255,000000ff)$sg$ = %i(128,00000080)$sb$ = %i(64,00000040)$sa$ = %i(0,00000000)$ma$ = %i(255,000000ff)$er$ = %i(255,000000ff)$eg$ = %i(64,00000040)$eb$ = %i(0,00000000)$ea$ = %i(128,00000080)
+	:i $setcolor$$corner$ = %i(4,00000004)$sr$ = %i(255,000000ff)$sg$ = %i(128,00000080)$sb$ = %i(64,00000040)$sa$ = %i(0,00000000)$ma$ = %i(128,00000080)$er$ = %i(255,000000ff)$eg$ = %i(64,00000040)$eb$ = %i(0,00000000)$ea$ = %i(0,00000000)
+:i endfunction
+:i $skater_elec_sparks_params$ = :s{
+	:i $bone$ = $Bone_Board_Tail$
+	:i $LocalSpace$
+	:i $add_vel$
+	:i $params$ = :s{$update_pos$ = %i(1,00000001)
+		:i $get_bone_script$ = $GetBoardGrindBone$
+	:i :s}
+	:i $max$ = %i(40,00000028)
+	:i $emitscript$ = $skater_elec_sparks_emit$
+	:i $updatescript$ = $align_scale_size_to_vel_update$
+	:i $type$ = $FlatRibbonTail$
+	:i $texture$ = $apm_spark_01$
+	:i $history$ = %i(2,00000002)
+	:i $blendmode$ = $blend$
+	:i $perm$ = %i(1,00000001)
+:i :s}
+:i function $skater_elec_sparks_emit$
+	:i $setlife$$min$ = %f(0.250000)$max$ = %f(0.300000)
+	:i $setanglespread$$spread$ = %f(0.250000)
+	:i $setspeedrange$$min$ = %i(4,00000004)$max$ = %i(8,00000008)
+	:i $setforce$$force$ = %vec3(0.000000,-0.300000,0.000000)
+	:i $setparticlesize$$sw$ = %f(1.250000)$sh$ = %f(1.250000)$ew$ = %f(0.750000)$eh$ = %f(0.750000)
+	:i $setcolor$$corner$ = %i(0,00000000)$sr$ = %i(255,000000ff)$sg$ = %i(255,000000ff)$sb$ = %i(255,000000ff)$sa$ = %i(255,000000ff)$ma$ = %i(255,000000ff)$er$ = %i(255,000000ff)$eg$ = %i(255,000000ff)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(1,00000001)$sr$ = %i(124,0000007c)$sg$ = %i(255,000000ff)$sb$ = %i(255,000000ff)$sa$ = %i(128,00000080)$ma$ = %i(128,00000080)$er$ = %i(124,0000007c)$eg$ = %i(64,00000040)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(2,00000002)$sr$ = %i(124,0000007c)$sg$ = %i(64,00000040)$sb$ = %i(255,000000ff)$sa$ = %i(0,00000000)$ma$ = %i(0,00000000)$er$ = %i(124,0000007c)$eg$ = %i(64,00000040)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(3,00000003)$sr$ = %i(124,0000007c)$sg$ = %i(255,000000ff)$sb$ = %i(255,000000ff)$sa$ = %i(80,00000050)$ma$ = %i(80,00000050)$er$ = %i(124,0000007c)$eg$ = %i(128,00000080)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(4,00000004)$sr$ = %i(124,0000007c)$sg$ = %i(255,000000ff)$sb$ = %i(255,000000ff)$sa$ = %i(64,00000040)$ma$ = %i(64,00000040)$er$ = %i(124,0000007c)$eg$ = %i(128,00000080)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i $setcolor$$corner$ = %i(5,00000005)$sr$ = %i(124,0000007c)$sg$ = %i(255,000000ff)$sb$ = %i(255,000000ff)$sa$ = %i(0,00000000)$ma$ = %i(0,00000000)$er$ = %i(124,0000007c)$eg$ = %i(128,00000080)$eb$ = %i(255,000000ff)$ea$ = %i(0,00000000)
+	:i while
+		
+		:i if %GLOBAL%$name$.$ShouldEmit$
+			:i $emit$$num$ = random%vec2(1.000000,2.000000)
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i :end

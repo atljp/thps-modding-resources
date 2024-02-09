@@ -1,0 +1,578 @@
+
+:i function $PlayYouTieScoreSound$
+	:i $PlaySound$$copinghit3_11$
+:i endfunction
+:i function $PlayYouBeatScoreSound$
+	:i $PlaySound$$GotStat04$
+:i endfunction
+:i function $PlayYouGetLetterSound$
+	:i $PlaySound$$HUDtrickslopC$
+:i endfunction
+:i function $PlayYouLoseSound$
+	:i $PlaySound$$GoalFail$
+:i endfunction
+:i function $PlayNoScoreSetSound$
+	:i $PlaySound$$GUI_buzzer01$
+:i endfunction
+:i function $play_appropriate_horse_sound$
+	:i if $HorseEnded$
+		:i $PlayYouLoseSound$
+	:i endif
+	:i if $HorseStatusEquals$$GotLetter$
+		:i $PlayYouGetLetterSound$
+	:i endif
+	:i if $HorseStatusEquals$$TieScore$
+		:i $PlayYouTieScoreSound$
+	:i endif
+	:i if $HorseStatusEquals$$BeatScore$
+		:i $PlayYouBeatScoreSound$
+	:i endif
+	:i if $HorseStatusEquals$$NoScoreSet$
+		:i $PlayNoScoreSetSound$
+	:i endif
+:i endfunction
+:i function $WaitForPanelDone$
+	:i while
+		
+		:i if $ControllerPressed$$X$
+			:i $kill_horse_panel_messages$
+			:i continue
+			
+		:i endif
+		:i if $ObjectExists$$id$ = $Top$
+			:i $wait$%i(1,00000001)$gameframe$
+		:i else 
+			:i if $ObjectExists$$id$ = $Bottom$
+				:i $wait$%i(1,00000001)$gameframe$
+			:i else 
+				:i if $ObjectExists$$id$ = $TopFinal$
+					:i $wait$%i(1,00000001)$gameframe$
+				:i else 
+					:i if $ObjectExists$$id$ = $BottomFinal$
+						:i $wait$%i(1,00000001)$gameframe$
+					:i else 
+						:i continue
+						
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $launch_panel_message$
+	:i $LaunchPanelMessage$ isNull 
+:i endfunction
+:i $player1_horsecolor$ = :a{
+	:i :s{%vec3(128.000000,32.000000,32.000000)$alpha$ = %i(128,00000080):s}
+	:i :a}
+:i $player2_horsecolor$ = :a{
+	:i :s{%vec3(32.000000,32.000000,128.000000)$alpha$ = %i(128,00000080):s}
+	:i :a}
+:i $horse_top_key_points$ = :a{
+	:i :s{$pos$ = %vec2(320.000000,204.000000)$alpha$ = %i(0,00000000)$scale$ = %f(1.000000)$time$ = %i(0,00000000):s}
+	:i :s{$alpha$ = %i(128,00000080)$time$ = %f(2.000000):s}
+	:i :a}
+:i $horse_middle_key_points$ = :a{
+	:i :s{$pos$ = %vec2(320.000000,224.000000)$alpha$ = %i(0,00000000)$scale$ = %f(1.000000)$time$ = %i(0,00000000):s}
+	:i :s{$alpha$ = %i(128,00000080)$time$ = %f(2.000000):s}
+	:i :a}
+:i $horse_bottom_key_points$ = :a{
+	:i :s{$pos$ = %vec2(320.000000,244.000000)$alpha$ = %i(0,00000000)$scale$ = %f(1.000000)$time$ = %i(0,00000000):s}
+	:i :s{$alpha$ = %i(128,00000080)$time$ = %f(2.000000):s}
+	:i :a}
+:i $horse_bottomfinal_key_points$ = :a{
+	:i :s{$pos$ = %vec2(340.000000,300.000000)$alpha$ = %i(0,00000000)$scale$ = %f(2.000000)$time$ = %i(0,00000000):s}
+	:i :s{$alpha$ = %i(128,00000080)$time$ = %f(5.000000):s}
+	:i :a}
+:i $horse_topfinal_key_points$ = :a{
+	:i :s{$pos$ = %vec2(320.000000,204.000000)$alpha$ = %i(0,00000000)$scale$ = %f(1.000000)$time$ = %i(0,00000000):s}
+	:i :s{$alpha$ = %i(128,00000080)$time$ = %f(5.000000):s}
+	:i :a}
+:i $player1_default_horseprop$ = :s{
+	:i $font$ = %s(9,"title.fnt")
+	:i $just$ = %vec2(0.000000,0.000000)
+	:i $dims$ = %vec2(320.000000,112.000000)
+	:i $colors$ = $player1_horsecolor$
+	:i $key_points$ = $horse_middle_key_points$
+:i :s}
+:i $player2_default_horseprop$ = :s{
+	:i $font$ = %s(9,"title.fnt")
+	:i $just$ = %vec2(0.000000,0.000000)
+	:i $dims$ = %vec2(320.000000,112.000000)
+	:i $colors$ = $player2_horsecolor$
+	:i $key_points$ = $horse_middle_key_points$
+:i :s}
+:i $player1_top_horseprop$ = :s{
+	:i $player1_default_horseprop$
+	:i $key_points$ = $horse_top_key_points$
+:i :s}
+:i $player2_top_horseprop$ = :s{
+	:i $player2_default_horseprop$
+	:i $key_points$ = $horse_top_key_points$
+:i :s}
+:i $player1_bottom_horseprop$ = :s{
+	:i $player1_default_horseprop$
+	:i $key_points$ = $horse_bottom_key_points$
+:i :s}
+:i $player2_bottom_horseprop$ = :s{
+	:i $player2_default_horseprop$
+	:i $key_points$ = $horse_bottom_key_points$
+:i :s}
+:i $player1_topfinal_horseprop$ = :s{
+	:i $player1_default_horseprop$
+	:i $key_points$ = $horse_topfinal_key_points$
+:i :s}
+:i $player2_topfinal_horseprop$ = :s{
+	:i $player2_default_horseprop$
+	:i $key_points$ = $horse_topfinal_key_points$
+:i :s}
+:i $player1_bottomfinal_horseprop$ = :s{
+	:i $player1_default_horseprop$
+	:i $key_points$ = $horse_bottomfinal_key_points$
+:i :s}
+:i $player2_bottomfinal_horseprop$ = :s{
+	:i $player2_default_horseprop$
+	:i $key_points$ = $horse_bottomfinal_key_points$
+:i :s}
+:i $horse_final_prop_default$ = :s{
+	:i $font$ = %s(9,"title.fnt")
+	:i $just$ = %vec2(0.000000,0.000000)
+	:i $dims$ = %vec2(320.000000,112.000000)
+	:i $colors$ = :a{
+		:i :s{%vec3(128.000000,128.000000,128.000000)$alpha$ = %i(128,00000080):s}
+		:i :s{%vec3(255.000000,245.000000,0.000000)$alpha$ = %i(128,00000080):s}
+		:i :s{%vec3(195.000000,20.000000,20.000000)$alpha$ = %i(128,00000080):s}
+		:i :a}
+	:i $key_points$ = :a{
+		:i :s{$pos$ = %vec2(320.000000,224.000000)$alpha$ = %i(0,00000000)$scale$ = %f(1.000000)$time$ = %i(0,00000000):s}
+		:i :s{$alpha$ = %i(128,00000080)$time$ = %f(5.000000):s}
+		:i :a}
+:i :s}
+:i function $remove_skater_from_world$
+	:i $printf$%s(28,"removing skater to the world")
+	:i $RemoveSkaterFromWorld$
+:i endfunction
+:i function $add_skater_to_world$
+	:i $printf$%s(26,"adding skater to the world")
+	:i $AddSkaterToWorld$
+	:i $ResetLookAround$
+:i endfunction
+:i function $print_horse_string$
+	:i if $IsCurrentHorseSkater$%i(0,00000000)
+		:i if $GotParam$$Top$
+			:i $ApplyToHorsePanelString$:s{
+				:i $whichString$ = %GLOBAL%$whichString$
+				:i $callback$ = $LaunchPanelMessage$
+				:i $properties$ = $player1_top_horseprop$
+				:i $id$ = $Top$
+			:i :s}
+		:i else 
+			:i if $GotParam$$Bottom$
+				:i $ApplyToHorsePanelString$:s{
+					:i $whichString$ = %GLOBAL%$whichString$
+					:i $callback$ = $LaunchPanelMessage$
+					:i $properties$ = $player1_bottom_horseprop$
+					:i $id$ = $Bottom$
+				:i :s}
+			:i else 
+				:i if $GotParam$$TopFinal$
+					:i $ApplyToHorsePanelString$:s{
+						:i $whichString$ = %GLOBAL%$whichString$
+						:i $callback$ = $LaunchPanelMessage$
+						:i $properties$ = $player1_topfinal_horseprop$
+						:i $id$ = $TopFinal$
+					:i :s}
+				:i else 
+					:i if $GotParam$$BottomFinal$
+						:i $ApplyToHorsePanelString$:s{
+							:i $whichString$ = %GLOBAL%$whichString$
+							:i $callback$ = $LaunchPanelMessage$
+							:i $properties$ = $player1_bottomfinal_horseprop$
+							:i $id$ = $BottomFinal$
+						:i :s}
+					:i else 
+						:i $ApplyToHorsePanelString$:s{
+							:i $whichString$ = %GLOBAL%$whichString$
+							:i $callback$ = $LaunchPanelMessage$
+							:i $properties$ = $player1_default_horseprop$
+							:i $id$ = $Top$
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i if $GotParam$$Top$
+			:i $ApplyToHorsePanelString$:s{
+				:i $whichString$ = %GLOBAL%$whichString$
+				:i $callback$ = $LaunchPanelMessage$
+				:i $properties$ = $player2_top_horseprop$
+				:i $id$ = $Top$
+			:i :s}
+		:i else 
+			:i if $GotParam$$Bottom$
+				:i $ApplyToHorsePanelString$:s{
+					:i $whichString$ = %GLOBAL%$whichString$
+					:i $callback$ = $LaunchPanelMessage$
+					:i $properties$ = $player2_bottom_horseprop$
+					:i $id$ = $Bottom$
+				:i :s}
+			:i else 
+				:i if $GotParam$$TopFinal$
+					:i $ApplyToHorsePanelString$:s{
+						:i $whichString$ = %GLOBAL%$whichString$
+						:i $callback$ = $LaunchPanelMessage$
+						:i $properties$ = $player2_topfinal_horseprop$
+						:i $id$ = $TopFinal$
+					:i :s}
+				:i else 
+					:i if $GotParam$$BottomFinal$
+						:i $ApplyToHorsePanelString$:s{
+							:i $whichString$ = %GLOBAL%$whichString$
+							:i $callback$ = $LaunchPanelMessage$
+							:i $properties$ = $player2_bottomfinal_horseprop$
+							:i $id$ = $BottomFinal$
+						:i :s}
+					:i else 
+						:i $ApplyToHorsePanelString$:s{
+							:i $whichString$ = %GLOBAL%$whichString$
+							:i $callback$ = $LaunchPanelMessage$
+							:i $properties$ = $player2_default_horseprop$
+							:i $id$ = $Top$
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $horse_start_run$
+	:i $kill_start_key_binding$
+	:i $StartHorseRun$
+	:i $ShowClock$
+	:i $disable_inactive_horse_player$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $WaitForPanelDone$
+	:i $printf$%s(24,"***** PAUSING GAME *****")
+	:i $exit_pause_menu$
+	:i $kill_start_key_binding$
+	:i $PauseGame$
+	:i $print_horse_string$:s{$whichString$ = $playerName$$Top$:s}
+	:i $print_horse_string$:s{$whichString$ = $horseprerun$$Bottom$:s}
+	:i $WaitForPanelDone$
+	:i $GetPreferenceChecksum$$pref_type$ = $splitscreen$$horse_time_limit$
+	:i switch %GLOBAL%$checksum$
+		:i case $horse_time_10$
+			:i $horse_time$ = %i(10,0000000a)
+			:i endcase
+		case $horse_time_20$
+			:i $horse_time$ = %i(20,00000014)
+			:i endcase
+		case $horse_time_30$
+			:i $horse_time$ = %i(30,0000001e)
+			:i end_switch
+	
+	:i $StartGoal_Horse_Mp$$time$ = %GLOBAL%$horse_time$
+	:i $printf$%s(26,"***** UNPAUSING GAME *****")
+	:i if $IsCurrentHorseSkater$%i(0,00000000)
+		:i $skater$.$ResetLookAround$
+		:i $skater$.$RunStarted$
+	:i else 
+		:i $skater2$.$ResetLookAround$
+		:i $skater2$.$RunStarted$
+	:i endif
+	:i $horse_check_for_controller_unplugged_dialog$
+	:i $UnpauseGame$
+	:i $restore_start_key_binding$
+	:i $GetHorseString$$whichString$ = $panelString1$
+	:i $update_horse_score$$id$ = $horse_score_1$ isNull 
+	:i $GetHorseString$$whichString$ = $panelString2$
+	:i $update_horse_score$$id$ = $horse_score_2$ isNull 
+	:i $GetHorseString$$whichString$ = $horseprerun$
+	:i $update_horse_score$$id$ = $horse_score_3$ isNull 
+	:i $wait$%i(1,00000001)$gameframe$
+:i endfunction
+:i function $disable_inactive_horse_player$
+	:i if $IsCurrentHorseSkater$%i(0,00000000)
+		:i $printf$%s(17,"unhiding skater 0")
+		:i $SetScreenMode$$horse1$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $DoScreenElementMorph$:s{$id$ = $player1_panel_container$$alpha$ = %i(1,00000001):s}
+		:i $printf$%s(15,"hiding skater 1")
+		:i $MakeSkaterGosub$$remove_skater_from_world$$skater$ = %i(1,00000001)
+		:i $DoScreenElementMorph$:s{$id$ = $player2_panel_container$$alpha$ = %i(0,00000000):s}
+		:i $printf$%s(8,"*** done")
+		:i $printf$%s(48,"************** ABOUT TO DO CONTROLLER ENABLING 1")
+		:i $skater2$.$DisablePlayerInput$
+		:i $skater2$.$PausePhysics$
+		:i $skater$.$EnablePlayerInput$
+		:i $skater$.$UnpausePhysics$
+	:i else 
+		:i if $IsCurrentHorseSkater$%i(1,00000001)
+			:i $printf$%s(17,"unhiding skater 1")
+			:i $SetScreenMode$$horse2$
+			:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+			:i $DoScreenElementMorph$:s{$id$ = $player2_panel_container$$alpha$ = %i(1,00000001):s}
+			:i $printf$%s(15,"hiding skater 0")
+			:i $MakeSkaterGosub$$remove_skater_from_world$$skater$ = %i(0,00000000)
+			:i $DoScreenElementMorph$:s{$id$ = $player1_panel_container$$alpha$ = %i(0,00000000):s}
+			:i $printf$%s(8,"*** done")
+			:i $printf$%s(48,"************** ABOUT TO DO CONTROLLER ENABLING 2")
+			:i $skater$.$DisablePlayerInput$
+			:i $skater$.$PausePhysics$
+			:i $skater2$.$EnablePlayerInput$
+			:i $skater2$.$UnpausePhysics$
+		:i endif
+	:i endif
+	:i $SetActivecamera$$id$ = $skatercam0$$viewport$ = %i(0,00000000)
+	:i $SetActivecamera$$id$ = $skatercam1$$viewport$ = %i(1,00000001)
+:i endfunction
+:i function $horse_end_run$
+	:i $kill_start_key_binding$
+	:i $printf$%s(22,"entering horse_end_run")
+	:i $EndHorseRun$
+	:i $EndGoal_Horse_Mp$
+	:i $WaitForPanelDone$
+	:i $printf$%s(24,"***** PAUSING GAME *****")
+	:i $exit_pause_menu$
+	:i $kill_start_key_binding$
+	:i $PauseGame$
+	:i $play_appropriate_horse_sound$
+	:i if $HorseEnded$
+		:i $printf$%s(15,"HORSE GAME DONE")
+		:i $print_horse_string$:s{$whichString$ = $youarea$$TopFinal$:s}
+		:i $print_horse_string$:s{$whichString$ = $finalword$$BottomFinal$:s}
+		:i $wait$%i(120,00000078)$gameframes$
+		:i if $ObjectExists$$id$ = $horse_score_menu$
+			:i $DestroyScreenElement$$id$ = $horse_score_menu$
+		:i endif
+	:i else 
+		:i $print_horse_string$:s{$whichString$ = $playerName$$Top$:s}
+		:i $print_horse_string$:s{$whichString$ = $horsepostrun$$Bottom$:s}
+	:i endif
+	:i $WaitForPanelDone$
+	:i $SwitchHorsePlayers$
+	:i $printf$%s(26,"***** UNPAUSING GAME *****")
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $printf$%s(21,"exiting horse_end_run")
+	:i if $HorseEnded$
+		:i $restore_start_key_binding$
+		:i $create_end_run_menu$
+	:i else 
+		:i $horse_check_for_controller_unplugged_dialog$
+		:i $UnpauseGame$
+	:i endif
+:i endfunction
+:i function $horse_uninit$
+:i endfunction
+:i function $kill_horse_panel_messages$
+	:i if $ObjectExists$$id$ = $Top$
+		:i $DestroyScreenElement$$id$ = $Top$
+	:i endif
+	:i if $ObjectExists$$id$ = $Bottom$
+		:i $DestroyScreenElement$$id$ = $Bottom$
+	:i endif
+	:i if $ObjectExists$$id$ = $TopFinal$
+		:i $DestroyScreenElement$$id$ = $TopFinal$
+	:i endif
+	:i if $ObjectExists$$id$ = $BottomFinal$
+		:i $DestroyScreenElement$$id$ = $BottomFinal$
+	:i endif
+:i endfunction
+:i function $horse_check_for_controller_unplugged_dialog$
+	:i while
+		
+		:i if NOT $ScreenElementExists$$id$ = $controller_unplugged_dialog_anchor$
+			:i $root_window$.$GetTags$
+			:i if $GotParam$$menu_state$
+				:i if  (%GLOBAL%$menu_state$ = $off$) 
+					:i continue
+					
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $create_horse_panel_message$
+	:i $printf$%s(26,"create_horse_panel_message")
+	:i $printstruct$ isNull 
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $chaos1$ = select(2f,2, 01 00 01 00) :OFFSET(0):OFFSET(1)
+		 :POS(0) %i(1,00000001)
+	:BREAKTO(2)
+		 :POS(1) %i(2,00000002) :POS(2) 
+		:i $chaos2$ = select(2f,2, 01 00 01 00) :OFFSET(3):OFFSET(4)
+			 :POS(3) %i(3,00000003)
+		:BREAKTO(5)
+			 :POS(4) %i(4,00000004) :POS(5) 
+			:i switch %GLOBAL%$id$
+				:i case $Top$
+					:i $message_pos$ = %vec2(320.000000,150.000000)
+					:i $message_color$ = %GLOBAL%$text_rgba$
+					:i %GLOBAL%$style$ = $play_horse_animation$
+					:i endcase
+				case $Bottom$
+					:i $message_pos$ = %vec2(320.000000,180.000000)
+					:i $message_color$ = :a{%i(108,0000006c)%i(112,00000070)%i(120,00000078)%i(128,00000080):a}
+					:i %GLOBAL%$style$ = $play_horse_animation2$
+					:i endcase
+				case $TopFinal$
+					:i $message_pos$ = %vec2(320.000000,150.000000)
+					:i $message_color$ = %GLOBAL%$text_rgba$
+					:i %GLOBAL%$style$ = $play_horse_animation_final_1$
+					:i endcase
+				case $BottomFinal$
+					:i $message_pos$ = %vec2(320.000000,180.000000)
+					:i $message_color$ = %GLOBAL%$text_rgba$
+					:i %GLOBAL%$style$ = $play_horse_animation_final_2$
+					:i endcase
+				default 
+					:i end_switch
+			
+			:i $create_panel_block$ isNull $style$ = %GLOBAL%$style$$parent$ = $root_window$$pos$ = %GLOBAL%$message_pos$$rgba$ = %GLOBAL%$message_color$$dims$ = %vec2(450.000000,0.000000)$z_priority$ = %i(10,0000000a)
+		:i endfunction
+		:i function $play_horse_animation$
+			:i switch %GLOBAL%$chaos1$
+				:i case %i(1,00000001)
+					:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(320.000000,0.000000)
+					:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(1.200000)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,133.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+					:i $Die$
+					:i endcase
+				case %i(2,00000002)
+					:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(320.000000,500.000000)
+					:i $DoMorph$$time$ = %f(0.200000)
+					:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(1.200000)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,133.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+					:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(4,00000004)$alpha$ = %i(0,00000000)
+					:i $Die$
+					:i end_switch
+			
+		:i endfunction
+		:i function $play_horse_animation2$
+			:i switch %GLOBAL%$chaos2$
+				:i case %i(3,00000003)
+					:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(0.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.300000)
+					:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,153.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,153.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.150000)$pos$ = %vec2(640.000000,150.000000)$alpha$ = %i(0,00000000)
+					:i $Die$
+					:i endcase
+				case %i(4,00000004)
+					:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(700.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.300000)
+					:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,153.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,153.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,151.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,150.000000)
+					:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+					:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(4,00000004)$alpha$ = %i(0,00000000)
+					:i $Die$
+					:i end_switch
+			
+		:i endfunction
+		:i function $play_horse_animation_final_1$
+			:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(320.000000,130.000000)
+			:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(1.200000)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,130.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,133.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,131.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,127.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,131.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,129.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,130.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,129.000000)
+			:i $DoMorph$$time$ = %f(0.200000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(319.000000,500.000000)
+			:i $Die$
+		:i endfunction
+		:i function $play_horse_animation_final_2$
+			:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(320.000000,170.000000)
+			:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.900000)$alpha$ = %i(1,00000001)$pos$ = %vec2(320.000000,150.000000)
+			:i $DoMorph$$time$ = %f(0.220000)$scale$ = %f(1.200000)
+			:i $DoMorph$$time$ = %f(0.230000)$scale$ = %f(1.500000)
+			:i $DoMorph$$time$ = %f(0.320000)$scale$ = %f(1.300000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,153.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(321.000000,151.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(317.000000,149.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(323.000000,150.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(319.000000,149.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(322.000000,151.000000)
+			:i $DoMorph$$time$ = %f(0.100000)$pos$ = %vec2(318.000000,147.000000)
+			:i $SetProps$$blur_effect$
+			:i $do_blur_effect$
+			:i $SetProps$$no_blur_effect$
+			:i $DoMorph$$time$ = %f(0.400000)$scale$ = %i(6,00000006)$alpha$ = %i(0,00000000)$pos$ = %vec2(320.000000,150.000000)
+			:i $Die$
+		:i endfunction
+		:i :end
+		

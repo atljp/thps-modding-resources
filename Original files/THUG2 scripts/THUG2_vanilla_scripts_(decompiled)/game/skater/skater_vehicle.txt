@@ -1,0 +1,2010 @@
+
+:i function $Vehicle_Start$
+	:i $skater$.$RemoveTags$$tags$ = :a{$gurney_params$$shoppingcart_params$$segway_params$$luge_params$$slalom_params$$tricycle_params$$wheelchair_params$$minikart_params$$mechbull_params$$chainsaw_params$:a}
+	:i $skater$.$SetTags$:s{%GLOBAL%$params$$InAirTrick$ = %i(0,00000000):s}
+	:i $MakeSkaterGoto$$Vehicle_Start2$
+:i endfunction
+:i $Vehicle_Start2_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $GroundGone$$Scr$ = $Vehicle_Airborne$:s}
+	:i :s{$Exception$$Ex$ = $FlailHitWall$$Scr$ = $Vehicle_Flail$:s}
+	:i :s{$Exception$$Ex$ = $FlailLeft$$Scr$ = $Vehicle_Flail$:s}
+	:i :s{$Exception$$Ex$ = $FlailRight$$Scr$ = $Vehicle_Flail$:s}
+	:i :s{$Exception$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun$:s}
+	:i :s{$Exception$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun$:s}
+	:i :a}
+:i function $Vehicle_Start2$$start_script$ = $vehicle_default_start_script$
+	:i $GetTags$
+	:i if $gotparam$$grind_sound$
+		:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+	:i endif
+	:i $SetCurrentBailEndpose$
+	:i $OnExceptionRun$
+	:i $ResetEventHandlersFromTable$$Vehicle_Start2_ExceptionTable$
+	:i $SkaterVehicleOn$
+	:i $SetSkaterVehicle$%GLOBAL%$racemode$
+	:i $orient_vehicle$
+	:i if $gotparam$$wheel_anim$
+		:i $remove_all_anim_subsets$$not_wheels$
+	:i else 
+		:i $remove_all_anim_subsets$
+	:i endif
+	:i if $walking$
+		:i $SwitchToSkatingPhysics$
+	:i endif
+	:i if $gotparam$$blend_turn_anims$
+		:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Second$
+			:i $Obj_AddAnimSubset$$SubsetId$ = $Second$
+		:i endif
+		:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)
+	:i endif
+	:i if  (%GLOBAL%$canbrake$ = %i(1,00000001)) 
+		:i $CanBrakeOn$
+	:i else 
+		:i $CanBrakeOff$
+	:i endif
+	:i if  (%GLOBAL%$autokick$ = %i(1,00000001)) 
+		:i $ForceAutokickOn$
+	:i else 
+		:i $ForceAutokickOff$
+	:i endif
+	:i if  (%GLOBAL%$board$ = %i(1,00000001)) 
+		:i $SwitchOnBoard$
+	:i else 
+		:i $SwitchOffBoard$
+	:i endif
+	:i if  (%GLOBAL%$cangrind$ = %i(1,00000001)) 
+		:i $AllowRailTricks$
+	:i else 
+		:i $NoRailTricks$
+	:i endif
+	:i if $gotparam$$soundstruct$
+		:i $SetSkaterVehicleSounds$%GLOBAL%$soundstruct$
+	:i else 
+		:i $NoSkaterVehicleSounds$
+	:i endif
+	:i if $BoardIsRotated$
+		:i $boardrotate$
+	:i endif
+	:i $VibrateOff$
+	:i $Obj_KillSpawnedScript$$name$ = $BailBoardControl$
+	:i $ClearEventBuffer$
+	:i $EnablePlayerInput$
+	:i $BailOff$
+	:i $BashOff$
+	:i $SetRollingFriction$%i(0,00000000)
+	:i $SetSpeed$%GLOBAL%$startspeed$
+	:i $Blendperiodout$%i(0,00000000)
+	:i $skater$.$SkaterLoopingSound_TurnOff$
+	:i if $gotparam$$sound$
+		:i $GetTags$
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+			:i $skater$.$Obj_PlaySound$$ShoppingCartLoop$
+		:i else 
+			:i $skater$.$Obj_StopSound$%GLOBAL%$sound$
+			:i $skater$.$Obj_PlaySound$%GLOBAL%$sound$
+		:i endif
+	:i endif
+	:i $UnpauseSkaters$
+	:i if $gotparam$$start_script$
+		:i %GLOBAL%$start_script$
+	:i endif
+	:i $Goto$$Vehicle_OnGround$
+:i endfunction
+:i function $Vehicle_OnGround$
+	:i $GetTags$
+	:i if $gotparam$$grind_sound$
+		:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+	:i endif
+	:i if $gotparam$$land_manual$
+		:i $ClearPanel_Landed$
+	:i endif
+	:i $SetException$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun$
+	:i $SetException$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun$
+	:i $StopBalanceTrick$
+	:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(0,00000000)
+	:i $SetTags$$veh_backwardsgrind$ = %i(0,00000000)
+	:i $SetException$$Ex$ = $Ollied$$Scr$ = $Vehicle_Ollie$
+	:i $ResetLandedFromVert$
+	:i if NOT $OnGround$
+		:i $SetState$$Ground$
+	:i endif
+	:i if $gotparam$$canmanual$
+		:i $SetManualTricks$$VehicleManualTricks$
+	:i else 
+		:i $SetManualTricks$$NoTricks$
+	:i endif
+	:i $orient_vehicle$
+	:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Cycle$$NoRestart$
+	:i $vehicle_onground_loop$
+:i endfunction
+:i function $vehicle_onground_loop$
+	:i $GetTags$
+	:i if $gotparam$$grind_sound$
+		:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+	:i endif
+	:i if $gotparam$$sound$
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+			:i $skater$.$Obj_PlaySound$$ShoppingCartLoop$
+		:i else 
+			:i $skater$.$Obj_StopSound$%GLOBAL%$sound$
+			:i $skater$.$Obj_PlaySound$%GLOBAL%$sound$
+		:i endif
+	:i endif
+	:i while
+		
+		:i if NOT $IsSkaterOnVehicle$
+			:i $MakeSkaterGoto$$OnGroundAI$
+		:i endif
+		:i if $gotparam$$canmanual$
+			:i $DoNextManualTrick$
+		:i endif
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i if $SkaterSpeedGreaterThan$%i(0,00000000)
+				:i if NOT $IsSoundPlaying$$ShoppingCartLoop$
+					:i if  ($LevelIs$$load_bo$) 
+						:i $printf$%s(76,"vehicle_onground_loop - QuicklyStopping, then starting ShoppingCartLoopSound")
+						:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+						:i $skater$.$Obj_PlaySound$$ShoppingCartLoop$
+						:i $SetSoundParams$$ShoppingCartLoop$$vol$ = %i(0,00000000)$pitch$ = %i(0,00000000)
+					:i endif
+				:i endif
+			:i else 
+				:i if  ($LevelIs$$load_bo$) 
+					:i if $IsSoundPlaying$$ShoppingCartLoop$
+						:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $orient_vehicle$
+		:i %GLOBAL%$onground_script$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $vehicle_accel_ground_sound_loop$
+	:i $GetTags$
+	:i if $gotparam$$grind_sound$
+		:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+	:i endif
+	:i while
+		
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i if $SkaterSpeedGreaterThan$%i(0,00000000)
+				:i if NOT $IsSoundPlaying$$ShoppingCartLoop$
+					:i if  ($LevelIs$$load_bo$) 
+						:i $printf$%s(88,"vehicle_accel_ground_sound_loop - Quickly Stopping, then starting ShoppingCartLoop sound")
+						:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+						:i $skater$.$Obj_PlaySound$$ShoppingCartLoop$
+						:i $SetSoundParams$$ShoppingCartLoop$$vol$ = %i(0,00000000)$pitch$ = %i(0,00000000)
+					:i endif
+				:i endif
+			:i else 
+				:i if $IsSoundPlaying$$ShoppingCartLoop$
+					:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+				:i endif
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to %i(2,00000002)
+:i endfunction
+:i function $orient_vehicle$
+	:i if $flipped$
+		:i $Flip$
+	:i endif
+	:i if $BoardIsRotated$
+		:i $boardrotate$
+	:i endif
+:i endfunction
+:i function $ShoppingCart_OnGround_Loop$
+	:i $GetTags$
+	:i if $held$$left$
+		:i $PlayAnim$$Anim$ = $Trolley_IdleToLeanLeft$$NoRestart$
+	:i else 
+		:i if $held$$right$
+			:i $PlayAnim$$Anim$ = $Trolley_IdleToLeanRight$$NoRestart$
+		:i else 
+			:i if $AnimFinished$
+				:i $PlayAnim$$Anim$ = select(2f,9, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8)
+						 :POS(0) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(1) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(2) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(3) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(4) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(5) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(6) $Trolley_Idle$
+					:BREAKTO(9)
+						 :POS(7) $Trolley_LookLeft$
+					:BREAKTO(9)
+						 :POS(8) $Trolley_LookRight$ :POS(9) 
+				:i endif
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $veh_OnGroundAI$$Coasting$ = %i(0,00000000)$Pushes$ = %i(0,00000000)$PressureTimer$ = %i(0,00000000)
+		:i $GetTags$
+		:i if $gotparam$$blend_turn_anims$
+			:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(1.000000)$BlendDuration$ = %f(0.100000)
+			:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)$BlendDuration$ = %f(0.100000)
+		:i endif
+		:i if $LeftPressed$
+			:i if $Crouched$
+				:i $PlayVehSingleTurnAnimOrTurnIdle$$TurnIdle$ = %GLOBAL%$crouch_leftidle_anim$$TurnAnim$ = %GLOBAL%$crouch_left_anim$$dir$ = $left$
+			:i else 
+				:i $PlayVehSingleTurnAnimOrTurnIdle$$TurnIdle$ = %GLOBAL%$leftidle_anim$$TurnAnim$ = %GLOBAL%$left_anim$$dir$ = $left$
+			:i endif
+		:i else 
+			:i if $RightPressed$
+				:i if $Crouched$
+					:i $PlayVehSingleTurnAnimOrTurnIdle$$TurnIdle$ = %GLOBAL%$crouch_rightidle_anim$$TurnAnim$ = %GLOBAL%$crouch_right_anim$$dir$ = $right$
+				:i else 
+					:i $PlayVehSingleTurnAnimOrTurnIdle$$TurnIdle$ = %GLOBAL%$rightidle_anim$$TurnAnim$ = %GLOBAL%$right_anim$$dir$ = $right$
+				:i endif
+			:i else 
+				:i if $Braking$
+					:i $GetSpeed$
+					:i if  (%GLOBAL%$speed$ > %i(50,00000032)) 
+						:i $PlayAnim$$Anim$ = %GLOBAL%$brake_anim$$NoRestart$
+					:i else 
+						:i if $HeldLongerThan$$Button$ = $down$%i(2,00000002)$Second$
+							:i $Goto$$veh_handbrake$
+						:i else 
+							:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Cycle$$NoRestart$
+						:i endif
+					:i endif
+				:i else 
+					:i if $Crouched$
+						:i if $SpeedLessThan$%i(300,0000012c)
+							:i $SpawnSound$$vehicle_accel_ground_sound_loop$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$accel_anim$$NoRestart$
+							:i $Obj_WaitAnimFinished$
+						:i else 
+							:i $PlayAnim$$Anim$ = %GLOBAL%$crouch_anim$$Cycle$$NoRestart$
+						:i endif
+					:i else 
+						:i if $gotparam$$only_idle_when_stopped$
+							:i $GetSpeed$
+							:i if  (%GLOBAL%$speed$ > %i(50,00000032)) 
+								:i $PlayAnim$$Anim$ = %GLOBAL%$crouch_anim$$Cycle$$NoRestart$$speed$ = %f(0.700000)
+							:i else 
+								:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Cycle$$NoRestart$
+							:i endif
+						:i else 
+							:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Cycle$$NoRestart$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $PlayVehSingleTurnAnimOrTurnIdle$
+		:i $GetTags$
+		:i if $gotparam$$blend_turn_anims$
+			:i $veh_blendturnanims$ isNull 
+			:i return
+			
+		:i endif
+		:i if NOT $AnimEquals$%GLOBAL%$TurnIdle$
+			:i if NOT $AnimEquals$%GLOBAL%$TurnAnim$
+				:i if  (%GLOBAL%$TurnAnim$ = %GLOBAL%$TurnIdle$) 
+					:i $PlayAnim$$Anim$ = %GLOBAL%$TurnIdle$$Cycle$$NoRestart$
+				:i else 
+					:i $PlayAnim$$Anim$ = %GLOBAL%$TurnAnim$$NoRestart$
+				:i endif
+			:i endif
+			:i if $AnimFinished$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$TurnIdle$$Cycle$$NoRestart$
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $veh_blendturnanims$
+		:i $GetTags$
+		:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Second$
+			:i $Obj_AddAnimSubset$$SubsetId$ = $Second$
+			:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)
+		:i endif
+		:i $runanim$ = %GLOBAL%$crouch_anim$
+		:i $PlayAnim$$Anim$ = %GLOBAL%$runanim$$Cycle$$SyncToPreviousAnim$
+		:i $PlayAnim$$SubsetId$ = $Second$$Anim$ = %GLOBAL%$TurnAnim$$Cycle$$SyncToPreviousAnim$
+		:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(0.200000)$BlendDuration$ = %f(1.000000)
+		:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.800000)$BlendDuration$ = %f(1.000000)
+		:i $wait$%i(1,00000001)$gameframe$
+		:i if  (%GLOBAL%$dir$ = $right$) 
+			:i $downdir$ = $downright$
+			:i $updir$ = $upright$
+		:i else 
+			:i $downdir$ = $downleft$
+			:i $updir$ = $upleft$
+		:i endif
+		:i while
+			
+			:i if $held$%GLOBAL%$dir$
+			:i else 
+				:i if $held$%GLOBAL%$downdir$
+				:i else 
+					:i if $held$%GLOBAL%$updir$
+					:i else 
+						:i continue
+						
+					:i endif
+				:i endif
+			:i endif
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+		:i $out_time$ = %f(0.100000)
+		:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(1.000000)$BlendDuration$ = %GLOBAL%$out_time$
+		:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)$BlendDuration$ = %GLOBAL%$out_time$
+		:i $wait$%GLOBAL%$out_time$$seconds$
+		:i $Goto$$vehicle_onground_loop$
+	:i endfunction
+	:i function $veh_blenturnanims_exit$
+		:i if $Obj_AnimSubsetExists$$SubsetId$ = $Second$
+			:i $Obj_RemoveAnimSubset$$SubsetId$ = $Second$
+		:i endif
+	:i endfunction
+	:i function $vehicle_animate_wheels$
+		:i $GetTags$
+		:i $OnExitRun$$vehicle_animate_wheels_exit$
+		:i $last_speed$ = %i(4294967197,ffffff9d)
+		:i while
+			
+			:i if NOT $IsSkaterOnVehicle$
+				:i continue
+				
+			:i endif
+			:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Wheels$
+				:i $setup_wheels_subset$
+				:i $wait$%i(1,00000001)$gameframe$
+			:i else 
+				:i $GetSpeed$
+				:i $animate$ = %i(0,00000000)
+				:i if  (%GLOBAL%$speed$ > %i(0,00000000)) 
+					:i $animate$ = %i(1,00000001)
+				:i endif
+				:i if NOT $OnGround$
+					:i $animate$ = %i(0,00000000)
+				:i endif
+				:i if  (%GLOBAL%$animate$ = %i(1,00000001)) 
+					:i if  (%GLOBAL%$speed$ > %i(50,00000032)) 
+						:i $wheel_speed$ = %i(1,00000001)
+					:i else 
+						:i $wheel_speed$ =  (%GLOBAL%$speed$ / %i(50,00000032)) 
+					:i endif
+					:i if NOT  (%GLOBAL%$wheel_speed$ = %GLOBAL%$last_speed$) 
+						:i $PlayAnim$$SubsetId$ = $Wheels$$Anim$ = %GLOBAL%$wheel_anim$$speed$ = %GLOBAL%$wheel_speed$$Cycle$
+						:i $last_speed$ = %GLOBAL%$wheel_speed$
+					:i endif
+				:i else 
+					:i if NOT  (%GLOBAL%$last_speed$ = %i(0,00000000)) 
+						:i $PlayAnim$$SubsetId$ = $Wheels$$Anim$ = %GLOBAL%$wheel_anim$$speed$ = %i(0,00000000)$from$ = $current$
+						:i $last_speed$ = %i(0,00000000)
+					:i endif
+				:i endif
+				:i $wait$%i(10,0000000a)$gameframe$
+			:i endif
+		:i loop_to 
+	:i endfunction
+	:i function $setup_wheels_subset$
+		:i $Obj_AddAnimSubset$$SubsetId$ = $Wheels$$Stage$ = %i(1,00000001)
+		:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Wheels$$BlendWeight$ = %i(1,00000001)
+		:i if $Obj_AnimationFlipped$
+			:i $Obj_Flip$$SubsetId$ = $Wheels$
+		:i endif
+	:i endfunction
+	:i function $vehicle_animate_wheels_exit$
+		:i if $Obj_AnimSubsetExists$$SubsetId$ = $Wheels$
+			:i $Obj_RemoveAnimSubset$$SubsetId$ = $Wheels$
+		:i endif
+	:i endfunction
+	:i function $CarMode_OnGround_Loop$
+		:i $GetTags$
+		:i if $held$$left$
+			:i $SetRollingFriction$%GLOBAL%$turn_friction$
+			:i $PlayAnim$$Anim$ = %GLOBAL%$left_anim$$NoRestart$
+		:i else 
+			:i if $held$$right$
+				:i $SetRollingFriction$%GLOBAL%$turn_friction$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$right_anim$$NoRestart$
+			:i else 
+				:i if $held$$down$
+					:i if $gotparam$$brake_anim$
+						:i $PlayAnim$$Anim$ = %GLOBAL%$brake_anim$$NoRestart$
+					:i endif
+				:i else 
+					:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Cycle$$NoRestart$
+					:i $SetRollingFriction$%i(0,00000000)
+					:i $GetSpeed$
+					:i if  (%GLOBAL%$speed$ < %GLOBAL%$accelerate_to$) 
+						:i $speed$ =  (%GLOBAL%$speed$ + %GLOBAL%$acceleration$) 
+					:i endif
+					:i $SetSpeed$%GLOBAL%$speed$
+				:i endif
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $veh_handbrake$
+		:i $GetTags$
+		:i $ClearEventBuffer$
+		:i $OnExceptionRun$$BrakeDone$
+		:i $SetRollingFriction$%i(100,00000064)
+		:i $ClearTricksFrom$$GroundTricks$
+		:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$NoRestart$$Cycle$
+		:i while
+			
+			:i $wait$%i(1,00000001)$gameframe$
+			:i if $held$$up$
+				:i continue
+				
+			:i endif
+			:i if $Crouched$
+				:i continue
+				
+			:i endif
+		:i loop_to 
+		:i $SetRollingFriction$$default$
+		:i $Goto$$vehicle_onground_loop$
+	:i endfunction
+	:i function $Vehicle_Bail_Cleanup$
+		:i $printf$%s(43,"restoring original bounding sphere for bail")
+		:i $Obj_RestoreBoundingSphere$
+	:i endfunction
+	:i function $Vehicle_Bail$
+		:i $GetTags$
+		:i if $gotparam$$dont_bail$
+			:i $SetState$$Ground$
+			:i $ClearPanel_Landed$
+			:i $BailOff$
+			:i if $LandedFromSpine$
+				:i $SetSpeed$%i(0,00000000)
+			:i endif
+			:i $Goto$$Vehicle_OnGround$
+		:i endif
+		:i $Obj_SetBoundingSphere$%i(10000,00002710)
+		:i $OnExitRun$$Vehicle_Bail_Cleanup$
+		:i if $gotparam$$blend_turn_anims$
+			:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(1.000000)
+			:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)
+		:i endif
+		:i $PlaySkaterStream$$type$ = %s(4,"bail")
+		:i $InBail$
+		:i $LaunchStateChangeEvent$$State$ = $Skater_InBail$
+		:i $skater$.$Obj_StopSound$%GLOBAL%$sound$
+		:i $skater$.$SkaterLoopingSound_TurnOn$
+		:i $ClearExceptions$
+		:i $ClearTrickQueue$
+		:i $DisablePlayerInput$$AllowCameraControl$
+		:i $NoRailTricks$
+		:i $SetExtraTricks$$NoTricks$
+		:i $BailSkaterTricks$
+		:i $StopBalanceTrick$
+		:i if NOT $LandedFromVert$
+			:i $SetRollingFriction$%i(20,00000014)
+			:i if  (%GLOBAL%$allow_vert$ = %i(0,00000000)) 
+				:i $Jump$$BonelessHeight$
+			:i endif
+		:i else 
+			:i $SetRollingFriction$%i(1000,000003e8)
+		:i endif
+		:i $CanBrakeOn$
+		:i $overridelimits$$max$ = %i(10000,00002710)$friction$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $RestoreAutoKick$
+		:i $ClearSkaterCamOverride$
+		:i if $gotparam$$BigAir$
+		:i endif
+		:i $GetTags$
+		:i if $gotparam$$bail_sound$
+			:i $skater$.$Obj_PlaySound$%GLOBAL%$bail_sound$$vol$ = %i(200,000000c8)$pitch$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(10):OFFSET(11):OFFSET(12)
+					 :POS(10) %i(90,0000005a)
+				:BREAKTO(13)
+					 :POS(11) %i(100,00000064)
+				:BREAKTO(13)
+					 :POS(12) %i(110,0000006e) :POS(13) 
+			:i endif
+			:i if $OnRail$
+				:i $Obj_SpawnScript$$FallOffRail$$params$ = :s{$xmove$ = %GLOBAL%$xmove$$moveframes$ = %GLOBAL%$moveframes$:s}
+				:i $ClearException$$GroundGone$
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.200000)
+				:i $SetState$$Air$
+				:i $move$$y$ = %f(2.000000)
+				:i $Rotate$$y$ = random%vec2(1.000000,20.000000)
+			:i endif
+			:i if $gotparam$$bail_script$
+				:i %GLOBAL%$bail_script$%GLOBAL%$manual$
+			:i else 
+				:i $ManualBail$
+			:i endif
+			:i $NotInBail$
+		:i endfunction
+		:i function $Vehicle_Flail$$speed$ = %i(0,00000000)$bailspeed$ = %i(999,000003e7)
+			:i $GetTags$
+			:i $GetSpeed$
+			:i if  (%GLOBAL%$speed$ > %GLOBAL%$bailspeed$) 
+				:i $Goto$$Vehicle_Bail$
+			:i else 
+				:i if $gotparam$$flail_anim$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$flail_anim$
+					:i $Obj_WaitAnimFinished$
+				:i endif
+				:i $Goto$$Vehicle_OnGround$
+			:i endif
+		:i endfunction
+		:i function $Vehicle_Ollie$
+			:i $ClearException$$Ollied$
+			:i $GetTags$
+			:i $PlayAnim$$Anim$ = %GLOBAL%$ollie_anim$
+			:i $SetTrickName$%GLOBAL%$jump_name$
+			:i $SettrickScore$%GLOBAL%$jump_score$
+			:i $Display$
+			:i if $gotparam$$jumpheight$
+				:i $Jump$$no_sound$$speed$ = %GLOBAL%$jumpheight$
+			:i else 
+				:i if $gotparam$$BonelessHeight$
+					:i $Jump$$BonelessHeight$$no_sound$
+				:i else 
+					:i $Jump$$no_sound$
+				:i endif
+			:i endif
+			:i $GetTags$
+			:i if $gotparam$$ollie_sound$
+				:i $printf$%s(35,"################  OLLIE SOUND!!!!! ")
+				:i $PlaySound$%GLOBAL%$ollie_sound$$pitch$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18)
+						 :POS(14) %i(95,0000005f)
+					:BREAKTO(19)
+						 :POS(15) %i(98,00000062)
+					:BREAKTO(19)
+						 :POS(16) %i(100,00000064)
+					:BREAKTO(19)
+						 :POS(17) %i(103,00000067)
+					:BREAKTO(19)
+						 :POS(18) %i(105,00000069) :POS(19) $vol$ = %i(150,00000096)
+				:i endif
+				:i $Goto$$Vehicle_Airborne$
+			:i endfunction
+			:i function $Vehicle_Airborne$
+				:i $GetTags$
+				:i $SetState$$Air$
+				:i $LaunchStateChangeEvent$$State$ = $Skater_InAir$
+				:i $GetTags$
+				:i $printf$%s(39,"**********************RACEMODE  =   %o ")$o$ = %GLOBAL%$racemode$
+				:i if  (%GLOBAL%$racemode$ = $gurney$) 
+					:i $printf$%s(34,"********************GOT IN HERE!  ")
+					:i $printf$%s(51,"********************     STOPPING ShoppingCartLoop ")
+					:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+					:i $printf$%s(57,"********************     STOPPING ShoppingCartLoop AGAIN ")
+					:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+					:i $printf$%s(64,"********************     DONE STOPPING ShoppingCartLoop.........")
+				:i endif
+				:i $SetException$$Ex$ = $Landed$$Scr$ = $Vehicle_Land$
+				:i if $gotparam$$canwallplant$
+					:i $SetException$$Ex$ = $WallPlant$$Scr$ = $Air_WallPlant$
+				:i endif
+				:i $SetException$$Ex$ = $PointRailSpin$$Scr$ = $vehicle_PointRailSpin$
+				:i $skater$.$Obj_StopSound$%GLOBAL%$sound$
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Second$
+					:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Second$$BlendWeight$ = %f(0.000000)
+				:i endif
+				:i if $gotparam$$canmanual$
+					:i $SetManualTricks$$VehicleManualTricks$
+				:i else 
+					:i $SetManualTricks$$NoTricks$
+				:i endif
+				:i if $AnimEquals$%GLOBAL%$ollie_anim$
+					:i $WaitAnimFinishedOrVehicleTrick$
+				:i endif
+				:i $PlayAnim$$Anim$ = %GLOBAL%$air_idle_anim$
+				:i if  (%GLOBAL%$racemode$ = $slalom$) 
+					:i while
+						
+						:i if $AirTimeGreaterThan$%f(1.250000)$seconds$
+							:i $PlayAnim$$Anim$ = $FlailingFall$$Blendperiod$ = %f(0.300000)$Cycle$
+							:i $SetException$$Ex$ = $Landed$$Scr$ = $Vehicle_Bail$$params$ = :s{$BigAir$:s}
+							:i continue
+							
+						:i endif
+						:i $wait$%i(1,00000001)$gameframe$
+					:i loop_to 
+				:i else 
+					:i while
+						
+						:i if $held$$circle$
+							:i if $gotparam$$air_trick_init$
+								:i $Goto$$vehicle_grab_trick$
+							:i endif
+						:i endif
+						:i if $held$$square$
+							:i if $gotparam$$air_trick2$
+								:i $Goto$$vehicle_flip_trick$
+							:i endif
+						:i endif
+						:i if $gotparam$$canmanual$
+							:i $DoNextManualTrick$
+						:i endif
+						:i $wait$%i(1,00000001)$gameframe$
+					:i loop_to 
+				:i endif
+			:i endfunction
+			:i function $WaitAnimFinishedOrVehicleTrick$
+				:i $GetTags$
+				:i while
+					
+					:i if $AnimFinished$
+						:i continue
+						
+					:i endif
+					:i if $held$$circle$
+						:i if $gotparam$$air_trick_init$
+							:i $Goto$$vehicle_grab_trick$
+						:i endif
+					:i endif
+					:i if $held$$square$
+						:i if $gotparam$$air_trick2$
+							:i $Goto$$vehicle_flip_trick$
+						:i endif
+					:i endif
+					:i if $gotparam$$canmanual$
+						:i $DoNextManualTrick$
+					:i endif
+					:i $wait$%i(1,00000001)$gameframe$
+				:i loop_to 
+			:i endfunction
+			:i function $vehicle_grab_trick$
+				:i $GetTags$
+				:i $SetTags$$InAirTrick$ = %i(1,00000001)
+				:i $LaunchStateChangeEvent$$State$ = $Skater_InAir$
+				:i $LaunchSubStateEntryEvent$$SubState$ = $Grab$
+				:i $OnExitRun$$veh_ExitGrabTrick$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$air_trick_init$$speed$ = %GLOBAL%$grab_trick_speed$
+				:i $Obj_WaitAnimFinished$
+				:i $SetTrickName$%GLOBAL%$trick_name$
+				:i $SettrickScore$%GLOBAL%$trick_score$
+				:i $Display$
+				:i if $held$$circle$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$air_trick_idle$$Cycle$$NoRestart$
+					:i while
+						
+						:i if NOT $held$$circle$
+							:i continue
+							
+						:i endif
+						:i $GetSingleTag$$State$
+						:i if  (%GLOBAL%$State$ = $Ground$) 
+							:i continue
+							
+						:i endif
+						:i $wait$%i(1,00000001)$gameframe$
+					:i loop_to 
+				:i endif
+				:i if $gotparam$$air_trick_out$
+					:i $PlayAnim$$Anim$ = %GLOBAL%$air_trick_out$$speed$ = %GLOBAL%$grab_trick_speed$
+				:i else 
+					:i $PlayAnim$$Anim$ = %GLOBAL%$air_trick_init$$backwards$$speed$ = %GLOBAL%$grab_trick_speed$
+				:i endif
+				:i $WaitAnim$%i(50,00000032)$Percent$
+				:i $SetTags$$InAirTrick$ = %i(0,00000000)
+				:i $Obj_WaitAnimFinished$
+				:i $Goto$$Vehicle_Airborne$
+			:i endfunction
+			:i function $veh_ExitGrabTrick$
+				:i $LaunchSubStateExitEvent$$SubState$ = $Grab$
+			:i endfunction
+			:i function $vehicle_flip_trick$
+				:i $GetTags$
+				:i $SetTags$$InAirTrick$ = %i(1,00000001)
+				:i $LaunchStateChangeEvent$$State$ = $Skater_InAir$
+				:i $LaunchSubStateEntryEvent$$SubState$ = $Flip$
+				:i $OnExitRun$$veh_ExitFlipTrick$
+				:i $PlayAnim$$Anim$ = %GLOBAL%$air_trick2$$speed$ = %GLOBAL%$air_trick2_speed$
+				:i $wait$%i(10,0000000a)$frames$
+				:i $SetTrickName$%GLOBAL%$trick_name2$
+				:i $SettrickScore$%GLOBAL%$trick_score2$
+				:i $Display$
+				:i $WaitAnim$%i(50,00000032)$Percent$
+				:i $SetTags$$InAirTrick$ = %i(0,00000000)
+				:i $Obj_WaitAnimFinished$
+				:i $Goto$$Vehicle_Airborne$
+			:i endfunction
+			:i function $veh_ExitFlipTrick$
+				:i $LaunchSubStateExitEvent$$SubState$ = $Flip$
+			:i endfunction
+			:i function $Vehicle_Land$
+				:i $GetTags$
+				:i $SetState$$Ground$
+				:i $SetTags$$InAirTrick$ = %i(0,00000000)
+				:i $LaunchStateChangeEvent$$State$ = $Skater_OnGround$
+				:i if NOT $gotparam$$yaw_angles$
+					:i $yaw_angles$ = %vec2(45.000000,155.000000)
+				:i endif
+				:i if  (%GLOBAL%$InAirTrick$ = %i(1,00000001)) 
+					:i $SetTags$$InAirTrick$ = %i(0,00000000)
+					:i $Goto$$Vehicle_Bail$
+				:i endif
+				:i if $PitchGreaterThan$%i(60,0000003c)
+					:i $Goto$$Vehicle_Bail$
+				:i endif
+				:i if $RollGreaterThan$%i(50,00000032)
+					:i $Goto$$Vehicle_Bail$
+				:i endif
+				:i if NOT $gotparam$$auto_correct_direction$
+					:i $GetSpeed$
+					:i if  (%GLOBAL%$speed$ > %i(0,00000000)) 
+						:i if $YawBetween$%GLOBAL%$yaw_angles$
+							:i $Goto$$Vehicle_Bail$
+						:i endif
+						:i if $backwards$
+							:i if $LandedFromVert$
+								:i $manual_turnaround$
+							:i endif
+							:i if  (%GLOBAL%$allow_backwards$ = %i(0,00000000)) 
+							:i else 
+							:i endif
+						:i endif
+					:i endif
+				:i else 
+				:i endif
+				:i $GotoPreserveParams$$vehicle_land2$
+			:i endfunction
+			:i function $vehicle_land2$$RevertTime$ = %i(5,00000005)
+				:i if $LandedFromVert$
+					:i if  (%GLOBAL%$allow_vert$ = %i(0,00000000)) 
+						:i $Goto$$Vehicle_Bail$
+					:i endif
+					:i $OverrideCancelGround$
+					:i $Obj_ClearFlag$$FLAG_SKATER_MANUALCHEESE$
+					:i if $gotparam$$revert_trick$
+						:i $GetSpeed$
+						:i if  (%GLOBAL%$speed$ > %i(250,000000fa)) 
+							:i $SetExtraTricks_Reverts$$Duration$ = %GLOBAL%$RevertTime$
+						:i endif
+					:i endif
+				:i else 
+					:i if $gotparam$$canmanual$
+						:i $DoNextManualTrick$
+					:i endif
+				:i endif
+				:i $OnExceptionRun$$LandSkaterTricks$
+				:i $SetException$$Ex$ = $Ollied$$Scr$ = $Vehicle_Ollie$
+				:i $SetException$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun$
+				:i $SetException$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun$
+				:i $GetTags$
+				:i if $gotparam$$land_sound$
+					:i $PlaySound$%GLOBAL%$land_sound$$vol$ = %i(150,00000096)$pitch$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(20):OFFSET(21):OFFSET(22):OFFSET(23):OFFSET(24)
+							 :POS(20) %i(95,0000005f)
+						:BREAKTO(25)
+							 :POS(21) %i(98,00000062)
+						:BREAKTO(25)
+							 :POS(22) %i(100,00000064)
+						:BREAKTO(25)
+							 :POS(23) %i(103,00000067)
+						:BREAKTO(25)
+							 :POS(24) %i(105,00000069) :POS(25) 
+					:i endif
+					:i if $gotparam$$soft_land_anim$
+						:i if $AirTimeGreaterThan$%i(1,00000001)$seconds$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$land_anim$$Blendperiod$ = %f(0.100000)
+						:i else 
+							:i if $AirTimeGreaterThan$%f(0.100000)$seconds$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$soft_land_anim$$Blendperiod$ = %f(0.100000)
+							:i endif
+						:i endif
+					:i else 
+						:i $PlayAnim$$Anim$ = %GLOBAL%$land_anim$$Blendperiod$ = %f(0.100000)
+					:i endif
+					:i $GetTags$
+					:i if  (%GLOBAL%$racemode$ = $gurney$) 
+						:i if $SkaterSpeedGreaterThan$%i(0,00000000)
+							:i if NOT $IsSoundPlaying$$ShoppingCartLoop$
+								:i if  ($LevelIs$$load_bo$) 
+									:i $printf$%s(69,"vehicle_land2 - Quickly Stopping then starting shoppingcartloop sound")
+									:i $skater$.$Obj_StopSound$$ShoppingCartLoop$
+									:i $skater$.$Obj_PlaySound$$ShoppingCartLoop$
+									:i $SetSoundParams$$ShoppingCartLoop$$vol$ = %i(0,00000000)$pitch$ = %i(0,00000000)
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+					:i if $gotparam$$spin_time$
+						:i $wait$%GLOBAL%$spin_time$$seconds$
+						:i $CancelRotateDisplay$
+					:i endif
+					:i if $gotparam$$revert_trick$
+						:i if $LandedFromVert$
+							:i $ResetLandedFromVert$
+							:i while
+								
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to %GLOBAL%$RevertTime$
+						:i else 
+							:i while
+								
+								:i $DoNextManualTrick$$FromAir$
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to %i(10,0000000a)
+						:i endif
+					:i endif
+					:i $LandSkaterTricks$
+					:i if  (%GLOBAL%$racemode$ = $Wheelchair$) 
+						:i $Paulie_TalkShit$
+					:i endif
+					:i $Obj_WaitAnimFinished$
+					:i $Goto$$Vehicle_OnGround$
+				:i endfunction
+				:i function $vehicle_play_land_sound$
+					:i $GetTags$
+					:i if $gotparam$$land_sound$
+						:i $PlaySound$%GLOBAL%$land_sound$$vol$ = %i(150,00000096)$pitch$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29):OFFSET(30)
+								 :POS(26) %i(95,0000005f)
+							:BREAKTO(31)
+								 :POS(27) %i(98,00000062)
+							:BREAKTO(31)
+								 :POS(28) %i(100,00000064)
+							:BREAKTO(31)
+								 :POS(29) %i(103,00000067)
+							:BREAKTO(31)
+								 :POS(30) %i(105,00000069) :POS(31) 
+						:i endif
+					:i endfunction
+					:i function $GetReducedSpin$
+						:i $GetActualSpin$
+						:i if NOT $LandedFromSpine$
+							:i if $LandedFromVert$
+								:i $spin$ =  (%GLOBAL%$spin$ + %i(180,000000b4)) 
+							:i endif
+						:i endif
+						:i while
+							
+							:i if  (%i(360,00000168) > %GLOBAL%$spin$) 
+								:i continue
+								
+							:i else 
+								:i $spin$ =  (%GLOBAL%$spin$ - %i(360,00000168)) 
+							:i endif
+						:i loop_to 
+						:i return
+						$spin$ = %GLOBAL%$spin$
+					:i endfunction
+					:i $vehicle_grind_ExceptionTable$ = :a{
+						:i :s{$Exception$$Ex$ = $Ollied$$Scr$ = $vehicle_rail_exit$$params$ = :s{$callback$ = $Vehicle_Ollie$:s}:s}
+						:i :s{$Exception$$Ex$ = $OffRail$$Scr$ = $vehicle_OffRail$:s}
+						:i :s{$Exception$$Ex$ = $Landed$$Scr$ = $vehicle_rail_exit$$params$ = :s{$callback$ = $Vehicle_Land$:s}:s}
+						:i :s{$Exception$$Ex$ = $OffMeterTop$$Scr$ = $vehicle_rail_exit$$params$ = :s{$callback$ = $Vehicle_Bail$:s}:s}
+						:i :s{$Exception$$Ex$ = $OffMeterBottom$$Scr$ = $vehicle_rail_exit$$params$ = :s{$callback$ = $Vehicle_Bail$:s}:s}
+						:i :s{$Exception$$Ex$ = $SkaterCollideBail$$Scr$ = $vehicle_rail_exit$$params$ = :s{$callback$ = $Vehicle_Bail$:s}:s}
+						:i :s{$Event$$Ex$ = $MadeOtherSkaterBail$$Scr$ = $MadeOtherSkaterBail_Called$:s}
+						:i :a}
+					:i function $vehicle_grind$
+						:i $GetTags$
+						:i if  (%GLOBAL%$InAirTrick$ = %i(1,00000001)) 
+							:i $SetTags$$InAirTrick$ = %i(0,00000000)
+							:i $Goto$$Vehicle_Bail$
+						:i endif
+						:i if $backwards$
+							:i $SetTags$$veh_backwardsgrind$ = %i(1,00000001)
+							:i $RotateNoFlip$
+						:i else 
+							:i $GetReducedSpin$
+							:i if  ( (%GLOBAL%$spin$ > %i(90,0000005a))  AND  (%i(270,0000010e) > %GLOBAL%$spin$) ) 
+								:i if  (%GLOBAL%$veh_backwardsgrind$ = %i(0,00000000)) 
+									:i $SetTags$$veh_backwardsgrind$ = %i(1,00000001)
+									:i $RotateNoFlip$
+								:i else 
+									:i $SetTags$$veh_backwardsgrind$ = %i(0,00000000)
+								:i endif
+							:i else 
+								:i if  (%GLOBAL%$veh_backwardsgrind$ = %i(1,00000001)) 
+									:i $RotateNoFlip$
+								:i endif
+							:i endif
+						:i endif
+						:i if $BailIsOn$
+							:i $SetState$$Air$
+							:i $Goto$$Vehicle_Bail$
+						:i endif
+						:i $BailOff$
+						:i $CancelRotateDisplay$
+						:i $GetTags$
+						:i if $gotparam$$land_sound$
+							:i $PlaySound$%GLOBAL%$land_sound$$vol$ = %i(120,00000078)$pitch$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35):OFFSET(36)
+									 :POS(32) %i(110,0000006e)
+								:BREAKTO(37)
+									 :POS(33) %i(113,00000071)
+								:BREAKTO(37)
+									 :POS(34) %i(115,00000073)
+								:BREAKTO(37)
+									 :POS(35) %i(118,00000076)
+								:BREAKTO(37)
+									 :POS(36) %i(120,00000078) :POS(37) 
+							:i endif
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+								:i $skater$.$Obj_PlaySound$%GLOBAL%$grind_sound$$vol$ = %i(150,00000096)
+							:i endif
+							:i $LaunchStateChangeEvent$$State$ = $Skater_OnRail$
+							:i $KillExtraTricks$
+							:i $SetTrickName$%s(0,"")
+							:i $SettrickScore$%i(0,00000000)
+							:i $Display$$Blockspin$
+							:i $Obj_ClearFlag$$FLAG_SKATER_MANUALCHEESE$
+							:i $Obj_ClearFlag$$FLAG_SKATER_REVERTCHEESE$
+							:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$Duration$ = %f(0.250000)
+							:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(50,00000032)
+							:i $ResetEventHandlersFromTable$$vehicle_grind_ExceptionTable$
+							:i $OnExceptionRun$$Grind_Kissed$
+							:i $ClearTrickQueue$
+							:i $ClearManualTrick$
+							:i $ClearExtraGrindTrick$
+							:i $SetQueueTricks$$NoTricks$
+							:i $SetManualTricks$$NoTricks$
+							:i $SetRailSound$$Grind$
+							:i $SetGrindTweak$%i(10,0000000a)
+							:i if $gotparam$$grind_init_anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$grind_init_anim$$Blendperiod$ = %i(0,00000000)
+							:i endif
+							:i $DoBalanceTrick$$ButtonA$ = $right$$ButtonB$ = $left$$type$ = $Grind$$DoFlipCheck$
+							:i $orient_vehicle$
+							:i $wait$%i(15,0000000f)$frames$
+							:i if $IsPs2$
+								:i $SetExtraTricks$$GrindRelease$
+							:i endif
+							:i $wait$%i(1,00000001)$frame$
+							:i $OnExceptionRun$$Normal_Grind$
+							:i $SetTrickName$%GLOBAL%$grind_trick$
+							:i $SettrickScore$%GLOBAL%$grind_score$
+							:i $Display$$Blockspin$
+							:i $Obj_WaitAnimFinished$
+							:i if $gotparam$$grind_idle_anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$grind_idle_anim$$Wobble$$wobbleparams$ = $grindwobble_params$
+							:i endif
+							:i while
+								
+								:i $DoNextTrick$
+								:i $orient_vehicle$
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+						:i endfunction
+						:i function $vehicle_OffRail$
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i if $gotparam$$KissedRail$
+								:i $SettrickScore$%i(50,00000032)
+								:i $SetTrickName$%s(15,"Kissed the Rail")
+								:i $Display$$Blockspin$$NoMult$
+							:i endif
+							:i $StopBalanceTrick$
+							:i $KillExtraTricks$
+							:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(0,00000000)
+							:i $SetState$$Air$
+							:i $SetException$$Ex$ = $Landed$$Scr$ = $Vehicle_Land$
+							:i if $gotparam$$canwallplant$
+								:i $SetException$$Ex$ = $WallPlant$$Scr$ = $Air_WallPlant$
+							:i endif
+							:i $DoNextTrick$
+							:i if $gotparam$$grind_Out_Anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$grind_Out_Anim$$Blendperiod$ = %f(0.100000)
+							:i else 
+								:i if $gotparam$$grind_init_anim$
+									:i $PlayAnim$$Anim$ = %GLOBAL%$grind_init_anim$$Blendperiod$ = %f(0.100000)$backwards$
+								:i endif
+							:i endif
+							:i if $gotparam$$canmanual$
+								:i $DoNextManualTrick$
+							:i endif
+							:i $Obj_WaitAnimFinished$
+							:i $Goto$$Vehicle_Airborne$
+						:i endfunction
+						:i function $vehicle_rail_exit$
+							:i $StopBalanceTrick$
+							:i $KillExtraTricks$
+							:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(0,00000000)
+							:i $SetState$$Air$
+							:i $AllowRailTricks$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i if NOT $gotparam$$callback$
+								:i return
+								
+							:i else 
+								:i $Goto$%GLOBAL%$callback$
+							:i endif
+						:i endfunction
+						:i function $vehicle_PointRailSpin$
+							:i $GetTags$
+							:i $SetException$$Ex$ = $Ollied$$Scr$ = $vehicle_ExitPointRailSpin$
+							:i $SetException$$Ex$ = $OffMeterTop$$Scr$ = $vehicle_PointRailSpinBail$
+							:i $SetException$$Ex$ = $OffMeterBottom$$Scr$ = $vehicle_PointRailSpinBail$
+							:i $SetRailSound$$slide$
+							:i $DoBalanceTrick$$ButtonA$ = $right$$ButtonB$ = $left$$type$ = $Grind$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$idle_anim$$Wobble$
+							:i $SetTrickName$%s(0,"")
+							:i $SettrickScore$%i(0,00000000)
+							:i $Display$$Blockspin$
+							:i $SetTrickName$%sc(4,"Spin")
+							:i $SettrickScore$%i(50,00000032)
+							:i $Display$$natas$
+						:i endfunction
+						:i function $vehicle_ExitPointRailSpin$
+							:i $skater$.$SetSpeed$%i(300,0000012c)
+							:i $Vehicle_Ollie$
+						:i endfunction
+						:i function $vehicle_PointRailSpinBail$
+							:i $StopBalanceTrick$
+							:i $SetSpeed$%i(200,000000c8)
+							:i $Vehicle_Bail$
+						:i endfunction
+						:i $vehicle_manual_ExceptionTable$ = :a{
+							:i :s{$Exception$$Ex$ = $Ollied$$Scr$ = $Vehicle_Ollie$:s}
+							:i :s{$Exception$$Ex$ = $OffMeterBottom$$Scr$ = $Vehicle_OnGround$$params$ = :s{$land_manual$ = $land_manual$:s}:s}
+							:i :s{$Exception$$Ex$ = $OffMeterTop$$Scr$ = $Vehicle_Bail$$params$ = :s{$manual$ = $manual$:s}:s}
+							:i :s{$Exception$$Ex$ = $GroundGone$$Scr$ = $Vehicle_Airborne$:s}
+							:i :a}
+						:i function $vehicle_manual$
+							:i if NOT $OnGround$
+								:i $SetException$$Ex$ = $Landed$$Scr$ = $manual$$params$ = :s{ isNull :s}
+								:i return
+								
+							:i endif
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i $KillExtraTricks$
+							:i $SetTrickName$%s(0,"")
+							:i $SettrickScore$%i(0,00000000)
+							:i $Display$$Blockspin$
+							:i if $LandedFromVert$
+								:i $Goto$$Vehicle_Land$
+							:i endif
+							:i $ClearLipCombos$
+							:i $ResetLandedFromVert$
+							:i $NollieOff$
+							:i $ResetEventHandlersFromTable$$vehicle_manual_ExceptionTable$
+							:i $OnExceptionRun$$vehicle_CheckForNewTrick_ManualOut$
+							:i $LaunchStateChangeEvent$$State$ = $Skater_InManual$
+							:i $ClearTrickQueue$
+							:i $SetQueueTricks$$NoTricks$
+							:i $SetManualTricks$$NoTricks$
+							:i $StartBalanceTrick$
+							:i if NOT $IsNGC$
+								:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(25,00000019)
+								:i $OnExitRun$$KillManualVibration$
+							:i endif
+							:i $SetRollingFriction$$default$
+							:i $DoBalanceTrick$$ButtonA$ = $up$$ButtonB$ = $down$$type$ = $manual$$Tweak$ = %i(1,00000001)
+							:i if $gotparam$$manual_init_anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$manual_init_anim$$Blendperiod$ = %f(0.300000)
+							:i endif
+							:i if $Obj_FlagSet$$FLAG_SKATER_MANUALCHEESE$
+								:i if $gotparam$$CheckCheese$
+									:i $GetManualCheese$
+									:i $ManualCheese$ =  (%GLOBAL%$ManualCheese$ + %i(1,00000001)) 
+									:i $SetTags$$ManualCheese$ = %GLOBAL%$ManualCheese$
+									:i if  (%GLOBAL%$ManualCheese$ > %i(1,00000001)) 
+										:i $AdjustBalance$$TimeAdd$ = %i(2,00000002)$SpeedMult$ = %i(2,00000002)$LeanMult$ = %f(1.200000)
+									:i endif
+								:i endif
+							:i else 
+								:i $Obj_SetFlag$$FLAG_SKATER_MANUALCHEESE$
+								:i $SetTags$$ManualCheese$ = %i(0,00000000)
+							:i endif
+							:i $SetTrickName$%GLOBAL%$manual_trick$
+							:i $SettrickScore$%GLOBAL%$manual_Score$
+							:i $Display$$Blockspin$
+							:i $Obj_WaitAnimFinished$
+							:i $vehicle_manual2$
+						:i endfunction
+						:i function $vehicle_CheckForNewTrick_ManualOut$
+							:i $printf$%s(27,"give the events back!!!!!!!")
+							:i $RestoreEvents$$UsedBy$ = $Extra$$Duration$ = %i(100,00000064)
+							:i $ManualOut$
+							:i $StopBalanceTrick$
+						:i endfunction
+						:i function $vehicle_manual2$
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i if $gotparam$$manual_balance_anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$manual_balance_anim$$Wobble$$wobbleparams$ = $Manual_wobble_params$
+							:i endif
+							:i $was_held$ = %i(0,00000000)
+							:i while
+								
+								:i if $gotparam$$extra_manual_trick$
+									:i if  (%GLOBAL%$was_held$ = %i(1,00000001)) 
+										:i if $released$$r2$
+											:i $Goto$$vehicle_manual_trick$
+										:i endif
+									:i else 
+										:i if $held$$r2$
+											:i $was_held$ = %i(1,00000001)
+										:i endif
+									:i endif
+								:i endif
+								:i $DoNextTrick$
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+						:i endfunction
+						:i function $vehicle_manual_trick$
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i $PlayAnim$$Anim$ = %GLOBAL%$revert_anim$
+							:i $Obj_WaitAnimFinished$
+							:i $SetTrickName$%GLOBAL%$extra_manual_trick$
+							:i $SettrickScore$%GLOBAL%$extra_manual_score$
+							:i $Display$
+							:i $Goto$$vehicle_manual2$
+						:i endfunction
+						:i function $vehicle_revert$
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i if NOT $gotparam$$revert_anim$
+								:i $Goto$$Vehicle_Land$
+							:i endif
+							:i $OnExitRun$$vehicle_exit_revert$
+							:i $InRevert$
+							:i $GetTags$
+							:i $ClearLipCombos$
+							:i $KillExtraTricks$
+							:i $SettrickScore$%i(100,00000064)
+							:i $LaunchStateChangeEvent$$State$ = $Skater_InRevert$
+							:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+								:i $Obj_SpawnScript$$CessTrail$$params$ = :s{$repeat_times$ = %i(10,0000000a):s}
+								:i $PlayCessSound$
+								:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$Duration$ = %f(0.500000)
+								:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$Duration$ = %f(0.100000)
+							:i endif
+							:i $ClearException$$Ollied$
+							:i $SetSpecialFriction$:a{%i(0,00000000);%i(0,00000000);%i(5,00000005);%i(10,0000000a);%i(15,0000000f);%i(25,00000019):a}$Duration$ = %f(0.667000)
+							:i $SetQueueTricks$$NoTricks$
+							:i $NollieOff$
+							:i $PressureOff$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$revert_anim$
+							:i $SetTrickName$%GLOBAL%$revert_trick$
+							:i $Display$$Blockspin$
+							:i $Blendperiodout$%f(0.000000)
+							:i $wait$%f(0.100000)$seconds$
+							:i $SetException$$Ex$ = $Ollied$$Scr$ = $Vehicle_Ollie$
+							:i $ResetLandedFromVert$
+							:i $Obj_WaitAnimFinished$
+							:i if $gotparam$$canmanual$
+								:i $DoNextManualTrick$
+							:i endif
+							:i $LandSkaterTricks$
+							:i $ClearEventBuffer$
+							:i $Goto$$veh_OnGroundAI$
+						:i endfunction
+						:i function $vehicle_exit_revert$
+							:i $OutRevert$
+							:i $SetTrickName$%sc(0,"")
+							:i $SettrickScore$%i(0,00000000)
+							:i $Display$$Blockspin$
+						:i endfunction
+						:i function $vehicle_wallplant$
+							:i $GetTags$
+							:i if $gotparam$$grind_sound$
+								:i $skater$.$Obj_StopSound$%GLOBAL%$grind_sound$
+							:i endif
+							:i if NOT $gotparam$$canwallplant$
+								:i return
+								
+							:i endif
+							:i $PressureOff$
+							:i $NollieOff$
+							:i $ClearException$$Ollied$
+							:i $LaunchStateChangeEvent$$State$ = $Skater_InWallplant$
+							:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.100000)
+							:i $SetTrickName$%s(0,"")
+							:i $SettrickScore$%i(0,00000000)
+							:i $Display$$Blockspin$
+							:i $PlayAnim$$Anim$ = %GLOBAL%$wallplant_anim$$Blendperiod$ = %i(0,00000000)
+							:i $Blendperiodout$%i(0,00000000)
+							:i $BoardRotateAfter$
+							:i $SetTrickName$%sc(12,"Sticker Slap")
+							:i $SettrickScore$%i(750,000002ee)
+							:i $Display$
+							:i $skater$.$Obj_PlaySound$$SK6_StickerSlap_01$$vol$ = %i(150,00000096)$pitch$ = random%vec2(98.000000,105.000000)
+							:i $GetStartTime$
+							:i while
+								
+								:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+								:i if  (%GLOBAL%$ElapsedTime$ > $Post_Wallplant_No_Ollie_Window$) 
+									:i continue
+									
+								:i endif
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+							:i $ClearEventBuffer$$Buttons$ = :a{$X$:a}$OlderThan$ = %i(0,00000000)
+							:i $GetStartTime$
+							:i while
+								
+								:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+								:i if  (%GLOBAL%$ElapsedTime$ > $Post_Wallplant_Allow_Ollie_Window$) 
+									:i continue
+									
+								:i endif
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+							:i $Obj_WaitAnimFinished$
+							:i $boardrotate$
+							:i $Goto$$Vehicle_Airborne$
+						:i endfunction
+						:i function $remove_all_anim_subsets$
+							:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(1.000000)
+							:i if $Obj_AnimSubsetExists$$SubsetId$ = $cloth$
+								:i $Obj_RemoveAnimSubset$$SubsetId$ = $cloth$
+							:i endif
+							:i if $Obj_AnimSubsetExists$$SubsetId$ = $throw$
+								:i $Obj_RemoveAnimSubset$$SubsetId$ = $throw$
+							:i endif
+							:i if $Obj_AnimSubsetExists$$SubsetId$ = $Second$
+								:i $Obj_RemoveAnimSubset$$SubsetId$ = $Second$
+							:i endif
+							:i if NOT $gotparam$$not_wheels$
+								:i if $Obj_AnimSubsetExists$$SubsetId$ = $Wheels$
+									:i $Obj_RemoveAnimSubset$$SubsetId$ = $Wheels$
+								:i endif
+							:i endif
+						:i endfunction
+						:i function $vehicle_default_start_script$
+							:i $ClearSkaterCamOverride$
+							:i $Obj_SetFlag$$FLAG_SKATER_CARMODE$
+						:i endfunction
+						:i $gurney_params$ = :s{
+							:i $struct$ = $gurney_params$
+							:i $racemode$ = $gurney$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(4,00000004)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(0,00000000)
+							:i $trick_score$ = %i(100,00000064)
+							:i $allow_vert$ = %i(0,00000000)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $cangrind$ = %i(1,00000001)
+							:i $only_idle_when_stopped$ = %i(1,00000001)
+							:i $bailspeed$ = %i(100,00000064)
+							:i $blend_turn_anims$ = %i(1,00000001)
+							:i $trick_name$ = %sc(10,"Gurney Air")
+							:i $trick_score$ = %i(100,00000064)
+							:i $start_script$ = $gurney_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $gurney_bail_script$
+							:i $idle_anim$ = $Gurney_stand_idle$
+							:i $crouch_anim$ = $Gurney_Run$
+							:i $left_anim$ = $Gurney_Run_TurnLeft$
+							:i $right_anim$ = $Gurney_Run_TurnRight$
+							:i $leftidle_anim$ = $Gurney_Run_TurnLeft$
+							:i $rightidle_anim$ = $Gurney_Run_TurnRight$
+							:i $crouch_left_anim$ = $Gurney_Run_TurnLeft$
+							:i $crouch_right_anim$ = $Gurney_Run_TurnRight$
+							:i $crouch_leftidle_anim$ = $Gurney_Run_TurnLeft$
+							:i $crouch_rightidle_anim$ = $Gurney_Run_TurnRight$
+							:i $flail_anim$ = $Gurney_Bump$
+							:i $ollie_anim$ = $Gurney_Ollie$
+							:i $air_idle_anim$ = $Gurney_AirIdle$
+							:i $land_anim$ = $Gurney_Land$
+							:i $grind_init_anim$ = $gurney_grind_init$
+							:i $grind_idle_anim$ = $gurney_grind_range$
+							:i $grind_Out_Anim$ = $gurney_grind_out$
+							:i $accel_anim$ = $Gurney_Stand_To_Run$
+							:i $brake_anim$ = $Gurney_stop$
+							:i $air_trick_init$ = $Segway_Trick1_Init$
+							:i $air_trick_idle$ = $Segway_Trick1_Idle$
+							:i $air_trick_out$ = $Segway_Trick1_Out$
+							:i $soundstruct$ = $BO_Gurney$
+							:i $bail_sound$ = $ShoppingCartBail$
+							:i $land_sound$ = $ShoppingCartLand$
+						:i :s}
+						:i $gurney_anims$ = :a{:s{$skater$ = $Gurney_Run$$object$ = $Gurney_Run_rider$:s}
+							:i :s{$skater$ = $Gurney_Run_1$$object$ = $Gurney_Run_1_rider$:s}
+							:i :s{$skater$ = $Gurney_stand_idle$$object$ = $Gurney_stand_idle_rider$:s}
+							:i :s{$skater$ = $Gurney_Run_TurnLeft$$object$ = $Gurney_Run_TurnLeft_rider$:s}
+							:i :s{$skater$ = $Gurney_Run_TurnRight$$object$ = $Gurney_Run_TurnRight_rider$:s}
+							:i :s{$skater$ = $Gurney_Bump$$object$ = $Gurney_Bump_rider$:s}
+							:i :s{$skater$ = $Gurney_Stand_To_Run$$object$ = $Gurney_Stand_To_Run_rider$:s}
+							:i :s{$skater$ = $Gurney_Ollie$$object$ = $Gurney_Ollie_rider$:s}
+							:i :s{$skater$ = $Gurney_AirIdle$$object$ = $Gurney_AirIdle_rider$:s}
+							:i :s{$skater$ = $Gurney_Land$$object$ = $Gurney_Land_rider$:s}
+							:i :s{$skater$ = $Gurney_stop$$object$ = $Gurney_Stop_rider$:s}
+							:i :s{$skater$ = $gurney_grind_init$$object$ = $gurney_grind_init_rider$:s}
+							:i :s{$skater$ = $gurney_grind_range$$object$ = $gurney_grind_range_rider$:s}
+							:i :s{$skater$ = $gurney_grind_out$$object$ = $gurney_grind_out_rider$:s}
+							:i :a}
+						:i function $gurney_start_script$
+							:i $kill$$name$ = $gurney$
+							:i $BO_AllParticlesOff$
+							:i $skater$.$AddGeom$$name$ = $vehicle$$model$ = %s(37,"models\veh\veh_gurney\veh_gurney.skin")
+							:i $skater$.$SwitchOffAtomic$$board$
+							:i $kill$$name$ = $TRG_Ped_Sick_Kid$
+							:i $kill$$name$ = $TRG_Gurney_Ghost$
+							:i $create$$name$ = $TRG_Ped_Sick_Kid$
+							:i $TRG_Ped_Sick_Kid$.$Obj_LockToObject$$ObjectName$ = $skater$%vec3(0.000000,7.000000,5.000000)
+							:i $spawnscript$$gurney_play_appropriate_sick_kid_anims$
+							:i $TRG_Ped_Sick_Kid$.$SwitchOffBoard$
+						:i endfunction
+						:i function $gurney_bail_script$
+							:i $SkaterVehicleOff$
+							:i $kill$$name$ = $TRG_Ped_Sick_Kid$
+							:i $kill$$name$ = $TRG_Tony_Ghost$
+							:i if $CompositeObjectExists$$name$ = $skater$
+								:i $skater$.$ClearGeom$$vehicle$
+							:i endif
+							:i if $CompositeObjectExists$$name$ = $skater2$
+								:i $skater2$.$ClearGeom$$vehicle$
+							:i endif
+							:i $KillSpawnedScript$$name$ = $gurney_play_appropriate_sick_kid_anims$
+							:i $NoSkaterVehicleSounds$
+							:i $spawnscript$$BO_Kill_Paramedics$
+							:i $spawnscript$$gurney_rider_bail$
+							:i $remove_all_anim_subsets$
+							:i $GurneyBail$
+							:i $SkaterLoopingSound_TurnOn$
+						:i endfunction
+						:i function $gurney_rider_bail$
+							:i while
+								
+								:i if $ObjectExists$$id$ = $BailGurney$
+									:i if $ObjectExists$$id$ = $gurney$
+										:i $kill$$name$ = $gurney$
+									:i endif
+									:i $create$$name$ = $gurney$
+									:i $gurney$.$Obj_LockToObject$$bone$ = $Bone_Board_Root$$ObjectName$ = $BailGurney$%vec3(0.000000,13.000000,24.000000)
+									:i $BailGurney$.$Obj_PlayAnim$$Anim$ = $Gurney_Run$$Cycle$
+									:i if $ObjectExists$$id$ = $TRG_Ped_Sick_Kid$
+										:i $kill$$name$ = $TRG_Ped_Sick_Kid$
+									:i endif
+									:i $create$$name$ = $TRG_Ped_Sick_Kid$
+									:i $TRG_Ped_Sick_Kid$.$Obj_LockToObject$$ObjectName$ = $gurney$%vec3(0.000000,-12.000000,-25.000000)
+									:i $TRG_Ped_Sick_Kid$.$Obj_PlayAnim$$Anim$ = $Gurney_Run_rider$$Cycle$
+									:i continue
+									
+								:i endif
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+							:i $wait$%i(1,00000001)$Second$
+							:i if $ObjectExists$$id$ = $BailGurney$
+								:i $BailGurney$.$die$
+							:i endif
+							:i if $ObjectExists$$id$ = $TRG_Ped_Sick_Kid$
+								:i $kill$$name$ = $TRG_Ped_Sick_Kid$
+							:i endif
+							:i if $ObjectExists$$id$ = $gurney$
+								:i $kill$$name$ = $gurney$
+							:i endif
+							:i $skater$.$veh_blenturnanims_exit$
+							:i $create$$name$ = $gurney$
+							:i $create$$name$ = $TRG_Ped_Sick_Kid$
+						:i endfunction
+						:i function $gurney_play_appropriate_sick_kid_anims$
+							:i $TRG_Ped_Sick_Kid$.$gurney_play_appropriate_sick_kid_anims2$$array$ = $gurney_anims$
+						:i endfunction
+						:i function $gurney_play_appropriate_sick_kid_anims2$$blend$ = %f(0.900000)
+							:i $GetTags$
+							:i $GetArraySize$%GLOBAL%$array$
+							:i $Obj_EnableAnimBlending$$enabled$ = %i(1,00000001)
+							:i if NOT $gotparam$$parentID$
+								:i %GLOBAL%$parentID$ = $skater$
+							:i endif
+							:i while
+								
+								:i $index$ = %i(0,00000000)
+								:i while
+									
+									:i $SkaterAnim$ =  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) ->$skater$) 
+									:i $ObjectAnim$ =  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) ->$object$) 
+									:i if %GLOBAL%$parentID$.$AnimEquals$%GLOBAL%$SkaterAnim$
+										:i if NOT $AnimEquals$%GLOBAL%$ObjectAnim$
+											:i if $gotparam$$Wobble$
+												:i %GLOBAL%$parentID$.$Obj_GetAnimSpeed$%GLOBAL%$SkaterAnim$
+												:i $Obj_PlayAnim$$Anim$ = %GLOBAL%$ObjectAnim$$Wobble$$wobbleparams$ = $grindwobble_params$$speed$ = %GLOBAL%$speed$$blend$ = %GLOBAL%$blend$
+												:i continue
+												
+											:i else 
+												:i %GLOBAL%$parentID$.$Obj_GetAnimSpeed$%GLOBAL%$SkaterAnim$
+												:i $Obj_PlayAnim$$Anim$ = %GLOBAL%$ObjectAnim$$NoRestart$$speed$ = %GLOBAL%$speed$$blend$ = %GLOBAL%$blend$$Cycle$
+												:i continue
+												
+											:i endif
+										:i endif
+									:i endif
+									:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+								:i loop_to %GLOBAL%$array_size$
+								:i $wait$%i(1,00000001)$gameframe$
+							:i loop_to 
+						:i endfunction
+						:i $shoppingcart_params$ = :s{
+							:i $struct$ = $shoppingcart_params$
+							:i $racemode$ = $shoppingcart$
+							:i $startspeed$ = %i(600,00000258)
+							:i $turn_friction$ = %i(4,00000004)
+							:i $canbrake$ = %i(0,00000000)
+							:i $autokick$ = %i(0,00000000)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(0,00000000)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $cangrind$ = %i(1,00000001)
+							:i $canmanual$ = %i(1,00000001)
+							:i $trick_name$ = %sc(8,"Cart Air")
+							:i $trick_score$ = %i(100,00000064)
+							:i $start_script$ = $shoppingcart_start_script$
+							:i $onground_script$ = $ShoppingCart_OnGround_Loop$
+							:i $bail_script$ = $shoppingcart_bail_script$
+							:i $idle_anim$ = $Trolley_Idle$
+							:i $ollie_anim$ = $Trolley_Ollie$
+							:i $air_idle_anim$ = $Trolley_AirIdle$
+							:i $land_anim$ = $Trolley_land$
+							:i $soft_land_anim$ = $Trolley_SmallLand$
+							:i $sound$ = $ShoppingCartLoop$
+							:i $bail_sound$ = $ShoppingCartBail$
+							:i $ollie_sound$ = $ShoppingCartOllie$
+							:i $land_sound$ = $ShoppingCartLand$
+						:i :s}
+						:i function $shoppingcart_start_script$
+							:i if $ObjectExists$$id$ = $ago_ShoppingCart$
+								:i $kill$$name$ = $ago_ShoppingCart$
+								:i $create$$name$ = $ago_ShoppingCart$
+								:i $ago_ShoppingCart$.$Obj_LockToObject$$ObjectName$ = $skater$%vec3(2.000000,4.000000,0.000000)
+							:i endif
+							:i $SetSkaterCamOverride$$heading$ = %i(2,00000002)$tilt$ = %f(-0.200000)$time$ = %f(0.000001)
+							:i $PlayAnim$$Anim$ = $Trolley_PushFromStand$$Blendperiod$ = %i(0,00000000)
+							:i $Obj_WaitAnimFinished$
+							:i $ClearSkaterCamOverride$
+							:i $PlayAnim$$Anim$ = $Trolley_Push$$Blendperiod$ = %i(0,00000000)
+							:i $Obj_WaitAnimFinished$
+							:i $PlayAnim$$Anim$ = $Trolley_JumpIn$$Blendperiod$ = %i(0,00000000)
+							:i $Obj_WaitAnimFinished$
+						:i endfunction
+						:i function $shoppingcart_bail_script$
+							:i if $ObjectExists$$id$ = $ago_ShoppingCart$
+								:i $kill$$name$ = $ago_ShoppingCart$
+							:i endif
+							:i $Trolley_BailB$
+						:i endfunction
+						:i $luge_params$ = :s{
+							:i $struct$ = $luge_params$
+							:i $racemode$ = $luge$
+							:i $startspeed$ = %i(600,00000258)
+							:i $turn_friction$ = %i(4,00000004)
+							:i $accelerate_to$ = %i(800,00000320)
+							:i $acceleration$ = %f(10.000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(0,00000000)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $cangrind$ = %i(0,00000000)
+							:i $trick_name$ = %sc(8,"Luge Hop")
+							:i $trick_score$ = %i(100,00000064)
+							:i $start_script$ = $luge_start_script$
+							:i $onground_script$ = $CarMode_OnGround_Loop$
+							:i $idle_anim$ = $luge_idle$
+							:i $brake_anim$ = $Luge_Brake$
+							:i $left_anim$ = $luge_IdleToLeanLeft$
+							:i $right_anim$ = $luge_IdleToLeanRight$
+							:i $flail_anim$ = $luge_Flail$
+							:i $ollie_anim$ = $luge_ollie$
+							:i $air_idle_anim$ = $Luge_AirIdle$
+							:i $land_anim$ = $luge_land$
+						:i :s}
+						:i function $luge_start_script$
+							:i $PlayAnim$$Anim$ = $Luge_Push$
+							:i $Obj_WaitAnimFinished$
+						:i endfunction
+						:i $slalom_params$ = :s{
+							:i $struct$ = $slalom_params$
+							:i $racemode$ = $slalom$
+							:i $startspeed$ = %i(600,00000258)
+							:i $turn_friction$ = %i(4,00000004)
+							:i $accelerate_to$ = %i(800,00000320)
+							:i $acceleration$ = %f(10.000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(1,00000001)
+							:i $cangrind$ = %i(0,00000000)
+							:i $trick_name$ = %sc(16,"Old School Ollie")
+							:i $trick_score$ = %i(100,00000064)
+							:i $start_script$ = $slalom_start_script$
+							:i $onground_script$ = $CarMode_OnGround_Loop$
+							:i $bail_script$ = $slalom_bail_script$
+							:i $idle_anim$ = $slalom_idle$
+							:i $left_anim$ = $Slalom_IdleToLeanLeft$
+							:i $right_anim$ = $Slalom_IdleToLeanRight$
+							:i $flail_anim$ = $Slalom_Flail$
+							:i $ollie_anim$ = $slalom_ollie$
+							:i $air_idle_anim$ = $slalom_AirIdle$
+							:i $land_anim$ = $Slalom_land$
+						:i :s}
+						:i function $slalom_start_script$
+							:i $PlayAnim$$Anim$ = $Slalom_Push$
+							:i $Obj_WaitAnimFinished$
+						:i endfunction
+						:i function $slalom_bail_script$
+							:i $NoseManualBail$
+						:i endfunction
+						:i $segway_params$ = :s{
+							:i $struct$ = $segway_params$
+							:i $racemode$ = $segway$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(1,00000001)
+							:i $auto_correct_direction$ = %i(1,00000001)
+							:i $cangrind$ = %i(1,00000001)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $dont_bail$ = %i(1,00000001)
+							:i $jump_name$ = %sc(7,"Jump It")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(8,"Grind It")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(10,"One Footer")
+							:i $trick_score$ = %i(100,00000064)
+							:i $trick_name2$ = %sc(7,"BarSpin")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $start_script$ = $segway_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $segway_bail_script$
+							:i $idle_anim$ = $segway_idle$
+							:i $crouch_anim$ = $segway_crouch$
+							:i $left_anim$ = $segway_IdleToLeanRight$
+							:i $right_anim$ = $segway_IdleToLeanLeft$
+							:i $leftidle_anim$ = $segway_LeanRight$
+							:i $rightidle_anim$ = $segway_LeanLeft$
+							:i $crouch_left_anim$ = $segway_crouchToLeanRight$
+							:i $crouch_right_anim$ = $segway_crouchToLeanLeft$
+							:i $crouch_leftidle_anim$ = $segway_crouch_LeanRight$
+							:i $crouch_rightidle_anim$ = $segway_crouch_LeanLeft$
+							:i $flail_anim$ = $segway_idle$
+							:i $ollie_anim$ = $segway_ollie$
+							:i $air_idle_anim$ = $segway_AirIdle$
+							:i $land_anim$ = $segway_land$
+							:i $grind_init_anim$ = $segway_grind_init$
+							:i $grind_idle_anim$ = $segway_grind_range$
+							:i $grind_Out_Anim$ = $segway_grind_out$
+							:i $accel_anim$ = $segway_accel$
+							:i $brake_anim$ = $segway_stop$
+							:i $air_trick_init$ = $Segway_Trick1_Init$
+							:i $air_trick_idle$ = $Segway_Trick1_Idle$
+							:i $air_trick_out$ = $Segway_Trick1_Out$
+							:i $air_trick2$ = $Segway_FlipTrick1$
+							:i $wheel_anim$ = $Segway_wheels_partial$
+							:i $soundstruct$ = $BO_Segway$
+							:i $ollie_sound$ = $SK6_BO_JesseRide_Jump$
+							:i $land_sound$ = $SK6_BO_JesseRide_Land$
+							:i $grind_sound$ = $SK6_BO_JesseRide_Grind$
+						:i :s}
+						:i function $segway_start_script$
+							:i $Obj_SpawnScript$$vehicle_animate_wheels$
+						:i endfunction
+						:i function $segway_bail_script$
+							:i $NoseManualBail$
+						:i endfunction
+						:i function $segway_reenable_gurney$
+							:i $GetTags$
+							:i if  (%GLOBAL%$racemode$ = $segway$) 
+								:i if NOT $GoalManager_HasWonGoal$$name$ = $BO_Goal_Gaps7$
+									:i if NOT $IsAlive$$name$ = $TRG_Gurney_Ghost$
+										:i $create$$name$ = $TRG_Gurney_Ghost$
+									:i endif
+								:i endif
+							:i endif
+						:i endfunction
+						:i $tricycle_params$ = :s{
+							:i $struct$ = $tricycle_params$
+							:i $racemode$ = $tricycle$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $cangrind$ = %i(1,00000001)
+							:i $canmanual$ = %i(1,00000001)
+							:i $canwallplant$ = %i(1,00000001)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $only_idle_when_stopped$ = %i(1,00000001)
+							:i $yaw_angles$ = %vec2(60.000000,120.000000)
+							:i $blend_turn_anims$ = %i(1,00000001)
+							:i $acceleration$ = %i(500,000001f4)
+							:i $accelerate_to$ = %i(2000,000007d0)
+							:i $jump_name$ = %sc(4,"Jump")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(5,"Grind")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(17,"Superman Seatgrab")
+							:i $trick_score$ = %i(100,00000064)
+							:i $grab_trick_speed$ = %f(1.500000)
+							:i $trick_name2$ = %sc(7,"BarSpin")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $air_trick2_speed$ = %f(2.000000)
+							:i $revert_trick$ = %sc(6,"Revert")
+							:i $manual_trick$ = %sc(7,"Wheelie")
+							:i $manual_Score$ = %i(50,00000032)
+							:i $start_script$ = $tricycle_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $tricycle_bail$
+							:i $idle_anim$ = $tricycle_stand$
+							:i $crouch_anim$ = $tricycle_idle$
+							:i $left_anim$ = $tricycle_turn_left$
+							:i $right_anim$ = $tricycle_turn_right$
+							:i $leftidle_anim$ = $tricycle_idle$
+							:i $rightidle_anim$ = $tricycle_idle$
+							:i $crouch_left_anim$ = $tricycle_turn_left$
+							:i $crouch_right_anim$ = $tricycle_turn_right$
+							:i $crouch_leftidle_anim$ = $tricycle_idle$
+							:i $crouch_rightidle_anim$ = $tricycle_idle$
+							:i $flail_anim$ = $tricycle_idle$
+							:i $ollie_anim$ = $tricycle_ollie$
+							:i $air_idle_anim$ = $tricycle_air_idle$
+							:i $land_anim$ = $tricycle_land$
+							:i $grind_init_anim$ = $tricycle_grind_init$
+							:i $grind_idle_anim$ = $tricycle_grind_range$
+							:i $grind_Out_Anim$ = $tricycle_grind_out$
+							:i $accel_anim$ = $tricycle_start$
+							:i $brake_anim$ = $tricycle_stop$
+							:i $manual_init_anim$ = $tricycle_manual$
+							:i $manual_balance_anim$ = $tricycle_manual_range$
+							:i $air_trick_init$ = $tricycle_grabtrick_init$
+							:i $air_trick_idle$ = $tricycle_grabtrick_idle$
+							:i $air_trick_out$ = $tricycle_grabtrick_out$
+							:i $air_trick2$ = $tricycle_fliptrick$
+							:i $wheel_anim$ = $tricycle_wheels$
+							:i $wallplant_anim$ = $tricycle_wallplant$
+							:i $getup_anim$ = $tricycle_getup$
+							:i $revert_anim$ = $tricycle_revert$
+							:i $soundstruct$ = $NO_Trike$
+							:i $ollie_sound$ = $SK6_NO_TrikeJump$
+							:i $land_sound$ = $SK6_NO_TrikeLand$
+							:i $grind_sound$ = $SK6_NO_Trike_Grind$
+						:i :s}
+						:i function $tricycle_start_script$
+							:i $Obj_GetId$
+							:i $TerminateObjectsScripts$$id$ = %GLOBAL%$Objid$$script_name$ = $vehicle_animate_wheels$
+							:i $Obj_SpawnScript$$vehicle_animate_wheels$
+						:i endfunction
+						:i function $tricycle_bail$
+							:i $GetTags$
+							:i $ForceAutokickOff$
+							:i if  (%GLOBAL%$racemode$ = $mechbull$) 
+								:i $manual$ = %i(1,00000001)
+							:i endif
+							:i if $gotparam$$manual$
+								:i $PlayAnim$$Anim$ = $Bail_Manual_BK$
+							:i else 
+								:i $PlayAnim$$Anim$ = $Bail_Manual_FT$
+							:i endif
+							:i $KillSpecial$
+							:i $ClearExceptions$
+							:i $BailSkaterTricks$
+							:i $StopBalanceTrick$
+							:i $Obj_WaitAnimFinished$
+							:i if $gotparam$$getup_anim$
+								:i $PlayAnim$$Anim$ = %GLOBAL%$getup_anim$
+								:i $Obj_WaitAnimFinished$
+							:i endif
+							:i $NotInBail$
+							:i $Vehicle_Start$$params$ = %GLOBAL%$struct$
+						:i endfunction
+						:i $wheelchair_params$ = :s{
+							:i $struct$ = $wheelchair_params$
+							:i $racemode$ = $Wheelchair$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $cangrind$ = %i(1,00000001)
+							:i $canmanual$ = %i(1,00000001)
+							:i $canwallplant$ = %i(1,00000001)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $yaw_angles$ = %vec2(60.000000,120.000000)
+							:i $jump_name$ = %sc(9,"Chair Hop")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(11,"Chair Grind")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(10,"One Hander")
+							:i $trick_score$ = %i(100,00000064)
+							:i $trick_name2$ = %sc(8,"Sit Flip")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $air_trick2_speed$ = %f(1.500000)
+							:i $manual_trick$ = %sc(7,"Wheelie")
+							:i $manual_Score$ = %i(50,00000032)
+							:i $revert_trick$ = %sc(7,"Spin-In")
+							:i $extra_manual_trick$ = %sc(7,"Weeeee!")
+							:i $extra_manual_score$ = %i(50,00000032)
+							:i $start_script$ = $turnwheels_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $tricycle_bail$
+							:i $idle_anim$ = $wheelchair_idle$
+							:i $crouch_anim$ = $wheelchair_movingidle$
+							:i $left_anim$ = $wheelchair_turnright$
+							:i $right_anim$ = $wheelchair_turnleft$
+							:i $leftidle_anim$ = $wheelchair_turnright_idle$
+							:i $rightidle_anim$ = $wheelchair_turnleft_idle$
+							:i $crouch_left_anim$ = $wheelchair_turnright$
+							:i $crouch_right_anim$ = $wheelchair_turnleft$
+							:i $crouch_leftidle_anim$ = $wheelchair_turnright_idle$
+							:i $crouch_rightidle_anim$ = $wheelchair_turnleft_idle$
+							:i $flail_anim$ = $wheelchair_idle$
+							:i $ollie_anim$ = $wheelchair_ollie$
+							:i $air_idle_anim$ = $wheelchair_airidle$
+							:i $land_anim$ = $wheelchair_land$
+							:i $grind_init_anim$ = $wheelchair_grind_init$
+							:i $grind_idle_anim$ = $wheelchair_grind_range$
+							:i $grind_Out_Anim$ = $wheelchair_grind_out$
+							:i $accel_anim$ = $wheelchair_accel$
+							:i $brake_anim$ = $wheelchair_brake$
+							:i $manual_init_anim$ = $wheelchair_manual$
+							:i $manual_balance_anim$ = $wheelchair_manual_range$
+							:i $air_trick_init$ = $wheelchair_airtrick_init$
+							:i $air_trick_idle$ = $wheelchair_airtrick_idle$
+							:i $air_trick_out$ = $wheelchair_airtrick_out$
+							:i $air_trick2$ = $wheelchair_FlipTrick$
+							:i $wheel_anim$ = $WheelChair_Wheels_Partial$
+							:i $revert_anim$ = $wheelchair_revert$
+							:i $wallplant_anim$ = $wheelchair_wallplant$
+							:i $getup_anim$ = $wheelchair_getup$
+							:i $soundstruct$ = $BE_PaulieWheelchair$
+							:i $ollie_sound$ = $SK6_BE_Paulie_Jump$
+							:i $land_sound$ = $SK6_BE_Paulie_Land$
+							:i $grind_sound$ = $SK6_BE_Paulie_Grind$
+						:i :s}
+						:i function $turnwheels_start_script$
+							:i $Obj_GetId$
+							:i $TerminateObjectsScripts$$id$ = %GLOBAL%$Objid$$script_name$ = $vehicle_animate_wheels$
+							:i $Obj_SpawnScript$$vehicle_animate_wheels$
+						:i endfunction
+						:i $minikart_params$ = :s{
+							:i $struct$ = $minikart_params$
+							:i $racemode$ = $minikart$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $cangrind$ = %i(1,00000001)
+							:i $canmanual$ = %i(1,00000001)
+							:i $canwallplant$ = %i(1,00000001)
+							:i $jumpheight$ = %i(600,00000258)
+							:i $yaw_angles$ = %vec2(60.000000,120.000000)
+							:i $jump_name$ = %sc(4,"Jump")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(5,"Grind")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(8,"Toe Hang")
+							:i $trick_score$ = %i(100,00000064)
+							:i $trick_name2$ = %sc(4,"Flip")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $manual_trick$ = %sc(7,"Wheelie")
+							:i $manual_Score$ = %i(50,00000032)
+							:i $revert_trick$ = %sc(7,"Spin-In")
+							:i $start_script$ = $turnwheels_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $tricycle_bail$
+							:i $idle_anim$ = $veh_minikart_idle$
+							:i $crouch_anim$ = $veh_minikart_idlemoving$
+							:i $left_anim$ = $veh_minikart_turnleft$
+							:i $right_anim$ = $veh_minikart_turnright$
+							:i $leftidle_anim$ = $veh_minikart_turnleft_idle$
+							:i $rightidle_anim$ = $veh_minikart_turnright_idle$
+							:i $crouch_left_anim$ = $veh_minikart_turnleft$
+							:i $crouch_right_anim$ = $veh_minikart_turnright$
+							:i $crouch_leftidle_anim$ = $veh_minikart_turnleft_idle$
+							:i $crouch_rightidle_anim$ = $veh_minikart_turnright_idle$
+							:i $flail_anim$ = $veh_minikart_bump$
+							:i $ollie_anim$ = $veh_minikart_ollie$
+							:i $air_idle_anim$ = $veh_minikart_AirIdle$
+							:i $land_anim$ = $veh_minikart_land$
+							:i $grind_init_anim$ = $veh_minikart_grind_init$
+							:i $grind_idle_anim$ = $veh_minikart_grind_range$
+							:i $grind_Out_Anim$ = $veh_minikart_grind_out$
+							:i $accel_anim$ = $veh_minikart_accel$
+							:i $brake_anim$ = $veh_minikart_brake$
+							:i $air_trick_init$ = $veh_minikart_grabtrick_Init$
+							:i $air_trick_idle$ = $veh_minikart_grabtrick_Idle$
+							:i $air_trick_out$ = $veh_minikart_grabtrick_Out$
+							:i $wheel_anim$ = $veh_minikart_wheels$
+							:i $manual_init_anim$ = $veh_minikart_wheelie_init$
+							:i $manual_balance_anim$ = $veh_minikart_wheelie_range$
+							:i $air_trick2$ = $veh_minikart_FlipTrick$
+							:i $revert_anim$ = $veh_minikart_revert$
+							:i $wallplant_anim$ = $veh_minikart_wallplant$
+							:i $getup_anim$ = $veh_minikart_getup$
+							:i $soundstruct$ = $AU_AborigineCart$
+							:i $ollie_sound$ = $AU_KartJump$
+							:i $land_sound$ = $AU_KartLand$
+							:i $grind_sound$ = $AU_KartGrind$
+						:i :s}
+						:i $mechbull_params$ = :s{
+							:i $struct$ = $mechbull_params$
+							:i $racemode$ = $mechbull$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $cangrind$ = %i(1,00000001)
+							:i $canmanual$ = %i(1,00000001)
+							:i $canwallplant$ = %i(1,00000001)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $yaw_angles$ = %vec2(60.000000,120.000000)
+							:i $blend_turn_anims$ = %i(1,00000001)
+							:i $jump_name$ = %sc(4,"Jump")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(5,"Grind")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(8,"Yee Haw!")
+							:i $trick_score$ = %i(100,00000064)
+							:i $trick_name2$ = %sc(9,"Bull flip")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $air_trick2_speed$ = %f(2.000000)
+							:i $revert_trick$ = %sc(6,"Revert")
+							:i $manual_trick$ = %sc(7,"Wheelie")
+							:i $manual_Score$ = %i(50,00000032)
+							:i $start_script$ = $turnwheels_start_script$
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $tricycle_bail$
+							:i $idle_anim$ = $veh_bull_idle$
+							:i $crouch_anim$ = $veh_bull_idlemoving$
+							:i $left_anim$ = $veh_bull_turnleft$
+							:i $right_anim$ = $veh_bull_turnright$
+							:i $leftidle_anim$ = $veh_bull_turnleft_idle$
+							:i $rightidle_anim$ = $veh_bull_turnright_idle$
+							:i $crouch_left_anim$ = $veh_bull_turnleft$
+							:i $crouch_right_anim$ = $veh_bull_turnright$
+							:i $crouch_leftidle_anim$ = $veh_bull_turnleft_idle$
+							:i $crouch_rightidle_anim$ = $veh_bull_turnright_idle$
+							:i $flail_anim$ = $veh_bull_bump$
+							:i $ollie_anim$ = $veh_bull_ollie$
+							:i $air_idle_anim$ = $veh_bull_AirIdle$
+							:i $land_anim$ = $veh_bull_land$
+							:i $grind_init_anim$ = $veh_bull_grind_init$
+							:i $grind_idle_anim$ = $veh_bull_grind_range$
+							:i $grind_Out_Anim$ = $veh_bull_grind_out$
+							:i $accel_anim$ = $veh_bull_accel$
+							:i $brake_anim$ = $veh_bull_brake$
+							:i $air_trick_init$ = $veh_bull_GrabTrick_Init$
+							:i $air_trick_idle$ = $veh_bull_GrabTrick_Idle$
+							:i $air_trick_out$ = $veh_bull_GrabTrick_Out$
+							:i $air_trick2$ = $veh_bull_fliptrick$
+							:i $manual_init_anim$ = $veh_bull_wheelie_init$
+							:i $manual_balance_anim$ = $veh_bull_wheelie_range$
+							:i $wheel_anim$ = $veh_bull_wheels$
+							:i $wallplant_anim$ = $veh_bull_wallplant$
+							:i $revert_anim$ = $veh_bull_revert$
+							:i $getup_anim$ = $veh_bull_getup$
+							:i $soundstruct$ = $BA_SteveOBull$
+							:i $ollie_sound$ = $SK6_BA_Steveo_Buck_11$
+							:i $land_sound$ = $SK6_BA_Steveo_Buck02_11$
+							:i $bail_sound$ = $SK6_BA_Steveo_Jump$
+							:i $grind_sound$ = $SK6_BA_SteveO_Grind$
+						:i :s}
+						:i $chainsaw_params$ = :s{
+							:i $struct$ = $chainsaw_params$
+							:i $racemode$ = $chainsaw$
+							:i $startspeed$ = %i(0,00000000)
+							:i $turn_friction$ = %i(0,00000000)
+							:i $canbrake$ = %i(1,00000001)
+							:i $autokick$ = %i(1,00000001)
+							:i $board$ = %i(1,00000001)
+							:i $allow_vert$ = %i(1,00000001)
+							:i $allow_backwards$ = %i(0,00000000)
+							:i $cangrind$ = %i(0,00000000)
+							:i $canwallplant$ = %i(1,00000001)
+							:i $BonelessHeight$ = %i(1,00000001)
+							:i $jump_name$ = %sc(5,"Ollie")
+							:i $jump_score$ = %i(100,00000064)
+							:i $grind_trick$ = %s(5,"Grind")
+							:i $grind_score$ = %i(50,00000032)
+							:i $trick_name$ = %sc(10,"Grab Trick")
+							:i $trick_score$ = %i(100,00000064)
+							:i $trick_name2$ = %sc(9,"Fliptrick")
+							:i $trick_score2$ = %i(50,00000032)
+							:i $revert_trick$ = %sc(6,"Revert")
+							:i $onground_script$ = $veh_OnGroundAI$
+							:i $bail_script$ = $tricycle_bail$
+							:i $idle_anim$ = $MotoSkateboard_stationaryidle$
+							:i $crouch_anim$ = $MotoSkateboard_movingidle$
+							:i $left_anim$ = $MotoSkateboard_turnleft$
+							:i $right_anim$ = $MotoSkateboard_turnright$
+							:i $leftidle_anim$ = $MotoSkateboard_turnleftidle$
+							:i $rightidle_anim$ = $MotoSkateboard_turnrightidle$
+							:i $crouch_left_anim$ = $MotoSkateboard_turnleft$
+							:i $crouch_right_anim$ = $MotoSkateboard_turnright$
+							:i $crouch_leftidle_anim$ = $MotoSkateboard_turnleftidle$
+							:i $crouch_rightidle_anim$ = $MotoSkateboard_turnrightidle$
+							:i $flail_anim$ = $MotoSkateboard_bump$
+							:i $ollie_anim$ = $MotoSkateboard_ollie$
+							:i $air_idle_anim$ = $MotoSkateboard_AirIdle$
+							:i $land_anim$ = $MotoSkateboard_land$
+							:i $accel_anim$ = $MotoSkateboard_accel$
+							:i $brake_anim$ = $MotoSkateboard_brake$
+							:i $air_trick_init$ = $MotoSkateboard_GrabTrick_Init$
+							:i $air_trick_idle$ = $MotoSkateboard_GrabTrick_Idle$
+							:i $air_trick2$ = $MotoSkateboard_fliptrick$
+							:i $wallplant_anim$ = $MotoSkateboard_wallplant$
+							:i $revert_anim$ = $MotoSkateboard_revert$
+							:i $getup_anim$ = $MotoSkateboard_getup$
+						:i :s}
+						:i function $kill_all_vehicles$
+							:i if NOT $InNetGame$
+								:i if $IsSkaterOnVehicle$
+									:i $SkaterVehicleOff$
+									:i $remove_all_anim_subsets$
+									:i $GetTags$
+									:i switch %GLOBAL%$racemode$
+										:i case $gurney$
+											:i $reset_gurney$
+											:i endcase
+										case $default$
+											:i end_switch
+									
+								:i endif
+							:i endif
+						:i endfunction
+						:i function $reset_gurney$
+							:i if $IsSkaterOnVehicle$
+								:i $GetTags$
+								:i if  (%GLOBAL%$racemode$ = $gurney$) 
+									:i $SkaterVehicleOff$
+									:i $kill$$name$ = $TRG_Ped_Sick_Kid$
+									:i $KillSpawnedScript$$name$ = $gurney_play_appropriate_sick_kid_anims$
+									:i $skater$.$Obj_StopSound$%GLOBAL%$sound$
+									:i $ClearGeom$$vehicle$
+									:i if $ObjectExists$$id$ = $gurney$
+										:i $kill$$name$ = $gurney$
+									:i endif
+									:i if $gotparam$$show_gurney$
+										:i $create$$name$ = $gurney$
+										:i $create$$name$ = $TRG_Ped_Sick_Kid$
+									:i endif
+									:i if NOT $gotparam$$no_ai$
+										:i $MakeSkaterGoto$$OnGroundAI$
+									:i endif
+								:i endif
+							:i endif
+						:i endfunction
+						:i function $vehicle_ped_script$
+							:i $Obj_PlayAnim$$Anim$ =  (%GLOBAL%$params$->$idle_anim$) 
+						:i endfunction
+						:i function $motoskateboard_bail$
+							:i $MakeSkaterGoto$$YawBail$
+						:i endfunction
+						:i function $Trick_Motoskateboard_Grind$
+							:i $Grind$:s{$name$ = %sc(14,"Chainsaw Grind")$Score$ = %i(100,00000064)$InitAnim$ = $Init_FiftyFifty$$Anim$ = $FiftyFifty2_range$$Anim2$ = $FiftyFifty_range$$Anim3$ = $FiftyFifty3_range$$type$ = $Grind$$NoBlend$ = %GLOBAL%$NoBlend$
+								:i $GrindBail$ = $FiftyFiftyFall$$motoskateboard_grind$:s}
+						:i endfunction
+						:i $Motoskateboard_AirTricks$ = 
+						:i :a{
+							:i :s{$Trigger$ = :s{$Press$;$circle$;%i(500,000001f4):s}$Scr$ = $GrabTrick$$params$ = :s{$name$ = %sc(15,"Hairy Foot Grab")$Score$ = %i(400,00000190)$Anim$ = $Method$$Idle$ = $Method_Idle$$speed$ = %f(1.200000):s}:s}
+							:i :s{$Trigger$ = :s{$Press$;$square$;%i(500,000001f4):s}$Scr$ = $FlipTrick$$params$ = :s{$name$ = %sc(12,"Bigfoot Flip")$Score$ = %i(100,00000064)$Anim$ = $Kickflip$$Nollie$ = $NollieKickflip$$xExtraTricks$ = $DoubleKickflip$:s}:s}
+							:i :a}
+						:i :end
+						

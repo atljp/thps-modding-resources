@@ -1,0 +1,129 @@
+##############################################
+################SKIP INTRO####################
+##############################################
+x32dbg:
+	added assembly at Offset: 0044f830
+		cmp eax, 1
+		nop
+		nop
+		jne 0x0044F838
+		ret
+		jmp 0x0044FDC0
+
+eax = 1 when game starts
+jne jumps condionally to jmp instruction 2 lines below
+jmp command goes to function that loads movies
+This allows to skip movies at game start but keeps the ability to watch them from the menu
+In EXE:
+Offset: 4F830
+Search for:
+e98b050000CCCCCCCCCCCCCCCCCCCCCC
+Change bytes starting at 
+83f80190907501c3e983050000CCCCCC
+
+
+##############################################
+#################BLUR FIX#####################
+##############################################
+In EXE: 
+Offset: 8C170
+-vanilla:            51 8B 4C 24 08
+-fixed (reloaded):   B0 01 C3 90 90
+
+vanilla code:
+	push ecx
+	mov ecx, dword ptr ss:[esp+0x8]
+	[...]
+
+fixed code:
+	mov al,1
+	ret
+
+Presumably the function we skip loads the values from skutils.qb (http://thps-mods.com/forum/viewtopic.php?f=22&t=655)
+
+
+##############################################
+################RESOLUTION####################
+##############################################
+width: D876E
+height: D878A
+
+8007
+3804
+
+-->changes resolution and fov in vanilla
+-->wrong aspect ratio
+
+aspect ratio from AB AA AA 3F to 39 8E E3 3F
+-->wrong FOV
+
+
+##############################################
+#################AIR DRIFT####################
+##############################################
+Horizontal movement during caveman in air:
+8xNOP: mov dword ptr ss:[esp+0x8], 0x0
+THUG2 address: 0x00526A40 (Offset 126A40)
+
+Replace C7 44 24 08 00 00 00 00 with 90 90 90 90 90 90 90 90
+
+Stop camera from rotating during vert air:
+8xNOP: mov dword ptr ss:[esp+0x4], 0x0
+THUG2 address: 0x00526A36 (Offset 126A36)
+
+
+THUGPRO.DLL Offset: 0x003AF44
+movss xmm2, dword ptr ds:[esi+0x1880]
+
+
+##############################################
+###############DISABLE LIPS###################
+##############################################
+Offset: 10B247
+
+Change jp to jmp and fill with one NOP
+Original: 0F 8A 78 02 00 00
+NoLip: E9 79 02 00 00 90
+
+
+##############################################
+###############DISABLE SPRAY##################
+##############################################
+Offset: 11E47E
+Change je to jmp
+Also possible: Change je 0x0051E48A to jmp 0x0051EA08
+Original 740A
+New EB0A
+
+Inside the Berlin pool you can still spray
+
+##############################################
+#################BANKDROPS####################
+##############################################
+Offset: 102629
+Insert: 90 90 90 90 90 90
+Vanilla: 0F 84 F4 00 00 00
+Slope adjustment:
+Offset: 2467BC
+Better angles: 33 33 73
+Original: F4 FD 34
+
+
+##############################################
+################HIGHER A.D.###################
+##############################################
+Offset: 24B8FA
+8 times: FA 46 (18170)
+Original: 7A 45 (17786)
+
+
+##############################################
+################PAL SPEED################ä####
+##############################################
+at 1BE88F
+90 90 90 90 90
+PAL Speed
+
+at 2463B8
+0A D7 A3
+PAL speed extreme

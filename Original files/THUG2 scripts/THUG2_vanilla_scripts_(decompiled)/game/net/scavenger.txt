@@ -1,0 +1,525 @@
+
+:i $SentObjectPlacements$ = %i(0,00000000)
+:i $SentStartMessage$ = %i(0,00000000)
+:i $goal_scavenger_genericParams$ = :s{
+	:i $goal_text$ = %s(27,"Collect All Objects to Win!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $dont_deactivate_upon_expiration$
+	:i $game_continues_after_expiration$
+	:i $init$ = $goal_scavenger_init$
+	:i $active$ = $goal_scavenger_active$
+	:i $activate$ = $goal_scavenger_activate$
+	:i $deactivate$ = $goal_scavenger_deactivate$
+	:i $expire$ = $goal_scavenger_expire$
+	:i $goal_description$ = %s(15,"Scavenger Hunt!")
+:i :s}
+:i function $goal_scavenger_init$
+:i endfunction
+:i function $goal_scavenger_active$
+:i endfunction
+:i function $goal_scavenger_activate$
+	:i $change$$SentObjectPlacements$ = %i(0,00000000)
+	:i $change$$SentStartMessage$ = %i(0,00000000)
+	:i $FormatText$$TextName$ = $msg_text$%s(50,"\c2Scavenger Hunt:\c0\n\b7 + \b1 to place objects!")
+	:i $msg_pos$ = %vec2(620.000000,27.000000)
+	:i if $InSplitScreenGame$
+		:i $ScriptGetScreenMode$
+		:i if  (%GLOBAL%$screen_mode$ = $split_vertical$) 
+			:i $msg_pos$ = %vec2(400.000000,44.000000)
+		:i else 
+			:i $msg_pos$ = %vec2(640.000000,204.000000)
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$font_face$ = $testtitle$$dims$ = %vec2(300.000000,0.000000)
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i if NOT $IsObserving$
+		:i $bind_scavenger_tricks$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $bind_scavenger_tricks_player_2$
+	:i endif
+:i endfunction
+:i function $goal_scavenger_deactivate$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = $scavenger_collect_period$
+		:i if NOT $GoalManager_GoalIsActive$$name$ = $scavenger_interval$
+			:i if $ObjectExists$$id$ = $mp_goal_text$
+				:i $DestroyScreenElement$$id$ = $mp_goal_text$
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $IsObserving$
+		:i $unbind_scavenger_tricks$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $unbind_scavenger_tricks_player_2$
+	:i endif
+:i endfunction
+:i function $goal_scavenger_add_time$
+	:i $create_net_panel_message$$text$ = %s(35,"You must place at least one object!")$style$ = $net_team_panel_message$$msg_time$ = %i(3000,00000bb8)
+	:i $GoalManager_AddTime$$name$ = $scavenger$%i(15,0000000f)
+:i endfunction
+:i function $goal_scavenger_expire$
+	:i if $AtLeastOneObjectPlaced$
+		:i $GoalManager_DeactivateGoal$$name$ = $scavenger$
+		:i if $OnServer$
+			:i $StartGoal_Scavenger_Interval$$time$ = %i(6,00000006)
+		:i else 
+			:i $StartGoal_Scavenger_Interval$$unlimited_time$
+		:i endif
+	:i else 
+		:i if $OnServer$
+			:i $AnnounceNeedToPlaceObjects$
+		:i endif
+	:i endif
+:i endfunction
+:i function $AddGoal_Scavenger$
+	:i $GoalManager_AddGoal$$name$ = $scavenger$:s{
+		:i $params$ = :s{$goal_scavenger_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_Scavenger$
+	:i $GoalManager_EditGoal$$name$ = $scavenger$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $scavenger$
+	:i $GoalManager_SetGoalTimer$$name$ = $scavenger$
+:i endfunction
+:i $goal_scavenger_collect_genericParams$ = :s{
+	:i $goal_text$ = %s(0,"")
+	:i $time$ = %i(60,0000003c)
+	:i $net$
+	:i $init$ = $goal_scavenger_collect_init$
+	:i $activate$ = $goal_scavenger_collect_activate$
+	:i $deactivate$ = $goal_scavenger_collect_deactivate$
+	:i $expire$ = $goal_scavenger_collect_expire$
+	:i $goal_description$ = %s(0,"")
+:i :s}
+:i function $goal_scavenger_collect_init$
+:i endfunction
+:i function $goal_scavenger_collect_active$
+:i endfunction
+:i function $goal_scavenger_collect_activate$
+	:i if $GoalManager_GoalIsActive$$name$ = $scavenger_interval$
+		:i $GoalManager_DeactivateGoal$$name$ = $scavenger_interval$
+	:i endif
+	:i $ResetSkaters$
+	:i $show_all_objects$
+	:i $FormatText$$TextName$ = $msg_text$%s(39,"\c2Scavenger Hunt:\c0\nCollect objects!")
+	:i $msg_pos$ = %vec2(620.000000,27.000000)
+	:i if $InSplitScreenGame$
+		:i $ScriptGetScreenMode$
+		:i if  (%GLOBAL%$screen_mode$ = $split_vertical$) 
+			:i $msg_pos$ = %vec2(400.000000,44.000000)
+		:i else 
+			:i $msg_pos$ = %vec2(640.000000,204.000000)
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$font_face$ = $testtitle$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+:i endfunction
+:i function $goal_scavenger_collect_deactivate$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+:i endfunction
+:i function $goal_scavenger_finished$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $SpawnScript$$wait_then_create_rankings$
+:i endfunction
+:i function $goal_scavenger_collect_expire$
+	:i $goal_scavenger_finished$
+:i endfunction
+:i $goal_scavenger_interval_genericParams$ = :s{
+	:i $goal_text$ = %s(0,"")
+	:i $time$ = %i(6,00000006)
+	:i $net$
+	:i $init$ = $goal_scavenger_interval_init$
+	:i $activate$ = $goal_scavenger_interval_activate$
+	:i $deactivate$ = $goal_scavenger_interval_deactivate$
+	:i $expire$ = $goal_scavenger_interval_expire$
+	:i $active$ = $goal_scavenger_interval_active$
+	:i $goal_description$ = %s(0,"")
+	:i $game_continues_after_expiration$
+:i :s}
+:i function $goal_scavenger_interval_init$
+:i endfunction
+:i function $goal_scavenger_interval_active$
+	:i if NOT $InSplitScreenGame$
+		:i if $OnServer$
+			:i $GoalManager_GetTimeLeftInNetGame$
+			:i if NOT $IsTrue$$SentObjectPlacements$
+				:i if $GotParam$$time_left$
+					:i if  (%GLOBAL%$time_left$ < %i(3000,00000bb8)) 
+						:i $BroadcastObjectPlacements$
+						:i $change$$SentObjectPlacements$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i endif
+			:i if NOT $IsTrue$$SentStartMessage$
+				:i if $GotParam$$time_left$
+					:i if  (%GLOBAL%$time_left$ < %i(500,000001f4)) 
+						:i $AnnounceHuntStarted$
+						:i $change$$SentStartMessage$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_scavenger_interval_activate$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $hide$
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(36,"\c2Scavenger Hunt:\c0\nGet Ready...!")
+	:i if $InSplitScreenGame$
+		:i $ScriptGetScreenMode$
+		:i if  (%GLOBAL%$screen_mode$ = $split_vertical$) 
+			:i $msg_pos$ = %vec2(400.000000,44.000000)
+		:i else 
+			:i $msg_pos$ = %vec2(640.000000,204.000000)
+		:i endif
+	:i endif
+	:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$font_face$ = $testtitle$
+:i endfunction
+:i function $goal_scavenger_interval_deactivate$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i if NOT $GoalManager_GoalIsActive$$name$ = $scavenger$
+		:i if NOT $GoalManager_GoalIsActive$$name$ = $scavenger_collect_period$
+			:i if $ObjectExists$$id$ = $mp_goal_text$
+				:i $DestroyScreenElement$$id$ = $mp_goal_text$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_scavenger_interval_expire$
+	:i $StartGoal_Scavenger_Collect$
+:i endfunction
+:i function $AddGoal_Scavenger_Interval$
+	:i $GoalManager_AddGoal$$name$ = $scavenger_interval$:s{
+		:i $params$ = :s{$goal_scavenger_interval_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_Scavenger_Interval$
+	:i $GoalManager_EditGoal$$name$ = $scavenger_interval$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $scavenger_interval$
+:i endfunction
+:i function $AddGoal_Scavenger_Collect$
+	:i $GoalManager_AddGoal$$name$ = $scavenger_collect_period$:s{
+		:i $params$ = :s{$goal_scavenger_collect_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $ForceStartScavengerCollect$
+	:i if $GoalManager_GoalIsActive$$name$ = $scavenger$
+		:i $GoalManager_DeactivateGoal$$name$ = $scavenger$
+	:i endif
+	:i if $GoalManager_GoalIsActive$$name$ = $scavenger_interval$
+		:i $GoalManager_DeactivateGoal$$name$ = $scavenger_interval$
+	:i endif
+	:i $StartGoal_Scavenger_Collect$
+:i endfunction
+:i function $StartGoal_Scavenger_Collect$
+	:i $GetTimeLimit$
+	:i $GoalManager_EditGoal$$name$ = $scavenger_collect_period$$params$ = :s{$time$ = %GLOBAL%$time_limit$:s}
+	:i $GoalManager_ActivateGoal$$name$ = $scavenger_collect_period$
+:i endfunction
+:i function $ScavengerHunt_GotObject$
+	:i $ReportObjectPickup$ isNull 
+	:i $PlaySound$$goaldone$$vol$ = %i(150,00000096)
+	:i %GLOBAL%$id$.$Die$
+:i endfunction
+:i function $ScavengerHunt_KillObject$
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i %GLOBAL%$id$.$Die$
+	:i endif
+:i endfunction
+:i function $ScavengerHunt_GotObject2P$
+	:i %GLOBAL%$id$.$GetTags$
+	:i if $GotParam$$player_retrieved$
+		:i if  (%GLOBAL%$player_retrieved$ = %GLOBAL%$colObjId$) 
+		:i else 
+			:i $ReportObjectPickup$ isNull 
+			:i $PlaySound$$goaldone$$vol$ = %i(150,00000096)
+			:i %GLOBAL%$id$.$Die$
+		:i endif
+	:i else 
+		:i $ReportObjectPickup$ isNull 
+		:i $PlaySound$$goaldone$$vol$ = %i(150,00000096)
+		:i %GLOBAL%$id$.$SetTags$$player_retrieved$ = %GLOBAL%$colObjId$
+		:i if  (%GLOBAL%$intId$ = %i(0,00000000)) 
+			:i $Obj_ClearVisibility$$viewport$ = %i(0,00000000)
+		:i else 
+			:i $Obj_ClearVisibility$$viewport$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $ScavengerHunt_InitObjectExceptions$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetInnerRadius$%i(8,00000008)
+	:i if $InSplitScreenGame$
+		:i $Obj_SetException$:s{
+			:i $ex$ = $AnyObjectInRadius$
+			:i $scr$ = $ScavengerHunt_GotObject2P$
+			:i $params$ = :s{$id$ = %GLOBAL%$id$:s}
+		:i :s}
+	:i else 
+		:i $Obj_SetException$:s{
+			:i $ex$ = $ObjectInRadius$
+			:i $scr$ = $ScavengerHunt_GotObject$
+			:i $params$ = :s{$id$ = %GLOBAL%$id$:s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $ScavengerHunt_InitObject$
+	:i if $InSplitScreenGame$
+		:i $Obj_ClearVisibility$$viewport$ = %i(0,00000000)
+		:i $Obj_ClearVisibility$$viewport$ = %i(1,00000001)
+	:i endif
+	:i $Obj_Invisible$
+	:i $Obj_RotY$$speed$ = %i(200,000000c8)
+	:i $Obj_Hover$$Amp$ = %i(6,00000006)$Freq$ = %i(2,00000002)
+:i endfunction
+:i function $ScavengerHunt_ShowObject$
+	:i $Obj_Visible$
+	:i if $InSplitScreenGame$
+		:i $Obj_SetVisibility$$viewport$ = %i(0,00000000)
+		:i $Obj_SetVisibility$$viewport$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $DropSHObject$
+	:i $FormatText$$ChecksumName$ = $id$%s(15,"sh_object_%i_%j")$i$ = %GLOBAL%$objId$$j$ = %GLOBAL%$index$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = $sh_object_composite_structure$
+		:i $params$ = :s{$name$ = %GLOBAL%$id$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $NeverSuspend$
+			:i $model$ = %s(45,"GameObjects\scavenger_coin\scavenger_coin.mdl")
+		:i :s}
+	:i :s}
+	:i if $InTeamGame$
+		:i $GetPlayersTeam$$objId$ = %GLOBAL%$objId$
+		:i switch %GLOBAL%$team$
+			:i case %i(0,00000000)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(102,00000066)$g$ = %i(26,0000001a)$b$ = %i(8,00000008)
+				:i endcase
+			case %i(1,00000001)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(17,00000011)$g$ = %i(64,00000040)$b$ = %i(116,00000074)
+				:i endcase
+			case %i(2,00000002)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(9,00000009)$g$ = %i(107,0000006b)$b$ = %i(36,00000024)
+				:i endcase
+			case %i(3,00000003)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(123,0000007b)$g$ = %i(99,00000063)$b$ = %i(3,00000003)
+				:i end_switch
+		
+	:i else 
+		:i switch %GLOBAL%$objId$
+			:i case %i(0,00000000)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(102,00000066)$g$ = %i(26,0000001a)$b$ = %i(8,00000008)
+				:i endcase
+			case %i(1,00000001)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(17,00000011)$g$ = %i(64,00000040)$b$ = %i(116,00000074)
+				:i endcase
+			case %i(2,00000002)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(9,00000009)$g$ = %i(107,0000006b)$b$ = %i(36,00000024)
+				:i endcase
+			case %i(3,00000003)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(123,0000007b)$g$ = %i(99,00000063)$b$ = %i(3,00000003)
+				:i endcase
+			case %i(4,00000004)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(0,00000000)$g$ = %i(128,00000080)$b$ = %i(128,00000080)
+				:i endcase
+			case %i(5,00000005)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(128,00000080)$g$ = %i(0,00000000)$b$ = %i(128,00000080)
+				:i endcase
+			case %i(6,00000006)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(80,00000050)$g$ = %i(80,00000050)$b$ = %i(116,00000074)
+				:i endcase
+			case %i(7,00000007)
+				:i %GLOBAL%$id$.$Obj_SetColorRGB$$r$ = %i(80,00000050)$g$ = %i(105,00000069)$b$ = %i(112,00000070)
+				:i end_switch
+		
+	:i endif
+	:i $RunScriptOnObject$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $ScavengerHunt_InitObject$
+		:i $params$ = :s{$id$ = %GLOBAL%$id$:s}
+	:i :s}
+	:i if $GotParam$$show_now$
+		:i $RunScriptOnObject$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $ScavengerHunt_ShowObject$
+			:i $params$ = :s{$id$ = %GLOBAL%$id$:s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $ClientDropSHObject$
+	:i if NOT $GameModeEquals$$is_scavenger_hunt$
+		:i return
+		
+	:i endif
+	:i $GetSkaterPosition$
+	:i $GetCurrentSkaterId$
+	:i $new_y$ =  (%GLOBAL%$y$ + %i(24,00000018)) 
+	:i %GLOBAL%$y$ = %GLOBAL%$new_y$
+	:i $new_pos$ =  (%GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+	:i $PlaceObject$$pos$ = %GLOBAL%$new_pos$
+	:i $ReportObjectPlacement$$objId$ = %GLOBAL%$objId$$pos$ = %GLOBAL%$new_pos$
+	:i if $InNetGame$
+		:i $DropSHObject$$pos$ = %GLOBAL%$new_pos$$objId$ = %GLOBAL%$intId$$index$ = %GLOBAL%$index$$show_now$
+	:i else 
+		:i $DropSHObject$$pos$ = %GLOBAL%$new_pos$$objId$ = %GLOBAL%$intId$$index$ = %GLOBAL%$index$
+	:i endif
+	:i if NOT $PlacedLessThan$%i(5,00000005)
+		:i if $InSplitScreenGame$
+			:i $GetCurrentSkaterId$
+			:i if  (%GLOBAL%$intId$ = %i(0,00000000)) 
+				:i $unbind_scavenger_tricks$
+			:i else 
+				:i $unbind_scavenger_tricks_player_2$
+			:i endif
+		:i else 
+			:i $unbind_scavenger_tricks$
+		:i endif
+	:i endif
+:i endfunction
+:i $sh_object_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $model$:s}
+	:i :s{$component$ = $objectproximity$:s}
+	:i :a}
+:i function $bind_scavenger_tricks$
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareU$
+	:i if $GotParam$$cat_num$
+		:i $skater$.$SetTags$$old_scavengerf_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater$.$SetTags$$old_scavengerf_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareU$
+		:i $trick$ = $ScavengerF$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+:i endfunction
+:i function $bind_scavenger_tricks_player_2$
+	:i $SetCurrentSkaterProfile$%i(1,00000001)
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareU$
+	:i if $GotParam$$cat_num$
+		:i $skater2$.$SetTags$$old_scavengerf_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater2$.$SetTags$$old_scavengerf_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareU$
+		:i $trick$ = $ScavengerF$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+:i endfunction
+:i function $unbind_scavenger_tricks$
+	:i $skater$.$GetTags$
+	:i if $GotParam$$old_scavengerf_checksum$
+		:i $old_trick_int$ = %GLOBAL%$old_scavengerf_checksum$
+		:i $CastToInteger$$old_trick_int$
+		:i if  (%i(12,0000000c) > %GLOBAL%$old_trick_int$) 
+			:i $trick$ = %GLOBAL%$old_trick_int$
+		:i else 
+			:i $trick$ = %GLOBAL%$old_scavengerf_checksum$
+		:i endif
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareU$
+			:i $trick$ = %GLOBAL%$trick$
+			:i $update_mappings$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+:i endfunction
+:i function $unbind_scavenger_tricks_player_2$
+	:i $SetCurrentSkaterProfile$%i(1,00000001)
+	:i $skater2$.$GetTags$
+	:i if $GotParam$$old_scavengerf_checksum$
+		:i $old_trick_int$ = %GLOBAL%$old_scavengerf_checksum$
+		:i $CastToInteger$$old_trick_int$
+		:i if  (%i(12,0000000c) > %GLOBAL%$old_trick_int$) 
+			:i $trick$ = %GLOBAL%$old_trick_int$
+		:i else 
+			:i $trick$ = %GLOBAL%$old_scavengerf_checksum$
+		:i endif
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareU$
+			:i $trick$ = %GLOBAL%$trick$
+			:i $update_mappings$ = %i(2,00000002)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+:i endfunction
+:i function $show_all_objects$
+	:i $objId$ = %i(0,00000000)
+	:i while
+		
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $name$%s(15,"sh_object_%i_%j")$i$ = %GLOBAL%$objId$$j$ = %GLOBAL%$index$
+			:i if $ObjectExists$$id$ = %GLOBAL%$name$
+				:i $RunScriptOnObject$:s{
+					:i $id$ = %GLOBAL%$name$
+					:i $ScavengerHunt_ShowObject$
+					:i $params$ = :s{$id$ = %GLOBAL%$name$:s}
+				:i :s}
+				:i $RunScriptOnObject$:s{
+					:i $id$ = %GLOBAL%$name$
+					:i $ScavengerHunt_InitObjectExceptions$
+					:i $params$ = :s{$id$ = %GLOBAL%$name$:s}
+				:i :s}
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i if  (%GLOBAL%$index$ = %i(5,00000005)) 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+		:i $objId$ =  (%GLOBAL%$objId$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$objId$ = %i(8,00000008)) 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i :end

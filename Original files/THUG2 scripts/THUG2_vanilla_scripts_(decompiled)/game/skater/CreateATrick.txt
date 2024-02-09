@@ -1,0 +1,1006 @@
+
+:i $MAX_CREATED_TRICKS$ = %i(11,0000000b)
+:i $CAT_BLEND$ = %f(0.150000)
+:i $cat_done$ = %i(1,00000001)
+:i $demo_flipped_cat_skater$ = %i(0,00000000)
+:i $Default_CAT_other_info$ = :s{$name$ = %s(0,"")$full$ = %i(0,00000000)$can_spin$ = %i(1,00000001):s}
+:i $Default_CAT_rotation_info$ = :a{
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+	:i :a}
+:i $Default_CAT_animation_info$ = :a{
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+	:i :a}
+:i function $get_new_cat_values$
+	:i $printf$%s(25,"script get_new_cat_values")
+	:i $name$ = %s(0,"")
+	:i $full$ = %i(1,00000001)
+	:i $can_spin$ = %i(1,00000001)
+	:i $rotation_info$ =  ($Default_CAT_rotation_info$) 
+	:i $animation_info$ =  ($Default_CAT_animation_info$) 
+	:i return
+	 isNull 
+:i endfunction
+:i function $CreateATrick$
+	:i $printf$%s(12,"CreateATrick")
+	:i $GetCurrentSkaterProfileIndex$
+	:i $change$$cat_done$ = %i(0,00000000)
+	:i $CAT_SetHoldTime$%f(0.000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_SetAnimsDone$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_SetRotsDone$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if NOT $GotParam$$demo_loop$
+		:i $OnExitRun$$created_trick_cleanup$
+	:i endif
+	:i $get_CAT_param_values$$skater$ = %i(0,00000000)$trick_index$ = %GLOBAL%$trick_index$
+	:i if $GotParam$$demo_loop$
+		:i $CAT_Skater$.$Obj_EnableAnimBlending$$enabled$ = %i(1,00000001)
+		:i $CAT_Skater$.$Obj_SetOrientation$$y$ = %i(0,00000000)
+	:i else 
+		:i $ClearTricksFrom$$Jumptricks$$Jumptricks0$$Jumptricks$
+		:i $KillExtraTricks$
+		:i $Bailon$
+		:i if $GotParam$$FromGroundGone$
+			:i $SetEventHandler$$Ex$ = $Ollied$$Scr$ = $TrickOllie$
+		:i else 
+			:i $ClearException$$Ollied$
+		:i endif
+	:i endif
+	:i $no_rotations$ = %i(1,00000001)
+	:i $bailtime$ = %i(0,00000000)
+	:i $animtime$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$rotation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i $no_rotations$ = %i(0,00000000)
+			:i $CAT_SetRotsDone$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$can_spin$ = %i(0,00000000)) 
+		:i if NOT $GotParam$$demo_loop$
+			:i $NoSpin$
+		:i endif
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i if  (%GLOBAL%$no_rotations$ = %i(0,00000000)) 
+		:i while
+			
+			:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+				:i $Dur$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+				:i $start$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+				:i if  ( (%GLOBAL%$Dur$ + %GLOBAL%$start$)  > %GLOBAL%$bailtime$) 
+					:i $bailtime$ =  (%GLOBAL%$Dur$ + %GLOBAL%$start$) 
+					:i $last_rot$ = %GLOBAL%$index$
+				:i endif
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+				:i $Dur$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+				:i $start$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+				:i if  (%GLOBAL%$index$ = %GLOBAL%$last_rot$) 
+					:i $last$ = %i(1,00000001)
+				:i endif
+				:i $spawn_rotation_script$:s{$Axis$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Axis$) 
+					:i $Deg$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Deg$) 
+					:i $Dur$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+					:i $start$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+					:i $off_x$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$off_x$) 
+					:i $off_y$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$off_y$) 
+					:i $off_z$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$off_z$) 
+					:i $deg_dir$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$deg_dir$) 
+					:i $last$ = %GLOBAL%$last$
+					:i $demo_loop$ = %GLOBAL%$demo_loop$
+				:i :s}
+			:i endif
+			:i $RemoveParameter$$last$
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $GetArraySize$%GLOBAL%$animation_info$
+	:i $index$ = %i(0,00000000)
+	:i $CAT_SetNumAnims$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i $GetCurrentSkaterProfileIndex$
+			:i $CAT_GetNumAnims$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $CAT_SetNumAnims$ (%GLOBAL%$num_animations_on$ + %i(1,00000001)) $skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $count$ = %i(1,00000001)
+	:i $anim_order$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i while
+		
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$order$)  = %GLOBAL%$count$) 
+				:i $SetArrayElement$$ArrayName$ = $anim_order$$index$ =  (%GLOBAL%$count$%i(4294967295,ffffffff)) $newvalue$ = %GLOBAL%$index$
+				:i continue
+				
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $CAT_GetNumAnims$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$num_animations_on$ > %i(0,00000000)) 
+		:i $CAT_SetAnimsDone$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i $Obj_Spawnscript$$spawned_trick_anim$$Params$ = :s{$animation_info$ = %GLOBAL%$animation_info$
+			:i $array_size$ = %GLOBAL%$array_size$
+			:i $anim_order$ = %GLOBAL%$anim_order$
+			:i $demo_loop$ = %GLOBAL%$demo_loop$
+		:i :s}
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$)  = %i(4,00000004)) 
+				:i $trick_got_idle$$trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+				:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+					:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+				:i else 
+					:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$animtime$ > %GLOBAL%$bailtime$) 
+		:i $bailtime$ = %GLOBAL%$animtime$
+	:i endif
+	:i $CAT_SetBailDone$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $Obj_Spawnscript$$waitforbailoff$$Params$ = :s{$time$ = %GLOBAL%$bailtime$:s}
+	:i if NOT $GotParam$$demo_loop$
+		:i $Obj_Spawnscript$$cat_update_trick_string$$Params$ = :s{$name$ = %GLOBAL%$name$$bailtime$ = %GLOBAL%$bailtime$$can_spin$ = %GLOBAL%$can_spin$:s}
+	:i endif
+	:i while
+		
+		:i if $GotParam$$FromGroundGone$
+			:i if $AirTimeGreaterThan$$Skater_Late_Jump_Slop$
+				:i $ClearException$$Ollied$
+				:i $RemoveParameter$$FromGroundGone$
+			:i endif
+		:i endif
+		:i $CAT_GetBailDone$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i if  (%GLOBAL%$bailtimescriptdone$ = %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i if $GotParam$$FromGroundGone$
+		:i $ClearException$$Ollied$
+	:i endif
+	:i if NOT $GotParam$$demo_loop$
+		:i $Bailoff$
+		:i $CanSpin$
+		:i $DoNextTrick$
+	:i endif
+	:i while
+		
+		:i $CAT_GetAnimsDone$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i if  (%GLOBAL%$cat_animations_done$ = %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i while
+		
+		:i $CAT_GetRotsDone$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i if  (%GLOBAL%$cat_rotations_done$ = %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i $printf$%s(21,"FINISHED CREATEATRICK")
+	:i $change$$cat_done$ = %i(1,00000001)
+	:i if $GotParam$$demo_loop$
+		:i if  ($demo_flipped_cat_skater$ = %i(1,00000001)) 
+			:i $Obj_Flip$
+			:i $change$$demo_flipped_cat_skater$ = %i(0,00000000)
+		:i endif
+		:i return
+		
+	:i endif
+	:i $goto$$Airborne$
+:i endfunction
+:i function $spawn_rotation_script$$Axis$ = $x$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $CAT_SetTotalY$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_SetTotalX$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_SetTotalZ$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$Axis$ = $x$) 
+		:i $Obj_Spawnscript$$RotateOnAxis$$PauseWithObject$$Params$ = :s{$Axis$ = %GLOBAL%$Axis$
+			:i $Dur$ = %GLOBAL%$Dur$
+			:i $start_val$ = %GLOBAL%$start$
+			:i $StartAngle$ = %i(0,00000000)
+			:i $EndAngle$ = %GLOBAL%$Deg$
+			:i $off_x$ = %GLOBAL%$off_x$
+			:i $off_y$ = %GLOBAL%$off_y$
+			:i $off_z$ = %GLOBAL%$off_z$
+			:i $last$ = %GLOBAL%$last$
+			:i $deg_dir$ = %GLOBAL%$deg_dir$
+			:i $demo_loop$ = %GLOBAL%$demo_loop$
+		:i :s}
+	:i else 
+		:i $StartAngle$ = %i(0,00000000)
+		:i $EndAngle$ = %GLOBAL%$Deg$
+		:i if NOT $GotParam$$demo_loop$
+			:i if $flipped$
+				:i $EndAngle$ =  (%i(4294967295,ffffffff) * %GLOBAL%$Deg$) 
+			:i endif
+		:i endif
+		:i $Obj_Spawnscript$$RotateOnAxis$$PauseWithObject$$Params$ = :s{$Axis$ = %GLOBAL%$Axis$
+			:i $Dur$ = %GLOBAL%$Dur$
+			:i $start_val$ = %GLOBAL%$start$
+			:i $StartAngle$ = %GLOBAL%$StartAngle$
+			:i $EndAngle$ = %GLOBAL%$EndAngle$
+			:i $off_x$ = %GLOBAL%$off_x$
+			:i $off_y$ = %GLOBAL%$off_y$
+			:i $off_z$ = %GLOBAL%$off_z$
+			:i $last$ = %GLOBAL%$last$
+			:i $deg_dir$ = %GLOBAL%$deg_dir$
+			:i $demo_loop$ = %GLOBAL%$demo_loop$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $RotateOnAxis$:s{$off_x$ = %i(0,00000000)$off_y$ = %i(30,0000001e)$off_z$ = %i(0,00000000)$Axis$ = $x$:s}
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $GotParam$$start_val$
+		:i $wait$%GLOBAL%$start_val$$seconds$
+	:i endif
+	:i $RotationOffset$ =  ( (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$off_x$)  +  (%vec3(0.000000,1.000000,0.000000) * %GLOBAL%$off_y$)  +  (%vec3(0.000000,0.000000,1.000000) * %GLOBAL%$off_z$) ) 
+	:i if  (%GLOBAL%$deg_dir$ = %i(1,00000001)) 
+		:i $EndAngle$ =  (%GLOBAL%$EndAngle$ * %i(4294967295,ffffffff)) 
+	:i endif
+	:i if $GotParam$$demo_loop$
+		:i $dontpause$ = $dontpause$
+	:i endif
+	:i $RotateDisplay$:s{%GLOBAL%$Axis$
+		:i $Duration$ = %GLOBAL%$Dur$$seconds$
+		:i $EndAngle$ = %GLOBAL%$EndAngle$
+		:i $SinePower$ = %i(1,00000001)
+		:i $RotationOffset$ = %GLOBAL%$RotationOffset$
+		:i $HoldOnLastAngle$
+		:i %GLOBAL%$dontpause$
+	:i :s}
+	:i $CAT_GetTotalX$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_GetTotalY$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $CAT_GetTotalZ$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i switch %GLOBAL%$Axis$
+		:i case $x$
+			:i $total_X_angle$ =  (%GLOBAL%$total_X_angle$ + %GLOBAL%$EndAngle$) 
+			:i $CAT_SetTotalX$%GLOBAL%$total_X_angle$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i endcase
+		case $y$
+			:i $total_Y_angle$ =  (%GLOBAL%$total_Y_angle$ + %GLOBAL%$EndAngle$) 
+			:i $CAT_SetTotalY$%GLOBAL%$total_Y_angle$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i endcase
+		case $z$
+			:i $total_Z_angle$ =  (%GLOBAL%$total_Z_angle$ + %GLOBAL%$EndAngle$) 
+			:i $CAT_SetTotalZ$%GLOBAL%$total_Z_angle$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i endcase
+		default 
+			:i $printf$%s(19,"CAT: Bad Axis value")
+			:i return
+			
+			:i end_switch
+	
+	:i $mod_x$ =  (%GLOBAL%$total_X_angle$ -  (%GLOBAL%$total_X_angle$ / %i(360,00000168))  * %i(360,00000168)) 
+	:i $mod_y$ =  (%GLOBAL%$total_Y_angle$ -  (%GLOBAL%$total_Y_angle$ / %i(360,00000168))  * %i(360,00000168)) 
+	:i $mod_z$ =  (%GLOBAL%$total_Z_angle$ -  (%GLOBAL%$total_Z_angle$ / %i(360,00000168))  * %i(360,00000168)) 
+	:i if NOT  (%GLOBAL%$mod_y$ = %i(0,00000000)) 
+		:i $flip_skater$ = %i(1,00000001)
+	:i else 
+		:i $flip_skater$ = %i(0,00000000)
+	:i endif
+	:i if NOT  (%GLOBAL%$mod_x$ = %i(0,00000000)) 
+		:i if NOT  (%GLOBAL%$mod_z$ = %i(0,00000000)) 
+			:i if  (%GLOBAL%$flip_skater$ = %i(1,00000001)) 
+				:i $flip_skater$ = %i(0,00000000)
+			:i else 
+				:i $flip_skater$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$flip_skater$ = %i(1,00000001)) 
+		:i $CAT_SetFlipSkater$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i else 
+		:i $CAT_SetFlipSkater$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i if $GotParam$$last$
+		:i $wait$%GLOBAL%$Dur$$seconds$
+		:i if NOT $GotParam$$demo_loop$
+			:i if  (%GLOBAL%$flip_skater$ = %i(1,00000001)) 
+				:i $CAT_SetFlipSkater$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $rotate$$y$ = %i(180,000000b4)
+			:i endif
+			:i $CancelRotateDisplay$
+		:i endif
+		:i $CAT_SetRotsDone$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+:i endfunction
+:i function $spawned_trick_anim$
+	:i $index$ = %i(0,00000000)
+	:i $tweak_grab$ = %i(99,00000063)
+	:i $anims_played_this_trick$ = %i(0,00000000)
+	:i $have_played_real_anim$ = %i(0,00000000)
+	:i $GetCurrentSkaterProfileIndex$
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$hold$)  = %i(1,00000001)) 
+				:i $tweak_grab$ = %GLOBAL%$index$
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $index$ = %i(0,00000000)
+	:i $count$ = %i(0,00000000)
+	:i while
+		
+		:i $index$ =  (%GLOBAL%$anim_order$:a{%GLOBAL%$count$:a}) 
+		:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i $blend$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$blend$) 
+			:i $from$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$from$) 
+			:i $Dur$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+			:i $start$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+			:i $trickType$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$) 
+			:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+			:i $idletime$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$) 
+			:i %GLOBAL%$backwards$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$backwards$) 
+			:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+			:i if NOT $IsArray$%GLOBAL%$trick$
+				:i $SpecialItem_details$ =  (%GLOBAL%$trick$->$Params$->$SpecialItem_details$) 
+				:i $SpecialSounds$ =  (%GLOBAL%$trick$->$Params$->$SpecialSounds$) 
+				:i $Stream$ =  (%GLOBAL%$trick$->$Params$->$Stream$) 
+			:i else 
+				:i $SpecialItem_details$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$SpecialItem_details$) 
+				:i $SpecialSounds$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$SpecialSounds$) 
+				:i $Stream$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$Stream$) 
+			:i endif
+			:i $TurnOffSpecialItem$
+			:i if  (%GLOBAL%$trickType$ = %i(4,00000004)) 
+				:i if NOT $GotParam$$demo_loop$
+					:i $Obj_Spawnscript$$spawned_cat_sound_script$$Params$ = :s{$start$ = %GLOBAL%$start$$Stream$ = %GLOBAL%$Stream$:s}
+				:i endif
+				:i $anims_played_this_trick$ =  (%GLOBAL%$anims_played_this_trick$ + %i(1,00000001)) 
+				:i $GetCurrentSkaterProfileIndex$
+				:i $CAT_GetNumAnims$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $printf$%s(21,"	played %p / %o anims")$p$ = %GLOBAL%$anims_played_this_trick$$o$ = %GLOBAL%$num_animations_on$
+				:i if  (%GLOBAL%$anims_played_this_trick$ = %GLOBAL%$num_animations_on$) 
+					:i $Obj_Spawnscript$$are_cat_anims_done$$Params$ = :s{$no_wait$$flip_skater$ = %GLOBAL%$flip_skater$$demo_loop$ = %GLOBAL%$demo_loop$:s}
+					:i return
+					
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+					:i if NOT $IsArray$%GLOBAL%$trick$
+						:i $anim$ =  (%GLOBAL%$trick$->$Params$->$anim$) 
+						:i $idle$ =  (%GLOBAL%$trick$->$Params$->$idle$) 
+						:i if $StructureContains$$structure$ =  (%GLOBAL%$trick$->$Params$) $outanim$
+							:i $outanim$ =  (%GLOBAL%$trick$->$Params$->$outanim$) 
+						:i endif
+					:i else 
+						:i $anim$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$anim$) 
+						:i $idle$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$idle$) 
+						:i if $StructureContains$$structure$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$) $outanim$
+							:i $outanim$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$outanim$) 
+						:i endif
+					:i endif
+					:i if $GotParam$$outanim$
+						:i $GetAnimLength$$anim$ = %GLOBAL%$outanim$
+						:i $out_length$ = %GLOBAL%$length$
+					:i endif
+					:i $GetAnimLength$$anim$ = %GLOBAL%$anim$
+					:i if NOT $GotParam$$out_length$
+						:i $out_length$ = %GLOBAL%$length$
+					:i endif
+					:i $total_length$ =  (%GLOBAL%$length$ + %GLOBAL%$out_length$) 
+					:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$percent$) 
+					:i if  (%GLOBAL%$percent$ > %i(1,00000001)) 
+						:i $percent$ = %i(1,00000001)
+					:i endif
+					:i $from_seconds$ =  (%GLOBAL%$from$ *  (%GLOBAL%$total_length$ / %f(2.000000))  * %i(60,0000003c)) 
+					:i $to_seconds$ =  (%GLOBAL%$percent$ *  (%GLOBAL%$total_length$ / %f(2.000000))  * %i(60,0000003c)) 
+					:i $in_ratio$ =  (%GLOBAL%$length$ / %GLOBAL%$total_length$) 
+					:i $out_ratio$ =  (%f(1.000000) - %GLOBAL%$in_ratio$) 
+					:i if  ( (%GLOBAL%$in_ratio$ = %i(0,00000000))  OR  (%GLOBAL%$out_ratio$ = %i(0,00000000)) ) 
+						:i $printf$%s(14,"CAT: bad ratio")
+						:i return
+						
+					:i endif
+					:i $speed$ =  ( (%GLOBAL%$length$ *  (%f(1.000000) - %GLOBAL%$from$) )  /  (%GLOBAL%$in_ratio$ * %GLOBAL%$Dur$) ) 
+					:i $speed2$ =  ( (%GLOBAL%$out_length$ * %GLOBAL%$percent$)  /  (%GLOBAL%$out_ratio$ * %GLOBAL%$Dur$) ) 
+					:i if  (%i(0,00000000) > %GLOBAL%$to_seconds$) 
+						:i $to_seconds$ = %i(0,00000000)
+					:i endif
+					:i $blend_seconds$ =  (%GLOBAL%$blend$ * %GLOBAL%$speed$) 
+					:i if NOT  (%GLOBAL%$start$ = %i(0,00000000)) 
+						:i $wait$%GLOBAL%$start$$seconds$
+					:i endif
+					:i if $GotParam$$SpecialItem_details$
+						:i $printf$%s(21,"I have a special item")
+						:i $TurnOnSpecialItem$$SpecialItem_details$ = %GLOBAL%$SpecialItem_details$
+					:i endif
+					:i if NOT $GotParam$$demo_loop$
+						:i if $GotParam$$SpecialSounds$
+							:i $Obj_Spawnscript$%GLOBAL%$SpecialSounds$
+						:i endif
+						:i if $GotParam$$Stream$
+							:i $Obj_PlayStream$%GLOBAL%$Stream$$vol$ = %i(250,000000fa)
+						:i endif
+					:i endif
+					:i if NOT  (%GLOBAL%$speed$ = %i(0,00000000)) 
+						:i if NOT  (%GLOBAL%$have_played_real_anim$ = %i(0,00000000)) 
+							:i $Obj_PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %GLOBAL%$speed$$from$ = %GLOBAL%$from_seconds$:s}
+						:i else 
+							:i $Obj_PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %GLOBAL%$speed$$from$ = %GLOBAL%$from_seconds$$blendperiodpercent$ = %i(0,00000000):s}
+						:i endif
+					:i endif
+					:i if NOT $IsArray$%GLOBAL%$trick$
+						:i $Out_Params$ =  (%GLOBAL%$trick$->$Params$) 
+					:i else 
+						:i $Out_Params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$) 
+					:i endif
+					:i if NOT  (%GLOBAL%$speed$ = %i(0,00000000)) 
+						:i $Obj_WaitAnimFinished$
+					:i endif
+					:i if NOT  (%GLOBAL%$idletime$ = %i(0,00000000)) 
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$idle$$cycle$$xblendperiodpercent$ = %i(0,00000000)
+						:i $wait$%GLOBAL%$idletime$$seconds$
+						:i if  (%GLOBAL%$index$ = %GLOBAL%$tweak_grab$) 
+							:i if NOT $GotParam$$demo_loop$
+								:i while
+									
+									:i if $Released$$Circle$
+										:i if $Released$$Square$
+											:i continue
+											
+										:i endif
+									:i endif
+									:i $CAT_GetHoldTime$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+									:i $CAT_SetHoldTime$ (%GLOBAL%$cat_hold_time$ +  (%f(1.000000) / %f(60.000000)) ) $skater$ = %GLOBAL%$currentSkaterProfileIndex$
+									:i $WaitOneGameFrame$
+									:i $TweakTrick$$GRABTWEAK_MEDIUM$
+								:i loop_to 
+								:i $CAT_GetHoldTime$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+								:i $printf$%s(19,"	cat_hold_time = %c")$c$ = %GLOBAL%$cat_hold_time$
+							:i endif
+						:i endif
+					:i endif
+					:i $CATReleased_SquareOrCircle$%GLOBAL%$Out_Params$$speed$ = %GLOBAL%$speed2$$To$ = %GLOBAL%$to_seconds$$blend$ =  (%i(100,00000064) * %GLOBAL%$blend$) 
+				:i else 
+					:i if NOT $IsArray$%GLOBAL%$trick$
+						:i $anim$ =  (%GLOBAL%$trick$->$Params$->$anim$) 
+					:i else 
+						:i $anim$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$->$anim$) 
+					:i endif
+					:i if NOT $GotParam$$anim$
+						:i if $StructureContains$$structure$ =  (%GLOBAL%$trick$->$Params$) $initanim$
+							:i $anim$ =  (%GLOBAL%$trick$->$Params$->$initanim$) 
+						:i else 
+							:i $printf$%s(21,"back trick... no anim")
+							:i return
+							
+						:i endif
+					:i endif
+					:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$percent$) 
+					:i if  (%GLOBAL%$percent$ > %i(1,00000001)) 
+						:i $percent$ = %i(1,00000001)
+					:i endif
+					:i $GetAnimLength$$anim$ = %GLOBAL%$anim$
+					:i $from_seconds$ =  (%GLOBAL%$from$ * %GLOBAL%$length$ * %i(60,0000003c)) 
+					:i $to_seconds$ =  (%GLOBAL%$percent$ * %GLOBAL%$length$ * %i(60,0000003c)) 
+					:i $total_percent$ =  (%GLOBAL%$percent$ - %GLOBAL%$from$) 
+					:i if NOT  (%GLOBAL%$Dur$ = %i(0,00000000)) 
+						:i $speed$ =  ( ( (%GLOBAL%$length$ * %GLOBAL%$total_percent$) )  / %GLOBAL%$Dur$) 
+					:i else 
+						:i $speed$ = %i(1,00000001)
+					:i endif
+					:i if  (%i(0,00000000) > %GLOBAL%$speed$) 
+						:i $speed$ =  (%GLOBAL%$speed$ * %i(4294967295,ffffffff)) 
+					:i endif
+					:i if  (%GLOBAL%$backwards$ = %i(1,00000001)) 
+						:i $temp$ = %GLOBAL%$to_seconds$
+						:i $to_seconds$ = %GLOBAL%$from_seconds$
+						:i $from_seconds$ = %GLOBAL%$temp$
+					:i endif
+					:i if NOT  (%GLOBAL%$start$ = %i(0,00000000)) 
+						:i $wait$%GLOBAL%$start$$seconds$
+					:i endif
+					:i if $GotParam$$SpecialItem_details$
+						:i $printf$%s(21,"I have a special item")
+						:i $TurnOnSpecialItem$$SpecialItem_details$ = %GLOBAL%$SpecialItem_details$
+					:i endif
+					:i if NOT $GotParam$$demo_loop$
+						:i if $GotParam$$SpecialSounds$
+							:i $Obj_Spawnscript$%GLOBAL%$SpecialSounds$
+						:i endif
+						:i if $GotParam$$Stream$
+							:i $Obj_PlayStream$%GLOBAL%$Stream$$vol$ = %i(250,000000fa)
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$have_played_real_anim$ = %i(0,00000000)) 
+						:i $blendperiodpercent$ = %i(0,00000000)
+					:i else 
+						:i $blendperiodpercent$ =  (%GLOBAL%$blend$ * %i(100,00000064)) 
+					:i endif
+					:i if NOT  (%GLOBAL%$speed$ = %i(0,00000000)) 
+						:i $Obj_PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %GLOBAL%$speed$$blendperiodpercent$ = %GLOBAL%$blendperiodpercent$$from$ = %GLOBAL%$from_seconds$$To$ = %GLOBAL%$to_seconds$:s}
+					:i endif
+				:i endif
+				:i if $IsArray$%GLOBAL%$trick$
+					:i $trick_params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$) 
+				:i else 
+					:i $trick_params$ =  (%GLOBAL%$trick$->$Params$) 
+				:i endif
+				:i if $StructureContains$$BoardRotate$$structure$ = %GLOBAL%$trick_params$
+					:i $BlendperiodOut$%i(0,00000000)
+					:i if NOT $GotParam$$demo_loop$
+						:i $BoardRotateAfter$
+					:i endif
+				:i endif
+				:i if $StructureContains$$RotateAfter$$structure$ = %GLOBAL%$trick_params$
+					:i $printf$%s(18,"skater should flip")
+					:i $BlendperiodOut$%i(0,00000000)
+					:i $flip_skater$ = %i(1,00000001)
+				:i endif
+				:i if $StructureContains$$FlipAfter$$structure$ = %GLOBAL%$trick_params$
+					:i $BlendperiodOut$%i(0,00000000)
+					:i if NOT $GotParam$$demo_loop$
+						:i $Flip$
+					:i else 
+						:i $Obj_Flip$
+						:i if  ($demo_flipped_cat_skater$ = %i(0,00000000)) 
+							:i $change$$demo_flipped_cat_skater$ = %i(1,00000001)
+						:i else 
+							:i $change$$demo_flipped_cat_skater$ = %i(0,00000000)
+						:i endif
+					:i endif
+				:i endif
+				:i $anims_played_this_trick$ =  (%GLOBAL%$anims_played_this_trick$ + %i(1,00000001)) 
+				:i $have_played_real_anim$ = %i(1,00000001)
+				:i $GetCurrentSkaterProfileIndex$
+				:i $CAT_GetNumAnims$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $printf$%s(21,"	played %p / %o anims")$p$ = %GLOBAL%$anims_played_this_trick$$o$ = %GLOBAL%$num_animations_on$
+				:i if NOT  (%GLOBAL%$anims_played_this_trick$ = %GLOBAL%$num_animations_on$) 
+					:i if NOT $GotParam$$speed2$
+						:i if NOT  (%GLOBAL%$speed$ = %i(0,00000000)) 
+							:i $Obj_WaitAnimFinished$
+						:i endif
+					:i else 
+						:i if NOT  (%GLOBAL%$speed2$ = %i(0,00000000)) 
+							:i $Obj_WaitAnimFinished$
+						:i endif
+					:i endif
+					:i if $GotParam$$flip_skater$
+						:i if NOT $GotParam$$demo_loop$
+							:i $rotate$$y$ = %i(180,000000b4)
+						:i else 
+							:i $Obj_SetOrientation$$y$ = %i(180,000000b4)
+						:i endif
+						:i $RemoveParameter$$flip_skater$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $RemoveParameter$$anim$
+		:i $RemoveParameter$$outanim$
+		:i $RemoveParameter$$out_length$
+		:i $RemoveParameter$$in_ratio$
+		:i $RemoveParameter$$out_ratio$
+		:i $RemoveParameter$$percent$
+		:i $RemoveParameter$$speed2$
+		:i $RemoveParameter$$SpecialItem_details$
+		:i $RemoveParameter$$SpecialSounds$
+		:i $RemoveParameter$$Stream$
+		:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $Obj_Spawnscript$$are_cat_anims_done$$Params$ = :s{$flip_skater$ = %GLOBAL%$flip_skater$$demo_loop$ = %GLOBAL%$demo_loop$:s}
+	:i $printf$%s(18,"	finished CAT anim")
+:i endfunction
+:i function $are_cat_anims_done$
+	:i if NOT $GotParam$$no_wait$
+		:i $Obj_WaitAnimFinished$
+	:i endif
+	:i $TurnOffSpecialItem$
+	:i if $GotParam$$flip_skater$
+		:i if NOT $GotParam$$demo_loop$
+			:i $rotate$$y$ = %i(180,000000b4)
+		:i else 
+		:i endif
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $CAT_SetAnimsDone$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $trick_got_idle$
+	:i if $IsArray$%GLOBAL%$trick$
+		:i if $StructureContains$$structure$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$Params$) $idle$
+			:i $got_idle$ = %i(1,00000001)
+		:i else 
+			:i $got_idle$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$trick$->$Params$) $idle$
+			:i $got_idle$ = %i(1,00000001)
+		:i else 
+			:i $got_idle$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i return
+	$got_idle$ = %GLOBAL%$got_idle$
+:i endfunction
+:i function $CATReleased_SquareOrCircle$$from$ = %i(0,00000000)
+	:i $printf$%s(35,"		script CATReleased_SquareOrCircle")
+	:i if  (%GLOBAL%$speed$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$outanim$
+		:i $printf$%s(10,"			OutAnim")
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$outanim$$blendperiodpercent$ = %GLOBAL%$blend$$speed$ = %GLOBAL%$speed$$from$ = %GLOBAL%$from$$To$ = %GLOBAL%$To$
+	:i else 
+		:i if $GotParam$$BackwardsAnim$
+			:i $printf$%s(16,"			BackwardsAnim")
+			:i $Obj_PlayAnim$$anim$ = %GLOBAL%$BackwardsAnim$$backwards$$blendperiodpercent$ = %GLOBAL%$blend$$speed$ = %GLOBAL%$speed$$from$ = %GLOBAL%$from$$To$ = %GLOBAL%$To$
+		:i else 
+			:i if $AnimEquals$$Airwalk$
+				:i $printf$%s(10,"			Airwalk")
+				:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$$from$ = $Current$$To$ = %i(0,00000000)$blendperiodpercent$ = %GLOBAL%$blend$$speed$ = %GLOBAL%$speed$
+			:i else 
+				:i $printf$%s(8,"			Other")
+				:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$$backwards$$speed$ = %GLOBAL%$speed$$from$ = %GLOBAL%$from$$To$ = %GLOBAL%$To$$blendperiodpercent$ = %GLOBAL%$blend$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $spawned_cat_sound_script$
+	:i if NOT  (%GLOBAL%$start$ = %i(0,00000000)) 
+		:i $wait$%GLOBAL%$start$$seconds$
+	:i endif
+	:i if $GotParam$$Stream$
+		:i $Obj_PlayStream$%GLOBAL%$Stream$$vol$ = %i(250,000000fa)
+	:i endif
+:i endfunction
+:i function $waitforbailoff$
+	:i $time_passed$ = %f(0.000000)
+	:i $bail_point$ =  (%GLOBAL%$time$ * %f(0.200000)) 
+	:i $time$ =  (%GLOBAL%$time$ - %GLOBAL%$bail_point$) 
+	:i $GetCurrentSkaterProfileIndex$
+	:i $CAT_GetHoldTime$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $printf$%s(39,"	cat_hold_time=%c time=%t bail_point=%b")$c$ = %GLOBAL%$cat_hold_time$$t$ = %GLOBAL%$time$$b$ = %GLOBAL%$bail_point$
+	:i while
+		
+		:i if  ( (%GLOBAL%$time_passed$ >  (%GLOBAL%$time$ + %GLOBAL%$cat_hold_time$) )  OR  (%GLOBAL%$time_passed$ =  (%GLOBAL%$time$ + %GLOBAL%$cat_hold_time$) ) ) 
+			:i continue
+			
+		:i endif
+		:i $WaitOneGameFrame$
+		:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%f(1.000000) / %f(60.000000)) ) 
+		:i $CAT_GetHoldTime$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i loop_to 
+	:i $printf$%s(17,"	time_passed = %t")$t$ = %GLOBAL%$time_passed$
+	:i $CAT_SetBailDone$%i(1,00000001)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $cat_update_trick_string$
+	:i if  (%GLOBAL%$name$ = %s(0,"")) 
+		:i $name$ = %s(13,"Created Trick")
+	:i endif
+	:i $SetTrickName$%GLOBAL%$name$
+	:i $cat_get_score_from_bailtime$$bailtime$ = %GLOBAL%$bailtime$$can_spin$ = %GLOBAL%$can_spin$
+	:i $SetTrickScore$%GLOBAL%$Score$
+	:i $Display$$cat$
+	:i $LaunchSpecialMessage$
+:i endfunction
+:i function $created_trick_cleanup$
+	:i $KillSpawnedScript$$name$ = $CreateATrick$
+	:i $change$$cat_done$ = %i(1,00000001)
+	:i $KillSpawnedScript$$name$ = $RotateOnAxis$
+	:i $KillSpawnedScript$$name$ = $spawned_trick_anim$
+	:i $KillSpawnedScript$$name$ = $spawned_cat_sound_script$
+	:i $KillSpawnedScript$$name$ = $waitforbailoff$
+	:i $KillSpawnedScript$$name$ = $cat_update_trick_string$
+	:i $CancelRotateDisplay$
+	:i $CAT_GetFlipSkater$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$cat_flip_skater_180$ = %i(1,00000001)) 
+		:i $CAT_SetFlipSkater$%i(0,00000000)$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i $rotate$$y$ = %i(180,000000b4)
+	:i endif
+	:i $TurnOffSpecialItem$
+	:i $CanSpin$
+	:i if $ScreenElementExists$$id$ = $timeline_anchor$
+		:i $DestroyScreenElement$$id$ = $timeline_anchor$
+	:i endif
+:i endfunction
+:i function $set_new_rot_values$$trick_index$ = %i(0,00000000)
+	:i $printf$%s(25,"script set_new_rot_values")
+	:i $GetCreateATrickRotations$$skater$ = %i(0,00000000)$trick_index$ = %GLOBAL%$trick_index$
+	:i $SetArrayElement$$ArrayName$ = $rotation_info$$index$ = %GLOBAL%$rot_index$$newvalue$ = :s{$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $SetCreateATrickRotations$:s{$trick_index$ = %GLOBAL%$trick_index$
+		:i $rotation_info$ = %GLOBAL%$rotation_info$
+	:i :s}
+:i endfunction
+:i function $quick_set_anim_values$
+	:i $set_new_anim_values$:s{$anim_index$ = %GLOBAL%$anim_index$$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$anim$ = %GLOBAL%$anim$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+:i endfunction
+:i function $set_new_anim_values$$trick_index$ = %i(0,00000000)
+	:i $printf$%s(26,"script set_new_anim_values")
+	:i $GetCreateATrickAnimations$$trick_index$ = %GLOBAL%$trick_index$
+	:i $SetArrayElement$$ArrayName$ = $animation_info$$index$ = %GLOBAL%$anim_index$$newvalue$ = :s{$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+	:i $SetCreateATrickAnimations$:s{
+		:i $trick_index$ = %GLOBAL%$trick_index$
+		:i $animation_info$ = %GLOBAL%$animation_info$
+	:i :s}
+:i endfunction
+:i function $set_new_CAT_param_values$
+	:i $printf$%s(31,"script set_new_CAT_param_values")
+	:i $other_params$ = :s{$name$ = %GLOBAL%$name$$can_spin$ = %GLOBAL%$can_spin$$full$ = %GLOBAL%$full$:s}
+	:i $SetCreateATrickOtherParams$:s{$trick_index$ = %GLOBAL%$trick_index$
+		:i $other_params$ = %GLOBAL%$other_params$
+	:i :s}
+:i endfunction
+:i function $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+	:i $printf$%s(27,"script get_CAT_param_values")
+	:i if $GetCreateATrickParams$:s{$trick_index$ = %GLOBAL%$trick_index$:s}
+		:i $name$ =  (%GLOBAL%$other_params$->$name$) 
+		:i $can_spin$ =  (%GLOBAL%$other_params$->$can_spin$) 
+		:i $full$ =  (%GLOBAL%$other_params$->$full$) 
+		:i return
+		 isNull 
+	:i endif
+:i endfunction
+:i function $get_CAT_rot_values$$trick_index$ = %i(0,00000000)$rot_index$ = %i(0,00000000)
+	:i $printf$%s(25,"script get_CAT_rot_values")
+	:i if $GetCreateATrickRotations$:s{$trick_index$ = %GLOBAL%$trick_index$:s}
+		:i return
+		 (%GLOBAL%$rotation_info$:a{%GLOBAL%$rot_index$:a}) 
+	:i endif
+:i endfunction
+:i function $get_CAT_anim_values$$trick_index$ = %i(0,00000000)$anim_index$ = %i(0,00000000)
+	:i $printf$%s(26,"script get_CAT_anim_values")
+	:i if $GetCreateATrickAnimations$:s{$trick_index$ = %GLOBAL%$trick_index$:s}
+		:i return
+		 (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) 
+	:i endif
+:i endfunction
+:i function $get_CAT_other_param_values$
+	:i $printf$%s(33,"script get_CAT_other_param_values")
+	:i if $GetCreateATrickOtherParams$:s{$trick_index$ = %GLOBAL%$trick_index$:s}
+		:i $name$ =  (%GLOBAL%$other_params$->$name$) 
+		:i $can_spin$ =  (%GLOBAL%$other_params$->$can_spin$) 
+		:i $full$ =  (%GLOBAL%$other_params$->$full$) 
+		:i return
+		 isNull 
+	:i endif
+:i endfunction
+:i function $print_out_cat$$index$ = %i(0,00000000)
+	:i $get_CAT_param_values$$trick_index$ = %GLOBAL%$index$
+	:i $printstruct$ isNull 
+:i endfunction
+:i $Premade_CATS$ = :a{
+	:i :s{$name$ = %s(10,"Gavin Flip")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $z$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.200000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $x$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.700000)$start$ = %f(0.200000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $x$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.700000)$start$ = %f(0.600000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(540,0000021c)$Dur$ = %f(0.600000)$start$ = %f(0.900000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $CATTrick_other07$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %f(0.210000)$percent$ = %i(1,00000001)$trickType$ = %i(3,00000003)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Stalefish$$Dur$ = %f(0.600000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %f(0.400000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(9,"McTwisted")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Deg$ = %i(540,0000021c)$Axis$ = $y$$Dur$ = %f(1.000000)$start$ = %f(0.200000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Deg$ = %i(180,000000b4)$Axis$ = $z$$Dur$ = %f(0.700000)$start$ = %f(0.200000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Deg$ = %i(180,000000b4)$Axis$ = $z$$Dur$ = %f(0.700000)$start$ = %f(0.500000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Deg$ = %i(360,00000168)$Axis$ = $y$$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Deg$ = %i(360,00000168)$Axis$ = $y$$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Deg$ = %i(360,00000168)$Axis$ = $y$$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Seatbelt$$Dur$ = %f(0.400000)$percent$ = %f(1.000000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$trickType$ = %i(1,00000001)$idletime$ = %f(0.700000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(15,"The Triple Deke")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.399999)$start$ = %f(0.000000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(0.400000)$start$ = %f(0.200000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(0.400000)$start$ = %f(0.400000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.400000)$start$ = %f(0.600000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Shifty360ShovitBSShifty$$Dur$ = %f(1.300000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(2,00000002)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(12,"Martial Kick")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.200000)$start$ = %f(0.200000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $z$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.500000)$start$ = %f(0.800000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_FSFlipOneFootTailGrab$$Dur$ = %f(0.699999)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %f(0.500000)$trickType$ = %i(2,00000002)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Benihana$$Dur$ = %f(0.700000)$blend$ = $CAT_BLEND$$from$ = %f(0.500000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(20,"720 Double Heelstale")
+		:i $can_spin$ = %i(1,00000001)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(720,000002d0)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $x$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.500000)$start$ = %f(1.000000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Extra_DBackfootKickflip$$Dur$ = %f(0.400000)$blend$ = $CAT_BLEND$$from$ = %f(0.000000)$percent$ = %f(0.590000)$trickType$ = %i(0,00000000)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Stalefish$$Dur$ = %i(1,00000001)$blend$ = $CAT_BLEND$$from$ = %f(0.500000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(23,"360 BodyVarial Kickflip")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(0.600000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Extra_VarialKickflip$$Dur$ = %f(0.600000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(0,00000000)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(9,"Tweak out")
+		:i $can_spin$ = %i(1,00000001)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $z$$Deg$ = %i(360,00000168)$Dur$ = %f(1.300000)$start$ = %f(0.000000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_Japan$$Dur$ = %f(1.000000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %f(0.100000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(1,00000001)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(15,"Hot Board Flips")
+		:i $can_spin$ = %i(1,00000001)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.300000)$start$ = %f(0.000000)$deg_dir$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_FingerFlip$$Dur$ = %f(0.700000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(0,00000000)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(1,00000001)$backwards$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_FingerFlip$$Dur$ = %f(0.600000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(0,00000000)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(8,"All City")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.700000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(0.600000)$start$ = %f(0.900000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Trick_VarialHeelflip$$Dur$ = %f(0.700000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(0,00000000)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :s{$name$ = %s(11,"Dookie Flip")
+		:i $can_spin$ = %i(0,00000000)
+		:i $full$ = %i(1,00000001)
+		:i $rotation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(0.700000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(180,000000b4)$Dur$ = %f(0.800000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $z$$Deg$ = %i(360,00000168)$Dur$ = %f(0.600000)$start$ = %f(0.600000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :s{$on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001):s}
+			:i :a}
+		:i $animation_info$ = :a{
+			:i :s{$on$ = %i(1,00000001)$trick$ = $Extra_DBackfootKickflip$$Dur$ = %f(0.700000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(0,00000000)$idletime$ = %f(0.000000)$start$ = %i(0,00000000)$order$ = %i(1,00000001)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(2,00000002)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(3,00000003)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(4,00000004)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(5,00000005)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :s{$on$ = %i(2,00000002)$trick$ = $trick_indy$$Dur$ = %f(0.500000)$blend$ = $CAT_BLEND$$from$ = %i(0,00000000)$percent$ = %i(1,00000001)$trickType$ = %i(1,00000001)$idletime$ = %i(0,00000000)$start$ = %i(0,00000000)$order$ = %i(6,00000006)$hold$ = %i(0,00000000)$backwards$ = %i(0,00000000):s}
+			:i :a}
+	:i :s}
+	:i :a}
+:i :end

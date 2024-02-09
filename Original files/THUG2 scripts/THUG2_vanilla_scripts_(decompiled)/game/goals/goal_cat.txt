@@ -1,0 +1,153 @@
+
+:i $goal_CAT_GenericParams$ = :s{
+	:i $init$ = $goal_cat_init$
+	:i $uninit$ = $goal_cat_uninit$
+	:i $activate$ = $goal_cat_activate$
+	:i $active$ = $goal_cat_active$
+	:i $deactivate$ = $goal_cat_deactivate$
+	:i $fail$ = $goal_cat_fail$
+	:i $success$ = $goal_cat_success$
+	:i $expire$ = $goal_cat_expire$
+	:i $create_a_trick$
+	:i $goal_text$ = %s(21,"Generic CAT goal text")
+	:i $view_goals_text$ = %s(8,"Do a CAT")
+	:i $time$ = %i(20,00000014)
+	:i $trigger_obj_id$ = $TRG_G_CAT_Pro$
+	:i $start_pad_id$ = $G_CAT_StartPad$
+	:i $restart_node$ = $TRG_G_CAT_RestartNode$
+	:i $should_remove_trick$ = %i(0,00000000)
+	:i $trick_type$ = $cat$
+:i :s}
+:i function $goal_cat_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_cat_uninit$
+	:i $goal_uninit$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_cat_activate$
+	:i $GoalManager_AddTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$should_create_cat_menu$ = %i(0,00000000):s}
+:i endfunction
+:i function $goal_cat_active$
+:i endfunction
+:i function $goal_cat_deactivate$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_RemoveTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_cat_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+	:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$should_create_cat_menu$ = %i(1,00000001):s}
+	:i endif
+:i endfunction
+:i function $goal_cat_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_cat_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_cat_create_menu$
+	:i $kill_start_key_binding$
+	:i $wait$%i(1,00000001)$frame$
+	:i $restore_start_key_binding$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if  (%GLOBAL%$should_create_cat_menu$ = %i(1,00000001)) 
+		:i $change$$viewer_buttons_enabled$ = %i(0,00000000)
+		:i if NOT $InNetGame$
+			:i $printf$%s(56,"-------------------- PAUSING GAME ----------------------")
+			:i $PauseGame$
+			:i $wait$%i(1,00000001)$gameframe$
+			:i $pause_trick_text$
+			:i $pause_balance_meter$
+			:i $pause_run_timer$
+			:i $kill_blur$
+			:i $hide_console_window$
+			:i if $ObjectExists$$id$ = $speech_box_anchor$
+				:i $DoScreenElementMorph$$id$ = $speech_box_anchor$$scale$ = %i(0,00000000)
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+				:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+				:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_retry_anchor$
+				:i $DestroyScreenElement$$id$ = $goal_retry_anchor$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_complete$
+				:i $DestroyScreenElement$$id$ = $goal_complete$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_complete_sprite$
+				:i $DestroyScreenElement$$id$ = $goal_complete_sprite$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_complete_line2$
+				:i $DestroyScreenElement$$id$ = $goal_complete_line2$
+			:i endif
+			:i if $ScreenElementExists$$id$ = $goal_current_reward$
+				:i $DestroyScreenElement$$id$ = $goal_current_reward$
+			:i endif
+			:i $hide_goal_panel_messages$
+		:i endif
+		:i $load_premade_cat$$index$ = %GLOBAL%$premade_cat_index$$dont_focus_timeline$ = %i(1,00000001)
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $darken_screen$
+			:i $scale$ = %vec2(320.000000,240.000000)
+			:i $texture$ = $white2$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(60,0000003c):a}
+			:i $z_priority$ = %i(100,00000064)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $create_dialog_box$:s{
+			:i $title$ = %s(14,"Create-A-Trick")
+			:i $text$ = %s(249,"Welcome! In THUG 2 you can create your own tricks. The Trick timeline shows the components of the trick you just landed. Tweak it, or make a whole new trick and map it to your skater. You can return to Create-A-Trick at any time from the Pause menu.")
+			:i $pos$ = %vec2(320.000000,260.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_scale$ = %f(0.900000)
+			:i $text_dims$ = %vec2(300.000000,0.000000)
+			:i $z_priority$ = %i(101,00000065)
+			:i $buttons$ = :a{
+				:i :s{$font$ = $small$$text$ = %s(19,"Modify My Trick Now")$pad_choose_script$ = $goal_cat_focus_cat_menu$:s}
+				:i :s{$font$ = $small$$text$ = %s(14,"Return to Game")$pad_choose_script$ = $goal_cat_refuse_cat_menu$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_cat_focus_cat_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $darken_screen$
+		:i $DestroyScreenElement$$id$ = $darken_screen$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $timeline_vmenu$
+		:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+		:i $SpawnScript$$spawn_cat_demo_loop$
+	:i endif
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $goal_cat_refuse_cat_menu$
+	:i if $ObjectExists$$id$ = $darken_screen$
+		:i $DestroyScreenElement$$id$ = $darken_screen$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $cat_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $cat_menu_anchor$
+	:i endif
+	:i $GoalManager_InitializeAllGoals$
+	:i if $ObjectExists$$id$ = $CAT_Skater$
+		:i $CAT_Skater$.$TurnOffSpecialItem$
+		:i $CAT_Skater$.$Die$
+	:i endif
+	:i $restore_skater_camera$
+	:i $KillSpawnedScript$$name$ = $cat_perform_trick_loop$
+	:i $change$$running_cat_demo$ = %i(0,00000000)
+	:i $change$$in_cat_preview_mode$ = %i(0,00000000)
+	:i $restore_start_key_binding$
+	:i $dialog_box_exit$
+	:i $exit_pause_menu$
+:i endfunction
+:i :end

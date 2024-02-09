@@ -1,0 +1,148 @@
+
+:i function $ped_walker_hit_dead_end$
+	:i $Ped_StopMoving$
+	:i $PlayAnimWithPartialAnimIfExists$$anim$ = $Ped_M_LookAtWatch$
+	:i $Obj_WaitAnimFinished$
+	:i $Ped_GetCurrentNodeNames$
+	:i $ped_standing_look_at_skater$$node_name$ = %GLOBAL%$node_to$
+	:i $Ped_Utils_GetAnimName$$Type$ = $WalkAnims$
+	:i $PlayAnimWithPartialAnimIfExists$$anim$ = %GLOBAL%$AnimName$$Cycle$$UseAnimTags$
+	:i $GetSingleTag$$animTags$
+	:i if $GotParam$$animTags$
+		:i $ped_adjust_speed_to_match_anim$%GLOBAL%$animTags$
+	:i endif
+	:i $Ped_StartMoving$
+:i endfunction
+:i function $ped_standing_idle$
+	:i $GetSingleTag$$should_look_at_skater$
+	:i $GetSingleTag$$standing_anims$
+	:i if NOT $GotParam$$standing_anims$
+		:i $Ped_GetGender$
+		:i if  (%GLOBAL%$Gender$ = $female$) 
+			:i %GLOBAL%$standing_anims$ = $female_goal_wait$
+		:i else 
+			:i %GLOBAL%$standing_anims$ = $generic_ped_anims_wait$
+		:i endif
+	:i endif
+	:i while
+		
+		:i if $GotParam$$standing_anims$
+			:i $GetArraySize$%GLOBAL%$standing_anims$
+			:i $CreateIndexArray$%GLOBAL%$array_size$
+			:i $PermuteArray$$NewArrayName$ = $random_index_array$$Array$ = %GLOBAL%$index_array$
+			:i while
+				
+				:i if $GetNextArrayElement$%GLOBAL%$random_index_array$$index$ = %GLOBAL%$index$
+					:i if NOT  (%GLOBAL%$should_look_at_skater$ = %i(0,00000000)) 
+						:i $ped_standing_look_at_skater$
+					:i endif
+					:i $ped_standing_play_anim_set$ (%GLOBAL%$standing_anims$:a{%GLOBAL%$element$:a}) 
+				:i else 
+					:i $RemoveParameter$$index$
+					:i continue
+					
+				:i endif
+				:i $wait$%i(1,00000001)$frame$
+			:i loop_to 
+			:i $wait$%i(30,0000001e)$frame$
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $ped_standing_look_at_skater$
+	:i %GLOBAL%$time_to_rotate$ = %i(1,00000001)
+	:i $GetTags$
+	:i $Obj_StopRotating$
+	:i if NOT $ObjectExists$$id$ = $skater$
+		:i return
+		
+	:i endif
+	:i if $Obj_AngleToNearestSkaterGreaterThan$%i(15,0000000f)
+		:i if $GotParam$$turning_anims$
+			:i if $StructureContains$$structure$ = %GLOBAL%$turning_anims$$pre_rotate$
+				:i %GLOBAL%$pre_rotate$ =  (%GLOBAL%$turning_anims$->$pre_rotate$) 
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$turning_anims$$rotate_anim$
+				:i %GLOBAL%$rotate_anim$ =  (%GLOBAL%$turning_anims$->$rotate_anim$) 
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$turning_anims$$post_rotate$
+				:i %GLOBAL%$post_rotate$ =  (%GLOBAL%$turning_anims$->$post_rotate$) 
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$rotate_anim$
+			:i $Ped_Utils_GetAnimName$$Type$ = $TurnAnims$
+			:i %GLOBAL%$rotate_anim$ = %GLOBAL%$AnimName$
+		:i endif
+		:i if $GotParam$$pre_rotate$
+			:i $PlayAnimWithPartialAnimIfExists$$anim$ = %GLOBAL%$pre_rotate$
+			:i $Obj_WaitAnimFinished$
+		:i endif
+		:i $Obj_LookAtObject$$Type$ = $skater$$time$ = %GLOBAL%$time_to_rotate$
+		:i $PlayAnimWithPartialAnimIfExists$$anim$ = %GLOBAL%$rotate_anim$
+		:i $wait$%GLOBAL%$time_to_rotate$$seconds$
+		:i if $GotParam$$post_rotate$
+			:i $PlayAnimWithPartialAnimIfExists$$anim$ = %GLOBAL%$post_rotate$
+			:i $Obj_WaitAnimFinished$
+		:i endif
+	:i endif
+:i endfunction
+:i function $ped_standing_play_anim_set$
+	:i while
+		
+		:i if $GetNextArrayElement$%GLOBAL%$anims$$index$ = %GLOBAL%$index$
+			:i if $StructureContains$$structure$ = %GLOBAL%$element$$ped_speed$
+				:i $Obj_SetPathVelocity$ (%GLOBAL%$element$->$ped_speed$) $fps$
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$element$$speed$
+				:i %GLOBAL%$speed$ =  (%GLOBAL%$element$->$speed$) 
+			:i else 
+				:i if $StructureContains$$structure$ = %GLOBAL%$element$$random_speed_high$
+					:i if $StructureContains$$structure$ = %GLOBAL%$element$$random_speed_low$
+						:i $GetRandomValue$:s{
+							:i $name$ = $speed$
+							:i $resolution$ = %f(0.100000)
+							:i $a$ =  (%GLOBAL%$element$->$random_speed_low$) 
+							:i $b$ =  (%GLOBAL%$element$->$random_speed_high$) 
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$element$$flip$
+				:i $Obj_flip$
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$element$$anim$
+				:i $PlayAnimWithPartialAnimIfExists$%GLOBAL%$element$$speed$ = %GLOBAL%$speed$$UseAnimTags$
+				:i $GetTags$
+				:i if $GotParam$$animTags$
+					:i $ped_adjust_speed_to_match_anim$%GLOBAL%$animTags$
+				:i endif
+				:i if $StructureContains$$structure$ = %GLOBAL%$element$$script_name$
+					:i $ped_run_script$%GLOBAL%$element$
+				:i endif
+			:i else 
+				:i if $StructureContains$$structure$ = %GLOBAL%$element$$script_name$
+					:i $ped_run_script$%GLOBAL%$element$
+				:i else 
+					:i $PlayAnimWithPartialAnimIfExists$$anim$ = %GLOBAL%$element$$speed$ = %GLOBAL%$speed$$UseAnimTags$
+					:i $GetTags$
+					:i if $GotParam$$animTags$
+						:i $ped_adjust_speed_to_match_anim$%GLOBAL%$animTags$
+					:i endif
+				:i endif
+			:i endif
+			:i $Obj_WaitAnimFinished$
+		:i else 
+			:i return
+			
+		:i endif
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+:i endfunction
+:i function $ped_run_script$
+	:i %GLOBAL%$script_name$%GLOBAL%$script_params$
+:i endfunction
+:i function $ped_adjust_speed_to_match_anim$
+	:i if $GotParam$$movementSpeed$
+		:i $Obj_SetPathVelocity$%GLOBAL%$movementSpeed$$ips$
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,4529 @@
+$InNetOptionsFromNetPlay$ = %i(0,00000000)
+:i $InNetOptionsFromFaceDownload$ = %i(0,00000000)
+:i $has_accepted_dnas$ = %i(1,00000001)
+:i $SkipDNASAuthentication$ = %i(0,00000000)
+:i $NeedsToTestDNAS$ = %i(1,00000001)
+:i $SignedDisclaimer$ = %i(0,00000000)
+:i function $launch_viewer$
+	:i $printf$%s(80,"launch_viewer is no longer needed ... you can remove it from your startup script")
+:i endfunction
+:i function $auto_launch_viewer$
+	:i $LoadFromMemoryCard$$Name$ = %s(12,"Online Prefs")$Type$ = $NetworkSettings$
+	:i $UseNetworkPreferences$
+	:i $LaunchViewer$
+:i endfunction
+:i $NO_NET_MODE$ = %i(0,00000000)
+:i $LAN_MODE$ = %i(1,00000001)
+:i $INTERNET_MODE$ = %i(2,00000002)
+:i $HOST_MODE_SERVE$ = %i(0,00000000)
+:i $HOST_MODE_AUTO_SERVE$ = %i(1,00000001)
+:i $HOST_MODE_FCFS$ = %i(2,00000002)
+:i $JOIN_MODE_PLAY$ = %i(0,00000000)
+:i $JOIN_MODE_OBSERVE$ = %i(1,00000001)
+:i $level_info$ = :a{
+	:i :s{$Name$ = %s(7,"College")$checksum$ = $load_sch$:s}
+	:i :s{$Name$ = %s(13,"San Francisco")$checksum$ = $load_sf2$:s}
+	:i :s{$Name$ = %s(8,"Alcatraz")$checksum$ = $load_alc$:s}
+	:i :s{$Name$ = %s(8,"Shipyard")$checksum$ = $load_jnk$:s}
+	:i :s{$Name$ = %s(6,"London")$checksum$ = $load_lon$:s}
+	:i :s{$Name$ = %s(4,"Kona")$checksum$ = $load_kon$:s}
+	:i :s{$Name$ = %s(3,"Zoo")$checksum$ = $load_zoo$:s}
+	:i :s{$Name$ = %s(8,"Carnival")$checksum$ = $load_cnv$:s}
+	:i :s{$Name$ = %s(7,"Chicago")$checksum$ = $load_hof$:s}
+	:i :s{$Name$ = %s(12,"Created Park")$checksum$ = $load_sk5ed_gameplay$:s}
+	:i :a}
+:i $num_players_info$ = :a{
+	:i :s{$Name$ = %s(9,"2 Players")$checksum$ = $num_2$$num$ = %i(2,00000002):s}
+	:i :s{$Name$ = %s(9,"3 Players")$checksum$ = $num_3$$num$ = %i(3,00000003):s}
+	:i :s{$Name$ = %s(9,"4 Players")$checksum$ = $num_4$$num$ = %i(4,00000004)$broadband_only$:s}
+	:i :s{$Name$ = %s(9,"5 Players")$checksum$ = $num_5$$num$ = %i(5,00000005)$broadband_only$:s}
+	:i :s{$Name$ = %s(9,"6 Players")$checksum$ = $num_6$$num$ = %i(6,00000006)$broadband_only$:s}
+	:i :s{$Name$ = %s(9,"7 Players")$checksum$ = $num_7$$num$ = %i(7,00000007)$broadband_only$:s}
+	:i :s{$Name$ = %s(9,"8 Players")$checksum$ = $num_8$$num$ = %i(8,00000008)$broadband_only$:s}
+	:i :a}
+:i $net_game_type_info$ = :a{
+	:i :s{$Name$ = %s(12,"Trick Attack")$description$ = %s(63,"Player with the highest score at the end of the time limit wins")$checksum$ = $nettrickattack$$goal_script$ = $StartGoal_TrickAttack$$icon$ = %s(9,"2p_attack"):s}
+	:i :s{$Name$ = %s(14,"Scavenger Hunt")$description$ = %s(63,"Player with the most objects at the end of the time limit wins.")$checksum$ = $netscavengerhunt$$goal_script$ = $StartGoal_Scavenger$$icon$ = %s(7,"2p_hunt"):s}
+	:i :s{$Name$ = %s(10,"Elimiskate")$description$ = %s(60,"Player with the lowest score at game intervals is eliminated")$checksum$ = $netelimiskate$$goal_script$ = $StartGoal_ElimiSkate$$icon$ = %s(7,"2p_elim"):s}
+	:i :s{$Name$ = %s(15,"Score Challenge")$description$ = %s(45,"The first player to reach the\nset score wins")$checksum$ = $netscorechallenge$$goal_script$ = $StartGoal_ScoreChallenge$$icon$ = %s(8,"2p_score"):s}
+	:i :s{$Name$ = %s(11,"Combo Mambo")$description$ = %s(66,"The player who busts the biggest combo during the time limit, wins")$checksum$ = $netcombomambo$$goal_script$ = $StartGoal_ComboMambo$$icon$ = %s(8,"2p_mambo"):s}
+	:i :s{$Name$ = %s(5,"Slap!")$description$ = %s(57,"The player who slaps their opponents the most times, wins")$checksum$ = $netslap$$goal_script$ = $StartGoal_Slap$$icon$ = %s(7,"2p_slap"):s}
+	:i :s{$Name$ = %s(16,"King of the Hill")$description$ = %s(53,"The player who holds the crown\nfor the set time wins")$checksum$ = $netking$$goal_script$ = $StartGoal_King$$icon$ = %s(7,"2p_koth"):s}
+	:i :s{$Name$ = %s(8,"Graffiti")$description$ = %s(41,"The player who tags the most objects wins")$checksum$ = $netgraffiti$$goal_script$ = $StartGoal_Graffiti$$icon$ = %s(11,"2p_graffiti"):s}
+	:i :s{$Name$ = %s(11,"Goal Attack")$description$ = %s(49,"First one to finish all the \nselected goals wins")$checksum$ = $netgoalattack$$goal_script$ = $StartGoal_GoalAttack$$icon$ = %s(7,"2p_goal"):s}
+	:i :s{$Name$ = %s(16,"Capture the Flag")$description$ = %s(54,"Capture another team's flag and return it to your base")$checksum$ = $netctf$$goal_script$ = $StartGoal_CTF$$icon$ = %s(7,"2p_flag"):s}
+	:i :s{$Name$ = %s(9,"FireFight")$description$ = %s(70,"Launch fireballs with either \b1\b7 or \b1\b4. Last man standing wins.")$checksum$ = $netfirefight$$goal_script$ = $StartGoal_FireFight$$icon$ = %s(7,"2p_fire"):s}
+	:i :a}
+:i $net_game_type_info_demo$ = :a{
+	:i :s{$Name$ = %s(12,"Trick Attack")$description$ = %s(63,"Player with the highest score at the end of the time limit wins")$checksum$ = $nettrickattack$$goal_script$ = $StartGoal_TrickAttack$$icon$ = %s(9,"2p_attack"):s}
+	:i :s{$Name$ = %s(5,"Slap!")$description$ = %s(73,"Player who slaps their opponent the most times within the time limit wins")$checksum$ = $netslap$$goal_script$ = $StartGoal_Slap$$icon$ = %s(7,"2p_slap"):s}
+	:i :s{$Name$ = %s(16,"King of the Hill")$description$ = %s(48,"Player who holds the crown for the set time wins")$checksum$ = $netking$$goal_script$ = $StartGoal_King$$icon$ = %s(7,"2p_koth"):s}
+	:i :s{$Name$ = %s(8,"Graffiti")$description$ = %s(37,"Player who tags the most objects wins")$checksum$ = $netgraffiti$$goal_script$ = $StartGoal_Graffiti$$icon$ = %s(11,"2p_graffiti"):s}
+	:i :a}
+:i $mp_game_type_info$ = :a{
+	:i :s{$Name$ = %s(12,"Trick Attack")$description$ = %s(63,"Player with the highest score at the end of the time limit wins")$checksum$ = $trickattack$$goal_script$ = $StartGoal_TrickAttack$$icon$ = %s(9,"2p_attack"):s}
+	:i :s{$Name$ = %s(14,"Scavenger Hunt")$description$ = %s(63,"Player with the most objects at the end of the time limit wins.")$checksum$ = $scavengerhunt$$goal_script$ = $StartGoal_Scavenger$$icon$ = %s(9,"2p_attack"):s}
+	:i :s{$Name$ = %s(15,"Score Challenge")$description$ = %s(33,"First one to reach set score wins")$checksum$ = $scorechallenge$$goal_script$ = $StartGoal_ScoreChallenge$$icon$ = %s(8,"2p_score"):s}
+	:i :s{$Name$ = %s(11,"Combo Mambo")$description$ = %s(67,"The player who busts the biggest combo during the time limit, wins!")$checksum$ = $combomambo$$goal_script$ = $StartGoal_ComboMambo$$icon$ = %s(8,"2p_mambo"):s}
+	:i :s{$Name$ = %s(5,"Slap!")$description$ = %s(73,"Player who slaps their opponent the most times within the time limit wins")$checksum$ = $slap$$goal_script$ = $StartGoal_Slap$$icon$ = %s(7,"2p_slap"):s}
+	:i :s{$Name$ = %s(16,"King of the Hill")$description$ = %s(48,"Player who holds the crown for the set time wins")$checksum$ = $king$$goal_script$ = $StartGoal_King$$icon$ = %s(7,"2p_koth"):s}
+	:i :s{$Name$ = %s(8,"Graffiti")$description$ = %s(37,"Player who tags the most objects wins")$checksum$ = $graffiti$$goal_script$ = $StartGoal_Graffiti$$icon$ = %s(11,"2p_graffiti"):s}
+	:i :s{$Name$ = %s(5,"Horse")$description$ = %s(42,"Pull off combos until someone spells horse")$checksum$ = $horse$$goal_script$ = $do_nothing$$icon$ = %s(8,"2p_horse"):s}
+	:i :s{$Name$ = %s(10,"Free Skate")$description$ = %s(22,"Skate the level freely")$checksum$ = $freeskate2p$$goal_script$ = $StartFreeSkate$$icon$ = %s(7,"2p_free"):s}
+	:i :s{$Name$ = %s(9,"FireFight")$description$ = %s(73,"Launch fireballs with\n either \b1\b7 or \b1\b4.\nLast man standing wins.")$checksum$ = $firefight$$goal_script$ = $StartGoal_FireFight$$icon$ = %s(7,"2p_fire"):s}
+	:i :a}
+:i $num_observers_info$ = :a{
+	:i :s{$Name$ = %s(12,"No Observers")$checksum$ = $num_0$:s}
+	:i :s{$Name$ = %s(10,"1 Observer")$checksum$ = $num_1$$broadband_only$:s}
+	:i :a}
+:i $net_goal_info$ = :a{
+	:i :s{$Name$ = %s(13,"Classic Goals")$checksum$ = $goals_classic$:s}
+	:i :s{$Name$ = %s(13,"Created Goals")$checksum$ = $goals_created$:s}
+	:i :a}
+:i $skill_level_info$ = :a{
+	:i :s{$Name$ = %s(13,"1: Baby Steps")$checksum$ = $num_1$:s}
+	:i :s{$Name$ = %s(15,"2: I Can Crawl!")$checksum$ = $num_2$:s}
+	:i :s{$Name$ = %s(14,"3: Hold My Own")$checksum$ = $num_3$:s}
+	:i :s{$Name$ = %s(16,"4: Let's Do This")$checksum$ = $num_4$:s}
+	:i :s{$Name$ = %s(15,"5: Bring It On!")$checksum$ = $num_5$:s}
+	:i :a}
+:i $fireball_level_info$ = :a{
+	:i :s{$Name$ = %s(8,"1 (easy)")$checksum$ = $num_1$$fireball_level$ = %i(1,00000001):s}
+	:i :s{$Name$ = %s(1,"2")$checksum$ = $num_2$$fireball_level$ = %i(2,00000002):s}
+	:i :s{$Name$ = %s(1,"3")$checksum$ = $num_3$$fireball_level$ = %i(3,00000003):s}
+	:i :s{$Name$ = %s(1,"4")$checksum$ = $num_4$$fireball_level$ = %i(4,00000004):s}
+	:i :s{$Name$ = %s(8,"5 (hard)")$checksum$ = $num_5$$fireball_level$ = %i(5,00000005):s}
+	:i :a}
+:i function $sign_out$
+	:i $SignOut$
+	:i $create_pause_menu$
+:i endfunction
+:i function $go_to_xbox_dashboard$
+	:i $GotoXboxDashboard$
+:i endfunction
+:i function $create_big_black_hiding_box$
+	:i $unlock_root_window$
+	:i if $ScreenElementExists$$id$ = $big_black_box$
+		:i $DestroyScreenElement$$id$ = $big_black_box$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $big_black_box$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(190.000000,190.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(5001,00001389)
+	:i :s}
+:i endfunction
+:i function $quit_network_game$
+	:i $change$$is_changing_levels$ = %i(1,00000001)
+	:i if $OnXbox$
+		:i $DisplayLoadingScreen$%s(16,"loadscrn_generic")%i(17,00000011)
+	:i else 
+		:i $create_big_black_hiding_box$
+	:i endif
+	:i $console_destroy$
+	:i $restore_start_key_binding$
+	:i if $InInternetMode$
+		:i if $OnServer$
+			:i $ReportStats$$final$
+		:i endif
+		:i if $ProfileLoggedIn$
+			:i $SetLobbyStatus$
+		:i endif
+		:i $CancelNatNegotiation$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater$
+		:i if NOT $IsObserving$
+			:i $skater$.$NetEnablePlayerInput$
+			:i $skater$.$DestroyAllSpecialItems$
+		:i endif
+	:i endif
+	:i if NOT $IsObserving$
+		:i $ExitSurveyorMode$
+	:i endif
+	:i $ProximCleanup$
+	:i $chosen_leave_server$
+	:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+	:i $dialog_box_exit$
+	:i if $IsInternetGameHost$
+		:i $QuitGame$
+		:i return
+		
+	:i endif
+	:i if $IsJoiningInternetGame$
+		:i $QuitGame$
+		:i return
+		
+	:i endif
+	:i $SetGameType$$career$
+	:i $SetCurrentGameType$
+	:i $SetStatOverride$
+	:i $setservermode$$on$
+	:i $StartServer$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $SetNetworkMode$$LAN_MODE$
+	:i $JoinServer$
+	:i while
+		
+		:i if $JoinServerComplete$
+			:i continue
+			
+		:i else 
+			:i $Wait$%i(1,00000001)
+		:i endif
+	:i loop_to 
+	:i if $InInternetMode$
+		:i $SetQuietMode$$OFF$
+	:i endif
+	:i $SetGameType$$NetLobby$
+	:i $SetCurrentGameType$
+	:i $level_select_change_level$$level$ = $Load_MainMenu$$no_levelUnload$
+	:i $SetNetworkMode$
+:i endfunction
+:i function $spawned_chosen_host_game$
+	:i if $IsXbox$
+		:i $DisplayLoadingScreen$%s(22,"loadscrn_system_link_x")
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $Wait$%i(1,00000001)$frame$
+	:i endif
+	:i if $IsXbox$
+		:i $DisplayLoadingScreen$%s(22,"loadscrn_system_link_x")
+	:i endif
+	:i $leave_front_end$
+	:i $Cleanup$$preserve_skaters$
+	:i if NOT $IsXbox$
+		:i $DisplayLoadingScreen$%s(15,"loadscrn_Online")
+	:i endif
+	:i $FreeServerList$
+	:i $LeaveServer$
+	:i $SetGameType$$NetLobby$
+	:i $SetCurrentGameType$
+	:i $InitSkaterHeaps$
+	:i $setservermode$
+	:i $StartServer$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $JoinServer$
+	:i while
+		
+		:i if $JoinServerComplete$
+			:i continue
+			
+		:i else 
+			:i $Wait$%i(1,00000001)
+		:i endif
+	:i loop_to 
+	:i $ChangeLevel$$level$ = $use_preferences$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $chosen_host_game$
+	:i $change$$in_server_options$ = %i(0,00000000)
+	:i if $InNetGame$
+		:i $network_start_selected$
+	:i else 
+		:i if $InSplitScreenGame$
+			:i $ApplySplitScreenOptions$
+			:i $chosen_start_game$
+		:i else 
+			:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+			:i $change$$is_changing_levels$ = %i(1,00000001)
+			:i $SpawnScript$$spawned_chosen_host_game$$NotSessionSpecific$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $select_thug_online_play$
+	:i $change_gamemode_net$
+	:i $GoalManager_SetDifficultyLevel$%i(1,00000001)
+	:i $launch_select_skater_menu$$change_gamemode$ = $change_gamemode_net$
+:i endfunction
+:i function $prompt_for_net_config$
+	:i $change$$InNetOptionsFromNetPlay$ = %i(1,00000001)
+	:i $_CreationOptionsLoadNetConfig$
+:i endfunction
+:i function $select_internet_play$
+	:i $change$$network_connection_type$ = $internet$
+	:i $do_network_setup$$error_script$ = $back_from_startup_error_dialog$$success_script$ = $chose_internet$$need_setup_script$ = $prompt_for_net_config$
+:i endfunction
+:i function $select_lan_play$
+	:i $do_network_setup$$error_script$ = $back_from_startup_error_dialog$$success_script$ = $launch_network_select_lan_games_menu$$need_setup_script$ = $prompt_for_net_config$
+:i endfunction
+:i function $net_setup_from_net_play_successful$
+	:i $dialog_box_exit$
+	:i $launch_select_skater_menu$$change_gamemode$ = $change_gamemode_net$
+:i endfunction
+:i function $do_network_setup$
+	:i $SetMemThreadSafe$
+	:i $UseNetworkPreferences$
+	:i $SpawnScript$$test_network_setup$$params$ =  isNull 
+:i endfunction
+:i function $spoof_usb_adaptor_setup$
+	:i if NOT $IsTrue$$DontSpoofAdaptor$
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(11,"device_type")$string$ = %s(20,"USB Ethernet Adaptor")$checksum$ = $device_broadband_usb$
+	:i endif
+:i endfunction
+:i function $spoof_pcmcia_adaptor_setup$
+	:i if NOT $IsTrue$$DontSpoofAdaptor$
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(11,"device_type")$string$ = %s(34,"Ethernet (Network Adaptor for PS2)")$checksum$ = $device_broadband_pc$
+	:i endif
+:i endfunction
+:i function $test_network_setup$
+	:i if $levelIs$$Load_MainMenu$
+		:i $skater$.$hide$
+	:i endif
+	:i if NOT $OnXbox$
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+		:i switch %GLOBAL%$checksum$
+			:i case $device_none$
+				:i %GLOBAL%$need_setup_script$$text$ = $net_status_need_to_setup$ isNull 
+				:i return
+				
+				:i endcase
+			case $device_sony_modem$
+				:i endcase
+			case $device_usb_modem$
+				:i $GetPreferenceString$$pref_type$ = $network$$dialup_number$
+				:i if  (%GLOBAL%$ui_string$ = %s(0,"")) 
+					:i %GLOBAL%$need_setup_script$$text$ = $net_status_need_to_setup_dialup$ isNull 
+					:i return
+					
+				:i endif
+				:i endcase
+			default 
+				:i end_switch
+		
+	:i endif
+	:i if $NeedToTestNetSetup$
+		:i $change$$NeedsToTestDNAS$ = %i(1,00000001)
+		:i $create_testing_network_settings_dialog$
+		:i $Wait$%i(1,00000001)$Seconds$
+		:i $TestNetSetup$ isNull 
+	:i else 
+		:i %GLOBAL%$success_script$ isNull 
+	:i endif
+:i endfunction
+:i function $launch_network_host_options_sub_menu$
+	:i $PrintStruct$ isNull 
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i %GLOBAL%$sub_menu_script$ isNull 
+:i endfunction
+:i function $back_from_account_list_menu$
+	:i $CancelLogon$
+	:i $SetNetworkMode$
+	:i $create_pause_menu$
+:i endfunction
+:i function $back_from_create_account_dialog$
+	:i $dialog_box_exit$
+	:i $back_from_account_list_menu$
+:i endfunction
+:i function $back_from_wrong_pin_dialog$
+	:i $dialog_box_exit$
+	:i $ConnectToInternet$
+:i endfunction
+:i function $launch_no_accounts_dialog$
+	:i $create_dialog_box$:s{$title$ = %s(17,"NO ACCOUNTS FOUND")
+		:i $text$ = %s(79,"No accounts were found on your system. Would you like to create an account now?")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $go_to_xbox_dashboard$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $back_from_create_account_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $launch_auto_server_notification$
+	:i $destroy_onscreen_keyboard$
+	:i $create_error_box$:s{$title$ = %s(11,"Auto-Server")
+		:i $text$ = %s(112,"This server is in auto-server mode.  When at least two players are present, games will launch one-after-another.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $dialog_box_exit$:s}
+			:i :a}
+		:i $no_animate$
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $launch_auto_server_explanation$
+	:i $destroy_onscreen_keyboard$
+	:i $create_error_box$:s{$title$ = %s(10,"Auto-Serve")
+		:i $text$ = %s(128,"You are in auto-server mode.  When at least two players have joined, a new game will start and new games will follow thereafter.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $dialog_box_exit$:s}
+			:i :a}
+		:i $no_animate$
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $launch_fcfs_notification$
+	:i if  (%GLOBAL%$checksum$ = $boolean_true$) 
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(16,"player_collision")$string$ = %s(2,"On") isNull 
+	:i else 
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(16,"player_collision")$string$ = %s(3,"Off") isNull 
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i $force_close_rankings$
+	:i $exit_pause_menu$
+	:i $create_error_box$:s{$title$ = %s(17,"Host Notification")
+		:i $text$ = %s(117,"This server is in First Come First Serve mode.  You are the designated host.  You may change options and start games.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $exit_async_dialog$:s}
+			:i :a}
+		:i $no_animate$
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $fcfs_confirm$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = %s(22,"First Come First Serve")
+		:i $text$ = %s(141,"This option will make you a permanent observer and will allow the first joining player to choose game modes and change levels.  Are you sure?")
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $fcfs_selected$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $create_sit_out_menu$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $auto_serve_confirm$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = %s(10,"Auto Serve")
+		:i $text$ = %s(185,"This option will make you a permanent observer. When at least two players have joined, a new game of the current game mode will start and new games will follow thereafter. Are you sure?")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $auto_serve_selected$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $create_sit_out_menu$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $create_kick_ban_menu$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = %GLOBAL%$Name$
+		:i $text$ = %s(14,"Remove Player?")
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+			:i :s{$text$ = %s(4,"kick")$pad_choose_script$ = $kick_player_confirm$$pad_choose_params$ =  isNull :s}
+			:i :s{$text$ = %s(3,"ban")$pad_choose_script$ = $ban_player_confirm$$pad_choose_params$ =  isNull :s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $create_player_options_dialog$
+	:i if $GotParam$$allow_remove_homie$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i if $OnServer$
+			:i $create_dialog_box$:s{$title$ = %s(14,"Player Options")
+				:i $text$ = %GLOBAL%$Name$
+				:i $pad_back_script$ = $cancel_remove_player$
+				:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+					:i :s{$text$ = %s(4,"kick")$pad_choose_script$ = $kick_player_confirm$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(3,"ban")$pad_choose_script$ = $ban_player_confirm$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(12,"remove homie")$pad_choose_script$ = $remove_buddy$$pad_choose_params$ =  isNull :s}
+					:i :a}
+				:i $no_animate$
+			:i :s}
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %s(14,"Player Options")
+				:i $text$ = %GLOBAL%$Name$
+				:i $pad_back_script$ = $cancel_remove_player$
+				:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+					:i :s{$text$ = %s(12,"remove homie")$pad_choose_script$ = $remove_buddy$$pad_choose_params$ =  isNull :s}
+					:i :a}
+				:i $no_animate$
+			:i :s}
+		:i endif
+	:i else 
+		:i if $GotParam$$allow_add_homie$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i if $OnServer$
+				:i $create_dialog_box$:s{$title$ = %s(14,"Player Options")
+					:i $text$ = %GLOBAL%$Name$
+					:i $pad_back_script$ = $cancel_remove_player$
+					:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+						:i :s{$text$ = %s(4,"kick")$pad_choose_script$ = $kick_player_confirm$$pad_choose_params$ =  isNull :s}
+						:i :s{$text$ = %s(3,"ban")$pad_choose_script$ = $ban_player_confirm$$pad_choose_params$ =  isNull :s}
+						:i :s{$text$ = %s(9,"add homie")$pad_choose_script$ = $add_buddy$$pad_choose_params$ =  isNull :s}
+						:i :a}
+					:i $no_animate$
+				:i :s}
+			:i else 
+				:i $create_dialog_box$:s{$title$ = %s(14,"Player Options")
+					:i $text$ = %GLOBAL%$Name$
+					:i $pad_back_script$ = $cancel_remove_player$
+					:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+						:i :s{$text$ = %s(9,"add homie")$pad_choose_script$ = $add_buddy$$pad_choose_params$ =  isNull :s}
+						:i :a}
+					:i $no_animate$
+				:i :s}
+			:i endif
+		:i else 
+			:i if $OnServer$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+				:i $create_dialog_box$:s{$title$ = %s(14,"Player Options")
+					:i $text$ = %GLOBAL%$Name$
+					:i $pad_back_script$ = $cancel_remove_player$
+					:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_remove_player$:s}
+						:i :s{$text$ = %s(4,"kick")$pad_choose_script$ = $kick_player_confirm$$pad_choose_params$ =  isNull :s}
+						:i :s{$text$ = %s(3,"ban")$pad_choose_script$ = $ban_player_confirm$$pad_choose_params$ =  isNull :s}
+						:i :a}
+					:i $no_animate$
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $launch_add_buddy$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $make_new_menu$$menu_id$ = $add_buddy_menu$$vmenu_id$ = $homie_vmenu$$menu_title$ = %s(9,"ADD HOMIE")
+	:i $SetScreenElementProps$:s{$id$ = $add_buddy_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $FillProspectiveBuddyList$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $cancel_add_buddy$
+	:i $dialog_box_exit$
+	:i $printf$%s(16,"cancel_add_buddy")
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+	:i $FireEvent$$Type$ = $focus$$target$ = $lobby_player_list_menu$
+	:i $change$$current_lobby_focus$ = %i(2,00000002)
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+	:i $AssignAlias$$id$ = $lobby_player_list_menu$$alias$ = $current_menu$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$OFF$
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$on$
+:i endfunction
+:i function $cant_add_buddy_prompt_1$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(104,"This user does not have a GameSpy profile and therefore can not be tracked and added to your homie list.")
+	:i $create_dialog_box$:s{$title$ = %s(20,"PLAYER NOT LOGGED IN")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $text_dims$ = %vec2(300.000000,0.000000)
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cant_add_buddy_prompt_3$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(76,"Your homie list is full. You must remove some homies before adding new ones.")
+	:i $create_dialog_box$:s{$title$ = %s(15,"HOMIE LIST FULL")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cant_add_buddy_prompt_2$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(95,"You must create a GameSpy profile before you can track users by adding them to your homie list.")
+	:i $create_dialog_box$:s{$title$ = %s(18,"NO GAMESPY PROFILE")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cant_add_self_to_buddy_prompt$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(48,"You may not add yourself to your own homie list.")
+	:i $create_dialog_box$:s{$title$ = %s(12,"MY OWN HOMIE")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $already_buddy_prompt$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(40,"This user is already on your homie list.")
+	:i $create_dialog_box$:s{$title$ = %s(18,"ALREADY YOUR HOMIE")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $add_buddy_prompt$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $game_list_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(26,"Add %s to your homie list?")$s$ = %GLOBAL%$net_name$
+	:i $create_dialog_box$:s{$title$ = %s(9,"ADD HOMIE")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $lobby_add_buddy$$pad_choose_params$ =  isNull :s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $cancel_add_buddy$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $add_buddy$
+	:i if $BuddyListFull$
+		:i $dialog_box_exit$
+		:i $create_buddy_list_full_dialog$
+	:i else 
+		:i $AddBuddy$ isNull 
+		:i $dialog_box_exit$
+		:i $create_adding_buddy_dialog$
+	:i endif
+:i endfunction
+:i function $send_buddy_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SendBuddyMessage$ isNull 
+	:i if $GotParam$$from_buddy_message$
+		:i if $InNetGame$
+			:i $game_back_from_buddy_messages$
+		:i else 
+			:i $back_from_buddy_messages$
+		:i endif
+	:i else 
+		:i $launch_homie_list$
+	:i endif
+:i endfunction
+:i function $message_buddy$
+	:i $pager_window_destroy$$hide_ui$
+	:i $dialog_box_exit$
+	:i if $GotParam$$from_buddy_message$
+		:i if $InNetGame$
+			:i $cancel_script$ = $game_back_from_buddy_messages$
+		:i else 
+			:i $cancel_script$ = $back_from_buddy_messages$
+		:i endif
+	:i else 
+		:i $cancel_script$ = $launch_homie_list$
+	:i endif
+	:i $create_onscreen_keyboard$$max_length$ = %i(64,00000040)$allow_cancel$$keyboard_cancel_script$ = %GLOBAL%$cancel_script$$keyboard_done_script$ = $send_buddy_message$$keyboard_title$ = %s(12,"Send message") isNull 
+:i endfunction
+:i function $remove_buddy$
+	:i $RemoveBuddy$ isNull 
+	:i $dialog_box_exit$
+	:i $create_removed_buddy_dialog$
+:i endfunction
+:i function $show_next_buddy_message$
+	:i $dialog_box_exit$
+	:i $ShowNextBuddyMessage$
+:i endfunction
+:i function $lobby_add_buddy_from_message$
+	:i $back_from_buddy_messages$
+	:i $lobby_add_buddy$ isNull 
+:i endfunction
+:i function $show_buddy_message$
+	:i if $InNetGame$
+		:i $add_buddy_script$ = $add_buddy$
+		:i $back_script$ = $game_back_from_buddy_messages$
+	:i else 
+		:i $add_buddy_script$ = $lobby_add_buddy_from_message$
+		:i $back_script$ = $back_from_buddy_messages$
+	:i endif
+	:i $FormatText$$TextName$ = $msg_text$%s(15,"Message from %s")$s$ = %GLOBAL%$nick$
+	:i if $AnyBuddyMessagesLeft$
+		:i if $IsAlreadyMyBuddy$ isNull 
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$msg_text$
+				:i $text$ = %GLOBAL%$msg_body$
+				:i $buttons$ = :a{
+					:i :s{$text$ = %s(5,"reply")$pad_choose_script$ = $message_buddy$$pad_choose_params$ = :s{ isNull $from_buddy_message$:s}:s}
+					:i :s{$text$ = %s(4,"next")$pad_choose_script$ = $show_next_buddy_message$:s}
+					:i :s{$text$ = %s(5,"close")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$msg_text$
+				:i $text$ = %GLOBAL%$msg_body$
+				:i $buttons$ = :a{
+					:i :s{$text$ = %s(9,"add homie")$pad_choose_script$ = %GLOBAL%$add_buddy_script$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(5,"reply")$pad_choose_script$ = $message_buddy$$pad_choose_params$ = :s{ isNull $from_buddy_message$:s}:s}
+					:i :s{$text$ = %s(4,"next")$pad_choose_script$ = $show_next_buddy_message$:s}
+					:i :s{$text$ = %s(5,"close")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i else 
+		:i if $IsAlreadyMyBuddy$ isNull 
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$msg_text$
+				:i $text$ = %GLOBAL%$msg_body$
+				:i $buttons$ = :a{
+					:i :s{$text$ = %s(5,"reply")$pad_choose_script$ = $message_buddy$$pad_choose_params$ = :s{ isNull $from_buddy_message$:s}:s}
+					:i :s{$text$ = %s(5,"close")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$msg_text$
+				:i $text$ = %GLOBAL%$msg_body$
+				:i $buttons$ = :a{
+					:i :s{$text$ = %s(9,"add homie")$pad_choose_script$ = %GLOBAL%$add_buddy_script$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(5,"reply")$pad_choose_script$ = $message_buddy$$pad_choose_params$ = :s{ isNull $from_buddy_message$:s}:s}
+					:i :s{$text$ = %s(5,"close")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $lobby_add_buddy$
+	:i $dialog_box_exit$
+	:i $AddBuddy$$profile$ = %GLOBAL%$profile$$nick$ = %GLOBAL%$net_name$
+	:i if $InNetGame$
+		:i $create_dialog_box$:s{$title$ = $net_status_msg$
+			:i $text$ = %s(11,"Added homie")
+			:i $buttons$ = :a{:s{$text$ = %s(5,"close")$pad_choose_script$ = $cancel_add_buddy$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $FormatText$$TextName$ = $msg_text$%s(26,"Adding %s to homie list...")$s$ = %GLOBAL%$net_name$
+		:i $SendMessage$$text$ = %GLOBAL%$msg_text$$system_message$
+		:i $cancel_add_buddy$
+		:i if $ScreenElementExists$$id$ = $actions_menu$
+			:i $FillPlayerList$
+			:i if  ($current_lobby_focus$ = %i(2,00000002)) 
+				:i $refocus_actions_menu$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_adding_buddy_dialog$
+	:i if $InNetGame$
+		:i $dialog_box_exit$
+		:i $exit_pause_menu$
+		:i $create_console_message$$text$ = %s(24,"<system>: Adding homie..")
+	:i else 
+		:i $create_dialog_box$:s{$title$ = $net_status_msg$
+			:i $text$ = %s(15,"Adding homie...")
+			:i $buttons$ = :a{:s{$text$ = %s(5,"close")$pad_choose_script$ = $close_add_buddy$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_buddy_list_full_dialog$
+	:i if $InNetGame$
+		:i $dialog_box_exit$
+		:i $exit_pause_menu$
+		:i $create_console_message$$text$ = %s(34,"<system>: Your homie list is full.")
+	:i else 
+		:i $create_dialog_box$:s{$title$ = $net_error_msg$
+			:i $text$ = %s(76,"Your homie list is full. You must remove some homies before adding new ones.")
+			:i $buttons$ = :a{:s{$text$ = %s(5,"close")$pad_choose_script$ = $close_add_buddy$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $failed_add_buddy_already_buddy$
+	:i if $InNetGame$
+		:i $create_failed_add_buddy_dialog$
+	:i else 
+		:i $SendMessage$$text$ = %s(27,"User already on homie list.")$system_message$
+	:i endif
+:i endfunction
+:i function $added_buddy$
+	:i if $levelIs$$Load_MainMenu$
+		:i $FormatText$$TextName$ = $msg_text$%s(23,"Added %s to homie list.")$s$ = %GLOBAL%$net_name$
+		:i $SendMessage$$text$ = %GLOBAL%$msg_text$$system_message$
+	:i else 
+		:i $create_added_buddy_dialog$
+	:i endif
+:i endfunction
+:i function $removed_buddy$
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $create_added_buddy_dialog$
+	:i if $InNetGame$
+		:i $dialog_box_exit$
+		:i $exit_pause_menu$
+		:i $create_console_message$$text$ = %s(22,"<system>: Added homie.")
+	:i else 
+		:i if NOT $ObjectExists$$id$ = $dialog_box_anchor$
+			:i $create_dialog_box$:s{$title$ = $net_status_msg$
+				:i $text$ = %s(12,"Added homie.")
+				:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_buddy_ok$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_removed_buddy_dialog$
+	:i if $InNetGame$
+		:i $dialog_box_exit$
+		:i $exit_pause_menu$
+		:i $create_console_message$$text$ = %s(24,"<system>: Removed homie.")
+	:i else 
+		:i $dialog_box_exit$
+		:i $create_dialog_box$:s{$title$ = $net_status_msg$
+			:i $text$ = %s(14,"Removed homie.")
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_buddy_ok$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_failed_add_buddy_dialog$
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $create_error_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(28,"User was already your homie.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_buddy_ok$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $close_add_buddy$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $accept_buddy_ok$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_quit_game_dialog$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_quit_game_dialog$
+:i endfunction
+:i function $create_quit_game_dialog$
+	:i $create_error_box$:s{$title$ = %s(9,"Quit Game")
+		:i $text$ = %s(13,"Are you sure?")
+		:i $anchor_id$ = $quit_dialog_anchor$
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $quit_network_game$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $quit_game_dialog_box_exit$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $quit_game_dialog_box_exit$
+	:i $generic_menu_pad_back_sound$
+	:i $exit_pause_menu$
+	:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+:i endfunction
+:i function $launch_wrong_pin_dialog_box$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = %s(9,"WRONG PIN")
+		:i $text$ = %s(38,"The PIN you have entered is incorrect.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_wrong_pin_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $select_xbox_multiplayer$
+	:i $change$$network_connection_type$ = $lan$
+	:i $change_gamemode_net$
+	:i $launch_select_skater_menu$
+:i endfunction
+:i function $launch_network_select_games_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_network_select_games_menu$$play_cam$
+:i endfunction
+:i function $launch_remove_players_menu$
+	:i $hide_current_goal$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_remove_players_menu$
+:i endfunction
+:i function $launch_xbox_online_menu$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_xbox_online_menu$
+:i endfunction
+:i function $chose_xbox_online$
+	:i if $AlreadySignedIn$
+		:i $create_xbox_online_menu$
+	:i else 
+		:i $chose_internet$
+	:i endif
+:i endfunction
+:i function $connected_to_internet$
+	:i $change$$NeedsToTestDNAS$ = %i(0,00000000)
+	:i if $ServicesAreAvailable$
+		:i $retrieve_motd$
+	:i endif
+:i endfunction
+:i function $availability_check_wait$
+	:i $printf$%s(26,"IN availability_check_wait")
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_checking_motd$
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $retrieve_motd$
+	:i if NOT $AlreadyGotMotd$
+		:i $DownloadMotd$
+	:i else 
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i if NOT $ProfileLogIn$
+			:i $create_internet_options$
+		:i endif
+	:i endif
+:i endfunction
+:i function $service_never_available$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_never_available$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_startup_error_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $service_not_available$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_not_available$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_startup_error_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $failed_internet_connection$
+	:i $printf$%s(33,"script failed_internet_connection")
+	:i $create_ss_menu$$no_animate$
+:i endfunction
+:i function $chose_internet$
+	:i $printf$%s(24,"**** Chose Internet*****")
+	:i $SetNetworkMode$$INTERNET_MODE$
+	:i if NOT $OnXbox$
+		:i $ConnectToInternet$
+	:i else 
+		:i if $ConnectToInternet$$success$ = $authenticate_client$$failure$ = $failed_internet_connection$
+			:i $printf$%s(21,"connected to internet")
+		:i else 
+			:i $change$$NeedsToTestDNAS$ = %i(1,00000001)
+			:i if $ObjectExists$$id$ = $current_menu_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $confirm_observe$
+	:i $generic_menu_pad_back_sound$
+	:i $exit_pause_menu$
+	:i $dialog_box_exit$
+	:i $EnterObserverMode$
+:i endfunction
+:i function $chose_observe$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_dialog_box$:s{$title$ = %s(13,"Observer Mode")
+		:i $text$ = %s(87,"Are you sure you would like to observe this game? You will not be able to jump back in.")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $confirm_observe$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $back_from_dialog$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $launch_motd_wait_dialog$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_motd_wait_dialog$
+:i endfunction
+:i function $launch_network_select_lan_games_menu$
+	:i $KillSkaterCamAnim$$all$
+	:i $skater$.$reset_model_lights$
+	:i $skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$Name$ = $mainmenu_camera03$$play_hold$
+	:i $SetNetworkMode$$LAN_MODE$
+	:i $launch_network_select_games_menu$
+:i endfunction
+:i function $launch_network_host_options_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_network_host_options_menu$
+:i endfunction
+:i $in_server_options$ = %i(0,00000000)
+:i function $back_from_internet_host_options$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $Wait$%i(1,00000001)$frame$
+	:i endif
+	:i $change$$in_server_options$ = %i(0,00000000)
+	:i if $InNetGame$
+		:i $create_pause_menu$
+	:i else 
+		:i $launch_network_select_games_menu$
+	:i endif
+:i endfunction
+:i $in_net_lobby$ = %i(0,00000000)
+:i function $back_from_auth_error$
+	:i $printf$%s(27,"script back_from_auth_error")
+	:i $dialog_box_exit$
+	:i $create_ss_menu$$no_animate$
+:i endfunction
+:i function $display_auth_error$
+	:i $dialog_box_exit$
+	:i $FormatText$$TextName$ = $message$%s(17,"%h (%s)\n%e\n\n%f")$h$ = %GLOBAL%$header$$s$ = %GLOBAL%$sub_code$$e$ = %GLOBAL%$desc$$f$ = %GLOBAL%$footer$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = %GLOBAL%$message$
+		:i $text_dims$ = %vec2(500.000000,0.000000)
+		:i $buttons$ = :a{:s{$text$ = %s(2,"OK")$pad_choose_script$ = $back_from_auth_error$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $spawn_dnas_authentication$
+	:i $Wait$%i(30,0000001e)$frames$
+	:i $AuthenticateClient$
+:i endfunction
+:i function $authenticate_client$
+	:i $printf$%s(33,"**** in authenticate client *****")
+	:i $KillSkaterCamAnim$$all$
+	:i $skater$.$reset_model_lights$
+	:i $skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$Name$ = $mainmenu_camera03$$play_hold$
+	:i $connected_to_internet$
+:i endfunction
+:i $current_lobby_focus$ = %i(0,00000000)
+:i function $host_chosen$
+	:i $console_hide$
+	:i $GSDisableNet$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $launch_network_host_options_menu$
+:i endfunction
+:i function $host_net_chosen$
+	:i $console_hide$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $launch_network_host_options_menu$
+	:i $GSEnableNet$
+:i endfunction
+:i function $check_ip_from_keyboard_failure_exit$
+	:i $dialog_box_exit$
+	:i $create_network_select_games_menu$
+:i endfunction
+:i function $check_ip_from_keyboard_failure$
+	:i $TryJoinServerIPCancel$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %sc(17,"Unable to connect")
+		:i $text$ = %sc(28,"Unable to connect to server.")
+		:i $pad_back_script$ = $create_network_select_games_menu$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $check_ip_from_keyboard_failure_exit$:s}
+			:i :a}
+	:i :s}
+	:i $ResetTimer$
+	:i while
+		
+		:i if $TimeGreaterThan$%i(5,00000005)
+			:i continue
+			
+		:i endif
+		:i $Wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+		:i $dialog_box_exit$
+		:i $create_network_select_games_menu$$play_cam$
+	:i endif
+:i endfunction
+:i function $check_ip_from_keyboard_cancel$
+	:i $dialog_box_exit$
+	:i $TryJoinServerIPCancel$
+	:i $create_network_select_games_menu$$play_cam$
+:i endfunction
+:i function $check_ip_from_keyboard$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $destroy_onscreen_keyboard$
+	:i if NOT $GotParam$$cancel$
+		:i $TryJoinServerIP$$string$ = %GLOBAL%$string$
+		:i $ResetTimer$
+		:i $create_snazzy_dialog_box$:s{$title$ = %sc(11,"Checking...")
+			:i $text$ = %sc(22,"Checking for server...")
+			:i $pad_back_script$ = $check_ip_from_keyboard_cancel$
+			:i $buttons$ = :a{
+				:i :s{$font$ = $small$$text$ = %sc(6,"Cancel")$pad_choose_script$ = $check_ip_from_keyboard_cancel$:s}
+				:i :a}
+		:i :s}
+		:i while
+			
+			:i if $TimeGreaterThan$%i(5,00000005)
+				:i continue
+				
+			:i endif
+			:i if $TryJoinServerIPSuccess$
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+	:i endif
+	:i if $GotParam$$cancel$
+		:i $create_network_select_games_menu$
+	:i else 
+		:i if NOT $TryJoinServerIPSuccess$
+			:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+				:i $dialog_box_exit$
+				:i $check_ip_from_keyboard_failure$
+			:i endif
+		:i else 
+			:i $dialog_box_exit$
+			:i $create_network_select_games_menu$$play_cam$
+		:i endif
+	:i endif
+:i endfunction
+:i function $check_join_internet_ip$
+	:i $console_hide$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $TryJoinInternetGame$
+	:i $create_snazzy_dialog_box$:s{$title$ = %sc(11,"Checking...")
+		:i $text$ = %sc(22,"Checking for server...")
+		:i $pad_back_script$ = $check_ip_from_keyboard_cancel$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(6,"Cancel")$pad_choose_script$ = $check_ip_from_keyboard_cancel$:s}
+			:i :a}
+	:i :s}
+	:i while
+		
+		:i if NOT $TryingToJoinGame$
+			:i continue
+			
+		:i endif
+		:i $TryJoinInternetGame$
+		:i $ResetTimer$
+		:i while
+			
+			:i if $TimeGreaterThan$%i(3,00000003)
+				:i continue
+				
+			:i endif
+			:i if $TryJoinServerIPSuccess$
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+		:i if $TryJoinServerIPSuccess$
+			:i continue
+			
+		:i endif
+	:i loop_to %i(10,0000000a)
+	:i if NOT $TryJoinServerIPSuccess$
+		:i $TryJoinServerIPCancel$
+		:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+			:i $dialog_box_exit$
+			:i $check_ip_from_keyboard_failure$
+		:i endif
+	:i else 
+		:i $dialog_box_exit$
+		:i $create_network_select_games_menu$$play_cam$
+	:i endif
+:i endfunction
+:i function $fcfs_selected$
+	:i $dialog_box_exit$
+	:i $SetHostMode$$HOST_MODE_FCFS$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $auto_serve_selected$
+	:i $dialog_box_exit$
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$game_type$
+	:i switch %GLOBAL%$checksum$
+		:i case $netgoalattack$
+			:i if NOT $GoalManager_GoalsAreSelected$
+				:i $exit_pause_menu$
+				:i $create_dialog_box$:s{$title$ = %s(17,"No Goals Selected")
+					:i $text$ = %s(66,"You must select goals before starting the Goal Attack auto-server.")
+					:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_dialog$:s}
+						:i :a}
+				:i :s}
+				:i return
+				
+			:i endif
+			:i end_switch
+	
+	:i $SetHostMode$$HOST_MODE_AUTO_SERVE$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $create_sit_out_menu$
+	:i $dialog_box_exit$
+	:i $make_new_themed_sub_menu$$title$ = %s(7,"SIT OUT")
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $theme_menu_add_item$$text$ = %s(23,"First Come, First Serve")$id$ = $menu_network_fcfs_select$$pad_choose_script$ = $fcfs_confirm$$highlight_bar_scale$ = %vec2(1.150000,1.300000)$highlight_bar_pos$ = %vec2(97.000000,-7.000000)$centered$ = %i(1,00000001)
+	:i $theme_menu_add_item$$text$ = %s(10,"Auto-Serve")$id$ = $menu_network_auto_serve_select$$pad_choose_script$ = $auto_serve_confirm$$highlight_bar_scale$ = %vec2(1.150000,1.300000)$highlight_bar_pos$ = %vec2(97.000000,-7.000000)$centered$ = %i(1,00000001)$last_menu_item$ = %i(1,00000001)
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $launch_network_sit_out_menu$
+	:i $hide_current_goal$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_sit_out_menu$
+:i endfunction
+:i function $do_nothing$
+:i endfunction
+:i function $create_motd_menu$
+	:i $dialog_box_exit$
+	:i if $IsPal$
+		:i $create_dialog_box$:s{$title$ = %s(7,"MESSAGE")
+			:i $text$ = %GLOBAL%$message$
+			:i $text_dims$ = %vec2(500.000000,0.000000)
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $profile_connect$:s}
+				:i :a}
+			:i $box_animate$
+		:i :s}
+	:i else 
+		:i $create_dialog_box$:s{$title$ = %s(7,"MESSAGE")
+			:i $text$ = %GLOBAL%$message$
+			:i $sub_logo$ = $esrb$
+			:i $text_dims$ = %vec2(500.000000,0.000000)
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $profile_connect$:s}
+				:i :a}
+			:i $box_animate$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_motd_wait_dialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_checking_motd$
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancelled_motd$:s}:a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $cancelled_motd$
+	:i $CancelMotdDownload$
+:i endfunction
+:i function $CreateMotdRetryDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %GLOBAL%$message$
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $CreateMotdFailedDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_motd_failed$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_startup_error_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $StatsLoginFailedDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_stats_login_failed$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_profile_error$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $StatsRetrievalFailedDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_stats_retrieval_failed$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_profile_error$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $back_from_failed_buddy_login$
+	:i $dialog_box_exit$
+	:i $create_internet_options$
+:i endfunction
+:i function $CreateBuddyLoginFailedDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_buddy_login_failed$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_failed_buddy_login$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $back_from_removed_dialog$
+	:i $dialog_box_exit$
+	:i if $EnteringNetGame$
+		:i $cancel_join_server$
+	:i else 
+		:i $quit_network_game$
+	:i endif
+:i endfunction
+:i function $CreateServerRemovedYouDialog$
+	:i $HideLoadingScreen$
+	:i $GoalManager_DeactivateAllGoals$$force_all$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i $kill_net_panel_messages$
+	:i $force_close_rankings$$dont_retry$
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $exit_pause_menu$
+	:i if NOT $IsObserving$
+		:i $skater$.$Vibrate$$OFF$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $quit_dialog_anchor$
+		:i $DestroyScreenElement$$id$ = $quit_dialog_anchor$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $create_error_box$:s{$title$ = $net_notice_msg$
+		:i $text$ = $net_message_server_removed_you$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_removed_dialog$:s}
+			:i :a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $CreateServerMovedOnDialog$
+	:i $HideLoadingScreen$
+	:i $force_close_rankings$$dont_retry$
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $exit_pause_menu$
+	:i if NOT $IsObserving$
+		:i $skater$.$Vibrate$$OFF$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $create_error_box$:s{$title$ = $net_notice_msg$
+		:i $text$ = $net_message_server_moved_on$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_removed_dialog$:s}
+			:i :a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $destroy_server_menu_children$
+	:i if $ObjectExists$$id$ = $server_list_menu$
+		:i $SetScreenElementLock$$id$ = $server_list_menu$$OFF$
+		:i $DestroyScreenElement$$id$ = $server_list_menu$$recurse$$preserve_parent$
+		:i if $GotParam$$refocus$
+			:i $refocus_actions_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $destroy_server_desc_children$
+	:i $SetScreenElementLock$$id$ = $server_desc_menu$$OFF$
+	:i $DestroyScreenElement$$id$ = $server_desc_menu$$recurse$$preserve_parent$
+	:i $DestroyScreenElement$$id$ = $server_player_menu$$recurse$$preserve_parent$
+	:i $refocus_gamelist_menu$
+:i endfunction
+:i function $destroy_lobby_user_list_children$
+	:i if $ObjectExists$$id$ = $lobby_player_list_menu$
+		:i $prepare_lobby_user_list_for_new_children$
+		:i $DestroyScreenElement$$id$ = $lobby_player_list_menu$$recurse$$preserve_parent$
+	:i endif
+:i endfunction
+:i function $destroy_lobby_user$
+	:i if $ObjectExists$$id$ = %GLOBAL%$user_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$user_id$
+	:i endif
+:i endfunction
+:i function $destroy_lobby_server$
+	:i if $ObjectExists$$id$ = %GLOBAL%$server_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$server_id$
+	:i endif
+:i endfunction
+:i function $destroy_lobby_buddy_list_children$
+	:i if $ObjectExists$$id$ = $homie_vmenu$
+		:i $prepare_lobby_buddy_list_for_new_children$
+		:i $DestroyScreenElement$$id$ = $homie_vmenu$$recurse$$preserve_parent$
+	:i endif
+:i endfunction
+:i function $add_no_servers_found_message$
+	:i if $ObjectExists$$id$ = $server_list_menu$
+		:i $SetScreenElementLock$$id$ = $server_list_menu$$OFF$
+		:i if $OnXbox$
+			:i $main_menu_add_item$$text$ = %s(14,"No Games Found")$parent$ = $server_list_menu$$id$ = $menu_network_no_servers$
+		:i else 
+			:i $main_menu_add_item$$text$ = %s(16,"No Servers Found")$parent$ = $server_list_menu$$id$ = $menu_network_no_servers$
+		:i endif
+		:i if $GotParam$$refocus$
+			:i $refocus_actions_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $prepare_server_menu_for_new_children$
+	:i if $ObjectExists$$id$ = $server_list_menu$
+		:i $SetScreenElementLock$$id$ = $server_list_menu$$OFF$
+	:i endif
+:i endfunction
+:i function $prepare_lobby_user_list_for_new_children$
+	:i if $ObjectExists$$id$ = $lobby_player_list_menu$
+		:i $SetScreenElementLock$$id$ = $lobby_player_list_menu$$OFF$
+	:i endif
+:i endfunction
+:i function $prepare_lobby_buddy_list_for_new_children$
+	:i if $ObjectExists$$id$ = $homie_vmenu$
+		:i $SetScreenElementLock$$id$ = $homie_vmenu$$OFF$
+	:i endif
+:i endfunction
+:i function $rejoin_lobby$
+	:i $RejoinLobby$
+	:i $create_joining_lobby_dialog$
+:i endfunction
+:i function $choose_selected_lobby$
+	:i $printf$%s(57,"---------------------- chose lobby ----------------------")
+	:i $ChooseLobby$ isNull 
+	:i $DestroyScreenElement$$id$ = $lobby_list_anchor$
+	:i $DestroyScreenElement$$id$ = $menu_parts_anchor$
+	:i $create_joining_lobby_dialog$
+:i endfunction
+:i function $choose_selected_server$
+	:i $console_hide$
+	:i $ChooseServer$ isNull 
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+:i endfunction
+:i function $describe_selected_server$
+	:i $DescribeServer$ isNull 
+:i endfunction
+:i function $choose_selected_player$
+	:i if $OnXbox$
+		:i $RemovePlayer$ isNull 
+	:i else 
+		:i $CreatePlayerOptions$ isNull 
+	:i endif
+:i endfunction
+:i function $choose_selected_account$
+	:i $ChooseAccount$ isNull 
+:i endfunction
+:i function $cancel_remove_player$
+	:i $CancelRemovePlayer$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $kick_player_confirm$
+	:i $create_dialog_box$:s{$title$ = %GLOBAL%$Name$
+		:i $text$ = %s(12,"Kick player?")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"yes")$pad_choose_script$ = $kick_player$:s}
+			:i :s{$text$ = %s(2,"no")$pad_choose_script$ = $cancel_remove_player$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $kick_player$
+	:i $KickPlayer$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $back_from_dialog$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $ban_player_confirm$
+	:i $create_dialog_box$:s{$title$ = %GLOBAL%$Name$
+		:i $text$ = %s(11,"Ban player?")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"yes")$pad_choose_script$ = $ban_player$:s}
+			:i :s{$text$ = %s(2,"no")$pad_choose_script$ = $cancel_remove_player$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ban_player$
+	:i $BanPlayer$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_pin_entry_menu$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_pin_entry_menu$
+:i endfunction
+:i function $launch_buddy_list$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_buddy_list_menu$
+:i endfunction
+:i function $launch_homie_list$$parent$ = $root_window$
+	:i $pulse_blur$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $InNetGame$
+		:i $GoalManager_HidePoints$
+	:i endif
+	:i if  (%GLOBAL%$parent$ = $root_window$) 
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$OFF$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $homie_bg_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $homie_bg_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$$generic_helper_text$
+	:i $build_theme_sub_title$$title$ = %s(10,"HOMIE LIST")
+	:i if $levelIs$$Load_MainMenu$
+		:i $build_top_and_bottom_blocks$$bot_z$ = %i(15,0000000f)
+		:i $make_mainmenu_3d_plane$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $ContainerElement$
+		:i $parent$ = $homie_bg_anchor$
+		:i $id$ = $homie_menu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,840.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $homie_menu_anchor$$alias$ = $current_menu_anchor$
+	:i $theme_background$$width$ = %i(7,00000007)$pos$ = %vec2(320.000000,63.000000)$num_parts$ = %i(10,0000000a)$static$ = $static$$dark_menu$ = $dark_menu$
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.300003,4.000000)
+		:i $pos$ = %vec2(35.000000,63.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i if $levelIs$$Load_MainMenu$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $homie_bg_anchor$
+			:i $texture$ = $homie$
+			:i $scale$ = %vec2(1.800000,1.300000)
+			:i $pos$ = %vec2(380.000000,67.000000)
+			:i $just$ = :a{$left$$bottom$:a}
+			:i $alpha$ = %f(0.500000)
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $homie_bg_anchor$
+			:i $id$ = $globe$
+			:i $texture$ = $globe$
+			:i $scale$ = %f(1.300000)
+			:i $pos$ = %vec2(320.000000,560.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $alpha$ = %f(0.300000)
+			:i $z_priority$ = %i(4294967295,ffffffff)
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $textElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $text$ = %s(4,"Name")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(90.000000,83.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,83.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(260.000000,345.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,32.299999)
+		:i $pos$ = %vec2(275.000000,95.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $textElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $text$ = %s(6,"Status")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(285.000000,83.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,32.299999)
+		:i $pos$ = %vec2(380.000000,95.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $textElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $text$ = %s(8,"Location")
+		:i $scale$ = %i(1,00000001)
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$on_rgba$
+		:i $pos$ = %vec2(390.000000,83.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i if $InNetGame$
+		:i $pad_back_script$ = $back_to_pause_menu_from_buddy_list$
+	:i else 
+		:i $pad_back_script$ = $back_to_server_list_from_buddy_list$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $vscrollingmenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $homie_scrolling_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(600.000000,240.000000)
+		:i $pos$ = %vec2(100.000000,103.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $vmenu$
+		:i $parent$ = $homie_scrolling_menu$
+		:i $id$ = $homie_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = %GLOBAL%$pad_back_script$:s}:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i if $HasBuddies$
+		:i if $InGroupRoom$
+			:i $FillBuddyList$$allow_remove$$allow_join$
+		:i else 
+			:i $FillBuddyList$$allow_remove$
+		:i endif
+		:i $Wait$%i(2,00000002)$gameframes$
+		:i $SetScreenElementProps$$id$ = $homie_scrolling_menu$
+	:i endif
+	:i $AssignAlias$$id$ = $homie_bg_anchor$$alias$ = $current_menu_anchor$
+	:i if $ScreenElementExists$$id$ = $globe$
+		:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i endif
+	:i if NOT $GotParam$$dont_animate_in$
+		:i $RunScriptOnScreenElement$$id$ = $homie_menu_anchor$$online_stats_animate_in$$params$ = :s{$id$ = $homie_menu_anchor$:s}
+		:i $FireEvent$$Type$ = $focus$$target$ = $homie_vmenu$
+	:i endif
+:i endfunction
+:i function $homie_list_add_item$$Name$ = %s(0,"")$status$ = %s(0,"")$location$ = %s(0,"")
+	:i $printf$%s(19,"homie_list_add_item")
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i if $ScreenElementExists$$id$ = $homie_vmenu$
+		:i $printf$%s(38,"homie_list_add_itemhomie_list_add_item")
+		:i $SetScreenElementLock$$id$ = $homie_vmenu$$OFF$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $ContainerElement$
+			:i $parent$ = $homie_vmenu$
+			:i $id$ = %GLOBAL%$id$
+			:i $dims$ = %vec2(500.000000,15.000000)
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$online_stats_generic_focus$:s}
+				:i :s{$unfocus$$online_stats_generic_unfocus$:s}
+				:i :s{$pad_choose$$present_buddy_options$$params$ = :s{%GLOBAL%$pad_choose_params$:s}:s}
+				:i :s{$pad_start$$present_buddy_options$$params$ = :s{%GLOBAL%$pad_choose_params$:s}:s}
+				:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+				:i :a}
+		:i :s}
+		:i $anchor_id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ = $DE_highlight_bar$
+			:i $scale$ = %vec2(4.450000,0.450000)
+			:i $pos$ = %vec2(-65.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$bar_rgba$
+			:i $alpha$ = %i(0,00000000)
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+		:i $FormatText$$checksumname$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ = %GLOBAL%$rank_icon$
+			:i $scale$ = %f(0.700000)
+			:i $pos$ = %vec2(-60.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $textElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $text$ = %GLOBAL%$Name$
+			:i $font$ = $dialog$
+			:i $scale$ = %f(0.800000)
+			:i $pos$ = %vec2(-10.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$off_rgba$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $textElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $text$ = %GLOBAL%$status$
+			:i $font$ = $dialog$
+			:i $scale$ = %f(0.800000)
+			:i $pos$ = %vec2(185.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$off_rgba$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $textElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $text$ = %GLOBAL%$location$
+			:i $font$ = $dialog$
+			:i $scale$ = %f(0.800000)
+			:i $pos$ = %vec2(290.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$off_rgba$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $back_to_pause_menu_from_buddy_list$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalManager_ShowPoints$
+	:i $create_pause_menu$
+:i endfunction
+:i function $show_nat_start_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_locating$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_server$$pad_choose_params$ = :s{$cancel_nn$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $show_nat_timeout$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_nat_neg_failed$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_join_server$$pad_choose_params$ = :s{$cancel_nn$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $present_buddy_options$$back_script$ = $launch_homie_list$$remove_script$ = $lobby_remove_buddy$
+	:i if $GotParam$$in_lobby$
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $pad_back_params$ = :s{$from_lobby$:s}
+	:i else 
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $back_script$ = $launch_homie_list$
+	:i $nick$ = %GLOBAL%$Name$
+	:i if $GotParam$$allow_join$
+		:i if $GotParam$$allow_remove$
+			:i $FormatText$$TextName$ = $msg_text$%s(7,"%s : %t")$s$ = %GLOBAL%$status$$t$ = %GLOBAL%$location$
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$nick$
+				:i $text$ = %GLOBAL%$msg_text$
+				:i $buttons$ = :a{:s{$text$ = %s(4,"back")$pad_choose_script$ = %GLOBAL%$back_script$$pad_choose_params$ = %GLOBAL%$pad_back_params$:s}
+					:i :s{$text$ = %s(12,"send message")$pad_choose_script$ = $message_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(4,"join")$pad_choose_script$ = $join_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(7,"observe")$pad_choose_script$ = $observe_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(6,"remove")$pad_choose_script$ = %GLOBAL%$remove_script$$pad_choose_params$ =  isNull :s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $FormatText$$TextName$ = $msg_text$%s(7,"%s : %t")$s$ = %GLOBAL%$status$$t$ = %GLOBAL%$location$
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$nick$
+				:i $text$ = %GLOBAL%$msg_text$
+				:i $buttons$ = :a{:s{$text$ = %s(4,"back")$pad_choose_script$ = %GLOBAL%$back_script$$pad_choose_params$ = %GLOBAL%$pad_back_params$:s}
+					:i :s{$text$ = %s(12,"send message")$pad_choose_script$ = $message_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(4,"join")$pad_choose_script$ = $join_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(7,"observe")$pad_choose_script$ = $observe_buddy$$pad_choose_params$ =  isNull :s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i else 
+		:i if $GotParam$$allow_remove$
+			:i $FormatText$$TextName$ = $msg_text$%s(7,"%s : %t")$s$ = %GLOBAL%$status$$t$ = %GLOBAL%$location$
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$nick$
+				:i $text$ = %GLOBAL%$msg_text$
+				:i $buttons$ = :a{:s{$text$ = %s(4,"back")$pad_choose_script$ = %GLOBAL%$back_script$$pad_choose_params$ = %GLOBAL%$pad_back_params$:s}
+					:i :s{$text$ = %s(12,"send message")$pad_choose_script$ = $message_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(6,"remove")$pad_choose_script$ = %GLOBAL%$remove_script$$pad_choose_params$ =  isNull :s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $FormatText$$TextName$ = $msg_text$%s(7,"%s : %t")$s$ = %GLOBAL%$status$$t$ = %GLOBAL%$location$
+			:i $create_dialog_box$:s{$title$ = %GLOBAL%$nick$
+				:i $text$ = %GLOBAL%$msg_text$
+				:i $buttons$ = :a{:s{$text$ = %s(12,"send message")$pad_choose_script$ = $message_buddy$$pad_choose_params$ =  isNull :s}
+					:i :s{$text$ = %s(4,"back")$pad_choose_script$ = %GLOBAL%$back_script$$pad_choose_params$ = %GLOBAL%$pad_back_params$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $join_buddy$
+	:i $JoinBuddy$ isNull 
+:i endfunction
+:i function $observe_buddy$
+	:i $JoinBuddy$ isNull $observe$
+:i endfunction
+:i function $shell_remove_buddy$
+	:i $RemoveBuddy$ isNull 
+	:i $back_from_shell_buddy_options$
+:i endfunction
+:i function $back_from_shell_buddy_options$
+	:i $dialog_box_exit$
+	:i $launch_homie_list$
+:i endfunction
+:i function $net_chosen_join_server$
+	:i $printf$%s(41,"******* In net_chosen_join_server *******")
+	:i $LeaveServer$
+	:i $setservermode$$OFF$
+	:i if $GotParam$$cookie$
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $show_nat_start_dialog$
+		:i if NOT $StartNatNegotiation$ isNull 
+			:i $create_join_failed_dialog$
+		:i endif
+	:i else 
+		:i $JoinServer$ isNull 
+	:i endif
+	:i $PlaySkaterCamAnim$$Name$ = $SS_MenuCam$$play_hold$
+	:i $kill_start_key_binding$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+:i endfunction
+:i function $create_lobby_list_menu$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+	:i $build_top_and_bottom_blocks$
+	:i $make_mainmenu_3d_plane$
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $lobby_list_anchor$
+		:i $pos$ = %vec2(-5.000000,800.000000)
+	:i :s}
+	:i $make_new_menu$:s{$menu_id$ = $lobby_list_menu$
+		:i $parent$ = $lobby_list_anchor$
+		:i $Type$ = $vscrollingmenu$
+		:i $dims$ = %vec2(200.000000,252.000000)
+		:i $pos$ = %vec2(80.000000,132.000000)
+		:i $vmenu_id$ = $lobby_list_vmenu$
+		:i $menu_title$ = %s(0,"")
+		:i $dont_allow_wrap$ = $dont_allow_wrap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $textElement$
+		:i $parent$ = $lobby_list_anchor$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(7,"REGIONS")
+		:i $scale$ = %f(1.500000)
+		:i $pos$ = %vec2(92.000000,86.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $lobby_list_anchor$
+		:i $texture$ = $white2$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(34.500000,5.000000)
+		:i $pos$ = %vec2(34.000000,82.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $lobby_list_anchor$
+		:i $id$ = $regions_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(150.000000,121.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $lobby_list_anchor$
+		:i $id$ = $regions_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(150.000000,336.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+		:i $not_focusable$
+	:i :s}
+	:i $theme_background$$parent$ = $lobby_list_anchor$$width$ = %f(2.250000)$pos$ = %vec2(170.000000,78.000000)$num_parts$ = %i(10,0000000a)
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $SetScreenElementProps$:s{$id$ = $lobby_list_menu$$event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_lobbies$:s}:s}:a}:s}
+	:i $SetScreenElementProps$:s{$id$ = $lobby_list_vmenu$$event_handlers$ = :a{
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $regions_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $regions_down_arrow$:s}:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $lobby_list_anchor$
+		:i $z_priority$ = %i(100,00000064)
+		:i $pos$ = %vec2(132.000000,68.000000)
+		:i $texture$ = $gslogo$$scale$ = %f(1.100000)
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $RunScriptOnScreenElement$$lobby_list_animate_in$$id$ = $lobby_list_anchor$
+	:i $FireEvent$$Type$ = $focus$$target$ = $lobby_list_menu$
+:i endfunction
+:i function $lobby_list_animate_in$$id$ = $lobby_list_anchor$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$pos$ = %vec2(-5.000000,0.000000)$time$ = %f(0.300000)
+:i endfunction
+:i function $regions_menu_add_item$
+	:i $FormatText$$checksumname$ = $id$%s(2,"%i")$i$ = %GLOBAL%$text$
+	:i $theme_menu_add_item$:s{$parent$ = $lobby_list_vmenu$$centered$ isNull $menu$ = %i(2,00000002)$no_bg$ = $no_bg$:s}
+:i endfunction
+:i function $regions_menu_set_focus$
+	:i $generic_menu_update_arrows$:s{
+		:i $up_arrow_id$ = $regions_up_arrow$
+		:i $down_arrow_id$ = $regions_down_arrow$
+	:i :s}
+	:i $lobby_list_vmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+	:i $main_theme_focus$ isNull 
+:i endfunction
+:i function $create_pin_entry_menu$
+	:i $make_new_menu$$menu_id$ = $pin_entry_menu$$vmenu_id$ = $pin_entry_vmenu$$menu_title$ = %s(9,"ENTER PIN")
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $SetScreenElementProps$:s{$id$ = $pin_entry_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $do_nothing$:s}:s}
+			:i :a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $main_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $create_buddy_list_menu$
+	:i $make_new_menu$$menu_title$ = %s(11,"Friend List")
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $SetScreenElementProps$:s{$id$ = $main_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $launch_xbox_online_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $back_from_regions_menu$
+	:i if $ObjectExists$$id$ = $lobby_list_anchor$
+		:i $FireEvent$$Type$ = $unfocus$$target$ = $lobby_list_menu$
+		:i $FireEvent$$Type$ = $focus$$target$ = $sub_menu$
+		:i $AssignAlias$$id$ = $menu_parts_anchor$$alias$ = $current_menu_anchor$
+		:i $DoScreenElementMorph$$id$ = $lobby_list_anchor$$pos$ = %vec2(-5.000000,800.000000)$time$ = %f(0.300000)
+		:i $Wait$%f(0.300000)$Seconds$
+		:i $DestroyScreenElement$$id$ = $lobby_list_anchor$
+	:i endif
+:i endfunction
+:i function $back_from_lobbies$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $LobbyDisconnect$
+	:i $CancelNatNegotiation$
+	:i $back_from_regions_menu$
+:i endfunction
+:i function $back_from_network_menu$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_ss_menu$$no_animate$
+:i endfunction
+:i function $back_from_multiplayer_menu$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $back_from_network_select_menu$ isNull 
+:i endfunction
+:i function $select_host_option$
+	:i if  (%GLOBAL%$checksum$ = $rank_test_less$) 
+		:i $orig_checksum$ = %GLOBAL%$checksum$
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$rank_limit$
+		:i if  (%GLOBAL%$checksum$ = $num_1$) 
+			:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"rank_limit")$checksum$ = $num_2$$string$ = %s(1,"2")
+		:i endif
+		:i $checksum$ = %GLOBAL%$orig_checksum$
+	:i endif
+	:i if  (%GLOBAL%$checksum$ = $rank_test_greater$) 
+		:i $orig_checksum$ = %GLOBAL%$checksum$
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$rank_limit$
+		:i if  (%GLOBAL%$checksum$ = $num_10$) 
+			:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"rank_limit")$checksum$ = $num_9$$string$ = %s(1,"9")
+		:i endif
+		:i $checksum$ = %GLOBAL%$orig_checksum$
+	:i endif
+	:i $SetPreferencesFromUI$ isNull 
+	:i $select_host_option2$
+:i endfunction
+:i function $select_host_option2$
+	:i $launch_network_host_options_menu$
+:i endfunction
+:i function $select_game_option$
+	:i if  (%GLOBAL%$checksum$ = $netctf$) 
+		:i if NOT $InTeamGame$
+			:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(9,"team_mode")$checksum$ = $teams_two$$string$ = %s(1,"2")
+			:i $SetNumTeams$%i(2,00000002)
+		:i endif
+	:i endif
+	:i $SetPreferencesFromUI$ isNull 
+	:i switch %GLOBAL%$checksum$
+		:i case $netscorechallenge$
+			:i endcase
+		case $scorechallenge$
+			:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $score_1000000$$score$ = %i(1000000,000f4240)$string$ = %s(16,"1,000,000 points")
+			:i endcase
+		case $netking$
+			:i endcase
+		case $king$
+			:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $time_120$$time$ = %i(120,00000078)$string$ = %s(9,"2 minutes")
+			:i endcase
+		case $netctf$
+			:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $score_5$$score$ = %i(5,00000005)$string$ = %s(10,"5 captures")
+			:i end_switch
+	
+	:i $create_network_game_options_menu$ isNull 
+:i endfunction
+:i function $select_team_mode_option$
+	:i $printf$%s(26,"in select_team_mode_option")
+	:i $SetPreferencesFromUI$ isNull 
+	:i if $GameModeEquals$$is_lobby$
+		:i $printf$%s(28,"in select_team_mode_option 2")
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$team_mode$
+		:i switch %GLOBAL%$checksum$
+			:i case $teams_none$
+				:i $printf$%s(13,"SetNumTeams 0")
+				:i $SetNumTeams$%i(0,00000000)
+				:i endcase
+			case $teams_two$
+				:i $printf$%s(13,"SetNumTeams 2")
+				:i $SetNumTeams$%i(2,00000002)
+				:i endcase
+			case $teams_three$
+				:i $printf$%s(13,"SetNumTeams 3")
+				:i $SetNumTeams$%i(3,00000003)
+				:i endcase
+			case $teams_four$
+				:i $printf$%s(13,"SetNumTeams 4")
+				:i $SetNumTeams$%i(4,00000004)
+				:i endcase
+			default 
+				:i end_switch
+		
+	:i endif
+	:i $launch_network_host_options_menu$
+:i endfunction
+:i function $game_options_goals_sub_menu_return$
+	:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ = %s(7,"CREATED")$checksum$ = $goals_created$
+	:i if NOT $levelIs$$Load_MainMenu$
+		:i $dialog_box_exit$
+		:i $kill_start_key_binding$
+		:i $create_dialog_box$:s{$title$ = $net_warning_msg$
+			:i $text$ = $net_message_goals_next_level$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $create_network_game_options_menu$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $create_network_game_options_menu$
+	:i endif
+:i endfunction
+:i function $host_options_goals_sub_menu_return$
+	:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ = %s(7,"CREATED")$checksum$ = $goals_created$
+	:i if NOT $levelIs$$Load_MainMenu$
+		:i $dialog_box_exit$
+		:i $kill_start_key_binding$
+		:i $create_dialog_box$:s{$title$ = $net_warning_msg$
+			:i $text$ = $net_message_goals_next_level$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $launch_network_host_options_menu$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $launch_network_host_options_menu$
+	:i endif
+:i endfunction
+:i function $host_options_goals_sub_menu_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i %GLOBAL%$new_menu_script$ isNull 
+:i endfunction
+:i function $create_host_options_sub_menu$$pad_choose$ = $select_host_option$
+	:i $make_new_themed_sub_menu$$title$ = %GLOBAL%$menu_title$
+	:i if $levelIs$$Load_MainMenu$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $menu_parts_anchor$
+			:i $id$ = $globe$
+			:i $texture$ = $globe$
+			:i $scale$ = %i(1,00000001)
+			:i $pos$ = %vec2(550.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $alpha$ = %f(0.200000)
+			:i $z_priority$ = %i(4294967295,ffffffff)
+		:i :s}
+		:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i endif
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $launch_network_host_options_menu$:s}:s}:a}
+	:i :s}
+	:i $RemoveParameter$$id$
+	:i if $GotParam$$array$
+		:i $GetArraySize$%GLOBAL%$array$
+		:i if $GotParam$$max_index$
+			:i %GLOBAL%$array_size$ =  (%GLOBAL%$max_index$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $Name$ =  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) ->$Name$) 
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) $checksum$
+				:i $checksum$ =  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) ->$checksum$) 
+			:i endif
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) $time$
+				:i $time$ =  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) ->$time$) 
+			:i endif
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) $broadband_only$
+				:i $orig_checksum$ = %GLOBAL%$checksum$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+				:i switch %GLOBAL%$checksum$
+					:i case $device_sony_modem$
+						:i endcase
+					case $device_usb_modem$
+						:i continue
+						
+						:i end_switch
+				
+				:i $checksum$ = %GLOBAL%$orig_checksum$
+			:i endif
+			:i $params$ = :s{:s}
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) $test_greater_only$
+				:i $orig_checksum$ = %GLOBAL%$checksum$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$rank_test$
+				:i switch %GLOBAL%$checksum$
+					:i case $rank_test_less$
+						:i $params$ = :s{$not_focusable$:s}
+						:i end_switch
+				
+				:i $checksum$ = %GLOBAL%$orig_checksum$
+			:i endif
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) $test_less_only$
+				:i $orig_checksum$ = %GLOBAL%$checksum$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$rank_test$
+				:i switch %GLOBAL%$checksum$
+					:i case $rank_test_greater$
+						:i $params$ = :s{$not_focusable$:s}
+						:i end_switch
+				
+				:i $checksum$ = %GLOBAL%$orig_checksum$
+			:i endif
+			:i $pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}
+			:i if  (%GLOBAL%$pref_field$ = %s(11,"skill_level")) 
+				:i %GLOBAL%$just$ = :a{$left$$center$:a}
+				:i $RemoveParameter$$centered$
+				:i $text_pos$ = %vec2(20.000000,-5.000000)
+			:i else 
+				:i %GLOBAL%$just$ = :a{$center$$center$:a}
+			:i endif
+			:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+				:i $theme_menu_add_item$:s{
+					:i  isNull 
+					:i $text$ = %GLOBAL%$Name$
+					:i %GLOBAL%$params$
+					:i $pad_choose_script$ = %GLOBAL%$pad_choose$
+					:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+					:i $text_just$ = %GLOBAL%$just$
+				:i :s}
+			:i else 
+				:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+					:i $theme_menu_add_item$:s{
+						:i $last_menu_item$ = $last_menu_item$
+						:i  isNull 
+						:i %GLOBAL%$params$
+						:i $text$ = %GLOBAL%$Name$
+						:i $pad_choose_script$ = %GLOBAL%$pad_choose$
+						:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+						:i $text_just$ = %GLOBAL%$just$
+					:i :s}
+				:i else 
+					:i $theme_menu_add_item$:s{
+						:i  isNull 
+						:i %GLOBAL%$params$
+						:i $text$ = %GLOBAL%$Name$
+						:i $pad_choose_script$ = %GLOBAL%$pad_choose$
+						:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+						:i $text_just$ = %GLOBAL%$just$
+					:i :s}
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_game_options_sub_menu$
+	:i if $InSplitScreenGame$
+		:i $prefs$ = $splitscreen$
+	:i else 
+		:i $prefs$ = $network$
+	:i endif
+	:i if  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+		:i $make_new_themed_sub_menu$$menu_id$ = $options_sub_menu$$vmenu_id$ = $options_sub_vmenu$$pos$ = %vec2(230.000000,620.000000)$dims$ = %vec2(450.000000,300.000000)
+		:i $SetScreenElementProps$:s{$id$ = $options_sub_menu$$event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_network_game_options_menu$ isNull :s}:s}
+				:i :a}
+		:i :s}
+		:i $generic_array_menu_desc_setup$ isNull 
+	:i else 
+		:i $make_new_menu$$menu_id$ = $options_sub_menu$$vmenu_id$ = $options_sub_vmenu$$pos$ = %vec2(230.000000,620.000000)
+		:i $SetScreenElementProps$:s{$id$ = $options_sub_menu$$event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_network_game_options_menu$ isNull :s}:s}
+				:i :a}
+		:i :s}
+		:i $generic_array_menu_setup$ isNull 
+	:i endif
+	:i $build_theme_sub_title$$title$ = %GLOBAL%$menu_title$$right_bracket_z$ = %i(4294967295,ffffffff)$right_bracket_alpha$ = %f(0.000000)
+	:i $create_helper_text$$generic_helper_text$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $DoScreenElementMorph$$id$ = $options_sub_vmenu$$time$ = %f(0.200000)$pos$ = %vec2(230.000000,85.000000)
+	:i if  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+		:i $DoScreenElementMorph$$id$ = $bg_box_vmenu$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,85.000000)
+		:i if $InNetGame$
+			:i $DoScreenElementMorph$$id$ = $item_bg_box$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,349.000000)
+			:i $DoScreenElementMorph$$id$ = $item_description_text$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,338.000000)
+			:i $DoScreenElementMorph$$id$ = $item_description_bar$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,353.000000)
+		:i else 
+			:i $DoScreenElementMorph$$id$ = $item_bg_box$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,329.000000)
+			:i $DoScreenElementMorph$$id$ = $item_description_text$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,318.000000)
+			:i $DoScreenElementMorph$$id$ = $item_description_bar$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,328.000000)
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $top_bar_anchor$
+		:i $DoScreenElementMorph$$id$ = $top_bar_anchor$$time$ = %f(0.200000)$pos$ = %vec2(0.000000,62.000000)
+	:i endif
+	:i $FireEvent$$Type$ = $focus$$target$ = $options_sub_menu$
+:i endfunction
+:i function $set_host_option_preference$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetPreferencesFromUI$$prefs$ = $network$ isNull 
+	:i $destroy_onscreen_keyboard$
+	:i $create_network_host_options_menu$
+:i endfunction
+:i function $host_options_back_from_keyboard$
+	:i $destroy_onscreen_keyboard$
+	:i $create_network_host_options_menu$
+:i endfunction
+:i function $set_horse_option_preference$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetPreferencesFromUI$$prefs$ = $splitscreen$ isNull 
+	:i $horse_word_back_from_keyboard$
+:i endfunction
+:i function $horse_word_back_from_keyboard$
+	:i $destroy_onscreen_keyboard$
+	:i $create_network_game_options_menu$$end_run$
+:i endfunction
+:i function $create_network_host_options_server_name_menu$
+	:i $GetPreferenceString$$pref_type$ = $network$$server_name$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_onscreen_keyboard$$allow_cancel$$keyboard_cancel_script$ = $host_options_back_from_keyboard$$keyboard_done_script$ = $set_host_option_preference$$keyboard_title$ = %s(4,"NAME")$field$ = %s(11,"server_name")$text$ = %GLOBAL%$ui_string$$min_length$ = %i(1,00000001)$max_length$ = %i(15,0000000f)
+:i endfunction
+:i function $create_network_host_options_password_menu$
+	:i $GetPreferenceString$$pref_type$ = $network$$password$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_onscreen_keyboard$$password$$allow_cancel$$keyboard_cancel_script$ = $host_options_back_from_keyboard$$keyboard_done_script$ = $set_host_option_preference$$keyboard_title$ = %s(8,"PASSWORD")$field$ = %s(8,"password")$text$ = %GLOBAL%$ui_string$$min_length$ = %i(0,00000000)$max_length$ = %i(9,00000009)
+:i endfunction
+:i function $create_network_host_options_max_players_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(7,"PLAYERS")$pref_type$ = $network$$pref_field$ = %s(11,"num_players")$array$ = $num_players_info$$pad_choose_script$ = $select_host_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$ isNull $centered$
+:i endfunction
+:i function $create_network_host_options_max_observers_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(9,"OBSERVERS")$pref_type$ = $network$$pref_field$ = %s(13,"num_observers")$array$ = $num_observers_info$$pad_choose_script$ = $select_host_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_network_host_options_player_collision_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(16,"PLAYER COLLISION")$pref_type$ = $network$$pref_field$ = %s(16,"player_collision")$array$ = $on_off_types$$pad_choose_script$ = $select_host_option$$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_network_host_options_team_menu$
+	:i $printf$%s(40,"in create_network_host_options_team_menu")
+	:i $create_host_options_sub_menu$$menu_title$ = %s(5,"TEAMS")$pref_type$ = $network$$pref_field$ = %s(9,"team_mode")$array$ = $team_types$$pad_choose$ = $select_team_mode_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_network_host_options_skill_level_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(11,"SKILL LEVEL")$pref_type$ = $network$$pref_field$ = %s(11,"skill_level")$array$ = $skill_level_info$$pad_choose_script$ = $select_host_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_network_host_options_rank_limit_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(10,"RANK LIMIT")$pref_type$ = $network$$pref_field$ = %s(10,"rank_limit")$array$ = $rank_limits$$pad_choose_script$ = $select_host_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_network_host_options_rank_test_menu$
+	:i $create_host_options_sub_menu$$menu_title$ = %s(16,"RANK RESTRICTION")$pref_type$ = $network$$pref_field$ = %s(9,"rank_test")$array$ = $rank_tests$$pad_choose_script$ = $select_host_option$$pos$ = %vec2(227.000000,112.000000)$helper_text$ = $generic_helper_text$$centered$
+:i endfunction
+:i function $create_mp_game_options_game_type_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(9,"GAME TYPE")$pref_type$ = $splitscreen$$pref_field$ = %s(9,"game_type")$array$ = $mp_game_type_info$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_game_type_menu$
+	:i if $IsTrue$$DEMO_BUILD$
+		:i $create_game_options_sub_menu$$menu_title$ = %s(9,"GAME TYPE")$pref_type$ = $network$$pref_field$ = %s(9,"game_type")$array$ = $net_game_type_info_demo$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+	:i else 
+		:i $create_game_options_sub_menu$$menu_title$ = %s(9,"GAME TYPE")$pref_type$ = $network$$pref_field$ = %s(9,"game_type")$array$ = $net_game_type_info$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+	:i endif
+:i endfunction
+:i function $create_network_game_options_goal_type_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(9,"GOAL TYPE")$pref_type$ = %GLOBAL%$prefs$$pref_field$ = %s(5,"goals")$array$ = $net_goal_info$$call_script$ = $network_game_options_goal_type_select$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $network_game_options_goal_type_select$
+	:i $GoalManager_DeselectAllGoals$
+	:i $select_game_option$ isNull 
+:i endfunction
+:i function $create_network_game_options_ctf_mode_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(4,"MODE")$pref_type$ = %GLOBAL%$prefs$$pref_field$ = %s(13,"ctf_game_type")$array$ = $ctf_type$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_score_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(12,"TARGET SCORE")$pref_type$ = %GLOBAL%$prefs$$pref_field$ = %s(12,"target_score")$array$ = $target_score_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_captures_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(8,"CAPTURES")$pref_type$ = %GLOBAL%$prefs$$pref_field$ = %s(12,"target_score")$array$ = $capture_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_target_time_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(10,"TIME LIMIT")$pref_type$ = %GLOBAL%$prefs$$pref_field$ = %s(12,"target_score")$array$ = $time_limit_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_time_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(10,"TIME LIMIT")$pref_type$ = $network$$pref_field$ = %s(10,"time_limit")$array$ = $time_limit_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_graffiti_scoring_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(12,"SCORING MODE")$pref_type$ = $network$$pref_field$ = %s(18,"team_graffiti_mode")$array$ = $team_graffiti_mode$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_friendly_fire_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(13,"FRIENDLY FIRE")$pref_type$ = $network$$pref_field$ = %s(13,"friendly_fire")$array$ = $on_off_types$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_network_game_options_fireball_difficulty_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(19,"FIREBALL DIFFICULTY")$pref_type$ = $network$$pref_field$ = %s(19,"fireball_difficulty")$array$ = $fireball_level_info$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_mp_game_options_stop_at_zero_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(12,"STOP AT ZERO")$pref_type$ = $network$$pref_field$ = %s(12,"stop_at_zero")$array$ = $boolean_types$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_mp_game_options_score_reset_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(11,"SCORE RESET")$pref_type$ = $network$$pref_field$ = %s(11,"score_reset")$array$ = $boolean_types$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_mp_game_options_time_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(10,"TIME LIMIT")$pref_type$ = $splitscreen$$pref_field$ = %s(10,"time_limit")$array$ = $time_limit_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$ isNull 
+:i endfunction
+:i function $create_mp_game_options_horse_time_menu$
+	:i $create_game_options_sub_menu$$menu_title$ = %s(10,"TIME LIMIT")$pref_type$ = $splitscreen$$pref_field$ = %s(16,"horse_time_limit")$array$ = $horse_time_limit_options$$call_script$ = $select_game_option$$helper_text$ = $generic_helper_text$$prefs$ = $splitscreen$ isNull 
+:i endfunction
+:i $horse_allowed_characters$ = :a{%s(1,"1")%s(1,"2")%s(1,"3")%s(1,"4")%s(1,"5")%s(1,"6")%s(1,"7")%s(1,"8")%s(1,"9")%s(1,"0")
+	:i %s(1,"a")%s(1,"b")%s(1,"c")%s(1,"d")%s(1,"e")%s(1,"f")%s(1,"g")%s(1,"h")%s(1,"i")%s(1,"j")
+	:i %s(1,"k")%s(1,"l")%s(1,"m")%s(1,"n")%s(1,"o")%s(1,"p")%s(1,"q")%s(1,"r")%s(1,"s")%s(1,"t")
+	:i %s(1,"u")%s(1,"v")%s(1,"w")%s(1,"x")%s(1,"y")%s(1,"z")
+	:i %s(1,"A")%s(1,"B")%s(1,"C")%s(1,"D")%s(1,"E")%s(1,"F")%s(1,"G")%s(1,"H")%s(1,"I")%s(1,"J")
+	:i %s(1,"K")%s(1,"L")%s(1,"M")%s(1,"N")%s(1,"O")%s(1,"P")%s(1,"Q")%s(1,"R")%s(1,"S")%s(1,"T")
+	:i %s(1,"U")%s(1,"V")%s(1,"W")%s(1,"X")%s(1,"Y")%s(1,"Z")
+	:i %s(1,".")%s(1,",")%s(1,"!")%s(1,"?")%s(1,"-")%s(1,"?")%s(1,"'")%s(1,"+")%s(1,"^")
+	:i %s(1,"#")%s(1,"$")%s(1,"*")%s(1,"@")%s(1,"`")%s(1,"&")%s(1,":")%s(1,"<")%s(1,">")
+	:i %s(1,"_")%s(1,"-")%s(1,"=")%s(1,"(")%s(1,")")%s(1,"/")
+	:i %s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")
+	:i %s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")
+	:i %s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")
+	:i %s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?")%s(1,"?"):a}
+:i function $create_mp_game_options_horse_word_menu$
+	:i $GetPreferenceString$$pref_type$ = $splitscreen$$horse_word$
+	:i $create_onscreen_keyboard$$allowed_characters$ = $horse_allowed_characters$$allow_cancel$$keyboard_cancel_script$ = $horse_word_back_from_keyboard$$keyboard_done_script$ = $set_horse_option_preference$$keyboard_title$ = %s(10,"HORSE WORD")$field$ = %s(10,"horse_word")$text$ = %GLOBAL%$ui_string$$min_length$ = %i(1,00000001)$max_length$ = %i(15,0000000f)
+:i endfunction
+:i function $create_account_list_menu$
+	:i $make_new_menu$$menu_id$ = $account_list_menu$$vmenu_id$ = $account_list_vmenu$$menu_title$ = %s(17,"CHOOSE AN ACCOUNT")
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $SetScreenElementProps$:s{$id$ = $account_list_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_account_list_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $create_network_game_options_menu$
+	:i $dialog_box_exit$
+	:i $pause_menu_gradient$$on$
+	:i $hide_current_goal$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $prefs$ = $splitscreen$
+	:i else 
+		:i $prefs$ = $network$
+	:i endif
+	:i $hide_net_player_names$$on$
+	:i $make_new_themed_sub_menu$$title$ = %s(12,"GAME OPTIONS")$right_bracket_alpha$ = %f(0.000000)
+	:i if $GotParam$$end_run$
+		:i $SetScreenElementProps$:s{$id$ = $sub_menu$$event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_end_run_menu$:s}:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = $sub_menu$$event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$game_type$
+	:i if $InNetGame$
+		:i $theme_menu_add_item$$text$ = %s(10,"Game Type:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_game_type$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_game_type_menu$:s}
+	:i else 
+		:i if $GotParam$$end_run$
+			:i $theme_menu_add_item$$text$ = %s(10,"Game Type:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_game_type$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_mp_game_options_game_type_menu$:s}
+		:i else 
+			:i $theme_menu_add_item$$text$ = %s(10,"Game Type:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_game_type$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_game_type_menu$:s}
+		:i endif
+	:i endif
+	:i $GetPreferenceChecksum$$pref_type$ = %GLOBAL%$prefs$$game_type$
+	:i switch %GLOBAL%$checksum$
+		:i case $netgoalattack$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$goals$
+			:i $theme_menu_add_item$$text$ = %s(10,"Goal Type:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_choose_goal_type$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_goal_type_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i $pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_ctf_mode_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i $theme_menu_add_item$$text$ = %s(12,"Choose Goals")$centered$ = $centered$$id$ = $menu_network_host_options_choose_goals$$pad_choose_script$ = $create_choose_goals_menu$
+			:i if $OnServer$
+				:i $GetPreferenceChecksum$$pref_type$ = %GLOBAL%$prefs$$goals$
+				:i if  (%GLOBAL%$checksum$ = $goals_created$) 
+					:i $theme_menu_add_item$$text$ = %s(18,"Load Created Goals")$centered$ = $centered$$pad_choose_script$ = $host_options_goals_sub_menu_exit$$pad_choose_params$ = :s{$new_menu_script$ = $launch_load_created_goals_from_game_options_menu$$from_game_options$ = $from_game_options$:s}
+				:i endif
+			:i endif
+			:i if $GoalManager_GoalsAreSelected$
+				:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i else 
+				:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$not_focusable$$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$last_menu_item$ = %i(1,00000001)
+			:i endif
+			:i endcase
+		case $freeskate2p$
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $horse$
+			:i endcase
+		case $nethorse$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$horse_time_limit$
+			:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_mp_game_options_horse_time_menu$:s}
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$horse_word$
+			:i $theme_menu_add_item$$text$ = %s(11,"Horse Word:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_horse_word$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_mp_game_options_horse_word_menu$:s}
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $scorechallenge$
+			:i endcase
+		case $netscorechallenge$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$target_score$
+			:i if $GotParam$$end_run$
+				:i $theme_menu_add_item$$text$ = %s(13,"Target Score:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_target_score$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_network_game_options_score_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i else 
+				:i $theme_menu_add_item$$text$ = %s(13,"Target Score:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_target_score$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_score_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $netctf$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$ctf_game_type$
+			:i $theme_menu_add_item$$text$ = %s(5,"Mode:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_ctf_mode$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_ctf_mode_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i $GetPreferenceChecksum$$pref_type$ = %GLOBAL%$prefs$$ctf_game_type$
+			:i switch %GLOBAL%$checksum$
+				:i case $timed_ctf$
+					:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$time_limit$
+					:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_time_menu$:s}
+					:i endcase
+				case $score_ctf$
+					:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$target_score$
+					:i $theme_menu_add_item$$text$ = %s(9,"Captures:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_target_score$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_captures_menu$$prefs$ = %GLOBAL%$prefs$:s}
+					:i end_switch
+			
+			:i $GetPreferenceChecksum$$pref_type$ = %GLOBAL%$prefs$$ctf_game_type$
+			:i switch %GLOBAL%$checksum$
+				:i case $timed_ctf$
+					:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$stop_at_zero$
+					:i $theme_menu_add_item$$text$ = %s(13,"Stop at Zero:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_stop_at_zero$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_stop_at_zero_menu$:s}
+					:i end_switch
+			
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $king$
+			:i endcase
+		case $netking$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$target_score$
+			:i if $GotParam$$end_run$
+				:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_target_score$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_network_game_options_target_time_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i else 
+				:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_target_score$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_target_time_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $elimiskate$
+			:i endcase
+		case $netelimiskate$
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$time_limit$
+			:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_time_menu$:s}
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$score_reset$
+			:i $theme_menu_add_item$$text$ = %s(12,"Score Reset:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_score_reset$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_score_reset_menu$:s}
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $netgraffiti$
+			:i if $InTeamGame$
+				:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$team_graffiti_mode$
+				:i $theme_menu_add_item$$text$ = %s(13,"Scoring Mode:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_scoring_mode$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_graffiti_scoring_menu$:s}
+			:i endif
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$time_limit$
+			:i if $InNetGame$
+				:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_time_menu$:s}
+			:i else 
+				:i if $GotParam$$end_run$
+					:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_mp_game_options_time_menu$:s}
+				:i else 
+					:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_time_menu$:s}
+				:i endif
+			:i endif
+			:i if $InNetGame$
+				:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$stop_at_zero$
+				:i $theme_menu_add_item$$text$ = %s(13,"Stop at Zero:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_stop_at_zero$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_stop_at_zero_menu$:s}
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		case $firefight$
+			:i endcase
+		case $netfirefight$
+			:i if $InNetGame$
+				:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$friendly_fire$
+				:i $theme_menu_add_item$$text$ = %s(14,"Friendly Fire:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_friendly_fire$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_friendly_fire_menu$$prefs$ = %GLOBAL%$prefs$:s}
+				:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$fireball_difficulty$
+				:i $theme_menu_add_item$$text$ = %s(21,"Fireball Combo Level:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_fireball_difficulty$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_fireball_difficulty_menu$$prefs$ = %GLOBAL%$prefs$:s}
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i endcase
+		default 
+			:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$time_limit$
+			:i if $InNetGame$
+				:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_network_game_options_time_menu$:s}
+			:i else 
+				:i if $GotParam$$end_run$
+					:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$end_run$$sub_menu_script$ = $create_mp_game_options_time_menu$:s}
+				:i else 
+					:i $theme_menu_add_item$$text$ = %s(11,"Time Limit:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_time_limit$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_time_menu$:s}
+				:i endif
+			:i endif
+			:i if $InNetGame$
+				:i $GetPreferenceString$$pref_type$ = %GLOBAL%$prefs$$stop_at_zero$
+				:i $theme_menu_add_item$$text$ = %s(13,"Stop at Zero:")$extra_text$ = %GLOBAL%$ui_string$$id$ = $menu_network_host_options_stop_at_zero$$pad_choose_script$ = $launch_network_host_options_sub_menu$$pad_choose_params$ = :s{$sub_menu_script$ = $create_mp_game_options_stop_at_zero_menu$:s}
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(5,"Ready")$id$ = $menu_network_host_options_ready$$pad_choose_script$ = $chosen_host_game$$last_menu_item$ = %i(1,00000001)
+			:i end_switch
+	
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_network_host_options_menu$
+	:i $change$$in_server_options$ = %i(1,00000001)
+	:i $dialog_box_exit$
+	:i if $OnXbox$
+		:i $title_text$ = %s(12,"HOST OPTIONS")
+	:i else 
+		:i $title_text$ = %s(14,"SERVER OPTIONS")
+	:i endif
+	:i if $levelIs$$Load_MainMenu$
+		:i $skater$.$remove_skater_from_world$
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$Name$ = $mainmenu_camera03$$play_hold$
+	:i else 
+		:i $pause_menu_gradient$$on$
+	:i endif
+	:i $make_new_themed_sub_menu$$title$ = %GLOBAL%$title_text$$menu_id$ = $host_options_menu$$vmenu_id$ = $host_options_vmenu$
+	:i if $levelIs$$Load_MainMenu$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $menu_parts_anchor$
+			:i $id$ = $globe$
+			:i $texture$ = $globe$
+			:i $scale$ = %i(1,00000001)
+			:i $pos$ = %vec2(550.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $alpha$ = %f(0.200000)
+			:i $z_priority$ = %i(4294967295,ffffffff)
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $host_options_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_host_options$:s}:s}:a}
+	:i :s}
+	:i if $IsInternetGameHost$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $host_options_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$quit_game$:s}:a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $host_options_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_host_options$:s}:s}:a}
+		:i :s}
+	:i endif
+	:i if $InNetGame$
+		:i if $OnServer$
+			:i $actual_server$ = %i(1,00000001)
+		:i else 
+			:i $actual_server$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $actual_server$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$actual_server$ = %i(1,00000001)) 
+		:i $GetPreferenceString$$pref_type$ = $network$$server_name$
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(5,"Name:")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_network_host_options_server_name$
+			:i $pad_choose_script$ = $create_network_host_options_server_name_menu$
+			:i $first_item$
+		:i :s}
+	:i endif
+	:i if NOT $InNetGame$
+		:i $GetPreferenceString$$pref_type$ = $network$$level$
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(6,"Level:")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_network_host_options_level$
+			:i $pad_choose_script$ = $launch_level_select_menu$
+			:i $pad_choose_params$ = :s{$from_server_options$:s}
+		:i :s}
+	:i endif
+	:i if $isPS2$
+		:i if $InNetGame$
+			:i if  (%GLOBAL%$actual_server$ = %i(1,00000001)) 
+				:i if $GameModeEquals$$is_lobby$
+					:i if NOT $NetworkGamePending$
+						:i if NOT $ChangeLevelPending$
+							:i $GetPreferenceString$$pref_type$ = $network$$level$
+							:i $GetPreferenceChecksum$$pref_type$ = $network$$level$
+							:i if  (%GLOBAL%$checksum$ = $load_sk5ed_gameplay$) 
+								:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ =  ( ( ($net_goal_info$) :a{%i(1,00000001):a}) ->$Name$) $checksum$ =  ( ( ($net_goal_info$) :a{%i(1,00000001):a}) ->$checksum$) 
+								:i %GLOBAL%$not_focusable$ = $not_focusable$
+							:i else 
+								:i $GoalEditor$.$GetNumEditedGoals$$level$ = %GLOBAL%$checksum$
+								:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+									:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ =  ( ( ($net_goal_info$) :a{%i(0,00000000):a}) ->$Name$) $checksum$ =  ( ( ($net_goal_info$) :a{%i(0,00000000):a}) ->$checksum$) 
+								:i endif
+							:i endif
+							:i $GetPreferenceString$$pref_type$ = $network$$goals$
+							:i if NOT $GoalManager_HasActiveGoals$
+								:i $theme_menu_add_item$:s{
+									:i $text$ = %s(10,"LOAD GOALS")
+									:i $pad_choose_script$ = $host_options_goals_sub_menu_exit$
+									:i $pad_choose_params$ = :s{$new_menu_script$ = $launch_load_created_goals_from_host_goals_menu$:s}
+									:i $centered$ = $centered$
+								:i :s}
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$actual_server$ = %i(1,00000001)) 
+				:i $GetPreferenceString$$pref_type$ = $network$$level$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$level$
+				:i if  (%GLOBAL%$checksum$ = $load_sk5ed_gameplay$) 
+					:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ =  ( ( ($net_goal_info$) :a{%i(1,00000001):a}) ->$Name$) $checksum$ =  ( ( ($net_goal_info$) :a{%i(1,00000001):a}) ->$checksum$) 
+					:i %GLOBAL%$not_focusable$ = $not_focusable$
+				:i else 
+					:i $GoalEditor$.$GetNumEditedGoals$$level$ = %GLOBAL%$checksum$
+					:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+						:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(5,"goals")$string$ =  ( ( ($net_goal_info$) :a{%i(0,00000000):a}) ->$Name$) $checksum$ =  ( ( ($net_goal_info$) :a{%i(0,00000000):a}) ->$checksum$) 
+					:i endif
+				:i endif
+				:i $GetPreferenceString$$pref_type$ = $network$$goals$
+				:i if NOT $GoalManager_HasActiveGoals$
+					:i $theme_menu_add_item$:s{
+						:i $text$ = %s(10,"LOAD GOALS")
+						:i $pad_choose_script$ = $host_options_goals_sub_menu_exit$
+						:i $pad_choose_params$ = :s{$new_menu_script$ = $launch_load_created_goals_from_host_goals_menu$:s}
+						:i $centered$ = $centered$
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $OnServer$
+		:i if NOT $InNetGame$
+			:i %GLOBAL%$max_index$ = %i(6,00000006)
+			:i $GetPreferenceString$$pref_type$ = $network$$level$
+			:i if  (%GLOBAL%$ui_string$ = %s(12,"Created Park")) 
+				:i $GetParkEditorMaxPlayers$
+				:i $GetParkEditorMaxPlayers$
+				:i $GetParkEditorMaxPlayers$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$num_players$
+				:i switch %GLOBAL%$checksum$
+					:i case $num_2$
+						:i %GLOBAL%$cur_max$ = %i(2,00000002)
+						:i endcase
+					case $num_3$
+						:i %GLOBAL%$cur_max$ = %i(3,00000003)
+						:i endcase
+					case $num_4$
+						:i %GLOBAL%$cur_max$ = %i(4,00000004)
+						:i endcase
+					case $num_5$
+						:i %GLOBAL%$cur_max$ = %i(5,00000005)
+						:i endcase
+					case $num_6$
+						:i %GLOBAL%$cur_max$ = %i(6,00000006)
+						:i endcase
+					case $num_7$
+						:i %GLOBAL%$cur_max$ = %i(7,00000007)
+						:i endcase
+					case $num_8$
+						:i %GLOBAL%$cur_max$ = %i(8,00000008)
+						:i end_switch
+				
+				:i %GLOBAL%$max_index$ =  (%GLOBAL%$MaxPlayers$%i(4294967294,fffffffe)) 
+				:i if  (%GLOBAL%$MaxPlayers$ < %i(2,00000002)) 
+					:i $ScriptAssert$%s(50,"Too low max players for net game with created park")
+				:i endif
+				:i if  ( ( ( ($num_players_info$) :a{%GLOBAL%$max_index$:a}) ->$num$)  < %GLOBAL%$cur_max$) 
+					:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(11,"num_players")$string$ =  ( ( ($num_players_info$) :a{%GLOBAL%$max_index$:a}) ->$Name$) $checksum$ =  ( ( ($num_players_info$) :a{%GLOBAL%$max_index$:a}) ->$checksum$) 
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$max_index$ = %i(0,00000000)) 
+				:i $GetPreferenceString$$pref_type$ = $network$$num_players$
+				:i $theme_menu_add_item$:s{
+					:i $parent$ = $host_options_vmenu$
+					:i $text$ = %s(8,"Players:")
+					:i $extra_text$ = %GLOBAL%$ui_string$
+					:i $not_focusable$ = $not_focusable$
+					:i $id$ = $menu_network_host_options_max_players$
+				:i :s}
+			:i else 
+				:i $GetPreferenceString$$pref_type$ = $network$$num_players$
+				:i $theme_menu_add_item$:s{
+					:i $parent$ = $host_options_vmenu$
+					:i $text$ = %s(8,"Players:")
+					:i $extra_text$ = %GLOBAL%$ui_string$
+					:i $id$ = $menu_network_host_options_max_players$
+					:i $pad_choose_script$ = $create_network_host_options_max_players_menu$
+					:i $pad_choose_params$ = :s{$max_index$ = %GLOBAL%$max_index$:s}
+				:i :s}
+			:i endif
+		:i endif
+		:i if $InInternetMode$
+			:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+			:i switch %GLOBAL%$checksum$
+				:i case $device_sony_modem$
+					:i endcase
+				case $device_usb_modem$
+					:i $NullScript$
+					:i endcase
+				default 
+					:i $GetPreferenceString$$pref_type$ = $network$$num_observers$
+					:i $theme_menu_add_item$:s{
+						:i $parent$ = $host_options_vmenu$
+						:i $text$ = %s(10,"Observers:")
+						:i $extra_text$ = %GLOBAL%$ui_string$
+						:i $id$ = $menu_network_host_options_max_observers$
+						:i $pad_choose_script$ = $create_network_host_options_max_observers_menu$
+					:i :s}
+					:i end_switch
+			
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i $GetPreferenceString$$pref_type$ = $network$$team_mode$
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(6,"Teams:")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_network_host_options_player_team$
+			:i $pad_choose_script$ = $create_network_host_options_team_menu$
+		:i :s}
+	:i else 
+		:i if $GameModeEquals$$is_lobby$
+			:i if $IsHost$
+				:i if $OnServer$
+					:i $GetPreferenceString$$pref_type$ = $network$$team_mode$
+					:i $theme_menu_add_item$:s{
+						:i $parent$ = $host_options_vmenu$
+						:i $text$ = %s(6,"Teams:")
+						:i $extra_text$ = %GLOBAL%$ui_string$
+						:i $id$ = $menu_network_host_options_player_team$
+						:i $pad_choose_script$ = $create_network_host_options_team_menu$
+					:i :s}
+				:i else 
+					:i $GetPreferenceString$$pref_type$ = $network$$team_mode$
+					:i $theme_menu_add_item$:s{
+						:i $parent$ = $host_options_vmenu$
+						:i $text$ = %s(6,"Teams:")
+						:i $extra_text$ = %GLOBAL%$ui_string$
+						:i $id$ = $menu_network_host_options_player_team$
+						:i $pad_choose_script$ = $create_network_host_options_team_menu$
+						:i $first_item$
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $IsHost$
+		:i if $GameModeEquals$$is_lobby$
+			:i if NOT  (%GLOBAL%$actual_server$ = %i(1,00000001)) 
+				:i %GLOBAL%$last_menu_item$ = $last_menu_item$
+			:i endif
+			:i $GetPreferenceString$$pref_type$ = $network$$player_collision$
+			:i $theme_menu_add_item$:s{
+				:i $parent$ = $host_options_vmenu$
+				:i $text$ = %s(10,"Collision:")
+				:i $extra_text$ = %GLOBAL%$ui_string$
+				:i $last_menu_item$ = %GLOBAL%$last_menu_item$
+				:i $id$ = $menu_network_host_options_player_collision$
+				:i $pad_choose_script$ = $create_network_host_options_player_collision_menu$
+			:i :s}
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$actual_server$ = %i(1,00000001)) 
+		:i $GetPreferenceString$$pref_type$ = $network$$skill_level$
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(12,"Skill Level:")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_network_host_options_skill_level$
+			:i $pad_choose_script$ = $create_network_host_options_skill_level_menu$
+		:i :s}
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$rank_test$
+		:i $GetPreferenceString$$pref_type$ = $network$$rank_test$
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(17,"Rank Restriction:")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_network_host_options_rank_test$
+			:i $pad_choose_script$ = $create_network_host_options_rank_test_menu$
+		:i :s}
+		:i if NOT  (%GLOBAL%$checksum$ = $rank_test_none$) 
+			:i $GetPreferenceString$$pref_type$ = $network$$rank_limit$
+			:i $theme_menu_add_item$:s{
+				:i $parent$ = $host_options_vmenu$
+				:i $text$ = %s(11,"Rank Limit:")
+				:i $extra_text$ = %GLOBAL%$ui_string$
+				:i $id$ = $menu_network_host_options_rank_limit$
+				:i $pad_choose_script$ = $create_network_host_options_rank_limit_menu$
+			:i :s}
+		:i endif
+		:i if $GameModeEquals$$is_lobby$
+			:i $GetPreferencePassword$$pref_type$ = $network$$password$
+			:i $theme_menu_add_item$:s{
+				:i $parent$ = $host_options_vmenu$
+				:i $text$ = %s(9,"Password:")
+				:i $extra_text$ = %GLOBAL%$password_string$
+				:i $id$ = $menu_network_host_options_password$
+				:i $pad_choose_script$ = $create_network_host_options_password_menu$
+			:i :s}
+			:i if $InNetGame$
+				:i $last_menu_item$ = $last_menu_item$
+			:i endif
+			:i if NOT $IsHost$
+				:i %GLOBAL%$not_focusables$ = $not_focusable$
+			:i endif
+			:i $PrintStruct$%GLOBAL%$not_focusables$
+			:i $theme_menu_add_item$:s{
+				:i $parent$ = $host_options_vmenu$
+				:i $text$ = %s(8,"Advanced")
+				:i $extra_text$ = %s(7,"Options")
+				:i $id$ = $menu_real_cheats$
+				:i $pad_choose_script$ = $create_real_cheats_menu$
+				:i $pad_choose_params$ = :s{$back_script$ = $create_network_host_options_menu$:s}
+				:i $last_menu_item$ = %GLOBAL%$last_menu_item$
+				:i $not_focusable$ = %GLOBAL%$not_focusables$
+			:i :s}
+		:i else 
+			:i $GetPreferencePassword$$pref_type$ = $network$$password$
+			:i if $InNetGame$
+				:i $last_menu_item$ = $last_menu_item$
+			:i endif
+			:i $theme_menu_add_item$:s{
+				:i $parent$ = $host_options_vmenu$
+				:i $text$ = %s(9,"Password:")
+				:i $extra_text$ = %GLOBAL%$password_string$
+				:i $id$ = $menu_network_host_options_password$
+				:i $pad_choose_script$ = $create_network_host_options_password_menu$
+				:i $last_menu_item$ = %GLOBAL%$last_menu_item$
+			:i :s}
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i $focusable$ = :s{:s}
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$level$
+		:i if  (%GLOBAL%$checksum$ = $load_sk5ed_gameplay$) 
+			:i $GetParkEditorMaxPlayers$
+			:i $GetNetworkNumPlayers$
+			:i if  (%GLOBAL%$num_players$ > %GLOBAL%$MaxPlayers$) 
+				:i $focusable$ = :s{$not_focusable$:s}
+			:i endif
+		:i endif
+		:i $theme_menu_add_item$:s{
+			:i $parent$ = $host_options_vmenu$
+			:i $text$ = %s(5,"Ready")
+			:i $id$ = $menu_network_host_options_ready$
+			:i $pad_choose_script$ = $chosen_host_game$
+			:i $last_menu_item$ = $last_menu_item$
+			:i %GLOBAL%$focusable$
+		:i :s}
+	:i endif
+	:i if $levelIs$$Load_MainMenu$
+		:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i endif
+	:i $finish_themed_sub_menu$$menu$ = $host_options_menu$
+	:i if NOT $InNetGame$
+		:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$set_ready_focus$
+	:i endif
+:i endfunction
+:i function $set_ready_focus$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $host_options_vmenu$
+	:i $FireEvent$$Type$ = $focus$$target$ = $host_options_vmenu$$data$ = :s{$child_id$ = $menu_network_host_options_ready$:s}
+:i endfunction
+:i function $chosen_start_game$
+	:i if $InNetGame$
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$game_type$
+		:i if  (%GLOBAL%$checksum$ = $netctf$) 
+			:i if NOT $InTeamGame$
+				:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(9,"team_mode")$checksum$ = $teams_two$$string$ = %s(1,"2")
+				:i $SetNumTeams$%i(2,00000002)
+			:i endif
+		:i endif
+	:i else 
+	:i endif
+	:i $LoadPendingPlayers$
+	:i $StartNetworkGame$
+	:i if $InSplitScreenGame$
+		:i $skater$.$RunStarted$
+		:i $Skater2$.$RunStarted$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $exit_pause_menu$
+	:i endif
+:i endfunction
+:i function $network_options_selected$
+	:i $hide_current_goal$
+	:i $launch_network_host_options_menu$
+:i endfunction
+:i function $network_game_options_selected$
+	:i $create_network_game_options_menu$ isNull 
+:i endfunction
+:i function $network_start_selected$
+	:i if $OnServer$
+		:i $chosen_start_game$
+	:i else 
+		:i $FCFSRequestStartGame$
+		:i $exit_pause_menu$
+	:i endif
+:i endfunction
+:i function $fcfc_end_game_selected$
+	:i $ReportStats$$final$
+	:i $do_backend_retry$
+:i endfunction
+:i function $network_end_game_selected$
+	:i if $GameIsOver$
+		:i $create_pause_menu$
+		:i return
+		
+	:i endif
+	:i $kill_all_panel_messages$
+	:i if $InSplitScreenGame$
+		:i $SetStatOverride$
+		:i $GoalManager_DeactivateAllGoals$
+		:i $change_gamemode_freeskate_2p$
+		:i $pause_trick_text$
+		:i $create_end_run_menu$
+	:i else 
+		:i if $InInternetMode$
+			:i if $OnServer$
+				:i $ReportStats$$final$
+			:i endif
+		:i endif
+		:i $EndNetworkGame$
+	:i endif
+:i endfunction
+:i function $generic_array_menu_setup$$time$ = %i(60,0000003c)
+	:i $add_item_script$ = $theme_menu_add_centered_item$
+	:i if NOT  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+		:i if NOT  (%GLOBAL%$pref_field$ = %s(11,"device_type")) 
+		:i endif
+	:i endif
+	:i $GetArraySize$%GLOBAL%$array$
+	:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+	:i while
+		
+		:i $GetNextArrayElement$%GLOBAL%$array$
+		:i if $GotParam$$Element$
+			:i $AddParams$%GLOBAL%$Element$
+			:i if  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+				:i $focus_script$ = $game_options_focus_script$
+				:i $focus_params$ = :s{$description$ = %GLOBAL%$description$:s}
+				:i $add_item_script$ = $make_text_sub_menu_item$
+			:i endif
+			:i if $GotParam$$not_in_custom_parks$
+				:i if $CustomParkMode$$just_using$
+					:i $show_option$ = %i(0,00000000)
+				:i else 
+					:i $show_option$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i $show_option$ = %i(1,00000001)
+			:i endif
+			:i if $GotParam$$not_pal$
+				:i if $IsPal$
+					:i $show_option$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i if $levelIs$$load_se$
+				:i if  (%GLOBAL%$Name$ = %s(13,"Classic Goals")) 
+					:i $AddParams$:s{$not_available$:s}
+				:i endif
+			:i endif
+			:i if NOT  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+				:i if  (%GLOBAL%$show_option$ = %i(1,00000001)) 
+					:i if $GotParam$$not_available$
+						:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$
+					:i else 
+						:i if $GotParam$$team_only$
+							:i if $InTeamGame$
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = %GLOBAL%$focus_params$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$
+							:i else 
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$
+							:i endif
+						:i else 
+							:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = %GLOBAL%$focus_params$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$
+						:i endif
+					:i endif
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$show_option$ = %i(1,00000001)) 
+					:i if $GotParam$$not_available$
+						:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$$last_menu_item$ = %i(1,00000001)
+					:i else 
+						:i if $GotParam$$team_only$
+							:i if $InTeamGame$
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = %GLOBAL%$focus_params$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$$last_menu_item$ = %i(1,00000001)
+							:i else 
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$$last_menu_item$ = %i(1,00000001)
+							:i endif
+						:i else 
+							:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$font$ = $small$$centered$ = %i(1,00000001)$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = %GLOBAL%$focus_params$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$scale$ = %GLOBAL%$scale$$last_menu_item$ = %i(1,00000001)
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+			:i $RemoveParameter$$not_available$
+			:i $RemoveParameter$$not_in_custom_parks$
+			:i $RemoveParameter$$not_pal$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $generic_array_menu_desc_setup$$time$ = %i(60,0000003c)
+	:i $add_item_script$ = $theme_menu_add_centered_item$
+	:i if NOT  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+		:i if NOT  (%GLOBAL%$pref_field$ = %s(11,"device_type")) 
+		:i endif
+	:i endif
+	:i $GetArraySize$%GLOBAL%$array$
+	:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+	:i $theme_background$$parent$ = $current_menu_anchor$$id$ = $bg_box_vmenu$$width$ = %f(3.500000)$pos$ = %vec2(320.000000,625.000000)$num_parts$ = %f(10.500000)$z_priority$ = %i(1,00000001)
+	:i while
+		
+		:i $GetNextArrayElement$%GLOBAL%$array$
+		:i if $GotParam$$Element$
+			:i $AddParams$%GLOBAL%$Element$
+			:i if  (%GLOBAL%$pref_field$ = %s(9,"game_type")) 
+				:i $focus_script$ = $game_options_focus_script$
+				:i $focus_params$ = :s{$description$ = %GLOBAL%$description$:s}
+				:i $add_item_script$ = $make_text_sub_menu_item$
+			:i endif
+			:i if $GotParam$$not_in_custom_parks$
+				:i if $CustomParkMode$$just_using$
+					:i $show_option$ = %i(0,00000000)
+				:i else 
+					:i $show_option$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i $show_option$ = %i(1,00000001)
+			:i endif
+			:i if $GotParam$$not_pal$
+				:i if $IsPal$
+					:i $show_option$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$checksumname$ = $icon_2p$%GLOBAL%$icon$
+			:i if NOT  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+				:i if  (%GLOBAL%$show_option$ = %i(1,00000001)) 
+					:i if $GotParam$$not_available$
+						:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$text_pos$ = %vec2(115.000000,-5.000000)$centered$$no_bg$$font$ = $small$$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+					:i else 
+						:i if $GotParam$$team_only$
+							:i if $InTeamGame$
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$text_pos$ = %vec2(115.000000,-5.000000)$centered$$no_bg$$font$ = $small$$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = :s{%GLOBAL%$focus_params$$id$ = %GLOBAL%$checksum$$icon$ = %GLOBAL%$icon_2p$$text$ = %GLOBAL%$Name$:s}$unfocus_script$ = $sprite_unfocus$$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+							:i else 
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$text_pos$ = %vec2(115.000000,-5.000000)$centered$$no_bg$$font$ = $small$$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+							:i endif
+						:i else 
+							:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$text_pos$ = %vec2(115.000000,-5.000000)$centered$$no_bg$$font$ = $small$$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = :s{%GLOBAL%$focus_params$$id$ = %GLOBAL%$checksum$$icon$ = %GLOBAL%$icon_2p$$text$ = %GLOBAL%$Name$:s}$unfocus_script$ = $sprite_unfocus$$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+						:i endif
+					:i endif
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$show_option$ = %i(1,00000001)) 
+					:i if $GotParam$$not_available$
+						:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$text_pos$ = %vec2(115.000000,-5.000000)$centered$$no_bg$$font$ = $small$$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$static_width$ = %i(400,00000190)$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+					:i else 
+						:i if $GotParam$$team_only$
+							:i if $InTeamGame$
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$centered$$text_pos$ = %vec2(115.000000,-5.000000)$no_bg$$font$ = $small$$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = :s{%GLOBAL%$focus_params$$id$ = %GLOBAL%$checksum$$icon$ = %GLOBAL%$icon_2p$$text$ = %GLOBAL%$Name$:s}$unfocus_script$ = $sprite_unfocus$$static_width$ = %i(400,00000190)$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+							:i else 
+								:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$centered$$text_pos$ = %vec2(115.000000,-5.000000)$no_bg$$font$ = $small$$rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$:s}$not_focusable$$static_width$ = %i(400,00000190)$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+							:i endif
+						:i else 
+							:i $theme_menu_add_item$$text$ = %GLOBAL%$Name$$id$ = %GLOBAL%$checksum$$centered$$text_pos$ = %vec2(115.000000,-5.000000)$no_bg$$font$ = $small$$pad_choose_script$ = %GLOBAL%$call_script$$pad_choose_params$ = :s{$prefs$ = %GLOBAL%$pref_type$$field$ = %GLOBAL%$pref_field$$string$ = %GLOBAL%$Name$$checksum$ = %GLOBAL%$checksum$$time$ = %GLOBAL%$time$ isNull :s}$focus_script$ = %GLOBAL%$focus_script$$focus_params$ = :s{%GLOBAL%$focus_params$$id$ = %GLOBAL%$checksum$$icon$ = %GLOBAL%$icon_2p$$text$ = %GLOBAL%$Name$:s}$unfocus_script$ = $sprite_unfocus$$static_width$ = %i(400,00000190)$highlight_bar_scale$ = %vec2(2.700000,0.800000)$scale$ = %GLOBAL%$scale$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+			:i $RemoveParameter$$not_available$
+			:i $RemoveParameter$$not_in_custom_parks$
+			:i $RemoveParameter$$not_pal$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i if $InNetGame$
+		:i %GLOBAL%$bg_box_scale$ = %vec2(86.000000,11.000000)
+		:i %GLOBAL%$desc_text_scale$ = %f(0.850000)
+		:i %GLOBAL%$desc_text_dims$ = %vec2(400.000000,75.000000)
+	:i else 
+		:i %GLOBAL%$bg_box_scale$ = %vec2(86.000000,15.000000)
+		:i %GLOBAL%$desc_text_scale$ = %i(1,00000001)
+		:i %GLOBAL%$desc_text_dims$ = %vec2(300.000000,75.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $item_bg_box$
+		:i $padding_scale$ = %f(0.500000)
+		:i $texture$ = $black$
+		:i $z_priority$ = %i(0,00000000)
+		:i $scale$ = %GLOBAL%$bg_box_scale$
+		:i $pos$ = %vec2(320.000000,880.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(200,000000c8):a}
+	:i :s}
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $item_description_bar$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(43.000000,0.220000)
+		:i $pos$ = %vec2(322.000000,894.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$on_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $textBlockElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $item_description_text$
+		:i $text$ = %s(0,"")
+		:i $font$ = $small$
+		:i $dims$ = %GLOBAL%$desc_text_dims$
+		:i $scale$ = %GLOBAL%$desc_text_scale$
+		:i $line_spacing$ = %f(0.600000)
+		:i $pos$ = %vec2(320.000000,838.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(128,00000080):a}
+	:i :s}
+	:i $Wait$%i(1,00000001)$gameframe$
+:i endfunction
+:i function $game_options_focus_script$
+	:i $SetScreenElementProps$$id$ = $item_description_text$$text$ = %GLOBAL%$description$$line_spacing$ = %f(0.800000)
+	:i $main_theme_focus$
+	:i $GetTags$
+	:i $Theme_GetIconOnColor$$return_value$ = $icon_color$
+	:i if  ($no_focus_sound$ = %i(1,00000001)) 
+		:i $change$$no_focus_sound$ = %i(0,00000000)
+	:i else 
+	:i endif
+	:i $Wait$%i(3,00000003)$gameframes$
+	:i if $ObjectExists$$id$ = $cur_2p_sprite$
+		:i $DestroyScreenElement$$id$ = $cur_2p_sprite$
+	:i endif
+:i endfunction
+:i function $end_network_game$
+	:i $kill_all_panel_messages$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $CreateServerQuitDialog$
+	:i $printf$%s(35,"**** in CreateServerQuitDialog ****")
+	:i $HideLoadingScreen$
+	:i if NOT $levelIs$$Load_MainMenu$
+		:i $printf$%s(37,"**** Level was not the skateshop ****")
+		:i $GoalManager_DeactivateAllGoals$$force_all$
+		:i $GoalManager_UninitializeAllGoals$
+		:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+		:i $kill_net_panel_messages$
+		:i $destroy_onscreen_keyboard$
+		:i $force_close_rankings$$dont_retry$
+		:i $exit_pause_menu$
+		:i $HideLoadingScreen$
+		:i if NOT $IsObserving$
+			:i if $ObjectExists$$id$ = $skater$
+				:i $skater$.$Vibrate$$OFF$
+			:i endif
+			:i $ExitSurveyorMode$
+		:i endif
+		:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+		:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+		:i $PauseGame$
+		:i $create_error_box$:s{$title$ = %s(6,"Notice")
+			:i $text$ = %s(48,"The host has quit. Select OK to leave this game.")
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $quit_network_game$:s}
+				:i :a}
+			:i $delay_input$
+			:i $delay_input_time$ = %i(3000,00000bb8)
+		:i :s}
+	:i else 
+		:i $printf$%s(30,"*** Level IS the skateshop ***")
+	:i endif
+:i endfunction
+:i function $create_game_ended_dialog$
+	:i if NOT $levelIs$$Load_MainMenu$
+		:i $GoalManager_DeactivateAllGoals$$force_all$
+		:i $GoalManager_UninitializeAllGoals$
+		:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+		:i $kill_net_panel_messages$
+		:i $destroy_onscreen_keyboard$
+		:i $force_close_rankings$
+		:i $exit_pause_menu$
+		:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+		:i $create_error_box$:s{$title$ = %s(6,"Notice")
+			:i $text$ = %s(77,"The host has terminated the current game.  Select OK to go back to freeskate.")
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $end_network_game$:s}
+				:i :a}
+			:i $delay_input$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $accept_lost_connection$
+	:i $dialog_box_exit$
+	:i if $EnteringNetGame$
+		:i $cancel_join_server$
+	:i else 
+		:i $quit_network_game$
+	:i endif
+:i endfunction
+:i function $CreateLostConnectionDialog$
+	:i $HideLoadingScreen$
+	:i $GoalManager_DeactivateAllGoals$$force_all$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i $exit_pause_menu$
+	:i $destroy_onscreen_keyboard$
+	:i $force_close_rankings$$dont_retry$
+	:i if $InNetGame$
+		:i if $LocalSkaterExists$
+			:i $skater$.$Vibrate$$OFF$
+		:i endif
+	:i endif
+	:i if NOT $IsObserving$
+		:i $ExitSurveyorMode$
+	:i endif
+	:i $dialog_box_exit$
+	:i $dialog_box_exit$$anchor_id$ = $link_lost_dialog_anchor$
+	:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $create_error_box$:s{$title$ = %s(6,"Notice")
+		:i $text$ = %s(67,"You have lost connection to the host. Select OK to leave this game.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_lost_connection$:s}
+			:i :a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $BackToServerListFromJoinRefusedDialog$
+	:i $dialog_box_exit$
+	:i $create_network_select_games_menu$
+:i endfunction
+:i function $CreateJoinRefusedDialog$
+	:i if $InNetGame$
+		:i $create_dialog_box$:s{$title$ = $net_refused_msg$
+			:i $text$ = %GLOBAL%$reason$
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $dialog_box_exit$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i if $GotParam$$just_dialog$
+			:i $create_dialog_box$:s{$title$ = $net_refused_msg$
+				:i $text$ = %GLOBAL%$reason$
+				:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $BackToServerListFromJoinRefusedDialog$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $cancel_join_server$$show_refused_dialog$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_refused_dialog$
+	:i $printf$%s(32,"******* in cancel_join_server 12")
+	:i if $InNetGame$
+		:i $create_dialog_box$:s{$title$ = $net_refused_msg$
+			:i $text$ = %GLOBAL%$reason$
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $dialog_box_exit$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $create_dialog_box$:s{$title$ = $net_refused_msg$
+			:i $text$ = %GLOBAL%$reason$
+			:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $BackToServerListFromJoinRefusedDialog$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $reattempt_join_server$
+	:i $ReattemptJoinServer$
+	:i $PlaySkaterCamAnim$$Name$ = $SS_MenuCam$$play_hold$
+:i endfunction
+:i function $cancel_join_server$
+	:i $printf$%s(29,"******* in cancel_join_server")
+	:i if $GotParam$$cancel_nn$
+		:i $CancelNatNegotiation$
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $printf$%s(31,"******* in cancel_join_server 2")
+	:i if $InInternetMode$
+		:i $printf$%s(31,"******* in cancel_join_server 3")
+		:i $CancelJoinServer$
+		:i $restart_local_server$
+		:i $SetNetworkMode$$INTERNET_MODE$
+	:i else 
+		:i $printf$%s(31,"******* in cancel_join_server 4")
+		:i $CancelJoinServer$
+		:i $printf$%s(31,"******* in cancel_join_server 5")
+		:i $restart_local_server$
+		:i $printf$%s(31,"******* in cancel_join_server 6")
+		:i $SetNetworkMode$$LAN_MODE$
+	:i endif
+	:i $printf$%s(31,"******* in cancel_join_server 7")
+	:i if $GotParam$$show_timeout$
+		:i $printf$%s(31,"******* in cancel_join_server 8")
+		:i $create_join_timeout_dialog$
+	:i else 
+		:i if $GotParam$$show_refused_dialog$
+			:i $printf$%s(31,"******* in cancel_join_server 9")
+			:i $create_refused_dialog$ isNull 
+		:i else 
+			:i $printf$%s(32,"******* in cancel_join_server 10")
+			:i $create_network_select_games_menu$
+		:i endif
+	:i endif
+	:i $kill_start_key_binding$
+	:i $printf$%s(32,"******* in cancel_join_server 11")
+	:i while
+		
+		:i if $LocalSkaterExists$
+			:i $MakeSkaterGoto$$SkateshopAI$$params$ = :s{$NoSFX$:s}
+			:i $KillSkaterCamAnim$$all$
+			:i $skater$.$reset_model_lights$
+			:i $skater$.$remove_skater_from_world$
+			:i $KillSkaterCamAnim$$all$
+			:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$Name$ = $mainmenu_camera03$$play_hold$
+			:i $PlaySkaterCamAnim$$Name$ = $SS_MenuCam$$play_hold$
+			:i continue
+			
+		:i else 
+			:i $Wait$%i(1,00000001)
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $CreateEnterPasswordControl$
+	:i $dialog_box_exit$
+	:i $create_onscreen_keyboard$$password$$allow_cancel$$keyboard_cancel_script$ = $cancel_join_server$$keyboard_done_script$ = $try_password$$keyboard_title$ = %s(14,"ENTER PASSWORD")$text$ = %s(0,"")$min_length$ = %i(1,00000001)$max_length$ = %i(9,00000009)
+:i endfunction
+:i function $try_password$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $destroy_onscreen_keyboard$
+	:i $JoinWithPassword$ isNull 
+:i endfunction
+:i function $CreateGameInProgressDialog$
+	:i $dialog_box_exit$
+	:i $kill_start_key_binding$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_message_game_in_progress$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $reattempt_join_server$:s}
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_server$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $CreateConnectingDialog$
+	:i $kill_start_key_binding$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_connecting$
+		:i $no_animate$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_server$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $CreateJoiningDialog$
+	:i $dialog_box_exit$
+	:i $kill_start_key_binding$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_joining$
+		:i $no_animate$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_server$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $CreateTryingPasswordDialog$
+	:i $kill_start_key_binding$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_trying_password$
+		:i $no_animate$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_server$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $wait_for_players$
+	:i $dialog_box_exit$
+	:i $create_net_panel_message$$text$ = $net_message_game_will_start$
+:i endfunction
+:i function $dont_wait_for_players$
+	:i $dialog_box_exit$
+	:i $DropPendingPlayers$
+:i endfunction
+:i function $CreateWaitForPlayersDialog$
+	:i if $ObjectExists$$id$ = $pause_menu$
+		:i $exit_pause_menu$
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i $create_error_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_message_waiting_for_players$
+		:i $no_animate$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(3,"Yes")$pad_choose_script$ = $wait_for_players$:s}
+			:i :s{$text$ = %s(4," No ")$pad_choose_script$ = $dont_wait_for_players$:s}
+			:i :a}
+		:i $no_animate$
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $back_from_join_timeout$
+	:i $dialog_box_exit$
+	:i $create_network_select_games_menu$
+:i endfunction
+:i function $ShowJoinTimeoutNotice$
+	:i $cancel_join_server$$show_timeout$
+:i endfunction
+:i function $create_join_timeout_dialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_join_timeout$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_join_timeout$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $create_join_failed_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_join_failed$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_join_server$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $exit_net_menus$
+	:i $dialog_box_exit$
+	:i $SetGameType$$career$
+	:i $SetCurrentGameType$
+	:i $create_main_menu$
+:i endfunction
+:i function $create_link_unplugged_front_end_dialog$
+	:i if $OnXbox$
+		:i $back_from_multiplayer_menu$$no_menu$
+		:i $create_dialog_box$:s{$title$ = $net_status_msg$
+			:i $text$ = $net_error_unplugged_front_end$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $exit_net_menus$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $lost_connection_to_gamespy$
+	:i endif
+:i endfunction
+:i function $link_unplugged_ok$
+	:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$$no_pad_start$
+	:i $dialog_box_exit$$anchor_id$ = $link_lost_dialog_anchor$$no_pad_start$
+	:i %GLOBAL%$found_menu$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i %GLOBAL%$found_menu$ = %i(1,00000001)
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $current_menu_anchor$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i $FireEvent$$Type$ = $focus$$target$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $homie_menu_anchor$
+		:i $FireEvent$$Type$ = $focus$$target$ = $homie_vmenu$
+		:i %GLOBAL%$found_menu$ = %i(1,00000001)
+	:i else 
+		:i if $ScreenElementExists$$id$ = $current_menu$
+			:i %GLOBAL%$found_menu$ = %i(1,00000001)
+			:i $FireEvent$$Type$ = $focus$$target$ = $current_menu$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $sub_menu$
+			:i %GLOBAL%$found_menu$ = %i(1,00000001)
+			:i $FireEvent$$Type$ = $focus$$target$ = $sub_menu$
+		:i endif
+	:i endif
+	:i if NOT $levelIs$$Load_MainMenu$
+		:i if  (%GLOBAL%$found_menu$ = %i(0,00000000)) 
+			:i if $SkaterCamAnimFinished$
+				:i $create_pause_menu$
+			:i else 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $link_unplugged_quit$
+	:i $dialog_box_exit$$anchor_id$ = $link_lost_dialog_anchor$$no_pad_start$
+	:i $launch_quit_game_dialog$
+:i endfunction
+:i function $create_link_unplugged_dialog$
+	:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $quit_dialog_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $current_menu_anchor$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $FireEvent$$Type$ = $unfocus$$target$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $FireEvent$$Type$ = $unfocus$$target$ = $current_menu$
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i if $OnXbox$
+		:i $create_error_box$:s{$title$ = $net_error_msg$
+			:i $anchor_id$ = $link_lost_dialog_anchor$
+			:i $text$ = $net_error_unplugged$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $link_unplugged_ok$:s}
+				:i :s{$text$ = %s(4,"quit")$pad_choose_script$ = $link_unplugged_quit$:s}
+				:i :a}
+			:i $no_animate$
+		:i :s}
+	:i else 
+		:i $create_error_box$:s{$title$ = $net_error_msg$
+			:i $anchor_id$ = $link_lost_dialog_anchor$
+			:i $text$ = $net_error_unplugged_ps2$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $link_unplugged_ok$:s}
+				:i :s{$text$ = %s(4,"quit")$pad_choose_script$ = $link_unplugged_quit$:s}
+				:i :a}
+			:i $no_animate$
+		:i :s}
+	:i endif
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $exit_async_dialog$
+	:i $dialog_box_exit$
+	:i if $GameIsOver$
+		:i $do_backend_retry$
+	:i endif
+:i endfunction
+:i function $CreateNotPostedDialog$
+	:i $kill_all_panel_messages$
+	:i $create_error_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_not_posted$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $exit_async_dialog$:s}
+			:i :a}
+		:i $no_animate$
+		:i $delay_input$
+		:i $z_priority$ = %i(50,00000032)
+	:i :s}
+:i endfunction
+:i function $accept_gamespy_lost_connection_dialog$
+	:i $dialog_box_exit$
+	:i $ResetConnectionTimer$
+:i endfunction
+:i function $reset_gamespy_connection_timer$
+	:i if $isPS2$
+		:i $ResetConnectionTimer$
+	:i endif
+:i endfunction
+:i function $CreateGamespyLostConnectionDialog$
+	:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $link_lost_dialog_anchor$
+		:i return
+		
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i $create_error_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_error_lost_gamespy_connection$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_gamespy_lost_connection_dialog$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $CreateGettingLobbyListDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_getting_lobbies$
+		:i $no_animate$
+		:i $no_bg$
+		:i $pos$ = %vec2(237.000000,250.000000)
+	:i :s}
+:i endfunction
+:i function $CreateFailedLobbyListDialog$
+	:i $LobbyDisconnect$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %GLOBAL%$message$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_gamespy_connection_failure_dialog$:s}
+			:i :a}
+		:i $no_animate$
+		:i $no_bg$
+	:i :s}
+:i endfunction
+:i function $CreateJoinLobbyFailedDialog$
+	:i $LobbyDisconnect$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(21,"Failed to join lobby.")
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $create_internet_options$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $create_joining_lobby_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(16,"Joining lobby...")
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_join_lobby$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $cancel_join_lobby$
+	:i $back_from_internet_menu$
+:i endfunction
+:i function $create_net_panel_message$$msg_time$ = %i(2000,000007d0)
+	:i $root_window$.$GetSingleTag$$menu_state$
+	:i if  (%GLOBAL%$menu_state$ = $OFF$) 
+		:i $create_panel_block$$id$ = $net_panel_msg$ isNull $parent$ = $root_window$$pos$ = %vec2(320.000000,150.000000)$rgba$ = :a{%i(144,00000090)%i(144,00000090)%i(144,00000090)%i(128,00000080):a}$dims$ = %vec2(450.000000,0.000000)$z_priority$ = %i(4294967286,fffffff6)$time$ = %GLOBAL%$msg_time$
+	:i endif
+:i endfunction
+:i function $kill_net_panel_messages$
+	:i $console_clear$
+	:i if $ObjectExists$$id$ = $net_panel_msg$
+		:i $DestroyScreenElement$$id$ = $net_panel_msg$
+	:i endif
+	:i if $ObjectExists$$id$ = $taunt_msg_id$
+		:i $DestroyScreenElement$$id$ = $taunt_msg_id$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $perfect$
+		:i $DestroyScreenElement$$id$ = $perfect$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $perfect2$
+		:i $DestroyScreenElement$$id$ = $perfect2$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $death_message$
+		:i $DestroyScreenElement$$id$ = $death_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $speech_box_anchor$
+		:i $DoScreenElementMorph$$id$ = $speech_box_anchor$$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+		:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+	:i endif
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_retry_anchor$
+		:i $DestroyScreenElement$$id$ = $goal_retry_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $first_time_goal_info$
+		:i $DestroyScreenElement$$id$ = $first_time_goal_info$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_hint$
+		:i $DestroyScreenElement$$id$ = $skater_hint$
+	:i endif
+	:i $GetArraySize$$goal_panel_message_ids$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ =  ($goal_panel_message_ids$:a{%GLOBAL%$index$:a}) 
+			:i $DestroyScreenElement$$id$ =  ($goal_panel_message_ids$:a{%GLOBAL%$index$:a}) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $cancel_connect_to_internet$
+	:i $printf$%s(33,"script cancel_connect_to_internet")
+	:i $dialog_box_exit$
+	:i $CancelConnectToInternet$
+:i endfunction
+:i function $create_modem_state_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %GLOBAL%$text$
+		:i $no_animate$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_connect_to_internet$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $create_modem_status_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %GLOBAL%$text$
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $create_modem_final_state_dialog$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %GLOBAL%$text$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_connect_to_internet$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cancel_gamespy_connection_failure_dialog$
+	:i $printf$%s(47,"script cancel_gamespy_connection_failure_dialog")
+	:i $dialog_box_exit$
+	:i $StatsLogOff$
+	:i $ProfileLogOff$
+	:i $console_destroy$
+	:i $create_ss_menu$$no_animate$
+	:i $SetNetworkMode$
+:i endfunction
+:i function $create_gamespy_connection_failure_dialog$
+	:i $LobbyDisconnect$
+	:i $create_dialog_box$:s{$title$ = $net_error_msg$
+		:i $text$ = $net_status_gamespy_no_connect$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_gamespy_connection_failure_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $lost_connection_to_gamespy$
+	:i $printf$%s(33,"script lost_connection_to_gamespy")
+	:i $LobbyDisconnect$
+	:i if $StatsLoggedIn$
+		:i $StatsLogOff$
+	:i endif
+	:i if $ProfileLoggedIn$
+		:i $ProfileLogOff$
+	:i endif
+	:i if $levelIs$$Load_MainMenu$
+		:i if $ObjectExists$$id$ = $console_message_vmenu$
+			:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(0,00000000)
+		:i endif
+		:i $back_from_regions_menu$
+		:i $net_vault_menu_exit$
+		:i if $ScreenElementExists$$id$ = $stats_bg_anchor$
+			:i $KillSpawnedScript$$Name$ = $create_online_stat_scores_menu$
+			:i $KillSpawnedScript$$Name$ = $create_online_stat_players_menu$
+			:i $KillSpawnedScript$$Name$ = $create_online_stat_personal_menu$
+			:i $DestroyScreenElement$$id$ = $stats_bg_anchor$
+		:i endif
+		:i if $ObjectExists$$id$ = $keyboard_anchor$
+			:i $destroy_onscreen_keyboard$
+		:i endif
+		:i $dialog_box_exit$
+		:i $exit_pause_menu$
+		:i $GoalManager_HidePoints$
+		:i $GoalManager_HideGoalPoints$
+		:i $create_dialog_box$:s{$title$ = $net_error_msg$
+			:i $text$ = $net_status_gamespy_lost_connection$
+			:i $buttons$ = :a{
+				:i :s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_gamespy_connection_failure_dialog$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $cancel_keyboard$
+	:i if $ObjectExists$$id$ = $keyboard_anchor$
+		:i $destroy_onscreen_keyboard$
+	:i else 
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(1,00000001)
+	:i endif
+	:i $create_network_select_games_menu$ isNull 
+:i endfunction
+:i function $enter_kb_chat_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $cancel_keyboard$$focus_on_enter_message$
+	:i $SendMessage$$text$ = %GLOBAL%$string$
+:i endfunction
+:i function $check_keyboard_focus$
+	:i $KillSpawnedScript$$Name$ = $maybe_launch_lobby_keyboard$
+	:i $SpawnScript$$maybe_launch_lobby_keyboard$
+	:i $main_theme_focus$ isNull 
+:i endfunction
+:i function $maybe_launch_lobby_keyboard$
+	:i while
+		
+		:i $Wait$%i(1,00000001)$gameframe$
+		:i if NOT $ScreenElementExists$$id$ = $actions_menu$
+			:i continue
+			
+		:i endif
+		:i $LobbyCheckKeyboard$
+	:i loop_to 
+:i endfunction
+:i function $check_keyboard_unfocus$
+	:i $KillSpawnedScript$$Name$ = $maybe_launch_lobby_keyboard$
+	:i $main_theme_unfocus$ isNull 
+:i endfunction
+:i function $lobby_enter_kb_chat$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $actions_menu$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $no_buttons$
+		:i $pos$ = %vec2(320.000000,530.000000)
+		:i $keyboard_done_script$ = $lobby_entered_chat_message$
+		:i $display_text$ = %s(15,"ENTER MESSAGE: ")
+		:i $keyboard_title$ = %s(0,"")
+		:i $min_length$ = %i(1,00000001)
+		:i $max_length$ = %i(500,000001f4)
+		:i $text_block$
+		:i $keyboard_cancel_script$ = $lobby_keyboard_cancel$
+	:i :s}
+:i endfunction
+:i function $lobby_entered_chat_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SendMessage$$text$ = %GLOBAL%$string$
+	:i $destroy_onscreen_keyboard$
+	:i $AssignAlias$$id$ = $server_list_anchor$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+	:i $FireEvent$$Type$ = $focus$$target$ = $actions_menu$
+:i endfunction
+:i function $lobby_keyboard_cancel$
+	:i $destroy_onscreen_keyboard$
+	:i $AssignAlias$$id$ = $server_list_anchor$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+	:i $FireEvent$$Type$ = $focus$$target$ = $actions_menu$
+:i endfunction
+:i function $back_from_buddy_messages$
+	:i $dialog_box_exit$
+	:i $destroy_onscreen_keyboard$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(1,00000001)
+	:i endif
+	:i $create_network_select_games_menu$
+:i endfunction
+:i function $game_back_from_buddy_messages$
+	:i $dialog_box_exit$
+	:i $destroy_onscreen_keyboard$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_pause_menu$
+:i endfunction
+:i function $view_buddy_messages$
+	:i $pager_window_create$
+:i endfunction
+:i function $create_lobby_onscreen_kb$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $in_net_lobby$
+		:i $keyboard_cancel_script$ = $cancel_keyboard$
+		:i $keyboard_done_script$ = $enter_kb_chat_message$
+		:i $keyboard_title$ = %s(18,"ENTER CHAT MESSAGE")
+		:i $text$ = %s(0,"")
+		:i $max_length$ = %i(127,0000007f)
+		:i $text_block$
+		:i $display_text_offset$ = %vec2(0.000000,5.000000)
+	:i :s}
+:i endfunction
+:i function $add_multiplayer_mode_goals$
+	:i $AddGoal_TrickAttack$
+	:i $AddGoal_ComboMambo$
+	:i $AddGoal_ScoreChallenge$
+	:i $AddGoal_Graffiti$
+	:i $AddGoal_Slap$
+	:i $AddGoal_King$
+	:i $AddGoal_Ctf$
+	:i $AddGoal_Horse_Mp$
+	:i $AddGoal_GoalAttack$
+	:i $AddGoal_FireFight$
+	:i $AddGoal_Elimiskate$
+	:i $AddGoal_Elimiskate_Break_Period$
+	:i $AddGoal_ElimiSkate_Interval$
+	:i $AddGoal_Scavenger$
+	:i $AddGoal_Scavenger_Collect$
+	:i $AddGoal_Scavenger_Interval$
+:i endfunction
+:i function $create_score_menu$
+	:i if NOT $ObjectExists$$id$ = $net_score_menu$
+		:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $net_score_menu$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %i(0,00000000)
+			:i $dims$ = %vec2(640.000000,480.000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $vmenu$
+			:i $parent$ = $net_score_menu$
+			:i $id$ = $net_score_vmenu$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(45.000000,80.000000)
+			:i $scale$ = %f(0.900000)
+			:i $padding_scale$ = %i(1,00000001)
+			:i $internal_scale$ = %i(1,00000001)
+			:i $internal_just$ = :a{$left$$top$:a}
+		:i :s}
+		:i %GLOBAL%$index$ = %i(1,00000001)
+		:i while
+			
+			:i $FormatText$$checksumname$ = $current_id$%s(12,"net_score_%i")$i$ = %GLOBAL%$index$
+			:i $CreateScreenElement$:s{
+				:i $Type$ = $textElement$
+				:i $parent$ = $net_score_vmenu$
+				:i $id$ = %GLOBAL%$current_id$
+				:i $font$ = $dialog$
+				:i $text$ = %s(0,"")
+				:i $scale$ = %f(0.900000)
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+				:i $not_focusable$
+				:i $z_priority$ = %i(4294967291,fffffffb)
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %i(8,00000008)
+		:i $RunScriptOnScreenElement$$id$ = $net_score_menu$$menu_onscreen$$params$ = :s{$preserve_menu_state$:s}
+	:i endif
+:i endfunction
+:i function $clear_scores$
+	:i if $ObjectExists$$id$ = $net_score_menu$
+		:i %GLOBAL%$index$ = %i(1,00000001)
+		:i while
+			
+			:i $FormatText$$checksumname$ = $current_id$%s(12,"net_score_%i")$i$ = %GLOBAL%$index$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$current_id$
+				:i $text$ = %s(0,"")
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %i(8,00000008)
+	:i endif
+:i endfunction
+:i function $update_score$
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $hide_net_scores$
+	:i else 
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i if NOT $ObjectExists$$id$ = $kb_no_button_hdr$
+				:i $hide_net_scores$
+			:i else 
+				:i $unhide_net_scores$
+			:i endif
+		:i else 
+			:i $unhide_net_scores$
+		:i endif
+	:i endif
+:i endfunction
+:i function $entered_network_game$
+	:i if $InInternetMode$
+		:i $LeaveLobby$$preserve_status$
+		:i $SetQuietMode$
+	:i endif
+	:i $kill_net_panel_messages$
+	:i $console_unhide$
+	:i $restore_start_key_binding$
+	:i if $LocalSkaterExists$
+		:i $refresh_skater_model_for_cheats$
+	:i endif
+	:i if $OnServer$
+		:i $ClearOmnigons$
+	:i else 
+		:i if $InInternetMode$
+			:i $CancelNatNegotiation$
+		:i endif
+		:i $DisplayLoadingScreen$$Freeze$
+	:i endif
+	:i $EnteredNetworkGame$
+:i endfunction
+:i function $restart_local_server$
+	:i $SetNetworkMode$
+	:i $setservermode$$on$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $StartServer$
+	:i $JoinServer$ isNull 
+:i endfunction
+:i function $handle_keyboard_input$
+	:i if $ObjectExists$$id$ = $keyboard_anchor$
+		:i if $GotParam$$got_enter$
+			:i if $ScreenElementExists$$id$ = $keyboard_done_button$
+				:i $FireEvent$$Type$ = $pad_choose$$target$ = $keyboard_done_button$
+			:i else 
+				:i $FireEvent$$Type$ = $pad_choose$$target$ = $keyboard_anchor$
+			:i endif
+		:i else 
+			:i if $GotParam$$got_backspace$
+				:i $keyboard_handle_backspace$
+			:i else 
+				:i $keyboard_button_pressed$ isNull 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $back_from_profile_options$
+	:i $FireEvent$$Type$ = $unfocus$$target$ = $profile_options_menu$
+	:i $DestroyScreenElement$$id$ = $profile_options_anchor$
+	:i $FireEvent$$Type$ = $focus$$target$ = $sub_menu$
+:i endfunction
+:i function $back_from_profile_error$
+	:i $printf$%s(30,"script back_from_profile_error")
+	:i $dialog_box_exit$
+	:i $create_internet_options$
+:i endfunction
+:i function $profile_connect$
+	:i $dialog_box_exit$
+	:i if NOT $ProfileLogIn$
+		:i $create_internet_options$
+	:i endif
+:i endfunction
+:i function $launch_profile_menu$
+	:i $dialog_box_exit$
+	:i if NOT $ScreenElementExists$$id$ = $menu_play_online$
+		:i $create_internet_options$
+	:i endif
+	:i $create_profile_menu$
+:i endfunction
+:i function $launch_player_list_menu$
+	:i $hide_current_goal$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $GoalManager_HidePoints$
+	:i endif
+	:i $make_new_themed_sub_menu$$title$ = %s(11,"PLAYER LIST")$dims$ = %vec2(200.000000,237.000000)$pos$ = %vec2(229.000000,80.000000)$right_bracket_z$ = %i(1,00000001)
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $kill_start_key_binding$
+	:i $create_helper_text$$generic_helper_text$
+	:i $FillPlayerListMenu$
+	:i $theme_menu_add_item$$text$ = %s(1," ")$not_focusable$$centered$
+	:i $theme_menu_add_item$$text$ = %s(4,"Done")$pad_choose_script$ = $create_pause_menu$$centered$$last_menu_item$ = $last_menu_item$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $update_buddy_status$
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $text$ = %GLOBAL%$text$
+			:i $status$ = %GLOBAL%$status$
+			:i $location$ = %GLOBAL%$location$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $cancel_face_download$
+	:i $destroy_onscreen_keyboard$
+	:i $create_internet_options$
+:i endfunction
+:i function $face_download_chosen$$cancel_script$ = $cancel_face_download$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GetPreferenceString$$pref_type$ = $network$$face_dl_key$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $keyboard_cancel_script$ = %GLOBAL%$cancel_script$
+		:i $keyboard_done_script$ = $launch_face_download$
+		:i $keyboard_title$ = %s(14,"ENTER PASSWORD")
+		:i $text$ = %GLOBAL%$ui_string$
+		:i $max_length$ = %i(50,00000032)
+		:i $from_net$ = %GLOBAL%$from_net$
+	:i :s}
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $rgba$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_rgba$
+	:i if NOT $GotParam$$no_help_box$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $textBlockElement$
+			:i $parent$ = $current_menu_anchor$
+			:i $id$ = $directions_text$
+			:i $text$ = %s(75,"Enter the password that was e-mailed\nto you after submitting your picture.")
+			:i $pos$ = %vec2(320.000000,668.000000)
+			:i $dims$ = %vec2(640.000000,60.000000)
+			:i $font$ = $small$
+			:i $scale$ = %f(0.900000)
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $line_spacing$ = %f(0.650000)
+			:i $z_priority$ = %i(5,00000005)
+			:i $just$ = :a{$center$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $current_menu_anchor$
+			:i $id$ = $directions_box$
+			:i $texture$ = $myf_box_mid$
+			:i $pos$ = %vec2(320.000000,670.000000)
+			:i $scale$ = %vec2(12.000000,1.200000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = %GLOBAL%$highlight_rgba$
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i $DoScreenElementMorph$$id$ = $directions_text$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,368.000000)
+		:i $DoScreenElementMorph$$id$ = $directions_box$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,370.000000)
+	:i endif
+:i endfunction
+:i function $face_dnas_warning$
+	:i $dialog_box_exit$
+	:i $body$ = %s(142,"Before you can download your face, you will need to select THUG 2 Online Play\n from the Main Menu\nand authenticate your internet connection.")
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $FireEvent$$Type$ = $unfocus$$target$ = $current_menu$
+	:i endif
+	:i $create_dialog_box$:s{$title$ = %s(8,"Warning!")
+		:i $text$ = %GLOBAL%$body$
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $no_bg$ = $no_bg$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(28,"Continue Without Downloading")$pad_choose_script$ = $cont_wo_dl_face_dnas$:s}
+			:i :s{$font$ = $small$$text$ = %s(19,"Return to Main Menu")$pad_choose_script$ = $return_to_main_dnas$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $return_to_main_dnas$
+	:i $dialog_box_exit$
+	:i $change$$main_menu_return_to_createamodes$ = %i(0,00000000)
+	:i $UnloadCaptureDeviceLibraries$
+	:i $exit_cas$$return_script$ = $launch_main_menu$
+:i endfunction
+:i function $cont_wo_dl_face_dnas$
+	:i $dialog_box_exit$
+	:i $face_map_exit$$new_script$ = $create_face_map_menu$$focus_child$ = %i(4,00000004)
+:i endfunction
+:i function $ok_face_dnas$
+	:i $dialog_box_exit$
+	:i $create_main_menu$
+:i endfunction
+:i function $launch_face_download$
+	:i if $GotParam$$from_net$
+		:i $change$$download_from_online$ = %i(1,00000001)
+	:i endif
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $select_skater_get_current_skater_name$
+	:i if NOT  (%GLOBAL%$current_skater$ = $custom$) 
+		:i $load_pro_skater$:s{$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)$Name$ = $custom$:s}
+	:i endif
+	:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(11,"face_dl_key") isNull 
+	:i $printf$%s(16,"Downloading face")
+	:i $create_dialog_box$:s{$title$ = %s(16,"Downloading Face")
+		:i $text$ = %s(20,"Checking for file...")
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_download_face$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+	:i $DownloadFace$ isNull 
+:i endfunction
+:i function $cancel_download_face$
+	:i $change$$download_from_online$ = %i(0,00000000)
+	:i $CancelFileTransfer$
+	:i $dialog_box_exit$
+	:i $net_vault_menu_exit$
+	:i $back_from_face_transfer_succeeded_dialog$
+:i endfunction
+:i function $LaunchFaceDownloadCompleteDialog$
+	:i $dialog_box_exit$
+	:i $net_vault_menu_exit$
+	:i $create_dialog_box$:s{$title$ = %s(17,"Download Complete")
+		:i $text$ = %s(29,"Press OK to go map your face.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"OK")$pad_choose_script$ = $back_from_face_transfer_succeeded_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $download_content$
+	:i $printf$%s(28,"retrieving directory listing")
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(31,"Retrieving directory listing...")
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_download_file$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+	:i $DownloadDirectoryList$%GLOBAL%$Type$
+:i endfunction
+:i function $download_selected_file$
+	:i $printf$%s(19,"Downloading content")
+	:i $GetTags$
+	:i $GetTextElementString$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+	:i $SetScriptString$$string$ = %GLOBAL%$string$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_dialog_box$:s{$title$ = %s(16,"Downloading File")
+		:i $text$ = %s(0,"")
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_download_file$:s}
+			:i :a}
+		:i $no_animate$
+	:i :s}
+	:i $DownloadFile$ isNull 
+:i endfunction
+:i function $cancel_download_file$
+	:i $CancelFileTransfer$
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $back_from_transfer_dialog$
+:i endfunction
+:i function $update_transfer_progress$
+	:i if $ObjectExists$$id$ = $dialog_box_text$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $dialog_box_text$
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $back_from_transfer_dialog$
+	:i if $GameModeEquals$$is_net$
+		:i if NOT $IsTrue$$from_CAS_face_mapping$
+			:i $dialog_box_exit$
+			:i $create_internet_options$
+		:i else 
+			:i $change$$from_CAS_face_mapping$ = %i(0,00000000)
+			:i $face_back_from_net_setup$
+		:i endif
+	:i else 
+		:i $face_back_from_net_setup$
+	:i endif
+:i endfunction
+:i function $back_from_transfer_succeeded_dialog$
+	:i $dialog_box_exit$
+	:i $memcard_menus_cleanup$
+	:i $create_internet_options$
+	:i $change$$savevaultdata$ = %i(0,00000000)
+:i endfunction
+:i function $LaunchFileNotFoundDialog$
+	:i $change$$download_from_online$ = %i(0,00000000)
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(14,"File Not Found")
+		:i $text$ = %s(140,"Please verify that you have entered your key correctly and make sure that you have successfully emailed your face to: faces@thug2online.com.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_transfer_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $LaunchGeneralFileNotFoundDialog$
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(12,"Server Error")
+		:i $text$ = %s(85,"Could not download the selected file. The server may be down. Please try again later.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_transfer_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $LaunchTransferFailedDialog$
+	:i $change$$download_from_online$ = %i(0,00000000)
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(15,"Transfer Failed")
+		:i $text$ = %s(33,"Please check your network cables.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_transfer_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $LaunchDownloadCompleteDialog$
+	:i $printf$%s(35,"script LaunchDownloadCompleteDialog")
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $PrintStruct$ isNull 
+	:i if $GotParam$$Type$
+		:i switch %GLOBAL%$Type$
+			:i case $parks$
+				:i $text$ = %s(21,"Save downloaded park?")
+				:i $file_type$ = $park$
+				:i endcase
+			case $goals$
+				:i $text$ = %s(22,"Save downloaded goals?")
+				:i $file_type$ = $createdgoals$
+				:i endcase
+			case $skaters$
+				:i $text$ = %s(23,"Save downloaded skater?")
+				:i $file_type$ = $optionsandpros$
+				:i endcase
+			case $tricks$
+				:i $text$ = %s(22,"Save downloaded trick?")
+				:i $file_type$ = $cat$
+				:i endcase
+			case $tags$
+				:i $text$ = %s(24,"Save downloaded graphic?")
+				:i $file_type$ = $createdgraphic$
+				:i endcase
+			default 
+				:i $printf$%s(27,"save download: invalid type")
+				:i return
+				
+				:i end_switch
+		
+	:i else 
+		:i $printf$%s(27,"save download: missing type")
+		:i return
+		
+	:i endif
+	:i $create_dialog_box$:s{$title$ = %s(17,"Download Complete")
+		:i $text$ = %GLOBAL%$text$
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $launch_download_save_sequence$$pad_choose_params$ = :s{$file_type$ = %GLOBAL%$file_type$:s}:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $back_from_transfer_succeeded_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $back_from_face_transfer_succeeded_dialog$
+	:i $dialog_box_exit$
+	:i if $GameModeEquals$$is_net$
+		:i $SpawnSecondControllerCheck$
+		:i $StatsLogOff$
+		:i $ProfileLogOff$
+		:i $Wait$%i(1,00000001)$gameframe$
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $launch_cas$:s{$face2$$downloaded_face$ = $downloaded_face$:s}
+	:i else 
+		:i $face_back_from_net_setup$
+	:i endif
+:i endfunction
+:i function $StartFreeSkate$
+	:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+	:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+	:i $SetGameType$$freeskate2p$
+	:i $SetCurrentGameType$
+	:i $SetScreenModeFromGameMode$
+:i endfunction
+:i function $kill_all_panel_messages$
+	:i $exit_pause_menu$
+	:i $dialog_box_exit$$anchor_id$ = $quit_dialog_anchor$
+	:i $dialog_box_exit$
+	:i $speech_box_exit$
+	:i $force_close_rankings$
+	:i $close_goals_menu$
+	:i $kill_net_panel_messages$
+	:i $destroy_onscreen_keyboard$
+	:i $TantrumMessageKill$
+	:i if $ObjectExists$$id$ = $perfect$
+		:i $DestroyScreenElement$$id$ = $perfect$
+	:i endif
+	:i if $ObjectExists$$id$ = $perfect2$
+		:i $DestroyScreenElement$$id$ = $perfect2$
+	:i endif
+	:i if $ObjectExists$$id$ = $death_message$
+		:i $DestroyScreenElement$$id$ = $death_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $leaving_message$
+		:i $DestroyScreenElement$$id$ = $leaving_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $DestroyScreenElement$$id$ = $goal_message$
+	:i endif
+:i endfunction
+:i function $StartingNewNetGame$
+	:i $sound_options_exit$$just_remove$
+	:i $edit_tricks_menu_exit$$just_remove$
+	:i $kill_all_panel_messages$
+	:i if NOT $IsObserving$
+		:i $skater$.$RunStarted$
+	:i endif
+	:i $ClearPowerups$
+	:i if NOT $IsObserving$
+		:i $ExitSurveyorMode$
+	:i endif
+:i endfunction
+:i function $unlock_root_window$
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+:i endfunction
+:i function $create_object_label$
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $CreateScreenElement$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $Type$ = $textElement$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %f(1.000000)
+		:i $pos3D$ = %vec3(0.000000,0.000000,0.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+:i endfunction
+:i function $destroy_object_label$
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $destroy_all_player_names$
+	:i if $ObjectExists$$id$ = $skater_name_0$
+		:i $DestroyScreenElement$$id$ = $skater_name_0$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_1$
+		:i $DestroyScreenElement$$id$ = $skater_name_1$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_2$
+		:i $DestroyScreenElement$$id$ = $skater_name_2$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_3$
+		:i $DestroyScreenElement$$id$ = $skater_name_3$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_4$
+		:i $DestroyScreenElement$$id$ = $skater_name_4$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_5$
+		:i $DestroyScreenElement$$id$ = $skater_name_5$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_6$
+		:i $DestroyScreenElement$$id$ = $skater_name_6$
+	:i endif
+	:i if $ObjectExists$$id$ = $skater_name_7$
+		:i $DestroyScreenElement$$id$ = $skater_name_7$
+	:i endif
+:i endfunction
+:i function $create_net_metrics$
+	:i $SetScreenElementLock$$id$ = $root_window$$OFF$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $net_metrics$
+		:i $Type$ = $textElement$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(150.000000,400.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+:i endfunction
+:i function $update_net_metrics$
+	:i if NOT $ObjectExists$$id$ = $net_metrics$
+		:i $create_net_metrics$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $net_metrics$
+		:i $text$ = %GLOBAL%$text$
+	:i :s}
+:i endfunction
+:i function $notify_cheating$
+	:i $create_net_panel_message$$msg_time$ = %i(6000,00001770)$text$ = $net_message_server_cheating$
+:i endfunction
+:i function $notify_client_cheating$
+	:i $FormatText$$TextName$ = $msg_text$%s(22,"Player %s is cheating!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$msg_time$ = %i(6000,00001770)$text$ = %s(32,"At least one player is cheating!")$style$ = $net_team_panel_message$
+:i endfunction
+:i function $warn_all_same_team$
+	:i $create_panel_message$$id$ = $goal_message$$text$ = %s(41,"Warning: All players are on the same team")$style$ = $panel_message_generic_loss$$time$ = %i(5000,00001388)
+:i endfunction
+:i function $flash_buddy_message_icon$
+	:i $printf$%s(35,"*** flashing buddy message icon ***")
+	:i $update_pager_icon$$create$
+	:i $update_pager_icon$$show$
+	:i $update_pager_icon$$flash$
+:i endfunction
+:i function $kill_buddy_message_icon$
+	:i $printf$%s(34,"*** killing buddy message icon ***")
+	:i $update_pager_icon$$stop_flash$
+:i endfunction
+:i function $GotBuddyMessage$
+	:i $flash_buddy_message_icon$
+:i endfunction
+:i function $ReadLastBuddyMessage$
+	:i $kill_buddy_message_icon$
+:i endfunction
+:i function $InitSelectedGoals$
+	:i $GoalManager_InitializeAllSelectedGoals$
+	:i $GetGoalsMode$
+	:i if  (%GLOBAL%$goals$ = $goals_classic$) 
+		:i $GoalManager_ActivateAllSelectedGoals$
+	:i endif
+:i endfunction
+:i function $PatchCleanup$
+:i endfunction
+:i $judge_full_name$ = %s(5,"Judge")
+:i :end
