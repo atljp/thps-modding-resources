@@ -1,0 +1,190 @@
+
+:i function $launch_display_options_menu$
+	:i if $GotParam$$from_options$
+		:i $create_display_options_menu$$from_options$
+	:i else
+		:i $create_display_options_menu$
+	:i endif
+:i endfunction
+:i function $create_display_options_menu$
+	:i $FormatText$$ChecksumName$ = $title_icon$%s(10,"%i_special")$i$ =  ($THEME_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $make_new_themed_sub_menu$$title$ = %s(15,"DISPLAY OPTIONS")$title_icon$ = %GLOBAL%$title_icon$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Accept"):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $display_options_exit$:s}:s}
+			:i :a}
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $hud_text$ = %s(3,"Off")
+	:i else
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %s(20,"Score/Special Meter:")
+		:i $extra_text$ = %GLOBAL%$hud_text$
+		:i $id$ = $menu_display_hud$
+		:i $pad_choose_script$ = $toggle_display_hud$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $hud_text$ = %s(3,"Off")
+	:i else
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %s(13,"Trick String:")
+		:i $extra_text$ = %GLOBAL%$hud_text$
+		:i $id$ = $menu_display_trickstring$
+		:i $pad_choose_script$ = $toggle_display_trickstring$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $hud_text$ = %s(3,"Off")
+	:i else
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %s(11,"Base Score:")
+		:i $extra_text$ = %GLOBAL%$hud_text$
+		:i $id$ = $menu_display_basescore$
+		:i $pad_choose_script$ = $toggle_display_basescore$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $hud_text$ = %s(3,"Off")
+	:i else
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i if $InNetGame$
+		:i $theme_menu_add_item$:s{$text$ = %s(12,"Chat Window:")
+			:i $extra_text$ = %GLOBAL%$hud_text$
+			:i $id$ = $menu_display_chatwindow$
+			:i $pad_choose_script$ = $toggle_display_chatwindow$
+		:i :s}
+	:i else
+		:i $theme_menu_add_item$:s{$text$ = %s(15,"Console Window:")
+			:i $extra_text$ = %GLOBAL%$hud_text$
+			:i $id$ = $menu_display_chatwindow$
+			:i $pad_choose_script$ = $toggle_display_chatwindow$
+		:i :s}
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $hud_text$ = %s(3,"Off")
+	:i else
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i if $InNetGame$
+		:i if $GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$
+			:i $theme_menu_add_item$:s{$text$ = %s(15,"Balance Meters:")
+				:i $extra_text$ = %GLOBAL%$hud_text$
+				:i $id$ = $menu_display_balance$
+				:i $pad_choose_script$ = $toggle_display_balance$
+				:i $not_focusable$ = $not_focusable$
+			:i :s}
+		:i else
+			:i $theme_menu_add_item$:s{$text$ = %s(15,"Balance Meters:")
+				:i $extra_text$ = %GLOBAL%$hud_text$
+				:i $id$ = $menu_display_balance$
+				:i $pad_choose_script$ = $toggle_display_balance$
+			:i :s}
+		:i endif
+	:i else
+		:i $theme_menu_add_item$:s{$text$ = %s(15,"Balance Meters:")
+			:i $extra_text$ = %GLOBAL%$hud_text$
+			:i $id$ = $menu_display_balance$
+			:i $pad_choose_script$ = $toggle_display_balance$
+		:i :s}
+	:i endif
+	:i if $InNetGame$
+		:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+			:i $hud_text$ = %s(3,"Off")
+		:i else
+			:i $hud_text$ = %s(2,"On")
+		:i endif
+		:i $theme_menu_add_item$:s{$text$ = %s(17,"Names and Scores:")
+			:i $extra_text$ = %GLOBAL%$hud_text$
+			:i $id$ = $menu_display_net_scores$
+			:i $pad_choose_script$ = $toggle_display_net_scores$
+		:i :s}
+	:i endif
+	:i if $GotParam$$from_options$
+		:i $theme_menu_add_item$$text$ = %s(4,"Done")$id$ = $menu_done$$pad_choose_script$ = $display_options_exit$$pad_choose_params$ = :s{$from_options$:s}$last_menu_item$ = %i(1,00000001)
+	:i else
+		:i $theme_menu_add_item$$text$ = %s(4,"Done")$id$ = $menu_done$$pad_choose_script$ = $display_options_exit$$last_menu_item$ = %i(1,00000001)
+	:i endif
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $toggle_display_hud$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_hud$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_hud$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+	:i endif
+:i endfunction
+:i function $toggle_display_trickstring$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_trickstring$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_trickstring$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+	:i endif
+:i endfunction
+:i function $toggle_display_basescore$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_basescore$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_basescore$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+	:i endif
+:i endfunction
+:i function $toggle_display_chatwindow$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_chatwindow$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_chatwindow$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+	:i endif
+:i endfunction
+:i function $toggle_display_balance$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_balance$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_balance$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+	:i endif
+:i endfunction
+:i function $toggle_display_net_names$
+	:i $GetPreferenceString$$pref_type$ = $network$$show_names$
+	:i if  (%GLOBAL%$ui_string$ = %s(3,"Off")) 
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_net_names$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $set_preferences_from_ui$$prefs$ = $network$$field$ = %s(10,"show_names")$checksum$ = $boolean_true$$string$ = %s(2,"On")
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_net_names$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $set_preferences_from_ui$$prefs$ = $network$$field$ = %s(10,"show_names")$checksum$ = $boolean_false$$string$ = %s(3,"Off")
+	:i endif
+:i endfunction
+:i function $toggle_display_net_scores$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_net_scores$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+	:i else
+		:i $SetScreenElementProps$$id$ = :s{$menu_display_net_scores$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $UnsetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+	:i endif
+:i endfunction
+:i function $display_options_exit$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if NOT $LevelIs$$load_skateshop$
+		:i $create_options_menu$
+	:i else
+		:i $create_setup_options_menu$
+	:i endif
+:i endfunction
+:i :end

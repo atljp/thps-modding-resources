@@ -1,0 +1,233 @@
+
+:i $Goal_SkateLetters_genericParams$ = :s{
+	:i $goal_text$ = %s(17,"Collect S-K-A-T-E")
+	:i $view_goals_text$ = %s(17,"Collect S-K-A-T-E")
+	:i $goal_flags$ = :a{
+		:i $got_S$
+		:i $got_K$
+		:i $got_A$
+		:i $got_T$
+		:i $got_E$
+		:i :a}
+	:i $init$ = $SkateLetters_Init$
+	:i $uninit$ = $goal_uninit$
+	:i $active$ = $SkateLetters_Active$
+	:i $activate$ = $SkateLetters_Activate$
+	:i $deactivate$ = $SkateLetters_Deactivate$
+	:i $fail$ = $SkateLetters_Fail$
+	:i $success$ = $SkateLetters_Win$
+	:i $expire$ = $SkateLetters_Expire$
+	:i $trigger_obj_id$ = $TRG_G_SKATE_Pro$
+	:i $S_obj_id$ = $TRG_Goal_Letter_S$
+	:i $K_obj_id$ = $TRG_Goal_Letter_K$
+	:i $A_obj_id$ = $TRG_Goal_Letter_A$
+	:i $T_obj_id$ = $TRG_Goal_Letter_T$
+	:i $E_obj_id$ = $TRG_Goal_Letter_E$
+	:i $time$ = %i(120,00000078)
+	:i $restart_node$ = $TRG_G_SKATE_RestartNode$
+	:i $start_pad_id$ = $G_SKATE_StartPad$
+	:i $record_type$ = $score$
+:i :s}
+:i function $SkateLetters_Init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $SkateLetters_Activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $Create_skate$ isNull 
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$S_obj_id$$SkateLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = $got_S$$id$ = %GLOBAL%$S_obj_id$:s}
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$K_obj_id$$SkateLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = $got_K$$id$ = %GLOBAL%$K_obj_id$:s}
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$A_obj_id$$SkateLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = $got_A$$id$ = %GLOBAL%$A_obj_id$:s}
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$T_obj_id$$SkateLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = $got_T$$id$ = %GLOBAL%$T_obj_id$:s}
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$E_obj_id$$SkateLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = $got_E$$id$ = %GLOBAL%$E_obj_id$:s}
+:i endfunction
+:i function $SkateLetter_InitLetter$
+	:i $Obj_ClearExceptions$
+	:i $Obj_RotY$$speed$ = %i(200,000000c8)
+	:i $Obj_SetInnerRadius$%i(8,00000008)
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $SkateLetter_GotLetter$$params$ = :s{$id$ = %GLOBAL%$id$$goal_id$ = %GLOBAL%$goal_id$$flag$ = %GLOBAL%$flag$:s}
+:i endfunction
+:i function $SkateLetter_GotLetter$
+	:i $SpawnSkaterScript$$SkateLetter_GotLetter2$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = %GLOBAL%$flag$$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $SkateLetter_GotLetter2$
+	:i if NOT $IsInBail$
+		:i %GLOBAL%$id$.$Obj_ClearExceptions$
+		:i $PlaySound$$goaldone$$vol$ = %i(150,00000096)
+		:i $KillLocal$$name$ = %GLOBAL%$id$
+		:i $GoalManager_SetGoalFlag$$name$ = %GLOBAL%$goal_id$%GLOBAL%$flag$%i(1,00000001)
+		:i $SkateLetter_HUDLetter$$flag$ = %GLOBAL%$flag$
+	:i endif
+:i endfunction
+:i function $SkateLetters_Active$
+	:i if $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $SkateLetters_Fail$
+	:i $kill_skate_messages$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $SkateLetters_Deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $goal_skate_kill_letters$ isNull 
+	:i $kill_skate_messages$
+:i endfunction
+:i function $SkateLetters_Expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $SkateLetters_Win$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+	:i $kill_skate_messages$
+:i endfunction
+:i function $SkateLetter_HUDLetter$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$flag$$b$ = $got_S$
+		:i $create_panel_message$$id$ = $skate_letter_s$$text$ = %s(1,"S")$style$ = $panel_message_letterS$
+	:i else
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$flag$$b$ = $got_K$
+			:i $create_panel_message$$id$ = $skate_letter_k$$text$ = %s(1,"K")$style$ = $panel_message_letterK$
+		:i else
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$flag$$b$ = $got_A$
+				:i $create_panel_message$$id$ = $skate_letter_a$$text$ = %s(1,"A")$style$ = $panel_message_letterA$
+			:i else
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$flag$$b$ = $got_T$
+					:i $create_panel_message$$id$ = $skate_letter_t$$text$ = %s(1,"T")$style$ = $panel_message_letterT$
+				:i else
+					:i if $ChecksumEquals$$a$ = %GLOBAL%$flag$$b$ = $got_E$
+						:i $create_panel_message$$id$ = $skate_letter_e$$text$ = %s(1,"E")$style$ = $panel_message_letterE$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_skate_hide_letters$
+	:i if $ObjectExists$$id$ = $skate_letter_s$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_s$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_k$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_k$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_a$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_a$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_t$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_t$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_e$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_e$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $goal_skate_unhide_letters$
+	:i if $ObjectExists$$id$ = $skate_letter_s$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_s$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_k$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_k$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_a$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_a$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_t$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_t$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_e$
+		:i $DoScreenElementMorph$$id$ = $skate_letter_e$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $Create_skate$
+	:i $CreateLocal$$name$ = %GLOBAL%$S_obj_id$
+	:i $CreateLocal$$name$ = %GLOBAL%$K_obj_id$
+	:i $CreateLocal$$name$ = %GLOBAL%$A_obj_id$
+	:i $CreateLocal$$name$ = %GLOBAL%$T_obj_id$
+	:i $CreateLocal$$name$ = %GLOBAL%$E_obj_id$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$S_obj_id$$bounce_skate_letter$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$K_obj_id$$bounce_skate_letter$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$A_obj_id$$bounce_skate_letter$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$T_obj_id$$bounce_skate_letter$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$E_obj_id$$bounce_skate_letter$
+:i endfunction
+:i function $goal_skate_kill_letters$
+	:i $KillLocal$$name$ = %GLOBAL%$S_obj_id$
+	:i $KillLocal$$name$ = %GLOBAL%$K_obj_id$
+	:i $KillLocal$$name$ = %GLOBAL%$A_obj_id$
+	:i $KillLocal$$name$ = %GLOBAL%$T_obj_id$
+	:i $KillLocal$$name$ = %GLOBAL%$E_obj_id$
+:i endfunction
+:i function $kill_skate_messages$
+	:i if $ObjectExists$$id$ = $skate_letter_s$
+		:i $RunScriptOnScreenElement$$id$ = $skate_letter_s$$kill_panel_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_k$
+		:i $RunScriptOnScreenElement$$id$ = $skate_letter_k$$kill_panel_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_a$
+		:i $RunScriptOnScreenElement$$id$ = $skate_letter_a$$kill_panel_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_t$
+		:i $RunScriptOnScreenElement$$id$ = $skate_letter_t$$kill_panel_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $skate_letter_e$
+		:i $RunScriptOnScreenElement$$id$ = $skate_letter_e$$kill_panel_message$
+	:i endif
+:i endfunction
+:i function $bounce_skate_letter$
+	:i $Obj_Hover$$Amp$ = %i(6,00000006)$Freq$ = %i(2,00000002)
+:i endfunction
+:i function $panel_message_letterS$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(95,0000005f):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ = %vec2(695.000000,150.000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ = %vec2(610.000000,150.000000)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i function $panel_message_letterK$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(95,0000005f):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ = %vec2(695.000000,180.000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ = %vec2(610.000000,180.000000)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i function $panel_message_letterA$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(95,0000005f):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ = %vec2(695.000000,210.000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ = %vec2(610.000000,210.000000)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i function $panel_message_letterT$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(95,0000005f):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ = %vec2(695.000000,240.000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ = %vec2(610.000000,240.000000)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i function $panel_message_letterE$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(95,0000005f):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ = %vec2(695.000000,270.000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ = %vec2(610.000000,270.000000)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i function $Goal_Skate_Letter_S$
+:i endfunction
+:i function $Goal_Skate_Letter_K$
+:i endfunction
+:i function $Goal_Skate_Letter_A$
+:i endfunction
+:i function $Goal_Skate_Letter_T$
+:i endfunction
+:i function $Goal_Skate_Letter_E$
+:i endfunction
+:i :end

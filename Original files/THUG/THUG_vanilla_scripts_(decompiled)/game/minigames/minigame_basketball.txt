@@ -1,0 +1,683 @@
+
+:i function $Basketball$$Shotcounter$ = %i(10,0000000a)$ShotsMade$ = %i(0,00000000)
+	:i $Skiptrack$
+	:i if $Flipped$
+		:i $Flip$
+	:i endif
+	:i $ClearExceptions$
+	:i $DisablePlayerInput$
+	:i $SetRollingFriction$%i(1000,000003e8)
+	:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$
+	:i $Create_Speech_box$:s{$text$ = :a{%s(84,"Basketballer:\n 'sup dog. I bet you fitty bucks you can't make 8 shots in 10 tries. ")
+			:i %s(83,"Hold \b3 to shoot, release \b3 at the very top of your jump to bust a 3 pointer. \n")
+			:i %s(40,"Press \b1 at any time to wuss out, punk.")
+			:i :a}
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i while
+		
+		:i if $Held$$X$
+			:i $GotoPreserveParams$$Basketball_OnGround$
+		:i endif
+		:i if $Held$$Square$
+			:i $speech_box_exit$
+			:i $Goto$$SkaterInit$
+		:i endif
+		:i $WaitOneGameFrame$
+	:i loop_to 
+:i endfunction
+:i function $Basketball_OnGround$
+	:i $ClearTrickQueue$
+	:i $ClearEventBuffer$
+	:i $SetRollingFriction$%i(1000,000003e8)
+	:i if NOT $GotParam$$Shotcounter$
+		:i $Shotcounter$ = %i(10,0000000a)
+	:i endif
+	:i if  (%GLOBAL%$Shotcounter$ < %i(1,00000001)) 
+		:i if  (%GLOBAL%$ShotsMade$ < %i(9,00000009)) 
+			:i $Goto$$Basketball_PlayAgain$
+		:i else
+			:i $Goto$$Basketball_YouWin$
+		:i endif
+	:i endif
+	:i while
+		
+		:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$$NoRestart$
+		:i if $Held$$X$
+			:i $GotoPreserveParams$$Basketball_InAir$
+		:i endif
+		:i if $Held$$Square$
+			:i $Goto$$OnGroundAi$
+		:i endif
+		:i $WaitOneGameFrame$
+	:i loop_to 
+:i endfunction
+:i function $Basketball_InAir$
+	:i $ClearExceptions$
+	:i $PlayAnim$$Anim$ = $Ped_BP_ShootBall$$To$ = %i(80,00000050)
+	:i while
+		
+		:i if $released$$X$
+			:i %GLOBAL%$Shotcounter$ =  (%GLOBAL%$Shotcounter$ - %i(1,00000001)) 
+			:i $Update_ShotCounter$ isNull 
+			:i $Trick_MissShot$
+			:i $WaitAnimFinished$
+			:i $GotoPreserveParams$$Basketball_OnGround$
+		:i endif
+		:i $Wait$%i(1,00000001)$Frame$
+	:i loop_to %i(20,00000014)
+	:i while
+		
+		:i if $released$$X$
+			:i $Trick_MakeShot$
+			:i %GLOBAL%$ShotsMade$ =  (%GLOBAL%$ShotsMade$ + %i(1,00000001)) 
+			:i %GLOBAL%$Shotcounter$ =  (%GLOBAL%$Shotcounter$ - %i(1,00000001)) 
+			:i $Update_ShotCounter$ isNull 
+			:i $WaitAnimFinished$
+			:i $GotoPreserveParams$$Basketball_OnGround$
+		:i endif
+		:i $Wait$%i(1,00000001)$Frame$
+	:i loop_to %i(3,00000003)
+	:i while
+		
+		:i if $released$$X$
+			:i %GLOBAL%$Shotcounter$ =  (%GLOBAL%$Shotcounter$ - %i(1,00000001)) 
+			:i $Update_ShotCounter$ isNull 
+			:i $Trick_MissShot$
+			:i $WaitAnimFinished$
+			:i $GotoPreserveParams$$Basketball_OnGround$
+		:i endif
+		:i $Wait$%i(1,00000001)$Frame$
+	:i loop_to %i(20,00000014)
+	:i $WaitAnimFinished$
+	:i %GLOBAL%$Shotcounter$ =  (%GLOBAL%$Shotcounter$ - %i(1,00000001)) 
+	:i $Update_ShotCounter$ isNull 
+	:i $Trick_DidNotShoot$
+	:i while
+		
+		:i if $released$$X$
+			:i $GotoPreserveParams$$Basketball_OnGround$
+		:i else
+			:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$$NoRestart$
+		:i endif
+		:i $WaitOneGameFrame$
+	:i loop_to 
+:i endfunction
+:i function $Update_ShotCounter$
+	:i %GLOBAL%$TotalShots$ =  (%i(10,0000000a) - %GLOBAL%$Shotcounter$) 
+	:i $FormatText$$TextName$ = $Baskets_scored$%s(9,"%m for %s")$s$ = %GLOBAL%$TotalShots$$m$ = %GLOBAL%$ShotsMade$
+	:i $Create_panel_message$$id$ = $Shotcounter$$pos$ = %vec2(80.000000,240.000000)$text$ = %GLOBAL%$Baskets_scored$
+:i endfunction
+:i function $Trick_MakeShot$
+	:i $Create_panel_message$$text$ = %s(1," ")$id$ = $bball$$time$ = %i(1,00000001)
+	:i $Wait$%i(1,00000001)$Frame$
+	:i $Create_panel_message$$rgba$ = :a{%i(32,00000020)%i(144,00000090)%i(32,00000020)%i(100,00000064):a}$pos$ = %vec2(320.000000,80.000000)$id$ = $bball$select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4)
+			 :POS(0) $text$ = %s(5,"Nice!")
+		:BREAKTO(5)
+			 :POS(1) $text$ = %s(20,"He shoots he scores!")
+		:BREAKTO(5)
+			 :POS(2) $text$ = %s(7,"Bucket!")
+		:BREAKTO(5)
+			 :POS(3) $text$ = %s(5,"Nice!")
+		:BREAKTO(5)
+			 :POS(4) $text$ = %s(6,"Swish!") :POS(5) 
+	:i endfunction
+	:i function $Trick_MissShot$
+		:i $Create_panel_message$$text$ = %s(1," ")$id$ = $bball$$time$ = %i(1,00000001)
+		:i $Wait$%i(1,00000001)$Frame$
+		:i $Create_panel_message$$id$ = $bball$$pos$ = %vec2(320.000000,80.000000)select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(6):OFFSET(7):OFFSET(8):OFFSET(9)
+				 :POS(6) $text$ = %s(8,"Airball!")
+			:BREAKTO(10)
+				 :POS(7) $text$ = %s(6,"CLANG!")
+			:BREAKTO(10)
+				 :POS(8) $text$ = %s(7,"Weak...")
+			:BREAKTO(10)
+				 :POS(9) $text$ = %s(6,"Brick!") :POS(10) 
+		:i endfunction
+		:i function $Trick_DidNotShoot$
+			:i $Create_panel_message$$text$ = %s(1," ")$id$ = $bball$$time$ = %i(1,00000001)
+			:i $Wait$%i(1,00000001)$Frame$
+			:i $Create_panel_message$$id$ = $bball$$pos$ = %vec2(320.000000,80.000000)$text$ = %s(26,"Release X to shoot, moron!")
+		:i endfunction
+		:i function $Basketball_PlayAgain$
+			:i %GLOBAL%$Shotcounter$ = %i(10,0000000a)
+			:i %GLOBAL%$ShotsMade$ = %i(0,00000000)
+			:i $PlayAnim$$Anim$ = $Ped_M_Disgust$
+			:i $WaitAnimFinished$
+			:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$
+			:i $Create_Speech_box$:s{$text$ = :a{%s(52,"Basketballer:\n Man, get your sorry ass out of here.")
+					:i %s(61," If you still got game, press \b3 to go again, or else press ")
+					:i %s(16,"\b1 to get lost."):a}
+				:i $pos$ = %vec2(320.000000,240.000000):s}
+			:i $Debounce$$X$
+			:i while
+				
+				:i if $Held$$X$
+					:i $GotoPreserveParams$$Basketball_OnGround$
+				:i endif
+				:i if $Held$$Square$
+					:i $speech_box_exit$
+					:i $Goto$$OnGroundAi$
+				:i endif
+				:i $WaitOneGameFrame$
+			:i loop_to 
+		:i endfunction
+		:i function $Basketball_YouWin$
+			:i %GLOBAL%$Shotcounter$ = %i(10,0000000a)
+			:i %GLOBAL%$ShotsMade$ = %i(0,00000000)
+			:i $PlayAnim$$Anim$ = $Ped_M_Cheering$
+			:i $WaitAnimFinished$
+			:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$
+			:i $Create_Speech_box$:s{$text$ = :a{%s(81,"Basketballer:\n Daaaaaamn. You was raisin' up sumthin' righteous. Here's fitty - ")
+					:i %s(37,"press \b3 to go again or \b1 to bolt."):a}
+				:i $pos$ = %vec2(320.000000,240.000000):s}
+			:i $GoalMAnager_AddCash$%i(50,00000032)
+			:i $PlaySound$$cash$$Vol$ = %i(130,00000082)
+			:i $Debounce$$X$
+			:i while
+				
+				:i if $Held$$X$
+					:i $GotoPreserveParams$$Basketball_OnGround$
+				:i endif
+				:i if $Held$$Square$
+					:i $speech_box_exit$
+					:i $Goto$$OnGroundAi$
+				:i endif
+				:i $WaitOneGameFrame$
+			:i loop_to 
+		:i endfunction
+		:i function $Kill_Speech_Box$
+			:i if $ObjectExists$$id$ = $speech_box_anchor$
+				:i $DestroyScreenElement$$id$ = $speech_box_anchor$
+			:i endif
+		:i endfunction
+		:i function $WaitOnGroundWhilstChecking$
+			:i while
+				
+				:i $DoNextTrick$
+				:i if $OnGround$
+					:i continue
+					
+				:i endif
+				:i $WaitOneGameFrame$
+			:i loop_to 
+		:i endfunction
+		:i function $WaitFramesWhilstChecking$$Frames$ = %i(60,0000003c)
+			:i while
+				
+				:i $DoNextTrick$
+				:i $Wait$%i(1,00000001)$Frame$
+			:i loop_to %GLOBAL%$Frames$
+		:i endfunction
+		:i function $Basketball2$
+			:i $PlaySkaterCamAnim$$name$ = $MG_BBallTop$$play_hold$
+			:i $SwitchOffBoard$
+			:i $Obj_VarSet$$var$ = %i(0,00000000)$value$ = %i(4,00000004)
+			:i $printf$%s(14,"blah blah blah")
+			:i $kill$$prefix$ = %s(11,"TRG_Ped_BB_")
+			:i $create$$name$ = $TRG_PedBB_MG_D$
+			:i $create$$name$ = $MG_BB_Box$
+			:i $Skiptrack$
+			:i if $Flipped$
+				:i $Flip$
+			:i endif
+			:i $Obj_SetFlag$$OBJFLAG_BBALL_IDLE$
+			:i $ClearExceptions$
+			:i $SpawnSkaterScript$$MG_BB_Anims$
+			:i $DisablePlayerInput$
+			:i $SetRollingFriction$%i(1000,000003e8)
+			:i if NOT $IsAlive$$name$ = $TRG_MG_BB_AnimControl$
+				:i $create$$name$ = $TRG_MG_BB_AnimControl$
+			:i endif
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i $Create_Speech_box$:s{$text$ = :a{%s(72,"Basketballer:\n So the little skateboarder thinks he can hold his own?! ")
+					:i %s(68,"Hold \b3 to shoot, release \b3 when it looks like the shot is on. \n")
+					:i %s(40,"Press \b1 at any time to wuss out, punk."):a}
+				:i $pos$ = %vec2(320.000000,240.000000):s}
+			:i while
+				
+				:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$
+				:i $Wait$%i(30,0000001e)$Frames$
+				:i while
+					
+					:i if $Held$$X$
+						:i if $IsAlive$$name$ = $TRG_MG_BBall_GameBall$
+						:i else
+							:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+							:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_RUN$
+							:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_SHOOTING$
+							:i $Rotate$$duration$ = %i(10,0000000a)$Frame$$node$ = $TRG_MG_BBall_GameBall$
+							:i $Obj_PlayAnim$$Anim$ = $Ped_BP_ShootBall$
+							:i $create$$name$ = $TRG_MG_BBall_GameBall$
+							:i $PlaySound$$sch_tennis_11$
+							:i $SpawnSkaterScript$$MG_BBall_TakeShot$
+							:i while
+								
+								:i if $QueryFlag$$OBJFLAG_BBALL_SHOOTING$$name$ = $TRG_MG_BB_AnimControl$
+									:i continue
+									
+								:i endif
+								:i $Wait$%i(1,00000001)$Frame$
+							:i loop_to 
+						:i endif
+					:i endif
+					:i if $Held$$Left$
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(1,00000001)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo01$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(2,00000002)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo02$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(3,00000003)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo03$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(4,00000004)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo04$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(5,00000005)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo05$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(6,00000006)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo06$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(7,00000007)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo07$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(8,00000008)
+							:i $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo07$
+						:i endif
+					:i endif
+					:i if $Held$$Right$
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(1,00000001)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo02$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(2,00000002)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo03$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(3,00000003)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo04$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(4,00000004)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo05$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(5,00000005)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo06$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(6,00000006)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo07$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(7,00000007)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo08$
+						:i endif
+						:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(8,00000008)
+							:i $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo08$
+						:i endif
+					:i endif
+					:i if $Held$$Square$
+						:i $kill$$prefix$ = %s(21,"TRG_MG_BB_AnimControl")
+						:i $kill$$prefix$ = %s(14,"TRG_PedBB_MG_D")
+						:i $kill$$prefix$ = %s(9,"MG_BB_Box")
+						:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+						:i $SetRollingFriction$%i(1,00000001)
+						:i $Enableplayerinput$
+						:i $create$$prefix$ = %s(11,"TRG_Ped_BB_")
+						:i $MakeSkaterGoto$$SkaterInit$
+						:i $speech_box_exit$
+						:i continue
+						
+					:i endif
+					:i $Wait$%i(1,00000001)$Frame$
+				:i loop_to 
+				:i $Obj_WaitAnimFinished$
+			:i loop_to 
+		:i endfunction
+		:i function $Sch_MG_BBallShootCheck$
+			:i $Obj_ClearFlag$$OBJFLAG_BBALL_TOOKSHOT$
+			:i while
+				
+				:i $Obj_MoveToRelPos$%vec3(0.000000,5.000000,0.000000)
+				:i $Wait$%i(1,00000001)$Frame$
+				:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(5,"early")
+				:i if $Obj_FlagSet$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Obj_ClearFlag$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Goto$$Sch_MG_BBallShotEarly$
+				:i endif
+			:i loop_to %i(22,00000016)
+			:i while
+				
+				:i $Obj_MoveToRelPos$%vec3(0.000000,5.000000,0.000000)
+				:i $Wait$%i(1,00000001)$Frame$
+				:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(12,"!!!!NOW!!!!!")
+				:i if $Obj_FlagSet$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Obj_ClearFlag$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Goto$$Sch_MG_BBallShotOn$
+				:i endif
+			:i loop_to %i(5,00000005)
+			:i while
+				
+				:i $Obj_MoveToRelPos$%vec3(0.000000,5.000000,0.000000)
+				:i $Wait$%i(1,00000001)$Frame$
+				:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(4,"late")
+				:i if $Obj_FlagSet$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Obj_ClearFlag$$OBJFLAG_BBALL_TOOKSHOT$
+					:i $Goto$$Sch_MG_BBallShotLate$
+				:i endif
+			:i loop_to %i(7,00000007)
+			:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(1," ")
+			:i $Goto$$Sch_MG_BBallShotLate$
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_SHOOTING$
+			:i $Die$
+		:i endfunction
+		:i function $Sch_MG_BBallShotEarly$
+			:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(5,"EARLY")
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_SHOOTING$
+			:i $Die$
+		:i endfunction
+		:i function $Sch_MG_BBallShotOn$
+			:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(9,"RIGHT ON!")
+			:i $SpawnSkaterScript$$Sch_BB_Sound_BallMake$$id$ = $MG_BBallSound$
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_SHOOTING$
+			:i $Die$
+		:i endfunction
+		:i function $Sch_MG_BBallShotLate$
+			:i $Create_panel_message$$id$ = $bball_shot$$text$ = %s(4,"LATE")
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_SHOOTING$
+			:i $Die$
+		:i endfunction
+		:i function $MG_BBall_TakeShot$
+			:i while
+				
+				:i if $released$$X$
+					:i if $IsAlive$$name$ = $TRG_MG_BBall_GameBall$
+						:i $SendFlag$$name$ = $TRG_MG_BBall_GameBall$$OBJFLAG_BBALL_TOOKSHOT$
+						:i continue
+						
+					:i endif
+				:i endif
+				:i $Wait$%i(1,00000001)$Frame$
+			:i loop_to %i(50,00000032)
+		:i endfunction
+		:i function $MG_BB_RunToLeft$$node$ = $TRG_MG_BB_MoveTo01$
+			:i $Rotate$$duration$ = %i(3,00000003)$Frame$$node$ = %GLOBAL%$node$
+			:i $Move$$z$ = %i(5,00000005)
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_MOVING$
+			:i $Obj_GetDistToNode$%GLOBAL%$node$
+			:i if  (%GLOBAL%$dist$ < %i(50,00000032)) 
+				:i $printf$%s(10,"Obj_VarDec")
+				:i $Obj_VarDec$$var$ = %i(0,00000000)
+				:i $MG_BB_CehckVarSendFlag$
+			:i endif
+		:i endfunction
+		:i function $MG_BB_RunToRight$$node$ = $TRG_MG_BB_MoveTo08$
+			:i $Rotate$$duration$ = %i(2,00000002)$Frame$$node$ = %GLOBAL%$node$
+			:i $Move$$z$ = %i(5,00000005)
+			:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_MOVING$
+			:i $Obj_GetDistToNode$%GLOBAL%$node$
+			:i if  (%GLOBAL%$dist$ < %i(50,00000032)) 
+				:i $printf$%s(10,"Obj_VarInc")
+				:i $Obj_VarInc$$var$ = %i(0,00000000)
+				:i $MG_BB_CehckVarSendFlag$
+			:i endif
+		:i endfunction
+		:i function $MG_BB_ClearFlags$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV1$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV2$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV3$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV4$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV5$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV6$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV7$
+			:i $ClearFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV8$
+		:i endfunction
+		:i function $MG_BB_CehckVarSendFlag$
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(0,00000000)
+				:i $Obj_VarSet$$var$ = %i(0,00000000)$value$ = %i(1,00000001)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV1$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(1,00000001)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV1$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(2,00000002)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV2$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(3,00000003)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV3$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(4,00000004)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV4$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(5,00000005)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV5$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(6,00000006)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV6$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(7,00000007)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV7$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(8,00000008)
+				:i $MG_BB_ClearFlags$
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV8$
+			:i endif
+			:i if $Obj_VarEq$$var$ = %i(0,00000000)$value$ = %i(9,00000009)
+				:i $MG_BB_ClearFlags$
+				:i $Obj_VarSet$$var$ = %i(0,00000000)$value$ = %i(8,00000008)
+				:i $SendFlag$$name$ = $TRG_PedBB_MG_D$$OBJFLAG_BBALL_MOVETONAV8$
+			:i endif
+		:i endfunction
+		:i function $Sch_MG_BB_GotToNav01$
+			:i $printf$%s(14,"got to nave 01")
+		:i endfunction
+		:i function $MG_BB_AnimControl$
+			:i while
+				
+				:i $printf$%s(21,"MG BB anim controller")
+				:i $Wait$%i(1,00000001)$second$
+			:i loop_to 
+		:i endfunction
+		:i function $MG_BB_AnimsEnd$
+			:i if $IsAlive$$name$ = $TRG_MG_BB_AnimControl$
+				:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_MOVING$
+			:i endif
+			:i $Wait$%i(1,00000001)$Frame$
+			:i $Goto$$MG_BB_Anims$
+		:i endfunction
+		:i function $MG_BB_SetIdle$
+			:i if $IsAlive$$name$ = $TRG_MG_BB_AnimControl$
+				:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_RUN$
+				:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i endif
+		:i endfunction
+		:i function $MG_BB_SetRun$
+			:i if $IsAlive$$name$ = $TRG_MG_BB_AnimControl$
+				:i $SendFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_RUN$
+				:i $ClearFlag$$name$ = $TRG_MG_BB_AnimControl$$OBJFLAG_BBALL_IDLE$
+			:i endif
+		:i endfunction
+		:i function $MG_BB_Anims$
+			:i $Wait$%i(1,00000001)$Frame$
+			:i while
+				
+				:i if $IsAlive$$name$ = $TRG_MG_BB_AnimControl$
+					:i if $QueryFlag$$OBJFLAG_BBALL_SHOOTING$$name$ = $TRG_MG_BB_AnimControl$
+					:i else
+						:i if $QueryFlag$$OBJFLAG_BBALL_IDLE$$name$ = $TRG_MG_BB_AnimControl$
+							:i if $QueryFlag$$OBJFLAG_BBALL_MOVING$$name$ = $TRG_MG_BB_AnimControl$
+								:i $PlayAnim$$Anim$ = $Ped_BP_DribbleRunFromIdle$$Speed$ = %i(5,00000005)$NoRestart$$Blendperiod$ = %f(0.300000)
+								:i $WaitAnimFinished$
+								:i $MG_BB_SetRun$
+								:i $Goto$$MG_BB_AnimsEnd$
+							:i else
+								:i $Rotate$$duration$ = %i(10,0000000a)$Frame$$node$ = $TRG_MG_BBall_GameBall$
+								:i $PlayAnim$$Anim$ = $Ped_BP_DribbleInPlace$$Cycle$$NoRestart$
+								:i $MG_BB_SetIdle$
+								:i $Goto$$MG_BB_AnimsEnd$
+							:i endif
+						:i endif
+						:i if $QueryFlag$$OBJFLAG_BBALL_RUN$$name$ = $TRG_MG_BB_AnimControl$
+							:i if $QueryFlag$$OBJFLAG_BBALL_MOVING$$name$ = $TRG_MG_BB_AnimControl$
+								:i $PlayAnim$$Anim$ = $Ped_BP_DribbleRun$$Cycle$$NoRestart$
+								:i $MG_BB_SetRun$
+								:i $Goto$$MG_BB_AnimsEnd$
+							:i else
+								:i $Rotate$$duration$ = %i(10,0000000a)$Frame$$node$ = $TRG_MG_BBall_GameBall$
+								:i $PlayAnim$$Anim$ = $Ped_BP_DribbleRunToIdle$$Speed$ = %i(5,00000005)$NoRestart$$Blendperiod$ = %f(0.300000)
+								:i $WaitAnimFinished$
+								:i $MG_BB_SetIdle$
+								:i $Goto$$MG_BB_AnimsEnd$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i $Wait$%i(1,00000001)$Frame$
+			:i loop_to 
+		:i endfunction
+		:i function $MG_BB_Defense_Goal$
+			:i $Obj_StickToGround$$distAbove$ = %i(3,00000003)$distBelow$ = %i(6,00000006)
+			:i $Obj_SetPathTurnDist$%f(2.500000)$feet$
+			:i $Obj_StickToGround$$off$
+			:i $Obj_SetConstantHeight$
+			:i $Obj_PathHeading$$On$
+			:i $Obj_SetPathVelocity$%i(30,0000001e)$fps$
+			:i $Obj_SetPathAcceleration$%i(45,0000002d)$fpsps$
+			:i $Obj_SetPathDeceleration$%i(45,0000002d)$fpsps$
+			:i while
+				
+				:i $Obj_PlayAnim$$Anim$ = $Ped_BP_GuardPlayer$$Cycle$
+				:i while
+					
+					:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV1$
+						:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV1$
+						:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(11):OFFSET(12):OFFSET(13)
+							 :POS(11) %i(10,0000000a)$Frames$
+						:BREAKTO(14)
+							 :POS(12) %i(20,00000014)$Frames$
+						:BREAKTO(14)
+							 :POS(13) %i(30,0000001e)$Frames$ :POS(14) 
+							:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker01$
+							:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo01$
+							:i continue
+							
+						:i endif
+						:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV2$
+							:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV2$
+							:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(15):OFFSET(16):OFFSET(17)
+								 :POS(15) %i(10,0000000a)$Frames$
+							:BREAKTO(18)
+								 :POS(16) %i(20,00000014)$Frames$
+							:BREAKTO(18)
+								 :POS(17) %i(30,0000001e)$Frames$ :POS(18) 
+								:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker02$
+								:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo02$
+								:i continue
+								
+							:i endif
+							:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV3$
+								:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV3$
+								:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(19):OFFSET(20):OFFSET(21)
+									 :POS(19) %i(10,0000000a)$Frames$
+								:BREAKTO(22)
+									 :POS(20) %i(20,00000014)$Frames$
+								:BREAKTO(22)
+									 :POS(21) %i(30,0000001e)$Frames$ :POS(22) 
+									:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker03$
+									:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo03$
+									:i continue
+									
+								:i endif
+								:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV4$
+									:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV4$
+									:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(23):OFFSET(24):OFFSET(25)
+										 :POS(23) %i(10,0000000a)$Frames$
+									:BREAKTO(26)
+										 :POS(24) %i(20,00000014)$Frames$
+									:BREAKTO(26)
+										 :POS(25) %i(30,0000001e)$Frames$ :POS(26) 
+										:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker04$
+										:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo04$
+										:i continue
+										
+									:i endif
+									:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV5$
+										:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV5$
+										:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(27):OFFSET(28):OFFSET(29)
+											 :POS(27) %i(10,0000000a)$Frames$
+										:BREAKTO(30)
+											 :POS(28) %i(20,00000014)$Frames$
+										:BREAKTO(30)
+											 :POS(29) %i(30,0000001e)$Frames$ :POS(30) 
+											:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker05$
+											:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo05$
+											:i continue
+											
+										:i endif
+										:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV6$
+											:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV6$
+											:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(31):OFFSET(32):OFFSET(33)
+												 :POS(31) %i(10,0000000a)$Frames$
+											:BREAKTO(34)
+												 :POS(32) %i(20,00000014)$Frames$
+											:BREAKTO(34)
+												 :POS(33) %i(30,0000001e)$Frames$ :POS(34) 
+												:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker06$
+												:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo06$
+												:i continue
+												
+											:i endif
+											:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV7$
+												:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV7$
+												:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(35):OFFSET(36):OFFSET(37)
+													 :POS(35) %i(10,0000000a)$Frames$
+												:BREAKTO(38)
+													 :POS(36) %i(20,00000014)$Frames$
+												:BREAKTO(38)
+													 :POS(37) %i(30,0000001e)$Frames$ :POS(38) 
+													:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker07$
+													:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo07$
+													:i continue
+													
+												:i endif
+												:i if $Obj_FlagSet$$OBJFLAG_BBALL_MOVETONAV8$
+													:i $Obj_ClearFlag$$OBJFLAG_BBALL_MOVETONAV8$
+													:i $Wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(39):OFFSET(40):OFFSET(41)
+														 :POS(39) %i(10,0000000a)$Frames$
+													:BREAKTO(42)
+														 :POS(40) %i(20,00000014)$Frames$
+													:BREAKTO(42)
+														 :POS(41) %i(30,0000001e)$Frames$ :POS(42) 
+														:i $Sch_BB_RunToNav$$Sch_BBall_Nav$ = $TRG_Ped_BB_Blocker08$
+														:i $Obj_LookAtNode$$name$ = $TRG_MG_BB_MoveTo08$
+														:i continue
+														
+													:i endif
+													:i $Wait$%i(1,00000001)$Frame$
+												:i loop_to 
+											:i loop_to 
+										:i endfunction
+										:i $OBJFLAG_BBALL_TOOKSHOT$ = %i(0,00000000)
+										:i $OBJFLAG_BBALL_MOVETONAV1$ = %i(1,00000001)
+										:i $OBJFLAG_BBALL_MOVETONAV2$ = %i(2,00000002)
+										:i $OBJFLAG_BBALL_MOVETONAV3$ = %i(3,00000003)
+										:i $OBJFLAG_BBALL_MOVETONAV4$ = %i(4,00000004)
+										:i $OBJFLAG_BBALL_MOVETONAV5$ = %i(5,00000005)
+										:i $OBJFLAG_BBALL_MOVETONAV6$ = %i(6,00000006)
+										:i $OBJFLAG_BBALL_MOVETONAV7$ = %i(7,00000007)
+										:i $OBJFLAG_BBALL_MOVETONAV8$ = %i(8,00000008)
+										:i $OBJFLAG_BBALL_MOVING$ = %i(9,00000009)
+										:i $OBJFLAG_BBALL_IDLE$ = %i(10,0000000a)
+										:i $OBJFLAG_BBALL_RUN$ = %i(12,0000000c)
+										:i $OBJFLAG_BBALL_SHOOTING$ = %i(13,0000000d)
+										:i :end
+										

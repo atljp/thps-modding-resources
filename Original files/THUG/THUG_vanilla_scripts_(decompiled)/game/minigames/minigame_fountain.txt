@@ -1,0 +1,97 @@
+
+:i $minigame_fountain_genericParams$ = :s{
+	:i $init$ = $minigame_fountain_init$
+	:i $deactivate$ = $minigame_fountain_deactivate$
+	:i $number_collected$ = %i(1,00000001)
+	:i $minigame_record$ = %i(0,00000000)
+	:i $trigger_obj_id$ = $TRG_MG_RoundCounter02$
+	:i $no_restart$
+	:i $minigame$
+	:i $betting_game$
+	:i $betting_guy_node$ = $TRG_MG_BettingNav02$
+	:i $bet_action$ = %s(34,"grind the flag pole fountain ledge")
+	:i $bet_unit$ = %s(5,"times")
+	:i $bet_easy$ = :s{
+		:i $bet_amount$ = %i(100,00000064)
+		:i $bet_challenge$ = %i(2,00000002)
+		:i $tries$ = %i(5,00000005)
+	:i :s}
+	:i $bet_medium$ = :s{
+		:i $bet_amount$ = %i(250,000000fa)
+		:i $bet_challenge$ = %i(5,00000005)
+		:i $tries$ = %i(3,00000003)
+	:i :s}
+	:i $bet_hard$ = :s{
+		:i $bet_amount$ = %i(1000,000003e8)
+		:i $bet_challenge$ = %i(8,00000008)
+		:i $tries$ = %i(2,00000002)
+	:i :s}
+:i :s}
+:i $minigame_fountain2_genericParams$ = :s{
+	:i $deactivate$ = $minigame_fountain_deactivate$
+	:i $number_collected$ = %i(1,00000001)
+	:i $minigame_record$ = %i(0,00000000)
+	:i $trigger_obj_id$ = $TRG_MG_JockCounter$
+	:i $no_restart$
+	:i $minigame$
+:i :s}
+:i function $minigame_fountain_init$
+	:i $create$$name$ = %GLOBAL%$trigger_obj_id$
+:i endfunction
+:i function $minigame_fountain_deactivate$
+	:i $printf$%s(30,"deactivating fountain minigame")
+	:i $minigame_fountain_done$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$number_collected$ = %i(1,00000001):s}
+:i endfunction
+:i function $minigame_fountain_done$
+	:i $printf$%s(22,"minigame_fountain_done")
+	:i $GoalManager_EndBetAttempt$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i else
+		:i $GoalManager_GetGoalParams$$name$ = $Sch_goal_minigame_fountain$
+	:i endif
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+	:i $GoalManager_DeactivateGoal$$name$ = $Sch_goal_minigame_fountain$
+:i endfunction
+:i function $minigame_fountain_GrindCounter$$type$ = %s(7,"default")$object$ = %s(9,"Flag Pole")$verb_s$ = %s(5,"grind")$verb_p$ = %s(6,"grinds")
+	:i if $ScreenElementExists$$id$ = $minigame_combo_timer$
+		:i $DestroyScreenElement$$id$ = $minigame_combo_timer$
+	:i endif
+	:i $GoalManager_StartBetAttempt$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i else
+		:i %GLOBAL%$goal_id$ = $Sch_goal_minigame_fountain$
+		:i $GoalManager_GetGoalParams$$name$ = $Sch_goal_minigame_fountain$
+	:i endif
+	:i $printf$%s(12,"grindCounter")
+	:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$
+		:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$minigame_fountain_set_exceptions$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+	:i $GoalManager_GotCounterObject$$name$ = %GLOBAL%$goal_id$
+	:i if $GoalManager_CheckMinigameRecord$$name$ = %GLOBAL%$goal_id$%GLOBAL%$number_collected$
+		:i $create_panel_message$$id$ = $minigame_record$$text$ = %s(11,"New Record!")$style$ = $panel_message_MG_NewRecord$
+		:i $FormatText$$TextName$ = $minigame_message$%s(2,"%i")$i$ = %GLOBAL%$number_collected$
+		:i $create_panel_message$$id$ = $minigame_message$$text$ = %GLOBAL%$minigame_message$$style$ = $panel_message_MG_1_High$
+	:i else
+		:i $FormatText$$TextName$ = $minigame_message$%s(2,"%i")$i$ = %GLOBAL%$number_collected$
+		:i $create_panel_message$$id$ = $minigame_message$$text$ = %GLOBAL%$minigame_message$$style$ = $panel_message_MG_1_Low$
+	:i endif
+	:i $create_panel_message$$id$ = $MiniGame2$$text$ = %GLOBAL%$object$$style$ = $panel_message_MG_2$
+	:i if $IntegerEquals$$a$ = %GLOBAL%$number_collected$$b$ = %i(1,00000001)
+		:i $create_panel_message$$id$ = $MiniGame3$$text$ = %GLOBAL%$verb_s$$style$ = $panel_message_MG_3$
+	:i else
+		:i $create_panel_message$$id$ = $MiniGame3$$text$ = %GLOBAL%$verb_p$$style$ = $panel_message_MG_3$
+	:i endif
+:i endfunction
+:i function $minigame_fountain_set_exceptions$
+	:i $printf$%s(18,"setting exceptions")
+	:i $Obj_SetException$$ex$ = $SkaterLanded$$scr$ = $minigame_fountain_done$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Obj_SetException$$ex$ = $SkaterBailed$$scr$ = $minigame_fountain_done$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $minigame_fountain_success$
+	:i $create_speech_box$
+:i endfunction
+:i :end

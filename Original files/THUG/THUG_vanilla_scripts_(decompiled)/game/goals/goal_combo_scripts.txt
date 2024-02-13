@@ -1,0 +1,335 @@
+
+:i $Goal_amateurCOMBOline_genericParams$ = :s{
+	:i $goal_text$ = %s(17,"Collect C-O-M-B-O")
+	:i $view_goals_text$ = %s(17,"Collect C-O-M-B-O")
+	:i $goal_flags$ = :a{
+		:i $got_C$
+		:i $got_O$
+		:i $got_M$
+		:i $got_B$
+		:i $got_O2$
+		:i :a}
+	:i $init$ = $ComboLetters_Init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $ComboLetters_Activate$
+	:i $fail$ = $ComboLetters_Fail$
+	:i $success$ = $ComboLetters_Win$
+	:i $expire$ = $ComboLetters_Expire$
+	:i $deactivate$ = $ComboLetters_Deactivate$
+	:i $letter_info$ = :a{
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_C$$text$ = %s(1,"C"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O$$text$ = %s(1,"O"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_M$$text$ = %s(1,"M"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_B$$text$ = %s(1,"B"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O2$$text$ = %s(1,"O"):s}
+		:i :a}
+	:i $trigger_obj_id$ = $TRG_G_COMBO_Pro$
+	:i $restart_node$ = $TRG_G_COMBO_RestartNode$
+	:i $start_pad_id$ = $G_COMBO_StartPad$
+	:i $got_first_letter$ = %i(0,00000000)
+	:i $record_type$ = $score$
+:i :s}
+:i $Goal_ProCOMBOline_genericParams$ = :s{
+	:i $goal_text$ = %s(17,"Collect C-O-M-B-O")
+	:i $view_goals_text$ = %s(21,"Pro C-O-M-B-O letters")
+	:i $goal_flags$ = :a{
+		:i $got_C$
+		:i $got_O$
+		:i $got_M$
+		:i $got_B$
+		:i $got_O2$
+		:i :a}
+	:i $init$ = $ComboLetters_Init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $ComboLetters_Activate$
+	:i $expire$ = $ComboLetters_Expire$
+	:i $fail$ = $ComboLetters_Fail$
+	:i $success$ = $ComboLetters_Win$
+	:i $deactivate$ = $ComboLetters_Deactivate$
+	:i $letter_info$ = :a{
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_C$$text$ = %s(1,"C"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O$$text$ = %s(1,"O"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_M$$text$ = %s(1,"M"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_B$$text$ = %s(1,"B"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O2$$text$ = %s(1,"O"):s}
+		:i :a}
+	:i $time$ = %i(120,00000078)
+	:i $trigger_obj_id$ = $TRG_G_PROLINE_Pro$
+	:i $restart_node$ = $TRG_G_PROLINE_RestartNode$
+	:i $start_pad_id$ = $G_PROLINE_StartPad$
+	:i $got_first_letter$ = %i(0,00000000)
+	:i $record_type$ = $score$
+:i :s}
+:i $Goal_MedCOMBOline_genericParams$ = :s{
+	:i $goal_text$ = %s(17,"Collect C-O-M-B-O")
+	:i $view_goals_text$ = %s(21,"Pro C-O-M-B-O letters")
+	:i $goal_flags$ = :a{
+		:i $got_C$
+		:i $got_O$
+		:i $got_M$
+		:i $got_B$
+		:i $got_O2$
+		:i :a}
+	:i $init$ = $ComboLetters_Init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $ComboLetters_Activate$
+	:i $expire$ = $ComboLetters_Expire$
+	:i $fail$ = $ComboLetters_Fail$
+	:i $success$ = $ComboLetters_Win$
+	:i $deactivate$ = $ComboLetters_Deactivate$
+	:i $letter_info$ = :a{
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_C$$text$ = %s(1,"C"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O$$text$ = %s(1,"O"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_M$$text$ = %s(1,"M"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_B$$text$ = %s(1,"B"):s}
+		:i :s{$obj_id$ = $TRG_Goal_COMBO_O2$$text$ = %s(1,"O"):s}
+		:i :a}
+	:i $time$ = %i(120,00000078)
+	:i $trigger_obj_id$ = $TRG_G_MedCOMBO_Pro$
+	:i $restart_node$ = $TRG_G_MedCOMBO_RestartNode$
+	:i $start_pad_id$ = $G_MedCOMBO_StartPad$
+	:i $got_first_letter$ = %i(0,00000000)
+	:i $record_type$ = $score$
+:i :s}
+:i function $ComboLetters_Init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $ComboLetters_Activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $Create_Combo$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_letter$ = %i(0,00000000):s}
+	:i $GetArraySize$%GLOBAL%$goal_flags$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $RunScriptOnObject$$id$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$obj_id$) $ComboLetter_InitLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ =  (%GLOBAL%$goal_flags$:a{%GLOBAL%$index$:a}) $id$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$obj_id$) :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $ComboLetters_Deactivate$
+	:i $KillSpawnedScript$$name$ = $ComboLetter_GetLetter$
+	:i $KillSpawnedScript$$name$ = $ComboLetter_GotLetter$
+	:i $KillSpawnedScript$$name$ = $ComboLetter_GotLetter2$
+	:i $KillSpawnedScript$$id$ = $ComboLetter_GoalScript$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_combo_kill_letters$$goal_id$ = %GLOBAL%$goal_id$
+	:i $kill_combo_messages$ isNull 
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_letter$ = %i(0,00000000):s}
+:i endfunction
+:i function $ComboLetter_InitLetter$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $Obj_ClearExceptions$
+	:i $Obj_RotY$$speed$ = %i(200,000000c8)
+	:i $Obj_SetInnerRadius$%i(8,00000008)
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $ComboLetter_GotLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = %GLOBAL%$flag$$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $ComboLetter_HUDLetter$
+	:i $GetArraySize$%GLOBAL%$letter_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( (%GLOBAL%$goal_flags$:a{%GLOBAL%$index$:a})  = %GLOBAL%$flag$) 
+			:i %GLOBAL%$text$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$text$) 
+			:i %GLOBAL%$y_pos$ =  (%i(150,00000096) +  (%i(30,0000001e) * %GLOBAL%$index$) ) 
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if $GotParam$$text$
+		:i $create_panel_message$:s{
+			:i $id$ = %GLOBAL%$flag$
+			:i $text$ = %GLOBAL%$text$
+			:i $style$ = $combo_letter_panel_message$
+			:i $params$ = :s{$y_pos$ = %GLOBAL%$y_pos$:s}
+		:i :s}
+	:i else
+		:i $script_assert$%s(31,"couldn't find combo letter text")
+	:i endif
+:i endfunction
+:i function $hide_combo_letters$
+	:i if $ObjectExists$$id$ = $got_C$
+		:i $DoScreenElementMorph$$id$ = $got_C$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_O$
+		:i $DoScreenElementMorph$$id$ = $got_O$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_M$
+		:i $DoScreenElementMorph$$id$ = $got_M$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_B$
+		:i $DoScreenElementMorph$$id$ = $got_B$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_O2$
+		:i $DoScreenElementMorph$$id$ = $got_O2$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_combo_letters$
+	:i if $ObjectExists$$id$ = $got_C$
+		:i $DoScreenElementMorph$$id$ = $got_C$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_O$
+		:i $DoScreenElementMorph$$id$ = $got_O$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_M$
+		:i $DoScreenElementMorph$$id$ = $got_M$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_B$
+		:i $DoScreenElementMorph$$id$ = $got_B$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $ObjectExists$$id$ = $got_O2$
+		:i $DoScreenElementMorph$$id$ = $got_O2$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $ComboLetter_GotLetter$
+	:i $SpawnSkaterScript$$ComboLetter_GotLetter2$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$id$ = %GLOBAL%$id$$flag$ = %GLOBAL%$flag$:s}
+:i endfunction
+:i function $ComboLetter_GotLetter2$
+	:i if NOT $IsInBail$
+		:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i $ComboLetter_GetLetter$ isNull 
+		:i else
+			:i if $Skating$
+				:i if NOT $OnGround$
+					:i $ComboLetter_GetLetter$ isNull 
+				:i endif
+			:i else
+				:i if $Walking$
+					:i if $Walk_Air$
+						:i $ComboLetter_GetLetter$ isNull 
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $ComboLetter_GetLetter$
+	:i $KillLocal$$name$ = %GLOBAL%$id$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_SetGoalFlag$$name$ = %GLOBAL%$goal_id$%GLOBAL%$flag$%i(1,00000001)
+	:i if $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i $BroadcastEvent$$Type$ = $ComboLetter_GotLastLetter$
+	:i endif
+	:i if  (%GLOBAL%$got_first_letter$ = %i(0,00000000)) 
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_letter$ = %i(1,00000001):s}
+		:i $SpawnScript$$ComboLetter_StartCombo$$id$ = $ComboLetter_GoalScript$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+	:i $PlaySound$$GapSound$$vol$ = %i(100,00000064)
+	:i $ComboLetter_HUDLetter$$letter_info$ = %GLOBAL%$letter_info$$goal_flags$ = %GLOBAL%$goal_flags$$flag$ = %GLOBAL%$flag$
+:i endfunction
+:i function $ComboLetter_StartCombo$
+	:i $ClearExceptions$
+	:i $SetException$$ex$ = $SkaterLanded$$scr$ = $ComboLetters_ComboLanded$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $SetException$$ex$ = $SkaterBailed$$scr$ = $ComboLetters_ComboLost$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $SetException$$ex$ = $ComboLetter_GotLastLetter$$scr$ = $ComboLetter_GotLastLetter$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i if NOT $Skater$.$CurrentScorePotGreaterThan$%i(0,00000000)
+		:i $SetException$$ex$ = $SkaterEnterGround$$scr$ = $ComboLetters_ComboLanded$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $SetException$$ex$ = $SkaterEnterLadder$$scr$ = $ComboLetters_ComboLanded$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $SetException$$ex$ = $SkaterEnterHang$$scr$ = $ComboLetters_ComboLanded$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $WaitForEvent$$Type$ = $SkaterEnterCombo$
+		:i $ClearException$$SkaterEnterGround$
+		:i $ClearException$$SkaterEnterLadder$
+		:i $ClearException$$SkaterEnterHang$
+	:i endif
+	:i $Block$
+:i endfunction
+:i function $ComboLetter_GotLastLetter$
+	:i $ClearExceptions$
+	:i if NOT $Skater$.$CurrentScorePotGreaterThan$%i(0,00000000)
+		:i $SetException$$ex$ = $SkaterEnterGround$$scr$ = $ComboLetters_WinGoal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $SetException$$ex$ = $SkaterEnterLadder$$scr$ = $ComboLetters_WinGoal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $SetException$$ex$ = $SkaterEnterHang$$scr$ = $ComboLetters_WinGoal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+	:i $SetException$$ex$ = $SkaterBailed$$scr$ = $ComboLetters_ComboLost$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $SetException$$ex$ = $SkaterLanded$$scr$ = $ComboLetters_WinGoal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Wait$%i(60,0000003c)$Seconds$
+	:i $Block$
+:i endfunction
+:i function $ComboLetters_WinGoal$
+	:i $ClearExceptions$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_letter$ = %i(0,00000000):s}
+	:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $ComboLetters_ComboLost$
+	:i $ClearExceptions$
+	:i $SpawnScript$$ComboLetters_ComboLost2$$params$ =  isNull 
+:i endfunction
+:i function $ComboLetters_ComboLost2$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+		:i $create_panel_message$$id$ = $new_goal_message$$text$ = %s(20,"You lost your combo!")$style$ = $panel_message_generic_loss$
+	:i endif
+:i endfunction
+:i function $ComboLetters_ComboLanded$
+	:i $ClearExceptions$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $SpawnScript$$ComboLetters_ComboLanded2$$params$ =  isNull 
+:i endfunction
+:i function $ComboLetters_ComboLanded2$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $create_panel_message$$id$ = $new_goal_message$$text$ = %s(20,"You lost your combo!")$style$ = $panel_message_generic_loss$
+:i endfunction
+:i function $ComboLetters_Expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $ComboLetters_Fail$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_letter$ = %i(0,00000000):s}
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $ComboLetters_Win$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $kill_combo_messages$
+	:i $ReplayRecordSimpleScriptCall$$scriptname$ = $kill_combo_messages$
+	:i $GetArraySize$%GLOBAL%$goal_flags$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ =  (%GLOBAL%$goal_flags$:a{%GLOBAL%$index$:a}) 
+			:i $RunScriptOnScreenElement$$id$ =  (%GLOBAL%$goal_flags$:a{%GLOBAL%$index$:a}) $kill_panel_message$
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $Create_Combo$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GetArraySize$%GLOBAL%$letter_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $CreateLocal$$name$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$obj_id$) 
+		:i $RunScriptOnObject$$id$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$obj_id$) $bounce_combo_letter$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $goal_combo_kill_letters$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GetArraySize$%GLOBAL%$letter_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $KillLocal$$name$ =  ( (%GLOBAL%$letter_info$:a{%GLOBAL%$index$:a}) ->$obj_id$) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $bounce_combo_letter$
+	:i $Obj_Hover$$Amp$ = %i(6,00000006)$Freq$ = %i(2,00000002)
+:i endfunction
+:i function $combo_letter_panel_message$
+	:i $SetProps$$font$ = $small$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(10,0000000a)%i(225,000000e1)%i(10,0000000a)%i(115,00000073):a}
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %f(0.300000)$pos$ =  (%vec2(695.000000,0.000000) +  (%vec2(0.000000,1.000000) * %GLOBAL%$y_pos$) ) 
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(3.500000)$pos$ =  (%vec2(610.000000,0.000000) +  (%vec2(0.000000,1.000000) * %GLOBAL%$y_pos$) ) 
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.180000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)
+:i endfunction
+:i :end

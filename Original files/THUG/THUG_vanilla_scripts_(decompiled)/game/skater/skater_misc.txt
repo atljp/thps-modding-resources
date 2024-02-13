@@ -1,0 +1,34 @@
+
+:i function $TurnBackAround$$movetonode$ = $TRG_TurnAround01$$text$ = %s(122,"Whooah, easy bub. You don't have enough goal points to go to the next level. Beat some more goals, then come see me again.")
+	:i if $InNetGame$
+		:i %GLOBAL%$text$ = %s(66,"Sorry bub, taxi's busted. \n Don't you have a game to play anyway?")
+	:i endif
+	:i if $isTrue$$Bootstrap_Build$
+		:i %GLOBAL%$text$ = %s(108,"Sorry, the taxi's out of service for the demo. Maybe if you buy the real game, I can afford to get it fixed.")
+	:i endif
+	:i $StopSkitch$
+	:i $MakeSkaterGoto$$EndOfRun$$Params$ = :s{$FromTaxiGuy$:s}
+	:i $pause_trick_text$
+	:i $pause_balance_meter$
+	:i if NOT $InNetGame$
+		:i $GoalManager_PauseAllGoals$
+	:i endif
+	:i $create_speech_box$:s{$pos$ = %vec2(320.000000,300.000000)
+		:i $text$ = %GLOBAL%$text$
+		:i $pad_choose_script$ = $TurnBackAround_Finish$
+	:i :s}
+:i endfunction
+:i function $TurnBackAround_Finish$
+	:i $unpause_trick_text$
+	:i $unpause_balance_meter$
+	:i if NOT $InNetGame$
+		:i $GoalManager_UnPauseAllGoals$
+	:i endif
+	:i $Skater$.$SK3_Killskater$$nodename$ = $TRG_TurnAround01$$nomessage$
+:i endfunction
+:i function $GetSkaterState$
+	:i $Skater$.$GetTags$
+	:i return
+	$state$ = %GLOBAL%$state$
+:i endfunction
+:i :end

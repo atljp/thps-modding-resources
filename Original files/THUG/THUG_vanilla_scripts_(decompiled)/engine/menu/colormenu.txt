@@ -1,0 +1,1203 @@
+
+:i $colormenu_bar_scale$ = %vec2(4.400000,2.000000)
+:i $colormenu_bar_focus_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(118,00000076):a}
+:i $colormenu_bar_unfocus_rgba$ = :a{%i(40,00000028)%i(40,00000028)%i(40,00000028)%i(118,00000076):a}
+:i $colormenu_bar_pos$ = %vec2(12.000000,0.000000)
+:i $colormenu_text_pos$ = %vec2(-102.000000,0.000000)
+:i $colormenu_spacing_between$ = %i(25,00000019)
+:i $colormenu_arrow_pos_up$ = %vec2(0.000000,7.000000)
+:i $colormenu_arrow_pos_down$ = %vec2(0.000000,-7.000000)
+:i $colormenu_arrow_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+:i $colormenu_arrow_scale$ = %f(0.700000)
+:i $colormenu_wrap_arrow_left$ = %f(-53.000000)
+:i $colormenu_wrap_arrow_right$ = %f(80.000000)
+:i $colormenu_nowrap_arrow_left$ = %f(-53.000000)
+:i $colormenu_nowrap_arrow_right$ = %f(80.000000)
+:i $colormenu_hue_increment$ = %i(5,00000005)
+:i $colormenu_saturation_increment$ = %i(3,00000003)
+:i $colormenu_value_increment$ = %i(2,00000002)
+:i $colormenu_min_saturation$ = %f(0.000000)
+:i $colormenu_max_saturation$ = %f(90.000000)
+:i $colormenu_min_value$ = %f(12.000000)
+:i $colormenu_max_value$ = %f(60.000000)
+:i function $colormenu_focus$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(50,00000032):a}
+	:i $GetTags$
+	:i $FormatText$$ChecksumName$ = $highlighted_text_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $bar_rgba$%s(22,"%i_HIGHLIGHT_BAR_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i if $GotParam$$from_caf$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+			:i $scale$ = %f(1.100000)
+			:i $relative_scale$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}
+			:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i :s}
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$text_twitch_effect$$params$ = :s{$no_extra$ = $no_extra$:s}
+	:i else
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$do_scale_up$$params$ = :s{$rgba$ = %GLOBAL%$highlighted_text_rgba$:s}
+	:i endif
+	:i if $GotParam$$pad_left_handler$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_left$%GLOBAL%$pad_left_handler$$params$ = %GLOBAL%$handler_params$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_right_handler$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_right$%GLOBAL%$pad_right_handler$$params$ = %GLOBAL%$handler_params$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$color_bar_id$
+		:i $rgba$ = $colormenu_bar_focus_rgba$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$down_arrow_id$
+		:i $scale$ = $colormenu_arrow_scale$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$up_arrow_id$
+		:i $scale$ = $colormenu_arrow_scale$
+	:i :s}
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $generic_menu_update_arrows$:s{
+		:i $up_arrow_id$ = $edit_skater_menu_up_arrow$
+		:i $down_arrow_id$ = $edit_skater_menu_down_arrow$
+	:i :s}
+	:i if $ObjectExists$$id$ = $edit_skater_vmenu$
+		:i $edit_skater_vmenu$.$GetTags$
+		:i if $GotParam$$arrow_id$
+			:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $colormenu_unfocus$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i $GetTags$
+	:i if $GotParam$$from_caf$
+		:i $FormatText$$ChecksumName$ = $text_rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+		:i $KillSpawnedScript$$name$ = $text_twitch_effect$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+			:i $alpha$ = %GLOBAL%$text_alpha$
+			:i $scale$ = %i(1,00000001)
+			:i $relative_scale$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$do_scale_down$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$color_bar_id$
+		:i $rgba$ = $colormenu_bar_unfocus_rgba$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$down_arrow_id$
+		:i $scale$ = %f(0.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$up_arrow_id$
+		:i $scale$ = %f(0.000000)
+	:i :s}
+:i endfunction
+:i function $colormenu_get_default_color$
+	:i if NOT $GotParam$$part$
+		:i $script_assert$%s(17,"no part parameter")
+	:i endif
+	:i if NOT $GotParam$$desc_id$
+		:i $script_assert$%s(20,"no desc_id parameter")
+	:i endif
+	:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i if $GotParam$$default_h$
+		:i %GLOBAL%$h$ = %GLOBAL%$default_h$
+	:i else
+		:i %GLOBAL%$h$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$default_s$
+		:i %GLOBAL%$s$ = %GLOBAL%$default_s$
+	:i else
+		:i %GLOBAL%$s$ = %i(50,00000032)
+	:i endif
+	:i if $GotParam$$default_v$
+		:i %GLOBAL%$v$ = %GLOBAL%$default_v$
+	:i else
+		:i %GLOBAL%$v$ = %i(50,00000032)
+	:i endif
+	:i return
+	$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+:i endfunction
+:i function $colormenu_get_hsv$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+	:i if NOT $GotParam$$use_default_hsv$
+		:i %GLOBAL%$use_default_hsv$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$h$
+		:i %GLOBAL%$h$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$s$
+		:i %GLOBAL%$s$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$v$
+		:i %GLOBAL%$v$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$use_default_hsv$ = %i(1,00000001)) 
+		:i $colormenu_get_default_color$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i endif
+	:i return
+	$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$$use_default_hsv$ = %GLOBAL%$use_default_hsv$
+:i endfunction
+:i function $colormenu_set_hsv$$use_default_hsv$ = %i(0,00000000)
+	:i $GetCurrentSkaterProfileIndex$
+	:i $printf$%s(14,"h=%h s=%s v=%v")$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $SetPlayerAppearanceColor$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$$use_default_hsv$ = %GLOBAL%$use_default_hsv$
+:i endfunction
+:i function $colormenu_refresh_arrows$
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i $sliderbar_rescale_to_bar$$min$ = %f(0.000000)$max$ = %f(360.000000)$value$ = %GLOBAL%$h$$left$ = $colormenu_wrap_arrow_left$$right$ = $colormenu_wrap_arrow_right$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $hue_up_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $hue_down_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+	:i $sliderbar_rescale_to_bar$$min$ = $colormenu_min_saturation$$max$ = $colormenu_max_saturation$$value$ = %GLOBAL%$s$$left$ = $colormenu_nowrap_arrow_left$$right$ = $colormenu_nowrap_arrow_right$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $saturation_up_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $saturation_down_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+	:i $sliderbar_rescale_to_bar$$min$ = $colormenu_min_value$$max$ = $colormenu_max_value$$value$ = %GLOBAL%$v$$left$ = $colormenu_nowrap_arrow_left$$right$ = $colormenu_nowrap_arrow_right$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $value_up_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $value_down_arrow$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x_val$) 
+	:i :s}
+:i endfunction
+:i function $colormenu_refresh_skaters$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $RefreshSkaterColors$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $colormenu_increment_hue$
+	:i $printf$%s(16,"incrementing hue")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$h$ =  (%GLOBAL%$h$ + $colormenu_hue_increment$) 
+	:i if  (%GLOBAL%$h$ > %i(359,00000167)) 
+		:i %GLOBAL%$h$ =  (%GLOBAL%$h$ - %i(360,00000168)) 
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_decrement_hue$
+	:i $printf$%s(16,"decrementing hue")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$h$ =  (%GLOBAL%$h$ - $colormenu_hue_increment$) 
+	:i if  (%GLOBAL%$h$ < %i(0,00000000)) 
+		:i %GLOBAL%$h$ =  (%GLOBAL%$h$ + %i(360,00000168)) 
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_increment_saturation$
+	:i $printf$%s(23,"incrementing saturation")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$s$ =  (%GLOBAL%$s$ + $colormenu_saturation_increment$) 
+	:i if  (%GLOBAL%$s$ > $colormenu_max_saturation$) 
+		:i %GLOBAL%$s$ = $colormenu_max_saturation$
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_decrement_saturation$
+	:i $printf$%s(23,"decrementing saturation")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$s$ =  (%GLOBAL%$s$ - $colormenu_saturation_increment$) 
+	:i if  (%GLOBAL%$s$ < $colormenu_min_saturation$) 
+		:i %GLOBAL%$s$ = $colormenu_min_saturation$
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_increment_value$
+	:i $printf$%s(18,"incrementing value")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$v$ =  (%GLOBAL%$v$ + $colormenu_value_increment$) 
+	:i if  (%GLOBAL%$v$ > $colormenu_max_value$) 
+		:i %GLOBAL%$v$ = $colormenu_max_value$
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_decrement_value$
+	:i $printf$%s(18,"decrementing value")
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part$
+	:i %GLOBAL%$v$ =  (%GLOBAL%$v$ - $colormenu_value_increment$) 
+	:i if  (%GLOBAL%$v$ < $colormenu_min_value$) 
+		:i %GLOBAL%$v$ = $colormenu_min_value$
+	:i endif
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_reset_to_default$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+	:i $colormenu_get_default_color$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $SetPlayerAppearanceColor$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$$use_default_hsv$ = %i(1,00000001)
+	:i $colormenu_refresh_arrows$$part$ = %GLOBAL%$part$
+	:i $colormenu_refresh_skaters$
+:i endfunction
+:i function $colormenu_add_options_to_menu$
+	:i if NOT $GotParam$$from_caf$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $current_menu$
+			:i $spacing_between$ = $colormenu_spacing_between$
+		:i :s}
+	:i endif
+	:i if $GotParam$$from_cas$
+		:i if  ( ($in_deck_design$ = %i(1,00000001))  OR  ($in_boardshop$ = %i(1,00000001)) ) 
+			:i $create_helper_text$$generic_helper_text_left_right_up_down$
+		:i else
+			:i $create_helper_text$$generic_helper_text_color_menu$
+		:i endif
+	:i endif
+	:i $sliderbar_add_item$:s{
+		:i $text$ = %sc(3,"HUE")
+		:i $focus_script$ = $colormenu_focus$
+		:i $focus_params$ = :s{
+			:i $pad_left_handler$ = $colormenu_decrement_hue$
+			:i $pad_right_handler$ = $colormenu_increment_hue$
+			:i $handler_params$ = :s{$part$ = %GLOBAL%$part$:s}
+			:i $up_arrow_id$ = $hue_up_arrow$
+			:i $down_arrow_id$ = $hue_down_arrow$
+			:i $part$ = %GLOBAL%$part$
+			:i $color_bar_id$ = $hue_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $unfocus_script$ = $colormenu_unfocus$
+		:i $unfocus_params$ = :s{
+			:i $up_arrow_id$ = $hue_up_arrow$
+			:i $down_arrow_id$ = $hue_down_arrow$
+			:i $color_bar_id$ = $hue_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $pad_choose_script$ = $nullscript$
+		:i $child_texture$ = $colorbar$
+		:i $icon_id$ = $hue_slider_bar$
+		:i $icon_scale$ = $colormenu_bar_scale$
+		:i $icon_rgba$ = $colormenu_bar_unfocus_rgba$
+		:i $icon_pos$ = $colormenu_bar_pos$
+		:i $text_pos$ = $colormenu_text_pos$
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $tab$ = $tab3$
+		:i $anchor_id$ = $hue_anchor$
+		:i $up_arrow_id$ = $hue_up_arrow$
+		:i $down_arrow_id$ = $hue_down_arrow$
+		:i $arrow_pos_up$ = $colormenu_arrow_pos_up$
+		:i $arrow_pos_down$ = $colormenu_arrow_pos_down$
+		:i $arrow_rgba$ = $colormenu_arrow_rgba$
+		:i $text_pos$ = %GLOBAL%$text_pos$
+		:i $icon_pos$ = %GLOBAL%$icon_pos$
+		:i $arrow_pos_up$ = %GLOBAL%$arrow_pos_up$
+		:i $arrow_pos_down$ = %GLOBAL%$arrow_pos_down$
+		:i $dims$ = %GLOBAL%$dims$
+	:i :s}
+	:i $sliderbar_add_item$:s{
+		:i $text$ = %sc(4,"SAT.")
+		:i $focus_script$ = $colormenu_focus$
+		:i $focus_params$ = :s{
+			:i $pad_left_handler$ = $colormenu_decrement_saturation$
+			:i $pad_right_handler$ = $colormenu_increment_saturation$
+			:i $handler_params$ = :s{$part$ = %GLOBAL%$part$:s}
+			:i $up_arrow_id$ = $saturation_up_arrow$
+			:i $down_arrow_id$ = $saturation_down_arrow$
+			:i $part$ = %GLOBAL%$part$
+			:i $color_bar_id$ = $saturation_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $unfocus_script$ = $colormenu_unfocus$
+		:i $unfocus_params$ = :s{
+			:i $up_arrow_id$ = $saturation_up_arrow$
+			:i $down_arrow_id$ = $saturation_down_arrow$
+			:i $color_bar_id$ = $saturation_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $pad_choose_script$ = $nullscript$
+		:i $child_texture$ = $bw_slider$
+		:i $icon_id$ = $saturation_slider_bar$
+		:i $icon_scale$ = $colormenu_bar_scale$
+		:i $icon_rgba$ = $colormenu_bar_unfocus_rgba$
+		:i $icon_pos$ = $colormenu_bar_pos$
+		:i $text_pos$ = $colormenu_text_pos$
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $tab$ = $tab3$
+		:i $anchor_id$ = $saturation_anchor$
+		:i $up_arrow_id$ = $saturation_up_arrow$
+		:i $down_arrow_id$ = $saturation_down_arrow$
+		:i $arrow_pos_up$ = $colormenu_arrow_pos_up$
+		:i $arrow_pos_down$ = $colormenu_arrow_pos_down$
+		:i $arrow_rgba$ = $colormenu_arrow_rgba$
+		:i $text_pos$ = %GLOBAL%$text_pos$
+		:i $icon_pos$ = %GLOBAL%$icon_pos$
+		:i $arrow_pos_up$ = %GLOBAL%$arrow_pos_up$
+		:i $arrow_pos_down$ = %GLOBAL%$arrow_pos_down$
+		:i $dims$ = %GLOBAL%$dims$
+	:i :s}
+	:i $sliderbar_add_item$:s{
+		:i $text$ = %sc(4,"VAL.")
+		:i $focus_script$ = $colormenu_focus$
+		:i $focus_params$ = :s{
+			:i $pad_left_handler$ = $colormenu_decrement_value$
+			:i $pad_right_handler$ = $colormenu_increment_value$
+			:i $handler_params$ = :s{$part$ = %GLOBAL%$part$:s}
+			:i $up_arrow_id$ = $value_up_arrow$
+			:i $down_arrow_id$ = $value_down_arrow$
+			:i $part$ = %GLOBAL%$part$
+			:i $color_bar_id$ = $value_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $unfocus_script$ = $colormenu_unfocus$
+		:i $unfocus_params$ = :s{
+			:i $up_arrow_id$ = $value_up_arrow$
+			:i $down_arrow_id$ = $value_down_arrow$
+			:i $color_bar_id$ = $value_slider_bar$
+			:i $from_caf$ = %GLOBAL%$from_caf$
+		:i :s}
+		:i $pad_choose_script$ = $nullscript$
+		:i $child_texture$ = $bw_slider$
+		:i $icon_id$ = $value_slider_bar$
+		:i $icon_scale$ = $colormenu_bar_scale$
+		:i $icon_rgba$ = $colormenu_bar_unfocus_rgba$
+		:i $icon_pos$ = $colormenu_bar_pos$
+		:i $text_pos$ = $colormenu_text_pos$
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $tab$ = $tab3$
+		:i $anchor_id$ = $value_anchor$
+		:i $up_arrow_id$ = $value_up_arrow$
+		:i $down_arrow_id$ = $value_down_arrow$
+		:i $arrow_pos_up$ = $colormenu_arrow_pos_up$
+		:i $arrow_pos_down$ = $colormenu_arrow_pos_down$
+		:i $arrow_rgba$ = $colormenu_arrow_rgba$
+		:i $text_pos$ = %GLOBAL%$text_pos$
+		:i $icon_pos$ = %GLOBAL%$icon_pos$
+		:i $arrow_pos_up$ = %GLOBAL%$arrow_pos_up$
+		:i $arrow_pos_down$ = %GLOBAL%$arrow_pos_down$
+		:i $dims$ = %GLOBAL%$dims$
+	:i :s}
+	:i if NOT $GotParam$$from_caf$
+		:i $edit_skater_menu_add_item$:s{
+			:i $text$ = %sc(16,"Reset to default")
+			:i $pad_choose_script$ = $colormenu_reset_to_default$
+			:i $pad_choose_params$ = :s{$part$ = %GLOBAL%$part$:s}
+			:i $tab$ = $tab3$
+			:i $dims$ = %vec2(10.000000,30.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $posmenu_add_options_to_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $spacing_between$ = $colormenu_spacing_between$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$null_script$:s}
+			:i :s{$pad_down$$null_script$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $material$ =  ( (%GLOBAL%$part$:a{%i(0,00000000):a}) ->$material$) 
+	:i $pass$ =  ( (%GLOBAL%$part$:a{%i(0,00000000):a}) ->$pass$) 
+	:i if $GotParam$$from_cas$
+		:i $create_helper_text$$generic_helper_text_color_menu$
+	:i endif
+	:i if NOT $GotParam$$no_pos$
+		:i %GLOBAL%$add_pos$ = $add_pos$
+	:i else
+		:i %GLOBAL%$add_pos$ = %GLOBAL%$no_pos$
+	:i endif
+	:i if NOT $GotParam$$no_rot$
+		:i %GLOBAL%$add_rot$ = $add_rot$
+	:i endif
+	:i if NOT $GotParam$$no_scale$
+		:i %GLOBAL%$add_scale$ = $add_scale$
+	:i endif
+	:i $posmenu_add_item$:s{
+		:i $part$ = %GLOBAL%$part$
+		:i $material$ = %GLOBAL%$material$
+		:i $pass$ = %GLOBAL%$pass$
+		:i $add_pos$ = %GLOBAL%$add_pos$
+		:i $add_rot$ = %GLOBAL%$add_rot$
+		:i $add_scale$ = %GLOBAL%$add_scale$
+	:i :s}
+:i endfunction
+:i function $posmenu_add_item$:s{$pad_choose_script$ = $null_script$
+		:i $tab$ = $tab3$
+		:i $font$ = $small$
+		:i $icon_scale$ = %i(0,00000000)
+		:i $icon_pos$ = %vec2(22.000000,9.000000)
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $text_pos$ = %vec2(0.000000,0.000000)
+		:i $dims$ = %vec2(0.000000,40.000000)
+	:i :s}
+	:i if $GotParam$$is_enabled_script$
+		:i %GLOBAL%$is_enabled_script$
+		:i if  (%GLOBAL%$success$ = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $focus_params$ = :s{$material$ = %GLOBAL%$material$$pass$ = %GLOBAL%$pass$$part$ = %GLOBAL%$part$:s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $id$ = $pos_parts_anchor$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $event_handlers$ = :a{:s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_alt2$$posmenu_reset_uv$$params$ = :s{$part$ = %GLOBAL%$part$:s}:s}
+			:i :s{$pad_up$$null_script$:s}
+			:i :s{$pad_down$$null_script$:s}
+			:i :a}
+		:i %GLOBAL%$not_focusable$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i if  ($in_deck_design$ = %i(1,00000001)) 
+		:i if $isNGC$
+			:i $create_helper_text$$generic_helper_text_color_menu_reset_cad_ngc$
+		:i else
+			:i $create_helper_text$$generic_helper_text_color_menu_reset_cad$
+		:i endif
+	:i else
+		:i if $isNGC$
+			:i $create_helper_text$$generic_helper_text_color_menu_reset_ngc$
+		:i else
+			:i $create_helper_text$$generic_helper_text_color_menu_reset$
+		:i endif
+	:i endif
+	:i if $GotParam$$add_pos$
+		:i $posmenu_add_pos_item$ isNull 
+	:i endif
+	:i if $GotParam$$add_rot$
+		:i $posmenu_add_rotation_item$ isNull 
+	:i endif
+	:i if $GotParam$$add_scale$
+		:i $posmenu_add_scale_item$ isNull 
+	:i endif
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $posmenu_focus_all_parts$%GLOBAL%$focus_params$
+:i endfunction
+:i function $posmenu_focus_all_parts$
+	:i $edit_skater_posmenu_focus$ isNull 
+	:i $edit_skater_scalemenu_focus$ isNull 
+	:i $edit_skater_rotmenu_focus$ isNull 
+:i endfunction
+:i function $posmenu_add_pos_item$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $pos_parts_anchor$
+		:i $id$ = $pos_anchor$
+		:i $pos$ = %vec2(15.000000,15.000000)
+		:i $dims$ = %GLOBAL%$dims$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i %GLOBAL%$parent_id$ = %GLOBAL%$id$
+	:i if $GotParam$$index$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$parent_id$
+			:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$index$:s}
+		:i :s}
+	:i endif
+	:i $FormatText$$ChecksumName$ = $rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $arrow_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $font$ = %GLOBAL%$font$
+		:i $text$ = %s(3,"Pos")
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $just$ = %GLOBAL%$text_just$
+		:i $pos$ = %vec2(-110.000000,0.000000)
+		:i $replace_handlers$
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i if $isXbox$
+		:i $text$ = %s(15,"\b7/\b4/\b6/\b5")
+		:i $scale$ = %f(0.670000)
+	:i else
+		:i if $isNGC$
+			:i $text$ = %s(13,"Control Stick")
+			:i $scale$ = %f(0.670000)
+		:i else
+			:i $text$ = %s(17,"Left Analog Stick")
+			:i $scale$ = %f(0.670000)
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $rgba$ = %GLOBAL%$arrow_rgba$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-110.000000,-42.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $pos_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(20.000000,-30.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $pos_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(20.000000,30.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i if NOT  (%GLOBAL%$add_pos$ = $use_uv_v_only$) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent_id$
+			:i $id$ = $pos_left_arrow$
+			:i $texture$ = $left_arrow$
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(-20.000000,0.000000)
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+	:i endif
+	:i if NOT  (%GLOBAL%$add_pos$ = $use_uv_v_only$) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent_id$
+			:i $id$ = $pos_right_arrow$
+			:i $texture$ = $right_arrow$
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(60.000000,0.000000)
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+	:i endif
+	:i $get_part_current_desc_id$$part$ = %GLOBAL%$part$
+	:i if $GotParam$$current_desc_id$
+		:i $get_logo_texture$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$current_desc_id$
+		:i if  ($in_deck_design$ = %i(1,00000001)) 
+			:i $scale$ = %f(1.000000)
+		:i else
+			:i $scale$ = %f(0.500000)
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent_id$
+			:i $id$ = $pos_logo$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $pos$ = %vec2(20.000000,0.000000)
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $swap_deck_layers$$part1$ = $deck_layer3$$part2$ = $deck_layer1$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $current_desc_id$ = $None$
+	:i $get_part_current_desc_id$$part$ = %GLOBAL%$part1$
+	:i $texture1$ = %GLOBAL%$current_desc_id$
+	:i $swap_get_uv$$part$ = %GLOBAL%$part1$
+	:i $structure1$ = %GLOBAL%$structure$
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part1$$desc_id$ = %GLOBAL%$current_desc_id$
+	:i $h1$ = %GLOBAL%$h$$s1$ = %GLOBAL%$s$$v1$ = %GLOBAL%$v$$use_default_hsv1$ = %GLOBAL%$use_default_hsv$
+	:i $current_desc_id$ = $None$
+	:i $get_part_current_desc_id$$part$ = %GLOBAL%$part2$
+	:i $texture2$ = %GLOBAL%$current_desc_id$
+	:i $swap_get_uv$$part$ = %GLOBAL%$part2$
+	:i $structure2$ = %GLOBAL%$structure$
+	:i $colormenu_get_hsv$$part$ = %GLOBAL%$part2$$desc_id$ = %GLOBAL%$current_desc_id$
+	:i $h2$ = %GLOBAL%$h$$s2$ = %GLOBAL%$s$$v2$ = %GLOBAL%$v$$use_default_hsv2$ = %GLOBAL%$use_default_hsv$
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = %GLOBAL%$part1$$desc_id$ = %GLOBAL%$texture2$:s}
+	:i $SetPlayerAppearanceUV$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part1$%GLOBAL%$structure2$
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part1$$h$ = %GLOBAL%$h2$$s$ = %GLOBAL%$s2$$v$ = %GLOBAL%$v2$$use_default_hsv$ = %GLOBAL%$use_default_hsv2$
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = %GLOBAL%$part2$$desc_id$ = %GLOBAL%$texture1$:s}
+	:i $SetPlayerAppearanceUV$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part2$%GLOBAL%$structure1$
+	:i $colormenu_set_hsv$$part$ = %GLOBAL%$part2$$h$ = %GLOBAL%$h1$$s$ = %GLOBAL%$s1$$v$ = %GLOBAL%$v1$$use_default_hsv$ = %GLOBAL%$use_default_hsv1$
+	:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if $GotParam$$callback$
+		:i %GLOBAL%$callback$%GLOBAL%$callback_params$
+	:i endif
+:i endfunction
+:i function $posmenu_get_uv$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+	:i if NOT $GotParam$$use_default_uv$
+		:i %GLOBAL%$use_default_uv$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$uv_u$
+		:i %GLOBAL%$uv_u$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$uv_v$
+		:i %GLOBAL%$uv_v$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$uv_scale$
+		:i %GLOBAL%$uv_scale$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$uv_rot$
+		:i %GLOBAL%$uv_rot$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$use_default_uv$ = %i(1,00000001)) 
+		:i %GLOBAL%$uv_u$ = %i(0,00000000)
+		:i %GLOBAL%$uv_v$ = %i(0,00000000)
+		:i %GLOBAL%$uv_scale$ = %i(100,00000064)
+		:i %GLOBAL%$uv_rot$ = %i(0,00000000)
+	:i endif
+	:i return
+	$uv_u$ = %GLOBAL%$uv_u$$uv_v$ = %GLOBAL%$uv_v$$uv_scale$ = %GLOBAL%$uv_scale$$uv_rot$ = %GLOBAL%$uv_rot$$use_default_uv$ = %GLOBAL%$use_default_uv$
+:i endfunction
+:i function $swap_get_uv$
+	:i $posmenu_get_uv$ isNull 
+	:i $RemoveParameter$$part$
+	:i return
+	$structure$ = :s{ isNull :s}
+:i endfunction
+:i function $posmenu_set_uv$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $SetPlayerAppearanceUV$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$$uv_u$ = %GLOBAL%$uv_u$$uv_v$ = %GLOBAL%$uv_v$$uv_scale$ = %GLOBAL%$uv_scale$$uv_rot$ = %GLOBAL%$uv_rot$$use_default_uv$ = %i(0,00000000)
+:i endfunction
+:i function $posmenu_maybe_reset_uv$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu$
+	:i $create_error_box$:s{$title$ = %s(6,"Reset?")
+		:i $text$ = %s(60,"Are you sure you want to reset the adjustments to this item?")
+		:i $pad_back_script$ = $dialog_box_exit$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $posmenu_reset_uv$$params$ = :s{$part$ = %GLOBAL%$part$$refocus$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $dialog_box_exit$:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+:i endfunction
+:i function $posmenu_reset_uv$
+	:i if $isNGC$
+		:i if NOT $ControllerPressed$$L1$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $SetPlayerAppearanceUV$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$$uv_u$ = %i(0,00000000)$uv_v$ = %i(0,00000000)$uv_scale$ = %i(100,00000064)$uv_rot$ = %i(0,00000000)$use_default_uv$ = %i(1,00000001)
+	:i if  ($in_deck_design$ = %i(0,00000000)) 
+		:i $no_board$ = $no_board$
+	:i endif
+	:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$$no_board$ = %GLOBAL%$no_board$
+	:i if $GotParam$$refocus$
+		:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $adjust_cas_texture_pos$$uv_increment$ = %i(10,0000000a)
+	:i if NOT $GotParam$$pass$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$material$
+		:i return
+		
+	:i endif
+	:i $FormatText$$ChecksumName$ = $on_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $off_rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $controller$ = %i(0,00000000)
+	:i $got_controller$ = %i(0,00000000)
+	:i while
+		
+		:i if $ControllerBoundToSkater$$controller$ = %GLOBAL%$controller$$skater$ = %i(0,00000000)
+			:i $got_controller$ = %i(1,00000001)
+			:i continue
+			
+		:i endif
+		:i $controller$ =  (%GLOBAL%$controller$ + %i(1,00000001)) 
+	:i loop_to %i(4,00000004)
+	:i if  ($got_controller$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i while
+		
+		:i $GetAnalogueInfo$$controller$ = %GLOBAL%$controller$
+		:i $posmenu_get_uv$$part$ = %GLOBAL%$part$
+		:i %GLOBAL%$oldU$ = %GLOBAL%$uv_u$
+		:i %GLOBAL%$oldV$ = %GLOBAL%$uv_v$
+		:i if $ObjectExists$$id$ = $pos_right_arrow$
+			:i if  (%GLOBAL%$leftx$ > %i(0,00000000)) 
+				:i $DoScreenElementMorph$$id$ = $pos_right_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i else
+				:i $DoScreenElementMorph$$id$ = $pos_right_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_left_arrow$
+			:i if  (%i(0,00000000) > %GLOBAL%$leftx$) 
+				:i $DoScreenElementMorph$$id$ = $pos_left_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i else
+				:i $DoScreenElementMorph$$id$ = $pos_left_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_down_arrow$
+			:i if  (%GLOBAL%$lefty$ > %i(0,00000000)) 
+				:i $DoScreenElementMorph$$id$ = $pos_down_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i else
+				:i $DoScreenElementMorph$$id$ = $pos_down_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_up_arrow$
+			:i if  (%i(0,00000000) > %GLOBAL%$lefty$) 
+				:i $DoScreenElementMorph$$id$ = $pos_up_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i else
+				:i $DoScreenElementMorph$$id$ = $pos_up_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if NOT  ($in_deck_design$ = %i(1,00000001)) 
+			:i $temp$ = %GLOBAL%$lefty$
+			:i $lefty$ =  (%i(4294967295,ffffffff) * %GLOBAL%$leftx$) 
+			:i $leftx$ =  (%i(1,00000001) * %GLOBAL%$temp$) 
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_up_arrow$
+			:i if  (%GLOBAL%$leftx$ > %i(0,00000000)) 
+				:i %GLOBAL%$uv_v$ =  (%GLOBAL%$uv_v$ +  (%GLOBAL%$leftx$ * %GLOBAL%$uv_increment$) ) 
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_down_arrow$
+			:i if  (%i(0,00000000) > %GLOBAL%$leftx$) 
+				:i %GLOBAL%$uv_v$ =  (%GLOBAL%$uv_v$ +  (%GLOBAL%$leftx$ * %GLOBAL%$uv_increment$) ) 
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_right_arrow$
+			:i if  (%GLOBAL%$lefty$ > %i(0,00000000)) 
+				:i %GLOBAL%$uv_u$ =  (%GLOBAL%$uv_u$ +  (%GLOBAL%$lefty$ * %GLOBAL%$uv_increment$) ) 
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $pos_left_arrow$
+			:i if  (%i(0,00000000) > %GLOBAL%$lefty$) 
+				:i %GLOBAL%$uv_u$ =  (%GLOBAL%$uv_u$ +  (%GLOBAL%$lefty$ * %GLOBAL%$uv_increment$) ) 
+			:i endif
+		:i endif
+		:i if  (%GLOBAL%$uv_u$ < %i(4294967096,ffffff38)) 
+			:i %GLOBAL%$uv_u$ = %i(200,000000c8)
+		:i endif
+		:i if  (%GLOBAL%$uv_u$ > %i(200,000000c8)) 
+			:i %GLOBAL%$uv_u$ = %i(4294967096,ffffff38)
+		:i endif
+		:i if  (%GLOBAL%$uv_v$ < %i(4294967096,ffffff38)) 
+			:i %GLOBAL%$uv_v$ = %i(200,000000c8)
+		:i endif
+		:i if  (%GLOBAL%$uv_v$ > %i(200,000000c8)) 
+			:i %GLOBAL%$uv_v$ = %i(4294967096,ffffff38)
+		:i endif
+		:i if NOT  (%GLOBAL%$oldU$ = %GLOBAL%$uv_u$) 
+			:i $posmenu_set_uv$$part$ = %GLOBAL%$part$ isNull 
+			:i $refresh_skater_uv$
+		:i else
+			:i if NOT  (%GLOBAL%$oldV$ = %GLOBAL%$uv_v$) 
+				:i $posmenu_set_uv$$part$ = %GLOBAL%$part$ isNull 
+				:i $refresh_skater_uv$
+			:i endif
+		:i endif
+		:i if $IsPs2$
+			:i $wait$%i(4,00000004)$gameframe$
+		:i else
+			:i $wait$%i(1,00000001)$gameframe$
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $refresh_skater_uv$
+	:i if $IsPs2$
+		:i if  ($in_deck_design$ = %i(0,00000000)) 
+			:i $no_board$ = $no_board$
+		:i endif
+		:i $GetCurrentSkaterProfileIndex$
+		:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$$no_board$ = %GLOBAL%$no_board$
+	:i else
+		:i $GetCurrentSkaterProfileIndex$
+		:i $RefreshSkaterUV$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+:i endfunction
+:i function $edit_skater_posmenu_focus$
+	:i if $ScreenElementExists$$id$ = $pos_up_arrow$
+		:i $RunScriptOnScreenElement$$id$ = $pos_up_arrow$$adjust_cas_texture_pos$$params$ = :s{$pass$ = %GLOBAL%$pass$$material$ = %GLOBAL%$material$$part$ = %GLOBAL%$part$:s}
+	:i endif
+:i endfunction
+:i function $edit_skater_posmenu_unfocus$
+	:i $KillSpawnedScript$$name$ = $adjust_cas_texture_pos$
+:i endfunction
+:i function $posmenu_add_rotation_item$:s{$pad_choose_script$ = $null_script$
+		:i $tab$ = $tab3$
+		:i $font$ = $small$
+		:i $icon_scale$ = %i(0,00000000)
+		:i $icon_pos$ = %vec2(22.000000,9.000000)
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $text_pos$ = %vec2(0.000000,0.000000)
+		:i $dims$ = %vec2(0.000000,40.000000)
+		:i $anchor_id$ = $rot_item_anchor$
+	:i :s}
+	:i if $GotParam$$is_enabled_script$
+		:i %GLOBAL%$is_enabled_script$
+		:i if  (%GLOBAL%$success$ = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $pos_parts_anchor$
+		:i $id$ = $rot_anchor$
+		:i $pos$ = %vec2(0.000000,85.000000)
+		:i $dims$ = %GLOBAL%$dims$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i %GLOBAL%$parent_id$ = %GLOBAL%$id$
+	:i if $GotParam$$index$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$parent_id$
+			:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$index$:s}
+		:i :s}
+	:i endif
+	:i $FormatText$$ChecksumName$ = $rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $arrow_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $font$ = %GLOBAL%$font$
+		:i $text$ = %s(3,"Rot")
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $just$ = %GLOBAL%$text_just$
+		:i $pos$ = %vec2(-95.000000,0.000000)
+		:i $replace_handlers$
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i if $isXbox$
+		:i $text$ = %s(3,"\bk")
+		:i $scale$ = %f(0.670000)
+	:i else
+		:i if $isNGC$
+			:i $text$ = %s(7,"C-Stick")
+			:i $scale$ = %f(0.670000)
+		:i else
+			:i $text$ = %s(18,"Right Analog Stick")
+			:i $scale$ = %f(0.670000)
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $rgba$ = %GLOBAL%$arrow_rgba$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-95.000000,-30.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $rot_left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(-33.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $rot_right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(75.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $rot_logo$
+		:i $texture$ = $rot_bar$
+		:i $scale$ = %vec2(1.400000,1.000000)
+		:i $pos$ = %vec2(21.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+:i endfunction
+:i function $adjust_cas_texture_rot$$rot_increment$ = %i(20,00000014)
+	:i if NOT $GotParam$$pass$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$material$
+		:i return
+		
+	:i endif
+	:i $FormatText$$ChecksumName$ = $on_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $off_rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $controller$ = %i(0,00000000)
+	:i $got_controller$ = %i(0,00000000)
+	:i while
+		
+		:i if $ControllerBoundToSkater$$controller$ = %GLOBAL%$controller$$skater$ = %i(0,00000000)
+			:i $got_controller$ = %i(1,00000001)
+			:i continue
+			
+		:i endif
+		:i $controller$ =  (%GLOBAL%$controller$ + %i(1,00000001)) 
+	:i loop_to %i(4,00000004)
+	:i if  ($got_controller$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i while
+		
+		:i $GetAnalogueInfo$$controller$ = %GLOBAL%$controller$
+		:i $posmenu_get_uv$$part$ = %GLOBAL%$part$
+		:i %GLOBAL%$oldRot$ = %GLOBAL%$uv_rot$
+		:i if  (%GLOBAL%$rightx$ > %i(0,00000000)) 
+			:i $DoScreenElementMorph$$id$ = $rot_right_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ +  (%GLOBAL%$rightx$ * %GLOBAL%$rot_increment$) ) 
+		:i else
+			:i $DoScreenElementMorph$$id$ = $rot_right_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+		:i endif
+		:i if  (%i(0,00000000) > %GLOBAL%$rightx$) 
+			:i $DoScreenElementMorph$$id$ = $rot_left_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ +  (%GLOBAL%$rightx$ * %GLOBAL%$rot_increment$) ) 
+		:i else
+			:i $DoScreenElementMorph$$id$ = $rot_left_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$uv_rot$ < %i(0,00000000)) 
+			:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ + %i(360,00000168)) 
+		:i endif
+		:i if  (%GLOBAL%$uv_rot$ > %i(360,00000168)) 
+			:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ - %i(360,00000168)) 
+		:i endif
+		:i if NOT  (%GLOBAL%$oldRot$ = %GLOBAL%$uv_rot$) 
+			:i $posmenu_set_uv$$part$ = %GLOBAL%$part$ isNull 
+			:i $refresh_skater_uv$
+		:i endif
+		:i if $IsPs2$
+			:i $wait$%i(4,00000004)$gameframe$
+		:i else
+			:i $wait$%i(1,00000001)$gameframe$
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $edit_skater_rotmenu_focus$
+	:i if $ScreenElementExists$$id$ = $rot_left_arrow$
+		:i $RunScriptOnScreenElement$$id$ = $rot_left_arrow$$adjust_cas_texture_rot$$params$ = :s{$pass$ = %GLOBAL%$pass$$material$ = %GLOBAL%$material$$part$ = %GLOBAL%$part$:s}
+	:i endif
+:i endfunction
+:i function $edit_skater_rotmenu_unfocus$
+	:i $KillSpawnedScript$$name$ = $adjust_cas_texture_rot$
+:i endfunction
+:i function $posmenu_add_scale_item$:s{$pad_choose_script$ = $null_script$
+		:i $tab$ = $tab3$
+		:i $font$ = $small$
+		:i $icon_scale$ = %i(0,00000000)
+		:i $icon_pos$ = %vec2(22.000000,9.000000)
+		:i $text_just$ = :a{$left$$center$:a}
+		:i $text_pos$ = %vec2(0.000000,0.000000)
+		:i $dims$ = %vec2(0.000000,40.000000)
+		:i $anchor_id$ = $scale_item_anchor$
+	:i :s}
+	:i if $GotParam$$is_enabled_script$
+		:i %GLOBAL%$is_enabled_script$
+		:i if  (%GLOBAL%$success$ = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$add_rot$
+		:i $pos$ = %vec2(0.000000,90.000000)
+	:i else
+		:i $pos$ = %vec2(0.000000,115.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $pos_parts_anchor$
+		:i $id$ = $scale_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i %GLOBAL%$parent_id$ = %GLOBAL%$id$
+	:i if $GotParam$$index$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$parent_id$
+			:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$index$:s}
+		:i :s}
+	:i endif
+	:i $FormatText$$ChecksumName$ = $rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $arrow_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i if NOT $GotParam$$add_rot$
+		:i if $isXbox$
+			:i $text$ = %s(3,"\bk")
+			:i $scale$ = %f(0.670000)
+		:i else
+			:i if $isNGC$
+				:i $text$ = %s(7,"C-Stick")
+				:i $scale$ = %f(0.670000)
+			:i else
+				:i $text$ = %s(18,"Right Analog Stick")
+				:i $scale$ = %f(0.670000)
+			:i endif
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$parent_id$
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $rgba$ = %GLOBAL%$arrow_rgba$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(-95.000000,-30.000000)
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $font$ = %GLOBAL%$font$
+		:i $text$ = %s(5,"Scale")
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $just$ = %GLOBAL%$text_just$
+		:i $pos$ = %vec2(-95.000000,0.000000)
+		:i $replace_handlers$
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $scale_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(-30.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $scale_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(80.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent_id$
+		:i $id$ = $scale_logo$
+		:i $texture$ = $scale_bar$
+		:i $scale$ = %vec2(1.400000,1.000000)
+		:i $pos$ = %vec2(21.000000,0.000000)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+:i endfunction
+:i function $adjust_cas_texture_scale$$scale_increment$ = %i(10,0000000a)
+	:i if NOT $GotParam$$pass$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$material$
+		:i return
+		
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$part$:a{%i(0,00000000):a}) $scale_min$
+		:i $scale_min$ =  ( (%GLOBAL%$part$:a{%i(0,00000000):a}) ->$scale_min$) 
+	:i else
+		:i $scale_min$ = %i(200,000000c8)
+	:i endif
+	:i $FormatText$$ChecksumName$ = $on_rgba$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $FormatText$$ChecksumName$ = $off_rgba$%s(27,"%i_UNHIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $controller$ = %i(0,00000000)
+	:i $got_controller$ = %i(0,00000000)
+	:i while
+		
+		:i if $ControllerBoundToSkater$$controller$ = %GLOBAL%$controller$$skater$ = %i(0,00000000)
+			:i $got_controller$ = %i(1,00000001)
+			:i continue
+			
+		:i endif
+		:i $controller$ =  (%GLOBAL%$controller$ + %i(1,00000001)) 
+	:i loop_to %i(4,00000004)
+	:i if  ($got_controller$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i while
+		
+		:i $GetAnalogueInfo$$controller$ = %GLOBAL%$controller$
+		:i $posmenu_get_uv$$part$ = %GLOBAL%$part$
+		:i %GLOBAL%$oldScale$ = %GLOBAL%$uv_scale$
+		:i if  (%GLOBAL%$righty$ > %i(0,00000000)) 
+			:i $DoScreenElementMorph$$id$ = $scale_down_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i %GLOBAL%$uv_scale$ =  (%GLOBAL%$uv_scale$ +  (%GLOBAL%$righty$ * %GLOBAL%$scale_increment$) ) 
+		:i else
+			:i $DoScreenElementMorph$$id$ = $scale_down_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+		:i endif
+		:i if  (%i(0,00000000) > %GLOBAL%$righty$) 
+			:i $DoScreenElementMorph$$id$ = $scale_up_arrow$$rgba$ = %GLOBAL%$on_rgba$$scale$ = %f(1.100000)
+			:i %GLOBAL%$uv_scale$ =  (%GLOBAL%$uv_scale$ +  (%GLOBAL%$righty$ * %GLOBAL%$scale_increment$) ) 
+		:i else
+			:i $DoScreenElementMorph$$id$ = $scale_up_arrow$$rgba$ = %GLOBAL%$off_rgba$$scale$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$uv_scale$ < %i(50,00000032)) 
+			:i %GLOBAL%$uv_scale$ = %i(50,00000032)
+		:i endif
+		:i if  (%GLOBAL%$uv_scale$ > %GLOBAL%$scale_min$) 
+			:i %GLOBAL%$uv_scale$ = %GLOBAL%$scale_min$
+		:i endif
+		:i if NOT  (%GLOBAL%$oldScale$ = %GLOBAL%$uv_scale$) 
+			:i $posmenu_set_uv$$part$ = %GLOBAL%$part$ isNull 
+			:i $refresh_skater_uv$
+		:i endif
+		:i if $IsPs2$
+			:i $wait$%i(4,00000004)$gameframe$
+		:i else
+			:i $wait$%i(1,00000001)$gameframe$
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $edit_skater_scalemenu_focus$
+	:i if $ScreenElementExists$$id$ = $scale_up_arrow$
+		:i $RunScriptOnScreenElement$$id$ = $scale_up_arrow$$adjust_cas_texture_scale$$params$ = :s{$pass$ = %GLOBAL%$pass$$material$ = %GLOBAL%$material$$part$ = %GLOBAL%$part$:s}
+	:i endif
+:i endfunction
+:i function $edit_skater_scalemenu_unfocus$
+	:i $KillSpawnedScript$$name$ = $adjust_cas_texture_scale$
+:i endfunction
+:i :end

@@ -1,0 +1,135 @@
+
+:i $Goal_Film_GenericParams$ = :s{
+	:i $goal_text$ = %s(14,"Find X things!")
+	:i $view_goals_text$ = %s(24,"Generic find things text")
+	:i $init$ = $goal_film_init$
+	:i $uninit$ = $goal_uninit$
+	:i $active$ = $goal_film_active$
+	:i $activate$ = $goal_film_activate$
+	:i $deactivate$ = $goal_film_deactivate$
+	:i $expire$ = $goal_film_expire$
+	:i $fail$ = $goal_film_fail$
+	:i $success$ = $goal_film_success$
+	:i $restart_node$ = $TRG_G_FILM_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_FILM_Pro$
+	:i $record_type$ = $none$
+	:i $time$ = %i(120,00000078)
+	:i $max_distance_to_target$ = %i(120,00000078)
+	:i $time_on_camera$ = %i(0,00000000)
+	:i $Film$
+:i :s}
+:i function $goal_film_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$virtual_cam_params$
+		:i $GetSkaterId$
+		:i $PlaySkaterCamAnim$:s{
+			:i $name$ = $goal_film_virtual_cam$
+			:i $skaterId$ = %GLOBAL%$objId$
+			:i $targetID$ = %GLOBAL%$objId$
+			:i $targetOffset$ =  (%GLOBAL%$virtual_cam_params$->$targetOffset$) 
+			:i $positionOffset$ =  (%GLOBAL%$virtual_cam_params$->$positionOffset$) 
+			:i $play_hold$
+			:i $frames$ = %i(1,00000001)
+			:i $skippable$ = %i(0,00000000)
+			:i $virtual_cam$
+			:i $allow_pause$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i if $GotParam$$total_time_required$
+		:i if $GotParam$$quick_start$
+			:i $GoalManager_StartFilming$$name$ = %GLOBAL%$goal_id$
+			:i $goal_film_add_arrow_and_timer$$goal_id$ = %GLOBAL%$goal_id$
+		:i else
+			:i $SpawnScript$$goal_film_wait_and_start_filming$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_film_wait_and_start_filming$
+	:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $GoalManager_StartFilming$$name$ = %GLOBAL%$goal_id$
+	:i $goal_film_add_arrow_and_timer$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_add_arrow_and_timer$
+	:i if $ScreenElementExists$$id$ = $DesignerCreated_3DArrowPointer$
+		:i $DestroyScreenElement$$id$ = $DesignerCreated_3DArrowPointer$
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $show_cutscene_camera_hud$$for_goal$
+	:i $Create3dArrowPointer$:s{
+		:i $id$ = $DesignerCreated_3DArrowPointer$
+		:i $model$ = %s(9,"HUD_arrow")
+		:i $pos$ = %vec2(320.000000,70.000000)
+		:i $scale$ = %f(0.025000)
+		:i $Tilt$ = %i(7,00000007)
+		:i $name$ = %GLOBAL%$film_target$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $goal_film_update_message$
+		:i $DestroyScreenElement$$id$ = $goal_film_update_message$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $type$ = $TextElement$
+		:i $font$ = $small$
+		:i $text$ = %s(7,"Time: 0")
+		:i $id$ = $goal_film_update_message$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(4294966296,fffffc18)
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+:i endfunction
+:i function $goal_film_active$
+	:i $FormatText$$TextName$ = $text$%s(8,"Time: %i")$i$ = %GLOBAL%$time_on_camera$
+	:i if $ScreenElementExists$$id$ = $goal_film_update_message$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $goal_film_update_message$
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i else
+	:i endif
+	:i if  (%GLOBAL%$time_on_camera$ > %GLOBAL%$last_time_on_camera$) 
+		:i $camera_hud_breakup_frames$$millisecs$ = %GLOBAL%$time_on_camera$
+		:i if $ScreenElementExists$$id$ = $rec_anchor$
+			:i $DoScreenElementMorph$$id$ = $rec_anchor$$alpha$ = %i(1,00000001)
+		:i endif
+	:i else
+		:i if $ScreenElementExists$$id$ = $rec_anchor$
+			:i $DoScreenElementMorph$$id$ = $rec_anchor$$alpha$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_film_deactivate$
+	:i if $GotParam$$virtual_cam_params$
+		:i $KillSkaterCamAnim$$name$ = $goal_film_virtual_cam$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_film_update_message$
+		:i $DestroyScreenElement$$id$ = $goal_film_update_message$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $DesignerCreated_3DArrowPointer$
+		:i $DestroyScreenElement$$id$ = $DesignerCreated_3DArrowPointer$
+	:i endif
+	:i $kill_cutscene_camera_hud$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_bailed_skater$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_film_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

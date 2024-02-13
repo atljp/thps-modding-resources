@@ -1,0 +1,486 @@
+
+:i $lock_framerate$ = %i(0,00000000)
+:i $display_framerate_box$ = %i(1,00000001)
+:i $show_filenames$ = %i(0,00000000)
+:i $output_tracking_lines$ = %i(0,00000000)
+:i $rail_arrows$ = %i(0,00000000)
+:i $show_all_trick_objects$ = %i(0,00000000)
+:i $viewer_buttons_enabled$ = %i(1,00000001)
+:i $wireframe_skins$ = %i(0,00000000)
+:i $DEMO_BUILD$ = %i(0,00000000)
+:i $auto_change_chapter_and_stage$ = %i(0,00000000)
+:i $SHOWPOLYS_ONQUICKVIEW$ = %i(1,00000001)
+:i function $load_permanent_prefiles$
+	:i $LoadPreFile$%s(11,"permtex.pre")
+	:i if NOT $IsNgc$
+		:i $LoadPreFile$%s(12,"casfiles.pre")
+	:i endif
+	:i if $IsNgc$
+		:i $LoadPreFile$%s(14,"gcmemicons.pre")
+	:i endif
+:i endfunction
+:i function $load_permanent_assets$
+	:i $SetDefaultPermanent$%i(1,00000001)
+	:i $SetReferenceChecksum$%i(0,00000000)
+	:i $LoadPreFile$%s(13,"skeletons.pre")
+	:i $LoadPreFile$%s(8,"bits.pre")
+	:i $InitAnimCompressTable$%s(22,"anims\standardkeyq.bin")$q48$
+	:i $InitAnimCompressTable$%s(22,"anims\standardkeyt.bin")$t48$
+	:i $PushMemProfile$%s(19,"Audio Stream header")
+	:i $LoadStreamHeader$%s(15,"streams\streams")
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(19,"Permanent Skeletons")
+	:i $skeletonload_all$
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(16,"Permanent Models")
+	:i $LoadAsset$%s(22,"models\arrow\arrow.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(30,"models\HUD_arrow\HUD_arrow.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(32,"models\ped_shadow\ped_shadow.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(30,"models\goalarrow\goalarrow.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(24,"models\cat_bg\cat_bg.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(42,"models\gameobjects\p1_cursor\p1_cursor.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(46,"models\gameobjects\skate\letter_s\letter_s.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(46,"models\gameobjects\skate\letter_k\letter_k.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(46,"models\gameobjects\skate\letter_a\letter_a.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(46,"models\gameobjects\skate\letter_t\letter_t.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(46,"models\gameobjects\skate\letter_e\letter_e.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(54,"models\gameobjects\combo\goal_combo_c\goal_combo_c.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(54,"models\gameobjects\combo\goal_combo_o\goal_combo_o.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(54,"models\gameobjects\combo\goal_combo_m\goal_combo_m.mdl")$nocollision$ = %i(1,00000001)
+	:i $LoadAsset$%s(54,"models\gameobjects\combo\goal_combo_b\goal_combo_b.mdl")$nocollision$ = %i(1,00000001)
+	:i $load_special_items$
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(18,"Permanent Textures")
+	:i $LoadParticleTexture$%s(31,"particles\dt_generic_particle01")$perm$
+	:i $LoadParticleTexture$%s(20,"bits\particle_test02")$perm$
+	:i $LoadParticleTexture$%s(13,"bits\blood_01")$perm$
+	:i $LoadParticleTexture$%s(11,"bits\splash")$perm$
+	:i $LoadParticleTexture$%s(9,"bits\snow")$perm$
+	:i $LoadParticleTexture$%s(23,"particles\dt_nj_flame02")$perm$
+	:i $LoadParticleTexture$%s(24,"particles\dt_ironblast01")$perm$
+	:i $LoadParticleTexture$%s(19,"particles\dt_barf02")$perm$
+	:i if $isXbox$
+		:i $LoadParticleTexture$%s(14,"bits\skidtrail")$perm$
+	:i else
+		:i $LoadParticleTexture$%s(18,"bits\skidtrail_ps2")$perm$
+	:i endif
+	:i $PopMemProfile$
+	:i $UnloadPreFile$%s(13,"skeletons.pre")
+	:i $UnloadPreFile$%s(8,"bits.pre")
+	:i $do_load_permanent$
+	:i $do_load_unloadable$
+	:i $SetDefaultPermanent$%i(0,00000000)
+:i endfunction
+:i function $load_special_items$
+	:i $LoadAsset$%s(34,"models\specialitems\Flag\flag.skin")
+	:i $LoadAsset$%s(48,"models\specialitems\bustedboard\bustedboard.skin")
+	:i $LoadAsset$%s(42,"models\specialitems\pizzabox\pizzabox.skin")
+	:i $LoadAsset$%s(38,"models\specialitems\guitar\guitar.skin")
+	:i $LoadAsset$%s(46,"models\specialitems\extraboard\extraboard.skin")
+	:i $LoadAsset$%s(46,"models\specialitems\BloodyGuts\BloodyGuts.skin")
+	:i $LoadAsset$%s(42,"models\specialitems\spraycan\spraycan.skin")
+	:i $LoadAsset$%s(47,"models\specialitems\tongue\SEC_Gene_Tongue.skin")
+	:i $LoadAsset$%s(40,"models\specialitems\boombox\boombox.skin")
+	:i $LoadAsset$%s(41,"models\specialitems\skull\head_skull.skin")
+:i endfunction
+:i function $load_permanent_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_thps5_human$ isNull 
+	:i $load_special_item_anims$ isNull 
+:i endfunction
+:i function $load_unloadable_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_THPS5_human_unloadable$ isNull 
+:i endfunction
+:i function $load_special_anims$$LoadFunction$ = $LoadAnim$
+:i endfunction
+:i function $load_net_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_THPS5_human_net$ isNull 
+	:i $load_special_item_anims$ isNull 
+:i endfunction
+:i function $load_special_item_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_SI_flag$ isNull 
+	:i $animload_SI_bustedboard$ isNull 
+	:i $animload_SI_Pizza$ isNull 
+	:i $animload_SI_boombox$ isNull 
+	:i $animload_SI_Generic$ isNull 
+	:i $animload_SI_Extraboard$ isNull 
+	:i $animload_SI_Tongue$ isNull 
+	:i $animload_SI_Skull$ isNull 
+:i endfunction
+:i function $init_loading_bar$
+	:i $SetLoadingBarPos$$x$ = %i(258,00000102)$y$ = %i(400,00000190)
+	:i $SetLoadingBarSize$$width$ = %i(140,0000008c)$height$ = %i(8,00000008)
+	:i $SetLoadingBarStartColor$$r$ = %i(0,00000000)$g$ = %i(76,0000004c)$b$ = %i(129,00000081)
+	:i $SetLoadingBarEndColor$$r$ = %i(176,000000b0)$g$ = %i(211,000000d3)$b$ = %i(115,00000073)
+	:i $SetLoadingBarBorder$$width$ = %i(5,00000005)$height$ = %i(5,00000005)
+	:i $SetLoadingBarBorderColor$$r$ = %i(40,00000028)$g$ = %i(40,00000028)$b$ = %i(40,00000028)
+:i endfunction
+:i function $startup_loading_screen$
+	:i if NOT $Bootstrap$
+		:i if $IsPS2$
+			:i if $CD$
+				:i $Displayloadingscreen$$blank$
+				:i $PlayMovie$%s(11,"movies\atvi")
+				:i $PlayMovie$%s(13,"movies\nslogo")
+				:i $PlayMovie$%s(12,"movies\intro")
+			:i endif
+		:i endif
+	:i endif
+	:i if $isXbox$
+		:i if $CD$
+			:i if NOT $IsInternetGameHost$
+				:i if NOT $IsJoiningInternetGame$
+					:i $PlayMovie$%s(11,"movies\atvi")
+					:i $PlayMovie$%s(13,"movies\nslogo")
+					:i $PlayMovie$%s(13,"movies\beenox")
+					:i $PlayMovie$%s(12,"movies\intro")
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $IsNgc$
+		:i if $CD$
+			:i $PlayMovie$%s(11,"movies\atvi")
+			:i $PlayMovie$%s(13,"movies\nslogo")
+			:i $PlayMovie$%s(12,"movies\intro")
+		:i endif
+	:i endif
+	:i if $Bootstrap$
+		:i $Displayloadingscreen$%s(13,"loadscrn_demo")
+	:i else
+		:i if $isXbox$
+			:i $Displayloadingscreen$%s(10,"loadscrn_x")
+		:i endif
+		:i if $IsNgc$
+			:i $Displayloadingscreen$%s(12,"loadscrn_ngc")
+		:i endif
+		:i if $IsPS2$
+		:i endif
+	:i endif
+:i endfunction
+:i $All_Levels_Unlocked$ = %i(1,00000001)
+:i $bootstrap_build$ = %i(0,00000000)
+:i $UseLevelOverrideStats$ = %i(0,00000000)
+:i function $default_system_startup$
+	:i $WriteDNASBinary$
+	:i $change$$select_shift$ = %i(0,00000000)
+	:i $PushMemProfile$%s(47,"script default_system_startup before autolaunch")
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_SCH$
+	:i $unlock_initial_boards$
+	:i if $CD$
+		:i if $isXbox$
+		:i endif
+	:i endif
+	:i $SetSfxVolume$%i(100,00000064)
+	:i $SetMusicVolume$%i(50,00000032)
+	:i $SetRandomMode$%i(1,00000001)
+	:i $SetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+	:i if $CD$
+		:i $change$$UsePreFilesForLevelLoading$ = %i(1,00000001)
+		:i $change$$DEVKIT_LEVELS$ = %i(0,00000000)
+		:i $change$$All_Levels_Unlocked$ = %i(0,00000000)
+	:i endif
+	:i if $IsNgc$
+		:i $change$$UsePreFilesForLevelLoading$ = %i(1,00000001)
+	:i endif
+	:i $new_screen_element_test$
+	:i $SetScreenElementProps$$id$ = $root_window$$event_handlers$ = :a{:s{$pad_start$$nullscript$:s}:a}$replace_handlers$
+	:i $printf$%s(53,"replace_handlers to take away start key in load_level")
+	:i $setservermode$$on$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $StartServer$
+	:i $JoinServer$ isNull 
+	:i $CreateGoalEditor$
+	:i $CreateRailEditor$
+	:i $PopMemProfile$
+	:i if $Bootstrap$
+		:i $change$$bootstrap_build$ = %i(1,00000001)
+		:i $change$$STARTGAME_FIRST_TIME$ = %i(1,00000001)
+		:i $change$$BUMP_STATS$ = %i(0,00000000)
+		:i $change$$All_Levels_Unlocked$ = %i(0,00000000)
+		:i $autolaunch$$level$ = $load_sch$$game$ = $career$
+	:i else
+		:i if $CD$
+			:i $change$$BUMP_STATS$ = %i(1,00000001)
+			:i if  ($DEMO_BUILD$) 
+				:i $autolaunch$$level$ = $load_skateshop$$game$ = $career$
+			:i else
+				:i $launchviewer$
+				:i $autolaunch$$level$ = $load_skateshop$$game$ = $career$
+			:i endif
+		:i else
+			:i $cheat_select_shift$
+			:i $auto_launch_viewer$
+			:i $cheat_give_neversoft_skaters$
+			:i $LaunchScriptDebugger$
+		:i endif
+	:i endif
+:i endfunction
+:i function $Call_Personal_StartUp_Script$
+	:i if $Gunslinger$
+		:i if $ScriptExists$$gun_startup$
+			:i $gun_startup$
+		:i else
+			:i $default_gun_startup$
+		:i endif
+	:i else
+		:i if $ScriptExists$$startup$
+			:i $startup$
+		:i else
+			:i $printf$%s(35,"WARNING: Missing the startup script")
+			:i $Hideloadingscreen$
+			:i $CreateScreenElement$:s{
+				:i $parent$ = $root_window$
+				:i $type$ = $textelement$
+				:i $id$ = $ns_rules$
+				:i $text$ = %s(29,"Neversoft and Activision 2002")
+				:i $font$ = $newtrickfont$
+				:i $pos$ = %vec2(320.000000,420.000000)
+				:i $rgba$ = :a{%i(140,0000008c)%i(128,00000080)%i(128,00000080)%i(55,00000037):a}
+				:i $Scale$ = %f(0.600000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $not_focusable$
+			:i :s}
+			:i $RunScriptOnScreenElement$$id$ = $ns_rules$$missing_startup$
+		:i endif
+	:i endif
+:i endfunction
+:i function $default_gun_startup$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $SetPlayerAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$appearance_structure$ = $appearance_custom_skater_male_09$
+	:i $change$$show_career_startup_menu$ = %i(0,00000000)
+	:i $autolaunch$$level$ = $load_www$$game$ = $career$
+:i endfunction
+:i function $missing_startup$
+	:i while
+		
+		:i $SetProps$$text$ = %s(22,"Missing Script Startup")
+		:i $DoMorph$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+		:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(1,00000001)$Scale$ = %i(3,00000003)
+		:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(1,00000001)$Scale$ = %i(1,00000001)
+		:i $wait$%i(5,00000005)$seconds$
+		:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(0,00000000)$Scale$ = %f(0.500000)
+		:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(0,00000000)
+	:i loop_to 
+:i endfunction
+:i $STARTGAME_FIRST_TIME$ = %i(0,00000000)
+:i function $create_startup_menu$
+	:i $Hideloadingscreen$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $Destroyscreenelement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)
+		$game$$frame$
+	:i endif
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $SS_MenuCam$$play_hold$
+	:i $SetMemThreadSafe$$off$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(205.000000,109.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $startup_menu$
+		:i $vmenu_id$ = $startup_vmenu$
+		:i $menu_title$ = %s(0,"")
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $THPS4$
+		:i $pos$ = %vec2(320.000000,132.000000)
+		:i $Scale$ = %vec2(1.400000,1.000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $options_bg$
+		:i $draw_behind_parent$
+		:i $pos$ = %vec2(321.000000,115.000000)
+		:i $Scale$ = %vec2(1.170000,1.100000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $startup_menu_blue_bar$
+		:i $texture$ = $stats_notch$
+		:i $pos$ = %vec2(312.000000,369.000000)
+		:i $rgba$ = :a{%i(42,0000002a)%i(48,00000030)%i(77,0000004d)%i(50,00000032):a}
+		:i $Scale$ = %vec2(14.000000,0.200000)
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $startup_menu_box_top$
+		:i $texture$ = $level_top_piece$
+		:i $pos$ = %vec2(321.000000,145.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+		:i $Scale$ = %GLOBAL%$Scale$
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i while
+		
+		:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $current_menu_anchor$
+			:i $texture$ = $level_repeat_mid$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $Scale$ = %GLOBAL%$Scale$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+	:i loop_to %i(5,00000005)
+	:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $level_bottom_piece$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+		:i $Scale$ = %vec2(0.960000,1.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$x$$id$ = $startup_menu_box_top$$offset$ = %vec2(-20.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $goal_right$
+		:i $Scale$ = %vec2(0.800000,0.500000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$
+		:i $parent$ = $current_menu$
+		:i $font$ = $small$
+		:i $text$ = %s(0,"")
+		:i $not_focusable$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$continue_career$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $main_menu_add_item$$text$ = %s(10,"Start Game")$pad_choose_script$ = $continue_career$
+	:i $main_menu_add_item$:s{
+		:i $text$ = %s(8,"Controls")
+		:i $pad_choose_script$ = $bootstrap_displayscreen$
+		:i $pad_choose_params$ = :s{$screen$ = %s(22,"loadscrn_demo_controls"):s}
+	:i :s}
+	:i $main_menu_add_item$:s{
+		:i $text$ = %s(9,"More Info")
+		:i $pad_choose_script$ = $bootstrap_displayscreen$
+		:i $pad_choose_params$ = :s{$screen$ = %s(18,"loadscrn_marketing"):s}
+	:i :s}
+	:i $printf$%s(19,"create_Startup_menu")
+	:i $RunScriptOnScreenElement$$id$ = $startup_menu$$menu_onscreen$
+	:i $printf$%s(5,"step2")
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $type$ = $textelement$
+		:i $id$ = $ns_rules$
+		:i $text$ = %s(29,"Neversoft and Activision 2002")
+		:i $font$ = $newtrickfont$
+		:i $pos$ = %vec2(320.000000,420.000000)
+		:i $rgba$ = :a{%i(140,0000008c)%i(128,00000080)%i(128,00000080)%i(55,00000037):a}
+		:i $Scale$ = %f(0.600000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $not_focusable$
+	:i :s}
+	:i $startup_camera_playback$
+	:i $change$$STARTGAME_FIRST_TIME$ = %i(0,00000000)
+	:i $printf$%s(5,"step3")
+:i endfunction
+:i function $bootstrap_displayscreen$$screen$ = %s(22,"loadscrn_demo_controls")
+	:i if $ObjectExists$$id$ = $startup_menu$
+		:i $Destroyscreenelement$$id$ = $startup_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $ns_rules$
+		:i $Destroyscreenelement$$id$ = $ns_rules$
+	:i endif
+	:i $make_new_menu$$menu_id$ = $screen_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$exit_screen_menu$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $screen_menu$
+		:i $event_handlers$ = :a{:s{$pad_start$$exit_screen_menu$:s}
+			:i :s{$pad_choose$$exit_screen_menu$:s}
+			:i :s{$pad_back$$exit_screen_menu$:s}
+			:i :s{$pad_circle$$exit_screen_menu$:s}
+			:i :s{$pad_square$$exit_screen_menu$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $FireEvent$$type$ = $focus$$target$ = $screen_menu$
+	:i $Displayloadingscreen$%GLOBAL%$screen$
+:i endfunction
+:i function $exit_screen_menu$
+	:i if $ObjectExists$$id$ = $screen_menu$
+		:i $Destroyscreenelement$$id$ = $screen_menu$
+	:i endif
+	:i $Hideloadingscreen$
+	:i $create_startup_menu$
+:i endfunction
+:i function $startup_main_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$handle_start_pressed$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $ObjectExists$$id$ = $ns_rules$
+		:i $Destroyscreenelement$$id$ = $ns_rules$
+	:i endif
+	:i $level_select_change_level$$level$ = $load_skateshop$
+:i endfunction
+:i function $startup_camera_playback$
+	:i $KillSkaterCamAnim$$all$
+	:i $UnPauseGame$
+	:i $PauseSkaters$
+	:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$name$ = $sch_overview_camera$$loop$
+:i endfunction
+:i function $continue_career$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$handle_start_pressed$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $ObjectExists$$id$ = $ns_rules$
+		:i $Destroyscreenelement$$id$ = $ns_rules$
+	:i endif
+	:i $KillSkaterCamAnim$$all$
+	:i $GoalManager_ShowPoints$
+	:i $GoalManager_ShowGoalPoints$
+	:i $MakeSkaterGoto$$StartSkating1$
+	:i $UnPauseskaters$
+	:i $skiptrack$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $Destroyscreenelement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $tags$ = :s{$menu_state$ = $off$:s}
+	:i :s}
+:i endfunction
+:i function $morph_ns_rules$
+	:i while
+		
+		:i $fadein_fadeout$$text$ = %s(24,"Copyright Neversoft 2002")
+	:i loop_to 
+:i endfunction
+:i function $fadein_fadeout$$text$ = %s(19,"you forgot the text")
+	:i $SetProps$$text$ = %GLOBAL%$text$
+	:i $DoMorph$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(1,00000001)
+	:i $wait$%i(5,00000005)$seconds$
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(0,00000000)
+:i endfunction
+:i :end

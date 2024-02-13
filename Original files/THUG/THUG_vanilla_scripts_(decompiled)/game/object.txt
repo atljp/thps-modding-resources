@@ -1,0 +1,59 @@
+
+:i $DefaultMovingObjectSuspendDistance$ = %i(80,00000050)
+:i $X_AXIS$ = %i(1,00000001)
+:i $Y_AXIS$ = %i(2,00000002)
+:i $Z_AXIS$ = %i(4,00000004)
+:i $XY_AXIS$ = %i(3,00000003)
+:i $XZ_AXIS$ = %i(5,00000005)
+:i $YZ_AXIS$ = %i(6,00000006)
+:i $BOUNCEOBJ_REST_TOP_OR_BOTTOM$ = %i(1,00000001)
+:i $BOUNCEOBJ_REST_ANY_SIDE$ = %i(2,00000002)
+:i $BOUNCEOBJ_REST_TRAFFIC_CONE$ = %i(3,00000003)
+:i $GameObjExceptions$ = 
+:i :a{
+	:i $SkaterLanded$
+	:i $SkaterBailed$
+	:i $SkaterInRadius$
+	:i $SkaterOutOfRadius$
+	:i $AnySkaterInRadius$
+	:i :a}
+:i $CarExceptions$ = 
+:i :a{
+	:i $SkaterInRadius$
+	:i $SkaterOutOfRadius$
+	:i :a}
+:i $BouncyObjExceptions$ = 
+:i :a{
+	:i $SkaterInRadius$
+	:i $SkaterOutOfRadius$
+	:i $Bounce$
+	:i $DoneBouncing$
+	:i :a}
+:i function $Obj_WaitPlayerDist$$interval$ = %i(3,00000003)
+	:i while
+		
+		:i if $Obj_ObjectInRadius$$radius$ = %GLOBAL%$radius$$type$ = $skater$
+			:i continue
+			
+		:i else
+			:i $wait$%GLOBAL%$interval$$gameframes$
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $Obj_CycleAnim$$numCycles$ = %i(1,00000001)
+	:i while
+		
+		:i $Obj_PlayAnim$ isNull 
+		:i $Obj_WaitAnimFinished$
+	:i loop_to %GLOBAL%$numCycles$
+:i endfunction
+:i function $GetGap$
+	:i $StartGap$$GapID$ = $GetGap_DefaultID$$Flags$ = %GLOBAL%$Flags$$TrickText$ = %GLOBAL%$TrickText$$TrickScript$ = %GLOBAL%$TrickScript$
+	:i $EndGap$$GapID$ = $GetGap_DefaultID$$Score$ = %GLOBAL%$Score$$Text$ = %GLOBAL%$Text$$GapScript$ = %GLOBAL%$GapScript$
+:i endfunction
+:i function $EmptyScript$
+:i endfunction
+:i function $DefaultAvoidSkater$
+	:i $AvoidSkater$
+:i endfunction
+:i :end

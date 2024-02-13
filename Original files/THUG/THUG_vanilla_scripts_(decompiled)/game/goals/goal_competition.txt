@@ -1,0 +1,724 @@
+
+:i $Goal_Comp_GenericParams$ = :s{
+	:i $goal_text$ = %s(19,"Competition test...")
+	:i $goal_description$ = %s(55,"3 Runs\nYou lose points for bailing\nBest two runs wins")
+	:i $view_goals_text$ = %s(21,"Medal the Competition")
+	:i $time$ = %i(30,0000001e)
+	:i $init$ = $goal_comp_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_comp_activate$
+	:i $deactivate$ = $goal_comp_deactivate$
+	:i $expire$ = $goal_comp_expire$
+	:i $success$ = $goal_comp_success$
+	:i $trigger_obj_id$ = $TRG_G_JUDGE_COMP$
+	:i $geo_prefix$ = %s(7,"G_COMP_")
+	:i $restart_node$ = $TRG_G_COMP_RestartNode$
+	:i $start_pad_id$ = $G_COMP_StartPad$
+	:i $already_ended_run$ = %i(0,00000000)
+	:i $competition$
+	:i $record_type$ = $score$
+:i :s}
+:i $Goal_Comp2_GenericParams$ = :s{
+	:i $goal_text$ = %s(20,"Competition2 test...")
+	:i $goal_description$ = %s(55,"3 Runs\nYou lose points for bailing\nBest two runs wins")
+	:i $view_goals_text$ = %s(21,"Medal the Competition")
+	:i $time$ = %i(30,0000001e)
+	:i $init$ = $goal_comp_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_comp_activate$
+	:i $deactivate$ = $goal_comp_deactivate$
+	:i $expire$ = $goal_comp_expire$
+	:i $success$ = $goal_comp_success$
+	:i $trigger_obj_id$ = $TRG_G_JUDGE_COMP2$
+	:i $geo_prefix$ = %s(8,"G_COMP2_")
+	:i $restart_node$ = $TRG_G_COMP2_RestartNode$
+	:i $start_pad_id$ = $G_COMP2_StartPad$
+	:i $already_ended_run$ = %i(0,00000000)
+	:i $competition$
+	:i $record_type$ = $score$
+:i :s}
+:i function $goal_comp_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_comp_activate$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$already_ended_run$ = %i(0,00000000):s}
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_PauseCompetition$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $CompetitionEnded$
+		:i $EndCompetition$
+	:i endif
+	:i if $GotParam$$leader_board_names$
+		:i $PermuteArray$$NewArrayName$ = $leader_board_names$$Array$ = %GLOBAL%$leader_board_names$
+	:i endif
+	:i $StartCompetition$:s{
+		:i $gold$ = %GLOBAL%$gold$
+		:i $silver$ = %GLOBAL%$silver$
+		:i $bronze$ = %GLOBAL%$bronze$
+		:i $gold_score$ = %GLOBAL%$gold_score$
+		:i $silver_score$ = %GLOBAL%$silver_score$
+		:i $bronze_score$ = %GLOBAL%$bronze_score$
+		:i $bail$ = %GLOBAL%$bail$
+		:i $extra_params$ = :s{
+			:i $leader_board_names$ = %GLOBAL%$leader_board_names$
+			:i $first_place_name$ = %GLOBAL%$first_place_name$
+		:i :s}
+	:i :s}
+	:i $SetScoreAccumulation$%i(1,00000001)
+	:i $StartCompetitionRun$
+	:i $Skater$.$RunStarted$
+	:i $KillSpawnedScript$$name$ = $KillNixonTimer$
+	:i $wait$%f(0.100000)$seconds$
+	:i if $ObjectExists$$id$ = $nixon_timer_box$
+		:i $DestroyScreenElement$$id$ = $nixon_timer_box$
+		:i $wait$%f(0.100000)$seconds$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $nixon_timer_box$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(311.000000,35.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $nixon_timer_box$
+		:i $id$ = $nixon_timer_sprite$
+		:i $texture$ = $nixon$
+		:i $scale$ = %vec2(1.700000,1.700000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(4294965296,fffff830)
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = $nixon_timer_sprite$$time$ = %i(0,00000000)$scale$ = %vec2(0.000000,0.000000)$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $nixon_timer_sprite$$time$ = %f(0.300000)$scale$ = %vec2(0.725000,0.725000)$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $goal_comp_expire$
+	:i $kill_start_key_binding$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$already_ended_run$ = %i(1,00000001):s}
+	:i $pause_trick_text$
+	:i $GoalManager_PauseCompetition$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $RoundIs$%i(3,00000003)
+		:i $GoalManager_SetGoalTimer$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $SpawnSkaterScript$$goal_comp_expire2$$params$ =  isNull 
+:i endfunction
+:i function $goal_comp_expire2$
+	:i $root_window$.$SetTags$$giving_rewards$ = %i(1,00000001)
+	:i $root_window$.$SetTags$$showing_comp_results$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $goal_comp_out_of_bounds_warning$
+		:i $DestroyScreenElement$$id$ = $goal_comp_out_of_bounds_warning$
+	:i endif
+	:i $wait$%i(1,00000001)$frame$
+	:i $PauseSkaters$
+	:i if $RoundIs$%i(3,00000003)
+		:i $EndCompetitionRun$
+		:i $WaitForEvent$$type$ = $comp_continue$
+		:i $goal_comp_show_results$$goal_id$ = %GLOBAL%$goal_id$
+		:i $WaitForEvent$$type$ = $comp_continue$
+		:i $GoalManager_UnPauseCompetition$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+	:i else
+		:i $EndCompetitionRun$
+		:i $ResetScore$
+		:i $WaitForEvent$$type$ = $comp_continue$
+		:i if $ObjectExists$$id$ = $goal_comp_out_of_bounds_warning$
+			:i $DestroyScreenElement$$id$ = $goal_comp_out_of_bounds_warning$
+		:i endif
+		:i if $ObjectExists$$id$ = $comp_root_anchor$
+			:i $DestroyScreenElement$$id$ = $comp_root_anchor$
+		:i endif
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$already_ended_run$ = %i(0,00000000):s}
+		:i $SetScoreAccumulation$%i(1,00000001)
+		:i $StartCompetitionRun$
+		:i $DeBounce$$X$$time$ = %f(0.300000)$clear$ = %i(1,00000001)
+		:i $wait$%i(1,00000001)$frame$
+		:i $GoalManager_UnPauseCompetition$$name$ = %GLOBAL%$goal_id$
+		:i $RunStarted$
+	:i endif
+	:i $root_window$.$SetTags$$giving_rewards$ = %i(0,00000000)
+	:i $root_window$.$SetTags$$showing_comp_results$ = %i(0,00000000)
+:i endfunction
+:i function $goal_comp_deactivate$
+	:i $KillSkaterCamAnim$$all$
+	:i $KillSpawnedScript$$name$ = $goal_comp_expire2$
+	:i $KillSpawnedScript$$name$ = $goal_comp_end_current_run$
+	:i $EndCompetition$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $ObjectExists$$id$ = $comp_root_anchor$
+		:i $DestroyScreenElement$$id$ = $comp_root_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_comp_out_of_bounds_warning$
+		:i $DestroyScreenElement$$id$ = $goal_comp_out_of_bounds_warning$
+	:i endif
+	:i if $ObjectExists$$id$ = $comp_leader_board_anchor$
+		:i $DestroyScreenElement$$id$ = $comp_leader_board_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $comp_scores_anchor$
+		:i $DestroyScreenElement$$id$ = $comp_scores_anchor$
+	:i endif
+	:i $unpause_trick_text$
+	:i $KillSpawnedScript$$name$ = $KillNixonTimer$
+	:i $wait$%f(0.100000)$seconds$
+	:i $SpawnScript$$KillNixonTimer$
+	:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+	:i $MakeSkaterGoto$$HandBrake$
+:i endfunction
+:i function $KillNixonTimer$
+	:i if $ObjectExists$$nixon_timer_box$
+		:i $DoScreenElementMorph$$id$ = $nixon_timer_sprite$$time$ = %f(0.300000)$scale$ = %vec2(0.000000,0.000000)$alpha$ = %i(0,00000000)
+		:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+		:i $wait$%f(0.500000)$seconds$
+		:i $DestroyScreenElement$$id$ = $nixon_timer_box$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $KillNixonTimer$
+:i endfunction
+:i function $goal_comp_leave_area$
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $create_panel_message$$id$ = $goal_comp_out_of_bounds_warning$$text$ = %s(35,"You're out of the competition area!")$style$ = $goal_comp_out_of_bounds_text$
+		:i $ResetScorePot$$UseBailStyle$
+		:i $SetScoreAccumulation$%i(0,00000000)$freeze_score$
+	:i endif
+:i endfunction
+:i function $goal_comp_enter_area$
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i if $ObjectExists$$id$ = $goal_comp_out_of_bounds_warning$
+			:i $DestroyScreenElement$$id$ = $goal_comp_out_of_bounds_warning$
+		:i endif
+		:i $ResetScorePot$
+		:i $SetScoreAccumulation$%i(1,00000001)
+	:i endif
+:i endfunction
+:i function $goal_comp_enable_input$
+	:i $EnablePlayerInput$
+:i endfunction
+:i function $goal_comp_continue$
+	:i $KillSpawnedScript$$name$ = $goal_comp_show_run_scores$
+	:i $KillSpawnedScript$$name$ = $goal_comp_add_leader_board$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$handle_start_pressed$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $ObjectExists$$id$ = $comp_root_anchor$
+		:i $DestroyScreenElement$$id$ = $comp_root_anchor$
+	:i endif
+	:i $unpause_trick_text$
+	:i $UnPauseSkaters$
+	:i $DeBounce$$X$$time$ = %f(0.300000)$clear$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $comp_continue$
+	:i $speech_box_exit$
+:i endfunction
+:i function $goal_comp_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_comp_show_run_scores$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $comp_root_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(340.000000,250.000000)
+	:i :s}
+	:i $PauseSkaters$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$nullscript$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $comp_root_anchor$
+		:i $id$ = $comp_scores_anchor$
+		:i $pos$ = %vec2(330.000000,250.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $scores_hmenu$
+		:i $pos$ = %vec2(400.000000,117.000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $padding_scale$ = %f(1.300000)
+		:i $regular_space_amount$ = %i(40,00000028)
+	:i :s}
+	:i $FormatText$$TextName$ = $score_text$%s(2,"%i")$i$ =  (%GLOBAL%$total_score$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $id$ = $goal_comp_average_score$
+		:i $scale$ =  (%f(1.000000)) 
+		:i $parent$ = $comp_scores_anchor$
+		:i $pos$ = %vec2(460.000000,117.000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $not_focusable$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judges$
+		:i $font$ = $small$
+		:i $text$ = %s(6,"Judges")
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(108,0000006c):a}
+		:i $pos$ = %vec2(128.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judge1$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"1")
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pos$ = %vec2(215.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judge2$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"2")
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pos$ = %vec2(253.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judge3$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"3")
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pos$ = %vec2(293.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judge4$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"4")
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pos$ = %vec2(333.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_judge5$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"5")
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pos$ = %vec2(374.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $id$ = $comp_scores_average$
+		:i $font$ = $small$
+		:i $text$ = %s(7,"Average")
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(108,0000006c):a}
+		:i $pos$ = %vec2(414.000000,98.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(115.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(200.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(400.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(238.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(280.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(318.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(358.000000,92.000000)
+		:i $scale$ = %vec2(1.200000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_fill$
+		:i $pos$ = %vec2(288.000000,91.000000)
+		:i $scale$ = %vec2(58.500000,1.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $comp_end_cap$
+		:i $pos$ = %vec2(484.000000,91.000000)
+		:i $scale$ = %vec2(1.300000,0.980000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(110,0000006e):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_scores_anchor$
+		:i $texture$ = $options_bg$
+		:i $pos$ = %vec2(309.000000,118.000000)
+		:i $scale$ = %vec2(1.670000,0.700000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(15,0000000f)%i(15,0000000f)%i(15,0000000f)%i(80,00000050):a}
+	:i :s}
+	:i $GetArraySize$%GLOBAL%$scores$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $score_id$%s(7,"score%i")$i$ = %GLOBAL%$index$
+		:i $goal_comp_add_score_to_hmenu$ (%GLOBAL%$scores$:a{%GLOBAL%$index$:a}) $id$ = %GLOBAL%$score_id$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $RunScriptOnScreenElement$$id$ = $comp_scores_anchor$$goal_comp_animate_scores$
+	:i $create_speech_box$$text$ = %s(21,"Press \m0 to continue")$pos$ = %vec2(320.000000,400.000000)$pad_choose_script$ = $goal_comp_skip_scores$$pad_choose_params$ = :s{$scores$ = %GLOBAL%$scores$:s}
+	:i $WaitForEvent$$type$ = $goal_comp_scores_done$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $goal_comp_average_score$
+		:i $rgba$ = :a{%i(117,00000075)%i(14,0000000e)%i(14,0000000e)%i(100,00000064):a}
+	:i :s}
+:i endfunction
+:i function $goal_comp_animate_scores$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(305.000000,0.000000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.000000)$alpha$ = %i(1,00000001)$pos$ = %vec2(305.000000,232.000000)
+:i endfunction
+:i function $goal_comp_add_score_to_hmenu$
+	:i $FormatText$$TextName$ = $score_text$%s(2,"%i")$i$ =  (%GLOBAL%$score$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $scores_hmenu$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $not_focusable$
+	:i :s}
+	:i if NOT $GotParam$$top_judge$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$goal_comp_fade_lower_score$
+	:i endif
+:i endfunction
+:i function $goal_comp_fade_lower_score$
+	:i $wait$%i(1,00000001)$second$
+	:i $DoMorph$$time$ = %f(1.200000)$alpha$ = %f(0.300000)
+	:i $FireEvent$$type$ = $goal_comp_scores_done$
+:i endfunction
+:i function $goal_comp_skip_scores$
+	:i $GetArraySize$%GLOBAL%$scores$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $score_id$%s(7,"score%i")$i$ = %GLOBAL%$index$
+		:i if NOT $StructureContains$$structure$ =  (%GLOBAL%$scores$:a{%GLOBAL%$index$:a}) $top_judge$
+			:i if $ObjectExists$$id$ = %GLOBAL%$score_id$
+				:i $DoScreenElementMorph$$id$ = %GLOBAL%$score_id$$alpha$ = %f(0.300000)
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $goal_comp_average_score$
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i if $RoundIs$%i(3,00000003)
+	:i endif
+	:i $FireEvent$$type$ = $goal_comp_scores_done$
+:i endfunction
+:i function $goal_comp_end_current_run$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $exit_pause_menu$
+	:i endif
+	:i if $GoalManager_IsInCompetition$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$already_ended_run$ = %i(1,00000001):s}
+		:i $GoalManager_PauseCompetition$$name$ = %GLOBAL%$goal_id$
+		:i $KillSpawnedScript$$name$ = $SK3_Killskater_Finish$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+		:i $goal_comp_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i else
+		:i $printf$%s(39,"WARNING: you're not in a competition!!!")
+	:i endif
+:i endfunction
+:i function $goal_comp_add_leader_board$
+	:i $WaitForEvent$$type$ = $goal_comp_scores_done$
+	:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(1500,000005dc):s}
+	:i if $ObjectExists$$id$ = $speech_box_anchor$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $speech_box_anchor$
+			:i $event_handlers$ = :a{:s{$pad_choose$$goal_comp_continue$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $wait$%i(20,00000014)$frame$
+	:i if NOT $ObjectExists$$id$ = $comp_root_anchor$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{:s{$pad_start$$goal_comp_continue$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $comp_root_anchor$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $comp_root_anchor$
+		:i $id$ = $comp_leader_board_anchor$
+		:i $pos$ = %vec2(300.000000,232.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $comp_leader_board_anchor$
+		:i $id$ = $comp_leader_board_vmenu$
+		:i $pos$ = %vec2(208.000000,169.000000)
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $z_priority$ = %i(20,00000014)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_leader_board_vmenu$
+		:i $id$ = $comp_leader_board_vmenu_title$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(9,"STANDINGS")
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(1.370000)
+		:i $not_focusable$
+	:i :s}
+	:i if $RoundIs$%i(1,00000001)
+		:i $FormatText$$TextName$ = $round_info$%s(15,"(AFTER 1 ROUND)")
+	:i else
+		:i if $RoundIs$%i(2,00000002)
+			:i $FormatText$$TextName$ = $round_info$%s(16,"(AFTER 2 ROUNDS)")
+		:i else
+			:i $FormatText$$TextName$ = $round_info$%s(15,"(BEST 2 ROUNDS)")
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_leader_board_vmenu_title$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$round_info$
+		:i $rgba$ = :a{%i(117,00000075)%i(14,0000000e)%i(14,0000000e)%i(90,0000005a):a}
+		:i $pos$ = %vec2(264.000000,0.000000)
+		:i $scale$ = %f(0.650000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $not_focusable$
+	:i :s}
+	:i if $LevelIs$$load_FL$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $comp_leader_board_anchor$
+			:i $texture$ = $spot_goals$
+			:i $pos$ = %vec2(100.000000,139.000000)
+			:i $scale$ =  (%f(1.200000)) 
+			:i $just$ = :a{$center$$top$:a}
+			:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+			:i $z_priority$ = %i(100,00000064)
+		:i :s}
+	:i else
+		:i if $LevelIs$$load_SJ$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = $comp_leader_board_anchor$
+				:i $texture$ = $scj_goals$
+				:i $pos$ = %vec2(105.000000,128.000000)
+				:i $scale$ =  (%f(1.300000)) 
+				:i $just$ = :a{$center$$top$:a}
+				:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+				:i $z_priority$ = %i(100,00000064)
+			:i :s}
+		:i else
+			:i if $LevelIs$$load_HI$
+				:i $FormatText$$ChecksumName$ = $hi_goals_icon$%s(10,"5050_goals")
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = $comp_leader_board_anchor$
+					:i $texture$ = %GLOBAL%$hi_goals_icon$
+					:i $pos$ = %vec2(106.000000,132.000000)
+					:i $scale$ =  (%f(1.200000)) 
+					:i $just$ = :a{$center$$top$:a}
+					:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+					:i $z_priority$ = %i(100,00000064)
+				:i :s}
+			:i else
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = $comp_leader_board_anchor$
+					:i $texture$ = $PA_goals$
+					:i $pos$ = %vec2(100.000000,132.000000)
+					:i $scale$ =  (%f(1.200000)) 
+					:i $just$ = :a{$center$$top$:a}
+					:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+					:i $z_priority$ = %i(100,00000064)
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_leader_board_anchor$
+		:i $texture$ = $options_bg$
+		:i $pos$ = %vec2(315.000000,160.000000)
+		:i $scale$ = %vec2(1.700000,1.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_leader_board_anchor$
+		:i $texture$ = $comp_hori_lines$
+		:i $pos$ = %vec2(316.000000,186.000000)
+		:i $scale$ = %vec2(55.500000,0.960000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(90,0000005a):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_leader_board_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(120.000000,165.000000)
+		:i $scale$ = %vec2(1.200000,2.250000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(108,0000006c):a}
+		:i $z_priority$ = %i(30,0000001e)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $comp_leader_board_anchor$
+		:i $texture$ = $comp_tall_line$
+		:i $pos$ = %vec2(512.000000,165.000000)
+		:i $scale$ = %vec2(1.200000,2.250000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(108,0000006c):a}
+		:i $z_priority$ = %i(30,0000001e)
+	:i :s}
+	:i $ForEachIn$%GLOBAL%$leader_board$$do$ = $goal_comp_add_leader_board_entry$
+	:i $RunScriptOnScreenElement$$id$ = $comp_leader_board_anchor$$goal_comp_animate_leaderboard$
+:i endfunction
+:i function $goal_comp_animate_leaderboard$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(0.000000)$alpha$ = %i(0,00000000)
+	:i $wait$%i(20,00000014)$frame$
+	:i $PlaySound$$BailSlap01$
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.000000)$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $goal_comp_add_leader_board_entry$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $comp_leader_board_vmenu$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$name$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $not_focusable$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$leader_board_name_id$ = %GLOBAL%$id$
+	:i $FormatText$$TextName$ = $score_text$%s(2,"%i")$i$ =  (%GLOBAL%$score$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$leader_board_name_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$score_text$
+		:i $pos$ = %vec2(320.000000,0.000000)
+		:i $just$ = :a{$right$$top$:a}
+	:i :s}
+	:i if $GotParam$$player$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$leader_board_name_id$
+			:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(128,00000080):a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(128,00000080):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_comp_show_results$
+	:i if $PlaceIs$%i(1,00000001)
+		:i $create_speech_box$$text$ = %s(13,"You got gold!")$no_pad_start$$pad_choose_script$ = $nullscript$$style$ = $goal_comp_speech_box_style$
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i else
+		:i if $PlaceIs$%i(2,00000002)
+			:i $create_speech_box$$text$ = %s(15,"You got silver!")$no_pad_start$$pad_choose_script$ = $nullscript$$style$ = $goal_comp_speech_box_style$
+			:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+		:i else
+			:i if $PlaceIs$%i(3,00000003)
+				:i $create_speech_box$$text$ = %s(15,"You got bronze!")$no_pad_start$$pad_choose_script$ = $nullscript$$style$ = $goal_comp_speech_box_style$
+				:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+			:i else
+				:i $create_speech_box$$text$ = %s(22,"You didn't get a medal")$no_pad_start$$pad_choose_script$ = $null_script$$style$ = $goal_comp_speech_box_style$
+				:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_comp_out_of_bounds_text$
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,140.000000)
+:i endfunction
+:i function $goal_comp_speech_box_style$
+	:i $wait$%i(2000,000007d0)
+	:i $Die$
+:i endfunction
+:i :end

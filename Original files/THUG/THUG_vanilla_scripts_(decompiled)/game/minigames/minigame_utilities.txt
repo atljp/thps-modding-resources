@@ -1,0 +1,39 @@
+
+:i function $minigame_init$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$init_script$
+		:i $SpawnScript$%GLOBAL%$init_script$$params$ = :s{%GLOBAL%$init_script_params$$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+:i endfunction
+:i function $minigame_activate$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$activate_script$
+		:i $SpawnScript$%GLOBAL%$activate_script$$params$ = :s{%GLOBAL%$activate_script_params$$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+:i endfunction
+:i function $minigame_deactivate$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $minigame_hide_timer$
+	:i if $GotParam$$deactivate_script$
+		:i $SpawnScript$%GLOBAL%$deactivate_script$$params$ = :s{%GLOBAL%$deactivate_script_params$$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+:i endfunction
+:i function $minigame_hide_timer$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $minigame_timer$
+		:i $text$ = %s(0,"")
+	:i :s}
+:i endfunction
+:i function $minigame_got_cash$
+	:i $FormatText$$TextName$ = $message$%s(12,"You got $%i!")$i$ = %GLOBAL%$amount$
+	:i $create_panel_message$$id$ = $goal_current_reward$$text$ = %GLOBAL%$message$$style$ = $goal_message_got_stat$$params$ = :s{$sound$ = $cash$:s}
+:i endfunction
+:i function $minigame_cash_depleted$
+	:i $create_panel_message$:s{
+		:i $id$ = $goal_current_reward$
+		:i $text$ = %s(47,"You've collected all the cash for this minigame")
+		:i $style$ = $goal_message_got_stat$
+		:i $params$ = :s{$sound$ = $cash$:s}
+	:i :s}
+:i endfunction
+:i :end

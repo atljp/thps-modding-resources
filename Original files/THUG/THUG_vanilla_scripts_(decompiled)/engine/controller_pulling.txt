@@ -1,0 +1,257 @@
+
+:i $controller_unplugged_frame_count$ = %i(45,0000002d)
+:i function $controller_unplugged$
+	:i $GetSkaterId$
+	:i if NOT $LevelIs$$load_skateshop$
+		:i if NOT $LevelIs$$load_boardshop$
+			:i if NOT $LevelIs$$load_cas$
+				:i if NOT $SkaterCamAnimFinished$$skater$ = %GLOBAL%$objId$
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$leaving_net_game$
+		:i $PauseGame$
+		:i $PauseMusicAndStreams$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $wait_and_check_for_unplugged_controllers$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $SpawnScript$$create_controller_unplugged_dialog$$params$ =  isNull 
+:i endfunction
+:i function $create_controller_unplugged_dialog$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $block_events$
+		:i $hide$
+	:i :s}
+	:i %GLOBAL%$showing_comp_results$ = %i(0,00000000)
+	:i $root_window$.$GetTags$
+	:i %GLOBAL%$front_end_paused$ = %i(0,00000000)
+	:i if $GameIsPaused$
+		:i %GLOBAL%$front_end_paused$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$leaving_net_game$
+		:i if  ( ($LevelIs$$load_skateshop$)  OR  ($LevelIs$$load_boardshop$)  OR  ($LevelIs$$load_cas$) ) 
+			:i $GoalManager_DeactivateAllGoals$
+			:i $GoalManager_UninitializeAllGoals$
+			:i $PauseGame$
+			:i $PauseMusicAndStreams$%i(1,00000001)
+		:i else
+			:i if  (%GLOBAL%$showing_comp_results$ = %i(0,00000000)) 
+				:i $GoalManager_PauseAllGoals$
+				:i $PauseGame$
+				:i $PauseMusicAndStreams$%i(1,00000001)
+			:i else
+				:i $PauseGame$
+				:i $PauseMusicAndStreams$%i(1,00000001)
+				:i $SetButtonEventMappings$$unblock_menu_input$
+			:i endif
+		:i endif
+	:i endif
+	:i $wait$%i(1,00000001)$frame$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $WindowElement$
+		:i $id$ = $unplugged_root_window$
+	:i :s}
+	:i $unplugged_root_window$.$SetTags$$front_end_paused$ = %GLOBAL%$front_end_paused$
+	:i $unplugged_root_window$.$SetTags$$menu_state$ = %GLOBAL%$menu_state$
+	:i $unplugged_root_window$.$SetTags$$showing_comp_results$ = %GLOBAL%$showing_comp_results$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $unplugged_root_window$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(80.000000,60.000000)
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $unplugged_root_window$
+		:i $id$ = $controller_unplugged_dialog_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $z_priority$ = %i(1000,000003e8)
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $pad_choose_script$ = $controller_refresh$
+	:i if $GotParam$$leaving_net_game$
+		:i $FormatText$$TextName$ = $text$%s(109,"Controller disconnected. Please reconnect the controller to port %i and press \b8 to return to the main menu.")$i$ =  (%GLOBAL%$device_num$ + %i(1,00000001)) 
+		:i $unplugged_root_window$.$SetTags$$leaving_net_game$
+	:i else
+		:i if $IsNGC$
+			:i $FormatText$$TextName$ = $text$%s(82,"Please reconnect the controller to Controller Socket %i and press \b8 to continue.")$i$ =  (%GLOBAL%$device_num$ + %i(1,00000001)) 
+		:i else
+			:i if $IsPs2$
+				:i $FormatText$$TextName$ = $text$%s(77,"Please insert a controller into controller port %i and press \b8 to continue.")$i$ =  (%GLOBAL%$device_num$ + %i(1,00000001)) 
+			:i else
+				:i $FormatText$$TextName$ = $text$%s(69,"Please reconnect the controller to port %i and press \b8 to continue.")$i$ =  (%GLOBAL%$device_num$ + %i(1,00000001)) 
+			:i endif
+		:i endif
+	:i endif
+	:i %GLOBAL%$text_block_pos$ = %vec2(320.000000,200.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $pos$ = %GLOBAL%$text_block_pos$
+		:i $dims$ = %vec2(300.000000,0.000000)
+		:i $allow_expansion$
+		:i $just$ = :a{$center$$center$:a}
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $z_priority$ = %i(1000,000003e8)
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i %GLOBAL%$button_pos$ =  (%GLOBAL%$text_block_pos$ +  (%GLOBAL%$height$ * %vec2(0.000000,1.000000)) ) 
+	:i $CreateScreenElement$:s{
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $type$ = $TextElement$
+		:i $font$ = $small$
+		:i $text$ = %s(2,"OK")
+		:i $pos$ = %GLOBAL%$button_pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(1000,000003e8)
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$do_scale_up$:s}
+			:i :s{$unfocus$$do_scale_down$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = :s{$original_device_num$ = %GLOBAL%$device_num$:s}:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = :s{$original_device_num$ = %GLOBAL%$device_num$:s}:s}
+			:i :a}
+	:i :s}
+	:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$id$
+	:i $SetRootScreenElement$$id$ = $unplugged_root_window$
+:i endfunction
+:i function $controller_refresh$
+	:i if  (%GLOBAL%$original_device_num$ = %GLOBAL%$device_num$) 
+		:i $controller_reconnected$$device_num$ = %GLOBAL%$device_num$
+		:i if $CustomParkMode$$editing$
+			:i if NOT $istrue$$in_create_a_goal$
+				:i if NOT $ScreenElementExists$$id$ = $dialog_box_anchor$
+					:i if NOT $ScreenElementExists$$id$ = $files_menu$
+						:i if NOT $ScreenElementExists$$id$ = $keyboard_anchor$
+							:i if NOT $ObjectExists$$id$ = $park_resize_cam$
+								:i $parked_continue_editing$
+								:i $ResetAbortAndDoneScripts$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i else
+			:i if NOT  ($AbortScript$ = $DefaultAbortScript$) 
+				:i $goto$$reload_anims_then_run_abort_script$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $controller_reconnected$
+	:i if NOT $GotParam$$leaving_net_game$
+		:i if NOT $LevelIs$$load_skateshop$
+			:i if NOT $LevelIs$$load_boardshop$
+				:i if NOT $LevelIs$$load_cas$
+					:i if NOT $istrue$$in_create_a_goal$
+						:i if NOT $CustomParkMode$$editing$
+							:i if NOT $ScreenElementExists$$id$ = $timeline_vmenu$
+								:i $Restore_skater_camera$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $SetRootScreenElement$$id$ = $root_window$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $unblock_events$
+		:i $unhide$
+	:i :s}
+	:i if NOT $GotParam$$leaving_net_game$
+		:i if $ScreenElementExists$$id$ = $pre_cat_menu_is_up$
+			:i $UnpauseGame$
+			:i if $LevelIs$$load_nj$
+				:i $skater$.$Obj_MoveToNode$$name$ = $TRG_G_CAT_RestartNode$$Orient$$NoReset$
+			:i endif
+			:i $PauseGame$
+			:i $create_pre_cat_menu$
+		:i else
+			:i if $istrue$$in_create_a_goal$
+				:i if $istrue$$goal_editor_placement_mode$
+					:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+					:i $GoalEditor$.$UnPause$
+					:i if $ObjectExists$$id$ = $GoalEditorCursor$
+						:i $GoalEditorCursor$.$UnPause$
+					:i endif
+				:i endif
+			:i else
+				:i $unplugged_root_window$.$GetTags$
+				:i if  (%GLOBAL%$front_end_paused$ = %i(0,00000000)) 
+					:i $UnpauseGame$
+					:i $UnPauseMusicAndStreams$
+				:i endif
+				:i if NOT  ( ($LevelIs$$load_skateshop$)  OR  ($LevelIs$$load_boardshop$)  OR  ($LevelIs$$load_cas$) ) 
+					:i if  (%GLOBAL%$showing_comp_results$ = %i(1,00000001)) 
+					:i else
+						:i if NOT $CustomParkMode$$editing$
+							:i if  (%GLOBAL%$menu_state$ = $off$) 
+								:i $FireEvent$:s{
+									:i $type$ = $pad_start$
+									:i $target$ = $root_window$
+									:i $data$ = :s{$device_num$ = %GLOBAL%$device_num$:s}
+								:i :s}
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $unplugged_root_window$
+		:i $DestroyScreenElement$:s{
+			:i $id$ = $unplugged_root_window$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $high_scores_records_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $high_scores_records_menu$
+	:i endif
+	:i if $GotParam$$leaving_net_game$
+		:i $printf$%s(40,"quitting network game!!!!!!!!!!!!!!!!!!!")
+		:i $UnpauseGame$
+		:i $quit_network_game$
+	:i else
+		:i $SpawnScript$$wait_and_check_for_unplugged_controllers$
+	:i endif
+:i endfunction
+:i function $controller_pulled_disconnect_message$
+	:i $GoalManager_DeactivateAllGoals$$force_all$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i $exit_pause_menu$
+	:i $destroy_onscreen_keyboard$
+	:i $force_close_rankings$$dont_retry$
+	:i if $InNetGame$
+		:i if $LocalSkaterExists$
+			:i $skater$.$Vibrate$$off$
+		:i endif
+	:i endif
+	:i if NOT $IsObserving$
+		:i $ExitSurveyorMode$
+	:i endif
+	:i $dialog_box_exit$
+	:i $dialog_box_exit$$anchor_id$ = $link_lost_dialog_anchor$
+	:i $create_error_box$:s{
+		:i $title$ = %s(6,"Notice")
+		:i $text$ = %s(54,"Controller disconnected. Select OK to leave this game.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $accept_lost_connection$:s}:a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $wait_and_check_for_unplugged_controllers$$time$ = %i(50,00000032)
+	:i $wait$%GLOBAL%$time$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i :end

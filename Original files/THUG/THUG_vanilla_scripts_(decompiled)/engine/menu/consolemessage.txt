@@ -1,0 +1,167 @@
+$number_of_console_lines$ = %i(6,00000006)
+:i function $create_console$
+	:i if NOT $ObjectExists$$id$ = $console_message_vmenu$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $LevelIs$$load_skateshop$
+			:i $pos$ = %vec2(50.000000,240.000000)
+		:i else
+			:i $pos$ = %vec2(20.000000,265.000000)
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $VMenu$
+			:i $parent$ = $root_window$
+			:i $id$ = $console_message_vmenu$
+			:i $padding_scale$ = %f(0.650000)
+			:i $font$ = $dialog$
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+			:i $pos$ = %GLOBAL%$pos$
+			:i $z_priority$ = %i(0,00000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_console_message$$text$ = %s(23,"Default console message")$rgba$ = :a{%i(113,00000071)%i(121,00000079)%i(127,0000007f)%i(80,00000050):a}
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i if NOT $ObjectExists$$id$ = $console_message_vmenu$
+			:i $create_console$
+		:i endif
+		:i $SetScreenElementLock$$id$ = $console_message_vmenu$$off$
+		:i if $ScreenElementExists$$id$ = :s{$console_message_vmenu$$child$ =  ($number_of_console_lines$ - %i(1,00000001)) :s}
+			:i $DestroyScreenElement$$id$ = :s{$console_message_vmenu$$child$ = %i(0,00000000):s}
+		:i endif
+		:i if $LevelIs$$load_skateshop$
+			:i $dims$ = %vec2(750.000000,10.000000)
+			:i $pos$ = %vec2(50.000000,240.000000)
+			:i $change$$number_of_console_lines$ = %i(7,00000007)
+			:i $max_chat_height$ = %i(150,00000096)
+		:i else
+			:i $dims$ = %vec2(750.000000,10.000000)
+			:i $pos$ = %vec2(20.000000,265.000000)
+			:i $change$$number_of_console_lines$ = %i(6,00000006)
+			:i $max_chat_height$ = %i(96,00000060)
+		:i endif
+		:i if $GotParam$$join$
+			:i $rgba$ = :a{%i(0,00000000)%i(80,00000050)%i(0,00000000)%i(80,00000050):a}
+		:i else
+			:i if $GotParam$$left$
+				:i $rgba$ = :a{%i(80,00000050)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+			:i endif
+		:i endif
+		:i $SetScreenElementProps$$id$ = $console_message_vmenu$$pos$ = %GLOBAL%$pos$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $console_message_vmenu$
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$text$
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $scale$ = %f(0.800000)
+			:i $not_focusable$
+			:i $dims$ = %GLOBAL%$dims$
+			:i $allow_expansion$
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i while
+			
+			:i $total_height$ = %i(0,00000000)
+			:i $index$ = $number_of_console_lines$
+			:i while
+				
+				:i if $ScreenElementExists$$id$ = :s{$console_message_vmenu$$child$ =  ($number_of_console_lines$ - %GLOBAL%$index$) :s}
+					:i $GetScreenElementDims$$id$ = :s{$console_message_vmenu$$child$ =  ($number_of_console_lines$ - %GLOBAL%$index$) :s}
+					:i %GLOBAL%$total_height$ =  (%GLOBAL%$total_height$ + %GLOBAL%$height$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+				:i else
+					:i continue
+					
+				:i endif
+			:i loop_to 
+			:i if  (%GLOBAL%$total_height$ > %GLOBAL%$max_chat_height$) 
+				:i $DestroyScreenElement$$id$ = :s{$console_message_vmenu$$child$ = %i(0,00000000):s}
+			:i else
+				:i continue
+				
+			:i endif
+		:i loop_to 
+		:i if $GotParam$$wait_and_die$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$console_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+			:i return
+			
+		:i endif
+		:i if NOT $LevelIs$$load_skateshop$
+			:i if NOT $GotParam$$dont_die$
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$console_message_wait_and_die$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $hide_console_window$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_console_window$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $console_left_justify$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $SetScreenElementLock$$id$ = $console_message_vmenu$$off$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $console_message_vmenu$
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $console_message_vmenu$
+			:i $pos$ = %vec2(20.000000,265.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $console_right_justify$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $SetScreenElementLock$$id$ = $console_message_vmenu$$off$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $console_message_vmenu$
+			:i $just$ = :a{$right$$top$:a}
+			:i $internal_just$ = :a{$right$$center$:a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $console_message_vmenu$
+			:i $pos$ = %vec2(620.000000,265.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $console_hide$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $RunScriptOnScreenElement$$id$ = $console_message_vmenu$$console_hide2$
+	:i endif
+:i endfunction
+:i function $console_hide2$
+	:i $DoMorph$$scale$ = %i(0,00000000)
+:i endfunction
+:i function $console_unhide$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $RunScriptOnScreenElement$$id$ = $console_message_vmenu$$console_unhide2$
+	:i endif
+:i endfunction
+:i function $console_unhide2$
+	:i $DoMorph$$scale$ = %i(1,00000001)
+:i endfunction
+:i function $console_clear$
+	:i if $ScreenElementExists$$id$ = $console_message_vmenu$
+		:i $DestroyScreenElement$$id$ = $console_message_vmenu$$preserve_parent$
+	:i endif
+:i endfunction
+:i function $console_destroy$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DestroyScreenElement$$id$ = $console_message_vmenu$
+	:i endif
+:i endfunction
+:i function $console_message_wait_and_die$$time$ = %i(30,0000001e)
+	:i $wait$%GLOBAL%$time$$seconds$
+	:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i :end

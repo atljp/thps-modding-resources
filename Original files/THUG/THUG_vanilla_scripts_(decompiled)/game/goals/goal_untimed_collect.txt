@@ -1,0 +1,94 @@
+
+:i $Goal_UntimedCollect_GenericParams$ = :s{
+	:i $goal_text$ = %s(14,"Find X things!")
+	:i $view_goals_text$ = %s(24,"Generic find things text")
+	:i $init$ = $goal_untimed_collect_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_untimed_collect_activate$
+	:i $deactivate$ = $goal_untimed_collect_deactivate$
+	:i $expire$ = $goal_untimed_collect_expire$
+	:i $fail$ = $goal_untimed_collect_fail$
+	:i $success$ = $goal_untimed_collect_success$
+	:i $restart_node$ = $TRG_G_UNTIMEDCOLLECT_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_UNTIMEDCOLLECT_Pro$
+	:i $record_type$ = $none$
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $no_restart$
+	:i $UntimedCollect$
+:i :s}
+:i function $goal_untimed_collect_init$
+	:i if $GotParam$$goal_collect_objects$
+		:i $GetArraySize$%GLOBAL%$goal_collect_objects$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$num_to_collect$ = %GLOBAL%$array_size$:s}
+		:i while
+			
+			:i $goal_untimed_collect_init_object$:s{
+				:i $goal_id$ = %GLOBAL%$goal_id$
+				:i  (%GLOBAL%$goal_collect_objects$:a{%GLOBAL%$index$:a}) 
+				:i $inner_radius$ = %GLOBAL%$collect_object_radius$
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else
+		:i $script_assert$%s(45,"No goal_collect_objects array defined for %s.")$s$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_init_object$
+	:i if NOT $GotParam$$inner_radius$
+		:i %GLOBAL%$inner_radius$ = %i(5,00000005)
+	:i endif
+	:i $create$$name$ = %GLOBAL%$id$
+	:i %GLOBAL%$id$.$Obj_SetInnerRadius$%GLOBAL%$inner_radius$
+	:i %GLOBAL%$id$.$Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $goal_untimed_collect_got_object$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $goal_untimed_collect_activate$
+	:i if NOT $GotParam$$num_objects_collected$
+		:i %GLOBAL%$num_objects_collected$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$num_objects_collected$ >  (%GLOBAL%$num_to_collect$ - %i(1,00000001)) ) 
+		:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+		:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+		:i $SpawnScript$$goal_untimed_collect_wait_and_win$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i else
+		:i $SpawnScript$$goal_untimed_collect_wait_and_deactivate$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_untimed_collect_wait_and_deactivate$
+	:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_wait_and_win$
+	:i $wait$%i(1,00000001)$frame$
+	:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_untimed_collect_got_object$
+	:i $Obj_ClearExceptions$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $GotParam$$num_objects_collected$
+		:i %GLOBAL%$num_objects_collected$ = %i(1,00000001)
+	:i else
+		:i %GLOBAL%$num_objects_collected$ =  (%GLOBAL%$num_objects_collected$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$num_objects_collected$ >  (%GLOBAL%$num_to_collect$ - %i(1,00000001)) ) 
+			:i $create_panel_message$$text$ = %s(28,"You've collected everything!")
+		:i endif
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$num_objects_collected$ = %GLOBAL%$num_objects_collected$:s}
+	:i $Die$
+:i endfunction
+:i :end

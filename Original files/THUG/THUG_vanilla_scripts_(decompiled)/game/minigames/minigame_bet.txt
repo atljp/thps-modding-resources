@@ -1,0 +1,299 @@
+$minigame_trickspot_genericParams$ = :s{
+	:i $init$ = $minigame_trickspot_init$
+	:i $number_collected$ = %i(1,00000001)
+	:i $minigame_record$ = %i(0,00000000)
+	:i $trigger_obj_id$ = $TRG_MG_RoundCounter02$
+	:i $no_restart$
+	:i $minigame$
+	:i $betting_game$
+	:i $trickspot$
+	:i $betting_guy_node$ = $TRG_MG_BettingNav01$
+	:i $location$ = %s(10,"the stairs")
+	:i $bet_easy$ = :s{
+		:i $key_combos$ = :a{
+			:i $Air_SquareU$
+			:i $Air_SquareD$
+			:i $Air_SquareL$
+			:i $Air_SquareR$
+			:i :a}
+		:i $bet_amount$ = %i(100,00000064)
+		:i $tries$ = %i(5,00000005)
+	:i :s}
+	:i $bet_medium$ = :s{
+		:i $key_combos$ = :a{
+			:i $Air_SquareUL$
+			:i $Air_SquareUR$
+			:i $Air_SquareDL$
+			:i $Air_SquareDR$
+			:i :a}
+		:i $bet_amount$ = %i(250,000000fa)
+		:i $tries$ = %i(3,00000003)
+	:i :s}
+	:i $bet_hard$ = :s{
+		:i $key_combos$ = :a{
+			:i $Air_CircleUL$
+			:i $Air_CircleUR$
+			:i $Air_CircleDL$
+			:i $Air_CircleDR$
+			:i $Air_CircleU$
+			:i $Air_CircleD$
+			:i $Air_CircleL$
+			:i $Air_CircleR$
+			:i :a}
+		:i $bet_amount$ = %i(1000,000003e8)
+		:i $tries$ = %i(2,00000002)
+	:i :s}
+:i :s}
+:i function $minigame_trickspot_init$
+:i endfunction
+:i function $MG_Bet_InsideArea$
+	:i if $GoalManager_BetIsActive$$name$ = $sch_goal_minigame_trickspot$
+		:i $GoalManager_StartBetAttempt$$name$ = $sch_goal_minigame_trickspot$
+		:i $GoalManager_GetGoalParams$$name$ = $sch_goal_betting_guy$
+		:i $StartGap$$GapID$ = $StairMinigame$$flags$ = :a{$cancel_ground$:a}$TrickText$ = %GLOBAL%$bet_action$$trickscript$ = $sch_goal_minigame_trickspot_got$
+	:i endif
+:i endfunction
+:i function $MG_Bet_OutsideArea$
+	:i $EndGap$$GapID$ = $StairMinigame$
+	:i if $GoalManager_BetIsActive$$name$ = $sch_goal_minigame_trickspot$
+		:i $RunScriptOnObject$$id$ = $TRG_MG_BettingGuy01$$betting_guy_wait_for_land$$params$ = :s{$goal_id$ = $sch_goal_minigame_trickspot$:s}
+	:i endif
+:i endfunction
+:i function $sch_goal_minigame_trickspot_got$
+	:i $printf$%s(10,"you got it")
+	:i $GoalManager_WinGoal$$name$ = $sch_goal_betting_guy$
+:i endfunction
+:i $OBJ_FLAG_BETSTART$ = %i(0,00000000)
+:i $OBJ_FLAG_BETEND$ = %i(1,00000001)
+:i $OBJ_FLAG_BETWON$ = %i(2,00000002)
+:i $DefaultBettingParams$ = :s{
+	:i $Bet_Clusters$ = :a{:s{$id$ = $Sch_KillSpot01$$flag$ = $got_1$:s}
+		:i :s{$id$ = $Sch_KillSpot02$$flag$ = $got_2$:s}
+		:i :a}
+	:i $BetAmount$ = %i(50,00000032)
+	:i $TrickName$ = %s(8,"kickflip")
+	:i $TOName$ = %s(20,"the stairs behind me")
+	:i $NumTries$ = %i(3,00000003)
+:i :s}
+:i function $MG_Betting_Guy$$DefaultBettingParams$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $MG_Betting_Guy_Skater_Far$$params$ = :s{ isNull :s}
+	:i $Obj_SetInnerRadius$%i(100,00000064)
+:i endfunction
+:i function $MG_Betting_Guy_Skater_Far$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $MG_Betting_Guy_CheckForBet$$params$ = :s{ isNull :s}
+	:i $Obj_SetInnerRadius$%i(10,0000000a)
+	:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $MG_Betting_Guy_GotoNextLocation$$params$ = :s{ isNull :s}
+	:i $Obj_SetOuterRadius$%i(950,000003b6)
+:i endfunction
+:i function $MG_Betting_Guy_CheckForBet$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $MG_Betting_Guy_Skater_Far$$params$ = :s{ isNull :s}
+	:i $Obj_SetOuterRadius$%i(10,0000000a)
+	:i $Playstream$select(40,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4)
+		 :POS(0) $Andrew_Near01$
+	:BREAKTO(5)
+		 :POS(1) $Andrew_Near02$
+	:BREAKTO(5)
+		 :POS(2) $Andrew_Near03$
+	:BREAKTO(5)
+		 :POS(3) $Andrew_Near04$
+	:BREAKTO(5)
+		 :POS(4) $Andrew_NearTony01$ :POS(5) 
+		:i while
+			
+			:i if $SkaterSpeedLessThan$%i(1,00000001)
+				:i $GotoPreserveParams$$MG_Betting_Guy_BetSkater$
+			:i endif
+			:i $wait$%i(1,00000001)$frame$
+		:i loop_to 
+	:i endfunction
+	:i function $MG_Betting_Guy_GotoNextLocation$
+		:i $Die$
+	:i endfunction
+	:i function $MG_Betting_Guy_BetSkater$
+		:i $Obj_ClearFlag$$OBJ_FLAG_BETSTART$
+		:i $Obj_ClearFlag$$OBJ_FLAG_BETEND$
+		:i $Obj_ClearFlag$$OBJ_FLAG_BETWON$
+		:i $Obj_ClearExceptions$
+		:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $MG_Betting_Guy_Skater_Far$$params$ = :s{ isNull :s}
+		:i $Obj_SetOuterRadius$%i(15,0000000f)
+		:i $GetNodeName$
+		:i $wait$%i(1,00000001)$frame$
+		:i $MakeSkaterGoto$$MG_Betting_Sakter_AI$$params$ = :s{$BettingGuyNode$ = %GLOBAL%$nodename$:s}
+		:i $FormatText$$TextName$ = $b_d1$%s(28,"%a dollars says you can't %b")$a$ = %GLOBAL%$BetAmount$$b$ = %GLOBAL%$TrickName$
+		:i $FormatText$$TextName$ = $b_d2$%s(18,"%z %c in %d tries!")$c$ = %GLOBAL%$TOName$$d$ = %GLOBAL%$NumTries$$z$ = %GLOBAL%$b_d1$
+		:i $FormatText$$TextName$ = $bet_description$%s(68,"%y\n----------\n Press Square to Decline\nor\nPress Circle to Accept")$y$ = %GLOBAL%$b_d2$
+		:i $create_speech_box$$text$ = %GLOBAL%$bet_description$$style$ = $speech_box_style$
+		:i while
+			
+			:i if $Obj_FlagSet$$OBJ_FLAG_BETSTART$
+				:i $Obj_ClearFlag$$OBJ_FLAG_BETSTART$
+				:i $GotoPreserveParams$$MG_Betting_Guy_CheckingForTrick$
+			:i endif
+			:i if $Obj_FlagSet$$OBJ_FLAG_BETEND$
+				:i $Obj_ClearFlag$$OBJ_FLAG_BETEND$
+				:i continue
+				
+			:i endif
+			:i $wait$%i(1,00000001)$frame$
+		:i loop_to 
+		:i $GotoPreserveParams$$MG_Betting_Guy_Skater_Far$
+	:i endfunction
+	:i function $MG_Betting_Guy_CheckingForTrick$
+		:i $Playstream$select(40,2, 01 00 01 00) :OFFSET(6):OFFSET(7)
+			 :POS(6) $Andrew_Support01$
+		:BREAKTO(8)
+			 :POS(7) $Andrew_Support02$ :POS(8) 
+			:i $Obj_ClearExceptions$
+			:i $create$$prefix$ = %s(13,"TRGP_MG_Bet01")
+			:i $wait$%i(1,00000001)$frame$
+			:i $Obj_ClearFlag$$OBJ_FLAG_BETSTART$
+			:i while
+				
+				:i $printf$%s(22,"checking area entrance")
+				:i while
+					
+					:i if $Obj_FlagSet$$OBJ_FLAG_BETSTART$
+						:i $Obj_ClearFlag$$OBJ_FLAG_BETSTART$
+						:i continue
+						
+					:i endif
+					:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+						:i continue
+						
+					:i endif
+					:i $wait$%i(1,00000001)$frame$
+				:i loop_to 
+				:i $printf$%s(20,"checking trickstring")
+				:i $Obj_ClearFlag$$OBJ_FLAG_BETEND$
+				:i $SpawnSkaterScript$$SkaterStartBetGap$$params$ = :s{$TrickToDo$ = %GLOBAL%$TrickName$:s}
+				:i while
+					
+					:i $wait$%i(1,00000001)$frame$
+					:i if $Obj_FlagSet$$OBJ_FLAG_BETEND$
+						:i $Obj_ClearFlag$$OBJ_FLAG_BETEND$
+						:i continue
+						
+					:i endif
+				:i loop_to 
+				:i $printf$%s(11,"out of area")
+				:i $SpawnSkaterScript$$SkaterEndBetGap$$params$ = :s{$TrickToDo$ = %GLOBAL%$TrickName$:s}
+				:i $wait$%i(2,00000002)$frames$
+				:i while
+					
+					:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+						:i continue
+						
+					:i endif
+					:i $wait$%i(10,0000000a)$frame$
+				:i loop_to 
+				:i if $Obj_FlagSet$$OBJ_FLAG_BETWON$
+					:i $GotoPreserveParams$$MG_Betting_Guy_PaySkater$
+				:i endif
+				:i select(40,4, 01 00 01 00 01 00 01 00) :OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12)
+					
+					:i  :POS(9) $create_speech_box$$text$ = %s(12,"Not Quite...")$style$ = $speech_box_style$
+					:i 
+				:BREAKTO(13)
+					 :POS(10) $create_speech_box$$text$ = %s(9,"Not even!")$style$ = $speech_box_style$
+					:i 
+				:BREAKTO(13)
+					 :POS(11) $create_speech_box$$text$ = %s(12,"Try again...")$style$ = $speech_box_style$
+					:i 
+				:BREAKTO(13)
+					 :POS(12) $create_speech_box$$text$ = %s(15,"Not Even Close!")$style$ = $speech_box_style$
+					:i  :POS(13) 
+			:i loop_to %GLOBAL%$NumTries$
+			:i $printf$%s(12,"out of tries")
+			:i $Obj_ClearFlag$$OBJ_FLAG_BETSTART$
+			:i $Obj_ClearFlag$$OBJ_FLAG_BETEND$
+			:i $GotoPreserveParams$$MG_Betting_Guy_Skater_Far$
+		:i endfunction
+		:i function $MG_Betting_Guy_IgnoreSkater$
+			:i $Obj_ClearExceptions$
+			:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $MG_Betting_Guy_IgnoreSkaterNear$$params$ = :s{ isNull :s}
+			:i $Obj_SetInnerRadius$%i(10,0000000a)
+			:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $MG_Betting_Guy_GotoNextLocation$$params$ = :s{ isNull :s}
+			:i $Obj_SetOuterRadius$%i(250,000000fa)
+		:i endfunction
+		:i function $MG_Betting_Guy_IgnoreSkaterNear$
+			:i $Obj_ClearExceptions$
+			:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $MG_Betting_Guy_IgnoreSkater$$params$ = :s{ isNull :s}
+			:i $Obj_SetOuterRadius$%i(50,00000032)
+			:i select(40,4, 01 00 01 00 01 00 01 00) :OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17)
+				
+				:i  :POS(14) $create_speech_box$$text$ = %s(17,"Whatever, Dude...")$style$ = $speech_box_style$
+				:i 
+			:BREAKTO(18)
+				 :POS(15) $create_speech_box$$text$ = %s(7,"Wimp...")$style$ = $speech_box_style$
+				:i 
+			:BREAKTO(18)
+				 :POS(16) $create_speech_box$$text$ = %s(19,"Go fuck yourself...")$style$ = $speech_box_style$
+				:i 
+			:BREAKTO(18)
+				 :POS(17) $create_speech_box$$text$ = %s(11,"Fuck off...")$style$ = $speech_box_style$
+				:i  :POS(18) 
+		:i endfunction
+		:i function $MG_Betting_Guy_PaySkater$
+			:i while
+				
+				:i $Playsound$$hud_jumpgap$
+				:i $wait$%i(10,0000000a)$frames$
+			:i loop_to %i(10,0000000a)
+			:i $Playstream$select(40,3, 01 00 01 00 01 00) :OFFSET(19):OFFSET(20):OFFSET(21)
+				 :POS(19) $Andrew_Success03$
+			:BREAKTO(22)
+				 :POS(20) $Andrew_Success06$
+			:BREAKTO(22)
+				 :POS(21) $Andrew_Success07$ :POS(22) 
+				:i $Playsound$$cash$$Vol$ = %i(130,00000082)
+				:i $GoalManager_AddCash$%GLOBAL%$BetAmount$
+				:i $GotoPreserveParams$$MG_Betting_Guy_Skater_Far$
+			:i endfunction
+			:i function $MG_Betting_Sakter_AI$$BettingGuyNode$ = $TRG_MB_BettingGuy01$
+				:i $ClearTrickQueue$
+				:i $ClearEventBuffer$
+				:i $SetRollingFriction$%i(1000,000003e8)
+				:i $DisablePlayerInput$
+				:i $wait$%i(10,0000000a)$frames$
+				:i while
+					
+					:i if $Held$$Circle$
+						:i $SendFlag$$name$ = %GLOBAL%$BettingGuyNode$$OBJ_FLAG_BETSTART$
+						:i continue
+						
+					:i endif
+					:i if $Held$$Square$
+						:i $SendFlag$$name$ = %GLOBAL%$BettingGuyNode$$OBJ_FLAG_BETEND$
+						:i continue
+						
+					:i endif
+					:i $wait$%i(1,00000001)$frame$
+				:i loop_to 
+				:i $wait$%i(10,0000000a)$frames$
+				:i $speech_box_exit$
+				:i $SetRollingFriction$%i(1,00000001)
+				:i $Enableplayerinput$
+				:i $MakeSkaterGoto$$OnGroundAi$
+			:i endfunction
+			:i function $MG_BetGotGap$
+				:i select(40,2, 01 00 01 00) :OFFSET(23):OFFSET(24)
+					
+					:i  :POS(23) $create_speech_box$$text$ = %s(12,"Way to go...")$style$ = $speech_box_style$
+					:i 
+				:BREAKTO(25)
+					 :POS(24) $create_speech_box$$text$ = %s(11,"You did it!")$style$ = $speech_box_style$
+					:i  :POS(25) 
+				:i $SendFlag$$prefix$ = %s(17,"TRG_MG_BettingGuy")$OBJ_FLAG_BETWON$
+			:i endfunction
+			:i function $SkaterStartBetGap$
+				:i $printf$%GLOBAL%$TrickToDo$
+				:i $StartGap$$GapID$ = $BetGap$$flags$ = :a{$cancel_ground$:a}$TrickText$ = %GLOBAL%$TrickToDo$$trickscript$ = $MG_BetGotGap$
+			:i endfunction
+			:i function $SkaterEndBetGap$
+				:i $EndGap$$GapID$ = $BetGap$$text$ = %s(7,"Bet Gap")$score$ = %i(50,00000032)
+			:i endfunction
+			:i :end
+			

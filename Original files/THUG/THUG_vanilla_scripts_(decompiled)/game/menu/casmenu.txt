@@ -1,0 +1,170 @@
+
+:i function $cas_add_item$
+	:i $printf$%s(20,"Adding CAS item here")
+	:i if $GotParam$$play_deck_sound$
+		:i $PlaySound$$DE_MenuSelect$$vol$ = %i(100,00000064)
+	:i endif
+	:i $change_current_part_highlight$:s{$id$ = %GLOBAL%$id$$unfocus_script$ = %GLOBAL%$unfocus_script$$unfocus_params$ = %GLOBAL%$unfocus_params$:s}
+	:i $cas_handle_disqualifications$ isNull 
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_head$
+		:i $clear_face_texture_from_profile$
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_head$
+		:i $clear_face_texture_from_profile$
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_cas$
+		:i $player$ = %i(0,00000000)
+	:i else
+		:i $player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$part$:a{%i(0,00000000):a}) $cad_graphic$
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_graphic$$desc_id$ = $None$:s}
+	:i else
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$part$:a{%i(0,00000000):a}) $deck_graphic$
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $cad_graphic$$desc_id$ = $None$:s}
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_layer1$$desc_id$ = $None$:s}
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_layer2$$desc_id$ = $None$:s}
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_layer3$$desc_id$ = $None$:s}
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_layer4$$desc_id$ = $None$:s}
+			:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_layer5$$desc_id$ = $None$:s}
+		:i endif
+	:i endif
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{ isNull :s}
+	:i if $LevelIs$$Load_cas$
+		:i if NOT  ($in_deck_design$ = %i(1,00000001)) 
+			:i $no_board$ = $no_board$
+		:i endif
+	:i endif
+	:i $RefreshSkaterModel$$skater$ = %GLOBAL%$player$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$no_board$ = %GLOBAL%$no_board$
+	:i if $IsTrue$$cas_debug$
+		:i $DumpHeaps$
+	:i endif
+:i endfunction
+:i function $cas_remove_item$
+	:i $printf$%s(22,"Removing CAS item here")
+	:i $PrintStruct$ isNull 
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_Skateshop$
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $ClearPart$$targetParams$ = :s{ isNull :s}
+		:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i else
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $ClearPart$$targetParams$ = :s{ isNull :s}
+		:i $RefreshSkaterModel$$skater$ = %GLOBAL%$currentSkaterProfileIndex$$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+:i endfunction
+:i function $launch_bodyshape_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_out$$callback$ = $create_bodyshape_menu$$callback_params$ = :s{ isNull :s}
+:i endfunction
+:i function $create_bodyshape_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_menu$$menu_id$ = $cas_submenu$$vmenu_id$ = $cas_subvmenu$$menu_title$ = %s(6,"BUILDS")$type$ = $vscrollingmenu$$dims$ = %vec2(320.000000,200.000000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $cas_submenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_cas_menu$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $add_bodyshapes_to_menu$ isNull 
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$
+:i endfunction
+:i function $add_bodyshapes_to_menu$
+	:i $GetArraySize$$master_bodyshape_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $make_text_sub_menu_item$:s{
+			:i $text$ =  ( ($master_bodyshape_list$:a{%GLOBAL%$index$:a}) ->$text$) 
+			:i $pad_choose_script$ = $cas_apply_bodyshape$
+			:i $pad_choose_params$ = :s{$field$ = $body_shape$$value$ =  ( ($master_bodyshape_list$:a{%GLOBAL%$index$:a}) ->$scaling_table$) :s}
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i $master_bodyshape_list$ = :a{
+	:i :s{$text$ = %s(6,"Normal")$scaling_table$ = $normal_scale_info$:s}
+	:i :s{$text$ = %s(5,"Large")$scaling_table$ = $fat_scale_info$:s}
+	:i :s{$text$ = %s(8,"Athletic")$scaling_table$ = $athletic_scale_info$:s}
+	:i :s{$text$ = %s(3,"Kid")$scaling_table$ = $kid_scale_info$:s}
+	:i :a}
+:i function $cas_apply_bodyshape$
+	:i $printf$%s(24,"Applying body shape here")
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_Skateshop$
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetChecksum$$targetParams$ = :s{ isNull :s}
+		:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i else
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$target$ = $SetPart$$targetParams$ = :s{ isNull :s}
+		:i $RefreshSkaterModel$$skater$ = %GLOBAL%$currentSkaterProfileIndex$$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+:i endfunction
+:i function $cas_apply_sex$$apply_male$ = %i(1,00000001)
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$is_male$ = %i(1,00000001)) 
+		:i %GLOBAL%$success$ = %i(1,00000001)
+	:i else
+		:i %GLOBAL%$success$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$success$ = %GLOBAL%$apply_male$) 
+		:i $printf$%s(8,"Same sex")
+	:i else
+		:i if  (%GLOBAL%$apply_male$ = %i(1,00000001)) 
+			:i $SetPlayerAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$appearance_structure$ = $appearance_custom_skater_male$
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+		:i else
+			:i $SetPlayerAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$appearance_structure$ = $appearance_custom_skater_female$
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+		:i endif
+		:i $RefreshSkaterModel$$skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+:i endfunction
+:i function $refresh_skater_model$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_Skateshop$
+		:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+	:i else
+		:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+:i endfunction
+:i function $refresh_skater_model_for_cheats$
+	:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+	:i if $InSplitScreenGame$
+		:i %GLOBAL%$refresh_both_skaters$ = %i(1,00000001)
+		:i if $LevelIs$$Load_Skateshop$
+			:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$refresh_both_skaters$ = %i(1,00000001)) 
+		:i $RefreshSkaterScale$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterVisibility$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterScale$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+		:i $RefreshSkaterVisibility$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+	:i else
+		:i $GetCurrentSkaterProfileIndex$
+		:i if $LevelIs$$Load_Skateshop$
+			:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+		:i else
+			:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i endif
+		:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+		:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i endif
+:i endfunction
+:i function $load_pro_skater$
+	:i $SelectCurrentSkater$$name$ = %GLOBAL%$name$
+	:i if $LevelIs$$Load_cas$
+		:i $skater$.$SwitchOffBoard$
+		:i $no_board$ = $no_board$
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = %GLOBAL%$no_board$
+	:i if NOT $ObjectExists$$id$ = $select_skater_top_anchor$
+		:i $maybe_revert_theme$
+	:i endif
+:i endfunction
+:i :end

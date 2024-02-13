@@ -1,0 +1,139 @@
+
+:i function $playmovie_script_temp$
+:i endfunction
+:i function $PlayAllMovies$
+	:i $playmovie_script$%s(12,"movies\THPS3")
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_PRO_BAILS1$
+		:i $playmovie_script$%s(14,"movies\bails01")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_HAWK$
+		:i $playmovie_script$%s(11,"movies\tony")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_CABALLERO$
+		:i $playmovie_script$%s(10,"movies\cab")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_CAMPBELL$
+		:i $playmovie_script$%s(13,"movies\kareem")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_GLIFBERG$
+		:i $playmovie_script$%s(11,"movies\rune")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_KOSTON$
+		:i $playmovie_script$%s(13,"movies\koston")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_LASEK$
+		:i $playmovie_script$%s(12,"movies\bucky")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_MARGERA$
+		:i $playmovie_script$%s(10,"movies\bam")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_MULLEN$
+		:i $playmovie_script$%s(13,"movies\mullen")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_MUSKA$
+		:i $playmovie_script$%s(12,"movies\muska")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_REYNOLDS$
+		:i $playmovie_script$%s(13,"movies\andrew")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_ROWLEY$
+		:i $playmovie_script$%s(13,"movies\rowley")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_STEAMER$
+		:i $playmovie_script$%s(13,"movies\elissa")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_THOMAS$
+		:i $playmovie_script$%s(13,"movies\thomas")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_CAS$
+		:i $playmovie_script$%s(14,"movies\bails02")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_JEDIKNIGHT$
+		:i $playmovie_script$%s(14,"movies\NSbails")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_WOLVERINE$
+		:i $playmovie_script$%s(14,"movies\NSmakes")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_DICK$
+		:i $playmovie_script$%s(13,"movies\proret")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_CARRERA$
+		:i $playmovie_script$%s(12,"movies\kflip")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_BUM$
+		:i $playmovie_script$%s(14,"movies\friends")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_SLATER$
+		:i $playmovie_script$%s(13,"movies\slater")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_DEMONESS$
+		:i $playmovie_script$%s(12,"movies\nsret")
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_Eyeball$
+		:i $playmovie_script$%s(10,"movies\day")
+	:i endif
+:i endfunction
+:i function $playmovie_script$
+	:i %GLOBAL%$anims_unloaded$ = %i(0,00000000)
+	:i %GLOBAL%$pre_unloaded$ = %i(0,00000000)
+	:i if $LevelIs$$load_skateshop$
+		:i $PauseObjects$
+		:i %GLOBAL%$anims_unloaded$ = %i(1,00000001)
+		:i $printf$%s(20,"Unloading anims here")
+		:i $do_unload_permanent$
+		:i $do_unload_unloadable$
+		:i if $InPreFile$%s(15,"skaterparts.pre")
+			:i $UnloadPreFile$%s(15,"skaterparts.pre")
+			:i %GLOBAL%$pre_unloaded$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $mempushcontext$%i(0,00000000)
+	:i $playmovie$ isNull 
+	:i if $isXbox$
+		:i %GLOBAL%$time$ = %f(6.000000)
+	:i else
+		:i %GLOBAL%$time$ = %f(4.500000)
+	:i endif
+	:i if $LevelIs$$load_skateshop$
+		:i $DisplayLoadingScreen$%s(16,"loadscrn_generic")%GLOBAL%$time$
+	:i endif
+	:i $mempopcontext$
+	:i if  (%GLOBAL%$anims_unloaded$ = %i(1,00000001)) 
+		:i $printf$%s(20,"Reloading anims here")
+		:i $do_load_unloadable$
+		:i $UnpauseObjects$
+	:i endif
+	:i if  (%GLOBAL%$pre_unloaded$ = %i(1,00000001)) 
+		:i if NOT $LevelIs$$load_skateshop$
+			:i $script_assert$%s(71,"Can only unload skaterparts/play movies from skateshop (mainmenu) level")
+		:i endif
+		:i $LoadPreFile$%s(15,"skaterparts.pre")
+	:i endif
+	:i if $LevelIs$$load_skateshop$
+		:i $HideLoadingScreen$
+	:i endif
+:i endfunction
+:i function $cleanup_play_movie$
+	:i $goalmanager_levelunload$
+	:i $cleanup$$preserve_skaters$
+	:i $KillMessages$
+	:i $DisablePause$
+	:i $mempushcontext$%i(0,00000000)
+	:i $playmovie$ isNull 
+	:i $mempopcontext$
+:i endfunction
+:i function $ingame_play_movie$
+	:i $cleanup_play_movie$ isNull 
+	:i $mempushcontext$%i(0,00000000)
+	:i $DisplayLoadingScreen$%s(16,"loadscrn_generic")
+	:i $mempopcontext$
+	:i if NOT $GotParam$$level$
+		:i $GetCurrentLevel$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $change_level$$level$ = %GLOBAL%$level$
+	:i $restore_start_key_binding$
+:i endfunction
+:i :end

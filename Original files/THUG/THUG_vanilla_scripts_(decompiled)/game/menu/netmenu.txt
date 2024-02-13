@@ -1,0 +1,46 @@
+function $set_join_mode$
+	:i $StopServerList$
+	:i $SetJoinMode$ isNull 
+:i endfunction
+:i function $chosen_leave_server$
+	:i $ClearOmnigons$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $printf$%s(62,"****************** DEACTIVATING GOALS!!!! ********************")
+	:i $GoalManager_DeactivateAllGoals$$force_all$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_RemoveAllGoals$
+	:i $ParkEditorCommand$$command$ = $DestroyGeneratedPark$$instant$
+	:i $LeaveServer$
+	:i $SetNetworkMode$
+:i endfunction
+:i function $server_setup_complete$
+	:i $FreeServerList$
+	:i $SetGameType$$NetLobby$
+	:i $SetServerMode$
+	:i $Request_Level$$level$ = $use_preferences$
+	:i $SetGameState$$On$
+:i endfunction
+:i function $stop_server_list$
+	:i $StopServerList$
+:i endfunction
+:i function $start_server_list$
+	:i $StartServerList$
+:i endfunction
+:i function $set_ui_from_preferences$
+	:i $printf$%s(13,"show detected")
+	:i $SetUIFromPreferences$ isNull 
+:i endfunction
+:i function $set_preferences_from_ui$
+	:i $printf$%s(25,"contents changed detected")
+	:i $SetPreferencesFromUI$ isNull 
+:i endfunction
+:i function $join_with_password$
+	:i $printf$%s(29,"Attempting join with password")
+	:i $JoinWithPassword$ isNull 
+:i endfunction
+:i function $choose_level$
+	:i $printf$ isNull 
+	:i $set_preferences_from_ui$$prefs$ = $network$$field$ = %s(5,"level")$level_checksum$ = %GLOBAL%$level$ isNull 
+	:i $go_back$$id$ = $front_net_level_main_menu$
+:i endfunction
+:i :end

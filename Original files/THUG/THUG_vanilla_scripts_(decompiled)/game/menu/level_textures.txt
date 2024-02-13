@@ -1,0 +1,106 @@
+function $display_current_level_texture_values$
+	:i if $ScreenElementExists$$id$ = $texture_list$
+		:i $DestroyScreenElement$$id$ = $texture_list$
+	:i endif
+	:i $initials$ = :a{%s(2,"cp")%s(2,"dt")%s(2,"hj")%s(2,"as")%s(3,"jow")%s(2,"tw")%s(2,"cw")%s(3,"mls")%s(3,"apm")%s(2,"dm")%s(3,"nsn")%s(2,"cs")%s(2,"ts")%s(2,"tb")%s(2,"tz")%s(2,"jg"):a}
+	:i if $levelIs$$load_NJ$
+		:i if $GotParam$$NJ$
+			:i $level$ = %GLOBAL%$NJ$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_NY$
+		:i if $GotParam$$NY$
+			:i $level$ = %GLOBAL%$NY$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_FL$
+		:i if $GotParam$$FL$
+			:i $level$ = %GLOBAL%$FL$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_SD$
+		:i if $GotParam$$SD$
+			:i $level$ = %GLOBAL%$SD$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_HI$
+		:i if $GotParam$$HI$
+			:i $level$ = %GLOBAL%$HI$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_VC$
+		:i if $GotParam$$VC$
+			:i $level$ = %GLOBAL%$VC$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_RU$
+		:i if $GotParam$$RU$
+			:i $level$ = %GLOBAL%$RU$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_AU$
+		:i if $GotParam$$AU$
+			:i $level$ = %GLOBAL%$AU$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $levelIs$$load_default$
+		:i if $GotParam$$Def_Lev$
+			:i $level$ = %GLOBAL%$Def_Lev$
+		:i else
+			:i return
+			
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$level$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $GetArraySize$%GLOBAL%$initials$
+	:i $index$ = %i(0,00000000)
+	:i $shift$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$checksumname$ = $checksum$%s(2,"%i")$i$ =  (%GLOBAL%$initials$:a{%GLOBAL%$index$:a}) 
+		:i if  (%GLOBAL%$level$->%GLOBAL%$checksum$ > %i(0,00000000)) 
+			:i $FormatText$$textname$ = $text$%s(10,"%i = %t KB")$i$ =  (%GLOBAL%$initials$:a{%GLOBAL%$index$:a}) $t$ =  ( (%GLOBAL%$level$->%GLOBAL%$checksum$)  / %i(1024,00000400)) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $tex_count_anchor$
+				:i $pos$ =  ( (%vec2(0.000000,15.000000) * %GLOBAL%$shift$)  + %vec2(0.000000,30.000000)) 
+				:i $text$ = %GLOBAL%$text$
+				:i $font$ = $dialog$
+				:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+				:i $just$ = :a{$left$$center$:a}
+				:i $scale$ = %f(0.800000)
+			:i :s}
+			:i $shift$ =  (%GLOBAL%$shift$ + %i(1,00000001)) 
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i :end

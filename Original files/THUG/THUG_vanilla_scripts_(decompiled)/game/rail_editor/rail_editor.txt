@@ -1,0 +1,35 @@
+
+:i function $CreateRailEditor$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $camera$:s}
+			:i :s{$component$ = $input$$controller$ = %i(0,00000000):s}
+			:i :s{$component$ = $editorcamera$$min_height$ = %i(20,00000014)$min_radius$ = %i(10,0000000a)$max_radius$ = %i(1000,000003e8)$SimpleCollision$:s}
+			:i :s{$component$ = $raileditor$:s}
+			:i :a}
+		:i $Params$ = :s{$Name$ = $raileditor$$permanent$:s}
+	:i :s}
+	:i $raileditor$.$Hide$
+	:i $raileditor$.$Suspend$
+:i endfunction
+:i function $SwitchOnRailEditor$
+	:i $raileditor$.$SetEditingMode$$Mode$ = $FreeRoaming$
+	:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $raileditor$.$Unsuspend$
+	:i $raileditor$.$Unhide$
+	:i $GetParkEditorCursorPos$
+	:i $raileditor$.$EditorCam_Initialise$$position$ = %GLOBAL%$pos$$cursor_height$ = %i(20,00000014)
+	:i $SetActiveCamera$$id$ = $raileditor$
+:i endfunction
+:i function $SwitchOffRailEditor$
+	:i if $raileditor$.$GetEditedRailInfo$$CurrentRail$
+		:i if  (%GLOBAL%$num_points$ < %i(2,00000002)) 
+			:i $raileditor$.$DeleteRail$$rail_id$ = %GLOBAL%$rail_id$
+		:i endif
+	:i endif
+	:i $raileditor$.$Hide$
+	:i $raileditor$.$Suspend$
+	:i $SetActiveCamera$$id$ = $parked_cam$
+:i endfunction
+:i :end

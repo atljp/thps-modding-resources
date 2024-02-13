@@ -1,0 +1,116 @@
+
+:i $Minigame_TimedCombo_GenericParams$ = :s{
+	:i $init$ = $minigame_TimedCombo_init$
+	:i $activate$ = $minigame_TimedCombo_activate$
+	:i $active$ = $minigame_TimedCombo_active$
+	:i $deactivate$ = $minigame_TimedCombo_deactivate$
+	:i $minigame$
+	:i $no_restart$
+	:i $in_combo$ = %i(0,00000000)
+:i :s}
+:i function $minigame_TimedCombo_init$
+	:i $create$$name$ = %GLOBAL%$trigger_obj_id$
+:i endfunction
+:i function $minigame_TimedCombo_activate$
+	:i if $ObjectExists$$id$ = $minigame_combo_timer$
+		:i $DestroyScreenElement$$id$ = $minigame_combo_timer$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $minigame_message$
+		:i $DestroyScreenElement$$id$ = $minigame_message$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $MiniGame2$
+		:i $DestroyScreenElement$$id$ = $MiniGame2$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $MiniGame3$
+		:i $DestroyScreenElement$$id$ = $MiniGame3$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $minigame_combo_timer$
+		:i $text$ = %s(1," ")
+		:i $font$ = $small$
+		:i $pos$ = %vec2(20.000000,190.000000)
+		:i $scale$ = %f(0.700000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $dims$ = %vec2(200.000000,100.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+	:i :s}
+:i endfunction
+:i function $minigame_TimedCombo_active$
+	:i if NOT $ScreenElementExists$$id$ = $minigame_combo_timer$
+		:i $printf$%s(35,"no minigame_combo_timer!  Tell brad")
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$in_combo$ = %i(1,00000001)) 
+		:i $GoalManager_UpdateComboTimer$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if NOT $GotParam$$minigame_text$
+			:i %GLOBAL%$minigame_text$ = %s(11,"River Combo")
+		:i endif
+		:i if $GoalManager_CheckMinigameRecord$$name$ = %GLOBAL%$goal_id$%GLOBAL%$current_time$
+			:i $FormatText$$TextName$ = $minigame_time$%s(30,"New Record!\n%s.%f\nsecond\n%t")$s$ = %GLOBAL%$current_time_seconds$$f$ = %GLOBAL%$current_time_fraction$$t$ = %GLOBAL%$minigame_text$
+			:i $SetScreenElementProps$:s{
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(32,00000020)%i(128,00000080):a}
+				:i $id$ = $minigame_combo_timer$
+				:i $text$ = %GLOBAL%$minigame_time$
+				:i $scale$ = %f(0.700000)
+			:i :s}
+		:i else
+			:i $FormatText$$TextName$ = $minigame_time$%s(17,"%s.%f\nsecond\n%t")$s$ = %GLOBAL%$current_time_seconds$$f$ = %GLOBAL%$current_time_fraction$$t$ = %GLOBAL%$minigame_text$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $minigame_combo_timer$
+				:i $text$ = %GLOBAL%$minigame_time$
+				:i $rgba$ = :a{%i(115,00000073)%i(26,0000001a)%i(26,0000001a)%i(95,0000005f):a}
+				:i $scale$ = %f(0.700000)
+			:i :s}
+		:i endif
+	:i else
+		:i if $GotParam$$cancelSkitch$
+			:i if $Skater$.$Skitching$
+				:i return
+				
+			:i endif
+			:i if $Skater$.$AnimEquals$$SkitchInit$
+				:i return
+				
+			:i endif
+		:i endif
+		:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$in_combo$ = %i(1,00000001):s}
+			:i $GoalManager_SetStartTime$$name$ = %GLOBAL%$goal_id$
+			:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$minigame_TimedCombo_set_exceptions$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $minigame_TimedCombo_deactivate$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$in_combo$ = %i(0,00000000):s}
+	:i if $ObjectExists$$id$ = $minigame_combo_timer$
+		:i $RunScriptOnScreenElement$$id$ = $minigame_combo_timer$$panel_message_wait_and_die$$params$ = :s{$time$ = %i(2000,000007d0):s}
+	:i endif
+:i endfunction
+:i function $minigame_TimedCombo_set_exceptions$
+	:i $Obj_SetException$$ex$ = $SkaterLanded$$scr$ = $minigame_TimedCombo_ResetTimer$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Obj_SetException$$ex$ = $SkaterBailed$$scr$ = $minigame_TimedCombo_ResetTimer$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $minigame_TimedCombo_ResetTimer$
+	:i $Obj_ClearExceptions$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$in_combo$ = %i(0,00000000):s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $minigame_combo_timer$
+		:i $text$ = %s(1," ")
+	:i :s}
+:i endfunction
+:i function $minigame_TimedCombo_blinkTime$
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.110000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.210000)$alpha$ = %i(1,00000001)
+	:i $wait$%i(100,00000064)
+	:i $Die$
+:i endfunction
+:i :end

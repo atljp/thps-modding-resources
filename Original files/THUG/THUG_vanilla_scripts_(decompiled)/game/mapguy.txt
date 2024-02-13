@@ -1,0 +1,75 @@
+
+:i $MapGuy_GenericParams$ = :s{
+	:i $trigger_obj_id$ = $TRG_MapGuy$
+:i :s}
+:i function $AddMapGuy$
+	:i $MapGuy_InitTrigger$$MapGuy_GenericParams$ isNull 
+:i endfunction
+:i function $MapGuy_InitTrigger$
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$trigger_obj_id$
+		:i $create$$name$ = %GLOBAL%$trigger_obj_id$
+	:i endif
+	:i if $GotParam$$trigger_wait_script$
+		:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$%GLOBAL%$trigger_wait_script$
+	:i else
+		:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$GenericProWaiting$
+	:i endif
+	:i $attach_arrow_to_object$$object_id$ = %GLOBAL%$trigger_obj_id$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$mapguy_set_exceptions$$params$ =  isNull 
+:i endfunction
+:i function $mapguy_set_exceptions$$trigger_radius$ = %i(8,00000008)
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetInnerRadius$%GLOBAL%$trigger_radius$
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $mapguy_got_trigger$$params$ =  isNull 
+:i endfunction
+:i function $mapguy_got_trigger$
+	:i if $SkaterSpeedLessThan$%i(20,00000014)
+		:i if $SkaterIsBraking$
+			:i $PauseSkaters$
+			:i $Obj_ClearExceptions$
+			:i $Obj_SetOuterRadius$%i(20,00000014)
+			:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $mapguy_set_exceptions$$params$ =  isNull 
+			:i if $ObjectExists$$id$ = $current_menu_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+			:i $create_level_select_menu$
+			:i $SetScreenElementProps$:s{$id$ = $level_select_menu$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$mapguy_exit$$params$ =  isNull :s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+			:i $SetScreenElementProps$:s{$id$ = $root_window$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_start$$mapguy_exit$$params$ =  isNull :s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $mapguy_exit$
+	:i $KillSkaterCamAnim$$all$
+	:i $SetScreenElementProps$:s{$id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$handle_start_pressed$:s}
+			:i :a}
+	:i :s}
+	:i $UnPauseSkaters$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mapguy_start$
+	:i $SetScreenElementProps$:s{$id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$handle_start_pressed$:s}
+			:i :a}
+	:i :s}
+	:i $UnPauseSkaters$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_SetOuterRadius$%i(20,00000014)
+	:i %GLOBAL%$trigger_obj_id$.$Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $mapguy_set_exceptions$$params$ =  isNull 
+	:i $exit_pause_menu$
+:i endfunction
+:i :end

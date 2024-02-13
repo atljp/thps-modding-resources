@@ -1,0 +1,325 @@
+$LevelTestScripts$ = 
+:i :a{
+	:i :s{$TestScript$ = $Sch_TestLevel$$Name$ = %s(6,"School"):s}
+	:i :s{$TestScript$ = $Sf2_TestLevel$$Name$ = %s(15,"San Francisco 2"):s}
+	:i :s{$TestScript$ = $Alc_TestLevel$$Name$ = %s(8,"Alcatraz"):s}
+	:i :s{$TestScript$ = $Cnv_TestLevel$$Name$ = %s(8,"Carnival"):s}
+	:i :s{$TestScript$ = $Jnk_TestLevel$$Name$ = %s(8,"Junkyard"):s}
+	:i :s{$TestScript$ = $Kona_TestLevel$$Name$ = %s(4,"Kona"):s}
+	:i :s{$TestScript$ = $Lon_TestLevel$$Name$ = %s(6,"London"):s}
+	:i :s{$TestScript$ = $Zoo_TestLevel$$Name$ = %s(3,"Zoo"):s}
+	:i :s{$TestScript$ = $Hoffman_TestLevel$$Name$ = %s(7,"Hoffman"):s}
+	:i :a}
+:i function $Sch_TestLevel$
+	:i $changelevel$$level$ = $load_sch$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Sf2_TestLevel$
+	:i $changelevel$$level$ = $load_sf2$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Alc_TestLevel$
+	:i $changelevel$$level$ = $load_alc$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Cnv_TestLevel$
+	:i $changelevel$$level$ = $load_cnv$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Jnk_TestLevel$
+	:i $changelevel$$level$ = $load_jnk$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Lon_TestLevel$
+	:i $changelevel$$level$ = $load_lon$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Zoo_TestLevel$
+	:i $changelevel$$level$ = $load_zoo$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Kona_TestLevel$
+	:i $changelevel$$level$ = $load_kon$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $Hoffman_TestLevel$
+	:i $changelevel$$level$ = $load_hof$
+	:i $wait$%i(5,00000005)$gameframes$
+	:i if $GotParam$$TestCommonGoals$
+		:i $TestCommonGoals$
+	:i endif
+:i endfunction
+:i function $CleanupAnyMenus$
+	:i $wait$%i(10,0000000a)$seconds$
+	:i if $ObjectExists$$id$ = $stats_menu$
+		:i $goal_stats_menu_exit$
+	:i endif
+	:i if $ObjectExists$$id$ = $pro_challenge_anchor$
+		:i $goal_pro_challenges_unlocked_reject$
+	:i endif
+	:i if $ObjectExists$$id$ = $dialog_box_anchor$
+		:i $goal_new_level_reject$
+	:i endif
+:i endfunction
+:i function $TestCommonGoals$
+	:i $GoalManager_UnlockAllGoals$
+	:i $TestScoreGoal$$Type$ = %s(9,"HighScore")
+	:i $CleanupAnyMenus$
+	:i $TestScoreGoal$$Type$ = %s(8,"ProScore")
+	:i $CleanupAnyMenus$
+	:i $TestScoreGoal$$Type$ = %s(9,"SickScore")
+	:i $CleanupAnyMenus$
+	:i $TestSkateLettersGoal$
+	:i $CleanupAnyMenus$
+	:i $TestRaceGoal$
+	:i $CleanupAnyMenus$
+	:i $TestCollectGoal$
+	:i $CleanupAnyMenus$
+	:i $TestComboGoal$$Type$ = %s(16,"AmateurComboLine")
+	:i $CleanupAnyMenus$
+	:i $TestComboGoal$$Type$ = %s(8,"ProCombo")
+	:i $CleanupAnyMenus$
+	:i $GoalManager_UnbeatAllGoals$
+	:i $wait$%i(1,00000001)$second$
+:i endfunction
+:i function $TestLevels$
+	:i $DestroyAndRecreateMessageContainer$
+	:i while
+		
+		:i $GetNextArrayElement$$LevelTestScripts$
+		:i if $GotParam$$Element$
+			:i $AddParams$%GLOBAL%$Element$
+			:i %GLOBAL%$TestScript$
+		:i else
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i while
+		
+		:i $GetNextArrayElement$$LevelTestScripts$
+		:i if $GotParam$$Element$
+			:i $AddParams$%GLOBAL%$Element$
+			:i $FormatText$$TextName$ = $MessageText$%s(20,"About to test %s ...")$s$ = %GLOBAL%$Name$
+			:i $DisplayTestMessage$$Text$ = %GLOBAL%$MessageText$
+			:i %GLOBAL%$TestScript$$TestCommonGoals$
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i while
+		
+		:i $GetRandomArrayElement$$LevelTestScripts$
+		:i if $GotParam$$Element$
+			:i $AddParams$%GLOBAL%$Element$
+			:i %GLOBAL%$TestScript$
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i $KenStylePos$ = %vec2(320.000000,405.000000)
+:i function $KenStyle$
+	:i $SetProps$$Scale$ = %i(2,00000002)$Pos$ = $KenStylePos$$Just$ = :a{$CENTER$$CENTER$:a}$rgba$ = :a{%i(0,00000000);%i(128,00000080);%i(0,00000000);%i(128,00000080):a}
+	:i $DoMorph$$Time$ = %i(0,00000000)$Pos$ = $KenStylePos$$Scale$ = %i(0,00000000)
+	:i $DoMorph$$Time$ = %f(0.200000)$Pos$ = $KenStylePos$$Scale$ = %f(1.200000)
+	:i $wait$%i(2,00000002)$seconds$
+	:i $FireEvent$$Type$ = $KenStyleMessageDied$
+	:i $Die$
+:i endfunction
+:i function $DestroyAndRecreateMessageContainer$
+	:i if $ObjectExists$$id$ = $TestLevelMessagesContainer$
+		:i $DestroyScreenElement$$id$ = $TestLevelMessagesContainer$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $TestLevelMessagesContainer$
+		:i $Parent$ = $root_window$
+		:i $Type$ = $ContainerElement$
+		:i $Pos$ = %vec2(320.000000,240.000000)
+		:i $Dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+:i endfunction
+:i function $DisplayTestMessage$
+	:i $SetScreenElementLock$$id$ = $TestLevelMessagesContainer$$Off$
+	:i $CreateScreenElement$:s{
+		:i $Parent$ = $TestLevelMessagesContainer$
+		:i $Type$ = $TextElement$
+		:i $Font$ = $Small$
+		:i $Text$ = %GLOBAL%$Text$
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$KenStyle$
+	:i $WaitForEvent$$Type$ = $KenStyleMessageDied$
+:i endfunction
+:i function $WaitForCameraAnimToFinish$
+	:i while
+		
+		:i if $SkaterCamAnimFinished$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $TestSkateLettersGoal$
+	:i $DisplayTestMessage$$Text$ = %s(30,"About to test letters goal ...")
+	:i $GoalManager_CreateGoalName$$Goal_Type$ = %s(5,"Skate")
+	:i if $GoalManager_ActivateGoal$$Name$ = %GLOBAL%$Goal_Id$$DontAssert$
+		:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$Goal_Id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$s_obj_id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$k_obj_id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$a_obj_id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$t_obj_id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$e_obj_id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+	:i else
+		:i $wait$%i(1,00000001)$seconds$
+		:i $DisplayTestMessage$$Text$ = %s(33,"No SKATE letters goal to test ...")
+	:i endif
+:i endfunction
+:i function $TestRaceGoal$
+	:i $DisplayTestMessage$$Text$ = %s(27,"About to test race goal ...")
+	:i $GoalManager_CreateGoalName$$Goal_Type$ = %s(4,"Race")
+	:i if $GoalManager_ActivateGoal$$Name$ = %GLOBAL%$Goal_Id$$DontAssert$
+		:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$Goal_Id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i while
+			
+			:i $GetNextArrayElement$%GLOBAL%$race_waypoints$
+			:i if NOT $GotParam$$Element$
+				:i continue
+				
+			:i endif
+			:i $AddParams$%GLOBAL%$Element$
+			:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$id$
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+	:i else
+		:i $wait$%i(1,00000001)$seconds$
+		:i $DisplayTestMessage$$Text$ = %s(24,"No Race goal to test ...")
+	:i endif
+:i endfunction
+:i function $TestCollectGoal$
+	:i $DisplayTestMessage$$Text$ = %s(30,"About to test collect goal ...")
+	:i $GoalManager_CreateGoalName$$Goal_Type$ = %s(7,"Collect")
+	:i if $GoalManager_ActivateGoal$$Name$ = %GLOBAL%$Goal_Id$$DontAssert$
+		:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$Goal_Id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $PermuteArray$$Array$ = %GLOBAL%$goal_collect_objects$$NewArrayName$ = $PermutedArray$
+		:i while
+			
+			:i $GetNextArrayElement$%GLOBAL%$PermutedArray$
+			:i if NOT $GotParam$$Element$
+				:i continue
+				
+			:i endif
+			:i $AddParams$%GLOBAL%$Element$
+			:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$id$
+			:i $wait$%i(2,00000002)$seconds$
+			:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i loop_to 
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+	:i else
+		:i $wait$%i(1,00000001)$seconds$
+		:i $DisplayTestMessage$$Text$ = %s(27,"No Collect goal to test ...")
+	:i endif
+:i endfunction
+:i function $TestComboGoal$
+	:i $FormatText$$TextName$ = $MessageText$%s(20,"About to test %s ...")$s$ = %GLOBAL%$Type$
+	:i $DisplayTestMessage$$Text$ = %GLOBAL%$MessageText$
+	:i $GoalManager_CreateGoalName$$Goal_Type$ = %GLOBAL%$Type$
+	:i if $GoalManager_ActivateGoal$$Name$ = %GLOBAL%$Goal_Id$$DontAssert$
+		:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$Goal_Id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$c_obj_id$$MoveUpABit$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$o_obj_id$$MoveUpABit$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$m_obj_id$$MoveUpABit$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$b_obj_id$$MoveUpABit$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $JumpSkaterToNode$$NodeName$ = %GLOBAL%$o2_obj_id$$MoveUpABit$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+	:i else
+		:i $wait$%i(1,00000001)$seconds$
+		:i $FormatText$$TextName$ = $MessageText$%s(17,"No %s to test ...")$s$ = %GLOBAL%$Type$
+		:i $DisplayTestMessage$$Text$ = %GLOBAL%$MessageText$
+	:i endif
+:i endfunction
+:i function $TestScoreGoal$
+	:i $FormatText$$TextName$ = $MessageText$%s(20,"About to test %s ...")$s$ = %GLOBAL%$Type$
+	:i $DisplayTestMessage$$Text$ = %GLOBAL%$MessageText$
+	:i $GoalManager_CreateGoalName$$Goal_Type$ = %GLOBAL%$Type$
+	:i if $GoalManager_ActivateGoal$$Name$ = %GLOBAL%$Goal_Id$$DontAssert$
+		:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$Goal_Id$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+		:i $MakeSkaterGoto$$MakeSkaterGetScore$$Params$ = :s{$Score$ = %GLOBAL%$Score$:s}
+		:i $wait$%i(2,00000002)$seconds$
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$stop$
+	:i else
+		:i $wait$%i(1,00000001)$seconds$
+		:i $FormatText$$TextName$ = $MessageText$%s(17,"No %s to test ...")$s$ = %GLOBAL%$Type$
+		:i $DisplayTestMessage$$Text$ = %GLOBAL%$MessageText$
+	:i endif
+:i endfunction
+:i function $MakeSkaterGetScore$
+	:i $SetTrickName$%sc(11,"Cheat Score")
+	:i $SetTrickScore$%GLOBAL%$Score$
+	:i $Display$
+	:i $SetTrickName$%sc(11,"Cheat Score")
+	:i $SetTrickScore$%GLOBAL%$Score$
+	:i $Display$
+	:i $ClearPanel_Landed$
+	:i $goto$$OnGroundAI$
+:i endfunction
+:i :end

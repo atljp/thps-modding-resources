@@ -1,0 +1,80 @@
+
+:i $park_side_to_move$ = %i(0,00000000)
+:i $ThemeIndicesA$ = :a{%i(1,00000001);%i(2,00000002);%i(3,00000003);%i(4,00000004);%i(5,00000005);%i(6,00000006);%i(7,00000007);%i(8,00000008);%i(9,00000009);%i(10,0000000a);%i(16,00000010);%i(17,00000011);%i(19,00000013);%i(21,00000015);%i(23,00000017);%i(24,00000018):a}
+:i $ThemeIndicesB$ = :a{%i(11,0000000b);%i(12,0000000c);%i(13,0000000d);%i(14,0000000e);%i(15,0000000f);%i(18,00000012);%i(20,00000014);%i(22,00000016);%i(25,00000019):a}
+:i function $DoParkGeneration$
+	:i $setgametype$$creategoals$
+	:i $MemPushContext$%i(0,00000000)
+	:i $PreLevelLoad$
+	:i if $GameModeEquals$$is_parkeditor$
+		:i if $IsXbox$
+			:i $DisplayLoadingScreen$%s(17,"loadscrn_editor_x")
+		:i endif
+		:i if $IsNgc$
+			:i $DisplayLoadingScreen$%s(19,"loadscrn_editor_ngc")
+		:i endif
+		:i if $IsPS2$
+			:i $DisplayLoadingScreen$%s(15,"loadscrn_editor")
+		:i endif
+	:i else
+		:i if $IsXbox$
+			:i $DisplayLoadingScreen$%s(17,"loadscrn_editor_x")
+		:i endif
+		:i if $IsNgc$
+			:i $DisplayLoadingScreen$%s(19,"loadscrn_editor_ngc")
+		:i endif
+		:i if $IsPS2$
+			:i $DisplayLoadingScreen$%s(20,"loadscrn_editor_play")
+		:i endif
+	:i endif
+	:i $LaunchLevel$$Level$ = $custom_park$
+	:i $printf$%s(33,"Ryan: finished 'LaunchLevel' call")
+	:i $PostLevelLoad$
+	:i $ResetCamera$
+	:i $MemPopContext$
+	:i $SetBackgroundColor$:s{$r$ = %i(0,00000000);$g$ = %i(0,00000000);$b$ = %i(0,00000000);$alpha$ = %i(0,00000000):s}
+	:i $SetClippingDistances$$near$ = %i(12,0000000c)$far$ = %i(22000,000055f0)
+	:i $LaunchConsoleMessage$%s(11,"Stats at 10")%i(2,00000002)
+	:i $LoadPreFile$%s(17,"parked_sounds.pre")
+	:i $LoadSound$%s(22,"ParkEd\GUI_placeblock1")
+	:i $LoadSound$%s(23,"ParkEd\GUI_removeblock1")
+	:i $LoadSound$%s(14,"ParkEd\select1")
+	:i $LoadSound$%s(24,"Shared\Menu\GUI_buzzer01")
+	:i $UnloadPreFile$%s(17,"parked_sounds.pre")
+:i endfunction
+:i function $Ed_DropinSkater$
+	:i $printf$%s(15,"Ed_DropinSkater")
+	:i $ParkEditorCommand$$command$ = $SetCustomParkPlay$$on$
+:i endfunction
+:i function $Ed_RunCommand$
+	:i $ParkEditorCommand$ isNull 
+:i endfunction
+:i function $Ed_ThemeSwitch$
+	:i $change_level$$Level$ = $custom_park$$game$ = $parkeditor$
+:i endfunction
+:i function $PlayEdPlaceSound$
+	:i $PlaySound$$GUI_placeblock1$$vol$ = %i(60,0000003c)
+	:i $printf$%s(16,"Play Place Sound")
+:i endfunction
+:i function $PlayEdEraseSound$
+	:i $PlaySound$$GUI_removeblock1$$vol$ = %i(60,0000003c)
+:i endfunction
+:i function $PlayEdChangeSetSound$
+	:i $PlaySound$$select1$$vol$ = %i(60,0000003c)
+:i endfunction
+:i function $PlayEdChangePieceSound$
+	:i $PlaySound$$select2b$$vol$ = %i(60,0000003c)
+:i endfunction
+:i function $PlayEdBuzzSound$
+	:i $PlaySound$$GUI_buzzer01$$vol$ = %i(60,0000003c)
+:i endfunction
+:i function $PlayRaiseGroundSound$
+	:i $PlaySound$$MenuUp$$pitch$ = %i(35,00000023)
+:i endfunction
+:i function $PlayLowerGroundSound$
+	:i $PlaySound$$MenuUp$$pitch$ = %i(24,00000018)
+:i endfunction
+:i function $PlayRotatePieceSound$
+	:i $PlaySound$$menu03$$pitch$ = %i(55,00000037)
+:i endfunction
+:i :end

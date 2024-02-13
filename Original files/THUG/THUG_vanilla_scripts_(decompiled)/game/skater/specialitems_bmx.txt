@@ -1,0 +1,92 @@
+
+:i $bmx_collision_details$ = :s{
+	:i $Position$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Name$ = $Bmx_Collision$
+	:i $Class$ = $GameObject$
+	:i $Type$ = $Ghost$
+	:i $CollisionMode$ = $None$
+	:i $IgnoredLights$ = :a{%i(0,00000000);%i(1,00000001):a}
+	:i $Model$ = %s(4,"none")
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $TriggerScript$ = $Bmx_Collision_Script$
+:i :s}
+:i $Saw_Ghost_details$ = :s{
+	:i $Position$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Name$ = $Saw_Ghost$
+	:i $Class$ = $GameObject$
+	:i $Type$ = $Ghost$
+	:i $CollisionMode$ = $None$
+	:i $IgnoredLights$ = :a{%i(0,00000000);%i(1,00000001):a}
+	:i $Model$ = %s(4,"none")
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+:i :s}
+:i $Saw_Ghost2_details$ = :s{
+	:i $Position$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+	:i $Name$ = $Saw_Ghost2$
+	:i $Class$ = $GameObject$
+	:i $Type$ = $Ghost$
+	:i $CollisionMode$ = $None$
+	:i $IgnoredLights$ = :a{%i(0,00000000);%i(1,00000001):a}
+	:i $Model$ = %s(4,"none")
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+:i :s}
+:i function $Bmx_Collision_Script$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetInnerRadius$%i(2,00000002)
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = $Bmx_Collision_Collide$
+	:i while
+		
+		:i $Obj_GetSpeed$
+		:i if  (%GLOBAL%$speed$ = %i(0,00000000)) 
+		:i else
+			:i if  (%GLOBAL%$speed$ < %f(29.900000)) 
+				:i $SendFlag$$FLAG_TRICK_NOW$$Name$ = $TRG_BMX_Checker$
+			:i else
+				:i $ClearFlag$$FLAG_TRICK_NOW$$Name$ = $TRG_BMX_Checker$
+			:i endif
+		:i endif
+		:i $wait$%i(3,00000003)$frames$
+	:i loop_to 
+:i endfunction
+:i function $Bmx_Collision_Collide$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetOuterRadius$%i(5,00000005)
+	:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $Bmx_Collision_Script$
+	:i $printf$%s(14,"Bail now Bitch")
+	:i $Obj_PlayStream$select(2f,8, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7)
+		
+		:i  :POS(0) $rick_Collide01$
+		:i 
+	:BREAKTO(8)
+		 :POS(1) $rick_Collide02$
+		:i 
+	:BREAKTO(8)
+		 :POS(2) $rick_Collide03$
+		:i 
+	:BREAKTO(8)
+		 :POS(3) $rick_Collide04$
+		:i 
+	:BREAKTO(8)
+		 :POS(4) $rick_Collide05$
+		:i 
+	:BREAKTO(8)
+		 :POS(5) $rick_Collide06$
+		:i 
+	:BREAKTO(8)
+		 :POS(6) $rick_Collide07$
+		:i 
+	:BREAKTO(8)
+		 :POS(7) $rick_Collide08$
+		:i  :POS(8) 
+	:i $MakeSkaterGoto$$PedKnockDown$
+:i endfunction
+:i :end

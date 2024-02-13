@@ -1,0 +1,38 @@
+
+:i function $ChooseTeleportNode$
+	:i $PauseGame$
+	:i $make_new_menu$$menu_title$ = %s(11,"Choose node")$id$ = $teleport_menu$$pad_choose_script$ = $exit_start_menu$
+	:i $SetScreenElementProps$:s{$id$ = $main_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$handle_start_pressed$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $AddWarpPointsToMenu$$nodes$ = %GLOBAL%$nodes$
+	:i $RunScriptOnScreenElement$$id$ = $main_menu_anchor$$animate_in$
+:i endfunction
+:i function $WarpSkater$
+	:i $SpawnSkaterScript$$TeleportSkaterToNode$$params$ = :s{ isNull :s}
+	:i $UnPauseGame$
+	:i $Debounce$$X$$time$ = %f(0.300000)
+	:i $RunScriptOnScreenElement$$id$ = $main_menu_anchor$$menu_offscreen$
+:i endfunction
+:i function $WarpSkaterToNewLevel$
+	:i if $ObjectExists$$id$ = $main_menu_anchor$
+		:i $RunScriptOnScreenElement$$id$ = $main_menu_anchor$$menu_offscreen$$callback$ = $WarpSkaterToNewLevel2$$callback_params$ = :s{ isNull :s}
+	:i else
+		:i $WarpSkaterToNewLevel2$ isNull 
+	:i endif
+:i endfunction
+:i function $WarpSkaterToNewLevel2$
+	:i $PauseGame$
+	:i $make_new_menu$$menu_title$ = %s(17,"Warp to new level")$id$ = $warp_menu_anchor$
+	:i $SetScreenElementProps$:s{$id$ = $main_menu_anchor$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$exit_pause_menu$:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(6,"Cancel")$pad_choose_script$ = $exit_pause_menu$
+	:i $make_text_sub_menu_item$$text$ = %GLOBAL%$text$$pad_choose_script$ = $level_select_change_level$$pad_choose_params$ = :s{$level$ = %GLOBAL%$level$:s}
+	:i $RunScriptOnScreenElement$$id$ = $main_menu_anchor$$animate_in$
+:i endfunction
+:i :end

@@ -1,0 +1,67 @@
+
+:i $goal_highcombo_genericParams$ = :s{
+	:i $goal_text$ = %s(22,"generic highcombo text")
+	:i $view_goals_text$ = %s(10,"High combo")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_highcombo_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_highcombo_activate$
+	:i $success$ = $goal_highcombo_success$
+	:i $fail$ = $goal_highcombo_fail$
+	:i $deactivate$ = $goal_highcombo_deactivate$
+	:i $expire$ = $goal_highcombo_expire$
+	:i $trigger_obj_id$ = $TRG_G_HIGHCOMBO_Pro$
+	:i $restart_node$ = $TRG_G_HIGHCOMBO_RestartNode$
+	:i $start_pad_id$ = $G_HIGHCOMBO_StartPad$
+	:i $exception_set$ = %i(0,00000000)
+	:i $score$ = %i(10000,00002710)
+	:i $record_type$ = $score$
+	:i $high_combo$
+:i :s}
+:i $goal_highcombo2_genericParams$ = :s{
+	:i $goal_text$ = %s(23,"generic highcombo2 text")
+	:i $view_goals_text$ = %s(15,"Highcombo2 goal")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_highcombo_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_highcombo_activate$
+	:i $success$ = $goal_highcombo_success$
+	:i $fail$ = $goal_highcombo_fail$
+	:i $deactivate$ = $goal_highcombo_deactivate$
+	:i $expire$ = $goal_highcombo_expire$
+	:i $trigger_obj_id$ = $TRG_G_HIGHCOMBO2_Pro$
+	:i $restart_node$ = $TRG_G_HIGHCOMBO2_RestartNode$
+	:i $start_pad_id$ = $G_HIGHCOMBO2_StartPad$
+	:i $exception_set$ = %i(0,00000000)
+	:i $score$ = %i(10000,00002710)
+	:i $record_type$ = $score$
+	:i $high_combo$
+:i :s}
+:i function $goal_highcombo_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $SetScoreAccumulation$%i(0,00000000)
+:i endfunction
+:i function $goal_highcombo_check_score$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if  (%GLOBAL%$last_score_landed$ > %GLOBAL%$score$) 
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_highcombo_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

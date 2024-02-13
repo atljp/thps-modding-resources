@@ -1,0 +1,100 @@
+
+:i function $Ped_SetDefaults$
+	:i $SetTags$$collision_mode$ = $ignore$
+	:i $SetTags$$talking_mode$ = $friendly$
+	:i $SetTags$$is_moving_ped$ = %i(1,00000001)
+	:i $SetTags$$is_goal_ped$ = %i(0,00000000)
+	:i $SetTags$$talking_radius$ = %i(30,0000001e)
+	:i $SetTags$$collision_exception_return_state$ = $Ped_IdleState$
+	:i $SetTags$$pissed$ = %i(0,00000000)
+	:i $SetTags$$should_look_at_skater$ = %i(1,00000001)
+	:i if $GotParam$$skater$
+		:i $pedanim_init$$default_male_skater_anim_assets$ isNull 
+		:i if NOT $GotParam$$brake_idle_anims$
+			:i $SetTags$$brake_idle_anims$ = $ped_skater_brake_idle_anims$
+		:i endif
+	:i else
+		:i if $GotParam$$chick$
+			:i %GLOBAL%$anim_assets$ = $default_female_anim_assets$
+			:i %GLOBAL%$standing_anims$ = $female_goal_wait$
+		:i else
+			:i %GLOBAL%$anim_assets$ = $default_male_anim_assets$
+			:i %GLOBAL%$standing_anims$ = $generic_ped_anims_wait$
+		:i endif
+		:i if $GotParam$$stand$
+			:i $pedanim_init$%GLOBAL%$anim_assets$$standing_anims$ = %GLOBAL%$standing_anims$ isNull 
+			:i $SetTags$$collision_exception_return_state$ = $ped_standing_idle$
+		:i else
+			:i $pedanim_init$%GLOBAL%$anim_assets$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $CPF_PedGeneric$
+	:i $printf$%s(63,"Please rename all instances of 'CPF_PedGeneric' to 'Ped_InitAI'")
+	:i $Ped_InitAI$ isNull 
+:i endfunction
+:i function $Ped_InitAI$
+	:i $SK4_PedScript$ isNull 
+:i endfunction
+:i function $SK4_PedScript$
+	:i $Ped_SetDefaults$ isNull 
+	:i $SetTags$ isNull 
+	:i if $GotParam$$Avoid$
+		:i $SetTags$$collision_mode$ = $Avoid$
+	:i endif
+	:i if $GotParam$$Fall$
+		:i $SetTags$$collision_mode$ = $Fall$
+	:i endif
+	:i if $GotParam$$shot$
+		:i $SetTags$$collision_mode$ = $shot$
+	:i endif
+	:i if $GotParam$$Knock$
+		:i $SetTags$$collision_mode$ = $Knock$
+	:i endif
+	:i if $GotParam$$bump$
+		:i $SetTags$$collision_mode$ = $bump$
+	:i endif
+	:i if $GotParam$$ignore$
+		:i $SetTags$$collision_mode$ = $ignore$
+	:i endif
+	:i if $GotParam$$friendly$
+		:i $SetTags$$talking_mode$ = $friendly$
+	:i endif
+	:i if $GotParam$$Mean$
+		:i $SetTags$$talking_mode$ = $Mean$
+	:i endif
+	:i if $GotParam$$chick$
+		:i $pedanim_init$$default_female_anim_assets$
+	:i endif
+	:i if $GotParam$$NoMove$
+		:i $SetTags$$is_moving_ped$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$GoalPed$
+		:i $SetTags$$is_goal_ped$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$stand$
+		:i $SetTags$$is_standing_ped$ = %i(1,00000001)
+		:i $SetTags$$is_moving_ped$ = %i(0,00000000)
+	:i endif
+	:i $ped_initialize_collision_exceptions$
+	:i $Obj_StickToGround$$distAbove$ = %i(3,00000003)$distBelow$ = %i(6,00000006)
+	:i $Obj_StickToGround$$off$
+	:i $ped_initialize_movement$ isNull 
+	:i if NOT $GotParam$$stand$
+		:i $Ped_InitPath$
+		:i $SetTags$$collision_exception_return_state$ = $ped_walker_get_up$
+	:i endif
+	:i if $GotParam$$skater$
+		:i $Ped_SetIsSkater$%i(1,00000001)
+		:i $Ped_SetLogicState$$generic_skater$
+	:i else
+		:i if $GotParam$$stand$
+			:i $Ped_SetLogicState$$generic_standing$
+			:i $ped_standing_idle$
+		:i else
+			:i $Ped_SetLogicState$$generic$
+			:i $goto$$Ped_IdleState$
+		:i endif
+	:i endif
+:i endfunction
+:i :end

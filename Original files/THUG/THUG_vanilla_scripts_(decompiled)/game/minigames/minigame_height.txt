@@ -1,0 +1,86 @@
+
+:i $minigame_Height_genericParams$ = :s{
+	:i $init$ = $minigame_Height_init$
+	:i $activate$ = $minigame_Height_activate$
+	:i $active$ = $minigame_Height_active$
+	:i $deactivate$ = $minigame_Height_deactivate$
+	:i $number_collected$ = %i(1,00000001)
+	:i $minigame_record$ = %i(0,00000000)
+	:i $new_record$ = %i(0,00000000)
+	:i $trigger_obj_id$ = $TRG_MG_Height$
+	:i $no_restart$
+	:i $minigame$
+:i :s}
+:i function $minigame_Height_init$
+	:i $printf$%s(22,"adding height minigame")
+	:i if NOT $ObjectExists$$id$ = $minigame_record$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $id$ = $minigame_record$
+			:i $parent$ = $root_window$
+			:i $text$ = %s(1," ")
+			:i $font$ = $small$
+			:i $pos$ = %vec2(35.000000,105.000000)
+			:i $dims$ = %vec2(200.000000,100.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $internal_just$ = :a{$left$$bottom$:a}
+		:i :s}
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $minigame_height$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $id$ = $minigame_height$
+			:i $parent$ = $root_window$
+			:i $font$ = $small$
+			:i $text$ = %s(1," ")
+			:i $pos$ = %vec2(35.000000,145.000000)
+			:i $just$ = :a{$left$$center$:a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $minigame_Height_activate$
+	:i $printf$%s(26,"activating height minigame")
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$minigame_Height_set_exceptions$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $GoalManager_SetStartHeight$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $minigame_Height_active$
+	:i if $GoalManager_CheckHeightRecord$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i $FormatText$$TextName$ = $height_message$%s(21,"New Record: %f'%i''\n")$f$ = %GLOBAL%$record_feet$$i$ = %GLOBAL%$record_inches$
+		:i $SetScreenElementProps$:s{
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(32,00000020)%i(128,00000080):a}
+			:i $id$ = $minigame_record$
+			:i $text$ = %GLOBAL%$height_message$
+		:i :s}
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $FormatText$$TextName$ = $height_message$%s(7,"%f'%i''")$f$ = %GLOBAL%$current_height_feet$$i$ = %GLOBAL%$current_height_inches$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $minigame_height$
+		:i $rgba$ = :a{%i(115,00000073)%i(26,0000001a)%i(26,0000001a)%i(95,0000005f):a}
+		:i $text$ = %GLOBAL%$height_message$
+	:i :s}
+:i endfunction
+:i function $minigame_Height_deactivate$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+	:i $printf$%s(28,"deactivating height minigame")
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $minigame_height$
+		:i $text$ = %s(1," ")
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $minigame_record$
+		:i $text$ = %s(1," ")
+	:i :s}
+:i endfunction
+:i function $minigame_Height_set_exceptions$
+	:i $Obj_SetException$$ex$ = $SkaterLanded$$scr$ = $minigame_Height_done$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Obj_SetException$$ex$ = $SkaterBailed$$scr$ = $minigame_Height_done$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $minigame_Height_done$
+	:i $printf$%s(18,"height done called")
+	:i $Obj_ClearExceptions$
+	:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

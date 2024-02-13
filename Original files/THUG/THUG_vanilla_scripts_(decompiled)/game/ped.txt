@@ -1,0 +1,125 @@
+
+:i function $gameobj_add_components$
+	:i if $GotParam$$animName$
+		:i $CreateComponentFromStructure$$component$ = $animation$ isNull 
+	:i endif
+	:i if $GotParam$$skeletonName$
+		:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeleton$ = %GLOBAL%$skeletonName$
+	:i endif
+	:i %GLOBAL%$is_level_obj$ = %i(0,00000000)
+	:i if $GotParam$$class$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$class$$b$ = $LevelObject$
+			:i %GLOBAL%$is_level_obj$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$is_level_obj$ = %i(1,00000001)) 
+		:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i else
+		:i if $GotParam$$model$
+			:i if NOT $StringEquals$$a$ = %GLOBAL%$model$$b$ = %s(4,"none")
+				:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+			:i endif
+		:i endif
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $collision$ isNull 
+:i endfunction
+:i function $ped_add_components$
+	:i $CreateComponentFromStructure$$component$ = $avoid$
+	:i if NOT $GotParam$$NoPedLogic$
+		:i $CreateComponentFromStructure$$component$ = $pedlogic$ isNull 
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $SkaterLoopingSound$ isNull $volume_mult$ = %f(0.200000)
+	:i $CreateComponentFromStructure$$component$ = $SkaterSound$ isNull $volume_mult$ = %f(0.200000)
+	:i if  ( ($InNetGame$)  OR  ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$load_sk5ed_gameplay$) ) 
+		:i $GetAnimEventTableName$$animName$ = $thps5_human$
+		:i $CreateComponentFromStructure$:s{
+			:i $component$ = $animation$
+			:i  isNull 
+			:i $animName$ = $animload_thps5_human$
+			:i $animEventTableName$ = %GLOBAL%$animEventTableName$
+		:i :s}
+		:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeletonName$ = $thps5_human$
+	:i else
+		:i if $GotParam$$animName$
+			:i if NOT $GotParam$$animEventTableName$
+				:i $GetAnimEventTableName$$animName$ = %GLOBAL%$animName$
+			:i endif
+			:i if NOT $GotParam$$defaultAnimName$
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$skeletonName$$b$ = $thps5_human$
+					:i %GLOBAL%$defaultAnimName$ = $WStandIdle1$
+				:i endif
+				:i if NOT  ($have_loaded_net$) 
+					:i if $ChecksumEquals$$a$ = %GLOBAL%$skeletonName$$b$ = $Ped_Female$
+						:i %GLOBAL%$defaultAnimName$ = $Ped_F_Idle1$
+					:i endif
+				:i endif
+			:i endif
+			:i $CreateComponentFromStructure$$component$ = $animation$$animEventTableName$ = %GLOBAL%$animEventTableName$ isNull 
+		:i endif
+		:i if $GotParam$$skeletonName$
+			:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeleton$ = %GLOBAL%$skeletonName$
+		:i endif
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $model$
+	:i if NOT $GotParam$$ShadowOff$
+		:i $CreateComponentFromStructure$$component$ = $shadow$ isNull $ShadowType$ = $simple$
+	:i endif
+:i endfunction
+:i function $ped_init_model$
+	:i if $InNetGame$
+		:i $Obj_InitModel$$model$ = %s(29,"Peds/Ped_Judge/Ped_Judge.skin")$use_asset_manager$ = %i(1,00000001)
+		:i return
+		
+	:i endif
+	:i if  ( ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$load_sk5ed_gameplay$) ) 
+		:i $ChooseRandomCreatedGoalPedModel$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$profile$
+		:i $Obj_InitModelFromProfile$$struct$ = %GLOBAL%$profile$$use_asset_manager$ = %i(1,00000001)$buildscript$ = $create_ped_model_from_appearance$
+	:i else
+		:i if NOT $GotParam$$model$
+			:i $script_assert$%s(14,"no model name!")
+		:i endif
+		:i $Obj_InitModel$$model$ = %GLOBAL%$model$$use_asset_manager$ = %i(1,00000001)
+	:i endif
+	:i $Obj_GetID$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$objID$$set_ped_anim_handlers$
+:i endfunction
+:i function $ped_disable_bones$
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Cuff_L$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Cuff_R$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Hat$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_L$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_C$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_R$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Trouser_L$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Trouser_R$$active$ = %i(0,00000000)
+:i endfunction
+:i function $Ped_Printf$
+	:i if $IsTrue$$ped_debug$
+		:i $printf$ isNull 
+	:i endif
+:i endfunction
+:i function $Ped_PrintStruct$
+	:i if $IsTrue$$ped_debug$
+		:i $PrintStruct$ isNull 
+	:i endif
+:i endfunction
+:i function $Ped_Assert$
+	:i if $IsTrue$$ped_debug$
+		:i $printf$%s(14,"SCRIPT ASSERT!")
+		:i $printf$ isNull 
+		:i while
+			
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $Ped_PrintTags$
+	:i if $IsTrue$$ped_debug$
+		:i $GetTags$
+		:i $PrintStruct$ isNull 
+	:i endif
+:i endfunction
+:i :end

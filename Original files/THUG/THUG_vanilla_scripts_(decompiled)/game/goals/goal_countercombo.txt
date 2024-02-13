@@ -1,0 +1,135 @@
+
+:i $goal_countercombo_genericParams$ = :s{
+	:i $goal_text$ = %s(34,"Countercombo the spot generic text")
+	:i $view_goals_text$ = %s(17,"CounterCombo goal")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_countercombo_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_countercombo_activate$
+	:i $active$ = $goal_countercombo_active$
+	:i $success$ = $goal_countercombo_success$
+	:i $fail$ = $goal_countercombo_fail$
+	:i $deactivate$ = $goal_countercombo_deactivate$
+	:i $expire$ = $goal_countercombo_expire$
+	:i $trigger_obj_id$ = $TRG_G_COUNTERCOMBO_Pro$
+	:i $start_pad_id$ = $G_COUNTERCOMBO_StartPad$
+	:i $restart_node$ = $TRG_G_COUNTERCOMBO_RestartNode$
+	:i $number$ = %i(10,0000000a)
+	:i $got_first_object$ = %i(0,00000000)
+	:i $countercombo_objects$ = :a{:s{$id$ = $Sch_CountercomboSpot01$:s}
+		:i :s{$id$ = $Sch_CountercomboSpot02$:s}
+		:i :a}
+	:i $goal_countercombo_object_init_script$ = $goal_countercombo_init_object$
+	:i $goal_countercombo_got_object_script$ = $goal_countercombo_got_object$
+	:i $number_collected$ = %i(0,00000000)
+	:i $record_type$ = $score$
+	:i $exceptions_set$ = %i(0,00000000)
+:i :s}
+:i $goal_countercombo2_genericParams$ = :s{
+	:i $goal_text$ = %s(35,"Countercombo2 the spot generic text")
+	:i $view_goals_text$ = %s(18,"CounterCombo2 goal")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_countercombo_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_countercombo_activate$
+	:i $active$ = $goal_countercombo_active$
+	:i $success$ = $goal_countercombo_success$
+	:i $fail$ = $goal_countercombo_fail$
+	:i $deactivate$ = $goal_countercombo_deactivate$
+	:i $expire$ = $goal_countercombo_expire$
+	:i $trigger_obj_id$ = $TRG_G_COUNTERCOMBO2_Pro$
+	:i $start_pad_id$ = $G_COUNTERCOMBO2_StartPad$
+	:i $restart_node$ = $TRG_G_COUNTERCOMBO2_RestartNode$
+	:i $number$ = %i(10,0000000a)
+	:i $got_first_object$ = %i(0,00000000)
+	:i $countercombo_objects$ = :a{:s{$id$ = $Sch_Countercombo2Spot01$:s}
+		:i :s{$id$ = $Sch_Countercombo2Spot02$:s}
+		:i :a}
+	:i $goal_countercombo_object_init_script$ = $goal_countercombo_init_object$
+	:i $goal_countercombo_got_object_script$ = $goal_countercombo_got_object$
+	:i $number_collected$ = %i(0,00000000)
+	:i $record_type$ = $score$
+	:i $exceptions_set$ = %i(0,00000000)
+:i :s}
+:i function $goal_countercombo_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $ForEachIn$%GLOBAL%$countercombo_objects$$do$ = $goal_countercombo_run_init_object_script$$params$ =  isNull 
+:i endfunction
+:i function $goal_countercombo_run_init_object_script$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$id$%GLOBAL%$goal_countercombo_object_init_script$$params$ =  isNull 
+:i endfunction
+:i function $goal_countercombo_init_object$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$id$$goal_countercombo_init_object2$$params$ =  isNull 
+:i endfunction
+:i function $goal_countercombo_init_object2$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $SkaterInRadius$$scr$ = %GLOBAL%$goal_countercombo_got_object_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $goal_countercombo_got_object$
+	:i $printf$%s(17,"why are you here?")
+	:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if NOT $IntegerEquals$$a$ = %GLOBAL%$got_first_object$$b$ = %i(1,00000001)
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$got_first_object$ = %i(1,00000001):s}
+			:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$goal_countercombo_set_bailed_exception$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$number_collected$ = %GLOBAL%$number_collected$:s}
+		:i $FormatText$$TextName$ = $goal_countercombo_update$%s(19,"You've collected %i")$i$ = %GLOBAL%$number_collected$
+		:i $printstruct$ isNull 
+		:i $create_panel_message$$id$ = $goal_countercombo_update$$text$ = %GLOBAL%$goal_countercombo_update$$style$ = $goal_countercombo_update$
+		:i $Obj_SetOuterRadius$%i(10,0000000a)
+		:i $Obj_SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $goal_countercombo_init_object$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$id$ = %GLOBAL%$id$:s}
+	:i endif
+:i endfunction
+:i function $goal_countercombo_set_bailed_exception$
+	:i $Obj_SetException$$ex$ = $SkaterBailed$$scr$ = $goal_countercombo_lost$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Obj_SetException$$ex$ = $SkaterLanded$$scr$ = $goal_countercombo_lost$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $goal_countercombo_lost$
+	:i $printf$%s(22,"goal_countercombo_lost")
+	:i $Obj_ClearExceptions$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$number_collected$ = %i(0,00000000):s}
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$exceptions_set$ = %i(0,00000000):s}
+	:i $goal_update_counter$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_set_goal_done_exception$
+	:i $Obj_ClearException$$SkaterLanded$
+	:i $Obj_SetException$$ex$ = $SkaterLanded$$scr$ = $goal_countercombo_done$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $goal_countercombo_done$
+	:i $Obj_ClearException$$SkaterLanded$
+	:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_active$
+	:i if  (%GLOBAL%$exceptions_set$ = %i(0,00000000)) 
+		:i if  (%GLOBAL%$number_collected$ > %i(0,00000000)) 
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$exceptions_set$ = %i(1,00000001):s}
+			:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$goal_countercombo_set_bailed_exception$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+	:i endif
+	:i if $GoalManager_CounterGoalDone$$name$ = %GLOBAL%$goal_id$
+		:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$goal_countercombo_set_goal_done_exception$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i endif
+:i endfunction
+:i function $goal_countercombo_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_deactivate$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$number_collected$ = %i(0,00000000):s}
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$exceptions_set$ = %i(0,00000000):s}
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_countercombo_update$
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,50.000000)$scale$ = %i(1,00000001)$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i $wait$%i(1,00000001)$second$
+	:i $Die$
+:i endfunction
+:i :end

@@ -1,0 +1,297 @@
+
+:i $goal_horse_genericParams$ = :s{
+	:i $goal_text$ = %s(18,"generic horse text")
+	:i $view_goals_text$ = %s(10,"Horse goal")
+	:i $time$ = %i(3,00000003)
+	:i $init$ = $goal_horse_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_horse_activate$
+	:i $active$ = $goal_horse_active$
+	:i $success$ = $goal_horse_success$
+	:i $fail$ = $goal_horse_fail$
+	:i $deactivate$ = $goal_horse_deactivate$
+	:i $expire$ = $goal_horse_expire$
+	:i $trigger_obj_id$ = $TRG_G_HORSE_Pro$
+	:i $restart_node$ = $TRG_G_HORSE_RestartNode$
+	:i $start_pad_id$ = $G_HORSE_StartPad$
+	:i $goal_flags$ = :a{$got_1$
+		:i $got_2$
+		:i $got_3$
+		:i :a}
+	:i $horse_spots$ = :a{:s{$id$ = $TRG_G_HORSE_Spot01$$scr$ = $sch_horse_spot01$$flag$ = $got_1$$score$ = %i(1000,000003e8)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 1"):s}
+		:i :s{$id$ = $TRG_G_HORSE_Spot02$$scr$ = $sch_horse_spot02$$flag$ = $got_2$$score$ = %i(2000,000007d0)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 2"):s}
+		:i :s{$id$ = $TRG_G_HORSE_Spot03$$scr$ = $sch_horse_spot03$$flag$ = $got_3$$score$ = %i(3000,00000bb8)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 3"):s}
+		:i :a}
+	:i $record_type$ = $time$
+	:i $should_check_trick$ = %i(0,00000000)
+	:i $horse$
+:i :s}
+:i $goal_horse2_genericParams$ = :s{
+	:i $goal_text$ = %s(19,"generic horse2 text")
+	:i $view_goals_text$ = %s(11,"Horse2 goal")
+	:i $time$ = %i(3,00000003)
+	:i $init$ = $goal_horse_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_horse_activate$
+	:i $active$ = $goal_horse_active$
+	:i $success$ = $goal_horse_success$
+	:i $fail$ = $goal_horse_fail$
+	:i $deactivate$ = $goal_horse_deactivate$
+	:i $expire$ = $goal_horse_expire$
+	:i $trigger_obj_id$ = $TRG_G_HORSE2_Pro$
+	:i $restart_node$ = $TRG_G_HORSE2_RestartNode$
+	:i $start_pad_id$ = $G_HORSE2_StartPad$
+	:i $goal_flags$ = :a{$got_1$
+		:i $got_2$
+		:i $got_3$
+		:i :a}
+	:i $horse_spots$ = :a{:s{$id$ = $TRG_G_HORSE2_Spot01$$scr$ = $sch_horse2_spot01$$flag$ = $got_1$$score$ = %i(1000,000003e8)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 1"):s}
+		:i :s{$id$ = $TRG_G_HORSE2_Spot02$$scr$ = $sch_horse2_spot02$$flag$ = $got_2$$score$ = %i(2000,000007d0)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 2"):s}
+		:i :s{$id$ = $TRG_G_HORSE2_Spot03$$scr$ = $sch_horse2_spot03$$flag$ = $got_3$$score$ = %i(3000,00000bb8)$time$ = %i(10,0000000a)$text$ = %s(6,"spot 3"):s}
+		:i :a}
+	:i $should_check_trick$ = %i(0,00000000)
+	:i $record_type$ = $time$
+	:i $horse$
+:i :s}
+:i function $goal_horse_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$$dont_unpause$ = $dont_unpause$
+	:i $SetScoreAccumulation$%i(0,00000000)
+	:i $GoalManager_SetEndRunType$$name$ = %GLOBAL%$goal_id$$Goal_EndOfRun$
+	:i $GoalManager_NextHorseSpot$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_next_spot$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$should_check_trick$ = %i(0,00000000):s}
+	:i if NOT $GotParam$$first_spot$
+		:i $SlowSkaterToStop$
+		:i $pause_trick_text$
+		:i $ResetSkaters$$Node_Name$ = %GLOBAL%$id$
+		:i $Wait$%i(1,00000001)$GameFrame$
+		:i $PauseSkaters$
+	:i endif
+	:i if $GotParam$$text$
+		:i $create_speech_box$$text$ = %GLOBAL%$text$$pad_choose_script$ = $goal_horse_continue$
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$first_spot$
+		:i %GLOBAL%$cam_anim$ = %GLOBAL%$start_cam_anim$
+		:i $goal_horse_next_spot2$ isNull 
+	:i else
+		:i if $GotParam$$pro_node$
+			:i $printf$%s(10,"moving pro")
+			:i %GLOBAL%$trigger_obj_id$.$Obj_MoveToNode$$name$ = %GLOBAL%$pro_node$
+		:i endif
+		:i %GLOBAL%$trigger_obj_id$.$Obj_LookAtObject$$type$ = $skater$$time$ = %f(0.050000)
+		:i if $GotParam$$cam_anim$
+			:i $GetSkaterId$
+			:i $PlaySkaterCamAnim$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$cam_anim$$skippable$ = %i(1,00000001)$play_hold$
+		:i endif
+		:i $create_speech_box$:s{
+			:i $text$ = %s(21,"Press \m0 to continue")
+			:i $pos$ = %vec2(320.000000,400.000000)
+			:i $pad_choose_script$ = $goal_horse_next_spot2$
+			:i $pad_choose_params$ =  isNull 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_horse_next_spot2$
+	:i $DeBounce$$X$$time$ = %f(0.300000)
+	:i $GoalManager_PauseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $GetSkaterId$
+	:i $Wait$%i(1,00000001)$GameFrame$
+	:i if $GotParam$$first_spot$
+		:i if NOT $GotParam$$quick_start$
+			:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+			:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+				:i return
+				
+			:i endif
+		:i endif
+	:i else
+		:i if $GotParam$$cam_anim$
+			:i while
+				
+				:i if $SkaterCamAnimFinished$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$cam_anim$
+					:i continue
+					
+				:i endif
+				:i $Wait$%i(1,00000001)$GameFrame$
+			:i loop_to 
+		:i endif
+	:i endif
+	:i $unpause_trick_text$
+	:i $speech_box_exit$
+	:i $printf$%s(9,"unpausing")
+	:i $FireEvent$$type$ = $goal_horse_wait_done$
+	:i $GoalManager_UnPauseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $UnPauseSkaters$
+	:i $SpawnScript$%GLOBAL%$scr$
+	:i $skater$.$EnablePlayerInput$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$current_score$ = %GLOBAL%$score$:s}
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$current_flag$ = %GLOBAL%$flag$:s}
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$should_check_trick$ = %i(1,00000001):s}
+	:i $GoalManager_SetShouldDeactivateOnExpire$$name$ = %GLOBAL%$goal_id$%i(0,00000000)
+	:i $RunScriptOnObject$$id$ = %GLOBAL%$trigger_obj_id$$goal_horse_set_trigger_exceptions$$params$ =  isNull 
+:i endfunction
+:i function $goal_horse_set_trigger_exceptions$
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetException$$ex$ = $SkaterBailed$$scr$ = $goal_horse_skater_bailed$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $goal_horse_skater_bailed$
+	:i $SpawnScript$$goal_horse_skater_bailed2$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+:i endfunction
+:i function $goal_horse_skater_bailed2$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$should_check_trick$ = %i(0,00000000):s}
+:i endfunction
+:i function $goal_horse_active$
+	:i if $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_winGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_horse_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_deactivate$
+	:i $KillSpawnedScript$$name$ = $goal_horse_next_spot$
+	:i $KillSpawnedScript$$name$ = $goal_horse_next_spot2$
+	:i $KillSpawnedScript$$name$ = $goal_horse_continue$
+	:i $KillSpawnedScript$$name$ = $goal_horse_next_spot$
+	:i $Wait$%i(1,00000001)$frame$
+	:i if $ObjectExists$$id$ = $current_horse_spot$
+		:i $DestroyScreenElement$$id$ = $current_horse_spot$
+	:i endif
+	:i %GLOBAL%$trigger_obj_id$.$Obj_MoveToNode$$name$ = %GLOBAL%$trigger_obj_id$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$SkaterLanded$
+	:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$SkaterBailed$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_horse_continue$
+	:i $UnPauseSkaters$
+	:i $speech_box_exit$
+:i endfunction
+:i function $panel_message_new_horse_spot$$blink_time$ = %f(0.050000)
+	:i $FormatText$$ChecksumName$ = $text_color$%s(25,"%i_HIGHLIGHTED_TEXT_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $SetProps$$just$ = :a{$right$$top$:a}$rgba$ = %GLOBAL%$text_color$
+	:i $DoMorph$$pos$ = %vec2(445.000000,175.000000)
+	:i $DoMorph$$pos$ = %vec2(445.000000,175.000000)$time$ = %f(1.200000)
+	:i $DoMorph$$pos$ = %vec2(630.000000,63.000000)$scale$ = %f(1.300000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(630.000000,63.000000)$scale$ = %f(0.800000)$time$ = %f(0.110000)
+	:i while
+		
+		:i $DoMorph$$alpha$ = %i(0,00000000)
+		:i $Wait$%GLOBAL%$blink_time$$seconds$
+		:i $DoMorph$$alpha$ = %i(1,00000001)
+		:i $Wait$%GLOBAL%$blink_time$$seconds$
+	:i loop_to %i(6,00000006)
+:i endfunction
+:i $goal_horse_mp_genericParams$ = :s{
+	:i $goal_text$ = %s(35,"Complete the other players' tricks!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $init$ = $goal_horse_mp_init$
+	:i $activate$ = $goal_horse_mp_activate$
+	:i $deactivate$ = $goal_horse_mp_deactivate$
+	:i $expire$ = $goal_horse_mp_expire$
+	:i $goal_description$ = %s(6,"Horse!")
+:i :s}
+:i function $goal_horse_mp_init$
+:i endfunction
+:i function $goal_horse_mp_activate$
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i $ResetScore$
+:i endfunction
+:i function $goal_horse_mp_deactivate$
+	:i if $ObjectExists$$id$ = $horse_score_menu$
+		:i $DestroyScreenElement$$id$ = $horse_score_menu$
+	:i endif
+	:i $printf$%s(16,"DEACTIVATE HORSE")
+:i endfunction
+:i function $horse_mp_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_horse_mp_expire$
+	:i $printf$%s(12,"EXPIRE HORSE")
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $DestroyScreenElement$$id$ = $goal_message$
+	:i endif
+	:i $printf$%s(20,"goal_horse_mp_expire")
+:i endfunction
+:i function $AddGoal_Horse_Mp$
+	:i $GoalManager_AddGoal$$name$ = $horse_mp$:s{
+		:i $params$ = :s{$goal_horse_mp_genericParams$:s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_Horse_Mp$
+	:i $GoalManager_EditGoal$$name$ = $horse_mp$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $horse_mp$
+	:i $create_horse_score_menu$
+:i endfunction
+:i function $EndGoal_Horse_Mp$
+	:i $GoalManager_DeactivateGoal$$name$ = $horse_mp$
+:i endfunction
+:i function $create_horse_score_menu$
+	:i if NOT $ObjectExists$$id$ = $horse_score_menu$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $horse_score_menu$
+			:i $font$ = $dialog$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %i(0,00000000)
+			:i $dims$ = %vec2(640.000000,480.000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $VMenu$
+			:i $parent$ = $horse_score_menu$
+			:i $id$ = $horse_score_vmenu$
+			:i $font$ = $dialog$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(45.000000,60.000000)
+			:i $scale$ = %f(0.900000)
+			:i $padding_scale$ = %f(0.700000)
+			:i $internal_scale$ = %i(1,00000001)
+			:i $internal_just$ = :a{$left$$top$:a}
+		:i :s}
+		:i %GLOBAL%$index$ = %i(1,00000001)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $current_id$%s(14,"horse_score_%i")$i$ = %GLOBAL%$index$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $horse_score_vmenu$
+				:i $id$ = %GLOBAL%$current_id$
+				:i $font$ = $dialog$
+				:i $text$ = %s(0,"")
+				:i $scale$ = %f(0.900000)
+				:i $rgba$ = :a{%i(108,0000006c)%i(112,00000070)%i(120,00000078)%i(128,00000080):a}
+				:i $not_focusable$
+				:i $z_priority$ = %i(4294967291,fffffffb)
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %i(3,00000003)
+		:i $RunScriptOnScreenElement$$id$ = $horse_score_menu$$menu_onscreen$$params$ = :s{$preserve_menu_state$:s}
+	:i endif
+:i endfunction
+:i function $update_horse_score$
+	:i if $ObjectExists$$id$ = $horse_score_menu$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i endif
+:i endfunction
+:i :end

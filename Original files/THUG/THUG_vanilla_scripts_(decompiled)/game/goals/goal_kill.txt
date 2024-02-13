@@ -1,0 +1,54 @@
+
+:i $goal_kill_genericParams$ = :s{
+	:i $goal_text$ = %s(26,"Kill the spot generic text")
+	:i $view_goals_text$ = %s(13,"Kill the spot")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_kill_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_kill_activate$
+	:i $active$ = $goal_kill_active$
+	:i $success$ = $goal_kill_success$
+	:i $fail$ = $goal_kill_fail$
+	:i $deactivate$ = $goal_kill_deactivate$
+	:i $expire$ = $goal_kill_expire$
+	:i $trigger_obj_id$ = $TRG_G_KILL_Pro$
+	:i $start_pad_id$ = $G_KILL_StartPad$
+	:i $restart_node$ = $TRG_G_KILL_RestartNode$
+	:i $goal_flags$ = :a{$got_1$
+		:i $got_2$
+		:i :a}
+	:i $kill_clusters$ = :a{:s{$id$ = $Sch_KillSpot01$$flag$ = $got_1$$score$ = %i(1000,000003e8):s}
+		:i :s{$id$ = $Sch_KillSpot02$$flag$ = $got_2$$score$ = %i(1000,000003e8):s}
+		:i :a}
+	:i $record_type$ = $score$
+	:i $graffiti$
+:i :s}
+:i function $goal_kill_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_kill_activate$
+	:i $GoalManager_SetGraffitiMode$%i(1,00000001)
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_kill_active$
+	:i if $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_kill_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_kill_deactivate$
+	:i $GoalManager_SetGraffitiMode$%i(0,00000000)
+	:i $GoalManager_ColorTrickObjects$$name$ = %GLOBAL%$goal_id$$clear$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_kill_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_kill_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

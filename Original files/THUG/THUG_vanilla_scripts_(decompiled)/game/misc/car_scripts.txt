@@ -1,0 +1,162 @@
+
+:i $accelCarRot$ = %f(-1.000000)
+:i $decelCarRot$ = %f(3.000000)
+:i $speedCarRot$ = %f(0.125000)
+:i $accelCarRotFactor$ = %f(5.000000)
+:i $driving_parked_car$ = %i(0,00000000)
+:i function $SetupDrivableCar$
+	:i if $GameModeEquals$$is_creategoals$
+		:i return
+		
+	:i endif
+	:i $RunScriptOnObject$$car_set_exceptions$$Id$ = %GLOBAL%$Id$$Params$ = :s{ isNull :s}
+:i endfunction
+:i function $car_set_exceptions$$trigger_radius$ = %i(16,00000010)
+	:i if $ObjectExists$$Id$ = $goal_start_dialog$
+		:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i endif
+	:i $SetTags$$control_type$ = %GLOBAL%$control_type$$restart_node$ = %GLOBAL%$restart_node$$exit_node$ = %GLOBAL%$exit_node$$destroy_car$ = %GLOBAL%$destroy_car$
+	:i $ClearException$$SkaterOutOfRadius$
+	:i $Obj_SetInnerRadius$%GLOBAL%$trigger_radius$
+	:i $SetException$$ex$ = $SkaterInRadius$$scr$ = $car_inner_radius_handler$
+	:i $Block$
+:i endfunction
+:i function $car_inner_radius_handler$
+	:i $GetSkaterId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$objId$
+	:i $Obj_GetId$
+	:i if $CustomParkMode$$editing$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$Id$ = $goal_start_dialog$
+		:i %GLOBAL%$should_destroy$ = %i(0,00000000)
+		:i if %GLOBAL%$skaterId$.$IsInBail$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if NOT $GoalManager_CanStartGoal$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if  ($in_cat_preview_mode$ = %i(1,00000001)) 
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$should_destroy$ = %i(1,00000001)) 
+			:i $DestroyScreenElement$$Id$ = $goal_start_dialog$
+		:i endif
+	:i else
+		:i if $ObjectExists$$Id$ = $root_window$
+			:i $root_window$.$GetTags$
+			:i if $GotParam$$menu_state$
+				:i if  (%GLOBAL%$menu_state$ = $on$) 
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i if  ($in_cat_preview_mode$ = %i(0,00000000)) 
+			:i if $GoalManager_CanStartGoal$
+				:i %GLOBAL%$skater_ready_for_goal$ = %i(0,00000000)
+				:i if NOT %GLOBAL%$skaterId$.$Driving$
+					:i if %GLOBAL%$skaterId$.$OnGround$
+						:i %GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)
+					:i else
+						:i if %GLOBAL%$skaterId$.$Walking$
+							:i %GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)
+						:i endif
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)) 
+					:i if NOT %GLOBAL%$skaterId$.$IsInBail$
+						:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+							:i %GLOBAL%$objId$.$Obj_SetOuterRadius$%i(20,00000014)
+							:i %GLOBAL%$objId$.$SetException$$ex$ = $SkaterOutOfRadius$$scr$ = $car_refuse$
+							:i $FormatText$$TextName$ = $accept_text$%s(19,"Press \m5 to drive.")
+							:i $create_speech_box$:s{
+								:i $anchor_id$ = $goal_start_dialog$
+								:i $text$ = %GLOBAL%$accept_text$
+								:i $no_pad_choose$
+								:i $no_pad_start$
+								:i $pad_circle_script$ = $car_accept$
+								:i $pad_circle_params$ = :s{$objId$ = %GLOBAL%$objId$:s}
+								:i $pad_square_script$ = %GLOBAL%$pad_square_script$
+								:i $pad_square_params$ = %GLOBAL%$pad_square_params$
+								:i $bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+								:i $text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+								:i $font$ = $small$
+								:i $z_priority$ = %i(5,00000005)
+							:i :s}
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $car_refuse$$anchor_id$ = $goal_start_dialog$
+	:i $ClearException$$SkaterOutOfRadius$
+	:i $speech_box_exit$$anchor_id$ = %GLOBAL%$anchor_id$
+:i endfunction
+:i function $car_accept$$anchor_id$ = $goal_start_dialog$
+	:i $ClearException$$SkaterInRadius$
+	:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i %GLOBAL%$objId$.$car_begin_driving_run$
+:i endfunction
+:i function $car_begin_driving_run$
+	:i if NOT $GameModeEquals$$is_singlesession$
+		:i $GoalManager_DeactivateAllGoals$
+	:i endif
+	:i $Obj_GetId$
+	:i $GoalManager_GetLevelPrefix$
+	:i $FormatText$$ChecksumName$ = $ReadyLevelScript$%s(15,"%l_KillVehicles")$l$ = %GLOBAL%$level_prefix$
+	:i if $ScriptExists$%GLOBAL%$ReadyLevelScript$
+		:i %GLOBAL%$ReadyLevelScript$$CalledByParkedCar$$ParkedCar$ = %GLOBAL%$objId$
+	:i endif
+	:i $GetTags$
+	:i $goal_initialize_skater$$control_type$ = %GLOBAL%$control_type$$restart_node$ = %GLOBAL%$restart_node$$Exitable$
+	:i if $GotParam$$destroy_car$
+		:i $kill$$name$ = %GLOBAL%$destroy_car$
+	:i endif
+	:i $Change$$driving_parked_car$ = %i(1,00000001)
+	:i $SpawnScript$$car_wait_for_exit_request$
+	:i $PlayerVehicle$.$SetTags$$ParkedCarId$ = %GLOBAL%$objId$$ExitNode$ = %GLOBAL%$exit_node$$DestroyCar$ = %GLOBAL%$destroy_car$
+	:i if $PlayerVehicle$.$Vehicle_HandbrakeActive$
+		:i $create_panel_block$$Id$ = $current_goal$$text$ = %s(50,"\b3 = Accelerate\n\b1 = Brake/Reverse\n\b0 = Ditch")$style$ = $panel_message_goal$
+	:i else
+		:i $create_panel_block$$Id$ = $current_goal$$text$ = %s(67,"\b3 = Accelerate\n\b1 = Brake/Reverse\n\bf = Handbrake\n\b0 = Ditch")$style$ = $panel_message_goal$
+	:i endif
+	:i $Die$
+:i endfunction
+:i function $car_wait_for_exit_request$
+	:i $Wait$%f(0.500000)$Seconds$
+	:i $WaitForEvent$$Type$ = $ExitVehicleRequest$
+	:i $Goto$$handle_exit_vehicle_request$
+:i endfunction
+:i function $handle_exit_vehicle_request$
+	:i $PlayerVehicle$.$GetTags$
+	:i $car_end_driving_run$
+	:i $ResetSkaters$$node_name$ = %GLOBAL%$ExitNode$
+	:i $MakeSkaterGoto$$HandBrake$
+:i endfunction
+:i function $car_end_driving_run$
+	:i $KillSpawnedScript$$name$ = $car_wait_for_exit_request$
+	:i if $ObjectExists$$Id$ = $current_goal$
+		:i $DestroyScreenElement$$Id$ = $current_goal$
+	:i endif
+	:i $PlayerVehicle$.$GetTags$
+	:i $GoalManager_GetLevelPrefix$
+	:i $FormatText$$ChecksumName$ = $RestoreLevelScript$%s(17,"%l_CreateVehicles")$l$ = %GLOBAL%$level_prefix$
+	:i if $ScriptExists$%GLOBAL%$RestoreLevelScript$
+		:i %GLOBAL%$RestoreLevelScript$$CalledByParkedCar$$ParkedCar$ = %GLOBAL%$ParkedCarId$
+	:i endif
+	:i $Create$$name$ = %GLOBAL%$ParkedCarId$
+	:i if $GotParam$$DestroyCar$
+		:i if NOT $IsAlive$$name$ = %GLOBAL%$DestroyCar$
+			:i $Create$$name$ = %GLOBAL%$DestroyCar$
+		:i endif
+	:i endif
+	:i $Change$$driving_parked_car$ = %i(0,00000000)
+:i endfunction
+:i :end

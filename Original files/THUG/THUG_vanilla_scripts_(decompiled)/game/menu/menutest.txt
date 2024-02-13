@@ -1,0 +1,480 @@
+function $create_menu_test_menu$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $menu_test_menu$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(320.000000,224.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(0,00000000)
+		:i $dims$ = %vec2(200.000000,400.000000)
+		:i $focusable_child$ = $menu_test_vmenu$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $menu_test_menu$
+		:i $font$ = $small$
+		:i $text$ = %s(10,"Test Stuff")
+		:i $scale$ = %f(1.250000)
+		:i $pos$ = %vec2(100.000000,70.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(32,00000020)%i(32,00000020)%i(144,00000090)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $menu_test_menu$
+		:i $id$ = $the_scrolling_menu$
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(100.000000,90.000000)
+		:i $dims$ = %vec2(200.000000,80.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $the_scrolling_menu$
+		:i $id$ = $menu_test_vmenu$
+		:i $font$ = $small$
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(100.000000,0.000000)
+		:i $dims$ = %vec2(200.000000,170.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $AssignAlias$$id$ = $menu_test_menu$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $menu_test_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $menu_test_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$leave_menu_test_menu$:s}
+			:i :a}
+	:i :s}
+	:i $make_text_menu_item$$text$ = %s(14,"Sprite Test On")$id$ = $menu_sprite_test_on$$pad_choose_script$ = $start_sprite_test$$focus_script$ = $make_text_sub_menu_item$$text$ = %s(20,"Focus here to assert")$focus_script$ = $menu_test_focus_position$
+	:i $make_text_menu_item$$text$ = %s(15,"Sprite Test Off")$id$ = $menu_sprite_test_off$$pad_choose_script$ = $stop_sprite_test$
+	:i $make_text_menu_item$$text$ = %s(9,"Font Test")$id$ = $menu_font_test$$pad_choose_script$ = $launch_font_test_menu$
+	:i $make_text_menu_item$$text$ = %s(4,"Exit")$id$ = $menu_exit_test$$pad_choose_script$ = $leave_menu_test_menu$
+	:i $hookup_hmenu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$nullscript$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $LoadTexture$%s(12,"sht_volcom01")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $id$ = $blur_test_element$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $text$ = %s(12,"Vapor Trails")
+		:i $scale$ = %f(2.000000)
+		:i $pos$ = %vec2(320.000000,250.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $blur_effect$
+		:i $blur_rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $id$ = $dumb_monkey$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $text$ = %s(44,"O\m0\m1\m2\m3\m4\m5\m6ne\bcTwo\bc\m7Three\b1")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(25.000000,150.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $AssignAlias$$id$ = $blur_test_element$$alias$ = $blur_alias$
+	:i $RunScriptOnScreenElement$$id$ = $blur_alias$$do_blur_effect2$
+	:i $RunScriptOnScreenElement$$id$ = $menu_test_menu$$animate_in$
+	:i $printf$%s(26,"create_menu_test_menu done")
+	:i $AddTextureToVram$%s(10,"bottom_mid")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $bottom_mid_test$
+		:i $texture$ = $bottom_mid$
+		:i $pos$ = %vec2(320.000000,400.000000)
+		:i $scale$ = %vec2(15.000000,1.000000)
+		:i $just$ = :a{$center$$bottom$:a}
+	:i :s}
+:i endfunction
+:i function $menu_test_focus_position$
+	:i $GetTags$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $texture$ = $GO_fail$
+	:i :s}
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+:i endfunction
+:i function $do_blur_effect$
+	:i $DoMorph$$time$ = %i(0,00000000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$blur_max_displacement$ = %vec2(0.000000,0.000000)$scale$ = %vec2(0.900000,0.900000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.090000)$blur_alpha_pair$ = %vec2(0.000000,0.000000)$blur_bottom_scales$ = %vec2(2.000000,0.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.090000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+:i endfunction
+:i function $do_blur_effect_accept$
+	:i $DoMorph$$time$ = %i(0,00000000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$blur_max_displacement$ = %vec2(0.000000,0.000000)$scale$ = %vec2(0.900000,0.900000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.070000)$blur_alpha_pair$ = %vec2(0.000000,0.000000)$blur_bottom_scales$ = %vec2(3.500000,0.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.070000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+:i endfunction
+:i function $do_blur_effect_highlight$
+	:i $DoMorph$$time$ = %i(0,00000000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$blur_max_displacement$ = %vec2(0.000000,0.000000)$scale$ = %vec2(0.900000,0.900000)$blur_top_alpha_mult$ = %f(8.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.070000)$blur_alpha_pair$ = %vec2(0.200000,0.200000)$blur_bottom_scales$ = %vec2(2.600000,0.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.070000)$blur_alpha_pair$ = %vec2(4.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$scale$ = %vec2(1.000000,1.000000)$relative_scale$
+:i endfunction
+:i function $do_blur_effect2$
+	:i while
+		
+		:i $DoMorph$$time$ = %i(0,00000000)$blur_alpha_pair$ = %vec2(1.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$blur_max_displacement$ = %vec2(0.000000,0.000000)$alpha$ = %f(0.062500)$scale$ = %vec2(2.000000,2.000000)$relative_scale$
+		:i $DoMorph$$time$ = %f(0.750000)$blur_alpha_pair$ = %vec2(0.500000,0.000000)$blur_bottom_scales$ = %vec2(3.000000,3.000000)$scale$ = %vec2(2.000000,2.000000)$relative_scale$
+		:i $DoMorph$$time$ = %f(0.750000)$blur_alpha_pair$ = %vec2(1.000000,0.000000)$blur_bottom_scales$ = %vec2(1.000000,1.000000)$scale$ = %vec2(2.000000,2.000000)$relative_scale$
+		:i $wait$%f(0.600000)$seconds$
+		:i $DoMorph$$time$ = %f(0.500000)$pos$ = %vec2(320.000000,320.000000)$blur_max_displacement$ = %vec2(0.000000,70.000000)
+		:i $DoMorph$$time$ = %f(0.500000)$blur_max_displacement$ = %vec2(0.000000,0.000000)
+		:i $wait$%f(0.600000)$seconds$
+		:i $DoMorph$$time$ = %f(0.500000)$pos$ = %vec2(320.000000,250.000000)$blur_max_displacement$ = %vec2(0.000000,-70.000000)
+		:i $DoMorph$$time$ = %f(0.500000)$pos$ = %vec2(320.000000,250.000000)$blur_max_displacement$ = %vec2(0.000000,0.000000)$alpha$ = %f(1.000000)
+		:i $wait$%f(0.600000)$seconds$
+		:i $SetProps$$no_blur_effect$
+		:i $wait$%f(0.600000)$seconds$
+		:i $SetProps$$blur_effect$
+	:i loop_to 
+:i endfunction
+:i function $leave_menu_test_menu$
+	:i $DestroyScreenElement$$id$ = $dumb_monkey$
+	:i $DestroyScreenElement$$id$ = $blur_test_element$
+	:i $stop_sprite_test$
+	:i $UnloadTexture$%s(12,"sht_volcom01")
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$handle_start_pressed$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $GetTags$
+	:i $printf$%s(14,"death or glory")
+	:i $DestroyScreenElement$$id$ = $menu_test_menu$
+	:i $printf$%s(3,"ack")
+	:i $create_debug_menu$
+	:i $RemoveTextureFromVram$%s(10,"bottom_mid")
+	:i $DestroyScreenElement$$id$ = $bottom_mid_test$
+:i endfunction
+:i function $hookup_hmenu$
+	:i $printf$%s(12,"hookup_hmenu")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $hmenu$
+		:i $id$ = $test_h_menu$
+		:i $parent$ = $current_menu$
+		:i $just$ = :a{$center$$center$:a}
+		:i $padding_scale$ = %f(1.250000)
+		:i $spacing_between$ = %i(30,0000001e)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $test_h_menu$
+		:i $local_id$ = $something_something$
+		:i $text$ = %s(12,"do something")
+		:i $font$ = $small$
+		:i $rgba$ = :a{%i(128,00000080)%i(64,00000040)%i(64,00000040)%i(75,0000004b):a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$do_scale_up$:s}
+			:i :s{$unfocus$$do_scale_down$:s}
+			:i :a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $test_h_menu$
+		:i $text$ = %s(3,"yes")
+		:i $font$ = $small$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$do_scale_up$:s}
+			:i :s{$unfocus$$do_scale_down$:s}
+			:i :s{$pad_choose$$choose_h_menu_yes$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $test_h_menu$
+		:i $text$ = %s(2,"no")
+		:i $font$ = $small$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$do_scale_up$:s}
+			:i :s{$unfocus$$do_scale_down$:s}
+			:i :s{$pad_choose$$choose_h_menu_no$:s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $test_h_menu$
+	:i $printf$%s(17,"hookup_hmenu done")
+:i endfunction
+:i function $choose_h_menu_yes$
+	:i $SetScreenElementProps$$id$ = :s{$test_h_menu$$child$ = $something_something$:s}$focusable$
+	:i $SetScreenElementProps$$id$ = $current_menu$$disable_pad_handling$
+:i endfunction
+:i function $choose_h_menu_no$
+	:i $SetScreenElementProps$$id$ = :s{$test_h_menu$$child$ = $something_something$:s}$not_focusable$
+	:i $SetScreenElementProps$$id$ = $current_menu$$enable_pad_handling$
+:i endfunction
+:i function $start_sprite_test$
+	:i if $ObjectExists$$id$ = $test_sprite$
+	:i else
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $id$ = $test_sprite$
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $root_window$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(610.000000,30.000000)
+			:i $just$ = :a{$right$$top$:a}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $texture$ = $sht_volcom01$
+			:i $debug_outline$
+		:i :s}
+		:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $stop_sprite_test$
+	:i if $ObjectExists$$id$ = $test_sprite$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $DestroyScreenElement$$id$ = $test_sprite$$recurse$
+		:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $launch_font_test_menu$
+:i endfunction
+:i function $font_test$$font1$ = $small$$font2$ = $small_test_1$$font3$ = $small_test_2$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $font_test_anchor1$
+		:i $pos$ = %vec2(0.000000,324.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,100.000000)
+		:i $focusable_child$ = $font_test_vmenu$
+	:i :s}
+	:i $make_new_menu$$menu_id$ = $font_test_menu$$vmenu_id$ = $font_test_vmenu$$menu_title$ = %s(9,"Font test")
+	:i $SetScreenElementProps$:s{$id$ = $font_test_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$exit_font_test$:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$:s{$text$ = %s(14,"Exit font test")
+		:i $id$ = %s(3,"eft")
+		:i $unfocus_script$ = $do_scale_up$
+		:i $pad_choose_script$ = $exit_font_test$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor1$
+		:i $font$ = %GLOBAL%$font1$
+		:i $text$ = %s(43,"Tony Hawks Pro Skater - original THPS3 font")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(92,0000005c)%i(92,0000005c)%i(92,0000005c)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor1$
+		:i $font$ = %GLOBAL%$font2$
+		:i $text$ = %s(51,"A B C D E F G H I J K L M N O P Q R S T U V W X Y Z")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(92,0000005c)%i(92,0000005c)%i(92,0000005c)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,20.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor1$
+		:i $font$ = %GLOBAL%$font2$
+		:i $text$ = %s(51,"a b c d e f g h i j k l m n o p q r s t u v w x y z")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(92,0000005c)%i(92,0000005c)%i(92,0000005c)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,40.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor1$
+		:i $font$ = %GLOBAL%$font2$
+		:i $text$ = %s(51,"0 1 2 3 4 5 6 7 8 9 . , - ! ? : ' + / ^ ? ( ) * @ `")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(92,0000005c)%i(92,0000005c)%i(92,0000005c)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,60.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor1$
+		:i $font$ = %GLOBAL%$font2$
+		:i $text$ = %s(50," ? ? ? ? ? ? ? ? ? ? ? ? { _ # $ % & \ = < > ? ? ?")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(92,0000005c)%i(92,0000005c)%i(92,0000005c)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,80.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $font_test_anchor2$
+		:i $pos$ = %vec2(0.000000,15.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,100.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor2$
+		:i $font$ = %GLOBAL%$font3$
+		:i $text$ = %s(21,"ABCD EFGHI JKL MNOPQR")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(111,0000006f)%i(53,00000035)%i(18,00000012)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,200.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor2$
+		:i $font$ = %GLOBAL%$font3$
+		:i $text$ = %s(21,"STUV WXYZa bcd efghij")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(78,0000004e)%i(79,0000004f)%i(127,0000007f)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,220.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $font_test_anchor2$
+		:i $font$ = %GLOBAL%$font3$
+		:i $text$ = %s(21,"klmn opqrs tuv wxyz01")
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(118,00000076)%i(110,0000006e)%i(14,0000000e)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(15.000000,240.000000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $font_test_menu$$animate_in$
+:i endfunction
+:i function $exit_font_test$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $DestroyScreenElement$$id$ = $font_test_anchor1$$recurse$
+	:i $DestroyScreenElement$$id$ = $font_test_anchor2$$recurse$
+	:i $RunScriptOnScreenElement$$id$ = $font_test_menu$$animate_out$$callback$ = $create_pause_menu$
+:i endfunction
+:i function $Create3dArrowPointer$$model$ = %s(5,"Arrow")$angleX$ = %f(42.500000)$pos$ = %vec2(320.000000,50.000000)$scale$ = %f(0.030000)$active_viewport$ = %i(0,00000000)
+	:i if $GotParam$$ArrowId$
+		:i $printf$%s(55,"Create3dArrowPointer now uses 'Id' instead of 'ArrowId'")
+		:i $goto$$abort$
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $type$ = $Element3d$
+		:i $id$ = %GLOBAL%$id$
+		:i $model$ = %GLOBAL%$model$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $CameraZ$ = %i(4294967290,fffffffa)
+		:i $scale$ = %GLOBAL%$scale$
+		:i $Tilt$ = %GLOBAL%$Tilt$
+		:i $active_viewport$ = %GLOBAL%$active_viewport$
+		:i $angleX$ = %GLOBAL%$angleX$
+		:i $NodeToPointTo$ = %GLOBAL%$Node$
+		:i $ObjectToPointTo$ = %GLOBAL%$Name$
+	:i :s}
+:i endfunction
+:i function $SetArrowNode$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$SetElement3dNode$$params$ = :s{$Node$ = %GLOBAL%$Node$:s}
+:i endfunction
+:i function $SetElement3dNode$
+	:i $SetProps$$NodeToPointTo$ = %GLOBAL%$Node$
+:i endfunction
+:i function $FlyingLetters$
+	:i while
+		
+		:i $CreateTestElement3d$$model$ = %s(8,"Letter_S")$pos$ = %vec2(100.000000,100.000000)
+		:i $CreateTestElement3d$$model$ = %s(8,"Letter_K")$pos$ = %vec2(180.000000,100.000000)
+		:i $CreateTestElement3d$$model$ = %s(8,"Letter_A")$pos$ = %vec2(260.000000,100.000000)
+		:i $CreateTestElement3d$$model$ = %s(8,"Letter_T")$pos$ = %vec2(340.000000,100.000000)
+		:i $CreateTestElement3d$$model$ = %s(8,"Letter_E")$pos$ = %vec2(420.000000,100.000000)
+		:i $wait$%f(0.180000)$seconds$
+	:i loop_to %i(100,00000064)
+:i endfunction
+:i function $CreateTestElement3d$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $type$ = $Element3d$
+		:i $model$ = %GLOBAL%$model$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $CameraZ$ = %i(4294967286,fffffff6)
+		:i $scale$ = %f(0.030000)
+		:i $AngVelX$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5)
+			 :POS(0) %f(-0.100000)
+		:BREAKTO(6)
+			 :POS(1) %f(-0.120000)
+		:BREAKTO(6)
+			 :POS(2) %f(-0.110000)
+		:BREAKTO(6)
+			 :POS(3) %f(0.110000)
+		:BREAKTO(6)
+			 :POS(4) %f(0.120000)
+		:BREAKTO(6)
+			 :POS(5) %f(0.100000) :POS(6) 
+			:i $AngVelY$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(7):OFFSET(8):OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12)
+				 :POS(7) %f(-0.100000)
+			:BREAKTO(13)
+				 :POS(8) %f(-0.120000)
+			:BREAKTO(13)
+				 :POS(9) %f(-0.110000)
+			:BREAKTO(13)
+				 :POS(10) %f(0.110000)
+			:BREAKTO(13)
+				 :POS(11) %f(0.120000)
+			:BREAKTO(13)
+				 :POS(12) %f(0.100000) :POS(13) 
+				:i $AngVelZ$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19)
+					 :POS(14) %f(-0.100000)
+				:BREAKTO(20)
+					 :POS(15) %f(-0.120000)
+				:BREAKTO(20)
+					 :POS(16) %f(-0.110000)
+				:BREAKTO(20)
+					 :POS(17) %f(0.110000)
+				:BREAKTO(20)
+					 :POS(18) %f(0.120000)
+				:BREAKTO(20)
+					 :POS(19) %f(0.100000) :POS(20) 
+				:i :s}
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$TestElement3d$$params$ = :s{$pos$ = %GLOBAL%$pos$:s}
+			:i endfunction
+			:i function $TestElement3d$
+				:i $DoMorph$$time$ = %i(0,00000000)$pos$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(21):OFFSET(22):OFFSET(23):OFFSET(24)
+						 :POS(21) %vec2(0.000000,0.000000)
+					:BREAKTO(25)
+						 :POS(22) %vec2(-100.000000,240.000000)
+					:BREAKTO(25)
+						 :POS(23) %vec2(740.000000,240.000000)
+					:BREAKTO(25)
+						 :POS(24) %vec2(740.000000,580.000000) :POS(25) 
+					:i $DoMorph$$time$ = %f(0.500000)$pos$ = %GLOBAL%$pos$
+					:i $DoMorph$$time$ = %i(1,00000001)$pos$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29)
+							 :POS(26) %vec2(-200.000000,0.000000)
+						:BREAKTO(30)
+							 :POS(27) %vec2(-200.000000,240.000000)
+						:BREAKTO(30)
+							 :POS(28) %vec2(840.000000,240.000000)
+						:BREAKTO(30)
+							 :POS(29) %vec2(840.000000,580.000000) :POS(30) 
+						:i $wait$%i(1,00000001)$seconds$
+						:i $Die$
+					:i endfunction
+					:i :end
+					
