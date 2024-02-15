@@ -1,0 +1,1015 @@
+
+:i function $thugpro_init_dynamic_level_changes$
+	:i $GetLevelStructureName$
+	:i $FormatText$$ChecksumName$ = $NodeArray$%s(12,"%i_NodeArray")$i$ =  (%GLOBAL%$level_structure_name$->$level$) 
+	:i $FormatText$$ChecksumName$ = $LevelArray$%s(15,"%i_LevelChanges")$i$ =  (%GLOBAL%$level_structure_name$->$level$) 
+	:i if $GlobalExists$$name$ = %GLOBAL%$LevelArray$$type$ = $array$
+		:i $ForEachIn$%GLOBAL%$LevelArray$$Do$ = $thugpro_levelchanges_handle_objects$$params$ = :s{ isNull :s}
+	:i endif
+:i endfunction
+:i function $THUGProPreloadModels$
+	:i $GetLevelStructureName$
+	:i $FormatText$$ChecksumName$ = $LevelArray$%s(15,"%i_LevelChanges")$i$ =  (%GLOBAL%$level_structure_name$->$level$) 
+	:i if $GlobalExists$$name$ = %GLOBAL%$LevelArray$$type$ = $array$
+		:i $PushMemProfile$%s(13,"PreLoadModels")
+		:i $ForEachIn$%GLOBAL%$LevelArray$$Do$ = $thugpro_maybe_preloadmodel$$params$ = :s{ isNull :s}
+		:i $PopMemProfile$
+	:i endif
+:i endfunction
+:i function $thugpro_maybe_preloadmodel$
+	:i if $GotParam$$model$
+		:i $PreloadModel$$name$ = %GLOBAL%$model$
+	:i endif
+	:i if $GotParam$$LoadAsset$
+		:i $LoadAsset$%GLOBAL%$tex$
+		:i $FormatText$$ChecksumName$ = $tex_checksum$%s(2,"%a")$a$ = %GLOBAL%$tex$
+		:i $LoadAsset$%GLOBAL%$mdl$$nocollision$ = %i(1,00000001)$parent$ = %GLOBAL%$tex_checksum$
+	:i endif
+:i endfunction
+:i function $launch_skateshop_testscript$
+	:i $Change$$__from_skateshop$ = %i(1,00000001)
+	:i $THUGPRO_TriggerButtonPatch$$off$
+:i endfunction
+:i $skateshop_LevelChanges$ = :a{
+	:i :s{
+		:i $moveto$
+		:i $node$ = $ts_soda01$
+		:i $pos$ = %vec3(20.000000,0.000000,0.000000)$relative$
+	:i :s}
+	:i :s{
+		:i $moveto$
+		:i $node$ = $ts_soda02$
+		:i $pos$ = %vec3(20.000000,0.000000,0.000000)$relative$
+	:i :s}
+	:i :s{
+		:i $model$ = %s(43,"leveleditor\exported\tp_geo_Arcade_THPS.mdl")
+		:i $pos$ = %vec3(-3240.891113,20.000000,492.612000)$angle$ = %f(180.000000)$scale$ = %f(0.840000)$static$
+	:i :s}
+	:i :s{
+		:i $model$ = %s(43,"leveleditor\exported\tp_geo_Arcade_THPS.mdl")
+		:i $pos$ = %vec3(-3240.891113,20.000000,492.612000)$angle$ = %f(180.000000)$x_scale$ = %f(-0.840000)$z_scale$ = %f(0.840000)$y_scale$ = %f(-0.840000)$static$
+	:i :s}
+	:i :s{
+		:i $kill$
+		:i $node$ = $banner_1$
+	:i :s}
+	:i :s{
+		:i $kill$
+		:i $node$ = $banner_shadow01$
+	:i :s}
+	:i :s{
+		:i $kill$
+		:i $node$ = $banner_shadow$
+	:i :s}
+	:i :s{
+		:i $moveto$
+		:i $node$ = $banner_2$
+		:i $pos$ = %vec3(0.000000,0.000000,150.000000)$relative$
+	:i :s}
+	:i :s{
+		:i $model$ = %s(32,"levels\dynamic\tpBanner_Long.mdl")
+		:i $_type$ = $banner$$special$
+		:i $name$ = $__thugpro_banner$
+		:i $pos$ = %vec3(-3273.104004,148.597000,620.315002)$angle$ = %f(90.000000)$static$$y_scale$ = %f(0.400000)$x_scale$ = %f(0.520000)$replace_texture$
+	:i :s}
+	:i :s{
+		:i $model$ = %s(34,"levels\dynamic\tpBanner_Square.mdl")
+		:i $_type$ = $billboard$$special$
+		:i $name$ = $thugpro_squarebanner$
+		:i $pos$ = %vec3(-3182.420898,48.331001,774.184021)$angle$ = %f(90.000000)$static$$scale$ = %f(0.200000)$replace_texture$
+	:i :s}
+	:i :s{
+		:i $create$
+		:i $nodes$ = :a{
+			:i $TRG_PedController$
+			:i $TRG_prop_pumpkin_1$
+			:i $TRG_prop_pumpkin_2$
+			:i $TRG_prop_pumpkin_3$
+			:i $TRG_prop_pumpkin_small$
+			:i $TRG_prop_pumpkin_huge$
+			:i $TRG_prop_pumpkin_counter_1$
+			:i $TRG_prop_pumpkin_counter_2$
+			:i $TRG_prop_pumpkin_bench$
+			:i $TRG_prop_candle_cluster_big$
+			:i $TRG_prop_candle_cluster_big_2$
+			:i $TRG_G_SkPro_HellPortalDoor01$
+			:i :a}
+		:i $date$
+		:i $day_from$ =  ($global_day_from$) 
+		:i $day_to$ =  ($global_day_to$) 
+		:i $month_from$ =  ($global_month_from$) 
+		:i $month_to$ =  ($global_month_to$) 
+	:i :s}
+	:i :s{
+		:i $kill$
+		:i $nodes$ = :a{$shirt_stand_03$$glasses_shelf$$sunglasses_5$:a}
+		:i $date$
+		:i $day_from$ =  ($global_day_from$) 
+		:i $day_to$ =  ($global_day_to$) 
+		:i $month_from$ =  ($global_month_from$) 
+		:i $month_to$ =  ($global_month_to$) 
+	:i :s}
+	:i :a}
+:i $ca_LevelChanges$ = :a{
+	:i :s{
+		:i $replace_script$
+		:i $node$ = $TRG_Conc_Park_Rail891$
+		:i $TriggerScript$ = $TRG_Conc_Park_Rail891Script_thugpro$
+	:i :s}
+	:i :a}
+:i function $TRG_Conc_Park_Rail891Script_thugpro$
+	:i if $ObjectExists$$id$ = $TRG_PeeingKid01$
+		:i $CA_Peeing_Lip$
+	:i endif
+:i endfunction
+:i function $thugpro_handleAdditionalNodeData$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$class$$b$ = $ParticleObject$
+		:i if $GotParam$$BoxRGBAs$
+			:i %GLOBAL%$_StartRGB$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+			:i %GLOBAL%$_StartAlpha$ = %i(128,00000080)
+			:i $GetColorFromRGBA$$rgba$ =  (%GLOBAL%$BoxRGBAs$:a{%i(0,00000000):a}) 
+			:i if $GotParam$$r$
+				:i $SetArrayElement$$arrayname$ = $_StartRGB$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$r$
+			:i endif
+			:i if $GotParam$$g$
+				:i $SetArrayElement$$arrayname$ = $_StartRGB$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$g$
+			:i endif
+			:i if $GotParam$$b$
+				:i $SetArrayElement$$arrayname$ = $_StartRGB$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$b$
+			:i endif
+			:i if $GotParam$$a$
+				:i $_StartAlpha$ = %GLOBAL%$a$
+			:i endif
+			:i %GLOBAL%$_MidRGB$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+			:i %GLOBAL%$_MidAlpha$ = %i(128,00000080)
+			:i $GetColorFromRGBA$$rgba$ =  (%GLOBAL%$BoxRGBAs$:a{%i(1,00000001):a}) 
+			:i if $GotParam$$r$
+				:i $SetArrayElement$$arrayname$ = $_MidRGB$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$r$
+			:i endif
+			:i if $GotParam$$g$
+				:i $SetArrayElement$$arrayname$ = $_MidRGB$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$g$
+			:i endif
+			:i if $GotParam$$b$
+				:i $SetArrayElement$$arrayname$ = $_MidRGB$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$b$
+			:i endif
+			:i if $GotParam$$a$
+				:i $_MidAlpha$ = %GLOBAL%$a$
+			:i endif
+			:i %GLOBAL%$_EndRGB$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+			:i %GLOBAL%$_EndAlpha$ = %i(128,00000080)
+			:i $GetColorFromRGBA$$rgba$ =  (%GLOBAL%$BoxRGBAs$:a{%i(2,00000002):a}) 
+			:i if $GotParam$$r$
+				:i $SetArrayElement$$arrayname$ = $_EndRGB$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$r$
+			:i endif
+			:i if $GotParam$$g$
+				:i $SetArrayElement$$arrayname$ = $_EndRGB$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$g$
+			:i endif
+			:i if $GotParam$$b$
+				:i $SetArrayElement$$arrayname$ = $_EndRGB$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$b$
+			:i endif
+			:i if $GotParam$$a$
+				:i $_EndAlpha$ = %GLOBAL%$a$
+			:i endif
+			:i $AppendNodeParams$$node$ = %GLOBAL%$name$$params$ = :s{$StartRGB$ = %GLOBAL%$_StartRGB$$StartAlpha$ = %GLOBAL%$_StartAlpha$$MidRGB$ = %GLOBAL%$_MidRGB$$MidAlpha$ = %GLOBAL%$_MidAlpha$$EndRGB$ = %GLOBAL%$_EndRGB$$EndAlpha$ = %GLOBAL%$_EndAlpha$
+			:i :s}
+			:i $__RefreshParticles$ = %i(1,00000001)
+			:i $RemoveParameter$$BoxRGBAs$
+			:i $RemoveParameter$$r$
+			:i $RemoveParameter$$g$
+			:i $RemoveParameter$$b$
+			:i $RemoveParameter$$a$
+		:i endif
+		:i if $GotParam$$BoxDims$
+			:i $_BoxDimsStart$ =  (%GLOBAL%$BoxDims$:a{%i(0,00000000):a}) 
+			:i $_BoxDimsMid$ =  (%GLOBAL%$BoxDims$:a{%i(1,00000001):a}) 
+			:i $_BoxDimsEnd$ =  (%GLOBAL%$BoxDims$:a{%i(2,00000002):a}) 
+			:i $AppendNodeParams$$node$ = %GLOBAL%$name$$params$ = :s{$BoxDimsStart$ = %GLOBAL%$_BoxDimsStart$$BoxDimsMid$ = %GLOBAL%$_BoxDimsMid$$BoxDimsEnd$ = %GLOBAL%$_BoxDimsEnd$
+			:i :s}
+			:i $__RefreshParticles$ = %i(1,00000001)
+			:i $RemoveParameter$$BoxDims$
+		:i endif
+		:i if $GotParam$$BoxPositions$
+			:i $_StartPosition$ =  (%GLOBAL%$BoxPositions$:a{%i(0,00000000):a}) 
+			:i $_MidPosition$ =  (%GLOBAL%$BoxPositions$:a{%i(1,00000001):a}) 
+			:i $_EndPosition$ =  (%GLOBAL%$BoxPositions$:a{%i(2,00000002):a}) 
+			:i $AppendNodeParams$$node$ = %GLOBAL%$name$$params$ = :s{$StartPosition$ = %GLOBAL%$_StartPosition$$MidPosition$ = %GLOBAL%$_MidPosition$$EndPosition$ = %GLOBAL%$_EndPosition$
+			:i :s}
+			:i $__RefreshParticles$ = %i(1,00000001)
+			:i $RemoveParameter$$BoxPositions$
+		:i endif
+		:i if $GotParam$$__RefreshParticles$
+			:i if $IsAlive$$name$ = %GLOBAL%$name$
+				:i $THUGPRO_SafeKill$$name$ = %GLOBAL%$name$
+				:i $THUGPRO_ForceCreate$$name$ = %GLOBAL%$name$
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$CreatedFromVariable$
+		:i if $IsTrue$%GLOBAL%$CreatedFromVariable$
+			:i if NOT $GotParam$$CreatedAtStart$
+				:i $AppendNodeParams$$node$ = %GLOBAL%$name$$params$ = :s{$CreatedAtStart$:s}
+			:i endif
+			:i $THUGPRO_ForceCreate$$name$ = %GLOBAL%$name$
+		:i endif
+	:i endif
+	:i if $GotParam$$class$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$class$$b$ = $levelgeometry$
+			:i if $GotParam$$UVWibble$
+				:i if NOT $GotParam$$UVWibble_UVel$
+					:i $UVWibble_UVel$ = %f(0.000000)
+				:i endif
+				:i if NOT $GotParam$$UVWibble_VVel$
+					:i $UVWibble_VVel$ = %f(0.000000)
+				:i endif
+				:i if NOT $GotParam$$UVWibble_Freq$
+					:i $UVWibble_Freq$ = %f(0.000000)
+				:i endif
+				:i if NOT $GotParam$$UVWibble_UAmp$
+					:i $UVWibble_UAmp$ = %f(0.000000)
+				:i endif
+				:i if NOT $GotParam$$UVWibble_VAmp$
+					:i $UVWibble_VAmp$ = %f(0.000000)
+				:i endif
+				:i if NOT $GotParam$$UVWibble_Phase$
+					:i $UVWibble_Phase$ = %f(0.000000)
+				:i endif
+				:i $EnableExplicitUVWibble$:s{
+					:i $sector$ = %GLOBAL%$name$
+				:i :s}
+				:i $SetUVWibbleParams$:s{
+					:i $sector$ = %GLOBAL%$name$
+					:i $u_vel$ = %GLOBAL%$UVWibble_UVel$
+					:i $v_vel$ = %GLOBAL%$UVWibble_VVel$
+					:i $u_amp$ = %GLOBAL%$UVWibble_UAmp$
+					:i $v_amp$ = %GLOBAL%$UVWibble_VAmp$
+					:i $u_freq$ = %GLOBAL%$UVWibble_Freq$
+					:i $v_freq$ = %GLOBAL%$UVWibble_Freq$
+					:i $u_phase$ = %GLOBAL%$UVWibble_Phase$
+					:i $v_phase$ = %GLOBAL%$UVWibble_Phase$
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_UVWibble$
+	:i $EnableExplicitUVWibble$:s{
+		:i $sector$ = %GLOBAL%$node$
+	:i :s}
+	:i $SetUVWibbleParams$:s{
+		:i $sector$ = %GLOBAL%$node$
+		:i $u_vel$ = %GLOBAL%$UVWibble_UVel$
+		:i $v_vel$ = %GLOBAL%$UVWibble_VVel$
+		:i $u_amp$ = %GLOBAL%$UVWibble_UAmp$
+		:i $v_amp$ = %GLOBAL%$UVWibble_VAmp$
+		:i $u_freq$ = %GLOBAL%$UVWibble_Freq$
+		:i $v_freq$ = %GLOBAL%$UVWibble_Freq$
+		:i $u_phase$ = %GLOBAL%$UVWibble_Phase$
+		:i $v_phase$ = %GLOBAL%$UVWibble_Phase$
+	:i :s}
+:i endfunction
+:i function $thugpro_MoveNode$
+	:i %GLOBAL%$node$.$Obj_GetType$
+	:i switch %GLOBAL%$ObjType$
+		:i case $OBJECT_TYPE_PED$
+			:i %GLOBAL%$node$.$Obj_SetPosition$$position$ = %GLOBAL%$pos$
+			:i endcase
+		case $OBJECT_TYPE_CAR$
+			:i %GLOBAL%$node$.$Obj_SetPosition$$position$ = %GLOBAL%$pos$
+			:i endcase
+		case $OBJECT_TYPE_GAME_OBJ$
+			:i %GLOBAL%$node$.$Obj_SetPosition$$position$ = %GLOBAL%$pos$
+			:i endcase
+		case $OBJECT_TYPE_UNDEFINED$
+			:i $MoveNode$$name$ = %GLOBAL%$node$$position$ = %GLOBAL%$pos$
+			:i end_switch
+	
+:i endfunction
+:i function $thugpro_MoveNodeTo$
+	:i if $GotParam$$relative$
+		:i %GLOBAL%$new_pos$ = %GLOBAL%$pos$
+	:i else 
+		:i %GLOBAL%$new_pos$ =  ( (%GLOBAL%$pos$)  -  (%GLOBAL%$spos$) ) 
+	:i endif
+	:i if NOT $GotParam$$clone$
+		:i $THUGPRO_SafeKill$$name$ = %GLOBAL%$node$
+	:i endif
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$new_pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$node$
+		:i $class$ = $LevelObject$
+		:i $CreatedAtStart$
+		:i $CollisionMode$ = $Geometry$
+	:i :s}
+:i endfunction
+:i function $thugpro_levelchanges_remove_trigger$
+	:i if $GotParam$$node$
+		:i if $NodeExists$%GLOBAL%$node$
+			:i $AppendNodeParams$$node$ = %GLOBAL%$node$$params$ = :s{$TriggerScript$ = $nullscript$:s}
+			:i if $IsAlive$$name$ = %GLOBAL%$node$
+				:i $kill$$name$ = %GLOBAL%$node$
+			:i endif
+			:i $create$$name$ = %GLOBAL%$node$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_replace_trigger$
+	:i if $GotParam$$node$
+		:i if $NodeExists$%GLOBAL%$node$
+			:i $AppendNodeParams$$node$ = %GLOBAL%$node$$params$ = :s{$TriggerScript$ = %GLOBAL%$TriggerScript$:s}
+			:i if $IsAlive$$name$ = %GLOBAL%$node$
+				:i $kill$$name$ = %GLOBAL%$node$
+			:i endif
+			:i $create$$name$ = %GLOBAL%$node$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_replace_params$
+	:i if $GotParam$$node$
+		:i if $NodeExists$%GLOBAL%$node$
+			:i %GLOBAL%$tempNode$ = %GLOBAL%$node$
+			:i $RemoveParameter$$replace_test$
+			:i $RemoveParameter$$node$
+			:i $AppendNodeParams$$node$ = %GLOBAL%$tempNode$$params$ = :s{ isNull :s}
+			:i if $IsAlive$$name$ = %GLOBAL%$tempNode$
+				:i $kill$$name$ = %GLOBAL%$tempNode$
+			:i endif
+			:i $create$$name$ = %GLOBAL%$tempNode$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_add_static_model$
+	:i if $GotParam$$replace_texture$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$scale$
+		:i %GLOBAL%$scale$ = %f(1.000000)
+	:i endif
+	:i if NOT $GotParam$$x_scale$
+		:i %GLOBAL%$x_scale$ = %GLOBAL%$scale$
+	:i endif
+	:i if NOT $GotParam$$y_scale$
+		:i %GLOBAL%$y_scale$ = %GLOBAL%$scale$
+	:i endif
+	:i if NOT $GotParam$$z_scale$
+		:i %GLOBAL%$z_scale$ = %GLOBAL%$scale$
+	:i endif
+	:i if NOT $GotParam$$CollisionMode$
+		:i $CollisionMode$ = $None$
+	:i endif
+	:i $GetUniqueCompositeObjectID$$preferredID$ = %GLOBAL%$name$
+	:i if $GotParam$$TriggerScript$
+		:i $CreateFromStructure$:s{
+			:i $pos$ = %GLOBAL%$pos$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $name$ = %GLOBAL%$UniqueID$
+			:i $class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $CollisionMode$ = %GLOBAL%$CollisionMode$
+			:i $model$ = %GLOBAL%$model$
+			:i $x$ = %GLOBAL%$x_scale$
+			:i $y$ = %GLOBAL%$y_scale$
+			:i $z$ = %GLOBAL%$z_scale$
+			:i $z$ = %GLOBAL%$z_scale$
+			:i $TriggerScript$ = %GLOBAL%$TriggerScript$
+		:i :s}
+	:i else 
+		:i $CreateFromStructure$:s{
+			:i $pos$ = %GLOBAL%$pos$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $name$ = %GLOBAL%$UniqueID$
+			:i $class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $CollisionMode$ = %GLOBAL%$CollisionMode$
+			:i $model$ = %GLOBAL%$model$
+			:i $x$ = %GLOBAL%$x_scale$
+			:i $y$ = %GLOBAL%$y_scale$
+			:i $z$ = %GLOBAL%$z_scale$
+		:i :s}
+	:i endif
+	:i if $GotParam$$angle$
+		:i %GLOBAL%$UniqueID$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$
+	:i endif
+	:i if $GotParam$$dir$
+		:i %GLOBAL%$UniqueID$.$Obj_SetOrientation$$dir$ = %GLOBAL%$dir$
+	:i endif
+	:i if $GotParam$$replace_texture$
+		:i %GLOBAL%$UniqueID$.$thugpro_replace_textures$ isNull $id$ = %GLOBAL%$UniqueID$
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_create_soundemitter$
+	:i if NOT $GotParam$$SoundName$
+		:i if NOT $GotParam$$StreamName$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $GetUniqueCompositeObjectID$$preferredID$ = %GLOBAL%$name$
+	:i if NOT $GotParam$$Vol$
+		:i $Vol$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$Pitch$
+		:i $Pitch$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$DropOff$
+		:i $DropOff$ = %i(100,00000064)
+	:i endif
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$UniqueID$
+		:i $class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $model$ = %s(4,"none")
+		:i $TriggerScript$ = $THUGPRO_Emitter_PlaySound$
+		:i $NeverSuspend$
+		:i $SuspendDistance$ = %i(0,00000000)
+	:i :s}
+	:i if $GotParam$$StreamName$
+		:i %GLOBAL%$UniqueID$.$SetTags$$_StreamName$ = %GLOBAL%$StreamName$
+	:i else 
+		:i %GLOBAL%$UniqueID$.$SetTags$$_SoundName$ = %GLOBAL%$SoundName$
+	:i endif
+	:i %GLOBAL%$UniqueID$.$SetTags$$_Vol$ = %GLOBAL%$Vol$
+	:i %GLOBAL%$UniqueID$.$SetTags$$_Pitch$ = %GLOBAL%$Pitch$
+	:i %GLOBAL%$UniqueID$.$SetTags$$_DropOff$ = %GLOBAL%$DropOff$
+:i endfunction
+:i function $THUGPRO_Emitter_PlaySound$
+	:i $GetSingleTag$$_StreamName$
+	:i $GetSingleTag$$_SoundName$
+	:i $GetSingleTag$$_Vol$
+	:i $GetSingleTag$$_Pitch$
+	:i $GetSingleTag$$_DropOff$
+	:i if $GotParam$$_SoundName$
+		:i $Obj_PlaySound$:s{
+			:i %GLOBAL%$_SoundName$
+			:i $Vol$ = %GLOBAL%$_Vol$
+			:i $Pitch$ = %GLOBAL%$_Pitch$
+			:i $DropOff$ = %GLOBAL%$_DropOff$
+		:i :s}
+	:i else 
+		:i $Obj_PlayStream$:s{
+			:i %GLOBAL%$_StreamName$
+			:i $Vol$ = %GLOBAL%$_Vol$
+			:i $Pitch$ = %GLOBAL%$_Pitch$
+			:i $DropOff$ = %GLOBAL%$_DropOff$
+			:i $dropoff_function$ = $inv_exponential$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_create_proximobject$
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$name$
+		:i $class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $model$ = %s(4,"none")
+		:i $TriggerScript$ = $thugpro_proximobjectScript$
+	:i :s}
+	:i %GLOBAL%$name$.$SetTags$$proxim_TriggerScript$ = %GLOBAL%$TriggerScript$
+	:i %GLOBAL%$name$.$SetTags$$proxim_radius$ = %GLOBAL%$radius$
+:i endfunction
+:i function $thugpro_proximobjectScript$$proxim_radius$ = %i(10,0000000a)
+	:i $Obj_GetID$
+	:i %GLOBAL%$objID$.$GetSingleTag$$proxim_radius$
+	:i %GLOBAL%$objID$.$Obj_ClearExceptions$
+	:i %GLOBAL%$objID$.$Obj_SetInnerRadius$%GLOBAL%$proxim_radius$
+	:i %GLOBAL%$objID$.$Obj_SetOuterRadius$%GLOBAL%$proxim_radius$
+	:i %GLOBAL%$objID$.$ClearEventHandler$$AnyObjectInRadius$
+	:i %GLOBAL%$objID$.$ClearEventHandler$$ObjectOutofRadius$
+	:i %GLOBAL%$objID$.$GetSingleTag$$proxim_TriggerScript$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = %GLOBAL%$proxim_TriggerScript$$params$ = :s{:s}
+:i endfunction
+:i function $thugpro_levelchanges_add_ammopickup$$ammo_type$ = $beerbottle$$ammo_text$ = %s(0,"")$name$ = $TRG_TP_Ammo_Node$
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$name$
+		:i $class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $model$ = %s(4,"none")
+		:i $TriggerScript$ = $thugpro_setup_ammobox$
+	:i :s}
+	:i %GLOBAL%$name$.$SetTags$$pickup_ammo_type$ = %GLOBAL%$ammo_type$
+	:i %GLOBAL%$name$.$SetTags$$pickup_ammo_text$ = %GLOBAL%$ammo_text$
+:i endfunction
+:i function $thugpro_setup_ammobox$
+	:i $Obj_GetID$
+	:i %GLOBAL%$objID$.$GetSingleTag$$pickup_ammo_type$
+	:i %GLOBAL%$objID$.$Obj_ClearExceptions$
+	:i %GLOBAL%$inner_radius$ = %i(7,00000007)
+	:i %GLOBAL%$outer_radius$ = %i(15,0000000f)
+	:i %GLOBAL%$accept_text$ = %s(25,"Press \m5 to pick up Ammo")
+	:i %GLOBAL%$activation_script$ = $thugpro_get_ammo$
+	:i %GLOBAL%$activation_script_params$ = :s{$type$ = %GLOBAL%$pickup_ammo_type$$num$ = %i(5,00000005):s}
+	:i %GLOBAL%$objID$.$Obj_SetInnerRadius$%GLOBAL%$inner_radius$
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofRadius$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $ped_speech_got_trigger$$params$ = :s{$ammo_pickup$ isNull $ped_id$ = %GLOBAL%$objID$$activation_script_params$ =  isNull :s}
+:i endfunction
+:i function $thugpro_setup_ammobox_beerbottle$
+	:i $thugpro_setup_ammobox$$type$ = $beerbottle$
+:i endfunction
+:i function $thugpro_setup_ammobox_apple$
+	:i $thugpro_setup_ammobox$$type$ = $apple$
+:i endfunction
+:i function $thugpro_setup_ammobox_Tomato$
+	:i $thugpro_setup_ammobox$$type$ = $tomato$
+:i endfunction
+:i function $thugpro_setup_ammobox_PaintCan$
+	:i $thugpro_setup_ammobox$$type$ = $PaintCan$
+:i endfunction
+:i function $thugpro_get_ammo$
+	:i $Skater$.$give_skater_ammo$$type$ = %GLOBAL%$type$$num$ = %GLOBAL%$num$
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i $UnPauseSkaters$
+:i endfunction
+:i function $thugpro_levelchanges_destroy_object$
+	:i if $GotParam$$node$
+		:i if $NodeExists$%GLOBAL%$node$
+			:i if $IsAlive$$name$ = %GLOBAL%$node$
+				:i $kill$$name$ = %GLOBAL%$node$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_handle_objects$
+	:i if $InNetGame$
+		:i if $GotParam$$FLAG$
+			:i if NOT $GetGlobalFlag$$FLAG$ = %GLOBAL%$FLAG$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$net_only$
+		:i if NOT $InNetGame$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$freeskate_only$
+		:i if $InNetGame$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$date$
+		:i if NOT $GotParam$$day_to$
+			:i $day_to$ = %GLOBAL%$day_from$
+		:i endif
+		:i if NOT $GotParam$$month_to$
+			:i $month_to$ = %GLOBAL%$month_from$
+		:i endif
+		:i if NOT $DateEquals$$month_from$ = %GLOBAL%$month_from$$month_to$ = %GLOBAL%$month_to$$day_from$ = %GLOBAL%$day_from$$day_to$ = %GLOBAL%$day_to$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$not_in_ctf_or_koth$
+		:i if $InNetGame$
+			:i $GetGameMode$
+			:i if  ( (%GLOBAL%$gamemode$ = $netking$)  OR  (%GLOBAL%$gamemode$ = $netctf$) ) 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$ProximObject$
+		:i $PushMemProfile$%s(12,"Game Objects")
+		:i $thugpro_levelchanges_create_proximobject$ isNull 
+		:i $PopMemProfile$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$ProximNodeObject$
+		:i $PushMemProfile$%s(12,"Game Objects")
+		:i $ForEachIn$%GLOBAL%$node_objects$$Do$ = $MaybeCreateProximRootNode$$params$ = :s{$goal_id$ = $dummy_goal$$goal_text$ = %s(4,"test"):s}
+		:i $PopMemProfile$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$InitModelFromProfile$
+		:i if $GotParam$$node$
+			:i if $ObjectExists$$id$ = %GLOBAL%$node$
+				:i %GLOBAL%$node$.$Obj_InitModelFromProfile$:s{
+					:i $struct$ = %GLOBAL%$profile$
+					:i $use_asset_manager$ = %i(1,00000001)
+					:i $texDictOffset$ = %i(0,00000000)
+				:i :s}
+			:i endif
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $GotParam$$SoundEmitter$
+		:i $thugpro_levelchanges_create_soundemitter$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$RunScript$
+		:i %GLOBAL%$script$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$remove_script$
+		:i $thugpro_levelchanges_remove_trigger$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$replace_script$
+		:i $thugpro_levelchanges_replace_trigger$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$replace_test$
+		:i $thugpro_levelchanges_replace_params$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$ammo_pickup$
+		:i $PushMemProfile$%s(12,"Game Objects")
+		:i $thugpro_levelchanges_add_ammopickup$ isNull 
+		:i $PopMemProfile$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$static$
+		:i $thugpro_levelchanges_add_static_model$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$create_prefix_netonly$
+		:i if $InNetGame$
+			:i $GetArraySize$%GLOBAL%$nodes$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i $create$$prefix$ =  (%GLOBAL%$nodes$:a{%GLOBAL%$i$:a}) 
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$create$
+		:i if $GotParam$$nodes$
+			:i $GetArraySize$%GLOBAL%$nodes$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i $create$$name$ =  ( (%GLOBAL%$nodes$) :a{%GLOBAL%$i$:a}) 
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i $create$$name$ =  (%GLOBAL%$node$) 
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $GotParam$$kill$
+		:i if $GotParam$$nodes$
+			:i $GetArraySize$%GLOBAL%$nodes$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i if $IsAlive$$name$ =  (%GLOBAL%$nodes$:a{%GLOBAL%$i$:a}) 
+					:i $kill$$name$ =  (%GLOBAL%$nodes$:a{%GLOBAL%$i$:a}) 
+				:i endif
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i $thugpro_levelchanges_destroy_object$ isNull 
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $GotParam$$moveto$
+		:i $PushMemProfile$%s(12,"LevelObjects")
+		:i $thugpro_MoveNodeTo$ isNull 
+		:i $PopMemProfile$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$MoveNode$
+		:i $thugpro_MoveNode$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$UVWibble$
+		:i $thugpro_UVWibble$ isNull 
+		:i return
+		
+	:i endif
+:i endfunction
+:i function $thugpro_levelchanges_replace_objects$
+	:i $GetArraySize$%GLOBAL%$nodes$
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i $Invisible$$name$ =  (%GLOBAL%$nodes$:a{%GLOBAL%$i$:a}) 
+		:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetUniqueCompositeObjectID$$preferredID$ =  (%GLOBAL%$nodes$:a{%i(0,00000000):a}) 
+	:i if NOT $GotParam$$pos$
+		:i $GetIndexOfItemContaining$:s{
+			:i $array$ = %GLOBAL%$NodeArray$
+			:i $index$ = %i(0,00000000)
+			:i $name$ = $name$
+			:i $value$ =  (%GLOBAL%$nodes$:a{%i(0,00000000):a}) 
+		:i :s}
+		:i %GLOBAL%$pos$ =  ( (%GLOBAL%$NodeArray$) :a{%GLOBAL%$index$:a}->$pos$) 
+	:i endif
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$UniqueID$
+		:i $class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $CollisionMode$ = $None$
+		:i $model$ = %GLOBAL%$model$
+	:i :s}
+	:i if $GotParam$$angle$
+		:i %GLOBAL%$UniqueID$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$
+	:i endif
+	:i %GLOBAL%$UniqueID$.$thugpro_replace_textures$ isNull 
+:i endfunction
+:i function $thugpro_levelchanges_replace_object$
+	:i $Invisible$$name$ = %GLOBAL%$node$
+	:i $GetUniqueCompositeObjectID$$preferredID$ = %GLOBAL%$node$
+	:i if NOT $GotParam$$pos$
+		:i $GetIndexOfItemContaining$:s{
+			:i $array$ = %GLOBAL%$NodeArray$
+			:i $index$ = %i(0,00000000)
+			:i $name$ = $name$
+			:i $value$ =  (%GLOBAL%$node$) 
+		:i :s}
+		:i %GLOBAL%$pos$ =  ( (%GLOBAL%$NodeArray$) :a{%GLOBAL%$index$:a}->$pos$) 
+	:i endif
+	:i $CreateFromStructure$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $name$ = %GLOBAL%$UniqueID$
+		:i $class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $CollisionMode$ = $None$
+		:i $model$ = %GLOBAL%$model$
+	:i :s}
+	:i if $GotParam$$angle$
+		:i %GLOBAL%$UniqueID$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$
+	:i endif
+	:i %GLOBAL%$UniqueID$.$thugpro_replace_textures$ isNull 
+:i endfunction
+:i function $thugpro_get_random_textures$
+	:i switch %GLOBAL%$type$
+		:i case $banner$
+			:i $GetRandomValue$$name$ = $value$$a$ = %i(0,00000000)$b$ = %i(2,00000002)$Integer$
+			:i $FormatText$$TextName$ = $Texture$%s(26,"textures/thugpro/banner0%i")$i$ = %GLOBAL%$value$
+			:i return
+			$banner_texture$ = %GLOBAL%$Texture$
+			:i endcase
+		case $billboard$
+			:i $GetRandomValue$$name$ = $value$$a$ = %i(0,00000000)$b$ = %i(2,00000002)$Integer$
+			:i $FormatText$$TextName$ = $Texture$%s(29,"textures/thugpro/billboard0%i")$i$ = %GLOBAL%$value$
+			:i return
+			$billboard_texture$ = %GLOBAL%$Texture$
+			:i endcase
+		case $poster$
+			:i $GetRandomValue$$name$ = $value$$a$ = %i(0,00000000)$b$ = %i(3,00000003)$Resolution$ = %i(3,00000003)$Integer$
+			:i $FormatText$$TextName$ = $Texture$%s(26,"textures/thugpro/poster0%i")$i$ = %GLOBAL%$value$
+			:i return
+			$poster_texture$ = %GLOBAL%$Texture$
+			:i endcase
+		default 
+			:i end_switch
+	
+:i endfunction
+:i function $thugpro_replace_textures$
+	:i if NOT $GotParam$$_type$
+		:i $_type$ = $poster$
+	:i endif
+	:i if $GotParam$$special$
+		:i $_special$ = $special$
+	:i endif
+	:i switch %GLOBAL%$_type$
+		:i case $banner$
+			:i $THUGPRO_GetBillboardTexture$$type$ = $banner$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armR.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i $THUGPRO_GetBillboardTexture$$type$ = $banner$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armL.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i endcase
+		case $billboard$
+			:i $THUGPRO_GetBillboardTexture$$type$ = $billboard$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_legR.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i $THUGPRO_GetBillboardTexture$$type$ = $billboard$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_legL.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i $THUGPRO_GetBillboardTexture$$type$ = $billboard$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armR.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i $THUGPRO_GetBillboardTexture$$type$ = $billboard$%GLOBAL%$_special$
+			:i if $Obj_ReplaceTexture$$src$ = %s(19,"CS_NH_scar_armL.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i endcase
+		case $poster$
+			:i if $GotParam$$poster_texture$
+				:i $Texture$ = %GLOBAL%$poster_texture$
+			:i else 
+				:i $THUGPRO_GetBillboardTexture$$type$ = $poster$%GLOBAL%$_special$
+			:i endif
+			:i if $Obj_ReplaceTexture$$src$ = %s(20,"CS_NSN_tat_leg_R.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i if $GotParam$$poster_texture$
+				:i $Texture$ = %GLOBAL%$poster_texture$
+			:i else 
+				:i $THUGPRO_GetBillboardTexture$$type$ = $poster$%GLOBAL%$_special$
+			:i endif
+			:i if $Obj_ReplaceTexture$$src$ = %s(20,"CS_NSN_tat_leg_L.png")$dest$ = %GLOBAL%$Texture$
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i $global_day_from$ = %i(1,00000001)
+:i $global_day_to$ = %i(31,0000001f)
+:i $global_month_from$ = %i(10,0000000a)
+:i $global_month_to$ = %i(10,0000000a)
+:i $__NJ_pumpkin_collected$ = %i(0,00000000)
+:i $__alc_pumpkin_collected$ = %i(0,00000000)
+:i $__ware_pumpkin_collected$ = %i(0,00000000)
+:i $__sf2_pumpkin_collected$ = %i(0,00000000)
+:i $__kyoto_pumpkin_collected$ = %i(0,00000000)
+:i $__au_pumpkin_collected$ = %i(0,00000000)
+:i $__bo_pumpkin_collected$ = %i(0,00000000)
+:i function $pumpkin_swap_model$
+	:i $Obj_InitModel$$model$ = %s(30,"props\prop_pumpkin_smashed.mdl")
+:i endfunction
+:i function $pumpkin_smash_test$
+	:i $Obj_GetID$
+	:i if $THUGPRO_GetCollectedAllObjects$$is_halloween$
+		:i %GLOBAL%$objID$.$pumpkin_swap_model$
+		:i return
+		
+	:i endif
+	:i switch %GLOBAL%$objID$
+		:i case $__nj_pumpkin$
+			:i if $IsTrue$$__NJ_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__alc_pumpkin$
+			:i if $IsTrue$$__alc_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__ware_pumpkin$
+			:i if $IsTrue$$__ware_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__sf2_pumpkin$
+			:i if $IsTrue$$__sf2_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__kyoto_pumpkin$
+			:i if $IsTrue$$__kyoto_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__au_pumpkin$
+			:i if $IsTrue$$__au_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i endcase
+		case $__bo_pumpkin$
+			:i if $IsTrue$$__bo_pumpkin_collected$
+				:i %GLOBAL%$objID$.$pumpkin_swap_model$
+				:i return
+				
+			:i endif
+			:i end_switch
+	
+	:i %GLOBAL%$objID$.$Obj_ClearExceptions$
+	:i %GLOBAL%$objID$.$Obj_SetInnerRadius$%i(4,00000004)
+	:i %GLOBAL%$objID$.$Obj_SetOuterRadius$%i(4,00000004)
+	:i %GLOBAL%$objID$.$ClearEventHandler$$AnyObjectInRadius$
+	:i %GLOBAL%$objID$.$ClearEventHandler$$ObjectOutofRadius$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $_SmashPumpkin$$params$ = :s{$id$ = %GLOBAL%$objID$:s}
+:i endfunction
+:i function $_SmashPumpkin$
+	:i if NOT %GLOBAL%$colObjId$.$IsLocalSkater$
+		:i return
+		
+	:i endif
+	:i $Obj_GetID$
+	:i %GLOBAL%$objID$.$Obj_ClearExceptions$
+	:i %GLOBAL%$objID$.$ClearEventHandler$$AnyObjectInRadius$
+	:i %GLOBAL%$objID$.$ClearEventHandler$$ObjectOutofRadius$
+	:i %GLOBAL%$objID$.$Obj_PlaySound$$SmashCake$
+	:i %GLOBAL%$objID$.$pumpkin_swap_model$
+	:i $create_panel_message$$id$ = $pumpkin_smash_message$$style$ = $perfect_style$$rgba$ = :a{%i(128,00000080)%i(80,00000050)%i(0,00000000)%i(128,00000080):a}$text$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3)
+			 :POS(0) %s(23,"WE MAKE THE GOOD STUFF!")
+		:BREAKTO(4)
+			 :POS(1) %s(15,"TRICK OR TREAT!")
+		:BREAKTO(4)
+			 :POS(2) %s(13,"NICE COSTUME!")
+		:BREAKTO(4)
+			 :POS(3) %s(16,"HAPPY HALLOWEEN!") :POS(4) 
+		:i switch %GLOBAL%$objID$
+			:i case $__nj_pumpkin$
+				:i $Change$$__NJ_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__alc_pumpkin$
+				:i $Change$$__alc_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__ware_pumpkin$
+				:i $Change$$__ware_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__sf2_pumpkin$
+				:i $Change$$__sf2_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__kyoto_pumpkin$
+				:i $Change$$__kyoto_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__au_pumpkin$
+				:i $Change$$__au_pumpkin_collected$ = %i(1,00000001)
+				:i endcase
+			case $__bo_pumpkin$
+				:i $Change$$__bo_pumpkin_collected$ = %i(1,00000001)
+				:i end_switch
+		
+		:i $_pumpkinSmashCheckState$
+	:i endfunction
+	:i function $_pumpkinSmashCheckState$
+		:i $count$ = %i(0,00000000)
+		:i if $IsTrue$$__NJ_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__alc_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__ware_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__sf2_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__kyoto_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__au_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if $IsTrue$$__bo_pumpkin_collected$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i if  (%GLOBAL%$count$ = %i(7,00000007)) 
+			:i $create_panel_message$$id$ = $pumpkin_smash_message$$style$ = $perfect_style$$rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}$text$ = %s(27,"You Unlocked: Pumpkin Head!")
+			:i $THUGPRO_SetCollectedAllObjects$$is_halloween$
+		:i endif
+	:i endfunction
+	:i $apm_flames01_particle_params$ = :s{
+		:i $emitScript$ = $emit_apm_flames01_particle$
+		:i $emitterIndependent$ = %i(1,00000001)
+		:i $max$ = %i(40,00000028)
+		:i $type$ = $Shaded$
+		:i $Texture$ = $apm_flameQUAD_01$
+		:i $blendMode$ = $Add$
+		:i $UseRandomUVQuadrants$
+	:i :s}
+	:i function $emit_apm_flames01_particle$
+		:i $setEmitRange$$width$ = %f(0.500000)$height$ = %f(0.500000)
+		:i $setCircularEmit$$circular$ = %i(1,00000001)
+		:i $setLife$$min$ = %f(0.200000)$max$ = %f(0.750000)
+		:i $setAngleSpread$$spread$ = %f(0.122222)
+		:i $setSpeedRange$$min$ = %f(1.000000)$max$ = %f(1.300000)
+		:i $setEmitTarget$$x$ = %f(0.000000)$y$ = %f(1.000000)$z$ = %f(0.000000)
+		:i $setForce$$x$ = %f(0.000000)$y$ = %f(0.036000)$z$ = %f(0.000000)
+		:i $setParticleSize$$sw$ = %f(11.200000)$ew$ = %f(1.820000)
+		:i $setColor$$sr$ = %i(255,000000ff)$sg$ = %i(94,0000005e)$sb$ = %i(50,00000032)$sa$ = %i(187,000000bb)$mr$ = %i(240,000000f0)$mg$ = %i(98,00000062)$mb$ = %i(48,00000030)$ma$ = %i(255,000000ff)$er$ = %i(154,0000009a)$eg$ = %i(47,0000002f)$eb$ = %i(31,0000001f)$ea$ = %i(0,00000000)$midTime$ = %f(0.500000)
+		:i $emitRate$$rate$ = %f(120.000000)
+	:i endfunction
+	:i function $Barrelfire_01Script$
+		:i $CreateflexibleParticleSystem$$name$ = $TrashFire01$$params_script$ = $apm_flames01_particle_params$
+	:i endfunction
+	:i :end
+	

@@ -1,0 +1,62 @@
+//------------------------------------------------
+// Generic Scene header, shared across all game types
+// (Does THAW also match this?)
+//------------------------------------------------
+
+#define CL_SCENE_VECTOR 0xeeccaa
+#define CL_SCENE_VALUE 0xffeecc
+#define CL_SCENE_POINTER 0xffbb77
+#define CL_SCENE_PADDING 0x998866
+#define CL_SCENE_PADDING_SPECIAL 0xaa9977
+
+typedef struct
+{
+    local int scene_start = FTell();
+
+    CBBox bounding_box <bgcolor=CL_SCENE_VECTOR, comment="Bounding box">;
+    Sphere bounding_sphere <bgcolor=CL_SCENE_VECTOR, comment="XYZ sphere center, W radius">;
+
+    short unk_a <bgcolor=CL_SCENE_VALUE, comment="14 on X360, 15 on PS3?">;
+    short unk_b <bgcolor=CL_SCENE_VALUE>;
+
+    if (unk_a == 15)
+        SkinFilePlatform = SKIN_PLAT_PS3;
+    else
+        SkinFilePlatform = SKIN_PLAT_XENON;
+
+    uint flags <bgcolor=CL_SINGLEVALUE>;
+    uint unk_after_flags;
+
+    RelativeOffset pt_footer(g_SkinCoreStart) <bgcolor=CL_SCENE_VALUE, comment="Footer start">;
+    uint unk_footer_val;
+    RelativeOffset pt_unkThing(0) <bgcolor=CL_SCENE_POINTER>;
+
+    RelativeOffset pt_meshIndices(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Mesh Indices">;
+
+    int sMesh_count <bgcolor=CL_SCENE_VALUE>;
+
+    RelativeOffset pt_ffPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="0xFF Padding">;
+    uint pt_internalSectorList <bgcolor=CL_SCENE_POINTER, comment="Used internally">;
+    uint zeroB <bgcolor=CL_SCENE_PADDING, hidden=true>;
+    uint zeroC <bgcolor=CL_SCENE_PADDING, hidden=true>;
+    uint zeroD <bgcolor=CL_SCENE_PADDING, hidden=true>;
+
+    uint values1[2] <bgcolor=CL_SCENE_PADDING, hidden=true>;
+
+    int sector_count <bgcolor=CL_SCENE_VALUE>;
+
+    RelativeOffset pt_CSector(scene_start) <bgcolor=CL_SCENE_POINTER, comment="First object">;
+    RelativeOffset pt_CGeom(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Sector unknown">;
+
+    RelativeOffset pt_QTRETable(scene_start) <bgcolor=CL_SCENE_POINTER, comment="QTRE for node meshes, used in GH5">;
+    RelativeOffset pt_bigPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Big padding">;
+    RelativeOffset pt_sMesh(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Mesh Data">;
+
+    uint premesh_marker<bgcolor=CL_SCENE_PADDING, comment="Code sets this to premesh offset">;
+    uint idk <bgcolor=CL_SCENE_PADDING>;
+
+    local int big_padding_size = pt_sMesh.offset - pt_bigPadding.offset;
+ 
+    RelativeOffset pt_eaPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Must not be 161, apparently a count">;
+
+} NS_SceneHeader;

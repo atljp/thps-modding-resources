@@ -1,0 +1,55 @@
+//------------------------------------------------
+// CENT file for DJH games
+//------------------------------------------------
+
+#include "../Common.bt"
+
+struct CENTObject;
+
+#include "CENT_SDJDJ.bt"
+#include "CENT_SDJCostumeTexture.bt"
+#include "CENT_Mesh.bt"
+
+typedef struct
+{
+    NumString objPath;
+    NumString objType;
+
+    local string objectType = NumStringStr(objType);
+    switch (objectType)
+    {
+        case "Mesh":
+            Object_Mesh data;
+            break;
+
+        case "SDJDJ":
+            Object_SDJDJ data;
+            break;
+    
+        case "SDJCostumeTexture":
+            Object_SDJCostumeTexture data;
+            break;
+
+        case "SDJCostumeTexturePage":
+            Object_SDJCostumeTexturePage data;
+            break;
+
+        default:
+            Printf("Unknown CENT object %s.\n", objectType);
+            break;
+    }
+} CENTObject <read=Str("%s: %s", NumStringStr(objType), NumStringStr(objPath))>;
+
+typedef struct
+{
+    CENTObject entObject;
+} CENTFile;
+
+local ubyte testByte = ReadByte();
+
+if (testByte)
+    LittleEndian();
+else
+    BigEndian();
+
+CENTFile file;

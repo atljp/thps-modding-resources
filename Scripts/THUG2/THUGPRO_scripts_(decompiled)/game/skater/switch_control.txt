@@ -1,0 +1,179 @@
+
+:i $SwitchControl_Trigger$ = :s{$Trigger$ = :s{$Press$;$Black$;%i(10,0000000a):s}$Alt_Trigger$ = :s{$Press$;$White$;%i(10,0000000a):s}:s}
+:i $CAVEMAN_SCORE$ = %i(750,000002ee)
+:i $COMBO_RUNOUT_SCORE$ = %i(50,00000032)
+:i $CavemanBailDuration$ = %f(0.300000)
+:i $RunOutTrickDelay$ = %f(0.750000)
+:i function $RunTimerController_Reset$
+	:i $RunTimer_GetRunTimerControllerId$
+	:i $Obj_KillSpawnedScript$$Id$ = %GLOBAL%$RunTimerControllerId$
+	:i $Obj_SpawnScript$$RunTimerController_Start$$Id$ = %GLOBAL%$RunTimerControllerId$$PauseWithObject$
+	:i $RunTimer_GetRunTimerId$
+	:i $Obj_KillSpawnedScript$$Id$ =  (%GLOBAL%$RunTimerId$ + %i(2,00000002)) 
+	:i $hide_run_timer$$Id$ = %GLOBAL%$RunTimerId$
+:i endfunction
+:i function $RunTimerController_Start$
+	:i $ClearExceptionGroup$$RunTimeController$
+	:i $SetExceptionHandler$$Ex$ = $ShowRunTimer$$Scr$ = $RunTimerController_Displayed$$Group$ = $RunTimeController$
+	:i $Block$
+:i endfunction
+:i function $RunTimerController_Displayed$
+	:i $ClearExceptionGroup$$RunTimeController$
+	:i $SetExceptionHandler$$Ex$ = $HideRunTimer$$Scr$ = $RunTimerController_Hidden$$Group$ = $RunTimeController$
+	:i $RunTimer_GetRunTimerId$
+	:i $FadingSpawned$ = %i(0,00000000)
+	:i $SoundCounter$ = %i(0,00000000)
+	:i $SoundWait$ = %i(4,00000004)
+	:i $SoundType$ = %i(0,00000000)
+	:i $RunTimer_GetFactorComplete$
+	:i $RotationAngle$ =  (%i(360,00000168) * %GLOBAL%$FactorComplete$) 
+	:i $show_run_timer$$Id$ = %GLOBAL%$RunTimerId$$rot_angle$ = %GLOBAL%$RotationAngle$
+	:i while
+		
+		:i $DoScreenElementMorph$$Id$ = :s{%GLOBAL%$RunTimerId$$child$ = %i(0,00000000):s}$rot_angle$ =  (%i(180,000000b4) - %GLOBAL%$RotationAngle$) 
+		:i $hide_run_timer_piece$$Id$ = %GLOBAL%$RunTimerId$$rot_angle$ = %GLOBAL%$RotationAngle$
+		:i if  (%GLOBAL%$FadingSpawned$ = %i(0,00000000)) 
+			:i if  (%GLOBAL%$RotationAngle$ < %i(140,0000008c)) 
+				:i $Obj_SpawnScript$$blink_run_timer$$Id$ =  (%GLOBAL%$RunTimerId$ + %i(2,00000002)) $Params$ = :s{$Id$ = %GLOBAL%$RunTimerId$:s}$PauseWithObject$
+				:i $FadingSpawned$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if  (%GLOBAL%$SoundCounter$ > %GLOBAL%$SoundWait$) 
+			:i if  (%GLOBAL%$SoundType$ = %i(0,00000000)) 
+				:i $PlaySound$$ClockTickDown$
+				:i $SoundType$ = %i(1,00000001)
+			:i else 
+				:i $PlaySound$$ClockTickUp$$vol$ = %i(150,00000096)
+				:i $SoundType$ = %i(0,00000000)
+			:i endif
+			:i $SoundCounter$ = %i(0,00000000)
+		:i else 
+			:i $SoundCounter$ =  (%GLOBAL%$SoundCounter$ + %i(1,00000001)) 
+		:i endif
+		:i if  (%GLOBAL%$RotationAngle$ < %i(270,0000010e)) 
+			:i if  (%GLOBAL%$RotationAngle$ < %i(180,000000b4)) 
+				:i if  (%GLOBAL%$RotationAngle$ < %i(90,0000005a)) 
+					:i $SoundWait$ = %i(1,00000001)
+				:i else 
+					:i $SoundWait$ = %i(2,00000002)
+				:i endif
+			:i else 
+				:i $SoundWait$ = %i(3,00000003)
+			:i endif
+		:i endif
+		:i $Wait$%i(1,00000001)$GameFrame$
+		:i $RunTimer_GetFactorComplete$
+		:i $RotationAngle$ =  (%i(360,00000168) * %GLOBAL%$FactorComplete$) 
+	:i loop_to 
+:i endfunction
+:i function $RunTimerController_Hidden$
+	:i $ClearExceptionGroup$$RunTimeController$
+	:i $SetExceptionHandler$$Ex$ = $ShowRunTimer$$Scr$ = $RunTimerController_Displayed$$Group$ = $RunTimeController$
+	:i $RunTimer_GetRunTimerId$
+	:i $Obj_KillSpawnedScript$$Id$ =  (%GLOBAL%$RunTimerId$ + %i(2,00000002)) 
+	:i $soft_hide_run_timer$$Id$ = %GLOBAL%$RunTimerId$
+	:i $Block$
+:i endfunction
+:i function $CleanUp_WalkingtoSkating$
+	:i $AllowRailTricks$
+	:i $GetTags$
+	:i if NOT $GotParam$$AnimTags$
+		:i $SkaterLoopingSound_TurnOn$
+	:i else 
+		:i if NOT $StructureContains$$WalkToSkateTransition$$Structure$ = %GLOBAL%$AnimTags$
+			:i $SkaterLoopingSound_TurnOn$
+		:i endif
+	:i endif
+	:i $SetException$$Ex$ = $PointRail$$Scr$ = $PointRailWalkingToSkating$
+	:i $SwitchToSkatingPhysics$
+	:i if $InAir$
+		:i $SetQueueTricks$$NoTricks$
+		:i $InAirExceptions$$NoSkateToWalkTricks$
+	:i else 
+		:i $OnGroundExceptions$
+	:i endif
+:i endfunction
+:i function $PointRailWalkingToSkating$
+	:i $SetQueueTricks$$NoTricks$
+	:i $Goto$$PointRail$
+:i endfunction
+:i function $Switch_OnGroundAI$$newscript$ = $land$
+	:i $Obj_StopSound$ ($current_natas_spin_sound$) 
+	:i if $SkaterIsFlipping$
+		:i $dont_switch$ = %i(1,00000001)
+	:i endif
+	:i if $IsOnMotoSkateboard$
+		:i $dont_switch$ = %i(1,00000001)
+	:i endif
+	:i if $IsThrowingProjectile$
+		:i if $Walking$
+			:i $dont_switch$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$dont_switch$
+		:i if $Walking$
+			:i $Goto$$GroundOrAirWaitState$
+		:i else 
+			:i if $InAir$
+				:i $Goto$$Airborne$
+			:i else 
+				:i $Goto$$OnGroundAI$
+			:i endif
+		:i endif
+	:i endif
+	:i $Unhide$
+	:i $ClearExceptions$
+	:i $ClearTrickQueues$
+	:i $StopBalanceTrick$
+	:i $NotInBail$
+	:i if $Driving$
+		:i $ToggleUserControlledVehicleMode$
+	:i endif
+	:i switch %GLOBAL%$newscript$
+		:i case $OnGroundAI$
+			:i if $IsTrue$$THUGPRO_ObserveOn$
+				:i $THUGPRO_DisablePlayerInput$
+				:i if NOT $ScreenElementExists$$Id$ = $host_options_menu$
+					:i $THUGPRO_ObserveDestroyPauseMenu$
+					:i $restore_start_key_binding$
+				:i endif
+				:i $SlowSkaterToStop$
+			:i else 
+				:i $SetRollingFriction$$default$
+				:i $DestroyAllSpecialItems$
+				:i $SwitchOnBoard$
+				:i $CleanUp_WalkingtoSkating$
+				:i if $InAir$
+					:i $Goto$$Airborne$
+				:i else 
+					:i $Goto$$OnGroundAI$
+				:i endif
+			:i endif
+			:i endcase
+		case $Walking_onGroundAi$
+			:i $DestroyAllSpecialItems$
+			:i $SwitchOnBoard$
+			:i $SwitchToWalkingPhysics$
+			:i $AllowRailTricks$
+			:i if $GotParam$$Restart$
+				:i $Goto$$JustStoppedSkatingState$$Params$ = :s{$Restart$:s}
+			:i else 
+				:i $Goto$$JustStoppedSkatingState$
+			:i endif
+			:i endcase
+		case $TransAm$
+			:i $Goto$$ToggleUserControlledVehicleMode$$Params$ = :s{ isNull :s}
+			:i endcase
+		default 
+			:i $ScriptAssert$%s(41,"Bad NewScript passed to Switch_OnGroundAi")
+			:i end_switch
+	
+:i endfunction
+:i function $CheckforSwitchVehicles$$newscript$ = $OnGroundAI$
+	:i if $Walking$
+		:i $Goto$$Switch_OnGroundAI$$Params$ = :s{$newscript$ = $OnGroundAI$:s}
+	:i else 
+		:i $Goto$$Switch_OnGroundAI$$Params$ = :s{$newscript$ = $Walking_onGroundAi$:s}
+	:i endif
+:i endfunction
+:i :end

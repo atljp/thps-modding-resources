@@ -1,0 +1,96 @@
+
+:i function $Dismember$$Bone$ = $Bone_head$$MaxVel$ = %i(200,000000c8)$MaxRotVel$ = %i(4,00000004)
+	:i $Obj_GetId$
+	:i $BodyChunkName$ =  (%GLOBAL%$Bone$ + %GLOBAL%$ObjId$) 
+	:i if $CompositeObjectExists$$name$ = %GLOBAL%$BodyChunkName$
+		:i %GLOBAL%$BodyChunkName$.$Die$
+	:i endif
+	:i $Obj_GetPosition$
+	:i $Obj_GetBonePosition$$Bone$ = %GLOBAL%$Bone$
+	:i $ModelOffset$ =  (%GLOBAL%$Pos$ - %GLOBAL%$X$ * %vec3(1.000000,0.000000,0.000000) - %GLOBAL%$Y$ * %vec3(0.000000,1.000000,0.000000) - %GLOBAL%$Z$ * %vec3(0.000000,0.000000,1.000000)) 
+	:i $Obj_GetQuat$
+	:i $CreateCompositeObject$$Components$ = $BodyChunkComponents$$Params$ = :s{
+		:i $name$ = %GLOBAL%$BodyChunkName$
+		:i $Pos$ = %GLOBAL%$Pos$
+		:i $Orientation$ = %GLOBAL%$Quat$
+		:i $CloneFrom$ = %GLOBAL%$ObjId$
+		:i $CopySkeletonFrom$ = %GLOBAL%$ObjId$
+		:i $model_offset$ = %GLOBAL%$ModelOffset$
+	:i :s}
+	:i $Vel$ =  (%GLOBAL%$MaxVel$ * %vec2(-1.100000,1.100000) * %vec3(1.000000,0.000000,0.000000)
+	:i  + %GLOBAL%$MaxVel$ * %vec2(0.000000,1.100000) * %vec3(0.000000,1.000000,0.000000)
+	:i  + %GLOBAL%$MaxVel$ * %vec2(-1.100000,1.100000) * %vec3(0.000000,0.000000,1.000000)
+	:i ) 
+	:i $RotVel$ =  (%GLOBAL%$MaxRotVel$ * %vec2(-1.100000,1.100000) * %vec3(1.000000,0.000000,0.000000)
+	:i  + %GLOBAL%$MaxRotVel$ * %vec2(-1.100000,1.100000) * %vec3(0.000000,1.000000,0.000000)
+	:i  + %GLOBAL%$MaxRotVel$ * %vec2(-1.100000,1.100000) * %vec3(0.000000,0.000000,1.000000)
+	:i ) 
+	:i %GLOBAL%$BodyChunkName$.$RigidBody_Kick$$Vel$ = %GLOBAL%$Vel$$RotVel$ = %GLOBAL%$RotVel$
+	:i %GLOBAL%$BodyChunkName$.$Obj_SetBoneScale$$Bone$ = %GLOBAL%$Bone$$scale$ = %f(0.000000)$propagate_reverse$$force_update$
+	:i $Obj_SetBoneScale$$Bone$ = %GLOBAL%$Bone$$scale$ = %f(0.000000)$propagate$
+	:i %GLOBAL%$BodyChunkName$.$Obj_UpdateModel$
+:i endfunction
+:i $BodyChunkComponents$ = :a{
+	:i :s{
+		:i $Component$ = $Suspend$
+	:i :s}
+	:i :s{
+		:i $Component$ = $WaitAndDie$
+		:i $Lifetime$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $Component$ = $RigidBody$
+		:i $Box$
+		:i $Dimensions$ = %vec3(20.000000,20.000000,20.000000)
+	:i :s}
+	:i :s{
+		:i $Component$ = $Skeleton$
+	:i :s}
+	:i :s{
+		:i $Component$ = $Model$
+	:i :s}
+	:i :a}
+:i function $make_skater_explode$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterNumber$
+	:i $stored_scales$ = :a{
+		:i :s{$group$ = $torso_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :a}
+	:i $GetArraySize$%GLOBAL%$stored_scales$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $scalingmenu_get_xyz$$part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+		:i $SetArrayElement$$ArrayName$ = $stored_scales$$index$ = %GLOBAL%$index$$newvalue$ = :s{$group$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) $X$ = %GLOBAL%$X$$Y$ = %GLOBAL%$Y$$Z$ = %GLOBAL%$Z$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $Dismember$$Bone$ = $Bone_Collar_L$
+	:i $Dismember$$Bone$ = $Bone_Collar_R$
+	:i $Dismember$$Bone$ = $Bone_chest$
+	:i $Dismember$$Bone$ = $Cloth_breast$
+:i endfunction
+:i function $make_skater_lose_head$
+	:i $Dismember$$Bone$ = $Bone_head$
+:i endfunction
+:i function $make_skater_lol$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterNumber$
+	:i $stored_scales$ = :a{
+		:i :s{$group$ = $head_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $headtop_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Nose_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :s{$group$ = $Jaw_bone_group$$X$ = %i(100,00000064)$Y$ = %i(100,00000064)$Z$ = %i(100,00000064):s}
+		:i :a}
+	:i $GetArraySize$%GLOBAL%$stored_scales$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $scalingmenu_get_xyz$$part$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) 
+		:i $SetArrayElement$$ArrayName$ = $stored_scales$$index$ = %GLOBAL%$index$$newvalue$ = :s{$group$ =  (%GLOBAL%$stored_scales$:a{%GLOBAL%$index$:a}->$group$) $X$ = %GLOBAL%$X$$Y$ = %GLOBAL%$Y$$Z$ = %GLOBAL%$Z$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $Dismember$$Bone$ = $Bone_head$
+	:i $Obj_WaitAnimFinished$
+	:i $PlayAnim$$anim$ = $WStandIdle3$$speed$ = %f(2.000000)
+:i endfunction
+:i :end

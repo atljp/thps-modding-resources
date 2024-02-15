@@ -1,0 +1,2022 @@
+
+:i $RejoinNextGame$ = %i(0,00000000)
+:i $JoinedGameInProgress$ = %i(0,00000000)
+:i $JoinedAsObserver$ = %i(0,00000000)
+:i $THUGPRO_ObserveOn$ = %i(0,00000000)
+:i $THUGPRO_ObserveState_Running$ = %i(0,00000000)
+:i $observe_overview_cam_state$ = %i(0,00000000)
+:i $observe_overview_cam_mode$ = %i(0,00000000)
+:i function $THUGPRO_RejoinNextGame$
+	:i if $GotParam$$FromPauseMenu$
+		:i $THUGPRO_ObserveDestroyPauseMenu$
+	:i endif
+	:i $Change$$RejoinNextGame$ = %i(1,00000001)
+:i endfunction
+:i function $THUGPRO_ObserveMode$
+	:i $MORTEN_DUMP_OBSERVE_MODE_DATA$
+	:i if $GotParam$$on$
+		:i if $LocalSkaterExists$
+			:i if $Skater$.$OnLip$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $Change$$THUGPRO_ObserveOn$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$off$
+		:i $Change$$THUGPRO_ObserveOn$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$FromPauseMenu$
+		:i $THUGPRO_ObserveDestroyPauseMenu$
+	:i endif
+	:i if $IsTrue$$THUGPRO_ObserveOn$
+		:i $thugpro_observe_overview$$off$
+		:i if $IsTrue$$InDropin$
+			:i $Wait$%i(1,00000001)$second$
+		:i endif
+		:i if $LocalSkaterExists$
+			:i if $Skater$.$IsInBail$
+				:i $Skater$.$ReturnBoardToSkater$
+			:i endif
+		:i endif
+		:i if $THUGPRO_UberFriggedThisFrame$
+			:i $ResetSkaters$
+		:i endif
+		:i $MakeSkaterGoto$$THUGPRO_DisablePlayerInput$
+		:i $SlowSkaterToStop_NoBrake$
+		:i if NOT $GameModeEquals$$is_lobby$
+			:i $Change$$AlreadyEndedRun$ = %i(1,00000001)
+			:i $FireEvent$$type$ = $EndOfRunDone$
+			:i $EndOfRunDone$
+		:i endif
+	:i else 
+		:i if $IsTrue$$AlreadyEndedRun$
+			:i $Change$$THUGPRO_ObserveOn$ = %i(1,00000001)
+			:i return
+			
+		:i endif
+		:i $THUGPRO_ClearAllObserveValues$
+		:i if $ScreenElementExists$$id$ = $observe_input_handler$
+			:i $DestroyScreenElement$$id$ = $observe_input_handler$
+		:i endif
+		:i if $GameModeEquals$$is_lobby$
+			:i $ExitSurveyorMode$
+			:i $MakeSkaterGoto$$THUGPRO_EnablePlayerInput$
+			:i if $LocalSkaterExists$
+				:i if NOT $Skater$.$Walking$
+					:i $ResetPhysics$
+				:i else 
+					:i $ResetPhysics$$Walk$
+				:i endif
+			:i endif
+		:i else 
+			:i if $IsTrue$$RejoinNextGame$
+				:i $ExitSurveyorMode$
+				:i $MakeSkaterGoto$$THUGPRO_EnablePlayerInput$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $THUGPRO_ObserveDestroyPauseMenu$
+	:i $exit_pause_menu$$menu_id$ = $pause_menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+:i endfunction
+:i function $THUGPRO_ClearAllObserveValues$
+	:i $thugpro_observe_hud_set_visible$
+	:i $Change$$THUGPRO_ObserveOn$ = %i(0,00000000)
+	:i $Change$$observe_overview_cam_state$ = %i(0,00000000)
+	:i $Change$$observe_overview_cam_mode$ = %i(0,00000000)
+	:i $THUGPROResetViewer$
+	:i if NOT $GotParam$$quit$
+		:i $THUGPRO_ObserveFunctionCall$$func$ = $ObserveSelf$
+		:i $KillSkaterCamAnim$$all$
+		:i $thugpro_observe_overview_cam_toggle_objects$$unhide$
+		:i $restore_skater_camera$
+	:i endif
+	:i $unhide_special_meter$
+	:i $update_all_player_names$
+:i endfunction
+:i function $THUGPRO_ObserveState$
+:i endfunction
+:i function $THUGPRO_ObserveBail$
+	:i if $IsTrue$$InDropin$
+		:i $Wait$%i(1,00000001)$second$
+	:i endif
+	:i if $Skater$.$IsInBail$
+		:i $Skater$.$ReturnBoardToSkater$
+	:i endif
+	:i $SlowSkaterToStop$
+:i endfunction
+:i function $create_observe_menu$
+	:i $MORTEN_DUMP_OBSERVE_MODE_DATA$
+	:i if NOT $IsTrue$$JoinedAsObserver$
+		:i if NOT $IsTrue$$JoinedGameInProgress$
+			:i if NOT $IsSurveying$
+				:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+					:i $edmsg2$%s(37,"\c2BOOOOO! THUGPRO_ObserveOn == FALSE")
+					:i $THUGPRO_ClearAllObserveValues$
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $reset_exit_pause_menu_delay$
+	:i if $ScreenElementExists$$id$ = $host_options_menu$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $rankings_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $observe_input_handler$
+		:i return
+		
+	:i endif
+	:i $edmsg2$%s(22,"\c6create_observe_menu")
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i if $ScreenElementExists$$id$ = $keyboard_anchor$
+			:i if $ScreenElementExists$$id$ = $keyboard_bg_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+		:i else 
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $observe_input_handler$
+		:i $parent$ = $root_window$
+		:i $type$ = $ContainerElement$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $event_handlers$ = :a{
+			:i :s{$pad_left$$thugpro_observe_prev$$params$ = :s{:s}:s}
+			:i :s{$pad_right$$thugpro_observe_next$$params$ = :s{:s}:s}
+			:i :s{$pad_circle$$thugpro_observe_prev$$params$ = :s{:s}:s}
+			:i :s{$pad_choose$$thugpro_observe_next$$params$ = :s{:s}:s}
+			:i :s{$pad_expand$$thugpro_observe_overview$$params$ = :s{:s}:s}
+			:i :s{$pad_L3$$thugpro_observe_toggle_hud$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $observe_input_handler$
+		:i $id$ = $menu_obs_player_name$
+		:i $text$ = %s(0,"")
+		:i $font$ = $testtitle$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(320.000000,380.000000)
+		:i $alpha$ = %f(1.000000)
+		:i $just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $menu_obs_player_name$$do_obs_player_name_update$
+	:i $pause_menu_gradient$$off$
+	:i if $ObjectExists$$id$ = $helper_text_anchor$
+		:i $DestroyScreenElement$$id$ = $helper_text_anchor$
+	:i endif
+	:i $thugpro_observe_menu_refresh_helper_text$
+	:i $Wait$%i(4,00000004)$frames$
+	:i $FireEvent$$type$ = $focus$$target$ = $observe_input_handler$
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $do_obs_player_name_update$
+	:i while
+		
+		:i if NOT $IsTrue$$observe_overview_cam_state$
+			:i $THUGPRO_ObserveFunctionCall$$func$ = $GetCurrentPlayerName$
+			:i if $GotParam$$player_name$
+				:i $thugpro_observe_menu_set_display_text$$text$ = %GLOBAL%$player_name$
+			:i endif
+		:i endif
+		:i $Wait$%i(30,0000001e)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $thugpro_observe_menu_refresh_helper_text$
+	:i $hide_special_meter$
+	:i $viewer_enabled$ = %i(0,00000000)
+	:i $camera_toggle_enabled$ = %i(0,00000000)
+	:i if  ( ($userselect_index$)  = %i(0,00000000)) 
+		:i $camera_toggle_enabled$ = %i(1,00000001)
+	:i endif
+	:i if  ( ($userselect_index$)  = %i(2,00000002)) 
+		:i $viewer_enabled$ = %i(1,00000001)
+	:i endif
+	:i if  ( ($observe_overview_cam_state$)  = %i(1,00000001)) 
+		:i $viewer_enabled$ = %i(0,00000000)
+		:i $camera_toggle_enabled$ = %i(0,00000000)
+	:i endif
+	:i $helper_text_console$ = %i(0,00000000)
+	:i $helper_text_pc$ = %i(0,00000000)
+	:i if  ( ($GLOBAL_CtrlLayout$)  = %i(0,00000000)) 
+		:i $helper_text_pc$ = %i(1,00000001)
+		:i $helper_text_console$ = %i(0,00000000)
+	:i else 
+		:i $helper_text_console$ = %i(1,00000001)
+		:i $helper_text_pc$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $observe_input_handler$
+		:i $create_helper_text$:s{
+			:i $parent$ = $observe_input_handler$
+			:i $anchor_id$ = $observe_helper_text_anchor$
+			:i $helper_pos$ = %vec2(320.000000,464.000000)
+			:i $helper_text_elements$ = :a{
+				:i :s{$text$ = %s(23,"\b6/\b5 = Cycle Cameras"):s}
+				:i :s{$enabled$ = %GLOBAL%$helper_text_pc$$text$ = %s(25,"\m1 = Toggle Camera Modes"):s}
+				:i :s{$enabled$ = %GLOBAL%$helper_text_console$$text$ = %s(25,"\b0 = Toggle Camera Modes"):s}
+				:i :s{$enabled$ = %GLOBAL%$viewer_enabled$$text$ = %s(19,"\b9 = Detach Camera"):s}
+				:i :s{$enabled$ = %GLOBAL%$camera_toggle_enabled$$text$ = %s(25,"\b9 = Player Camera Angle"):s}
+				:i :s{$enabled$ = %GLOBAL%$helper_text_pc$$text$ = %s(16,"\mq = Toggle HUD"):s}
+				:i :s{$enabled$ = %GLOBAL%$helper_text_console$$text$ = %s(16,"\bk = Toggle HUD"):s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $thugpro_observe_menu_set_display_text$
+	:i if NOT $GotParam$$text$
+		:i $text$ = %s(0,"")
+	:i endif
+	:i if $ObjectExists$$id$ = $menu_obs_player_name$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $menu_obs_player_name$
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $thugpro_set_overview_cam_active$
+	:i $THUGPROResetViewer$
+	:i $THUGPRO_ObserveFunctionCall$$func$ = $GetSceneCenterPos$
+	:i $GetLevelStructureName$
+	:i if $StructureContains$$structure$ = %GLOBAL%$level_structure_name$$overview_cam_zoom$
+		:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ -  (%GLOBAL%$level_structure_name$->$overview_cam_zoom$) ) 
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$level_structure_name$$overview_cam_pos$
+		:i %GLOBAL%$pos$ =  (%GLOBAL%$level_structure_name$->$overview_cam_pos$) 
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$level_structure_name$$overview_cam_angle$
+		:i %GLOBAL%$angle$ =  (%GLOBAL%$level_structure_name$->$overview_cam_angle$) 
+	:i endif
+	:i $thugpro_observe_overview_cam_toggle_objects$$hide$
+	:i $Overview_Cam01$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+	:i $Overview_Cam01$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$$x$ = %i(90,0000005a)
+	:i $SetActiveCamera$$id$ = $Overview_Cam01$
+	:i $Change$$observe_overview_cam_state$ = %i(1,00000001)
+:i endfunction
+:i function $thugpro_observe_overview_cam_toggle_objects$
+	:i $GetLevelStructureName$
+	:i if $StructureContains$$structure$ = %GLOBAL%$level_structure_name$$overview_cam_hide_objects$
+		:i $GetArraySize$ (%GLOBAL%$level_structure_name$->$overview_cam_hide_objects$) 
+		:i if $GotParam$$hide$
+			:i $index$ = %i(0,00000000)
+			:i while
+				
+				:i $Invisible$$name$ =  ( (%GLOBAL%$level_structure_name$->$overview_cam_hide_objects$) :a{%GLOBAL%$index$:a}) 
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i if $GotParam$$unhide$
+				:i $index$ = %i(0,00000000)
+				:i while
+					
+					:i $Visible$$name$ =  ( (%GLOBAL%$level_structure_name$->$overview_cam_hide_objects$) :a{%GLOBAL%$index$:a}) 
+					:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_observe_viewer_fov$
+	:i $printf$%s(26,"thugpro_observe_viewer_fov")
+	:i if $IsTrue$$view_mode$
+		:i if $GotParam$$up$
+			:i $printf$%s(2,"UP")
+			:i $toggle_camera_fov$:s{$right$$no_menu$:s}
+		:i else 
+			:i $printf$%s(4,"down")
+			:i $toggle_camera_fov$:s{$left$$no_menu$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_observe_name_test$
+:i endfunction
+:i $thugpro_observe_hud_visible$ = %i(1,00000001)
+:i function $thugpro_observe_toggle_hud$
+	:i if  ($thugpro_observe_hud_visible$) 
+		:i $thugpro_observe_hud_set_invisible$
+	:i else 
+		:i $thugpro_observe_hud_set_visible$
+	:i endif
+:i endfunction
+:i function $thugpro_observe_hud_set_visible$
+	:i $show_all_hud_items$
+	:i $Change$$thugpro_observe_hud_visible$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $root_window$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $root_window$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $thugpro_observe_hud_set_invisible$
+	:i $hide_all_hud_items$
+	:i $Change$$thugpro_observe_hud_visible$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $root_window$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $root_window$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $MORTEN_DUMP_OBSERVE_MODE_DATA$
+:i endfunction
+:i function $thugpro_observe_overview$
+	:i $MORTEN_DUMP_OBSERVE_MODE_DATA$
+	:i if $GotParam$$off$
+		:i $Change$$observe_overview_cam_state$ = %i(1,00000001)
+	:i endif
+	:i if $IsTrue$$observe_overview_cam_state$
+		:i $thugpro_observe_overview_cam_toggle_objects$$unhide$
+		:i $restore_skater_camera$
+		:i $THUGPRO_ObserveFunctionCall$$func$ = $RefreshCamera$
+		:i $Change$$observe_overview_cam_state$ = %i(0,00000000)
+		:i $Change$$observe_overview_cam_mode$ = %i(0,00000000)
+	:i else 
+		:i $thugpro_set_overview_cam_active$
+		:i $thugpro_observe_menu_set_display_text$$text$ = %s(8,"overview")
+	:i endif
+	:i $update_all_player_names$
+	:i $thugpro_observe_menu_refresh_helper_text$
+:i endfunction
+:i function $thugpro_observe_overview_cam_update$
+	:i if $IsTrue$$observe_overview_cam_state$
+		:i switch  ($observe_overview_cam_mode$) 
+			:i case %i(0,00000000)
+				:i $SetActiveCamera$$id$ = $Overview_Cam01$
+				:i endcase
+			case %i(1,00000001)
+				:i $observe_overview_cam_view_flag$$flag_name$ = $TRG_Flag_Red$
+				:i endcase
+			case %i(2,00000002)
+				:i $observe_overview_cam_view_flag$$flag_name$ = $TRG_Flag_Blue$
+				:i endcase
+			case %i(3,00000003)
+				:i $observe_overview_cam_view_flag$$flag_name$ = $TRG_Flag_Green$
+				:i endcase
+			case %i(4,00000004)
+				:i $observe_overview_cam_view_flag$$flag_name$ = $TRG_Flag_Yellow$
+				:i endcase
+			case %i(5,00000005)
+				:i $thugpro_observe_the_crown$
+				:i endcase
+			default 
+				:i $Change$$observe_overview_cam_mode$ = %i(0,00000000)
+				:i $SetActiveCamera$$id$ = $Overview_Cam01$
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $observe_overview_cam_view_flag$
+	:i if $GotParam$$object_name$
+		:i if $ObjectExists$$id$ = %GLOBAL%$object_name$
+			:i %GLOBAL%$object_name$.$Obj_GetPosition$
+			:i $Overview_Cam02$.$Obj_SetPosition$$Position$ =  (%GLOBAL%$pos$ + %vec3(0.000000,100.000000,0.000000)) 
+			:i $SetActiveCamera$$id$ = $Overview_Cam02$
+		:i endif
+	:i else 
+		:i if $NodeExists$%GLOBAL%$flag_name$
+			:i if $IsAlive$$name$ = %GLOBAL%$flag_name$
+				:i $edmsg2$%s(14,"flag_name = %a")$a$ = %GLOBAL%$flag_name$
+				:i %GLOBAL%$flag_name$.$Obj_GetPosition$
+				:i $Overview_Cam02$.$Obj_SetPosition$$Position$ =  (%GLOBAL%$pos$ + %vec3(0.000000,100.000000,0.000000)) 
+				:i $SetActiveCamera$$id$ = $Overview_Cam02$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $change_observe_overview_cam_mode$
+	:i if $GotParam$$prev$
+		:i if  ($observe_overview_cam_mode$ = %i(0,00000000)) 
+			:i $Change$$observe_overview_cam_mode$ = %i(8,00000008)
+		:i else 
+			:i $Change$$observe_overview_cam_mode$ =  ( ($observe_overview_cam_mode$)  - %i(1,00000001)) 
+		:i endif
+	:i else 
+		:i if  ($observe_overview_cam_mode$ = %i(8,00000008)) 
+			:i $Change$$observe_overview_cam_mode$ = %i(0,00000000)
+		:i else 
+			:i $Change$$observe_overview_cam_mode$ =  ( ($observe_overview_cam_mode$)  + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i $thugpro_observe_overview_cam_update$
+:i endfunction
+:i function $thugpro_observe_next$
+	:i if NOT $IsTrue$$view_mode$
+		:i if $IsTrue$$observe_overview_cam_state$
+			:i $change_observe_overview_cam_mode$$next$
+		:i else 
+			:i $THUGPRO_ObserveFunctionCall$$func$ = $ObserveNextPlayer$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_observe_prev$
+	:i if NOT $IsTrue$$view_mode$
+		:i if $IsTrue$$observe_overview_cam_state$
+			:i $change_observe_overview_cam_mode$$prev$
+		:i else 
+			:i $THUGPRO_ObserveFunctionCall$$func$ = $ObservePrevPlayer$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_observe_leader$
+	:i if NOT $IsTrue$$view_mode$
+		:i $THUGPRO_ObserveFunctionCall$$func$ = $ObserveLeader$
+	:i endif
+:i endfunction
+:i function $thugpro_observe_the_crown$
+:i endfunction
+:i function $thugpro_observe_king$
+	:i if $THUGPRO_ObserveFunctionCall$$func$ = $ObserveKing$
+	:i else 
+		:i $observe_overview_cam_view_flag$$object_name$ = $crown_object$
+	:i endif
+:i endfunction
+:i function $thugpro_observe_crown$
+	:i $observe_overview_cam_view_flag$$object_name$ = $crown_object$
+:i endfunction
+:i function $thugpro_observe_self$
+	:i if NOT $IsTrue$$view_mode$
+		:i $THUGPRO_ObserveFunctionCall$$func$ = $ObserveSelf$
+	:i endif
+:i endfunction
+:i function $thugpro_observe_skater_name$
+	:i $exit_pause_menu$
+	:i $create_onscreen_keyboard$$keyboard_done_script$ = $thugpro_try_observe_skater$$keyboard_title$ = %s(11,"skater name")$min_length$ = %i(4,00000004)$max_length$ = %i(15,0000000f)$text$ = %s(0,"")
+	:i $pause_menu_gradient$$off$
+:i endfunction
+:i function $thugpro_try_observe_skater$
+	:i if $ObjectExists$$id$ = $keyboard_current_string$
+		:i $GetTextElementString$$id$ = $keyboard_current_string$
+		:i $FormatText$$TextName$ = $PlayerName$%s(2,"%s")$s$ = %GLOBAL%$string$
+		:i $destroy_onscreen_keyboard$
+		:i $THUGPRO_ObserveFunctionCall$$func$ = $ObservePlayerByPlayerName$$PlayerName$ = %GLOBAL%$PlayerName$
+	:i endif
+	:i $create_observe_menu$
+:i endfunction
+:i function $test_projectile_SettleScript$
+	:i $test_projectile_OBJID$.$die$
+:i endfunction
+:i function $test_spawn_projectile$
+	:i if $IsTrue$$view_mode$
+		:i $viewer_cam$.$Obj_GetPosition$
+		:i $viewer_cam$.$Obj_GetOrientation$
+	:i else 
+		:i $Skater$.$Obj_GetPosition$
+		:i $skatercam0$.$Obj_GetOrientation$
+	:i endif
+	:i $dir$ =  (%vec3(-1.000000,0.000000,0.000000) * %GLOBAL%$x$ + %vec3(0.000000,-1.000000,0.000000) * %GLOBAL%$y$ + %vec3(0.000000,0.000000,-1.000000) * %GLOBAL%$z$) 
+	:i $vel$ =  (%GLOBAL%$dir$ * %f(1000.000000)) 
+	:i if NOT $IsTrue$$view_mode$
+		:i $pos$ =  (%GLOBAL%$pos$ + %GLOBAL%$dir$ + %vec3(0.000000,40.000000,0.000000)) 
+	:i endif
+	:i if $ObjectExists$$id$ = $test_projectile_OBJID$
+		:i $test_projectile_OBJID$.$die$
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $test_projectile_OBJID$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $model$:s}
+				:i :s{$component$ = $rigidbody$:s}
+				:i :s{$component$ = $MovableContact$:s}
+				:i :a}
+			:i $params$ = :s{
+				:i $name$ = $test_projectile_OBJID$
+				:i $pos$ = %GLOBAL%$pos$
+				:i $model$ = %s(49,"leveleditor\props\NY_BasketBall\NY_BasketBall.mdl")
+				:i $bouncy$
+				:i $contacts$ = :a{%vec3(0.000000,0.000000,-9.000000)%vec3(9.000000,0.000000,-2.000000)%vec3(4.000000,0.000000,7.000000)%vec3(-3.000000,0.000000,7.000000)%vec3(-8.000000,0.000000,-2.000000)%vec3(-2.000000,8.000000,-2.000000)%vec3(2.000000,8.000000,-2.000000)%vec3(-2.000000,8.000000,2.000000)%vec3(2.000000,8.000000,2.000000)%vec3(-2.000000,-8.000000,-2.000000)%vec3(2.000000,-8.000000,-2.000000)%vec3(-2.000000,-8.000000,2.000000)%vec3(2.000000,-8.000000,2.000000):a}
+				:i $center_of_mass$ = %vec3(0.000000,0.000000,0.000000)
+				:i $coeff_restitution$ = %f(0.600000)
+				:i $coeff_friction$ = %f(0.700000)
+				:i $skater_collision_impulse_factor$ = %f(0.900000)
+				:i $skater_collision_rotation_factor$ = %f(4.500000)
+				:i $skater_collision_assent$ = %i(30,0000001e)
+				:i $skater_collision_radius$ = %i(20,00000014)
+				:i $SoundType$ = $Basketball$
+				:i $SettleScript$ = $test_projectile_SettleScript$
+			:i :s}
+		:i :s}
+	:i endif
+	:i $Wait$%i(1,00000001)$frame$
+	:i $test_projectile_OBJID$.$RigidBody_Kick$$vel$ = %GLOBAL%$vel$
+:i endfunction
+:i function $update_lobby_server_list$
+	:i $printf$%s(31,"script update_lobby_server_list")
+	:i if $ScreenElementExists$$id$ = $server_list_menu$
+		:i if NOT  ($current_lobby_focus$ = %i(1,00000001)) 
+			:i $SetScreenElementProps$$id$ = $server_list_scrolling_menu$$reset_window_top$
+		:i endif
+	:i endif
+:i endfunction
+:i function $update_lobby_player_list$
+	:i if $ScreenElementExists$$id$ = $lobby_player_list_menu$
+		:i if NOT  ($current_lobby_focus$ = %i(2,00000002)) 
+		:i endif
+	:i endif
+:i endfunction
+:i function $back_from_network_select_menu$
+	:i $SetNetworkMode$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $Wait$%i(1,00000001)$frame$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if NOT $GotParam$$no_menu$
+		:i $launch_new_ss_menu$
+	:i endif
+:i endfunction
+:i function $select_network_play_multi$
+	:i $hide_select_skater_arrows$
+	:i $Change$$back_to_local_net_menu$ = %i(0,00000000)
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $skateshop_startcam$$play_hold$
+	:i $UseNetworkPreferences$
+	:i $default_skateshop_menu_cleanup$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(400.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $multiplayer_options_menu$
+		:i $vmenu_id$ = $multiplayer_options_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $multiplayer_options_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_main_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(11,"multiplayer")$bg_just$ = $right$$no_grain$
+	:i $make_thpg_menu_item$:s{$text$ = %s(8,"internet")$pad_choose_script$ = $select_network_play$%GLOBAL%$focusable$:s}
+	:i $make_thpg_menu_item$:s{$text$ = %s(5,"local")$pad_choose_script$ = $select_local_play$:s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $multiplayer_options_vmenu$
+	:i $destroy_panel_stuff$
+	:i $create_panel_stuff$
+	:i $hide_panel_stuff$
+:i endfunction
+:i function $select_local_play$
+	:i $Change$$back_to_local_net_menu$ = %i(1,00000001)
+	:i $SetNetworkMode$$LAN_MODE$
+	:i $Change$$network_connection_type$ = $lan$
+	:i $change_gamemode_net$
+	:i $GoalManager_SetDifficultyLevel$%i(1,00000001)
+	:i $SetAllStats$$value$ = %i(10,0000000a)
+	:i $UseNetworkPreferences$
+	:i $setup_from_net_play_successful$
+:i endfunction
+:i function $select_network_play$
+	:i $Change$$back_to_local_net_menu$ = %i(0,00000000)
+	:i $SetNetworkMode$$INTERNET_MODE$
+	:i $Change$$network_connection_type$ = $internet$
+	:i $change_gamemode_net$
+	:i $GoalManager_SetDifficultyLevel$%i(1,00000001)
+	:i $SetAllStats$$value$ = %i(10,0000000a)
+	:i $UseNetworkPreferences$
+	:i $setup_from_net_play_successful$
+:i endfunction
+:i function $setup_from_net_play_successful$
+	:i $default_skateshop_menu_cleanup$
+	:i $launch_new_select_skater_menu$$callback$ = $select_network_play_multi$$params$ = :s{$from_skaterselect$:s}
+:i endfunction
+:i function $back_from_internet_options$
+	:i $CleanUpTopStats$
+	:i $StatsLogOff$
+	:i $ProfileLogOff$
+	:i $SetNetworkMode$
+	:i $default_skateshop_menu_cleanup$
+	:i $launch_new_ss_menu$
+:i endfunction
+:i function $create_internet_options$
+	:i if $ScreenElementExists$$id$ = $lobby_list_anchor$
+		:i $DestroyScreenElement$$id$ = $lobby_list_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $ClearMemcardDataForUpload$
+	:i $dialog_box_exit$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $skateshop_board_select_cam$$play_hold$
+	:i $Change$$in_net_lobby$ = %i(0,00000000)
+	:i $Change$$has_accepted_dnas$ = %i(1,00000001)
+	:i $create_menu_background_title$$title$ = %s(16,"internet options")$bg_just$ = $right$$no_grain$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(400.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $internet_menu$
+		:i $vmenu_id$ = $internet_vmenu$
+	:i :s}
+	:i $AssignAlias$$id$ = $internet_vmenu$$alias$ = $sub_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $internet_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_options$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(11,"Play Online")
+		:i $id$ = $menu_play_online$
+		:i $pad_choose_script$ = $play_online_chosen$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"Save Settings")
+		:i $id$ = $menu_save$
+		:i $pad_choose_script$ = $launch_save_internet_settings$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $internet_vmenu$
+:i endfunction
+:i function $join_chosen$
+	:i if $FoundServers$
+		:i $Change$$JoinedGameInProgress$ = %i(0,00000000)
+		:i $Change$$JoinedAsObserver$ = %i(0,00000000)
+		:i $StopServerList$
+		:i $SetJoinMode$$JOIN_MODE_PLAY$
+		:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $thugpro_change_lobby_menu_header_title$$title$ = %s(9,"Game Info")
+		:i $hide_internet_only_menus$$keep_chat$
+		:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $server_player_list_title$.$DoMorph$$scale$ = %f(0.700000)
+		:i $server_desc_level_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $lobby_menu_motd$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+		:i $Change$$current_lobby_focus$ = %i(1,00000001)
+		:i $AssignAlias$$id$ = $server_list_menu$$alias$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $observe_chosen$
+	:i if $FoundServers$
+		:i $Change$$JoinedGameInProgress$ = %i(0,00000000)
+		:i $Change$$JoinedAsObserver$ = %i(1,00000001)
+		:i $StopServerList$
+		:i $SetJoinMode$$JOIN_MODE_OBSERVE$
+		:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $thugpro_change_lobby_menu_header_title$$title$ = %s(9,"Game Info")
+		:i $hide_internet_only_menus$$keep_chat$
+		:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $server_player_list_title$.$DoMorph$$scale$ = %f(0.700000)
+		:i $server_desc_level_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $lobby_menu_motd$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+		:i $Change$$current_lobby_focus$ = %i(1,00000001)
+		:i $AssignAlias$$id$ = $server_list_menu$$alias$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $user_list_chosen$
+	:i $StopServerList$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $lobby_player_list_menu$
+	:i $Change$$current_lobby_focus$ = %i(2,00000002)
+	:i $AssignAlias$$id$ = $lobby_player_list_menu$$alias$ = $current_menu$
+:i endfunction
+:i function $refresh_chosen$
+	:i $RefreshServerList$$force_refresh$
+	:i if $InInternetMode$
+		:i $FillPlayerList$
+	:i endif
+:i endfunction
+:i function $refocus_actions_menu$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $server_list_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+	:i $Change$$current_lobby_focus$ = %i(0,00000000)
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+	:i $thugpro_change_lobby_menu_header_title$$title$ = %s(15,"THUG Pro Online")
+	:i if $InInternetMode$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i if $ObjectExists$$id$ = $console_message_vmenu$
+			:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $refocus_gamelist_menu$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $server_desc_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+:i endfunction
+:i function $hide_internet_only_menus$
+	:i if $InInternetMode$
+		:i if NOT $GotParam$$keep_chat$
+			:i if $ObjectExists$$id$ = $console_message_vmenu$
+				:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+			:i endif
+		:i endif
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $play_online_chosen$
+	:i $CleanUpTopStats$
+	:i $spawn_lobby_list$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $PlaySkaterCamAnim$$name$ = $skateshop_board_select_cam$$play_hold$
+:i endfunction
+:i function $spawn_lobby_list$
+	:i $Change$$back_to_local_net_menu$ = %i(0,00000000)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $ss_vmenu$
+	:i $CleanUpTopStats$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(24,"Connecting to OpenSpy...")
+		:i $no_bg$$keep_menu$$bg_anchor_id$ = $ss_menu$
+		:i $pos$ = %vec2(237.000000,250.000000)
+		:i $delay_input$
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_lobby_connecting$:s}
+			:i :a}
+	:i :s}
+	:i $LobbyConnect$
+:i endfunction
+:i function $cancel_lobby_connecting$
+	:i $dialog_box_exit$
+	:i $LeaveLobby$
+	:i $StatsLogOff$
+	:i $ProfileLogOff$
+	:i $CancelLogon$
+	:i $CancelLobbyConnect$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $CancelNatNegotiation$
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $ss_vmenu$
+:i endfunction
+:i function $cancel_lobby_list$
+	:i $dialog_box_exit$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+	:i $DestroyIfObjectExist$$id$ = $current_menu_anchor$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $LobbyDisconnect$
+	:i $CancelNatNegotiation$
+	:i $launch_new_ss_menu$
+:i endfunction
+:i function $back_from_internet_menu$
+	:i $console_destroy$
+	:i $LeaveLobby$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $LobbyDisconnect$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+	:i $DestroyIfObjectExist$$id$ = $current_menu_anchor$
+	:i $launch_new_ss_menu$
+:i endfunction
+:i function $create_network_select_games_menu$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+	:i if $IsInternetGameHost$
+		:i if  ($already_tried$ = %i(1,00000001)) 
+			:i $QuitGame$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $IsJoiningInternetGame$
+		:i if  ($already_tried$ = %i(1,00000001)) 
+			:i if NOT $TryJoinServerIPSuccess$
+				:i $QuitGame$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $Change$$already_tried$ = %i(1,00000001)
+	:i $Skater$.$reset_model_lights$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$Skater$ = %i(0,00000000)$name$ = $skateshop_board_select_cam$$play_hold$
+	:i if $GotParam$$play_cam$
+		:i $PlaySkaterCamAnim$$name$ = $skateshop_board_select_cam$$play_hold$
+	:i endif
+	:i $dialog_box_exit$
+	:i $make_server_list_menu$
+	:i if $IsInternetGameHost$
+		:i $host_net_chosen$
+	:i else 
+		:i if $InInternetMode$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $actions_menu$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_menu$:s}:s}
+					:i :a}
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $lobby_player_list_menu$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_user_list$:s}:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $actions_menu$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_multiplayer_menu$:s}:s}
+					:i :a}
+			:i :s}
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $server_list_menu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_game_list$:s}:s}
+				:i :a}
+		:i :s}
+		:i $highlight_bar_scale$ = %vec2(1.500000,0.600000)
+		:i if $InInternetMode$
+			:i if $CanHostGame$
+				:i $make_thpg_menu_item$$text$ = %s(9,"Host Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$
+			:i else 
+				:i $make_thpg_menu_item$$text$ = %s(9,"Host Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$
+			:i endif
+		:i else 
+			:i $make_thpg_menu_item$$text$ = %s(9,"Host Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$
+		:i endif
+		:i if $InInternetMode$
+			:i $make_thpg_menu_item$$text$ = %s(9,"Join Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_join$$pad_choose_script$ = $join_chosen$
+			:i $make_thpg_menu_item$$text$ = %s(12,"Observe Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_observe$$pad_choose_script$ = $observe_chosen$
+			:i $make_thpg_menu_item$$text$ = %s(7,"Refresh")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_refresh$$pad_choose_script$ = $refresh_chosen$
+		:i else 
+			:i $make_thpg_menu_item$$text$ = %s(9,"Join Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_join$$pad_choose_script$ = $join_chosen$
+			:i $make_thpg_menu_item$$text$ = %s(12,"Observe Game")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_observe$$pad_choose_script$ = $observe_chosen$
+			:i $make_thpg_menu_item$$text$ = %s(7,"Refresh")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_refresh$$pad_choose_script$ = $refresh_chosen$
+		:i endif
+		:i if $InInternetMode$
+			:i $make_thpg_menu_item$$text$ = %s(9,"User List")$parent$ = $actions_menu$$no_bg$$id$ = $menu_network_select_user_list$$pad_choose_script$ = $user_list_chosen$
+			:i if $ProfileLoggedIn$
+				:i $pad_choose$ = $launch_homie_list$
+			:i else 
+				:i $pad_choose$ = $no_profile_homie_list_prompt$
+			:i endif
+			:i $make_thpg_menu_item$$text$ = %s(12,"Chat Message")$parent$ = $actions_menu$$no_bg$$id$ = $fmenu_network_select_chat$$pad_choose_script$ = $create_lobby_onscreen_kb$
+			:i if $ProfileLoggedIn$
+			:i endif
+		:i endif
+		:i $add_no_servers_found_message$$refocus$
+		:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$$params$ = :s{$scale$ = %f(0.900000):s}
+		:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+		:i $create_helper_text$$generic_helper_text$$helper_pos$ = %vec2(204.000000,426.000000)$helper_scale$ = %f(1.125000)
+		:i $SetScreenElementLock$$id$ = $current_menu_anchor$$on$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $server_list_menu$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $server_desc_menu$
+		:i if $InInternetMode$
+			:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+		:i endif
+		:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+		:i $Change$$current_lobby_focus$ = %i(0,00000000)
+		:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+		:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+		:i if $GotParam$$focus_on_enter_message$
+			:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$set_enter_message_focus$
+		:i endif
+		:i if NOT $TryJoinServerIPSuccess$
+			:i if $IsJoiningInternetGame$
+				:i $check_join_internet_ip$
+				:i return
+				
+			:i endif
+			:i $RefreshServerList$$force_refresh$
+		:i endif
+		:i if $GotParam$$focus_on_enter_message$
+			:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$set_enter_message_focus$
+		:i endif
+		:i if $TryJoinServerIPSuccess$
+			:i $ForceServerListRefresh$
+			:i $join_chosen$
+			:i $GetScreenElementProps$$id$ = :s{$server_list_menu$$child$ = %i(0,00000000):s}
+			:i $FireEvent$$type$ = $pad_choose$$target$ = %GLOBAL%$id$
+		:i endif
+	:i endif
+	:i $hide_panel_stuff$
+:i endfunction
+:i function $thugpro_change_lobby_menu_header_title$$title$ = %s(14,"THUG Pro Lobby")
+	:i if $ScreenElementExists$$id$ = $lobby_menu_header_title$
+		:i $SetScreenElementProps$$id$ = $lobby_menu_header_title$$text$ = %GLOBAL%$title$
+	:i endif
+:i endfunction
+:i function $thugpro_create_lobby_menu_header$$parent$ = $server_list_anchor$$title$ = %s(14,"THUG Pro Lobby")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $lobby_menu_header_title$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$title$
+		:i $alpha$ = %f(1.000000)
+		:i $scale$ = %f(1.100000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(120,00000078)%i(120,00000078)%i(120,00000078)%i(120,00000078):a}
+		:i $shadow$
+		:i $shadow_offs$ = %vec2(0.500000,0.500000)
+		:i $shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(2404,00000964)
+		:i $pos$ = %vec2(-220.000000,6.000000)
+	:i :s}
+	:i if $InInternetMode$
+		:i $CreateScreenElement$:s{
+			:i $id$ = $lobby_menu_openspy_logo$
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $texture$ = $openspy_new$
+			:i $scale$ = %f(0.160000)
+			:i $alpha$ = %f(0.900000)
+			:i $pos$ = %vec2(232.000000,6.000000)
+			:i $just$ = :a{$right$$center$:a}
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $id$ = $lobby_menu_header_bg_l$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $header_gradient_r$
+		:i $scale$ = %vec2(0.500000,0.400000)
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $pos$ = %vec2(0.000000,5.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $lobby_menu_header_bg_r$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $header_gradient_r$
+		:i $scale$ = %vec2(0.500000,0.400000)
+		:i $pos$ = %vec2(0.000000,5.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$KEY_COLOR$) 
+	:i :s}
+:i endfunction
+:i function $thugpro_create_lobby_menu_container$$parent$ = $server_list_anchor$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $lobby_menu_container$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(120.000000,50.000000)
+		:i $alpha$ = %f(0.750000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $pos$ = %vec2(-240.500000,30.000000)
+	:i :s}
+:i endfunction
+:i function $thugpro_create_lobby_menu_chat_container$$parent$ = $server_list_anchor$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $lobby_menu_chat_container$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(120.000000,29.000000)
+		:i $alpha$ = %f(0.600000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $pos$ = %vec2(-240.500000,240.500000)
+	:i :s}
+:i endfunction
+:i $MAX_NUM_STATUS_ICONS$ = %i(5,00000005)
+:i function $make_server_list_menu$
+	:i $create_console$
+	:i $console_unhide$
+	:i $Change$$in_net_lobby$ = %i(1,00000001)
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $server_list_anchor$
+		:i $pos$ = %vec2(150.000000,60.000000)
+		:i $scale$ = %f(1.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $focusable_child$ = $actions_menu$
+	:i :s}
+	:i $thugpro_create_lobby_menu_header$:s{
+		:i $parent$ = $server_list_anchor$
+		:i $title$ = %s(14,"THUG Pro Lobby")
+	:i :s}
+	:i $thugpro_create_lobby_menu_container$:s{
+		:i $parent$ = $server_list_anchor$
+	:i :s}
+	:i $thugpro_create_lobby_menu_chat_container$:s{
+		:i $parent$ = $server_list_anchor$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(5,"Games")$bg_just$ = $right_lobby$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $actions_menu_anchor$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(351.500000,37.500000)
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $actions_menu_anchor$
+		:i $id$ = $actions_menu$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-280.500000,20.000000)
+		:i $scale$ = %f(1.000000)
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $game_list_menu_anchor$
+		:i $dims$ = %vec2(300.000000,300.000000)
+		:i $pos$ = %vec2(300.000000,60.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $id$ = $server_list_scrolling_menu$
+		:i $dims$ = %vec2(440.000000,300.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $num_items_to_show$ = %i(10,0000000a)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_list_scrolling_menu$
+		:i $id$ = $server_list_menu$
+		:i $vmenu_id$ = $server_list_vmenu$
+		:i $scale$ = %f(1.200000)
+		:i $dims$ = %vec2(440.000000,300.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $server_desc_menu_anchor$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_desc_level_anchor$
+		:i $scale$ = %f(0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-220.500000,50.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_level_thumb$
+		:i $texture$ = $flare1$
+		:i $scale$ = %f(1.000000)
+		:i $alpha$ = %f(0.950000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_level_static$
+		:i $texture$ = $levelselect_static$
+		:i $scale$ = %vec2(0.335000,0.410000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(200,000000c8)%i(200,000000c8)%i(200,000000c8)%i(128,00000080):a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $TerminateObjectsScripts$$id$ = $server_desc_level_static$
+	:i $RunScriptOnScreenElement$$id$ = $server_desc_level_static$$do_server_desc_level_static_effect$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_level_name_bg$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(0.000000,110.000000)
+		:i $scale$ = %vec2(32.500000,4.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_level_name$
+		:i $font$ = $newtrickfont$
+		:i $text$ = %s(10,"test level")
+		:i $scale$ = %f(0.500000)
+		:i $pos$ = %vec2(5.000000,114.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1000,000003e8)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $lobby_menu_motd$
+		:i $font$ = $small$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %f(0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-220.500000,50.000000)
+		:i $dims$ = %vec2(260.000000,300.000000)
+		:i $z_priority$ = %i(1000,000003e8)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_status_01$
+		:i $texture$ = $logo_25$
+		:i $pos$ = %vec2(0.000000,135.000000)
+		:i $scale$ = %vec2(0.180000,0.180000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_status_02$
+		:i $texture$ = $logo_25$
+		:i $pos$ = %vec2(20.000000,135.000000)
+		:i $scale$ = %vec2(0.180000,0.180000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_status_03$
+		:i $texture$ = $logo_25$
+		:i $pos$ = %vec2(40.000000,135.000000)
+		:i $scale$ = %vec2(0.180000,0.180000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_status_04$
+		:i $texture$ = $logo_25$
+		:i $pos$ = %vec2(60.000000,135.000000)
+		:i $scale$ = %vec2(0.180000,0.180000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $server_desc_level_anchor$
+		:i $id$ = $server_desc_status_05$
+		:i $texture$ = $logo_25$
+		:i $pos$ = %vec2(80.000000,135.000000)
+		:i $scale$ = %vec2(0.180000,0.180000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.600000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(999,000003e7)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_desc_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(70.500000,46.000000)
+		:i $scale$ = %f(0.900000)
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_player_list_title$
+		:i $font$ = $dialog$
+		:i $text$ = %s(17,"Skaters in game: ")
+		:i $scale$ = %f(0.000000)
+		:i $pos$ = %vec2(-79.000000,45.500000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.700000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_player_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-60.500000,76.000000)
+		:i $scale$ = %f(0.850000)
+		:i $not_focusable$
+	:i :s}
+	:i if $InInternetMode$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_list_anchor$
+			:i $id$ = $player_list_anchor$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(0.000000,0.000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $player_list_title$
+			:i $font$ = $dialog$
+			:i $text$ = %s(18,"Skaters in lobby: ")
+			:i $scale$ = %f(0.700000)
+			:i $pos$ = %vec2(-79.000000,45.500000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $alpha$ = %f(0.700000)
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $Vmenu$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $lobby_player_list_menu$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(-60.500000,76.000000)
+			:i $scale$ = %f(0.850000)
+			:i $not_focusable$
+		:i :s}
+	:i endif
+	:i if $InInternetMode$
+		:i $lobby_menu_motd$.$DoMorph$$scale$ = %f(0.500000)
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $FillPlayerList$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+	:i endif
+	:i $AssignAlias$$id$ = $server_list_anchor$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+	:i $hide_panel_stuff$
+:i endfunction
+:i function $server_list_menu_add_item$
+	:i $printf$%s(32,"script server_list_menu_add_item")
+	:i if $ObjectExists$$id$ = $server_list_menu$
+		:i $FormatText$$ChecksumName$ = $mode_name$%GLOBAL%$mode$
+		:i $FormatText$$ChecksumName$ = $mode_attack$%s(12,"Trick Attack")
+		:i $FormatText$$ChecksumName$ = $mode_score$%s(15,"Score Challenge")
+		:i $FormatText$$ChecksumName$ = $mode_mambo$%s(11,"Combo Mambo")
+		:i $FormatText$$ChecksumName$ = $mode_slap$%s(5,"Slap!")
+		:i $FormatText$$ChecksumName$ = $mode_koth$%s(16,"King of the Hill")
+		:i $FormatText$$ChecksumName$ = $mode_graffiti$%s(8,"Graffiti")
+		:i $FormatText$$ChecksumName$ = $mode_goal$%s(11,"Goal Attack")
+		:i $FormatText$$ChecksumName$ = $mode_ctf$%s(16,"Capture the Flag")
+		:i $FormatText$$ChecksumName$ = $mode_fire$%s(9,"FireFight")
+		:i $FormatText$$ChecksumName$ = $mode_elim$%s(10,"Elimiskate")
+		:i $FormatText$$ChecksumName$ = $mode_hunt$%s(14,"Scavenger Hunt")
+		:i switch %GLOBAL%$mode_name$
+			:i case %GLOBAL%$mode_attack$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(9,"2p_attack")
+				:i endcase
+			case %GLOBAL%$mode_score$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(8,"2p_score")
+				:i endcase
+			case %GLOBAL%$mode_mambo$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(8,"2p_mambo")
+				:i endcase
+			case %GLOBAL%$mode_slap$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_slap")
+				:i endcase
+			case %GLOBAL%$mode_koth$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_koth")
+				:i endcase
+			case %GLOBAL%$mode_graffiti$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(11,"2p_graffiti")
+				:i endcase
+			case %GLOBAL%$mode_goal$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_goal")
+				:i endcase
+			case %GLOBAL%$mode_ctf$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_flag")
+				:i endcase
+			case %GLOBAL%$mode_fire$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_fire")
+				:i endcase
+			case %GLOBAL%$mode_elim$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_elim")
+				:i endcase
+			case %GLOBAL%$mode_hunt$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_hunt")
+				:i endcase
+			default 
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_free")
+				:i end_switch
+		
+		:i $child_texture$ = %GLOBAL%$gametype_icon$
+		:i $parent_menu_id$ = %GLOBAL%$parent$
+		:i $bar_length$ = %i(20,00000014)
+		:i $make_thpg_menu_item$ isNull 
+	:i endif
+:i endfunction
+:i function $player_list_add_item$$rank$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $lobby_player_list_menu$
+		:i $SetScreenElementLock$$id$ = $lobby_player_list_menu$$off$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $lobby_player_list_menu$
+			:i $id$ = %GLOBAL%$id$
+			:i $pos$ = %vec2(25.000000,0.000000)
+			:i $dims$ = %vec2(200.000000,15.000000)
+			:i $scale$ = %f(1.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$player_list_focus$:s}
+				:i :s{$unfocus$$player_list_unfocus$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(20.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+		:i %GLOBAL%$text_id$ = %GLOBAL%$id$
+		:i $truncate_string$$id$ = %GLOBAL%$text_id$$max_width$ = %i(130,00000082)
+		:i if  (%GLOBAL%$text$ = %s(9,"\c0morten")) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $texture$ = $best$
+				:i $scale$ = %f(0.400000)
+				:i $alpha$ = %f(0.800000)
+				:i $rgba$ = :a{%i(120,00000078)%i(80,00000050)%i(0,00000000)%i(120,00000078):a}
+				:i $pos$ = %vec2(-22.000000,9.000000)
+			:i :s}
+		:i else 
+			:i $FormatText$$ChecksumName$ = $rank_texture$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+				:i $texture$ = %GLOBAL%$rank_texture$
+				:i $scale$ = %f(0.700000)
+				:i $pos$ = %vec2(-22.000000,9.000000)
+				:i $just$ = :a{$center$$center$:a}
+			:i :s}
+		:i endif
+		:i $SetScreenElementLock$$id$ = $lobby_player_list_menu$$on$
+		:i $update_lobby_player_list$
+	:i endif
+:i endfunction
+:i function $player_list_focus$
+	:i $GetTags$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+:i endfunction
+:i function $player_list_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+:i endfunction
+:i function $do_server_desc_level_static_effect$
+	:i $GetTags$
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %vec2(0.335000,0.410000)
+			:i $Wait$%i(6,00000006)$gameframes$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %vec2(-0.335000,-0.410000)
+			:i $Wait$%i(6,00000006)$gameframes$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %vec2(0.335000,-0.410000)
+			:i $Wait$%i(6,00000006)$gameframes$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %vec2(-0.335000,0.410000)
+			:i $Wait$%i(6,00000006)$gameframes$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $server_desc_level_update_text$
+	:i if $ScreenElementExists$$id$ = $server_desc_level_name$
+		:i if $GotParam$$name$
+			:i $SetScreenElementProps$$id$ = $server_desc_level_name$$text$ = %GLOBAL%$name$
+		:i endif
+		:i if $GotParam$$level_name_checksum$
+			:i $get_level_thumb_texture_from_level_name_checksum$ isNull 
+			:i if $GotParam$$level_thumb$
+				:i $SetScreenElementProps$$id$ = $server_desc_level_thumb$$texture$ = %GLOBAL%$level_thumb$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $player_list_update_rank$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i if  (%GLOBAL%$texture$ = $best$) 
+			:i return
+			
+		:i endif
+		:i if $GotParam$$rank$
+			:i $FormatText$$ChecksumName$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$texture$ = %GLOBAL%$rank_icon$
+		:i endif
+	:i endif
+:i endfunction
+:i function $net_game_info_set_status_icon$
+	:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i $FormatText$$ChecksumName$ = $status_icon_id$%s(22,"server_desc_status_0%i")$i$ = %GLOBAL%$index$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$status_icon_id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$status_icon_id$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $rgba$ = %GLOBAL%$rgba$
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$status_icon_id$
+			:i $alpha$ = %f(0.600000)
+		:i :s}
+	:i endif
+	:i return
+	$status_icon_index$ = %GLOBAL%$index$
+:i endfunction
+:i function $net_game_info_update_status_icons$
+	:i $status_icon_index$ = %i(0,00000000)
+	:i if $GotParam$$has_password$
+		:i $net_game_info_set_status_icon$:s{
+			:i $index$ = %GLOBAL%$status_icon_index$
+			:i $texture$ = $logo_63$
+			:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i :s}
+	:i endif
+	:i if $GotParam$$game_in_progress$
+		:i $net_game_info_set_status_icon$:s{
+			:i $index$ = %GLOBAL%$status_icon_index$
+			:i $texture$ = $logo_82$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+		:i :s}
+	:i endif
+	:i if $GotParam$$script_mods_allowed$
+		:i if  (%GLOBAL%$script_mods_allowed$ = %i(1,00000001)) 
+			:i $net_game_info_set_status_icon$:s{
+				:i $index$ = %GLOBAL%$status_icon_index$
+				:i $texture$ = $logo_36$
+				:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i :s}
+		:i else 
+			:i $net_game_info_set_status_icon$:s{
+				:i $index$ = %GLOBAL%$status_icon_index$
+				:i $texture$ = $logo_36$
+				:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$hosting_imported_level$
+		:i switch %GLOBAL%$hosting_imported_level$
+			:i case %i(0,00000000)
+				:i $net_game_info_set_status_icon$:s{
+					:i $index$ = %GLOBAL%$status_icon_index$
+					:i $texture$ = $logo_64$
+					:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+				:i :s}
+				:i endcase
+			case %i(1,00000001)
+				:i $net_game_info_set_status_icon$:s{
+					:i $index$ = %GLOBAL%$status_icon_index$
+					:i $texture$ = $logo_64$
+					:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+				:i :s}
+				:i endcase
+			default 
+				:i end_switch
+		
+	:i endif
+	:i while
+		
+		:i if  (%GLOBAL%$status_icon_index$ <  ($MAX_NUM_STATUS_ICONS$) ) 
+			:i %GLOBAL%$status_icon_index$ =  (%GLOBAL%$status_icon_index$ + %i(1,00000001)) 
+			:i $FormatText$$ChecksumName$ = $status_icon_id$%s(22,"server_desc_status_0%i")$i$ = %GLOBAL%$status_icon_index$
+			:i if $ScreenElementExists$$id$ = %GLOBAL%$status_icon_id$
+				:i $DoScreenElementMorph$:s{
+					:i $id$ = %GLOBAL%$status_icon_id$
+					:i $alpha$ = %f(0.000000)
+				:i :s}
+			:i endif
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to  ($MAX_NUM_STATUS_ICONS$) 
+:i endfunction
+:i function $net_game_info_add_item$$parent$ = $server_desc_menu$$dims$ = %vec2(300.000000,16.000000)
+	:i if $ObjectExists$$id$ = %GLOBAL%$parent$
+		:i if NOT $GotParam$$value$
+			:i return
+			
+		:i endif
+		:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+		:i if $GotParam$$value$
+			:i $dims$ = %vec2(300.000000,36.000000)
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $dims$ = %GLOBAL%$dims$
+		:i :s}
+		:i $anchor_id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $text$ = %GLOBAL%$name$
+			:i $font$ = $dialog$
+			:i $scale$ = %f(0.800000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $alpha$ = %f(0.700000)
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+		:i :s}
+		:i if $GotParam$$value$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $text$ = %GLOBAL%$value$
+				:i $font$ = $small$
+				:i $scale$ = %f(0.700000)
+				:i $just$ = :a{$left$$top$:a}
+				:i $pos$ = %vec2(2.000000,18.000000)
+				:i $rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(128,00000080):a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $net_game_info_add_player$$rank$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $server_player_menu$
+		:i $FormatText$$ChecksumName$ = $id$%s(4,"%a%b")$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$value$
+		:i $SetScreenElementLock$$id$ = $server_player_menu$$off$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_player_menu$
+			:i $id$ = %GLOBAL%$id$
+			:i $pos$ = %vec2(25.000000,0.000000)
+			:i $dims$ = %vec2(200.000000,15.000000)
+			:i $scale$ = %f(1.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $event_handlers$ = :a{
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$value$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(20.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+		:i %GLOBAL%$text_id$ = %GLOBAL%$id$
+		:i $truncate_string$$id$ = %GLOBAL%$text_id$$max_width$ = %i(130,00000082)
+		:i if  (%GLOBAL%$value$ = %s(9,"\c0morten")) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $texture$ = $best$
+				:i $scale$ = %f(0.400000)
+				:i $alpha$ = %f(0.800000)
+				:i $rgba$ = :a{%i(120,00000078)%i(80,00000050)%i(0,00000000)%i(120,00000078):a}
+				:i $pos$ = %vec2(-22.000000,9.000000)
+			:i :s}
+		:i else 
+			:i $FormatText$$ChecksumName$ = $rank_texture$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+				:i $texture$ = %GLOBAL%$rank_texture$
+				:i $scale$ = %f(0.700000)
+				:i $pos$ = %vec2(-22.000000,9.000000)
+				:i $just$ = :a{$center$$center$:a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $net_game_info_update_player_title$
+:i endfunction
+:i function $server_list_focus$
+	:i $GetTags$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i if $RetrieveServerInfo$ isNull 
+		:i $describe_selected_server$ isNull 
+	:i endif
+:i endfunction
+:i function $server_list_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+:i endfunction
+:i function $back_from_game_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $server_player_list_title$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $server_desc_level_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i if $InInternetMode$
+		:i $lobby_menu_motd$.$DoMorph$$scale$ = %f(0.500000)
+	:i endif
+	:i $destroy_server_desc_children$
+	:i $refocus_actions_menu$
+:i endfunction
+:i function $back_from_user_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $refocus_actions_menu$
+:i endfunction
+:i function $back_from_buddy_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $refocus_actions_menu$
+:i endfunction
+:i $already_tried$ = %i(0,00000000)
+:i function $set_enter_message_focus$
+	:i $menu_onscreen$$params$ = :s{$scale$ = %f(0.900000):s} isNull 
+	:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$$data$ = :s{$child_id$ = $menu_network_select_chat$:s}
+:i endfunction
+:i function $back_to_server_list_from_buddy_list$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_network_select_games_menu$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $create_remove_players_menu$
+	:i $make_new_menu$$menu_id$ = $remove_players_menu$$vmenu_id$ = $remove_players_vmenu$$menu_title$ = %s(20,"REMOVE WHICH PLAYER?")
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $remove_players_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $FillRemovePlayersMenu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$$params$ = :s{$scale$ = %f(0.900000):s}
+:i endfunction
+:i function $cancel_view_homies$
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+	:i $SetScreenElementLock$$id$ = $server_list_anchor$$off$
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementLock$$id$ = $server_list_anchor$$on$
+:i endfunction
+:i function $lobby_remove_buddy$
+	:i $RemoveBuddy$ isNull 
+	:i $FillBuddyList$$clear_list$$allow_remove$
+	:i $launch_homie_list$
+:i endfunction
+:i function $back_from_regions_menu_update$
+	:i if $ObjectExists$$id$ = $lobby_list_anchor$
+		:i $FireEvent$$type$ = $focus$$target$ = $internet_vmenu$
+		:i $DoScreenElementMorph$$id$ = $lobby_list_anchor$$pos$ = %vec2(-5.000000,800.000000)$time$ = %f(0.300000)
+		:i $Wait$%f(0.300000)$Seconds$
+		:i $DestroyScreenElement$$id$ = $lobby_list_anchor$
+	:i endif
+:i endfunction
+:i function $back_from_lobbies_update$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $LobbyDisconnect$
+	:i $CancelNatNegotiation$
+	:i $back_from_regions_menu_update$
+:i endfunction
+:i function $create_lobby_list_menu$
+	:i $cas_handle_board_stuff$$RefreshSkaterModel$$show_board$
+	:i $destroy_menu_background_title$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $lobby_list_anchor$
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $default_skateshop_menu_cleanup$
+	:i $make_new_skateshop_menu$:s{
+		:i $parent$ = $lobby_list_anchor$
+		:i $pos$ = %vec2(380.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $lobby_list_menu$
+		:i $vmenu_id$ = $lobby_list_vmenu$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(12,"select lobby")$bg_just$ = $right_scroll$$no_grain$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $lobby_list_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $cancel_lobby_list$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $lobby_list_vmenu$
+:i endfunction
+:i function $launch_network_select_games_menu_update$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_network_select_games_menu$$play_cam$
+:i endfunction
+:i function $regions_menu_add_item$
+	:i $FormatText$$ChecksumName$ = $id$%s(2,"%i")$i$ = %GLOBAL%$text$
+	:i $make_thpg_menu_item$ isNull $focus_script$ = $thpg_menu_item_focus$$unfocus_script$ = $thpg_menu_item_unfocus$$rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(70,00000046):a}
+:i endfunction
+:i function $choose_selected_lobby$
+	:i $printf$%s(57,"---------------------- chose lobby ----------------------")
+	:i $ChooseLobby$ isNull 
+	:i if $ScreenElementExists$$id$ = $lobby_list_anchor$
+		:i $DestroyScreenElement$$id$ = $lobby_list_anchor$
+	:i endif
+	:i $create_joining_lobby_dialog$
+:i endfunction
+:i function $CreateGettingLobbyListDialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = $net_status_getting_lobbies$
+		:i $no_animate$$keep_menu$$bg_anchor_id$ = $ss_menu$
+		:i $no_bg$
+		:i $delay_input$
+		:i $pos$ = %vec2(237.000000,250.000000)
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_lobby_$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cancel_lobby_$
+	:i $dialog_box_exit$
+	:i $StatsLogOff$
+	:i $ProfileLogOff$
+	:i $console_destroy$
+	:i $back_from_lobbies$
+	:i $SetNetworkMode$
+	:i $FireEvent$$type$ = $focus$$target$ = $ss_vmenu$
+:i endfunction
+:i function $show_BulletinBoard$
+	:i $default_skateshop_menu_cleanup$
+	:i $KillSkaterCamAnim$$all$
+	:i $Wait$%i(1,00000001)$frame$
+	:i if NOT $ObjectExists$$id$ = $menu_cam$
+		:i $create_menu_camera$
+	:i endif
+	:i $menu_cam$.$UnPause$
+	:i $menu_cam$.$Obj_SetPosition$$Position$ = %vec3(-2942.136963,85.000000,839.000000)
+	:i $menu_cam$.$Obj_SetOrientation$$dir$ = %vec3(-1.000000,0.030000,-0.006000)
+	:i $SetActiveCamera$$id$ = $menu_cam$
+	:i if $ScreenElementExists$$id$ = $BulletinBoard_anchor$
+		:i $DestroyScreenElement$$id$ = $BulletinBoard_anchor$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i if $GotParam$$CanScroll$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $dims$ = %vec2(640.000000,480.000000)
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $parent$ = $root_window$
+			:i $id$ = $BulletinBoard_anchor$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_down$$BulletinBoard_scroll_down$:s}
+				:i :s{$pad_up$$BulletinBoard_scroll_up$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $dims$ = %vec2(640.000000,480.000000)
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $parent$ = $root_window$
+			:i $id$ = $BulletinBoard_anchor$
+		:i :s}
+	:i endif
+	:i $AssignAlias$$alias$ = $current_menu_anchor$$id$ = $BulletinBoard_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $BulletinBoard_anchor$
+		:i $id$ = $BulletinBoard_title$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(12,"THUGPRO News")
+		:i $pos$ = %vec2(320.000000,40.000000)
+		:i $scale$ = %f(2.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i if $GotParam$$CanScroll$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $BulletinBoard_anchor$
+			:i $id$ = $down_arrow$
+			:i $texture$ = $down_arrow$
+			:i $pos$ = %vec2(300.000000,352.000000)
+			:i $scale$ = %f(1.000000)
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $hmenu$
+		:i $parent$ = $BulletinBoard_anchor$
+		:i $dims$ = %vec2(360.000000,20.000000)
+		:i $id$ = $BulletinBoard_hmenu$
+		:i $pos$ = %vec2(360.000000,400.000000)
+		:i $z_priority$ = %i(20,00000014)
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :s{$pad_back$$back_from_BulletinBoard$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $pos$ = %vec2(350.000000,320.000000)
+		:i $parent$ = $BulletinBoard_hmenu$
+		:i $font$ = $dialog$
+		:i $text$ = %s(4,"Back")
+		:i $dims$ = %vec2(120.000000,15.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$BulletinBoard_focus$:s}
+			:i :s{$unfocus$$BulletinBoard_unfocus$:s}
+			:i :s{$pad_choose$$back_from_BulletinBoard$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $BulletinBoard_anchor$
+		:i $id$ = $black_mask$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(90.000000,5.000000)
+		:i $pos$ = %vec2(0.000000,380.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(255,000000ff):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967293,fffffffd)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $BulletinBoard_anchor$
+		:i $id$ = $BulletinBoard_vmenu$
+		:i $pos$ = %vec2(80.000000,82.000000)
+		:i $dims$ = %vec2(880.000000,380.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $dont_allow_wrap$
+		:i $padding_scale$ = %f(0.700000)
+	:i :s}
+	:i $THUGPRO_Version$
+	:i $FormatText$$TextName$ = $version_string$%s(35,"Welcome To THUGPRO BETA Version %a!")$a$ = %GLOBAL%$version$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $BulletinBoard_vmenu$
+		:i $id$ = $first_line$
+		:i $text$ = %GLOBAL%$version_string$
+		:i $font$ = $small_rus$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.800000)
+		:i $shadow$
+		:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $shadow_offs$ = %vec2(0.700000,0.700000)
+	:i :s}
+	:i $CreateMultipleTextElements$:s{
+		:i $parent$ = $BulletinBoard_vmenu$
+		:i $text$ = $BulletinBoard_text$
+		:i $font$ = $small_rus$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.800000)
+		:i $width$ = %i(700,000002bc)
+		:i $shadow$
+		:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $shadow_offs$ = %vec2(0.700000,0.700000)
+	:i :s}
+	:i if $GotParam$$CanScroll$
+		:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}
+			:i :s{$text$ = %s(12,"\b4 = Scroll"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Accept"):s}
+			:i :a}
+	:i else 
+		:i $create_helper_text$$helper_text_elements$ = :a{
+			:i :s{$text$ = %s(16,"\bn & \bm = Back"):s}
+			:i :a}
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $BulletinBoard_hmenu$
+	:i $FireEvent$$type$ = $focus$$target$ = $BulletinBoard_anchor$
+	:i $Wait$%i(2,00000002)$gameframes$
+:i endfunction
+:i function $BulletinBoard_scroll_down$
+	:i $GetTags$
+	:i $GetScreenElementPosition$$id$ = $BulletinBoard_vmenu$
+	:i if NOT  (%GLOBAL%$ScreenElementPos$->%vec2(0.000000,1.000000) < %i(4294966996,fffffed4)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $BulletinBoard_vmenu$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(0.000000,-20.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $BulletinBoard_scroll_up$
+	:i $GetTags$
+	:i $GetScreenElementPosition$$id$ = $BulletinBoard_vmenu$
+	:i if NOT  (%GLOBAL%$ScreenElementPos$->%vec2(0.000000,1.000000) > %i(60,0000003c)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $BulletinBoard_vmenu$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(0.000000,20.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $BulletinBoard_focus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) $scale$ = %f(1.200000)
+:i endfunction
+:i function $BulletinBoard_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(50,00000032):a}$scale$ = %i(1,00000001)
+:i endfunction
+:i function $signed_BulletinBoard$
+	:i if $ScreenElementExists$$id$ = $BulletinBoard_anchor$
+		:i $DestroyScreenElement$$id$ = $BulletinBoard_anchor$
+	:i endif
+	:i $create_main_menu$
+:i endfunction
+:i function $back_from_BulletinBoard$
+	:i $dialog_box_exit$
+	:i $generic_menu_pad_back_sound$
+	:i if $ScreenElementExists$$id$ = $BulletinBoard_anchor$
+		:i $DestroyScreenElement$$id$ = $BulletinBoard_anchor$
+	:i endif
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $skateshop_startcam$$play_hold$
+	:i $create_main_menu$
+:i endfunction
+:i $BulletinBoard_text$ = :a{
+	:i :a}
+:i $AlreadyEndedRun$ = %i(0,00000000)
+:i function $THUGPRO_NetEndRun$
+	:i if $InNetGame$
+		:i if $GameModeEquals$$should_end_run_quickly$
+			:i $GoalManager_GetTimeLeftInNetGame$
+			:i if  (%GLOBAL%$time_left$ < %i(1,00000001)) 
+				:i $Change$$AlreadyEndedRun$ = %i(1,00000001)
+				:i $FireEvent$$type$ = $EndOfRunDone$
+				:i $EndOfRunDone$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i :end

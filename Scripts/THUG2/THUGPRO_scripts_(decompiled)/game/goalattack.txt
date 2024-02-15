@@ -1,0 +1,797 @@
+
+:i $goal_goalattack_genericParams$ = :s{
+	:i $goal_text$ = %s(42,"You must complete all of the goals to win!")
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $no_restart$
+	:i $net$
+	:i $init$ = $goal_goalattack_init$
+	:i $activate$ = $goal_goalattack_activate$
+	:i $deactivate$ = $goal_goalattack_deactivate$
+	:i $expire$ = $goal_goalattack_expire$
+	:i $goal_description$ = %s(12,"Goal Attack!")
+:i :s}
+:i function $goal_goalattack_init$
+:i endfunction
+:i function $goal_goalattack_activate$
+	:i if $InNetGame$
+		:i $FormatText$$TextName$ = $msg_text$%s(50,"\c2Goal Attack \n\c0Complete all selected goals.\n")
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+		:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$font_face$ = $testtitle$$dims$ = %vec2(300.000000,0.000000)
+		:i $GetGoalsMode$
+		:i if  (%GLOBAL%$goals$ = $goals_classic$) 
+			:i if $IsTrue$$LEVEL_CLASSIC_GOAL_MODE$
+				:i $SetScoreAccumulation$%i(1,00000001)
+			:i else 
+				:i $SetScoreAccumulation$%i(0,00000000)
+			:i endif
+		:i else 
+			:i $SetScoreAccumulation$%i(0,00000000)
+		:i endif
+	:i endif
+	:i $ResetScore$
+	:i $GoalManager_ClearLastGoal$
+	:i $GoalManager_SetCanStartGoal$%i(1,00000001)
+:i endfunction
+:i function $goal_goalattack_deactivate$
+	:i $GoalManager_ClearLastGoal$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_retry_anchor$
+		:i $DestroyScreenElement$$id$ = $goal_retry_anchor$
+	:i endif
+:i endfunction
+:i function $goalattack_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_goalattack_expire$
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $DestroyScreenElement$$id$ = $goal_message$
+	:i endif
+	:i $printf$%s(22,"goal_goalattack_expire")
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+	:i if $OnServer$
+		:i $CalculateFinalScores$
+		:i $SendGameOverToObservers$
+		:i $SpawnScript$$wait_then_create_rankings$$params$ = :s{$score_title_text$ = %s(5,"GOALS"):s}
+	:i else 
+		:i $create_rankings$$score_title_text$ = %s(5,"GOALS")
+	:i endif
+:i endfunction
+:i function $AddGoal_GoalAttack$
+	:i $GoalManager_AddGoal$$name$ = $goalattack$:s{
+		:i $params$ = :s{$goal_goalattack_genericParams$ isNull :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_GoalAttack$
+	:i $GoalManager_EditGoal$$name$ = $goalattack$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $goalattack$
+:i endfunction
+:i function $back_to_game_options$
+	:i $dialog_box_exit$
+	:i $create_network_game_options_menu$
+:i endfunction
+:i function $create_choose_goals_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $GoalManager_HidePoints$
+	:i $hide_net_player_names$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $goals_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $goals_anchor$$alias$ = $current_menu_anchor$
+	:i $kill_start_key_binding$
+	:i $build_theme_sub_title$$title$ = %s(12,"CHOOSE GOALS")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $goals_anchor$
+		:i $id$ = $goals_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,640.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $goals_menu$$alias$ = $current_menu_anchor$
+	:i $theme_background$$width$ = %f(6.350000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)
+	:i %GLOBAL%$root_pos$ = %vec2(80.000000,25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_top_bar$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,7.000000)
+		:i $pos$ = %vec2(65.000000,87.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(6.000000,-25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Goals")
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(115.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(210.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(6,"On/Off")
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(60.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(355.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(0.000000,250.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $scale$ = %vec2(124.000000,6.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_up_arrow$$offset$ = %vec2(0.000000,260.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $goals_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $view_goals_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $view_goals_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $goals_vmenu$$alias$ = $current_menu$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_choose_goals_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $current_menu$.$SetTags$$num_goals$ = %i(0,00000000)
+	:i $current_menu$.$SetTags$$ForceOff$ = %i(0,00000000)
+	:i $select_all_no_goals_menu_set_event$
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$goals$
+	:i if  (%GLOBAL%$checksum$ = $goals_classic$) 
+		:i $GoalManager_AddGoalChoices$$classic_only$
+	:i else 
+		:i $GoalManager_AddGoalChoices$$created_only$
+	:i endif
+	:i $create_helper_text$$generic_helper_text$
+:i endfunction
+:i function $exit_choose_goals_menu$
+	:i if $ObjectExists$$id$ = $goals_anchor$
+		:i $DestroyScreenElement$$id$ = $goals_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon$
+		:i $DestroyScreenElement$$id$ = $box_icon$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon_2$
+		:i $DestroyScreenElement$$id$ = $box_icon_2$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $grunge_anchor$
+		:i $DestroyScreenElement$$id$ = $grunge_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $create_network_game_options_menu$
+:i endfunction
+:i function $hide_net_player_names$
+	:i if $GotParam$$on$
+		:i $scale$ = %i(1,00000001)
+	:i else 
+		:i $scale$ = %i(0,00000000)
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{$net_score_menu$$child$ = %GLOBAL%$index$:s}
+			:i $DoScreenElementMorph$$id$ = :s{$net_score_menu$$child$ = %GLOBAL%$index$:s}$scale$ = %GLOBAL%$scale$$time$ = %i(0,00000000)
+		:i endif
+	:i loop_to %i(8,00000008)
+:i endfunction
+:i function $choose_goals_menu_set_events$
+	:i $current_menu$.$GetSingleTag$$num_goals$
+	:i $current_menu$.$SetTags$$num_goals$ =  (%GLOBAL%$num_goals$ + %i(1,00000001)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,20.000000)
+		:i $event_handlers$ = :a{:s{$focus$$choose_goals_menu_focus$:s}
+			:i :s{$unfocus$$choose_goals_menu_unfocus$:s}
+			:i :s{$pad_choose$$choose_goals_menu_choose$$params$ = :s{$name$ = %GLOBAL%$goal_id$:s}:s}
+			:i :a}
+	:i :s}
+	:i %GLOBAL%$row_container_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %f(0.800000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i if  (%GLOBAL%$width$ > %i(310,00000136)) 
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = %GLOBAL%$id$$scale$ =  (%f(0.800000) * %f(310.000000) / %GLOBAL%$width$) 
+	:i endif
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(-25.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+		:i $scale$ = %vec2(4.100000,0.700000)
+		:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+	:i :s}
+	:i if $GoalManager_GoalIsSelected$$name$ = %GLOBAL%$goal_id$
+		:i %GLOBAL%$check_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i else 
+		:i %GLOBAL%$check_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $texture$ = $checkbox$
+		:i $pos$ = %vec2(420.000000,0.000000)
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $texture$ = $checkmark$
+		:i $pos$ = %vec2(420.000000,-2.000000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = %GLOBAL%$check_rgba$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+:i endfunction
+:i function $select_all_no_goals_menu_set_event$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,20.000000)
+		:i $event_handlers$ = :a{:s{$focus$$choose_goals_menu_focus$:s}
+			:i :s{$unfocus$$choose_goals_menu_unfocus$:s}
+			:i :s{$pad_choose$$force_select_goals_on_off$:s}
+			:i :a}
+	:i :s}
+	:i %GLOBAL%$row_container_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $text$ = %s(19,"Select all/no goals")
+		:i $scale$ = %f(0.800000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i if  (%GLOBAL%$width$ > %i(310,00000136)) 
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = %GLOBAL%$id$$scale$ =  (%f(0.800000) * %f(310.000000) / %GLOBAL%$width$) 
+	:i endif
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(-25.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+		:i $scale$ = %vec2(4.100000,0.700000)
+		:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+	:i :s}
+:i endfunction
+:i function $view_selected_goals_menu_set_events$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,20.000000)
+		:i $event_handlers$ = :a{:s{$focus$$choose_goals_menu_focus$:s}
+			:i :s{$unfocus$$choose_goals_menu_unfocus$:s}
+			:i :a}
+	:i :s}
+	:i %GLOBAL%$row_container_id$ = %GLOBAL%$id$
+	:i $GoalManager_ReplaceTrickText$$name$ = %GLOBAL%$goal_id$
+	:i $wait$%i(200,000000c8)
+	:i $printstruct$ isNull 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %f(0.800000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(-25.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+		:i $scale$ = %vec2(4.100000,0.700000)
+		:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+	:i :s}
+	:i if $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+		:i %GLOBAL%$check_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i else 
+		:i %GLOBAL%$check_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $texture$ = $checkbox$
+		:i $pos$ = %vec2(420.000000,0.000000)
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_container_id$
+		:i $just$ = :a{$left$$center$:a}
+		:i $font$ = $small$
+		:i $texture$ = $checkmark$
+		:i $pos$ = %vec2(420.000000,0.000000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = %GLOBAL%$check_rgba$
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+:i endfunction
+:i function $choose_goals_menu_choose$
+	:i $GetTags$
+	:i if $OnServer$
+		:i if NOT $GotParam$$Force$
+			:i $GoalManager_ToggleGoalSelection$ isNull 
+		:i else 
+			:i if $GoalManager_GoalIsSelected$$name$ = %GLOBAL%$name$
+				:i if  (%GLOBAL%$ForceOff$ = %i(1,00000001)) 
+					:i $GoalManager_ToggleGoalSelection$ isNull 
+				:i endif
+			:i else 
+				:i if NOT  (%GLOBAL%$ForceOff$ = %i(1,00000001)) 
+					:i $GoalManager_ToggleGoalSelection$ isNull 
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$Force$
+			:i $GoalManager_ToggleGoalSelection$ isNull 
+		:i else 
+			:i if $GoalManager_GoalIsSelected$$name$ = %GLOBAL%$name$
+				:i if  (%GLOBAL%$ForceOff$ = %i(1,00000001)) 
+					:i $GoalManager_ToggleGoalSelection$ isNull 
+					:i $FCFSRequestToggleGoalSelection$ isNull 
+				:i endif
+			:i else 
+				:i if NOT  (%GLOBAL%$ForceOff$ = %i(1,00000001)) 
+					:i $GoalManager_ToggleGoalSelection$ isNull 
+					:i $FCFSRequestToggleGoalSelection$ isNull 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $wait$%f(0.200000)$seconds$
+	:i if $GoalManager_GoalIsSelected$$name$ = %GLOBAL%$name$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+	:i else 
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $choose_goals_menu_focus$
+	:i $GetTags$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect2$
+	:i $GetScreenElementDims$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+	:i if  (%GLOBAL%$width$ > %i(305,00000131)) 
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ =  (%f(0.800000) * %f(310.000000) / %GLOBAL%$width$) $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i else 
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+			:i $scale$ =  (%f(0.800000) *  ( (%GLOBAL%$width$ + %f(5.000000))  / %GLOBAL%$width$) ) 
+		:i :s}
+	:i endif
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+	:i :s}
+	:i if $GotParam$$first_item$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_goals_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_goals_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i :s}
+	:i endif
+	:i if $GotParam$$last_item$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_goals_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_goals_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i :s}
+	:i endif
+	:i $goals_vmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+:i endfunction
+:i function $choose_goals_menu_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.800000)
+	:i :s}
+	:i $GetScreenElementDims$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+	:i if  (%GLOBAL%$width$ > %i(310,00000136)) 
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ =  (%f(0.800000) * %f(310.000000) / %GLOBAL%$width$) 
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+:i endfunction
+:i function $wait_and_create_view_selected_goals_menu$
+	:i $wait$%i(120,00000078)$frames$
+	:i $create_view_selected_goals_menu$ isNull 
+:i endfunction
+:i function $create_view_selected_goals_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $edit_tricks_menu_exit$$just_remove$
+	:i if NOT $GotParam$$from_pause$
+		:i $exit_pause_menu$
+	:i endif
+	:i $hide_current_goal$
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $GoalManager_HidePoints$
+	:i $pause_balance_meter$
+	:i $pause_run_timer$
+	:i $kill_start_key_binding$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $goals_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $goals_anchor$$alias$ = $current_menu_anchor$
+	:i $kill_start_key_binding$
+	:i if $GotParam$$goal_summary$
+		:i $build_theme_sub_title$$title$ = %s(9,"GOAL LIST")
+	:i else 
+		:i $build_theme_sub_title$$title$ = %s(10,"VIEW GOALS")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $goals_anchor$
+		:i $id$ = $goals_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,640.000000)
+	:i :s}
+	:i $theme_background$$width$ = %f(6.350000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)
+	:i %GLOBAL%$root_pos$ = %vec2(80.000000,25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_top_bar$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,7.000000)
+		:i $pos$ = %vec2(65.000000,87.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(6.000000,-25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Goals")
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(115.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(190.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(9,"Completed")
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(60.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(355.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(0.000000,250.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $scale$ = %vec2(124.000000,6.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_up_arrow$$offset$ = %vec2(0.000000,260.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_goals_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $goals_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $view_goals_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $view_goals_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $goals_vmenu$$alias$ = $current_menu$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i if $GotParam$$goal_summary$
+		:i $SetScreenElementProps$:s{$id$ = $current_menu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $close_goals_menu$:s}:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = $current_menu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_view_goals_menu$:s}:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i $GoalManager_AddGoalChoices$$selected_only$
+	:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(10,"\bn = Back"):s}:a}
+:i endfunction
+:i function $exit_view_goals_menu$
+	:i if $ObjectExists$$id$ = $goals_anchor$
+		:i $DestroyScreenElement$$id$ = $goals_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon$
+		:i $DestroyScreenElement$$id$ = $box_icon$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon_2$
+		:i $DestroyScreenElement$$id$ = $box_icon_2$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $grunge_anchor$
+		:i $DestroyScreenElement$$id$ = $grunge_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $create_pause_menu$
+:i endfunction
+:i function $close_goals_menu$
+	:i if $ObjectExists$$id$ = $goals_anchor$
+		:i $DestroyScreenElement$$id$ = $goals_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon$
+		:i $DestroyScreenElement$$id$ = $box_icon$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon_2$
+		:i $DestroyScreenElement$$id$ = $box_icon_2$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $grunge_anchor$
+		:i $DestroyScreenElement$$id$ = $grunge_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $GoalManager_ShowPoints$
+	:i $unpause_balance_meter$
+	:i $unpause_run_timer$
+	:i $restore_start_key_binding$
+	:i if $ObjectExists$$id$ = $view_goals_menu$
+		:i $exit_pause_menu$
+	:i endif
+:i endfunction
+:i function $goal_attack_completed_goal$
+	:i $FormatText$$TextName$ = $msg_text$%s(25,"Goal Completed! %i to go!")$i$ = %GLOBAL%$NumGoalsLeft$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $goal_attack_completed_goal_other_same_team$
+	:i $FormatText$$TextName$ = $msg_text$%s(26,"%n Completed %t! %i to go!")$n$ = %GLOBAL%$PlayerName$$t$ = %GLOBAL%$GoalText$$i$ = %GLOBAL%$NumGoalsLeft$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $goal_attack_started_goal_other_same_team$
+	:i $FormatText$$TextName$ = $msg_text$%s(14,"%n Started %t!")$n$ = %GLOBAL%$PlayerName$$t$ = %GLOBAL%$GoalText$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $force_select_goals_on_off$
+	:i $current_menu$.$GetSingleTag$$ForceOff$
+	:i if  (%GLOBAL%$ForceOff$ = %i(1,00000001)) 
+		:i $current_menu$.$SetTags$$ForceOff$ = %i(0,00000000)
+	:i else 
+		:i $current_menu$.$SetTags$$ForceOff$ = %i(1,00000001)
+	:i endif
+	:i $current_menu$.$GetSingleTag$$num_goals$
+	:i if  (%GLOBAL%$num_goals$ > %i(0,00000000)) 
+		:i $counter$ = %i(1,00000001)
+		:i while
+			
+			:i $FireEvent$$type$ = $pad_choose$$target$ = :s{$current_menu$$child$ = %GLOBAL%$counter$:s}$data$ = :s{$Force$$ForceOff$ = %GLOBAL%$ForceOff$:s}
+			:i $counter$ =  (%GLOBAL%$counter$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$num_goals$
+	:i endif
+:i endfunction
+:i :end

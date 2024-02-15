@@ -1,0 +1,152 @@
+// Header for .img files, used both in img and .tex
+
+local uint CurrentTextureStart;
+
+typedef struct
+{
+    ubyte type;
+} ImgType <read=PrintImgType>;
+
+string PrintImgType(ImgType &itype)
+{
+    switch (itype.type)
+    {
+        case 0:
+            return "Standard";
+            break;
+
+        case 1:
+            return "Normal Map";
+            break;
+
+        case 3:
+            return "Specular Map";
+            break;
+
+        case 4:
+            return "Cubemap";
+            break;
+
+        case 5:
+            return "Volumetric";
+            break;
+
+        default:
+            return Str("Unknown (%d)", itype.type);
+            break;  
+    }
+};
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_CHECKSUM>;
+    uint always_one <bgcolor=CL_SINGLEVALUE>;
+    uint skip_a[3] <bgcolor=CL_PADDING, hidden=true>;
+
+    ubyte null[3] <bgcolor=CL_PADDING, hidden=true>;
+    ubyte thawImageType <bgcolor=CL_SINGLEVALUE>;
+    short shorts[2] <bgcolor=CL_PARSED>;
+
+    ubyte unk_byte <bgcolor=CL_SINGLEVALUE>;
+    ubyte skip_b[2] <bgcolor=CL_PADDING, hidden=true>;
+    ubyte always_two <bgcolor=CL_SINGLEVALUE>;
+    ubyte skip_c[3] <bgcolor=CL_PADDING, hidden=true>;
+    ubyte image_format <bgcolor=CL_SINGLEVALUE>;
+    uint unknown <bgcolor=CL_SINGLEVALUE>;
+    uint unknown_a <bgcolor=CL_SINGLEVALUE>;
+    uint unknown_b <bgcolor=CL_SINGLEVALUE>;
+    uint unknown_c <bgcolor=CL_SINGLEVALUE>;
+} ImgXboxHeader <read=ReadImgXboxHeader>;
+
+string ReadImgXboxHeader(ImgXboxHeader &hed)
+{
+    local string s;
+
+    return SPrintf(s, "X360: 0x%x", hed.image_format);
+}
+
+typedef struct
+{
+    local ubyte xbox = 0;
+    local ubyte thaw = 0;
+    local uint start_offset = FTell();
+    CurrentTextureStart = FTell();
+
+    ubyte version <bgcolor=CL_SINGLEVALUE, comment="Texture version?">;
+    ubyte header_size <bgcolor=CL_SINGLEVALUE, comment="Size of texture header">;
+
+    // THAW texture
+    if (version < 10)
+        thaw = 1;
+
+    ubyte flags <bgcolor=CL_SINGLEVALUE, comment="Image flags">;
+    ImgType image_type <bgcolor=CL_SINGLEVALUE, comment="Image type">;
+    QBKey Checksum <bgcolor=CL_CHECKSUM, comment="Image identifier">;
+    ushort BaseWidth <bgcolor=CL_SINGLEVALUE, comment="The size of the D3D texture (Will be power of 2)">;
+    ushort BaseHeight <bgcolor=CL_SINGLEVALUE, comment="The size of the D3D texture (Will be power of 2)">;
+
+    if (!thaw)
+        ushort always_one_a <hidden=true, bgcolor=CL_PADDING>;
+
+    ushort ActualWidth <bgcolor=CL_SINGLEVALUE, comment="The size of the texture itself (may not be power of 2)">;
+    ushort ActualHeight <bgcolor=CL_SINGLEVALUE, comment="The size of the texture itself (may not be power of 2)">;
+
+    if (!thaw)
+        ushort always_one_b <hidden=true, bgcolor=CL_PADDING>;
+
+    ubyte Levels <bgcolor=CL_SINGLEVALUE, comment="Mipmap count">;
+    ubyte TexelDepth <bgcolor=CL_SINGLEVALUE, comment="Bits Per Pixel">;
+    ubyte DXT <bgcolor=CL_SINGLEVALUE, comment="Compression level">;
+    ubyte null_byte <hidden=true, bgcolor=CL_PADDING>;
+
+    if (!thaw)
+        uint null <hidden=true, bgcolor=CL_PADDING>;
+
+    RelativeOffset pD3DTexture(start_offset) <bgcolor=CL_POINTER, comment="Points to texture data, engine will point this to created IDirect3DTexture9">;
+    uint size <bgcolor=CL_SINGLEVALUE, comment="Size of texture data">;
+
+    local uint term_peek = ReadInt();
+
+    // If this value is not 0, it's likely an XBox image!
+    // Term will be an offset to the actual image data
+
+    if (term_peek != 0)
+    {
+        xbox = 1;
+        RelativeOffset term(0) <bgcolor=CL_PADDING, comment="X360, to image data">;
+    }
+    else
+        uint term <bgcolor=CL_PADDING>;
+    
+    // Check platform, X360 has unique identifiers
+    if (flags == 0x11 || flags == 0x02)
+        xbox = 1;
+
+    local uint old_off = FTell();
+
+    FSeek(CurrentTextureStart + pD3DTexture.offset);
+
+    if (xbox)
+    {
+        ImgXboxHeader xbox_info;
+
+        if (term_peek > 0)
+            FSeek(term_peek);
+        else
+            FSeek(CurrentTextureStart + 4096);
+    }
+
+    ubyte image_data[size] <bgcolor=0x6666FF>;
+
+    FSeek(old_off);
+} sTexture <read=Read_sTexture>;
+
+string Read_sTexture(sTexture &header)
+{
+    local string format_string;
+
+    if (header.xbox)
+        SPrintf(format_string, ", %s", ReadImgXboxHeader(header.xbox_info));
+
+    return Str("[%s] %s, [%dx%d / %dx%d], %dbpp, %d mips, DXT%d%s", PrintImgType(header.image_type), ReadQBKey(header.Checksum), header.BaseWidth, header.BaseHeight, header.ActualWidth, header.ActualHeight, header.TexelDepth, header.Levels, header.DXT, format_string);
+}

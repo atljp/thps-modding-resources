@@ -1,0 +1,35 @@
+//------------------------------------------------
+// PCM.dat file, contains sounds
+// XBox Version.
+//------------------------------------------------
+
+#include "Common.bt"
+
+#define CL_PCMCHECKSUM              0xDDFFDD
+#define CL_PCMSTART                 0xCCEECC
+#define CL_PCMSIZE                  0xBBDDBB
+
+typedef struct
+{
+    QBKey checksum <bgcolor=CL_PCMCHECKSUM>;
+    uint file_start <bgcolor=CL_PCMSTART>;
+    uint file_size <bgcolor=CL_PCMSIZE>;
+    
+    ushort unkAA;
+    ushort channels_maybe;
+    uint sample_rate;
+    uint unkC;
+    ushort unkDA;
+    ushort unkDB;
+    ushort unkEA;
+    ushort unkEB;
+} PCMHeader <read=Str("%s @%d, %d bytes", ReadQBKey(checksum), file_start, file_size)>;
+
+typedef struct
+{
+    uint num_streams <bgcolor=CL_SINGLEVALUE>;
+    PCMHeader header[num_streams];
+} PCMFile;
+
+LittleEndian();
+PCMFile pcm;

@@ -1,0 +1,50 @@
+
+:i function $launch_timeofday_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $timeofday_menu$
+		:i $vmenu_id$ = $timeofday_vmenu$
+		:i $menu_title$ = %s(11,"TIME OF DAY")
+		:i $type$ = $VMenu$
+		:i $dims$ = %vec2(200.000000,200.000000)
+		:i $padding_scale$ = %f(1.100000)
+		:i $pos$ = %vec2(210.000000,50.000000)
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $timeofday_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$create_debug_menu$:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(8,"Cycle on")$id$ = $tod_cycle_on$$pad_choose_script$ = $toggle_tod_manager_active$$pad_choose_params$ = :s{$active$ = %i(1,00000001):s}
+	:i $make_text_sub_menu_item$$text$ = %s(9,"Cycle off")$id$ = $tod_cycle_off$$pad_choose_script$ = $toggle_tod_manager_active$$pad_choose_params$ = :s{$active$ = %i(0,00000000):s}
+	:i $make_text_sub_menu_item$$text$ = %s(14,"Quick Cycle on")$id$ = $tod_quick_cycle_on$$pad_choose_script$ = $tod_menu_set_quick_cycle$$pad_choose_params$ = :s{$mult$ = %i(9,00000009):s}
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Quick Cycle off")$id$ = $tod_quick_cycle_off$$pad_choose_script$ = $tod_menu_set_quick_cycle$$pad_choose_params$ = :s{$mult$ = %i(1,00000001):s}
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Advance TOD State")$id$ = $tod_advance$$pad_choose_script$ = $tod_menu_advance_state$
+	:i $make_text_sub_menu_item$$text$ = %s(7,"Morning")$id$ = $tod_morn$$pad_choose_script$ = $tod_menu_set_instant$$pad_choose_params$ = :s{$tod_state$ = $morning$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(3,"Day")$id$ = $tod_day$$pad_choose_script$ = $tod_menu_set_instant$$pad_choose_params$ = :s{$tod_state$ = $afternoon$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(7,"Evening")$id$ = $tod_even$$pad_choose_script$ = $tod_menu_set_instant$$pad_choose_params$ = :s{$tod_state$ = $evening$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(5,"Night")$id$ = $tod_night$$pad_choose_script$ = $tod_menu_set_instant$$pad_choose_params$ = :s{$tod_state$ = $night$:s}
+	:i $set_sub_bg$$pos$ = %vec2(320.000000,54.000000)
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$$params$ = :s{$final_pos$ = %vec2(320.000000,134.000000):s}
+:i endfunction
+:i function $toggle_tod_manager_active$
+	:i $TODManager_SetActive$%GLOBAL%$active$
+:i endfunction
+:i function $tod_menu_set_quick_cycle$
+	:i $TODManager_SetActive$%i(1,00000001)
+	:i $TODManager_SetTimeMultiplier$%GLOBAL%$mult$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $tod_menu_set_instant$
+	:i $UnPauseGame$
+	:i $TODManager_SetTODInstant$%GLOBAL%$tod_state$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $tod_menu_advance_state$
+	:i $TODManager_AdvanceTODState$
+	:i $exit_pause_menu$
+:i endfunction
+:i :end

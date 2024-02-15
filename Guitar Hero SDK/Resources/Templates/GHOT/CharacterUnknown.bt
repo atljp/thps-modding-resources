@@ -1,0 +1,15 @@
+// Character unknown, what is this?
+
+typedef struct
+{
+    int unknown <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pointer_value_list(0) <bgcolor=CL_POINTER,comment="Pointer to value list">;
+    RelativeOffset pointer_child(0) <bgcolor=CL_POINTER,comment="Pointer to child(?) object">;
+    int value_count <bgcolor=CL_SINGLEVALUE,comment="What are these?">;
+    int values[value_count] <bgcolor=CL_FLOATS>;
+
+    local uint32 old_off = FTell();
+    FSeek(AbsOffset(pointer_child));
+    GCBObject child;
+    FSeek(old_off);
+} CharacterUnknown;

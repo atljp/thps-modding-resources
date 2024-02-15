@@ -1,0 +1,3747 @@
+
+:i $sp_str_unassigned$ = %sc(10,"Unassigned")
+:i $appearance_init_structure$ = :s{
+	:i $sleeves$ = :s{$desc_id$ = $None$:s}
+	:i $shoe_laces$ = :s{$desc_id$ = $None$:s}
+	:i $skater_m_lower_legs$ = :s{$desc_id$ = $None$:s}
+	:i $skater_f_lower_legs$ = :s{$desc_id$ = $None$:s}
+	:i $bare_torso$ = :s{$desc_id$ = $None$:s}
+:i :s}
+:i function $init_pro_skaters$
+	:i $ForEachIn$$master_skater_list$$do$ = $AddSkaterProfile$
+:i endfunction
+:i function $get_skater_index_from_name$
+	:i $GetArraySize$$master_skater_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$name$ =  ( ($master_skater_list$:a{%GLOBAL%$index$:a}) ->$name$) ) 
+			:i return
+			$skater_index$ = %GLOBAL%$index$
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $script_assert$%s(56,"Couldn't find profile with name %n in master_skater_list")$n$ = %GLOBAL%$name$
+:i endfunction
+:i function $get_num_visible_profiles$
+	:i $GetArraySize$$master_skater_list$
+	:i %GLOBAL%$count$ = %i(0,00000000)
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT $StructureContains$$structure$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}) $not_in_frontend$
+			:i %GLOBAL%$count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$num_visible_profiles$ = %GLOBAL%$count$
+:i endfunction
+:i $SKATER_SELECT_MENUS$ = 
+:i :a{
+	:i :s{
+		:i $menu_name$ = $pro$
+		:i $menu_array$ = $new_skater_select_list$
+		:i $menu_title$ = %s(11,"PRO SKATERS")
+	:i :s}
+	:i :s{
+		:i $menu_name$ = $story$
+		:i $menu_array$ = $story_skater_select_list$
+		:i $menu_title$ = %s(13,"STORY SKATERS")
+	:i :s}
+	:i :s{
+		:i $menu_name$ = $secret$
+		:i $menu_array$ = $secret_skater_select_list$
+		:i $menu_title$ = %s(14,"SECRET SKATERS")
+	:i :s}
+	:i :s{
+		:i $menu_name$ = $ped$
+		:i $menu_array$ = $ped_skater_select_list$
+		:i $menu_title$ = %s(18,"PEDESTRIANS / MISC")
+	:i :s}
+	:i :a}
+:i $story_skater_select_list$ = 
+:i :a{
+	:i :s{
+		:i $new_display_name$ = %s(12,"Eric Sparrow")
+		:i $skater_index$ = %i(29,0000001d)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(12,"Eric Sparrow")
+				:i $default_appearance$ = $appearance_sparrow$
+				:i $skater_index$ = %i(29,0000001d)
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(19,"Eric Sparrow (THUG)")
+				:i $default_appearance$ = $appearance_sparrow_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(4,"Todd")
+		:i $new_name$ = $Todd$
+		:i $new_default_appearance$ = $Ped_Todd$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Paulie Ryan")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(18,00000012)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(18,"Nigel Beaverhausen")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(21,00000015)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Jesse James")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(12,0000000c)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(7,"Steve-O")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(15,0000000f)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Phil Margera")
+		:i $new_name$ = $PhilGagged$
+		:i $new_default_appearance$ = $Phil_FULL$
+		:i $tag_texture$ = %s(12,"tags\phil_01")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $EL Deck 4$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(12,"Phil Margera")
+				:i $default_appearance$ = $Phil_FULL$
+				:i $tag_texture$ = %s(12,"tags\phil_01")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $EL Deck 4$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(12,"Phil Margera")
+				:i $default_appearance$ = $Phil_Gagged$
+				:i $tag_texture$ = %s(12,"tags\phil_01")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $EL Deck 4$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Ben Franklin")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(10,0000000a)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Bullfighter")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(13,0000000d)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(15,"Graffiti Tagger")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(16,00000010)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Shrimp Vendor")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(19,00000013)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(13,"Shrimp Vendor")
+				:i $default_appearance$ = $Ped_ShrimpVendor$
+				:i $tag_texture$ = %s(11,"tags\shr_01")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(13,"Wiener Vendor")
+				:i $default_appearance$ = $Ped_Wienerman$
+				:i $tag_texture$ = %s(15,"tags\wiener_man")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(16,"Bratwurst Vendor")
+				:i $default_appearance$ = $Ped_Bratwurst$
+				:i $tag_texture$ = %s(16,"tags\brat_vendor")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(11,"Corn Vendor")
+				:i $default_appearance$ = $Ped_Corn_Vendor_01$
+				:i $tag_texture$ = %s(16,"tags\corn_vendor")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Aborigine")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(20,00000014)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(6,"Jester")
+		:i $skater_index$ = %i(22,00000016)
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Jester$
+		:i $no_board$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Voodoo Doctor")
+		:i $skater_index$ = %i(23,00000017)
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(7,"Bigfoot")
+		:i $new_board_type$ = $chainsaw$
+		:i $skater_index$ = %i(24,00000018)
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(7,"Bigfoot")
+				:i $default_appearance$ = $Ped_Bigfoot$
+				:i $tag_texture$ = %s(12,"tags\bigfoot")
+				:i $new_board_type$ = $chainsaw$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(11,"Bigfoot One")
+				:i $default_appearance$ = $Ped_Bigfoot_graf$
+				:i $tag_texture$ = %s(14,"tags\bigfoot_1")
+				:i $new_board_type$ = $chainsaw$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :a}
+:i $secret_skater_select_list$ = 
+:i :a{
+	:i :s{
+		:i $new_display_name$ = %s(5,"Shrek")
+		:i $skater_index$ = %i(27,0000001b)
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(14,"C.o.D. Soldier")
+		:i $no_board$
+		:i $skater_index$ = %i(28,0000001c)
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"The Hand")
+		:i $no_board$
+		:i $skater_index$ = %i(26,0000001a)
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(4,"Nick")
+		:i $new_name$ = $NickSecretGuy$
+		:i $new_default_appearance$ = $appearance_Nick_SecretGuy$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Price")
+		:i $new_name$ = $PriceSecretGuy$
+		:i $new_default_appearance$ = $appearance_Price_SecretGuy$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(0,"")
+		:i $is_separator$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Gene Simmons")
+		:i $skater_index$ = %i(31,0000001f)
+		:i $skater_behavior_script$ = $SS_Behavior_GeneSimmons$
+		:i $no_board$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"Iron Man")
+		:i $skater_index$ = %i(32,00000020)
+		:i $skater_behavior_script$ = $SS_Behavior_IronMan$
+		:i $no_board$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"T.H.U.D.")
+		:i $skater_index$ = %i(33,00000021)
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(0,"")
+		:i $is_separator$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Eddie")
+		:i $new_name$ = $Eddie$
+		:i $new_default_appearance$ = $appearance_Eddie$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Jango")
+		:i $new_name$ = $Jango$
+		:i $new_default_appearance$ = $appearance_Jango$
+		:i $new_board_type$ = $Jango$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Daisy")
+		:i $new_name$ = $Daisy$
+		:i $new_default_appearance$ = $appearance_Daisy$
+		:i $new_board_type$ = $banana$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $is_female$ = %i(1,00000001)
+		:i $skater_index$ = %i(30,0000001e)
+		:i $skater_behavior_script$ = $SS_Behavior_Daisy$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(0,"")
+		:i $is_separator$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Darth Maul")
+		:i $new_name$ = $Darth Maul$
+		:i $new_board_type$ = $hover$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(44,0000002c)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Wolverine")
+		:i $new_name$ = $Wolverine$
+		:i $new_default_appearance$ = $appearance_Wolverine$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Officer Dick")
+		:i $new_name$ = $Officer Dick$
+		:i $new_default_appearance$ = $appearance_OfficerDick$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Cop$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(15,"Private Carrera")
+		:i $new_name$ = $Private Carrera$
+		:i $new_default_appearance$ = $appearance_PrivateCarrera$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $is_female$ = %i(1,00000001)
+		:i $skater_index$ = %i(30,0000001e)
+		:i $skater_behavior_script$ = $SS_Behavior_Daisy$
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(19,"Ollie The Magic Bum")
+		:i $new_name$ = $Ollie The Magic Bum$
+		:i $new_default_appearance$ = $appearance_OllieTheMagicBum$
+		:i $new_board_type$ = $board_ollie$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Kelly Slater")
+		:i $new_name$ = $KellySlater$
+		:i $new_default_appearance$ = $appearance_KellySlater$
+		:i $new_board_type$ = $board_slater$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"Demoness")
+		:i $new_name$ = $Demoness$
+		:i $new_default_appearance$ = $appearance_Demoness$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $is_female$ = %i(1,00000001)
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(17,"Neversoft Eyeball")
+		:i $new_name$ = $Neversoft Eyeball$
+		:i $new_default_appearance$ = $appearance_NeversoftEyeball$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"Doom Guy")
+		:i $new_name$ = $Doom Guy$
+		:i $new_default_appearance$ = $appearance_DoomGuy$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(11,"tags\doo_01")
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"X Ray")
+		:i $new_name$ = $X Ray$
+		:i $new_default_appearance$ = $appearance_xray$
+		:i $new_board_type$ = $board_xray$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :a}
+:i $ped_skater_select_list$ = 
+:i :a{
+	:i :s{
+		:i $new_display_name$ = %s(5,"Alien")
+		:i $new_name$ = $Alien$
+		:i $new_default_appearance$ = $Ped_Alien$
+		:i $tag_texture$ = %s(10,"tags\alien")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(5,"Alien")
+				:i $default_appearance$ = $Ped_Alien$
+				:i $tag_texture$ = %s(10,"tags\alien")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(12,"Alien Doctor")
+				:i $default_appearance$ = $Ped_AlienDoctor$
+				:i $tag_texture$ = %s(13,"tags\alien_dr")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(12,"Alien Leader")
+				:i $default_appearance$ = $Ped_AlienLeader$
+				:i $tag_texture$ = %s(17,"tags\alien_leader")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(14,"Australian Cop")
+		:i $new_name$ = $copaussie$
+		:i $new_default_appearance$ = $Ped_copaussie$
+		:i $tag_texture$ = %s(11,"tags\OZ_cop")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Cop$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Beach Goer")
+		:i $new_name$ = $beachgoer$
+		:i $new_default_appearance$ = $Ped_BeachGoer01$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Boat Captain")
+		:i $new_name$ = $boatcaptain$
+		:i $new_default_appearance$ = $Ped_boatcaptain$
+		:i $tag_texture$ = %s(14,"tags\boat_capt")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Bodyguard")
+		:i $new_name$ = $Bodyguard$
+		:i $new_default_appearance$ = $Ped_Bodyguard$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Cop$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Boston Guy")
+		:i $new_name$ = $BostonGuy$
+		:i $new_default_appearance$ = $Ped_BostonGuy$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Boxer")
+		:i $new_name$ = $Boxer$
+		:i $new_default_appearance$ = $Ped_Boxer$
+		:i $tag_texture$ = %s(10,"tags\boxer")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Camera Man")
+		:i $new_name$ = $CameraMan$
+		:i $new_default_appearance$ = $Ped_CameraMan$
+		:i $tag_texture$ = %s(15,"tags\camera_man")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(10,"Camera Man")
+				:i $default_appearance$ = $Ped_CameraMan$
+				:i $tag_texture$ = %s(15,"tags\camera_man")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(10,"Camera Man")
+				:i $default_appearance$ = $Ped_Video$
+				:i $tag_texture$ = %s(15,"tags\camera_man")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(19,"Construction Worker")
+		:i $new_name$ = $Construction_Worker_01$
+		:i $new_default_appearance$ = $Ped_Construction_Worker_01$
+		:i $tag_texture$ = %s(24,"tags\construction_worker")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Cut Chemist")
+		:i $new_name$ = $CutChemist$
+		:i $new_default_appearance$ = $Ped_CutChemist$
+		:i $tag_texture$ = %s(16,"tags\cut_chemist")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Flute Player")
+		:i $new_name$ = $FluteGuy$
+		:i $new_default_appearance$ = $Ped_FluteGuy$
+		:i $tag_texture$ = %s(17,"tags\flute_player")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Geeky Kid")
+		:i $new_name$ = $Nerdkid$
+		:i $new_default_appearance$ = $Ped_Nerdkid$
+		:i $tag_texture$ = %s(14,"tags\geeky_kid")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_StarWars$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"German Cop")
+		:i $new_name$ = $germancop$
+		:i $new_default_appearance$ = $Ped_germancop$
+		:i $tag_texture$ = %s(15,"tags\german_cop")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"German Drunk")
+		:i $new_name$ = $germandrunk$
+		:i $new_default_appearance$ = $Ped_germandrunk$
+		:i $tag_texture$ = %s(19,"tags\german_drunk_1")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(12,"German Drunk")
+				:i $default_appearance$ = $Ped_germandrunk$
+				:i $tag_texture$ = %s(19,"tags\german_drunk_1")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(14,"German Drunk 2")
+				:i $default_appearance$ = $Ped_germandrunk01$
+				:i $tag_texture$ = %s(19,"tags\german_drunk_2")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(14,"German Drunk 3")
+				:i $default_appearance$ = $Ped_germandrunk02$
+				:i $tag_texture$ = %s(19,"tags\german_drunk_3")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Graffiti Punk")
+		:i $new_name$ = $Grafiti_Punker_01$
+		:i $new_default_appearance$ = $Ped_Grafiti_Punker_01$
+		:i $tag_texture$ = %s(18,"tags\graffiti_punk")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Guitar Player")
+		:i $new_name$ = $guitarist$
+		:i $new_default_appearance$ = $Ped_guitarist$
+		:i $tag_texture$ = %s(14,"tags\guitarist")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Horn Player")
+		:i $new_name$ = $jazzman1$
+		:i $new_default_appearance$ = $Ped_jazzman1$
+		:i $tag_texture$ = %s(16,"tags\horn_player")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(18,"Hospital Attendant")
+		:i $new_name$ = $attendant$
+		:i $new_default_appearance$ = $Ped_attendant$
+		:i $tag_texture$ = %s(14,"tags\attendant")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(3,"Imp")
+		:i $new_name$ = $Imp$
+		:i $new_default_appearance$ = $Ped_Imp$
+		:i $tag_texture$ = %s(8,"tags\imp")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Inline Skater")
+		:i $new_name$ = $rollerblader$
+		:i $new_default_appearance$ = $Ped_rollerblader$
+		:i $tag_texture$ = %s(18,"tags\inline_skater")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Johnny Turbo")
+		:i $new_name$ = $Johnny_Turbo$
+		:i $new_default_appearance$ = $Ped_JohnnyTurbo$
+		:i $tag_texture$ = %s(11,"tags\jam_01")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Judge")
+		:i $new_name$ = $Judge$
+		:i $new_default_appearance$ = $Ped_Judge$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Lifeguard")
+		:i $new_name$ = $Lifeguard$
+		:i $new_default_appearance$ = $Ped_Lifeguard$
+		:i $tag_texture$ = %s(14,"tags\lifeguard")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Lounge Singer")
+		:i $new_name$ = $loungesinger$
+		:i $new_default_appearance$ = $Ped_loungesinger$
+		:i $tag_texture$ = %s(18,"tags\lounge_singer")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Lost Soul")
+		:i $new_name$ = $LostSoul01$
+		:i $new_default_appearance$ = $Ped_LostSoul01$
+		:i $tag_texture$ = %s(16,"tags\lost_soul_1")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(9,"Lost Soul")
+				:i $default_appearance$ = $Ped_LostSoul01$
+				:i $tag_texture$ = %s(16,"tags\lost_soul_1")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(11,"Lost Soul 2")
+				:i $default_appearance$ = $Ped_LostSoul02$
+				:i $tag_texture$ = %s(16,"tags\lost_soul_2")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(11,"Lost Soul 3")
+				:i $default_appearance$ = $Ped_LostSoul03$
+				:i $tag_texture$ = %s(16,"tags\lost_soul_3")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Mayan")
+		:i $new_name$ = $Mayan$
+		:i $new_default_appearance$ = $Ped_Mayan$
+		:i $tag_texture$ = %s(10,"tags\mayan")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(5,"Mayan")
+				:i $default_appearance$ = $Ped_Mayan$
+				:i $tag_texture$ = %s(10,"tags\mayan")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(15,"Mayan Tiki Mask")
+				:i $default_appearance$ = $Ped_TikiMan$
+				:i $tag_texture$ = %s(15,"tags\mayan_mask")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(18,"Metal Detector Guy")
+		:i $new_name$ = $metaldetector$
+		:i $new_default_appearance$ = $Ped_metaldetector$
+		:i $tag_texture$ = %s(19,"tags\metal_detector")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_FatGuy$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(4,"Mime")
+		:i $new_name$ = $mime$
+		:i $new_default_appearance$ = $Ped_mime$
+		:i $tag_texture$ = %s(9,"tags\mime")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(5,"Nurse")
+		:i $new_name$ = $Nurse$
+		:i $new_default_appearance$ = $Ped_Nurse_TP$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $is_female$ = %i(1,00000001)
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Paramedic")
+		:i $new_name$ = $Paramedic_01$
+		:i $new_default_appearance$ = $Ped_Paramedic_01$
+		:i $tag_texture$ = %s(14,"tags\paramedic")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(6,"Pirate")
+		:i $new_name$ = $Pirate$
+		:i $new_default_appearance$ = $Ped_Pirate$
+		:i $tag_texture$ = %s(11,"tags\pirate")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(8,"Ramp Kid")
+		:i $new_name$ = $Ramp_Kid_01$
+		:i $new_default_appearance$ = $Ped_Ramp_Kid_01$
+		:i $tag_texture$ = %s(13,"tags\ramp_kid")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Rastapopolous")
+		:i $new_name$ = $Rastapopolous$
+		:i $new_default_appearance$ = $appearance_rasta$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(21,"Revolutionary Soldier")
+		:i $new_name$ = $Soldier_01$
+		:i $new_default_appearance$ = $Ped_Soldier_01$
+		:i $tag_texture$ = %s(12,"tags\soldier")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(14,"Security Guard")
+		:i $new_name$ = $Security_Guard_01$
+		:i $new_default_appearance$ = $Ped_Security_Guard_01$
+		:i $tag_texture$ = %s(19,"tags\security_guard")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Cop$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(7,"Skaboto")
+		:i $new_name$ = $Skaboto$
+		:i $new_default_appearance$ = $Ped_Skaboto$
+		:i $tag_texture$ = %s(12,"tags\skaboto")
+		:i $new_board_type$ = $board_skaboto$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Skatopia Punk")
+		:i $new_name$ = $Skatopiaguy$
+		:i $new_default_appearance$ = $Ped_Skatopiaguy$
+		:i $tag_texture$ = %s(18,"tags\skatopia_punk")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(20,"Space Monkey (Green)")
+		:i $new_name$ = $dalek$
+		:i $new_default_appearance$ = $Ped_dalek$
+		:i $tag_texture$ = %s(12,"tags\dalek_1")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(20,"Space Monkey (Green)")
+				:i $default_appearance$ = $Ped_dalek$
+				:i $tag_texture$ = %s(12,"tags\dalek_1")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(19,"Space Monkey (Pink)")
+				:i $default_appearance$ = $Ped_dalekPink$
+				:i $tag_texture$ = %s(12,"tags\dalek_2")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(19,"Space Monkey (Blue)")
+				:i $default_appearance$ = $Ped_dalekBlue$
+				:i $tag_texture$ = %s(12,"tags\dalek_3")
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(7,"Trooper")
+		:i $new_name$ = $Trooper$
+		:i $new_default_appearance$ = $Ped_Trooper$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_Cop$
+		:i $no_board$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(6,"Zombie")
+		:i $new_name$ = $zombie$
+		:i $new_default_appearance$ = $Ped_zombiemale01$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+		:i $no_board$
+		:i $tag_texture$ = %s(12,"tags\zombie1")
+		:i $skater_index$ = %i(30,0000001e)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(6,"Zombie")
+				:i $default_appearance$ = $Ped_zombiemale01$
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+				:i $tag_texture$ = %s(12,"tags\zombie1")
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(8,"Zombie 2")
+				:i $default_appearance$ = $Ped_zombiemale02$
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+				:i $tag_texture$ = %s(12,"tags\zombie2")
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(8,"Zombie 3")
+				:i $default_appearance$ = $Ped_zombiefem01$
+				:i $new_board_type$ = $default$
+				:i $new_deck_graphic$ = $board_thugpro$
+				:i $skater_behavior_script$ = $SS_Behavior_GenericPed$
+				:i $no_board$
+				:i $tag_texture$ = %s(12,"tags\zombie1")
+				:i $is_female$ = %i(1,00000001)
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :a}
+:i $new_skater_select_list$ = 
+:i :a{
+	:i :s{
+		:i $new_display_name$ = %s(13,"Custom Skater")
+		:i $skater_index$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(9,"Tony Hawk")
+		:i $tag_texture$ = %s(12,"tags\tony_01")
+		:i $skater_index$ = %i(1,00000001)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(9,"Tony Hawk")
+				:i $default_appearance$ = $appearance_hawk$
+				:i $tag_texture$ = %s(12,"tags\tony_01")
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(16,"Tony Hawk (THUG)")
+				:i $default_appearance$ = $appearance_hawk_thug$
+				:i $tag_texture$ = %s(12,"tags\tony_01")
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(16,"Tony Hawk (THPS)")
+				:i $default_appearance$ = $appearance_THPS_Hawk$
+				:i $tag_texture$ = %s(12,"tags\thps_01")
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Bob Burnquist")
+		:i $skater_index$ = %i(2,00000002)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(13,"Bob Burnquist")
+				:i $default_appearance$ = $appearance_burnquist$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(20,"Bob Burnquist (THUG)")
+				:i $default_appearance$ = $appearance_burnquist_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(15,"Steve Caballero")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(34,00000022)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(15,"Kareem Campbell")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(35,00000023)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Rune Glifberg")
+		:i $new_name$ = $Glifberg$
+		:i $new_default_appearance$ = $appearance_glifberg_thug$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(36,00000024)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Natas Kaupas")
+		:i $new_name$ = $kaupas$
+		:i $new_default_appearance$ = $Ped_Natas$
+		:i $new_board_type$ = $oldschool$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Eric Koston")
+		:i $skater_index$ = %i(3,00000003)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(11,"Eric Koston")
+				:i $default_appearance$ = $appearance_Koston$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(18,"Eric Koston (THUG)")
+				:i $default_appearance$ = $appearance_koston_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Bucky Lasek")
+		:i $new_name$ = $Lasek$
+		:i $new_default_appearance$ = $appearance_lasek_thug$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(37,00000025)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(11,"Bam Margera")
+		:i $skater_index$ = %i(4,00000004)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(11,"Bam Margera")
+				:i $default_appearance$ = $appearance_margera$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(20,"Bam Margera (Masked)")
+				:i $default_appearance$ = $appearance_margera_masked$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(18,"Bam Margera (THUG)")
+				:i $default_appearance$ = $appearance_margera_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Rodney Mullen")
+		:i $skater_index$ = %i(5,00000005)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(13,"Rodney Mullen")
+				:i $default_appearance$ = $appearance_mullen$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(24,"Rodney Mullen (Cutscene)")
+				:i $default_appearance$ = $appearance_mullen_cut$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(20,"Rodney Mullen (THUG)")
+				:i $default_appearance$ = $appearance_mullen_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Chad Muska")
+		:i $skater_index$ = %i(6,00000006)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(10,"Chad Muska")
+				:i $default_appearance$ = $appearance_muska$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(17,"Chad Muska (THUG)")
+				:i $default_appearance$ = $appearance_muska_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Stacy Peralta")
+		:i $new_name$ = $Peralta$
+		:i $new_default_appearance$ = $Ped_Peralta$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(30,0000001e)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(15,"Andrew Reynolds")
+		:i $new_name$ = $Reynolds$
+		:i $new_default_appearance$ = $appearance_reynolds_thug$
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(38,00000026)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(14,"Paul Rodriguez")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(39,00000027)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Geoff Rowley")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(40,00000028)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(10,"Arto Saari")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(41,00000029)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(13,"Ryan Sheckler")
+		:i $skater_index$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(14,"Elissa Steamer")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $is_female$ = %i(1,00000001)
+		:i $skater_index$ = %i(42,0000002a)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Jamie Thomas")
+		:i $new_board_type$ = $default$
+		:i $new_deck_graphic$ = $board_thugpro$
+		:i $skater_index$ = %i(43,0000002b)
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(12,"Mike Vallely")
+		:i $skater_index$ = %i(8,00000008)
+		:i $sub_menu$ = :a{
+			:i :s{
+				:i $display_name$ = %s(12,"Mike Vallely")
+				:i $default_appearance$ = $appearance_vallely$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(23,"Mike Vallely (Cutscene)")
+				:i $default_appearance$ = $appearance_vallely_cutscene$
+			:i :s}
+			:i :s{
+				:i $display_name$ = %s(19,"Mike Vallely (THUG)")
+				:i $default_appearance$ = $appearance_vallely_thug$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $new_display_name$ = %s(7,"Wee-Man")
+		:i $skater_index$ = %i(9,00000009)
+		:i $skater_behavior_script$ = $SS_Behavior_WeeMan$
+	:i :s}
+	:i :a}
+:i function $SS_Behavior_FatGuy$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Ped_FatGuy_HandsWaistIdle$$Cycle$$Speed$ = %f(0.200000)
+:i endfunction
+:i function $SS_Behavior_GeneSimmons$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $FrontEnd_Gene$
+	:i $OBJ_waitanimfinished$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Ped_M_Idle1$$Cycle$
+:i endfunction
+:i function $SS_Behavior_IronMan$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $FrontEnd_Ironman$
+	:i $OBJ_waitanimfinished$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Ped_M_Idle1$$Cycle$
+:i endfunction
+:i function $SS_Behavior_WeeMan$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Pro_Idle02$$Cycle$
+:i endfunction
+:i function $SS_Behavior_Jester$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Special_Jester_Juggle_Idle$$Cycle$
+	:i $TurnOnSpecialItem$$specialitem_details$ = $JugglingBalls_details$
+:i endfunction
+:i function $SS_Behavior_GenericPed$
+	:i $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Ped_M_Idle1$$Cycle$
+:i endfunction
+:i function $SS_Behavior_StarWars$
+	:i $ss_temp_hide_skater$
+	:i while
+		
+		:i select(2f,2, 01 00 01 00) :OFFSET(0):OFFSET(1)
+			
+			:i  :POS(0) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Starwarskid_Clip01$
+			:i 
+		:BREAKTO(2)
+			 :POS(1) $PlayAnimWithPartialAnimIfExists$$Anim$ = $Ped_Starwarskid_Clip02$
+			:i  :POS(2) 
+		:i $OBJ_waitanimfinished$
+	:i loop_to 
+:i endfunction
+:i function $SS_Behavior_Daisy$
+	:i $ss_temp_hide_skater$
+	:i while
+		
+		:i $PlayBrakeIdle$
+		:i $OBJ_waitanimfinished$
+	:i loop_to 
+:i endfunction
+:i function $SS_Behavior_Cop$
+	:i $ss_temp_hide_skater$
+	:i while
+		
+		:i %GLOBAL%$objid$.$obj_PlayAnim$$Anim$ = $Pro_Idle02$
+		:i $OBJ_waitanimfinished$
+	:i loop_to 
+:i endfunction
+:i function $ss_temp_hide_skater$
+	:i %GLOBAL%$objid$.$BlendPeriodOut$%i(0,00000000)
+	:i %GLOBAL%$objid$.$hide$
+	:i $wait$%i(9,00000009)
+	:i %GLOBAL%$objid$.$unhide$
+:i endfunction
+:i $master_skater_list$ = :a{
+	:i :s{
+		:i $display_name$ = %s(13,"Custom Skater")
+		:i $select_icon$ = $ss_custom$
+		:i $first_name$ = %s(6,"Custom")
+		:i $file_name$ = %s(13,"Unimplemented")
+		:i $default_appearance$ = $appearance_custom_skater_male$
+		:i $name$ = $custom$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $has_custom_tag$ = %i(0,00000000)
+		:i $tag_texture$ = %s(11,"tags\cas_01")
+		:i $sticker_texture$ = %s(32,"thugpro\stickers\sticker_thugpro")
+		:i $skater_family$ = $family_custom$
+		:i $is_pro$ = %i(0,00000000)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(0,00000000)
+		:i $is_locked$ = %i(0,00000000)
+		:i $age$ = %i(20,00000014)
+		:i $hometown$ = %s(15,"Los Angeles, CA")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $CustomTricks$
+		:i $max_specials$ = %i(12,0000000c)
+		:i $voice$ = $male1$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(9,"Tony Hawk")
+		:i $select_icon$ = $ss_hawk$
+		:i $first_name$ = %s(4,"Tony")
+		:i $last_name$ = %s(4,"Hawk")
+		:i $default_appearance$ = $appearance_hawk$
+		:i $name$ = $hawk$
+		:i $teammate_pro_appearance_name$ = $pedpro_hawk_skateboard$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(12,"tags\tony_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(11,0000000b)
+		:i $run$ = %i(6,00000006)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(11,0000000b)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(7,00000007)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(7,00000007)
+		:i $sponsors$ = :a{$birdhouse$$hawkshoes$$quiksilver$$hawkapp$$tony$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $HawkTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_L_Circle$$trickname$ = $Trick_360VarialMcTwist$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_Indy900$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_EndlessHandflip$:s}
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_TonySurfer$:s}
+				:i :s{$trickslot$ = $SpAir_R_U_Circle$$trickname$ = $Trick_The900$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_hawk$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(13,"Bob Burnquist")
+		:i $select_icon$ = $ss_burnquist$
+		:i $first_name$ = %s(3,"Bob")
+		:i $last_name$ = %s(9,"Burnquist")
+		:i $default_appearance$ = $appearance_burnquist$
+		:i $name$ = $burnquist$
+		:i $teammate_pro_appearance_name$ = $pedpro_burnquist$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\bob_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(7,00000007)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(11,0000000b)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(7,00000007)
+		:i $sponsors$ = :a{$firm$$hurley$$burnquist$$organics$$oakley$$ogio$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $BurnquistTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_U_D_Circle$$trickname$ = $Trick_Shifty360ShovitBSShifty$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Circle$$trickname$ = $Trick_SambaFlip$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_DarksideJapan$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_RockNRollSwitch$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_burnquist$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(11,"Eric Koston")
+		:i $select_icon$ = $ss_koston$
+		:i $first_name$ = %s(4,"Eric")
+		:i $last_name$ = %s(6,"Koston")
+		:i $default_appearance$ = $appearance_Koston$
+		:i $name$ = $koston$
+		:i $teammate_pro_appearance_name$ = $pedpro_koston$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $mongo_when_switch$
+		:i $tag_texture$ = %s(11,"tags\kos_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(7,00000007)
+		:i $switch$ = %i(11,0000000b)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(6,00000006)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$girl$$es$$fourstar$$eric$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $KostonTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_U_R_Triangle$$trickname$ = $Trick_Fandangle$:s}
+				:i :s{$trickslot$ = $SpMan_R_L_Triangle$$trickname$ = $Trick_YeahRight$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Circle$$trickname$ = $Trick_EndlessKickflip$:s}
+				:i :s{$trickslot$ = $SpAir_R_U_Circle$$trickname$ = $Trick_Koston900$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(11,"Bam Margera")
+		:i $select_icon$ = $ss_margera$
+		:i $first_name$ = %s(3,"Bam")
+		:i $last_name$ = %s(7,"Margera")
+		:i $default_appearance$ = $appearance_margera$
+		:i $name$ = $margera$
+		:i $teammate_pro_appearance_name$ = $pedpro_margera$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\bam_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(9,00000009)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$element$$adio$$cky$$bam$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $MargeraTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_U_R_circle$$trickname$ = $Trick_BamBendAir$:s}
+				:i :s{$trickslot$ = $Splip_D_U_Triangle$$trickname$ = $Trick_BamLip$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_GrindNBarf$:s}
+				:i :s{$trickslot$ = $SpGrind_D_R_Triangle$$trickname$ = $Trick_Bam_Chainsaw$:s}
+				:i :s{$trickslot$ = $SpAir_D_U_Square$$trickname$ = $Trick_Jackass$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_margera$
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(13,"Rodney Mullen")
+		:i $select_icon$ = $ss_mullen$
+		:i $first_name$ = %s(6,"Rodney")
+		:i $last_name$ = %s(6,"Mullen")
+		:i $default_appearance$ = $appearance_mullen$
+		:i $name$ = $mullen$
+		:i $teammate_pro_appearance_name$ = $pedpro_mullen$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\rod_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(7,00000007)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(6,00000006)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(11,0000000b)
+		:i $sponsors$ = :a{$enjoi$$globe$$tensor$$rodney$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $MullenTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_R_L_Triangle$$trickname$ = $Trick_50Fingerflip$:s}
+				:i :s{$trickslot$ = $SpGrind_R_D_Triangle$$trickname$ = $Trick_RodneyGrind$:s}
+				:i :s{$trickslot$ = $SpAir_U_D_Square$$trickname$ = $Trick_HalfCabUnderFlip$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_PrimoSpin$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_mullen$
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(10,"Chad Muska")
+		:i $select_icon$ = $ss_muska$
+		:i $first_name$ = %s(4,"Chad")
+		:i $last_name$ = %s(5,"Muska")
+		:i $default_appearance$ = $appearance_muska$
+		:i $name$ = $muska$
+		:i $teammate_pro_appearance_name$ = $pedpro_muska$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\mus_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(11,0000000b)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(9,00000009)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(9,00000009)
+		:i $sponsors$ = :a{$shortys$$circa$$muskabeatz$$chad$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $MuskaTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_R_D_Triangle$$trickname$ = $Trick_MoonwalkGrind$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_RustySlide$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_Muska_Burn$:s}
+				:i :s{$trickslot$ = $Spgrind_D_U_Triangle$$trickname$ = $Trick_Worm$:s}
+				:i :s{$trickslot$ = $SpMan_R_L_Triangle$$trickname$ = $Trick_MuskaManual$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $no_edit$
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(13,"Ryan Sheckler")
+		:i $select_icon$ = $ss_sheckler$
+		:i $first_name$ = %s(4,"Ryan")
+		:i $last_name$ = %s(8,"Sheckler")
+		:i $default_appearance$ = $appearance_Sheckler$
+		:i $name$ = $sheckler$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\ryn_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(4,00000004)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_SHECKLER$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_SHECKLER$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_U_D_Triangle$$trickname$ = $Trick_ShecklerPrimo$:s}
+				:i :s{$trickslot$ = $SpAir_U_R_circle$$trickname$ = $Trick_ShecklerGrab$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $SpMan_D_R_Triangle$$trickname$ = $Trick_PrimoSlide$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Mike Vallely")
+		:i $select_icon$ = $ss_vallely$
+		:i $first_name$ = %s(4,"Mike")
+		:i $last_name$ = %s(7,"Vallely")
+		:i $default_appearance$ = $appearance_vallely$
+		:i $name$ = $vallely$
+		:i $teammate_pro_appearance_name$ = $pedpro_vallely$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\val_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(11,0000000b)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(7,00000007)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$vallely$$etnies$$mike$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $VallelyTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_KickflipSwitch$:s}
+				:i :s{$trickslot$ = $SpAir_D_R_Circle$$trickname$ = $Trick_Flamingo$:s}
+				:i :s{$trickslot$ = $SpLip_U_R_Triangle$$trickname$ = $Trick_Around$:s}
+				:i :s{$trickslot$ = $SpMan_R_L_Triangle$$trickname$ = $Trick_Boomerang$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_ElbowSmash$:s}
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_RunningMan$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_SlamSpinner$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(7,"Wee-Man")
+		:i $select_icon$ = $ss_weeman$
+		:i $first_name$ = %s(3,"Wee")
+		:i $last_name$ = %s(3,"man")
+		:i $default_appearance$ = $appearance_weeman$
+		:i $name$ = $weeman$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\wee_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(5,00000005)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(5,00000005)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$vallely$$etnies$$mike$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $VallelyTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_ElbowSmash$:s}
+				:i :s{$trickslot$ = $SpAir_D_U_Circle$$trickname$ = $Trick_HeadKickBackFlip$:s}
+				:i :s{$trickslot$ = $SpAir_D_R_Circle$$trickname$ = $Trick_Flamingo$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_SlamSpinner$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Ben Franklin")
+		:i $select_icon$ = $ss_benfranklin$
+		:i $first_name$ = %s(3,"Ben")
+		:i $last_name$ = %s(8,"Franklin")
+		:i $default_appearance$ = $Ped_benfranklin$
+		:i $name$ = $benfranklin$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $skatestyle$ = $crappy$
+		:i $tag_texture$ = %s(12,"tags\indy_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(6,00000006)
+		:i $run$ = %i(2,00000002)
+		:i $ollie$ = %i(1,00000001)
+		:i $Speed$ = %i(5,00000005)
+		:i $spin$ = %i(5,00000005)
+		:i $switch$ = %i(6,00000006)
+		:i $flip_speed$ = %i(6,00000006)
+		:i $rail_balance$ = %i(6,00000006)
+		:i $lip_balance$ = %i(4,00000004)
+		:i $manual_balance$ = %i(6,00000006)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_BENFRANKLIN$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_BENFRANKLIN$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $Spgrind_D_U_Triangle$$trickname$ = $Trick_Franklin_grind$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(21,"Jesse James - Vehicle")
+		:i $first_name$ = %s(5,"Jesse")
+		:i $last_name$ = %s(5,"James")
+		:i $default_appearance$ = $Ped_segwayrider$
+		:i $name$ = $segwayrider$
+		:i $not_in_frontend$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\jam_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(1,00000001)
+		:i $run$ = %i(1,00000001)
+		:i $ollie$ = %i(1,00000001)
+		:i $Speed$ = %i(5,00000005)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_JESSEJAMES$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $segway_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_HotRod$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(20,"Jesse James - Skater")
+		:i $first_name$ = %s(5,"Jesse")
+		:i $last_name$ = %s(14,"Ped_JesseJames")
+		:i $default_appearance$ = $Ped_segwayrider$
+		:i $name$ = $JesseJamesSkater$
+		:i $not_in_frontend$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\jam_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(9,00000009)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(11,0000000b)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(6,00000006)
+		:i $flip_speed$ = %i(5,00000005)
+		:i $rail_balance$ = %i(7,00000007)
+		:i $lip_balance$ = %i(6,00000006)
+		:i $manual_balance$ = %i(6,00000006)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_JESSEJAMES$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $segway_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_HotRod$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Bull Fighter")
+		:i $select_icon$ = $ss_bullfighter$
+		:i $first_name$ = %s(4,"Bull")
+		:i $last_name$ = %s(7,"Fighter")
+		:i $default_appearance$ = $Ped_bullfighter$
+		:i $name$ = $bullfighter$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $skatestyle$ = $crappy$
+		:i $tag_texture$ = %s(12,"tags\bull_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(6,00000006)
+		:i $run$ = %i(9,00000009)
+		:i $ollie$ = %i(3,00000003)
+		:i $Speed$ = %i(7,00000007)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(3,00000003)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(9,00000009)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_BULLFIGHTER$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_BULLFIGHTER$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_D_L_Triangle$$trickname$ = $Trick_BullF_Sword$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(17,"Steve-O - Vehicle")
+		:i $first_name$ = %s(4,"Mech")
+		:i $last_name$ = %s(9,"BullRider")
+		:i $default_appearance$ = $Ped_mechbull$
+		:i $name$ = $mechbullrider$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\stv_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(1,00000001)
+		:i $ollie$ = %i(1,00000001)
+		:i $Speed$ = %i(5,00000005)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_STEVEO$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $mechbull_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_U_Triangle$$trickname$ = $Trick_BiteBoard$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(16,"Steve-O - Skater")
+		:i $first_name$ = %s(5,"Steve")
+		:i $last_name$ = %s(9,"Bullrider")
+		:i $default_appearance$ = $Ped_mechbull$
+		:i $name$ = $SteveoSkater$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\stv_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(6,00000006)
+		:i $Speed$ = %i(7,00000007)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(5,00000005)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(6,00000006)
+		:i $lip_balance$ = %i(5,00000005)
+		:i $manual_balance$ = %i(4,00000004)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_STEVEO$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $mechbull_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_U_Triangle$$trickname$ = $Trick_BiteBoard$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Graffiti Tagger")
+		:i $select_icon$ = $ss_graffititagger$
+		:i $first_name$ = %s(8,"Graffiti")
+		:i $last_name$ = %s(6,"Tagger")
+		:i $default_appearance$ = $Ped_graffitiSkater$
+		:i $name$ = $graffititagger$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\tag_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(7,00000007)
+		:i $switch$ = %i(6,00000006)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(6,00000006)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(6,00000006)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_GRAFFITITAGGER$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_GRAFFITITAGGER$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_D_L_Circle$$trickname$ = $Trick_DoubleFistin$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(16,"Paulie - Vehicle")
+		:i $first_name$ = %s(6,"Paulie")
+		:i $last_name$ = %s(6,"Paulie")
+		:i $default_appearance$ = $paulie_full$
+		:i $name$ = $paulie$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(12,"tags\paul_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(1,00000001)
+		:i $ollie$ = %i(1,00000001)
+		:i $Speed$ = %i(5,00000005)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_PAULIE$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $wheelchair_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_Butt_Manual$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Paulie - Skater")
+		:i $first_name$ = %s(6,"Paulie")
+		:i $last_name$ = %s(6,"Paulie")
+		:i $default_appearance$ = $paulie_full$
+		:i $name$ = $PaulieSkater$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(12,"tags\paul_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(1,00000001)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_PAULIE$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $wheelchair_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_Butt_Manual$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(13,"Shrimp Vendor")
+		:i $select_icon$ = $ss_shrimpvendor$
+		:i $first_name$ = %s(6,"Shrimp")
+		:i $last_name$ = %s(6,"Vendor")
+		:i $default_appearance$ = $Ped_ShrimpVendor$
+		:i $name$ = $shrimpvendor$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\shr_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(9,00000009)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(7,00000007)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_SHRIMPVENDOR$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_SHRIMPVENDOR$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_Rotisserie$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Minikart Driver")
+		:i $first_name$ = %s(8,"Minikart")
+		:i $last_name$ = %s(11,"MiniKartGuy")
+		:i $default_appearance$ = $MiniKartGuy$
+		:i $name$ = $minikartdriver$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\cas_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(1,00000001)
+		:i $ollie$ = %i(1,00000001)
+		:i $Speed$ = %i(5,00000005)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_ABORIGINE$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $minikart_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(18,"Nigel Beaverhausen")
+		:i $first_name$ = %s(5,"Nigel")
+		:i $last_name$ = %s(12,"Beaverhausen")
+		:i $default_appearance$ = $Nigel_Costume$
+		:i $name$ = $nigel$
+		:i $not_in_frontend$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\bev_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(2,00000002)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(7,00000007)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_R_Square$$trickname$ = $Trick_BeaverBlast$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(6,"Jester")
+		:i $select_icon$ = $ss_jester$
+		:i $first_name$ = %s(6,"Jester")
+		:i $last_name$ = %s(6,"Jester")
+		:i $default_appearance$ = $Ped_jester$
+		:i $name$ = $jester$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $skatestyle$ = $crappy$
+		:i $tag_texture$ = %s(11,"tags\jes_01")
+		:i $skater_family$ = $family_guest$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $is_secret$
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(11,0000000b)
+		:i $run$ = %i(9,00000009)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(9,00000009)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(9,00000009)
+		:i $flip_speed$ = %i(9,00000009)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(9,00000009)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_JESTER$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_JESTER$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_JesterJuggle$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(6,"VooDoo")
+		:i $first_name$ = %s(3,"Voo")
+		:i $last_name$ = %s(15,"Ped_Witchdoctor")
+		:i $default_appearance$ = $Ped_witchdoctor$
+		:i $name$ = $voodoo$
+		:i $not_in_frontend$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\cas_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_VOODOO$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $vehicle_params$ = $tricycle_params$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Chainsaw Skater")
+		:i $first_name$ = %s(8,"Chainsaw")
+		:i $last_name$ = %s(11,"Ped_Bigfoot")
+		:i $default_appearance$ = $Ped_Bigfoot$
+		:i $name$ = $chainsawskater$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\cas_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(11,0000000b)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(11,0000000b)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $found_flag$ = $GUEST_FOUND_BIGFOOT$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(2,00000002)
+		:i $motoskateboard$
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_McTwist$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(9,"THPS Hawk")
+		:i $first_name$ = %s(4,"Tony")
+		:i $last_name$ = %s(4,"Hawk")
+		:i $default_appearance$ = $appearance_THPS_Hawk$
+		:i $name$ = $THPS_hawk$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(12,"tags\thps_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(5,00000005)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$birdhouse$$hawkshoes$$quiksilver$$hawkapp$$tony$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $HawkTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_L_Circle$$trickname$ = $Trick_360VarialMcTwist$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_Indy900$:s}
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_TonySurfer$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_EndlessHandflip$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_hawk$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(8,"The Hand")
+		:i $first_name$ = %s(4,"Tony")
+		:i $last_name$ = %s(11,"Ped_Bigfoot")
+		:i $default_appearance$ = $appearance_hand$
+		:i $name$ = $Hand$
+		:i $not_in_frontend$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\hnd_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(11,0000000b)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$birdhouse$$hawkshoes$$quiksilver$$hawkapp$$tony$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $HawkTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_L_Circle$$trickname$ = $Trick_360VarialMcTwist$:s}
+				:i :s{$trickslot$ = $SpGrind_L_D_Triangle$$trickname$ = $Trick_TheBird$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_hawk$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(5,"Shrek")
+		:i $select_icon$ = $ss_shrek$
+		:i $first_name$ = %s(4,"Tony")
+		:i $last_name$ = %s(5,"Shrek")
+		:i $default_appearance$ = $appearance_shrek$
+		:i $name$ = $skater_shrek$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $mongo_when_switch$
+		:i $tag_texture$ = %s(11,"tags\srk_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_secret$
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$birdhouse$$hawkshoes$$quiksilver$$hawkapp$$tony$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $HawkTricks$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_SHREK$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_L_Circle$$trickname$ = $Trick_BoardSnap$:s}
+				:i :s{$trickslot$ = $SpGrind_L_D_Triangle$$trickname$ = $Trick_WaxSlide$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_hawk$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(14,"C.o.D. Soldier")
+		:i $select_icon$ = $ss_soldier$
+		:i $first_name$ = %s(3,"CoD")
+		:i $last_name$ = %s(7,"Soldier")
+		:i $default_appearance$ = $appearance_COD$
+		:i $name$ = $cod_soldier$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(16,"tags\tag_thugpro")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_secret$
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$birdhouse$$hawkshoes$$quiksilver$$hawkapp$$tony$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $HawkTricks$
+		:i $unlock_flag$ = $SKATER_UNLOCKED_SOLDIER$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_L_Circle$$trickname$ = $Trick_360VarialMcTwist$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_Solute$:s}
+				:i :s{$trickslot$ = $SpGrind_U_D_Triangle$$trickname$ = $Trick_Hero$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_hawk$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Eric Sparrow")
+		:i $first_name$ = %s(4,"Eric")
+		:i $last_name$ = %s(7,"Sparrow")
+		:i $default_appearance$ = $appearance_sparrow$
+		:i $name$ = $sparrow$
+		:i $not_in_frontend$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $tag_texture$ = %s(11,"tags\spr_01")
+		:i $skater_family$ = $family_pro$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(0,00000000)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(6,00000006)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(9,00000009)
+		:i $spin$ = %i(6,00000006)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$vallely$$etnies$$mike$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_1234$:s}
+				:i :s{$trickslot$ = $SpAir_R_U_Circle$$trickname$ = $Trick_The900$:s}
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_SlamSpinner$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_OneFootOneWheel$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(14,"Secret Skaters")
+		:i $first_name$ = %s(6,"Secret")
+		:i $last_name$ = %s(7,"Skaters")
+		:i $select_icon$ = $ss_questionmark$
+		:i $default_appearance$ = $appearance_sparrow$
+		:i $name$ = $ped$
+		:i $profile_list$ = $ped_profile_list$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $tag_texture$ = %s(12,"tags\thps_01")
+		:i $skater_family$ = $family_flavor$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(4,"hell")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(4,00000004)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_1234$:s}
+				:i :s{$trickslot$ = $SpAir_R_U_Circle$$trickname$ = $Trick_The900$:s}
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_SlamSpinner$:s}
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_OneFootOneWheel$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Gene Simmons")
+		:i $first_name$ = %s(4,"Gene")
+		:i $default_appearance$ = $appearance_gene$
+		:i $name$ = $Gene$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_secret$
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(4,"hell")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_D_R_Circle$$trickname$ = $Trick_LickItUp$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_Flames$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(8,"Iron Man")
+		:i $first_name$ = %s(4,"Iron")
+		:i $default_appearance$ = $appearance_Ironman$
+		:i $name$ = $Iron_Man$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_secret$
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(10,"West coast")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(11,0000000b)
+		:i $run$ = %i(11,0000000b)
+		:i $ollie$ = %i(11,0000000b)
+		:i $Speed$ = %i(11,0000000b)
+		:i $spin$ = %i(11,0000000b)
+		:i $switch$ = %i(11,0000000b)
+		:i $flip_speed$ = %i(11,0000000b)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(11,0000000b)
+		:i $manual_balance$ = %i(11,0000000b)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_Scanning$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Circle$$trickname$ = $Trick_BootBurst$:s}
+				:i :s{$trickslot$ = $SpGrind_R_D_Triangle$$trickname$ = $Trick_BlastGrind$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(8,"T.H.U.D.")
+		:i $first_name$ = %s(8,"Creature")
+		:i $default_appearance$ = $appearance_creature$
+		:i $name$ = $Creature$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $always_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_hidden$ = %i(1,00000001)
+		:i $is_secret$
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(9,"the sewer")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(10,0000000a)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(10,0000000a)
+		:i $switch$ = %i(10,0000000a)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $PedTricks$
+		:i $no_edit$
+		:i $no_edit_groups$ = :a{
+			:i $secret_options$
+			:i :a}
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_U_R_circle$$trickname$ = $Trick_3DSwimAir$:s}
+				:i :s{$trickslot$ = $SpGrind_D_L_Triangle$$trickname$ = $Trick_3DScaryGrind$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Steve Caballero")
+		:i $first_name$ = %s(5,"Steve")
+		:i $default_appearance$ = $appearance_caballero_thug$
+		:i $name$ = $caballero$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(36,00000024)
+		:i $hometown$ = %s(12,"Campbell, CA")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$brigade$$sessions$$faction$$vans$$steve$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $CaballeroTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpLip_R_U_Triangle$$trickname$ = $Trick_HoHoSadplant$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_FS540$:s}
+				:i :s{$trickslot$ = $Spgrind_D_U_Triangle$$trickname$ = $Trick_GuitarSlide$:s}
+				:i :s{$trickslot$ = $SpGrind_U_D_Triangle$$trickname$ = $Trick_DaffyBrokenGrind$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_cab$
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Kareem Campbell")
+		:i $first_name$ = %s(6,"Kareem")
+		:i $default_appearance$ = $appearance_campbell_thug$
+		:i $name$ = $campbell$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(30,0000001e)
+		:i $hometown$ = %s(11,"N.Y. / L.A.")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(9,00000009)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$axion$$citystars$$ricta$$kareem$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $CampbellTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_U_R_Square$$trickname$ = $Trick_GhettoBird$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_KFBackflip$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Square$$trickname$ = $Trick_QuadrupleHeelFlip$:s}
+				:i :s{$trickslot$ = $SpAir_D_U_Circle$$trickname$ = $Trick_SitDownAir$:s}
+				:i :s{$trickslot$ = $SpMan_D_L_Triangle$$trickname$ = $Trick_ReemoSlide$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_campbell$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(13,"Rune Glifberg")
+		:i $first_name$ = %s(4,"Rune")
+		:i $default_appearance$ = $appearance_glifberg_thug$
+		:i $name$ = $Glifberg$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $vert$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(27,0000001b)
+		:i $hometown$ = %s(19,"Copenhagen, Denmark")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(11,0000000b)
+		:i $run$ = %i(7,00000007)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(9,00000009)
+		:i $spin$ = %i(9,00000009)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(9,00000009)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$flip$$axion$$volcom$$rune$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $GlifbergTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_R_U_Circle$$trickname$ = $Trick_DoubleKFindy$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Circle$$trickname$ = $Trick_FingerFlipAirwalk$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_540TailWhip$:s}
+				:i :s{$trickslot$ = $SpAir_L_D_Circle$$trickname$ = $Trick_2KickMadonnaFlip$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_glifberg$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(11,"Bucky Lasek")
+		:i $first_name$ = %s(5,"Bucky")
+		:i $default_appearance$ = $appearance_lasek_thug$
+		:i $name$ = $Lasek$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $vert$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(28,0000001c)
+		:i $hometown$ = %s(13,"Baltimore, MD")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(10,0000000a)
+		:i $run$ = %i(7,00000007)
+		:i $ollie$ = %i(7,00000007)
+		:i $Speed$ = %i(9,00000009)
+		:i $spin$ = %i(11,0000000b)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(8,00000008)
+		:i $lip_balance$ = %i(10,0000000a)
+		:i $manual_balance$ = %i(7,00000007)
+		:i $sponsors$ = :a{$birdhouse$$genetic$$billabong$$bucky$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $LasekTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpLip_L_D_Triangle$$trickname$ = $Trick_1990Invert$:s}
+				:i :s{$trickslot$ = $SpLip_R_L_Triangle$$trickname$ = $Trick_HeelflipFSInvert$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_BreakIn$:s}
+				:i :s{$trickslot$ = $SpGrind_U_L_Triangle$$trickname$ = $Trick_BigHitter$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_lasek$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(15,"Andrew Reynolds")
+		:i $first_name$ = %s(6,"Andrew")
+		:i $default_appearance$ = $appearance_reynolds_thug$
+		:i $name$ = $Reynolds$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(25,00000019)
+		:i $hometown$ = %s(12,"Lakeland, FL")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(7,00000007)
+		:i $ollie$ = %i(11,0000000b)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(9,00000009)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(9,00000009)
+		:i $sponsors$ = :a{$baker$$emerica$$independent$$andrew$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $ReynoldsTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_FiftyfiftySwitcheroo$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Circle$$trickname$ = $Trick_BigSpinShifty$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_KFBackflip$:s}
+				:i :s{$trickslot$ = $SpAir_U_D_Circle$$trickname$ = $Trick_FSFlipOneFootTailGrab$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_reynolds$
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i $helmet_items$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(14,"Paul Rodriguez")
+		:i $first_name$ = %s(4,"Paul")
+		:i $default_appearance$ = $appearance_rodriguez_thug$
+		:i $name$ = $rodriguez$
+		:i $stance$ = $goofy$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(0,00000000)
+		:i $is_locked$ = %i(0,00000000)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(18,00000012)
+		:i $hometown$ = %s(14,"Northridge, CA")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(6,00000006)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(9,00000009)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(10,0000000a)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(10,0000000a)
+		:i $sponsors$ = :a{$es$$girl$$paul$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $RodriguezTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_L_D_Triangle$$trickname$ = $Trick_FSNollie360FlipCrook$:s}
+				:i :s{$trickslot$ = $Spgrind_D_U_Triangle$$trickname$ = $Trick_YeaRightSlide$:s}
+				:i :s{$trickslot$ = $SpAir_R_D_Circle$$trickname$ = $Trick_NollieFlipUnderflip$:s}
+				:i :s{$trickslot$ = $SpLip_U_D_Triangle$$trickname$ = $Trick_Russian$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Geoff Rowley")
+		:i $first_name$ = %s(5,"Geoff")
+		:i $default_appearance$ = $appearance_rowley_thug$
+		:i $name$ = $rowley$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(25,00000019)
+		:i $hometown$ = %s(18,"Liverpool, England")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(7,00000007)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(9,00000009)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(10,0000000a)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$flip$$volcom$$vans$$geoff$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $RowleyTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpAir_U_R_circle$$trickname$ = $Trick_flipflip$:s}
+				:i :s{$trickslot$ = $SpAir_D_R_Square$$trickname$ = $Trick_AirCasperFlip$:s}
+				:i :s{$trickslot$ = $SpGrind_R_L_Triangle$$trickname$ = $Trick_RowleyDarkSlideHandStand$:s}
+				:i :s{$trickslot$ = $SpMan_U_D_Triangle$$trickname$ = $Trick_Sproing$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_RowleyDarkSlide$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $is_rowley$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(10,"Arto Saari")
+		:i $first_name$ = %s(4,"Arto")
+		:i $default_appearance$ = $appearance_saari_thug$
+		:i $name$ = $saari$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(0,00000000)
+		:i $is_locked$ = %i(0,00000000)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(10,"Edison, NJ")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(9,00000009)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(8,00000008)
+		:i $sponsors$ = :a{$flip$$es$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $SaariTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_L_R_Triangle$$trickname$ = $Trick_HeadStandManual$:s}
+				:i :s{$trickslot$ = $SpMan_D_U_Triangle$$trickname$ = $Trick_MixItUp$:s}
+				:i :s{$trickslot$ = $SpGrind_D_R_Triangle$$trickname$ = $Trick_OneFootDarkSlide$:s}
+				:i :s{$trickslot$ = $SpAir_L_R_Square$$trickname$ = $Trick_HardFlipBackFootFlip$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(14,"Elissa Steamer")
+		:i $first_name$ = %s(6,"Elissa")
+		:i $default_appearance$ = $appearance_steamer_thug$
+		:i $name$ = $steamer$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(0,00000000)
+		:i $age$ = %i(4294967295,ffffffff)
+		:i $hometown$ = %s(14,"Fort Myers, FL")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(9,00000009)
+		:i $run$ = %i(8,00000008)
+		:i $ollie$ = %i(9,00000009)
+		:i $Speed$ = %i(8,00000008)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(9,00000009)
+		:i $rail_balance$ = %i(9,00000009)
+		:i $lip_balance$ = %i(8,00000008)
+		:i $manual_balance$ = %i(9,00000009)
+		:i $sponsors$ = :a{$bootleg$$etnies$$tsa$$elissa$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $SteamerTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpMan_R_D_Triangle$$trickname$ = $Trick_NoComplyLate360$:s}
+				:i :s{$trickslot$ = $SpMan_R_L_Triangle$$trickname$ = $Trick_HoHoStreetPlant$:s}
+				:i :s{$trickslot$ = $SpGrind_L_R_Triangle$$trickname$ = $Trick_Coffin$:s}
+				:i :s{$trickslot$ = $SpAir_D_U_Circle$$trickname$ = $Trick_SemiFlip$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $lockout_flags$ = :a{
+			:i $shows_panties$
+			:i $not_with_elissa$
+			:i :a}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i $backpack_items$
+			:i $helmet_items$
+			:i $socks_items$
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $display_name$ = %s(12,"Jamie Thomas")
+		:i $first_name$ = %s(5,"Jamie")
+		:i $default_appearance$ = $appearance_thomas_thug$
+		:i $name$ = $thomas$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(26,0000001a)
+		:i $hometown$ = %s(10,"Dotham, AL")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(7,00000007)
+		:i $sponsors$ = :a{$zero$$circa$$monster$$jamie$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $ThomasTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $SpGrind_R_D_Triangle$$trickname$ = $Trick_CrookedBigSpinFlip$:s}
+				:i :s{$trickslot$ = $Spgrind_D_U_Triangle$$trickname$ = $Trick_PrimoHandStand$:s}
+				:i :s{$trickslot$ = $SpGrind_L_D_Triangle$$trickname$ = $Trick_AmericanHeroGrind$:s}
+				:i :s{$trickslot$ = $SpGrind_U_D_Triangle$$trickname$ = $Trick_CrookedSkull$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i $pad_options$
+			:i :a}
+	:i :s}
+	:i :s{$display_name$ = %s(10,"Darth Maul")
+		:i $default_appearance$ = $appearance_DarthMaul$
+		:i $name$ = $Maul$
+		:i $stance$ = $regular$
+		:i $pushstyle$ = $never_mongo$
+		:i $trickstyle$ = $street$
+		:i $is_pro$ = %i(1,00000001)
+		:i $is_head_locked$ = %i(1,00000001)
+		:i $is_locked$ = %i(1,00000001)
+		:i $is_male$ = %i(1,00000001)
+		:i $age$ = %i(26,0000001a)
+		:i $hometown$ = %s(25,"A galaxy, far far away...")
+		:i $points_available$ = %i(0,00000000)
+		:i $air$ = %i(8,00000008)
+		:i $run$ = %i(10,0000000a)
+		:i $ollie$ = %i(8,00000008)
+		:i $Speed$ = %i(10,0000000a)
+		:i $spin$ = %i(8,00000008)
+		:i $switch$ = %i(8,00000008)
+		:i $flip_speed$ = %i(8,00000008)
+		:i $rail_balance$ = %i(11,0000000b)
+		:i $lip_balance$ = %i(7,00000007)
+		:i $manual_balance$ = %i(7,00000007)
+		:i $sponsors$ = :a{$zero$$circa$$monster$$jamie$:a}
+		:i $trick_mapping$ = :s{:s}
+		:i $default_trick_mapping$ = $ThomasTricks$
+		:i $max_specials$ = %i(11,0000000b)
+		:i $specials$ = :s{
+			:i :a{
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :s{$trickslot$ = $Unassigned$$trickname$ = $Unassigned$:s}
+				:i :a}
+		:i :s}
+		:i $no_edit_groups$ = :a{
+			:i $head_options$
+			:i $pad_options$
+			:i :a}
+	:i :s}
+	:i :a}
+:i $default_classic_stats$ = 
+:i :s{
+	:i $air$ = %i(3,00000003)
+	:i $run$ = %i(3,00000003)
+	:i $ollie$ = %i(3,00000003)
+	:i $Speed$ = %i(3,00000003)
+	:i $spin$ = %i(3,00000003)
+	:i $switch$ = %i(3,00000003)
+	:i $flip_speed$ = %i(3,00000003)
+	:i $rail_balance$ = %i(3,00000003)
+	:i $lip_balance$ = %i(3,00000003)
+	:i $manual_balance$ = %i(3,00000003)
+	:i $points_available$ = %i(0,00000000)
+:i :s}
+:i :end

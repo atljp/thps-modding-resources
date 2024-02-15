@@ -1,0 +1,297 @@
+//------------------------------------------------
+// DJ HERO 1 MSB: Mesh
+// Contains mesh stuff
+//------------------------------------------------
+
+#define CL_FACE1             0x44DDDD
+#define CL_FACE2             0x55EEEE
+#define CL_FACE3             0x66FFFF
+
+#define CL_VERTPOS           0xFFFF66
+#define CL_VERTUNKA          0xEEEE55
+#define CL_VERTNORM          0xDDDD44
+#define CL_VERTUV            0xCCCC33
+#define CL_VERTUNKB          0xBBBB22
+
+//------------------------------
+
+local ubyte Mesh_UVMap_Count = 1;
+local ubyte Mesh_Extras_Count = 0;
+local ubyte Mesh_Weight_Count = 4;
+local ubyte Mesh_Flags = 0;
+
+//------------------------------
+
+typedef struct
+{
+    hfloat weights [4] <bgcolor=CL_VERTUNKA>;
+    ubyte bone_indices[4] <bgcolor=CL_VERTUNKA, comment="In reverse order?">;
+} DJVertexWeights;
+
+typedef struct
+{
+    float weights [4] <bgcolor=CL_VERTUNKA>;
+    ubyte bone_indices[4] <bgcolor=CL_VERTUNKA, comment="In reverse order?">;
+} DJVertexWeights_HiRes;
+
+typedef struct (ubyte real_unk0_count, ubyte real_weight_count, ubyte real_uv_count, ubyte real_unk2_count, ubyte flags)
+{
+    Vec3 pos <bgcolor=CL_VERTPOS>;
+    DJVertexWeights weights[real_weight_count];
+    Vec3 normal <bgcolor=CL_VERTNORM>;
+
+    if (flags & 0x40)
+    {
+        ubyte a <bgcolor=CL_SINGLEVALUE>;
+        ubyte r <bgcolor=CL_SINGLEVALUE>;
+        ubyte g <bgcolor=CL_SINGLEVALUE>;
+        ubyte b <bgcolor=CL_SINGLEVALUE>;
+    }
+
+    Vec2 uv[real_uv_count] <bgcolor=0xCCCC33>;
+
+    if (real_unk0_count > 0)
+        Vec3 unk_0 <bgcolor=0xBBBB22>;
+} DJVertex;
+
+typedef struct (uint vertexCount, ubyte real_unk0_count, ubyte real_weight_count, ubyte real_uv_count, ubyte real_unk2_count, ubyte flags)
+{
+    local uint i;
+
+    for (i=0; i<vertexCount; i++)
+    {
+        DJVertex verts(real_unk0_count, real_weight_count, real_uv_count, real_unk2_count, flags);
+    }
+
+} DJVertexChunk;
+
+typedef struct 
+{
+    ushort a <bgcolor=CL_FACE1>;
+    ushort b <bgcolor=CL_FACE2>;
+    ushort c <bgcolor=CL_FACE3>;
+} DJFace;
+
+typedef struct (uint face_count)
+{
+    DJFace faces[face_count];
+} DJFaceChunk;
+
+typedef struct (uint FaceBlobPos, uint VertBlobPos)
+{
+    uint unk <bgcolor=CL_SINGLEVALUE>;
+    uint faceCount <bgcolor=CL_SINGLEVALUE>;
+    uint vertexCount <bgcolor=CL_SINGLEVALUE>;
+    
+    ubyte unk0_1_count <bgcolor=CL_SINGLEVALUE>;
+    local ubyte real_unk0_count = (unk0_1_count >> 4);
+    local ubyte real_weight_count = (unk0_1_count & 0x0F);
+
+    ubyte uv_unk2_count <bgcolor=CL_SINGLEVALUE>;
+    local ubyte real_uv_count = (uv_unk2_count >> 4);
+    local ubyte real_unk2_count = (uv_unk2_count & 0x0F);
+
+    ubyte flags <bgcolor=CL_SINGLEVALUE, comment="Maybe???">;
+    ubyte null <bgcolor=CL_SINGLEVALUE>;
+
+    uint face_offset <bgcolor=CL_POINTER>;
+    uint vertex_offset <bgcolor=CL_POINTER>;
+    uint material_index <bgcolor=CL_SINGLEVALUE>;
+
+    // How many bytes does each vertex take up?
+    // local uint vertex_bytes = 12 + real_unk1_count * 12 + 12 + real_uv_count * 8 + 12;
+    local uint vertex_bytes = 0;
+
+    vertex_bytes += 12;                         // Pos
+    vertex_bytes += 12;                         // Normal
+    vertex_bytes += real_weight_count * 12;     // Weight blocks
+    vertex_bytes += real_uv_count * 8;          // UV
+    
+    if (flags & 0x40)
+        vertex_bytes += 4;                      // Color
+
+    vertex_bytes += real_unk0_count * 12;       // Unk0
+
+    local uint old_off = FTell();
+
+    // Let's grab our faces
+    // Face offset is * 2 because they're shorts
+    // (This is an offset of how many indices to skip)
+
+    FSeek(FaceBlobPos + (face_offset * 2));
+    DJFaceChunk face_chunk(faceCount);
+
+    // Let's grab our vertices
+    FSeek(VertBlobPos + (vertex_offset * vertex_bytes));
+
+    DJVertexChunk vert_chunk(vertexCount, real_unk0_count, real_weight_count, real_uv_count, real_unk2_count, flags);
+
+    FSeek(old_off);
+} DJMesh <read=Str("[%d faces, %d verts] Material %d", faceCount, vertexCount, material_index)>;
+
+//------------------------------------------------
+
+typedef struct (uint vertexStride)
+{
+    short pos_x <bgcolor=CL_VERTPOS>;
+    short pos_y <bgcolor=CL_VERTPOS>;
+    short pos_z <bgcolor=CL_VERTPOS>;
+    ubyte bytes[vertexStride - 6] <bgcolor=CL_VERTUV>;
+} DJVertex_PS3;
+
+typedef struct (uint vertexCount, uint vertexStride)
+{
+    local uint i;
+
+    for (i=0; i<vertexCount; i++)
+    {
+        DJVertex_PS3 vertex(vertexStride);
+    }
+} DJVertexChunk_PS3;
+
+typedef struct (uint vertexStride)
+{
+    uint faceCount;
+    uint vertexCount;
+    RelativeOffset face_offset(faceVertBlobStart) <comment="Offset from start of data">;
+    RelativeOffset vertex_offset(faceVertBlobStart) <comment="Offset from start of data">;
+    
+    char some_string[16];
+
+    ubyte values[3];
+    ubyte skip_me[253];
+    
+    local uint old_off = FTell();
+
+    FSeek(AbsOffset(face_offset));
+    DJFaceChunk face_chunk(faceCount);
+
+    FSeek(AbsOffset(vertex_offset));
+    DJVertexChunk_PS3 vertex_chunk(vertexCount, vertexStride);
+
+    FSeek(old_off);
+} DJMesh_PS3 <read=Str("[%d faces, %d verts] %s", faceCount, vertexCount, some_string)>;
+
+typedef struct (uint meshStartPos)
+{
+    uint material_index;
+    ubyte unkA;
+    ubyte unkB;
+    ubyte unkC;
+    ubyte unkD;
+    uint unkE;
+    uint unkF;
+    uint unkG;
+    uint vertexStride;
+    uint unkH;
+    uint unkI;
+
+    local uint old_off = FTell();
+
+    Printf("Mesh at %d\n", meshStartPos);
+
+    FSeek(meshStartPos);
+    DJMesh_PS3 mesh(vertexStride);
+    FSeek(old_off);
+
+} DJMeshMetadata_PS3;
+
+//------------------------------------------------
+
+typedef struct (uint vertexStride)
+{
+    local uint vertStart = FTell();
+
+    Vec3 pos <bgcolor=CL_VERTPOS>;
+    //DJVertexWeights weights[real_weight_count];
+    Vec3 normal <bgcolor=CL_VERTNORM>;
+
+    if (Mesh_Flags & 0x40)
+    {
+        ubyte a <bgcolor=CL_SINGLEVALUE>;
+        ubyte r <bgcolor=CL_SINGLEVALUE>;
+        ubyte g <bgcolor=CL_SINGLEVALUE>;
+        ubyte b <bgcolor=CL_SINGLEVALUE>;
+    }
+
+    if (Mesh_UVMap_Count > 0)
+        Vec2 uv[Mesh_UVMap_Count] <bgcolor=0xCCCC33>;
+
+    if (Mesh_Extras_Count > 0)
+        Vec3 extra <bgcolor=0xBBBB22>;
+
+    if (Mesh_Weight_Count > 0)
+        DJVertexWeights_HiRes weights;
+
+    FSeek(vertStart + vertexStride);
+
+} DJVertex_DJH2_X360;
+
+typedef struct (uint vertexCount, uint vertexStride)
+{
+    local uint i;
+
+    for (i=0; i<vertexCount; i++)
+        DJVertex_DJH2_X360 verts(vertexStride);
+
+} DJVertexChunk_DJH2_X360;
+
+typedef struct (uint vertexStride)
+{
+    Printf("FaceVertBlob start at %d\n", faceVertBlobStart);
+
+    uint faceCount;
+    uint vertexCount;
+    RelativeOffset face_offset(faceVertBlobStart) <comment="Offset from start of data">;
+    RelativeOffset vertex_offset(faceVertBlobStart) <comment="Offset from start of data">;
+    
+    char some_string[16];
+
+    ubyte values[3];
+    ubyte skip_me[253];
+    
+    local uint old_off = FTell();
+
+    FSeek(AbsOffset(face_offset));
+    DJFaceChunk face_chunk(faceCount);
+
+    FSeek(AbsOffset(vertex_offset));
+    DJVertexChunk_DJH2_X360 vertex_chunk(vertexCount, vertexStride);
+
+    FSeek(old_off);
+} DJMesh_DJH2_X360 <read=Str("[%d faces, %d verts] %s", faceCount, vertexCount, some_string)>;
+
+typedef struct (uint meshStartPos)
+{
+    uint material_index;
+    ubyte extras_count;
+    Mesh_Extras_Count = extras_count;
+
+    ubyte unk0_1_count <bgcolor=CL_SINGLEVALUE>;
+    local ubyte real_unk0_count = (unk0_1_count >> 4);
+    Mesh_Weight_Count = (unk0_1_count & 0x0F);
+
+    ubyte uv_unk2_count <bgcolor=CL_SINGLEVALUE>;
+    Mesh_UVMap_Count = (uv_unk2_count >> 4);
+    local ubyte real_unk2_count = (uv_unk2_count & 0x0F);
+
+    ubyte flags;
+    Mesh_Flags = flags;
+
+    uint unk_count;
+    uint unkF;
+    uint unkG;
+
+    uint vertexStride;
+    uint unkH;
+    uint unkI;
+
+    local uint old_off = FTell();
+
+    Printf("Mesh at %d\n", meshStartPos);
+
+    FSeek(meshStartPos);
+    DJMesh_DJH2_X360 mesh(vertexStride);
+    FSeek(old_off);
+
+} DJMeshMetadata_DJH2_X360 <read=Str("%d vert stride", vertexStride)>;

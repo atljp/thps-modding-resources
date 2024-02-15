@@ -1,0 +1,23 @@
+//------------------------------------------------
+// Matrix, probably
+//------------------------------------------------
+
+typedef struct
+{
+    int32 values[4] <bgcolor=CL_FLOATS>;
+} OTMatrixRow <read=ReadOTMatrixRow>;
+
+string ReadOTMatrixRow(OTMatrixRow &row)
+{
+    local string s;
+    return SPrintf(s, "[%f, %f, %f, %f]", row.values[0] / 4096.0, row.values[1] / 4096.0, row.values[2] / 4096.0, row.values[3] / 4096.0);
+}
+
+typedef struct
+{
+    int pointer_valuecount <bgcolor=CL_POINTER>;
+    int valueCount <bgcolor=CL_SINGLEVALUE>;
+
+    local int rowCount = valueCount / 4;
+    OTMatrixRow rows[rowCount];
+} OTMatrix;

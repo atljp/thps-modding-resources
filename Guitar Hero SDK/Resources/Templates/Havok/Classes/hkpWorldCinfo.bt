@@ -1,0 +1,132 @@
+enum <ubyte> BroadPhaseBorderBehaviour
+{
+		/// Cause an assert and set the motion type to be fixed (default).
+	BROADPHASE_BORDER_ASSERT,
+
+		/// Set the motion type to be fixed and raise a warning.
+	BROADPHASE_BORDER_FIX_ENTITY,
+
+		/// Remove the entity from the hkpWorld and raise a warning.
+	BROADPHASE_BORDER_REMOVE_ENTITY,
+
+		/// Do not do anything, just continue to work.
+		/// If many (>20) objects leave the broadphase,
+		/// serious memory and CPU can be wasted.
+	BROADPHASE_BORDER_DO_NOTHING,
+};
+
+enum <ubyte> SimulationType
+{
+		///
+	SIMULATION_TYPE_INVALID,
+
+		/// No continuous simulation is performed
+	SIMULATION_TYPE_DISCRETE,
+
+		/// Use this simulation if you want any continuous simulation.
+		/// Depending on the hkpEntity->getQualityType(), collisions
+		/// are not only performed at 'normal' physical timesteps (called PSI), but
+		/// at any time when two objects collide (TOI)
+	SIMULATION_TYPE_CONTINUOUS,
+
+		/// Multithreaded continuous simulation.
+		/// You must have read the multi threading user guide.<br>
+        /// To use this you should call hkpWorld::stepMultithreaded(), see
+		/// the hkDefaultPhysicsDemo::stepDemo for an example.
+		/// Notes:
+		///   - The internal overhead for multi threaded is small and you can expect
+		///     good speedups, except:
+		///   - solving multiple TOI events can not be done on different threads,
+		///     so TOI are solved on a single thread. However the collision detection
+		///     for each TOI event can be solver multithreaded (see m_processToisMultithreaded) 
+	SIMULATION_TYPE_MULTITHREADED,
+};
+
+typedef struct
+{
+    hkReferencedObject super;
+    hkVector4 m_gravity <comment="def: (0. -9.8, 0)">;
+    hkInt32 m_broadPhaseQuerySize <comment="def: 1024">;
+    hkReal m_contactRestingVelocity;
+    BroadPhaseBorderBehaviour m_broadPhaseBorderBehaviour <comment="def: BROADPHASE_BORDER_ASSERT">;
+    hkAabb m_broadPhaseWorldAabb <comment="def: cube of side 1000">;
+
+    if (HAVOK_VERSION > 5)
+    {
+        hkBool m_useKdTree <comment="def: false">;
+        hkBool m_autoUpdateKdTree <comment="def: true">;
+    }
+
+    hkReal m_collisionTolerance <comment="def: 0.1">;
+
+    OptionalLinkMarker m_collisionFilter;
+
+    OptionalLinkMarker m_convexListFilter;
+
+    // SDK only
+    // hkpCollisionFilter m_collisionFilter;
+
+    hkReal m_expectedMaxLinearVelocity <comment="def: 200">;
+    // int m_sizeOfToiEventQueue <comment="def: 250">;
+    hkInt32 m_sizeOfToiEventQueue <comment="def: 250">;
+    
+    // Min delta time you expect between two PSI
+    hkReal m_expectedMinPsiDeltaTime <comment="def: 1.0 / 30.0">;
+
+    LinkMarker m_memoryWatchDog;
+
+    hkInt32 m_broadPhaseNumMarkers <comment="def: 0">;
+    hkInt8 m_contactPointGeneration <comment="def: CONTACT_POINT_REJECT_MANY">;
+
+    if (HAVOK_VERSION > 5)
+        hkBool m_allowToSkipConfirmedCallbacks <comment="def: false">;
+
+    hkReal m_solverTau;
+    hkReal m_solverDamp <comment="def: 0.6">;
+    hkInt32 m_solverIterations <comment="def: 4">;
+    hkInt32 m_solverMicrosteps <comment="def: 1">;
+    hkBool m_forceCoherentConstraintOrderingInSolver <comment="def: false">;
+    hkReal m_snapCollisionToConvexEdgeThreshold <comment="def: 0.524">;
+    hkReal m_snapCollisionToConcaveEdgeThreshold <comment="def: 0.698">;
+    hkBool m_enableToiWeldRejection <comment="def: false">;
+    hkBool m_enableDeprecatedWelding <comment="def: false">;
+    hkReal m_iterativeLinearCastEarlyOutDistance <comment="def: 0.01">;
+    hkInt32 m_iterativeLinearCastMaxIterations <comment="def: 20">;
+
+    if (HAVOK_VERSION <= 5)
+    {
+        hkReal m_highFrequencyDeactivationPeriod <comment="def: 0.2">;
+        hkReal m_lowFrequencyDeactivationPeriod <comment="def: 10">;
+    }
+
+    hkUint8 m_deactivationNumInactiveFramesSelectFlag0 <comment="def: 0">;
+    hkUint8 m_deactivationNumInactiveFramesSelectFlag1 <comment="def: 0">;
+    hkUint8 m_deactivationIntegrateCounter <comment="def: 0">;
+    hkBool m_shouldActivateOnRigidBodyTransformChange <comment="def: true">;
+    hkReal m_deactivationReferenceDistance <comment="def: 0.02">;
+    hkReal m_toiCollisionResponseRotateNormal <comment="def: 0.2">;
+
+    //int m_maxSectorsPerCollideTask <comment="def: 4">;
+    hkInt32 m_maxSectorsPerCollideTask <comment="def: 4">;
+
+    hkBool m_processToisMultithreaded <comment="def: true">;
+
+    //int m_maxEntriesPerToiCollideTask <comment="def: 1">;
+    hkInt32 m_maxEntriesPerToiCollideTask <comment="def: 1">;
+
+    if (HAVOK_VERSION > 5)
+    {
+        hkReal m_numToisTillAllowedPenetrationSimplifiedToi <comment="def: 3.0">;
+        hkReal m_numToisTillAllowedPenetrationToi <comment="def: 3.0">;
+        hkReal m_numToisTillAllowedPenetrationToiHigher <comment="def: 4.0">;
+        hkReal m_numToisTillAllowedPenetrationToiForced <comment="def: 20.0">;
+    }
+
+    hkBool m_enableDeactivation <comment="def: true">;
+    SimulationType m_simulationType <comment="def: SIMULATION_TYPE_CONTINUOUS">;
+    hkBool m_enableSimulationIslands <comment="def: true">;
+    hkUint32 m_minDesiredIslandSize <comment="def: 64">;
+    hkBool m_processActionsInSingleThread <comment="def: true">;
+    hkReal m_frameMarkerPsiSnap <comment="def: 0.0001">;
+
+} hkpWorldCinfo;

@@ -1,0 +1,343 @@
+
+:i function $create_helper_text$:s{$anchor_id$ = $helper_text_anchor$
+		:i $parent$ = $current_menu_anchor$
+		:i $helper_text_anchor$ = %GLOBAL%$helper_text_anchor$
+		:i $helper_pos$ = %vec2(320.000000,464.000000)
+		:i $helper_scale$ = %f(1.000000)
+		:i $spacing_between$ = %i(2,00000002)
+		:i $bg_rgba$ = :a{%i(30,0000001e)%i(30,0000001e)%i(30,0000001e)%i(128,00000080):a}
+	:i :s}
+	:i if $ObjectExists$$id$ = %GLOBAL%$anchor_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$anchor_id$
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i $helper_pos$ = %vec2(320.000000,464.000000)
+	:i else 
+		:i if $GotParam$$helper_pos$
+			:i $helper_pos$ = %GLOBAL%$helper_pos$
+		:i else 
+			:i $helper_pos$ = %vec2(320.000000,464.000000)
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$helper_text_pos$
+		:i $helper_text_pos$ = %GLOBAL%$helper_pos$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $scale$ = %GLOBAL%$helper_scale$
+		:i $z_priority$ = %i(2000,000007d0)
+	:i :s}
+	:i %GLOBAL%$secondline_index$ = %i(2,00000002)
+	:i if NOT $GotParam$$no_bar$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ = $white$
+			:i $pos$ = %GLOBAL%$helper_pos$
+			:i $just$ = :a{$center$$bottom$:a}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $alpha$ = %f(0.600000)
+			:i $scale$ = %vec2(200.500000,12.000000)
+		:i :s}
+		:i %GLOBAL%$secondline_index$ = %i(3,00000003)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $local_id$ = $line1$
+		:i $pos$ =  (%GLOBAL%$helper_text_pos$ - %vec2(0.000000,20.000000)) 
+		:i $just$ = :a{$center$$bottom$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $padding_scale$ = %f(0.900000)
+		:i $scale$ = %f(0.600000)
+		:i $spacing_between$ = %GLOBAL%$spacing_between$
+	:i :s}
+	:i if  ( ($GotParam$$helper_text_elements_2$)  OR  ($GotParam$$helper_text_elements_2_pc$)  OR  ($GotParam$$helper_text_elements_2_console$) ) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $HMenu$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $local_id$ = $line2$
+			:i $pos$ =  (%GLOBAL%$helper_text_pos$ - %vec2(0.000000,5.000000)) 
+			:i $just$ = :a{$center$$bottom$:a}
+			:i $internal_just$ = :a{$center$$center$:a}
+			:i $padding_scale$ = %f(0.900000)
+			:i $scale$ = %f(0.600000)
+			:i $spacing_between$ = %GLOBAL%$spacing_between$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$menu_id$ = %GLOBAL%$id$
+	:i if $GotParam$$helper_text_elements$
+		:i $ForEachIn$%GLOBAL%$helper_text_elements$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line1$:s}:s}
+		:i if $GotParam$$helper_text_elements_2$
+			:i $ForEachIn$%GLOBAL%$helper_text_elements_2$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line2$:s}:s}
+		:i endif
+	:i else 
+		:i switch  ($GLOBAL_CtrlLayout$) 
+			:i case %i(0,00000000)
+				:i if $GotParam$$helper_text_elements_PC$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_PC$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line1$:s}:s}
+				:i endif
+				:i if $GotParam$$helper_text_elements_2_pc$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_2_pc$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line2$:s}:s}
+				:i endif
+				:i endcase
+			case %i(1,00000001)
+				:i if $GotParam$$helper_text_elements_Console$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_Console$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line1$:s}:s}
+				:i endif
+				:i if $GotParam$$helper_text_elements_2_console$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_2_console$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line2$:s}:s}
+				:i endif
+				:i endcase
+			case %i(2,00000002)
+				:i if $GotParam$$helper_text_elements_Console$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_Console$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line1$:s}:s}
+				:i endif
+				:i if $GotParam$$helper_text_elements_2_console$
+					:i $ForEachIn$%GLOBAL%$helper_text_elements_2_console$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line2$:s}:s}
+				:i endif
+				:i endcase
+			default 
+				:i $ForEachIn$%GLOBAL%$helper_text_elements_PC$$do$ = $helper_text_update_element$$params$ = :s{$menu_id$ = :s{%GLOBAL%$anchor_id$$child$ = $line1$:s}:s}
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $helper_text_update_element$
+	:i if $GotParam$$enabled$
+		:i if  ( (%GLOBAL%$enabled$)  = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$id$
+		:i if $ObjectExists$%GLOBAL%$id$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$id$
+				:i $text$ = %GLOBAL%$text$
+			:i :s}
+			:i return
+			
+		:i endif
+	:i endif
+	:i %GLOBAL%$pos$ = %vec2(0.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$menu_id$
+		:i $id$ = %GLOBAL%$id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(108,0000006c):a}
+		:i $scale$ = %f(0.750000)
+		:i $z_priority$ = %i(2100,00000834)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $not_focusable$
+	:i :s}
+:i endfunction
+:i $Desc_SS_PlayOnline$ = %s(26,"Host or join a game online")
+:i $Desc_SS_Freeskate$ = %s(45,"Explore levels and start a high score session")
+:i $Desc_SS_EditSkater$ = %s(16,"Edit your skater")
+:i $Desc_SS_ParkEditor$ = %s(26,"Create your own skate park")
+:i $Desc_SS_Options$ = %s(52,"Change display, control, sound, and gameplay options")
+:i $Desc_SS_Quit$ = %s(13,"Quit the game")
+:i $generic_helper_text_trick_list$ = :s{
+	:i $helper_text_elements_PC$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(12,"\bm = Accept"):s}
+		:i :s{$text$ = %s(20,"\bp = Unassign trick"):s}
+		:i :a}
+	:i $helper_text_elements_Console$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\m1 = Back"):s}
+		:i :s{$text$ = %s(12,"\m0 = Accept"):s}
+		:i :s{$text$ = %s(20,"\b0 = Unassign trick"):s}
+		:i :a}
+:i :s}
+:i $generic_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_no_back$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_no_accept$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:a}
+:i :s}
+:i $generic_helper_text_cas$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:a}
+:i :s}
+:i $generic_helper_text_cas_no_back$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:a}
+:i :s}
+:i $generic_helper_text_cas_z$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:s{$text$ = %s(10,"\bq = Zoom"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:s{$text$ = %s(10,"\b9 = Zoom"):s}:a}
+:i :s}
+:i $generic_helper_text_left_right$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_up_down_left_right$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(24,"\b7/\b4/\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(24,"\b7/\b4/\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_up_down_adjust$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_left_right_l_r$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:a}
+:i :s}
+:i $generic_helper_text_left_right_up_down$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_color_menu$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:a}
+:i :s}
+:i $generic_helper_text_color_menu_z$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:s{$text$ = %s(10,"\bq = Zoom"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:s{$text$ = %s(10,"\b9 = Zoom"):s}:a}
+:i :s}
+:i $generic_helper_text_color_menu_reset$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(16,"\bq/\br = Rotate"):s}:s{$text$ = %s(11,"\br = Reset"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(16,"\bg/\bh = Rotate"):s}:s{$text$ = %s(11,"\b8 = Reset"):s}:a}
+:i :s}
+:i $cag_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(10,"\b8 = Quit"):s}:s{$text$ = %s(10,"\bp = Back"):s}:s{$text$ = %s(11,"\bm = Place"):s}:s{$text$ = %s(21,"\bs/\bt = Lower/Raise"):s}:s{$text$ = %s(14,"\bq/\br = Zoom"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(10,"\b8 = Quit"):s}:s{$text$ = %s(10,"\b0 = Back"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+:i :s}
+:i $cag_helper_text_no_back$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(10,"\b8 = Quit"):s}:s{$text$ = %s(11,"\bm = Place"):s}:s{$text$ = %s(21,"\bs/\bt = Lower/Raise"):s}:s{$text$ = %s(14,"\bq/\br = Zoom"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(10,"\b8 = Quit"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(21,"\be/\bf = Raise/Lower"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+:i :s}
+:i $rail_editor_free_roam_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(10,"\b2 = Grab"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_pc$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(10,"\b2 = Grab"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_console$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+:i :s}
+:i $rail_editor_layout_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\b0 = Cancel"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_pc$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\b0 = Cancel"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_console$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+:i :s}
+:i $rail_editor_grab_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(10,"\b0 = Undo"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_pc$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(10,"\m1 = Undo"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(10,"\b1 = Snap"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_2_console$ = :a{:s{$text$ = %s(17,"\bk = Toggle Post"):s}:s{$text$ = %s(17,"\bl = Toggle Grid"):s}:a}
+:i :s}
+:i $park_editor_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(11,"\m0 = Place"):s}:s{$text$ = %s(16,"\b1/\b2 = Rotate"):s}:s{$text$ = %s(21,"\be/\bg = Raise/Lower"):s}:s{$text$ = %s(14,"\bf/\bh = Zoom"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:s{$text$ = %s(16,"\b1/\b2 = Rotate"):s}:s{$text$ = %s(21,"\be/\bf = Lower/Raise"):s}:s{$text$ = %s(14,"\bg/\bh = Zoom"):s}:a}
+:i :s}
+:i $gap_regular_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\m1 = Delete"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $gap_adjust_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(16,"\b1/\b2 = Rotate"):s}:s{$text$ = %s(24,"\be/\bf/\bg/\bh = Adjust"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\b0 = Delete"):s}:s{$text$ = %s(16,"\b1/\b2 = Rotate"):s}:s{$text$ = %s(24,"\be/\bf/\bg/\bh = Adjust"):s}:a}
+:i :s}
+:i $resize_park_helper_text_lr$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\bm = Side"):s}:s{$text$ = %s(12,"\bp = Expand"):s}:s{$text$ = %s(14,"\bo = Contract"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Adjust"):s}:s{$text$ = %s(10,"\m0 = Side"):s}:s{$text$ = %s(12,"\b0 = Expand"):s}:s{$text$ = %s(14,"\b1 = Contract"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:a}
+:i :s}
+:i $resize_park_helper_text_ud$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Adjust"):s}:s{$text$ = %s(10,"\bm = Side"):s}:s{$text$ = %s(12,"\bp = Expand"):s}:s{$text$ = %s(14,"\bo = Contract"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Adjust"):s}:s{$text$ = %s(10,"\m0 = Side"):s}:s{$text$ = %s(12,"\b0 = Expand"):s}:s{$text$ = %s(14,"\b1 = Contract"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:a}
+:i :s}
+:i $generic_dialog_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_dialog_helper_text2$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_dialog_helper_text3$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(10,"\m1 = Back"):s}:s{$text$ = %s(12,"\m0 = Accept"):s}:a}
+:i :s}
+:i $generic_helper_text_toggle$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(23,"\b6/\b5 or \bm = Toggle"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(23,"\b6/\b5 or \m0 = Toggle"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:a}
+:i :s}
+:i $generic_helper_text_view_menu$ = :s{
+	:i $helper_text_elements_PC$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}
+	:i $helper_text_elements_Console$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\m1 = Back"):s}:a}
+:i :s}
+:i $helper_text_skater_select$ = :s{
+	:i $helper_text_elements_PC$ = :a{
+		:i :s{$text$ = %s(17,"\b6/\b5 = Skaters"):s}
+		:i :s{$text$ = %s(15,"\b7/\b4 = Skins"):s}
+		:i :s{$text$ = %s(20,"\bs/\bt = Categories"):s}
+		:i :s{$text$ = %s(16,"\bq/\br = Rotate"):s}
+		:i :a}
+	:i $helper_text_elements_2_pc$ = :a{
+		:i :s{$text$ = %s(12,"\bm = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(17,"\bo = Load Skater"):s}
+		:i :s{$text$ = %s(24,"\bp = Make Custom Skater"):s}
+		:i :a}
+	:i $helper_text_elements_Console$ = :a{
+		:i :s{$text$ = %s(17,"\b6/\b5 = Skaters"):s}
+		:i :s{$text$ = %s(15,"\b7/\b4 = Skins"):s}
+		:i :s{$text$ = %s(20,"\be/\bf = Categories"):s}
+		:i :s{$text$ = %s(16,"\bg/\bh = Rotate"):s}
+		:i :a}
+	:i $helper_text_elements_2_console$ = :a{
+		:i :s{$text$ = %s(12,"\m0 = Select"):s}
+		:i :s{$text$ = %s(10,"\m1 = Back"):s}
+		:i :s{$text$ = %s(17,"\me = Load Skater"):s}
+		:i :s{$text$ = %s(24,"\b0 = Make Custom Skater"):s}
+		:i :a}
+:i :s}
+:i $generic_helper_text_thugpro_levelselect$ = :s{
+	:i $helper_text_elements$ = :a{
+		:i :s{$enabled$ = %i(0,00000000)$text$ = %s(15,"\b6/\b5 = Games"):s}
+		:i :s{$enabled$ = %i(0,00000000)$text$ = %s(22,"\b7/\b4 = Change Level"):s}
+		:i :s{$enabled$ = %i(0,00000000)$text$ = %s(18,"\m0 = Choose Level"):s}
+		:i :s{$enabled$ = %i(0,00000000)$text$ = %s(10,"\b2 = Back"):s}
+		:i :a}
+:i :s}
+:i $save_files_menu_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(12,"\bm = Accept"):s}
+		:i :s{$text$ = %s(12,"\bo = Delete"):s}
+		:i :a}
+	:i $helper_text_elements_Console$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\m1 = Back"):s}
+		:i :s{$text$ = %s(12,"\m0 = Accept"):s}
+		:i :s{$text$ = %s(12,"\me = Delete"):s}
+		:i :a}
+:i :s}
+:i $load_files_menu_helper_text$ = :s{
+	:i $helper_text_elements_PC$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(12,"\bm = Accept"):s}
+		:i :a}
+	:i $helper_text_elements_Console$ = :a{
+		:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\m1 = Back"):s}
+		:i :s{$text$ = %s(12,"\m0 = Accept"):s}
+		:i :a}
+:i :s}
+:i :end

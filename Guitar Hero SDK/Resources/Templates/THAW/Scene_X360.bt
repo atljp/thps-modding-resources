@@ -1,0 +1,77 @@
+//------------------------------------------------
+// THAW X360 scene
+//------------------------------------------------
+
+#include "Sector_X360.bt"
+#include "SectorInfo_X360.bt"
+#include "MeshData_X360.bt"
+
+typedef struct
+{
+    local int scene_start = FTell();
+
+    ushort eight <bgcolor=CL_SINGLEVALUE>;
+    ushort one_sixty <bgcolor=CL_SINGLEVALUE>;
+    uint nulls_a[2] <bgcolor=CL_PADDING, hidden=true>;
+    QBKey BAD_FOOD <bgcolor=CL_CHECKSUM>;
+
+    RelativeOffset off_footer(32) <bgcolor=CL_POINTER>;
+
+    uint zero <bgcolor=CL_PADDING, hidden=true>;
+    int neg <bgcolor=CL_PADDING, hidden=true>;
+
+    RelativeOffset off_meshindices(scene_start) <bgcolor=CL_POINTER>;
+
+    uint mesh_count_a <bgcolor=CL_SINGLEVALUE>;
+    uint nulls_b[2] <bgcolor=CL_PADDING, hidden=true>;
+    uint mesh_count_b <bgcolor=CL_SINGLEVALUE>;
+    uint mesh_count_c <bgcolor=CL_SINGLEVALUE>;
+    uint nulls_c[3] <bgcolor=CL_PADDING, hidden=true>;
+
+    Vec4 bounding_min <bgcolor=CL_PARSED>;
+    Vec4 bounding_max <bgcolor=CL_PARSED>;
+    Vec4 bounding_sphere <bgcolor=CL_PARSED>;
+
+    int another_neg <bgcolor=CL_PADDING, hidden=true>;
+
+    uint null_d <bgcolor=CL_PADDING, hidden=true>;
+    uint sector_count <bgcolor=CL_SINGLEVALUE>;
+
+    RelativeOffset off_to_sectors(scene_start) <bgcolor=CL_POINTER>;
+    RelativeOffset off_to_sectors_info(scene_start) <bgcolor=CL_POINTER>;
+
+    int another_neg_b <bgcolor=CL_PADDING, hidden=true>;
+
+    RelativeOffset off_thing_a(scene_start) <bgcolor=CL_POINTER>;
+    RelativeOffset off_to_meshdata(scene_start) <bgcolor=CL_POINTER>;
+
+    uint nulls_e[2] <bgcolor=CL_PADDING, hidden=true>;
+
+    uint odd_val <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset off_ea_padding(scene_start) <bgcolor=CL_POINTER>;
+
+    FSeek(AbsOffset(off_to_sectors));
+    THAW360Sector sector[sector_count];
+
+    FSeek(AbsOffset(off_to_sectors_info));
+    THAW360SectorInfo sector_info[sector_count];
+
+    // Honestly I have no idea what this is
+    FSeek(AbsOffset(off_thing_a));
+    uint unk_things[8] <bgcolor=0x66ffff>;
+
+    FSeek(AbsOffset(off_to_meshdata));
+
+    local int i;
+    for (i=0; i<mesh_count_a; i++)
+        THAW360MeshData mesh_data(scene_start);
+
+    FSeek(AbsOffset(off_ea_padding));
+    QBKey ea_pad[mesh_count_a] <bgcolor=CL_PARSED>;
+
+    FSeek(AbsOffset(off_meshindices));
+    uint mesh_indices[mesh_count_a] <bgcolor=CL_PARSED>;
+
+    QBKey aa_pad[mesh_count_a*2] <bgcolor=CL_PARSED>;
+
+} THAW360Scene;

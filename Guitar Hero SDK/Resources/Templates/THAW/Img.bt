@@ -1,0 +1,141 @@
+//------------------------------------------------
+// THAW .img.wpc file
+//------------------------------------------------
+
+#ifndef NO_STANDALONE_IMG
+#include "../Common.bt"
+#endif
+
+LittleEndian();
+
+typedef struct
+{
+    ubyte r <bgcolor=CL_SINGLEVALUE>;
+    ubyte g <bgcolor=CL_SINGLEVALUE>;
+    ubyte b <bgcolor=CL_SINGLEVALUE>;
+    ubyte a <bgcolor=CL_SINGLEVALUE>;
+} PaletteColor <read=Str("%d, %d, %d, %d", r, g, b, a)>;
+
+typedef struct
+{
+    uint imageSize <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte mip_data[imageSize] <bgcolor=CL_PARSED>;
+} THAWImageMipmap;
+
+typedef struct
+{
+    QBKey magic <comment="ABADDOOD", bgcolor=CL_CHECKSUM>;
+    ushort unk_a <bgcolor=CL_SINGLEVALUE>;
+    ushort unk_b <bgcolor=CL_SINGLEVALUE>;
+    QBKey checksum <bgcolor=CL_PARSED>;
+    ushort BaseWidth <bgcolor=CL_SINGLEVALUE>;
+    ushort BaseHeight <bgcolor=CL_SINGLEVALUE>;
+    ushort ActualWidth <bgcolor=CL_SINGLEVALUE>;
+    ushort ActualHeight <bgcolor=CL_SINGLEVALUE>;
+    ubyte Levels <bgcolor=CL_SINGLEVALUE>;
+    ubyte TexelDepth <bgcolor=CL_SINGLEVALUE>;
+    ubyte DXT <bgcolor=CL_SINGLEVALUE>;
+    ubyte BPP <bgcolor=CL_SINGLEVALUE>;
+    
+    if (BPP && DXT == 0)
+    {
+        if (BPP == 32)
+        {
+            uint palette_color_count;
+            PaletteColor colors[palette_color_count];
+        }
+        else
+            Printf("Unknown palette depth: %d\n", PaletteDepth);
+    }
+    
+    if (Levels)
+    {
+        if (DXT)
+            THAWImageMipmap mipmaps[Levels] <optimize=false>;
+        else
+        {
+            // CLUT depth?
+            if (BPP == 32)
+            {
+                uint palette_color_count;
+                PaletteColor colors[palette_color_count];
+            }
+            else if (BPP == 16)
+            {
+                Printf("Unknown logic for BPP 16.\n");            
+            }
+            else
+            {
+                ushort bytesPerLine <bgcolor=CL_SINGLEVALUE>;
+                ushort numLines <bgcolor=CL_SINGLEVALUE>;
+                
+                local uint dataSize = (uint) (bytesPerLine) * (uint) numLines;
+                ubyte data[dataSize] <bgcolor=CL_PARSED>;
+            }
+        }
+    }
+        
+} THAWImg <read=Str("[%s] %dx%d, %d mips", ReadQBKey(checksum), BaseWidth, BaseHeight, Levels)>;
+
+typedef struct
+{
+    QBKey checksum <bgcolor=CL_PARSED>;
+    uint BaseWidth <bgcolor=CL_SINGLEVALUE>;
+    uint BaseHeight <bgcolor=CL_SINGLEVALUE>;
+    uint Levels <bgcolor=CL_SINGLEVALUE>;
+    uint TexelDepth <bgcolor=CL_SINGLEVALUE>;
+    uint PaletteDepth <bgcolor=CL_SINGLEVALUE>;
+    uint DXT <bgcolor=CL_SINGLEVALUE>;
+    uint PaletteSize <bgcolor=CL_SINGLEVALUE>;
+    
+    if (Levels)
+        THAWImageMipmap mipmaps[Levels] <optimize=false>;
+} THUG2Img <read=Str("[%s] %dx%d, %d mips", ReadQBKey(checksum), BaseWidth, BaseHeight, Levels)>;
+
+typedef struct
+{
+    local uint start_offset = FTell();
+    
+    ushort version_maybe <bgcolor=CL_SINGLEVALUE>;
+    ushort unkB <bgcolor=CL_SINGLEVALUE>;
+    QBKey checksum <bgcolor=CL_CHECKSUM>;
+    
+    ushort BaseWidth <bgcolor=CL_SINGLEVALUE, comment="The size of the D3D texture (Will be power of 2)">;
+    ushort BaseHeight <bgcolor=CL_SINGLEVALUE, comment="The size of the D3D texture (Will be power of 2)">;
+    ushort ActualWidth <bgcolor=CL_SINGLEVALUE, comment="The size of the texture itself (may not be power of 2)">;
+    ushort ActualHeight <bgcolor=CL_SINGLEVALUE, comment="The size of the texture itself (may not be power of 2)">;
+    
+    ubyte Levels <bgcolor=CL_SINGLEVALUE, comment="Mipmap count">;
+    ubyte TexelDepth <bgcolor=CL_SINGLEVALUE, comment="Bits Per Pixel">;
+    ubyte UnkDepth <bgcolor=CL_SINGLEVALUE, comment="Palette depth?">;
+    ubyte DXT <bgcolor=CL_SINGLEVALUE, comment="Compression level">;
+    
+    uint null <hidden=true, bgcolor=CL_PADDING>;
+    
+    RelativeOffset pTexture(0) <bgcolor=CL_POINTER, comment="Points to texture data, on XBox this is metadata">;
+    uint padding[2] <bgcolor=CL_PADDING, hidden=true>;
+    RelativeOffset pImageData(0) <bgcolor=CL_SINGLEVALUE>;
+    
+    // ------------------------------------
+    
+    local uint old_off = FTell();
+    FSeek(AbsOffset(pTexture));
+    
+    ushort xboxA <bgcolor=CL_SINGLEVALUE>;
+    ushort xboxB <bgcolor=CL_SINGLEVALUE>;
+    
+    FSeek(old_off);
+} THAWXboxImg <read=Str("[%s] %dx%d, %d mips", ReadQBKey(checksum), BaseWidth, BaseHeight, Levels)>;;
+
+#ifndef NO_STANDALONE_IMG
+LittleEndian();
+local uint test_int = ReadInt();
+
+if (test_int == 0xABADD00D)
+    THAWImg file;
+else if (test_int == 0x00280006)
+    THAWXboxImg file;
+else
+    THUG2Img file;
+#endif

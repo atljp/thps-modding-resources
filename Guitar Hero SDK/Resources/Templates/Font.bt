@@ -1,0 +1,66 @@
+// GHWT Font file
+
+#include "Common.bt"
+#include "sTexture.bt"
+
+typedef struct
+{
+    local ushort highest_glyph = 0;
+    local uint i;
+    local ushort test_glyph;
+
+    for (i=0; i<65565; i++)
+    {
+        test_glyph = ReadUShort();
+        highest_glyph = (test_glyph > highest_glyph) ? test_glyph : highest_glyph;
+        ushort glyph_index <bgcolor=CL_PARSED>;
+    }
+
+    Printf("Highest glyph index: %d\n", highest_glyph);
+    Printf("Should have %d glyphs\n", highest_glyph+1);
+} GHWTGlyphBlock;
+
+typedef struct
+{
+    float x;
+    float y;
+    float x2;
+    float y2;
+    float pixel_width;
+    float pixel_height;
+    float vShift;
+    float hShift;
+    float unk_d;
+} GHWTFontGlyph;
+
+typedef struct
+{
+    uint null <bgcolor=CL_PADDING>;
+    float vShift <bgcolor=CL_SINGLEVALUE>;
+    float hShift <bgcolor=CL_SINGLEVALUE>;
+    float scale <bgcolor=CL_SINGLEVALUE, comment="Does this do anything?">;
+    float height <bgcolor=CL_SINGLEVALUE>;
+    
+    ushort const_a <bgcolor=CL_FLOATS>;
+    ushort const_b <bgcolor=CL_FLOATS>;
+
+    GHWTGlyphBlock glyphblock;
+
+    ubyte padding[6] <hidden=true, bgcolor=CL_PADDING>;
+    ushort always_1 <bgcolor=CL_SINGLEVALUE>;
+    ushort DEAD <hidden=true, bgcolor=CL_IMPORTANT_BG, fgcolor=CL_IMPORTANT_FG>;
+    uint FFpad <hidden=true, bgcolor=CL_PADDING>;
+
+    float space_width <bgcolor=CL_SINGLEVALUE, comment="Width of space glyph">;
+    ubyte big_padding[64] <hidden=true, bgcolor=CL_PADDING>;
+
+    RelativeOffset image_start(0) <bgcolor=CL_POINTER>;
+
+    GHWTFontGlyph glyphs[glyphblock.highest_glyph+1];
+    
+    FSeek(AbsOffset(image_start));
+
+    sTexture font_texture;
+} GHWTFont;
+
+GHWTFont font;

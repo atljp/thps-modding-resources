@@ -1,0 +1,248 @@
+
+:i $NotifiedLastPlacePlayer$ = %i(0,00000000)
+:i $NotifiedSecondToLastPlacePlayer$ = %i(0,00000000)
+:i $goal_elimiskate_genericParams$ = :s{
+	:i $goal_text$ = %s(47,"Avoid elimination by staying out of last place!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $game_continues_after_expiration$
+	:i $init$ = $goal_elimiskate_init$
+	:i $active$ = $goal_elimiskate_active$
+	:i $activate$ = $goal_elimiskate_activate$
+	:i $deactivate$ = $goal_elimiskate_deactivate$
+	:i $expire$ = $goal_elimiskate_expire$
+	:i $goal_description$ = %s(11,"Elimiskate!")
+:i :s}
+:i function $goal_elimiskate_init$
+:i endfunction
+:i function $goal_elimiskate_active$
+	:i $GoalManager_GetTimeLeftInNetGame$
+	:i if $GotParam$$time_left$
+		:i if  (%GLOBAL%$time_left$ < %i(5000,00001388)) 
+			:i if $InLastPlace$
+				:i if NOT $IsTrue$$NotifiedLastPlacePlayer$
+					:i $Change$$NotifiedLastPlacePlayer$ = %i(1,00000001)
+					:i if  (%GLOBAL%$points$ = %i(0,00000000)) 
+						:i $FormatText$$TextName$ = $msg_text$%s(30,"\c2You're tied for last place!")
+					:i else 
+						:i $FormatText$$TextName$ = $msg_text$%s(37,"\c2You're in last place by %s points!")$s$ = %GLOBAL%$points$
+					:i endif
+					:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$msg_time$ = %i(3000,00000bb8)
+				:i endif
+			:i else 
+				:i if $InSecondToLastPlace$
+					:i if NOT $IsTrue$$NotifiedSecondToLastPlacePlayer$
+						:i $Change$$NotifiedSecondToLastPlacePlayer$ = %i(1,00000001)
+						:i $FormatText$$TextName$ = $msg_text$%s(45,"\c2You're only %s points ahead of last place!")$s$ = %GLOBAL%$points$
+						:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$msg_time$ = %i(3000,00000bb8)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i $round$ = %i(0,00000000)
+:i function $goal_elimiskate_activate$
+	:i $RoundIncrement$
+	:i $Toggle_TrackTrickScore$$on$
+	:i $Change$$NotifiedLastPlacePlayer$ = %i(0,00000000)
+	:i $Change$$NotifiedSecondToLastPlacePlayer$ = %i(0,00000000)
+	:i if  ($round$ = %i(0,00000000)) 
+		:i if NOT $IsHost$
+			:i if  ($GetGlobalFlag$$flag$ = $FLAG_TOGGLE_GRAFF_MODE$) 
+				:i $Change$$GraffMode$ = %i(1,00000001)
+				:i $UnSetGlobalFlag$$flag$ = $FLAG_TOGGLE_GRAFF_MODE$
+			:i else 
+				:i $Change$$GraffMode$ = %i(0,00000000)
+			:i endif
+			:i $Change$$round$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $IsTrue$$GraffMode$
+		:i $Toggle_ShouldModulateColor$$on$
+		:i $FormatText$$TextName$ = $msg_text$%s(35,"%aElimiGraff\c0\nAvoid Elimination!")$a$ =  ($gamemode_color$) 
+	:i else 
+		:i $Toggle_ShouldModulateColor$$off$
+		:i $FormatText$$TextName$ = $msg_text$%s(35,"%aElimiSkate\c0\nAvoid Elimination!")$a$ =  ($gamemode_color$) 
+	:i endif
+	:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$$dims$ = %vec2(300.000000,0.000000)
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i if $GameModeEquals$$should_reset_scores$
+		:i if $IsTrue$$GraffMode$
+			:i $skater$ = %i(0,00000000)
+			:i while
+				
+				:i $THUGPRO_ClearGraffiti$$SkaterId$ = %GLOBAL%$skater$
+				:i %GLOBAL%$skater$ =  (%GLOBAL%$skater$ + %i(1,00000001)) 
+			:i loop_to %i(8,00000008)
+		:i endif
+		:i $ResetScore$$reset_all$
+		:i $ResetComboRecords$
+		:i $thugpro_update_tod$
+	:i endif
+:i endfunction
+:i function $goal_elimiskate_deactivate$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = $elimiskate_break_period$
+		:i if NOT $GoalManager_GoalIsActive$$name$ = $elimiskate_interval$
+			:i if $ObjectExists$$id$ = $mp_goal_text$
+				:i $DestroyScreenElement$$id$ = $mp_goal_text$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_elimiskate_expire$
+	:i if $IsTrue$$GraffMode$
+		:i $Toggle_ShouldModulateColor$$off$
+	:i endif
+	:i $Toggle_TrackTrickScore$$off$
+	:i $StartGoal_ElimiSkate_Interval$
+:i endfunction
+:i function $goal_elimiskate_finished$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $Change$$round$ = %i(0,00000000)
+	:i $SpawnScript$$wait_then_create_rankings$
+:i endfunction
+:i function $THUGPRO_EliminatedSkater$
+	:i if $IsTrue$$GraffMode$
+		:i $printf$%s(21,"Calling ClearGraffiti")
+		:i $THUGPRO_ClearGraffiti$$SkaterId$ = %GLOBAL%$objId$
+	:i endif
+:i endfunction
+:i function $AddGoal_Elimiskate$
+	:i $GoalManager_AddGoal$$name$ = $elimiskate$:s{
+		:i $params$ = :s{$goal_elimiskate_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_ElimiSkate$
+	:i $GoalManager_EditGoal$$name$ = $elimiskate$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $elimiskate$
+	:i $GoalManager_SetGoalTimer$$name$ = $elimiskate$
+:i endfunction
+:i $goal_elimiskate_break_period_genericParams$ = :s{
+	:i $goal_text$ = %s(22,"Next round starting...")
+	:i $time$ = %i(4,00000004)
+	:i $net$
+	:i $game_continues_after_expiration$
+	:i $init$ = $goal_elimiskate_break_period_init$
+	:i $activate$ = $goal_elimiskate_break_period_activate$
+	:i $deactivate$ = $goal_elimiskate_break_period_deactivate$
+	:i $expire$ = $goal_elimiskate_break_period_expire$
+	:i $goal_description$ = %s(11,"Elimiskate!")
+:i :s}
+:i function $goal_elimiskate_break_period_init$
+:i endfunction
+:i function $goal_elimiskate_break_period_active$
+:i endfunction
+:i function $goal_elimiskate_break_period_activate$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i if $IsTrue$$GraffMode$
+		:i $Toggle_ShouldModulateColor$$off$
+	:i endif
+	:i $Toggle_TrackTrickScore$$off$
+	:i $create_net_panel_message$$text$ = %s(72,"Getting ready to start next round. Scoring will begin when round starts.")
+:i endfunction
+:i function $goal_elimiskate_break_period_deactivate$
+:i endfunction
+:i function $goal_elimiskate_break_period_expire$
+	:i $StartGoal_ElimiSkate$
+:i endfunction
+:i function $AddGoal_Elimiskate_Break_Period$
+	:i $GoalManager_AddGoal$$name$ = $elimiskate_break_period$:s{
+		:i $params$ = :s{$goal_elimiskate_break_period_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_ElimiSkate_Break_Period$
+	:i $GoalManager_EditGoal$$name$ = $elimiskate_break_period$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $elimiskate_break_period$
+:i endfunction
+:i $goal_elimiskate_interval_genericParams$ = :s{
+	:i $goal_text$ = %s(0,"")
+	:i $time$ = %i(4,00000004)
+	:i $net$
+	:i $init$ = $goal_elimiskate_interval_init$
+	:i $activate$ = $goal_elimiskate_interval_activate$
+	:i $deactivate$ = $goal_elimiskate_interval_deactivate$
+	:i $expire$ = $goal_elimiskate_interval_expire$
+	:i $game_continues_after_expiration$
+	:i $goal_description$ = %s(0,"")
+:i :s}
+:i function $goal_elimiskate_interval_init$
+:i endfunction
+:i function $goal_elimiskate_interval_active$
+:i endfunction
+:i function $goal_elimiskate_interval_activate$
+	:i if $IsTrue$$GraffMode$
+		:i $Toggle_ShouldModulateColor$$off$
+	:i endif
+	:i $Toggle_TrackTrickScore$$off$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $hide$
+		:i :s}
+	:i endif
+	:i $create_net_panel_message$$text$ = %s(75,"Calculating final scores. Points scored in this time period will not count.")
+	:i if $OnServer$
+		:i $SpawnScript$$wait_and_eliminate$
+	:i endif
+	:i if $GameModeEquals$$should_reset_scores$
+		:i $SpawnScript$$wait_and_accumulate$
+	:i endif
+:i endfunction
+:i function $wait_and_eliminate$
+	:i $Wait$%i(2,00000002)$seconds$
+	:i $EliminateLastPlacePlayer$
+:i endfunction
+:i function $wait_and_accumulate$
+	:i $AccumulateScores$
+:i endfunction
+:i function $goal_elimiskate_interval_deactivate$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_elimiskate_interval_expire$
+	:i if $OnlyOnePlayerLeft$
+		:i $goal_elimiskate_finished$
+	:i else 
+		:i $StartGoal_ElimiSkate_Break_Period$
+	:i endif
+:i endfunction
+:i function $AddGoal_Elimiskate_Interval$
+	:i $GoalManager_AddGoal$$name$ = $elimiskate_interval$:s{
+		:i $params$ = :s{$goal_elimiskate_interval_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_ElimiSkate_Interval$
+	:i $GoalManager_ActivateGoal$$name$ = $elimiskate_interval$
+:i endfunction
+:i function $CheckForElimiskateGameOver$
+	:i if $OnlyOnePlayerLeft$
+		:i $GoalManager_DeactivateGoal$$name$ = $elimiskate$
+		:i $GoalManager_DeactivateGoal$$name$ = $elimiskate_break_period$
+		:i $GoalManager_DeactivateGoal$$name$ = $elimiskate_interval$
+		:i $goal_elimiskate_finished$
+	:i endif
+:i endfunction
+:i :end

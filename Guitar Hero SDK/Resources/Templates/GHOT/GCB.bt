@@ -1,0 +1,46 @@
+// Core GCB file
+// This is the container for the entire file
+
+#include "../Common.bt"
+
+struct GCBObject;
+struct GCBBlock;
+
+#include "GCBObject.bt"
+#include "GCBBlock.bt"
+
+LittleEndian();
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_MAGIC>;
+    RelativeOffset pointer_matrix(0) <bgcolor=CL_POINTER, comment="Pointer to matrix">;
+    RelativeOffset pointer_object_block(0) <bgcolor=CL_POINTER, comment="Pointer to main object block">;
+    RelativeOffset pointer_unk_a(0) <bgcolor=CL_POINTER, comment="Pointer to ???">;
+    RelativeOffset pointer_bone_block(0) <bgcolor=CL_POINTER, comment="Pointer to post-block (bones?)">;
+    RelativeOffset pointer_unk_b(0) <bgcolor=CL_POINTER, comment="Pointer to ???">;
+    RelativeOffset pointer_unk_c(0) <bgcolor=CL_POINTER, comment="Pointer to ???">;
+
+    if (pointer_matrix.offset > 0)
+    {
+        FSeek(AbsOffset(pointer_matrix));
+        GCBObject scene_matrix;
+    }
+
+    if (pointer_object_block.offset > 0)
+    {
+        FSeek(AbsOffset(pointer_object_block));
+        GCBBlock object_block;
+    }
+
+    if (pointer_bone_block.offset > 0)
+    {
+        FSeek(AbsOffset(pointer_bone_block));
+        GCBBlock post_block;
+    }
+} GCB;
+
+GCB gcb;
+
+if (!FEof())
+    Printf("WARNING: End of file not reached.");

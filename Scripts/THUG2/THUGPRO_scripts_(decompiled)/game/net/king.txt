@@ -1,0 +1,145 @@
+
+:i $goal_king_genericParams$ = :s{
+	:i $goal_text$ = %s(47,"Capture the crown and keep it away from others!")
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $score$ = %i(10000,00002710)
+	:i $net$
+	:i $init$ = $goal_king_init$
+	:i $activate$ = $goal_king_activate$
+	:i $deactivate$ = $goal_king_deactivate$
+	:i $active$ = $goal_king_active$
+	:i $goal_description$ = %s(17,"King of the Hill!")
+:i :s}
+:i function $goal_king_init$
+:i endfunction
+:i function $goal_king_activate$
+	:i if $InSplitScreenGame$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i endif
+	:i if $InNetGame$
+		:i $get_game_time_string$$score$ = %GLOBAL%$score$
+		:i $FormatText$$TextName$ = $msg_text$%s(54,"%aKing of the Hill\n\c0Hold the crown for \n%s to win.")$a$ =  ($gamemode_color$) $s$ = %GLOBAL%$time_string$
+		:i $create_panel_block$$id$ = $mp_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i $SpawnCrown$
+	:i $show_crown_arrow$$player_1$$player_2$$force_show$
+	:i $ResetScore$
+:i endfunction
+:i function $goal_king_active$
+	:i if $AnySkaterTotalScoreAtLeast$%GLOBAL%$score$
+		:i if $OnServer$
+			:i if $CalculateFinalScores$
+				:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+				:i $goal_king_finished$
+			:i endif
+		:i else 
+			:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+			:i $goal_king_finished$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_king_finished$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $hide_crown_arrow$$player_1$$player_2$
+	:i $printf$%s(20,"goal_king_deactivate")
+	:i if $OnServer$
+		:i if $InInternetMode$
+			:i $ReportStats$$final$
+		:i endif
+	:i endif
+	:i $create_rankings$$score_title_text$ = %s(4,"TIME")
+:i endfunction
+:i function $goal_king_deactivate$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $hide_crown_arrow$$player_1$$player_2$
+:i endfunction
+:i function $king_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $AddGoal_King$
+	:i $GoalManager_AddGoal$$name$ = $king$:s{
+		:i $params$ = :s{$goal_king_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $show_crown_arrow$
+	:i if NOT $GotParam$$force_show$
+		:i if NOT $GoalManager_GoalIsActive$$name$ = $king$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i if $GotParam$$player_1$
+					:i if NOT $ObjectExists$$id$ = $crown_arrow$
+						:i $Create3dArrowPointer$$id$ = $crown_arrow$$name$ = $crown_object$$pos$ = %vec2(395.000000,50.000000)$scale$ = %f(0.020000)$model$ = %s(9,"HUD_Arrow")
+					:i endif
+				:i endif
+				:i if $GotParam$$player_2$
+					:i if NOT $ObjectExists$$id$ = $crown_arrow_2$
+						:i $Create3dArrowPointer$$id$ = $crown_arrow_2$$name$ = $crown_object$$pos$ = %vec2(395.000000,50.000000)$scale$ = %f(0.020000)$active_viewport$ = %i(1,00000001)$model$ = %s(9,"HUD_Arrow")
+					:i endif
+				:i endif
+				:i endcase
+			case $split_horizontal$
+				:i if $GotParam$$player_1$
+					:i if NOT $ObjectExists$$id$ = $crown_arrow$
+						:i $Create3dArrowPointer$$id$ = $crown_arrow$$name$ = $crown_object$$pos$ = %vec2(320.000000,140.000000)$scale$ = %f(0.020000)$model$ = %s(9,"HUD_Arrow")
+					:i endif
+				:i endif
+				:i if $GotParam$$player_2$
+					:i if NOT $ObjectExists$$id$ = $crown_arrow_2$
+						:i $Create3dArrowPointer$$id$ = $crown_arrow_2$$name$ = $crown_object$$pos$ = %vec2(320.000000,140.000000)$scale$ = %f(0.020000)$active_viewport$ = %i(1,00000001)$model$ = %s(9,"HUD_Arrow")
+					:i endif
+				:i endif
+				:i end_switch
+		
+	:i else 
+		:i if $GotParam$$player_1$
+			:i if NOT $ObjectExists$$id$ = $crown_arrow$
+				:i $Create3dArrowPointer$$id$ = $crown_arrow$$name$ = $crown_object$$model$ = %s(9,"HUD_Arrow")
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $hide_crown_arrow$
+	:i if $GotParam$$player_1$
+		:i if $ObjectExists$$id$ = $crown_arrow$
+			:i $DestroyScreenElement$$id$ = $crown_arrow$
+		:i endif
+	:i endif
+	:i if $GotParam$$player_2$
+		:i if $ObjectExists$$id$ = $crown_arrow_2$
+			:i $DestroyScreenElement$$id$ = $crown_arrow_2$
+		:i endif
+	:i endif
+:i endfunction
+:i function $StartGoal_King$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $king$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $king$
+:i endfunction
+:i :end

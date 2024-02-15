@@ -1,0 +1,144 @@
+
+:i function $TwoWayLoopCheck$
+	:i if NOT $InAir$
+		:i if $Obj_FlagSet$$FLAG_SKATER_INLOOP$
+			:i $printf$%s(34,"In the loop and so making you land")
+			:i $Obj_ClearFlag$$FLAG_SKATER_INLOOP$
+			:i $SetRollingFriction$$default$
+			:i $LockVelocityDirection$$Off$
+			:i if $DoingTrick$
+				:i $SetSlomo$%i(1,00000001)
+				:i $kill_blur$
+				:i $MakeSkaterGoto$$Facesmash$
+			:i else 
+				:i $SetlandedFromVert$
+				:i $SetSlomo$%i(1,00000001)
+				:i $kill_blur$
+				:i $MakeSkaterGoto$$Land$
+			:i endif
+		:i else 
+			:i $Obj_SetFlag$$FLAG_SKATER_INLOOP$
+			:i $MakeSkaterGoto$$LoopGapStart$
+		:i endif
+	:i endif
+:i endfunction
+:i function $LoopGapStart$
+	:i $OnGroundExceptions$
+	:i $SetException$$Ex$ = $Ollied$$Scr$ = $LoopGapOllie$
+	:i $SetException$$Ex$ = $Landed$$Scr$ = $Land$
+	:i $OnExceptionRun$$LoopGapOut$
+	:i $LockVelocityDirection$$On$
+	:i $SetQueueTricks$$special$ = $SpecialTricks$$AirTricks$
+	:i $SetExtraGrindTricks$$special$ = $SpecialGrindTricks$$GrindTricks$
+	:i $SetManualTricks$$special$ = $SpecialManualTricks$$ManualTricks$
+	:i $PlayAnim$$Anim$ = $AirIdle$$Cycle$$NoRestart$
+	:i while
+		
+		:i $DoNextTrick$
+		:i $Obj_GetSpeed$
+		:i if  (%GLOBAL%$speed$ < %i(25,00000019)) 
+			:i $setstate$$air$
+			:i $LockVelocityDirection$$Off$
+			:i $create_panel_message$$text$ = %s(17,"Going too slow!!!")$pos$ = %vec2(320.000000,200.000000)
+			:i $Obj_ClearFlag$$FLAG_SKATER_INLOOP$
+			:i if NOT $DoingTrick$
+				:i $Goto$$Airborne$
+			:i endif
+		:i endif
+		:i $Wait$%i(1,00000001)
+		$game$$frame$
+	:i loop_to 
+:i endfunction
+:i function $LoopGapOllie$
+	:i $playJumpsound$
+	:i $PlayAnim$$Anim$ = $Ollie$
+	:i $Goto$$LoopGapStart$
+:i endfunction
+:i function $LoopGapOut$
+	:i $LockVelocityDirection$$Off$
+:i endfunction
+:i function $Loop$$Name$ = %sc(12,"Loop Balance")$Score$ = %i(5000,00001388)$InitAnim$ = $CrouchIdle$$FromAirAnim$ = $ManualFromAir$$BalanceAnim$ = $CrouchIdle$$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualBail$
+	:i $ClearExceptions$
+	:i if $InAir$
+		:i $Goto$$LoopOllie$
+	:i endif
+	:i $Obj_SetFlag$$FLAG_SKATER_INLOOP$
+	:i $OnExceptionRun$$LoopException$
+	:i $SetException$$Ex$ = $Ollied$$Scr$ = $LoopOllie$
+	:i $ClearLipCombos$
+	:i $SetException$$Ex$ = $GroundGone$$Scr$ = $LoopOllie$
+	:i $SetException$$Ex$ = $MadeOtherSkaterBail$$Scr$ = $MadeOtherSkaterBail_Called$
+	:i $SetException$$Ex$ = $OffMeterTop$$Scr$ = $NoseManualBail$
+	:i $SetException$$Ex$ = $OffMeterBottom$$Scr$ = $ManualBail$
+	:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$
+	:i $SetException$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun$
+	:i $SetException$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun$
+	:i $SetQueueTricks$$NoTricks$
+	:i $SetManualTricks$$NoTricks$
+	:i $StartBalanceTrick$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(25,00000019)
+	:i $SetRollingFriction$%i(2,00000002)
+	:i $PlayAnim$$Anim$ = $CrouchBumpUp_Crappy$
+	:i $SetTrickName$%GLOBAL%$Name$
+	:i $SetTrickScore$%i(5000,00001388)
+	:i $Display$$Blockspin$
+	:i while
+		
+		:i $Obj_GetSpeed$
+		:i if  (%GLOBAL%$speed$ < %i(20,00000014)) 
+			:i $Obj_ClearFlag$$FLAG_SKATER_INLOOP$
+			:i if $InSplitScreenGame$
+			:i else 
+				:i $create_panel_message$$text$ = %s(16,"Not Enough Speed")$id$ = $perfect$$rgba$ = :a{%i(200,000000c8)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}%vec2(320.000000,150.000000)$style$ = $sloppy_style$
+			:i endif
+			:i $Goto$$LoopOllie$
+		:i endif
+		:i $WaitOneGameFrame$
+	:i loop_to 
+:i endfunction
+:i function $LoopException$
+	:i $Obj_ClearFlag$$FLAG_SKATER_INLOOP$
+:i endfunction
+:i function $LoopOllie$
+	:i $StopBalanceTrick$
+	:i $Obj_ClearFlag$$FLAG_SKATER_INLOOP$
+	:i $SetTags$$LoopBailTriggerd$ = %i(1,00000001)
+	:i $SetTags$$NoLoopLandBail$ = %i(0,00000000)
+	:i if $AbsolutePitchGreaterThan$%i(80,00000050)
+		:i $Move$$y$ = %i(13,0000000d)
+		:i $SetSpeed$%i(0,00000000)
+	:i endif
+	:i if $AbsolutePitchGreaterThan$%i(40,00000028)
+		:i $SetSpeed$%i(1,00000001)
+	:i endif
+	:i if $Walking$
+		:i $Goto$$WalkBailState$
+	:i else 
+		:i $Goto$$NoseManualBailSlow$
+	:i endif
+:i endfunction
+:i function $LoopLand$
+	:i $GetSingleTag$$LoopBailTriggerd$
+	:i $GetSingleTag$$NoLoopLandBail$
+	:i if $Obj_FlagSet$$FLAG_SKATER_INLOOP$
+		:i $StopBalanceTrick$
+		:i if $InSplitScreenGame$
+		:i else 
+			:i $GetNumberOfTrickOccurrences$$TrickText$ = %sc(12,"Loop Balance")
+			:i if  (%GLOBAL%$number_of_occurrences$ > %i(1,00000001)) 
+				:i $FormatText$$TextName$ = $loop_count_string$%s(17,"Loop Combo x %a !")$a$ = %GLOBAL%$number_of_occurrences$
+				:i $create_panel_message$$text$ = %GLOBAL%$loop_count_string$$id$ = $perfect$$rgba$ = :a{%i(50,00000032)%i(120,00000078)%i(200,000000c8)%i(128,00000080):a}$pos$ = %vec2(110.000000,340.000000)$style$ = $perfect_style$
+			:i endif
+		:i endif
+		:i $SetlandedFromVert$
+		:i $Goto$$Land$$Params$ = :s{$RevertTime$ = %i(30,0000001e):s}
+	:i else 
+		:i if $GotParam$$NoLoopLandBail$
+			:i if  (%GLOBAL%$NoLoopLandBail$ = %i(1,00000001)) 
+				:i $Goto$$OnGroundAI$
+			:i endif
+		:i endif
+		:i $Obj_SpawnScript$$LoopOllie$
+	:i endif
+:i endfunction
+:i :end

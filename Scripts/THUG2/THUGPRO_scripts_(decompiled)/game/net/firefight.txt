@@ -1,0 +1,230 @@
+
+:i $firefight_projectile_type$ = $fireball$
+:i function $firefight_set_projectile_type$
+	:i if $GotParam$$value$
+		:i $Change$$firefight_projectile_type$ = %GLOBAL%$value$
+	:i endif
+:i endfunction
+:i $goal_firefight_genericParams$ = :s{
+	:i $goal_text$ = %s(37,"You must eliminate all other players!")
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $net$
+	:i $init$ = $goal_firefight_init$
+	:i $activate$ = $goal_firefight_activate$
+	:i $active$ = $goal_firefight_active$
+	:i $deactivate$ = $goal_firefight_deactivate$
+	:i $expire$ = $goal_firefight_expire$
+	:i $goal_description$ = %s(10,"FireFight!")
+:i :s}
+:i function $goal_firefight_init$
+	:i if $IsHost$
+		:i $Server_RunScript$:s{$_scr$ = $firefight_set_projectile_type$$_params$ = :s{$value$ =  ($firefight_projectile_type$) :s}:s}
+	:i endif
+:i endfunction
+:i function $goal_firefight_activate$
+	:i if $InTeamGame$
+		:i $FormatText$$TextName$ = $msg_text$%s(75,"\c2FireFight! \n\c0The last team standing wins.\n\b1\b7 or \b1\b4\nto shoot")
+	:i else 
+		:i $FormatText$$TextName$ = $msg_text$%s(77,"\c2FireFight! \n\c0The last player standing wins.\n\b1\b7 or \b1\b4\nto shoot")
+	:i endif
+	:i if NOT $IsObserving$
+		:i $skater$.$pickeduppowerup$$fireball$
+		:i $bind_fireball_tricks$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $skater2$.$pickeduppowerup$$fireball$
+		:i $bind_fireball_tricks_player_2$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i endif
+	:i if $InNetGame$
+		:i $create_panel_block$$id$ = $mp_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i $ResetScore$
+:i endfunction
+:i function $goal_firefight_active$
+	:i if $OnlyOneSkaterLeft$
+		:i if $OnServer$
+			:i if $CalculateFinalScores$
+				:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+				:i $goal_firefight_finished$
+			:i endif
+		:i else 
+			:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+			:i $goal_firefight_finished$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_firefight_finished$
+	:i $ClearPowerups$
+	:i if NOT $IsObserving$
+		:i $unbind_fireball_tricks$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $unbind_fireball_tricks_player_2$
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $printf$%s(25,"goal_firefight_deactivate")
+	:i if $OnServer$
+		:i if $InInternetMode$
+			:i $ReportStats$$final$
+		:i endif
+	:i endif
+	:i $create_rankings$$score_title_text$ = %s(6,"HEALTH")
+:i endfunction
+:i function $goal_firefight_deactivate$
+	:i $ClearPowerups$
+	:i if NOT $IsObserving$
+		:i $unbind_fireball_tricks$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $unbind_fireball_tricks_player_2$
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+:i endfunction
+:i function $firefight_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_firefight_expire$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $printf$%s(21,"goal_firefight_expire")
+	:i if $OnServer$
+		:i $SpawnScript$$wait_then_create_rankings$$params$ = :s{$score_title_text$ = %s(6,"Health"):s}
+	:i else 
+		:i $create_rankings$$score_title_text$ = %s(6,"Health")
+	:i endif
+:i endfunction
+:i function $AddGoal_firefight$
+	:i $GoalManager_AddGoal$$name$ = $firefight$:s{
+		:i $params$ = :s{$goal_firefight_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_firefight$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $firefight$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $firefight$
+:i endfunction
+:i function $announce_elimination$
+	:i $printf$%s(26,"announcing elimination!!!!")
+	:i $FormatText$$TextName$ = $msg_text$%s(23,"%s has been eliminated!")$s$ = %GLOBAL%$name$
+	:i $create_net_panel_message$$msg_time$ = %i(2000,000007d0)$text$ = %GLOBAL%$msg_text$
+:i endfunction
+:i function $bind_fireball_tricks$
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareU$
+	:i if $GotParam$$cat_num$
+		:i $skater$.$SetTags$$old_fireballf_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater$.$SetTags$$old_fireballf_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareU$
+		:i $trick$ = $FireballF$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+	:i $RemoveParameter$$cat_num$
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareD$
+	:i if $GotParam$$cat_num$
+		:i $skater$.$SetTags$$old_fireballb_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater$.$SetTags$$old_fireballb_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareD$
+		:i $trick$ = $FireballB$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+:i endfunction
+:i function $bind_fireball_tricks_player_2$
+	:i $SetCurrentSkaterProfile$%i(1,00000001)
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareU$
+	:i if $GotParam$$cat_num$
+		:i $skater2$.$SetTags$$old_fireballf_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater2$.$SetTags$$old_fireballf_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareU$
+		:i $trick$ = $FireballF$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i $RemoveParameter$$cat_num$
+	:i $GoalManager_GetTrickFromKeyCombo$$key_combo$ = $Air_SquareD$
+	:i if $GotParam$$cat_num$
+		:i $skater2$.$SetTags$$old_fireballb_checksum$ = %GLOBAL%$cat_num$
+	:i else 
+		:i $skater2$.$SetTags$$old_fireballb_checksum$ = %GLOBAL%$trick_checksum$
+	:i endif
+	:i $BindTrickToKeyCombo$:s{
+		:i $key_combo$ = $Air_SquareD$
+		:i $trick$ = $FireballB$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+:i endfunction
+:i function $unbind_fireball_tricks$
+	:i $skater$.$GetTags$
+	:i if $GotParam$$old_fireballf_checksum$
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareU$
+			:i $trick$ = %GLOBAL%$old_fireballf_checksum$
+			:i $update_mappings$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+	:i if $GotParam$$old_fireballb_checksum$
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareD$
+			:i $trick$ = %GLOBAL%$old_fireballb_checksum$
+			:i $update_mappings$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+:i endfunction
+:i function $unbind_fireball_tricks_player_2$
+	:i $SetCurrentSkaterProfile$%i(1,00000001)
+	:i $skater2$.$GetTags$
+	:i if $GotParam$$old_fireballf_checksum$
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareU$
+			:i $trick$ = %GLOBAL%$old_fireballf_checksum$
+			:i $update_mappings$ = %i(2,00000002)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i if $GotParam$$old_fireballb_checksum$
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = $Air_SquareD$
+			:i $trick$ = %GLOBAL%$old_fireballb_checksum$
+			:i $update_mappings$ = %i(2,00000002)
+		:i :s}
+	:i endif
+	:i $UpdateTrickMappings$$skater$ = %i(1,00000001)
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+:i endfunction
+:i :end

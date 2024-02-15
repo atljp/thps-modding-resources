@@ -1,0 +1,912 @@
+
+:i function $create_snazzy_dialog_box$:s{$title$ = %s(5,"Title")
+		:i $text$ = %s(12,"Default text")
+		:i $anchor_id$ = $dialog_box_anchor$
+		:i $vmenu_id$ = $dialog_box_vmenu$
+		:i $title_font$ = $newtrickfont$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $line_spacing$ = %f(0.700000)
+		:i $title_scale$ = %f(0.800000)
+		:i $text_scale$ = %i(1,00000001)
+		:i $text_dims$ = %vec2(200.000000,0.000000)
+		:i $pos_tweak$ = %vec2(0.000000,-50.000000)
+		:i $bg_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}
+		:i $bg_scale$ = %i(1,00000001)
+		:i $hmenu_pos$ = %vec2(0.000000,40.000000)
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i if NOT  ($thugpro_observe_hud_visible$) 
+		:i $change$$thugpro_observe_hud_visible$ = %i(0,00000000)
+		:i $thugpro_observe_toggle_hud$
+		:i $change$$thugpro_observe_hud_visible$ = %i(1,00000001)
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i if $StringEquals$$a$ = %GLOBAL%$text$$b$ =  ($net_status_gamespy_no_connect$) 
+			:i if $ObjectExists$$id$ = $ss_vmenu$
+				:i $FireEvent$$type$ = $unfocus$$target$ = $ss_vmenu$
+				:i $DestroyScreenElement$$id$ = $ss_vmenu$
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $ScreenElementExists$$id$ = $cat_menu_anchor$
+			:i $THUGPROResetViewer$
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $observe_input_handler$
+		:i $DestroyScreenElement$$id$ = $observe_input_handler$
+	:i endif
+	:i if NOT $GotParam$$keep_menu$
+		:i $destroy_menu_background_title$
+	:i endif
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$anchor_id$
+		:i $dialog_box_exit$$anchor_id$ = %GLOBAL%$anchor_id$
+	:i endif
+	:i if NOT $InNetGame$
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i $pause_menu_gradient$
+		:i endif
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %GLOBAL%$z_priority$
+		:i $priority$ = %GLOBAL%$priority$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $dialog_box_container$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %GLOBAL%$z_priority$
+		:i $priority$ = %GLOBAL%$priority$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if NOT $GotParam$$bg_anchor_id$
+		:i %GLOBAL%$bg_anchor_id$ = %GLOBAL%$id$
+	:i endif
+	:i if $GotParam$$from_cas$
+		:i $make_cas_bg_elements$$parent$ = %GLOBAL%$bg_anchor_id$
+	:i else 
+	:i endif
+	:i if $GotParam$$forced_pos$
+		:i $pos$ = %GLOBAL%$forced_pos$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = %GLOBAL%$vmenu_id$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if $GotParam$$buttons$
+		:i $GetArraySize$%GLOBAL%$buttons$
+		:i if $GotParam$$pad_back_script$
+			:i if  (%GLOBAL%$array_size$ = %i(1,00000001)) 
+				:i $create_helper_text$:s{$anchor_id$ = %GLOBAL%$helper_text_anchor_id$
+					:i $parent$ = %GLOBAL%$bg_anchor_id$
+					:i $generic_dialog_helper_text3$
+					:i $bg_rgba$ = %GLOBAL%$helper_text_bg_rgba$
+				:i :s}
+			:i else 
+				:i $create_helper_text$:s{$anchor_id$ = %GLOBAL%$helper_text_anchor_id$
+					:i $parent$ = %GLOBAL%$bg_anchor_id$
+					:i $generic_helper_text$
+					:i $bg_rgba$ = %GLOBAL%$helper_text_bg_rgba$
+				:i :s}
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$array_size$ = %i(1,00000001)) 
+				:i $create_helper_text$:s{$anchor_id$ = %GLOBAL%$helper_text_anchor_id$
+					:i $parent$ = %GLOBAL%$bg_anchor_id$
+					:i $generic_dialog_helper_text$
+					:i $bg_rgba$ = %GLOBAL%$helper_text_bg_rgba$
+				:i :s}
+			:i else 
+				:i $create_helper_text$:s{$anchor_id$ = %GLOBAL%$helper_text_anchor_id$
+					:i $parent$ = %GLOBAL%$bg_anchor_id$
+					:i $generic_dialog_helper_text2$
+					:i $bg_rgba$ = %GLOBAL%$helper_text_bg_rgba$
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$vmenu_id$
+		:i $font$ = %GLOBAL%$title_font$
+		:i $text$ = %GLOBAL%$title$
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+		:i $scale$ = %GLOBAL%$title_scale$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$title_id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$title_id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = %GLOBAL%$vmenu_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $just$ = :a{$center$$top$:a}
+		:i $dims$ = %GLOBAL%$text_dims$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$text_scale$
+		:i $line_spacing$ = %GLOBAL%$line_spacing$
+		:i $allow_expansion$
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$text_id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$text_id$
+	:i if $GotParam$$buttons$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$vmenu_id$
+			:i $dims$ =  (%GLOBAL%$text_dims$ + %vec2(50.000000,20.000000)) 
+			:i $not_focusable$
+		:i :s}
+	:i endif
+	:i if $GotParam$$logo$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$vmenu_id$
+			:i $texture$ = %GLOBAL%$logo$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $scale$ = %f(1.000000)
+		:i :s}
+		:i $no_icon$ = $no_icon$
+		:i if  (%GLOBAL%$logo$ = $dnas$) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextBlockElement$
+				:i $parent$ = %GLOBAL%$vmenu_id$
+				:i $text$ = %s(68,"\nDNAS logotype is a trademark of \nSony Computer Entertainment Inc.")
+				:i $font$ = $dialog$
+				:i $dims$ = %vec2(300.000000,100.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+				:i $scale$ = %GLOBAL%$text_scale$
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$pad_back_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$vmenu_id$
+			:i $event_handlers$ = :a{:s{$pad_back$%GLOBAL%$pad_back_script$$params$ = %GLOBAL%$pad_back_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$vmenu_id$$on$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$vmenu_id$$off$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$vmenu_id$
+	:i $section_width$ =  ( (%GLOBAL%$width$ / %f(100.000000))  + %f(0.000000)) 
+	:i if $GotParam$$buttons$
+		:i $ForEachIn$%GLOBAL%$buttons$$do$ = $create_dialog_button$$params$ = :s{$font$ = %GLOBAL%$font$$parent$ = %GLOBAL%$vmenu_id$$z_priority$ =  (%GLOBAL%$z_priority$ + %i(4,00000004)) $width$ = %GLOBAL%$section_width$:s}
+		:i $GetArraySize$%GLOBAL%$buttons$
+		:i if  (%GLOBAL%$array_size$ > %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$vmenu_id$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+					:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+					:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$callbackfix$
+		:i if  (%GLOBAL%$array_size$ > %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$vmenu_id$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$quit_game_dialog_box_exit$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$sub_logo$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$vmenu_id$
+			:i $texture$ = %GLOBAL%$sub_logo$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(88,00000058):a}
+			:i $scale$ = %f(1.200000)
+			:i $not_focusable$
+		:i :s}
+		:i $no_icon$ = $no_icon$
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$vmenu_id$$on$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$vmenu_id$$off$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$vmenu_id$
+	:i $section_width$ =  ( (%GLOBAL%$width$ / %f(100.000000))  + %f(0.000000)) 
+	:i $section_height$ = %i(32,00000020)
+	:i $num_parts$ =  ( ( (%GLOBAL%$height$ * %f(1.000000))  /  (%GLOBAL%$section_height$ * %f(1.000000)) ) %f(-1.000000)) 
+	:i if NOT $GotParam$$forced_pos$
+		:i $centered_pos$ =  (%vec2(320.000000,0.000000) +  (%vec2(0.000000,1.000000) *  (%i(480,000001e0) - %GLOBAL%$height$)  / %i(2,00000002))  + %GLOBAL%$pos_tweak$) 
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$vmenu_id$$pos$ = %GLOBAL%$centered_pos$
+	:i else 
+		:i $centered_pos$ = %GLOBAL%$forced_pos$
+	:i endif
+	:i $theme_dialog_background$:s{$parent$ = $dialog_box_container$
+		:i $width$ = %GLOBAL%$section_width$
+		:i $pos$ =  (%GLOBAL%$centered_pos$ + %vec2(0.000000,-8.000000)) 
+		:i $num_parts$ = %GLOBAL%$num_parts$
+		:i $z_priority$ = %i(10,0000000a)
+		:i $no_icon$ = %GLOBAL%$no_icon$
+		:i $add_loading_anim$ = %GLOBAL%$add_loading_anim$
+	:i :s}
+	:i $kill_start_key_binding$
+	:i if $ObjectExists$$id$ = $no_button$
+		:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$vmenu_id$$data$ = :s{$child_id$ = $no_button$:s}
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$vmenu_id$
+	:i endif
+	:i if $GotParam$$delay_input$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$anchor_id$$dialog_box_delay_input$$params$ = :s{$delay_input_time$ = %GLOBAL%$delay_input_time$:s}
+	:i endif
+	:i if NOT $GotParam$$no_animate$
+		:i if $GotParam$$style$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$anchor_id$%GLOBAL%$style$$params$ =  isNull 
+		:i else 
+			:i if NOT $GotParam$$full_animate$
+				:i $RunScriptOnScreenElement$$id$ = $dialog_box_container$$animate_dialog_box_in$$params$ =  isNull 
+			:i else 
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$anchor_id$$animate_dialog_box_in$$params$ =  isNull 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $special_dialog_style$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$vmenu_id$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$vmenu_id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = $left_star$
+		:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(40.000000,12.000000)) 
+		:i $texture$ = $PA_goals$
+		:i $scale$ = %f(1.800000)
+		:i $rot_angle$ = %i(10,0000000a)
+		:i $rgba$ = :a{%i(123,0000007b)%i(59,0000003b)%i(3,00000003)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = $middle_star$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$ScreenElementPos$ + %vec2(-250.000000,72.000000)) 
+		:i $texture$ = $DE_sponsor$
+		:i $scale$ = %vec2(6.500000,6.500000)
+		:i $rot_angle$ = %i(4294967206,ffffffa6)
+		:i $rgba$ = :a{%i(123,0000007b)%i(59,0000003b)%i(3,00000003)%i(50,00000032):a}
+		:i $z_priority$ = %i(11,0000000b)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = $right_star$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$ScreenElementPos$ + %vec2(-30.000000,12.000000)) 
+		:i $texture$ = $PA_goals$
+		:i $scale$ = %f(1.800000)
+		:i $flip_v$
+		:i $rot_angle$ = %i(4294967286,fffffff6)
+		:i $rgba$ = :a{%i(123,0000007b)%i(59,0000003b)%i(3,00000003)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = $flash3$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$ScreenElementPos$ + %vec2(-275.000000,110.000000)) 
+		:i $texture$ = $bg_gradient_1$
+		:i $scale$ = %vec2(1.880000,44.000000)
+		:i $flip_v$
+		:i $rgba$ = :a{%i(123,0000007b)%i(59,0000003b)%i(3,00000003)%i(88,00000058):a}
+		:i $z_priority$ = %i(11,0000000b)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $dialog_box_container$
+		:i $id$ = $topline$
+		:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$ScreenElementPos$ + %vec2(-275.000000,22.000000)) 
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(60.000000,0.600000)
+		:i $flip_v$
+		:i $rgba$ = :a{%i(123,0000007b)%i(59,0000003b)%i(3,00000003)%i(88,00000058):a}
+		:i $z_priority$ = %i(11,0000000b)
+	:i :s}
+	:i if $GotParam$$use_shrek_logo$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $dialog_box_container$
+			:i $id$ = $shrekie$
+			:i $pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$ScreenElementPos$ + %vec2(-275.000000,230.000000)) 
+			:i $texture$ = $shrek_logo$
+			:i $scale$ = %f(0.900000)
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $z_priority$ = %i(11,0000000b)
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $middle_star$$burst_star$
+	:i $RunScriptOnScreenElement$$id$ = $left_star$$spin_star$$params$ = :s{$dir$ = $cw$:s}
+	:i $RunScriptOnScreenElement$$id$ = $right_star$$spin_star$$params$ = :s{$dir$ = $ccw$:s}
+	:i %GLOBAL%$title_id$.$Obj_SpawnScript$$pulse_dialog_title$$params$ = :s{$id$ = %GLOBAL%$title_id$:s}
+	:i $RunScriptOnScreenElement$$id$ = $dialog_box_container$$animate_special_dialog_box_in$$params$ =  isNull 
+:i endfunction
+:i function $animate_special_dialog_box_in$
+	:i $DoMorph$$pos$ = %vec2(1000.000000,260.000000)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,260.000000)$alpha$ = %i(1,00000001)$time$ = %f(0.300000)$scale$ = %i(1,00000001)
+:i endfunction
+:i function $spin_star$$dir$ = $cw$
+	:i $do_random_effect$
+:i endfunction
+:i function $burst_star$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.400000)$scale$ = %f(5.500000)$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $pulse_dialog_title$
+	:i while
+		
+		:i if $ObjectExists$$id$ = %GLOBAL%$id$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.200000)$scale$ = %vec2(2.200000,2.000000)$rgba$ = :a{%i(120,00000078)%i(28,0000001c)%i(7,00000007)%i(28,0000001c):a}
+			:i $wait$%f(0.200000)$seconds$
+		:i else 
+			:i continue
+			
+		:i endif
+		:i if $ObjectExists$$id$ = %GLOBAL%$id$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.200000)$scale$ = %vec2(1.500000,1.500000)$rgba$ = :a{%i(120,00000078)%i(28,0000001c)%i(7,00000007)%i(128,00000080):a}
+			:i $wait$%f(0.200000)$seconds$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $theme_dialog_background$$parent$ = $current_menu_anchor$$width$ = %i(1,00000001)$pos$ = %vec2(320.000000,120.000000)$num_parts$ = %i(2,00000002)$top_height$ = %i(1,00000001)
+	:i if $ScreenElementExists$$id$ = $dialog_box_bg_vmenu$
+		:i $DestroyScreenElement$$id$ = $dialog_box_bg_vmenu$
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $dialog_box_bg_vmenu$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $padding_scale$ = %i(1,00000001)
+		:i $internal_scale$ = %i(1,00000001)
+		:i $internal_just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $middle_parts$ = %GLOBAL%$num_parts$
+	:i $CasttoInteger$$middle_parts$
+	:i $partial_scale$ =  (%GLOBAL%$num_parts$ - %GLOBAL%$middle_parts$) 
+	:i $printf$%s(18,"partial_scale = %p")$p$ = %GLOBAL%$partial_scale$
+	:i $build_theme_dialog_top$$parent$ = $dialog_box_bg_vmenu$$width$ = %GLOBAL%$width$$dialog_bg_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) $z_priority$ = %GLOBAL%$z_priority$$height$ = %GLOBAL%$top_height$
+	:i if  (%GLOBAL%$middle_parts$ > %i(0,00000000)) 
+		:i while
+			
+			:i $build_theme_dialog_middle$$parent$ = $dialog_box_bg_vmenu$$width$ = %GLOBAL%$width$$dialog_bg_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) $z_priority$ = %GLOBAL%$z_priority$
+		:i loop_to %GLOBAL%$middle_parts$
+	:i endif
+	:i $build_theme_dialog_middle$$parent$ = $dialog_box_bg_vmenu$$width$ = %GLOBAL%$width$$dialog_bg_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) $scale_height$ = %GLOBAL%$partial_scale$$z_priority$ = %GLOBAL%$z_priority$
+	:i $build_theme_dialog_bottom$$parent$ = $dialog_box_bg_vmenu$$width$ = %GLOBAL%$width$$dialog_bg_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) $scale_height$ = %GLOBAL%$partial_scale$$z_priority$ = %GLOBAL%$z_priority$$no_icon$ = %GLOBAL%$no_icon$$add_loading_anim$ = %GLOBAL%$add_loading_anim$
+:i endfunction
+:i function $build_theme_dialog_top$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $dims$ = %vec2(0.000000,32.000000)
+		:i $parent$ = %GLOBAL%$parent$
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_T_M$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %vec2(0.000000,1.000000) * %GLOBAL%$height$) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i %GLOBAL%$top_height$ = %GLOBAL%$height$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i $right_pos$ =  (%vec2(0.500000,0.000000) * %GLOBAL%$width$) 
+	:i $left_pos$ =  (%vec2(-0.500000,0.000000) * %GLOBAL%$width$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_T_L$
+		:i $pos$ = %GLOBAL%$left_pos$
+		:i $just$ = :a{$right$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ =  (%vec2(1.000000,0.000000) + %vec2(0.000000,1.000000) * %GLOBAL%$top_height$) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_T_R$
+		:i $pos$ = %GLOBAL%$right_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ =  (%vec2(1.000000,0.000000) + %vec2(0.000000,1.000000) * %GLOBAL%$top_height$) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+:i endfunction
+:i function $build_theme_dialog_middle$$scale_height$ = %i(1,00000001)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $dims$ = %vec2(0.000000,32.000000)
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_M_M$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$scale_height$ * %vec2(0.000000,1.000000)) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i $right_pos$ =  (%vec2(0.500000,0.000000) * %GLOBAL%$width$) 
+	:i $left_pos$ =  (%vec2(-0.500000,0.000000) * %GLOBAL%$width$) 
+	:i $side_scale$ =  (%vec2(1.000000,0.000000) * %i(1,00000001) + %GLOBAL%$scale_height$ * %vec2(0.000000,1.000000)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_M_L$
+		:i $pos$ = %GLOBAL%$left_pos$
+		:i $just$ = :a{$right$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ = %GLOBAL%$side_scale$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_M_R$
+		:i $pos$ = %GLOBAL%$right_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ = %GLOBAL%$side_scale$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+:i endfunction
+:i function $build_theme_dialog_bottom$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $dims$ = %vec2(0.000000,32.000000)
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $pos$ =  (%vec2(0.000000,-1.000000) *  (%i(32,00000020) -  (%GLOBAL%$scale_height$ * %i(32,00000020)) ) ) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_B_M$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$width$ + %vec2(0.000000,1.000000)) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i $right_pos$ =  (%vec2(0.500000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$pos$) 
+	:i $left_pos$ =  (%vec2(-0.500000,0.000000) * %GLOBAL%$width$ + %GLOBAL%$pos$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_B_L$
+		:i $pos$ = %GLOBAL%$left_pos$
+		:i $just$ = :a{$right$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ = %vec2(1.000000,1.000000)
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_snaz_B_R$
+		:i $pos$ = %GLOBAL%$right_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$dialog_bg_rgba$
+		:i $scale$ = %vec2(1.000000,1.000000)
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if NOT $GotParam$$no_icon$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SNAZ_ICON_TEXTURE$) 
+			:i $pos$ =  (%vec2(0.000000,10.000000) + %GLOBAL%$pos$) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(70,00000046):a}
+			:i $scale$ = %vec2(0.330000,0.330000)
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(1,00000001)) 
+		:i :s}
+		:i if $GotParam$$add_loading_anim$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$spin_dialog_icon$
+		:i endif
+	:i endif
+:i endfunction
+:i function $spin_dialog_icon$
+	:i while
+		
+		:i $DoMorph$$rot_angle$ = %i(360,00000168)$time$ = %f(1.000000)
+		:i $DoMorph$$rot_angle$ = %i(0,00000000)$time$ = %f(1.000000)
+	:i loop_to 
+:i endfunction
+:i function $create_error_box$$delay_input_time$ = %i(1000,000003e8)
+	:i $create_dialog_box$ isNull $error_box$
+:i endfunction
+:i function $create_dialog_box$
+	:i $create_snazzy_dialog_box$ isNull 
+:i endfunction
+:i function $thpg_menu_dialog_focus$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $text$:s}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i if $ObjectExists$$id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+			:i $alpha$ = %f(0.900000)$time$ = %f(0.100000)
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}$do_random_effect_paused$
+	:i endif
+:i endfunction
+:i function $thpg_menu_dialog_unfocus$
+	:i $GetTags$
+	:i if $ObjectExists$$id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+		:i $change$$random_effect_break_loop$ = %i(1,00000001)
+		:i $KillSpawnedScript$$name$ = $do_random_effect_paused$
+		:i $KillSpawnedScript$$name$ = $do_random_effect_paused_2$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $text$:s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i if $ObjectExists$$id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+			:i $alpha$ = %f(0.000000)$time$ = %f(0.000000)
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar_center$:s}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_dialog_button$:s{
+		:i $focus_script$ = $thpg_menu_dialog_focus$
+		:i $unfocus_script$ = $thpg_menu_dialog_unfocus$
+		:i $pad_choose_script$ = $dialog_box_exit$
+		:i $font$ = $small$
+		:i $parent$ = $dialog_box_vmenu$
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i if  (%GLOBAL%$text$ = %s(2,"No")) 
+		:i $id$ = $no_button$
+	:i endif
+	:i if NOT $GotParam$$id$
+		:i $FormatText$$ChecksumName$ = $temp_id$%s(2,"%s")$s$ = %GLOBAL%$text$
+		:i $MangleChecksums$$a$ = %GLOBAL%$pad_choose_script$$b$ = %GLOBAL%$temp_id$
+		:i %GLOBAL%$id$ = %GLOBAL%$mangled_id$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$id$
+		:i $alpha$ = %f(0.700000)
+		:i $scale$ = %f(1.150000)
+		:i $dims$ = %vec2(0.000000,20.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = 
+		:i :a{
+			:i :s{$focus$$thpg_menu_dialog_focus$$params$ = :s{:s}:s}
+			:i :s{$unfocus$$thpg_menu_dialog_unfocus$$params$ = :s{:s}:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :a}
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $local_id$ = $text$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %f(0.600000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $GetTextElementLength$$id$ = :s{%GLOBAL%$anchor_id$$child$ = $text$:s}
+	:i if  (%GLOBAL%$length$ < %i(4,00000004)) 
+		:i $length$ = %i(5,00000005)
+	:i endif
+	:i $_length$ = %GLOBAL%$length$
+	:i $bar_scale$ =  (%vec2(0.026000,0.000000) * %GLOBAL%$_length$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $local_id$ = $menu_bar_center$
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ =  (%vec2(0.000000,0.400000) + %GLOBAL%$bar_scale$) 
+		:i $alpha$ = %f(0.000000)
+		:i $pos$ = %vec2(7.000000,0.000000)
+		:i $texture$ = $tp_menubar_bar$
+	:i :s}
+:i endfunction
+:i function $dialog_box_exit$:s{$anchor_id$ = $dialog_box_anchor$:s}
+	:i if NOT $GotParam$$dont_restore_input$
+		:i $SetButtonEventMappings$$unblock_menu_input$
+	:i endif
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i if $ObjectExists$$id$ = %GLOBAL%$anchor_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$anchor_id$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+	:i else 
+		:i $pause_menu_gradient$$off$
+	:i endif
+	:i if NOT $GotParam$$no_pad_start$
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i $restore_start_key_binding$
+		:i endif
+	:i endif
+:i endfunction
+:i function $dialog_box_delay_input$$delay_input_time$ = %i(2000,000007d0)
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $wait$%GLOBAL%$delay_input_time$
+	:i $SetButtonEventMappings$$unblock_menu_input$
+:i endfunction
+:i function $create_speech_box$:s{$pos$ = %vec2(320.000000,450.000000)
+		:i $text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $anchor_id$ = $speech_box_anchor$
+		:i $scale$ = %i(1,00000001)
+		:i $pad_choose_script$ = $speech_box_exit$
+		:i $pad_choose_params$ = :s{$anchor_id$ = %GLOBAL%$anchor_id$:s}
+		:i $parent$ = $root_window$
+		:i $bg_x_scale$ = %f(1.120000)
+		:i $pause_input_time$ = %i(1000,000003e8)
+	:i :s}
+	:i $font$ = $testtitle$
+	:i if $ObjectExists$$id$ = %GLOBAL%$anchor_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$anchor_id$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $pos$ = %vec2(320.000000,210.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $scale$ = %GLOBAL%$scale$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if NOT $GotParam$$no_pad_choose$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_back_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_back$%GLOBAL%$pad_back_script$$params$ = %GLOBAL%$pad_back_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_circle_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_circle$%GLOBAL%$pad_circle_script$$params$ = %GLOBAL%$pad_circle_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_square_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_square$%GLOBAL%$pad_square_script$$params$ = %GLOBAL%$pad_square_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_option_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_option$%GLOBAL%$pad_option_script$$params$ = %GLOBAL%$pad_option_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_up_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_up$%GLOBAL%$pad_up_script$$params$ = %GLOBAL%$pad_up_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_down_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_down$%GLOBAL%$pad_down_script$$params$ = %GLOBAL%$pad_down_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_left_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_left$%GLOBAL%$pad_left_script$$params$ = %GLOBAL%$pad_left_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$pad_right_script$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_right$%GLOBAL%$pad_right_script$$params$ = %GLOBAL%$pad_right_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if NOT $GotParam$$no_pad_start$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{:s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$bottom$:a}
+		:i $texture$ = $tp_dialog_frame_b$
+		:i $scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$bg_x_scale$ + %vec2(0.000000,1.000000)) 
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPEECH_BOX_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $shadow$
+		:i $font$ = %GLOBAL%$font$
+		:i $dims$ =  (%vec2(260.000000,0.000000)) 
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $text$ = %GLOBAL%$text$
+		:i $internal_scale$ = %f(0.850000)
+		:i $internal_just$ = :a{$center$$bottom$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $scale$ = %i(1,00000001)
+		:i $allow_expansion$
+	:i :s}
+	:i %GLOBAL%$speech_text$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$speech_text$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$speech_text$
+		:i $pos$ =  (%GLOBAL%$pos$ - %vec2(0.000000,16.000000) -  (%vec2(0.000000,1.000000) * %GLOBAL%$height$) ) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $tp_dialog_middle$
+		:i $pos$ =  (%GLOBAL%$pos$ - %vec2(0.000000,16.000000)) 
+		:i $scale$ =  ( (%vec2(1.000000,0.000000) * %GLOBAL%$bg_x_scale$)  + %vec2(0.000000,1.000000) * %GLOBAL%$height$ / %i(16,00000010)) 
+		:i $just$ = :a{$center$$bottom$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPEECH_BOX_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $pos$ =  (%GLOBAL%$pos$ - %vec2(0.000000,16.000000) - %vec2(0.000000,1.000000) * %GLOBAL%$height$) 
+		:i $just$ = :a{$center$$bottom$:a}
+		:i $texture$ = $tp_dialog_frame$
+		:i $scale$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$bg_x_scale$ + %vec2(0.000000,1.000000)) 
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPEECH_BOX_COLOR$) 
+	:i :s}
+	:i if $GotParam$$style$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$anchor_id$%GLOBAL%$style$$params$ =  isNull 
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$anchor_id$
+	:i if $GotParam$$pause_input$
+		:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %GLOBAL%$pause_input_time$:s}
+	:i endif
+:i endfunction
+:i function $speech_box_exit$$anchor_id$ = $speech_box_anchor$
+	:i if $ObjectExists$$id$ = %GLOBAL%$anchor_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$anchor_id$
+	:i endif
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i if NOT $GotParam$$no_pad_start$
+		:i $restore_start_key_binding$
+	:i endif
+	:i $FireEvent$$type$ = $speech_box_destroyed$
+:i endfunction
+:i function $speech_box_style$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$speech_text$$hide_speech_text$$params$ =  isNull 
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(1.000000,1.000000)$alpha$ = %i(1,00000001)
+	:i $wait$%i(4,00000004)$frame$
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %vec2(1.000000,1.000000)$alpha$ = %i(1,00000001)
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$speech_text$$speech_box_style_scale_text$$params$ =  isNull 
+:i endfunction
+:i function $hide_speech_text$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+:i endfunction
+:i function $speech_box_style_scale_text$$anchor_id$ = %GLOBAL%$anchor_id$
+	:i $wait$%f(0.050000)$second$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(1.000000,1.000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.500000)$scale$ = %vec2(1.000000,1.000000)$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$anchor_id$
+:i endfunction
+:i function $animate_dialog_box_in$
+	:i if $GotParam$$full_animate$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$bg_anchor_id$
+			:i $hide$
+		:i :s}
+	:i endif
+	:i if NOT $GotParam$$delay_input$
+		:i $SpawnScript$$dialog_box_delay_input$$params$ = :s{$delay_input_time$ = %i(150,00000096):s}
+	:i endif
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(0.000000,0.000000)$alpha$ = %f(0.100000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %vec2(1.000000,0.000000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %vec2(1.000000,1.000000)$alpha$ = %f(1.000000)
+	:i if $GotParam$$full_animate$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$bg_anchor_id$
+			:i $unhide$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_test_dialog$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_dialog_box$:s{$pad_back_script$ = $create_test_menu$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $create_test_menu$:s}
+			:i :s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $null_script$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $dialog_box_accept$
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $message_accept$
+:i endfunction
+:i :end

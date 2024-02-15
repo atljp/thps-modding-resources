@@ -1,0 +1,133 @@
+//------------------------------------------------
+// THAW Sector info
+//------------------------------------------------
+
+#define CL_SI_SIZE              0xffccff
+#define CL_SI_PADDING           0xbb55bb
+#define CL_SI_VECTOR            0xee99ee
+#define CL_SI_VALUE             0xdd66dd
+
+#define CL_SI_VERTCOUNT         0xffff66
+#define CL_SI_VERTPOS           0xdddd44
+#define CL_SI_VERTVALUE         0xbbbb22
+
+#define SIZEOF_CGEOM            104
+
+local uint CurrentVerticesOffset = 0;
+
+typedef struct
+{
+    ubyte b <bgcolor=CL_SI_VERTVALUE>;
+    ubyte g <bgcolor=CL_SI_VERTVALUE>;
+    ubyte r <bgcolor=CL_SI_VERTVALUE>;
+    ubyte a <bgcolor=CL_SI_VERTVALUE>;
+} THUGVertexColor <read=Str("[%d, %d, %d, %d]", r, g, b, a)>;
+
+typedef struct
+{
+    float x <bgcolor=CL_SI_VERTPOS>;
+    float y <bgcolor=CL_SI_VERTPOS>;
+    float z <bgcolor=CL_SI_VERTPOS>;
+} THUGVertex <read=Str("(%f, %f, %f)", x, y, z)>;
+
+typedef struct
+{
+    ushort indices[4] <bgcolor=CL_SI_VERTVALUE>;
+} THUGWeightIndices <read=Str("%d, %d, %d, %d", indices[0], indices[1], indices[2], indices[3])>;
+
+typedef struct (uint coords_to_read)
+{
+    typedef struct
+    {
+        float x <bgcolor=CL_SI_VERTVALUE>;
+        float y <bgcolor=CL_SI_VERTVALUE>;
+    } V2;
+    
+    local uint i;
+    
+    V2 uv[coords_to_read];
+} THUGTexCoords <read=Str("(%f, %f)", uv[0].x, uv[0].y)>;
+
+typedef struct
+{
+    local uint i;
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        uint sector_block_size <bgcolor=CL_SI_SIZE, comment="Total size of sector section">;
+        ubyte skip_me[20] <hidden=true, bgcolor=CL_SI_PADDING>;
+        CBBox bounding_box <bgcolor=CL_SI_VECTOR, comment="Bounding box">;
+        uint pt_scene <bgcolor=CL_SI_PADDING, hidden=true, comment="Internal, points to scene">;
+        ubyte skip_me_b[8] <hidden=true, bgcolor=CL_SI_PADDING>;
+        uint mesh_count <bgcolor=CL_SI_VALUE>;
+        ubyte skip_me_c[32] <hidden=true, bgcolor=CL_SI_PADDING>;
+        
+        // Read our meshes.
+        if (mesh_count)
+        {
+            local uint old_off = FTell();
+            
+            for (i=0; i<mesh_count; i++)
+            {
+                FSeek(Off_sMeshes + ((IsXboxFile ? SIZEOF_SMESH_XBOX : SIZEOF_SMESH) * RunningSMeshIndex));
+                MeshData sMesh <optimize=false>;
+                RunningSMeshIndex ++;
+            }
+            
+            FSeek(old_off);
+        }
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG1 || SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        uint mesh_count <bgcolor=CL_SI_VALUE>;
+        CBBox_Small bounding_box <bgcolor=CL_SI_VECTOR, comment="Bounding box">;
+        Sphere bounding_sphere <bgcolor=CL_SI_VECTOR, comment="Bounding sphere">;
+        
+        if (CurrentSectorFlags & SECFLAGS_BILLBOARD_PRESENT)
+        {
+            uint billboard_type <bgcolor=CL_SI_VALUE>;
+            Vec3 billboard_pivot_origin <bgcolor=CL_SI_VECTOR>;
+            Vec3 billboard_pivot_pos <bgcolor=CL_SI_VECTOR>;
+            Vec3 billboard_pivot_axis <bgcolor=CL_SI_VECTOR>;
+        }
+        
+        if (SkinFileVersion == SKIN_VERSION_THUG1)
+        {
+            uint vertex_count <bgcolor=CL_SI_VALUE>;
+            uint vertex_stride <bgcolor=CL_SI_VALUE>;
+            
+            THUGVertex vertices[vertex_count] <optimize=false>;
+            
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_NORMALS)
+                THUGVertex normals[vertex_count] <optimize=false>;
+                
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_WEIGHTS)
+            {
+                uint PackedWeights[vertex_count] <bgcolor=CL_SI_VERTVALUE>;
+                THUGWeightIndices indices[vertex_count];
+            }
+            
+            if (CurrentSectorFlags & SECFLAGS_HAS_TEXCOORDS)
+            {
+                uint texcoords_to_read <bgcolor=CL_SI_VALUE>;
+                
+                local uint m;
+                
+                for (i=0; i<vertex_count; i++)
+                    THUGTexCoords coords(texcoords_to_read) <optimize=true>;
+            }
+            
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_COLORS)
+                THUGVertexColor colors[vertex_count];
+                
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_COLOR_WIBBLES)
+                ubyte skip[vertex_count] <bgcolor=CL_PARSED, hidden=true>;
+        }
+        
+        for (i=0; i<mesh_count; i++)
+        {
+            MeshData sMesh <optimize=false>;
+            RunningSMeshIndex ++;
+        }
+    }
+} SectorInfo;

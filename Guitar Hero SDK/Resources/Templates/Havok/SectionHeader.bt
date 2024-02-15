@@ -1,0 +1,48 @@
+//------------------------------------------------
+// Section header
+// Can be classnames, types, or data
+//------------------------------------------------
+
+/// Packfiles are composed of several sections.
+/// A section contains several areas
+/// | data | local | global | finish | exports | imports |
+/// data: the user usable data.
+/// local: pointer patches within this section (src,dst).
+/// global: pointer patches to locations within this packfile (src,(section,dst)).
+/// finish: offset and typename of all objects for finish functions (src, typename).
+/// exports: named objects (src,name).
+/// imports: named pointer patches outside this packfile (src,name).
+
+typedef struct
+{
+    char m_sectionTag[19] <bgcolor=CL_NAME>;
+    char m_nullByte <bgcolor=CL_PADDING>;
+
+    // RelativeOffset pt_DataBegin(0) <bgcolor=CL_POINTER>;
+    hkInt32 m_absoluteDataStart <bgcolor=CL_POINTER>;
+    
+    // Offset of local fixups from absoluteDataStart.
+    // RelativeOffset pt_DataPointer(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+    RelativeOffset m_localFixupsOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+    // Offset of global fixups from absoluteDataStart.
+    // RelativeOffset pt_LinkedEntries(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+    RelativeOffset m_globalFixupsOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+    // Offset of virtual fixups from absoluteDataStart.
+    // RelativeOffset pt_ClassMapping(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+    RelativeOffset m_virtualFixupsOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+    // Offset of exports from absoluteDataStart.
+    // RelativeOffset pt_EOFA(m_absoluteDataStart.value) <bgcolor=CL_POINTER, comment="EOF for Data">;
+    RelativeOffset m_exportsOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+    // Offset of imports from absoluteDataStart.
+    // RelativeOffset pt_EOFB(m_absoluteDataStart.value) <bgcolor=CL_POINTER, comment="EOF for Data">;
+    RelativeOffset m_importsOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+    // Offset of the end of section. Also the section size.
+    // RelativeOffset pt_EOFC(m_absoluteDataStart.value) <bgcolor=CL_POINTER, comment="EOF for Data">;
+    RelativeOffset m_endOffset(m_absoluteDataStart.value) <bgcolor=CL_POINTER>;
+
+} hkPackfileSectionHeader <read=Str("%s", m_sectionTag)>;

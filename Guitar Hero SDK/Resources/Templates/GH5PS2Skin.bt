@@ -1,0 +1,29 @@
+//------------------------------------------------
+// GH5 PS2 .skin
+//------------------------------------------------
+
+#include "Common.bt"
+#include "GH5PS2Material.bt"
+#include "GH5PS2MeshThing.bt"
+
+LittleEndian();
+
+typedef struct
+{
+    uint version <bgcolor=CL_PADDING>;
+    uint matCount <bgcolor=CL_SINGLEVALUE>;
+    uint meshCount <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset footer_offset(0) <bgcolor=CL_POINTER, comment="Disqualifiers">;
+    uint unk <bgcolor=CL_SINGLEVALUE>;
+    Vec3 vec <bgcolor=CL_FLOATS>;
+    QBKey unk_key <bgcolor=CL_CHECKSUM>;
+    uint matcount_c <bgcolor=CL_SINGLEVALUE>;
+
+    GH5PS2Material material[matCount];
+
+    SkipTo(16);
+
+    GH5PS2MeshThing mesh_thing[meshCount] <optimize=false>;
+} GH5PS2Skin;
+
+GH5PS2Skin skin;

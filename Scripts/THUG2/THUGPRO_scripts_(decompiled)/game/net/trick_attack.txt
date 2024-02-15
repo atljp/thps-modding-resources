@@ -1,0 +1,137 @@
+
+:i $goal_trickattack_genericParams$ = :s{
+	:i $goal_text$ = %s(38,"You must score the most points to win!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $init$ = $goal_trickattack_init$
+	:i $activate$ = $goal_trickattack_activate$
+	:i $deactivate$ = $goal_trickattack_deactivate$
+	:i $expire$ = $goal_trickattack_expire$
+	:i $goal_description$ = %s(12,"TrickAttack!")
+	:i $restart_node$ = $TRG_G_TrickAttack_RestartNode$
+:i :s}
+:i function $goal_trickattack_init$
+:i endfunction
+:i function $goal_trickattack_activate$
+	:i $ResetComboRecords$
+	:i if $InTeamGame$
+		:i $FormatText$$TextName$ = $msg_text$%s(35,"%aTrick Attack\n\c0Most points wins")$a$ =  ($gamemode_color$) 
+	:i else 
+		:i $FormatText$$TextName$ = $msg_text$%s(35,"%aTrick Attack\n\c0Most points wins")$a$ =  ($gamemode_color$) 
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i endif
+	:i if $InNetGame$
+		:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$dims$ = %vec2(300.000000,0.000000)$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i if  ( ($GameModeEquals$$is_singlesession$)  OR  ($GameModeEquals$$is_classic$) ) 
+		:i $skater$.$RunStarted$
+		:i $SetScoreAccumulation$%i(1,00000001)
+		:i $SetScoreDegradation$%i(1,00000001)
+	:i endif
+	:i $ResetScore$
+:i endfunction
+:i function $goal_trickattack_deactivate$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i if  ( ($GameModeEquals$$is_singlesession$)  OR  ($GameModeEquals$$is_classic$) ) 
+		:i $GoalManager_SetGoalTimer$$name$ = %GLOBAL%$goal_id$
+		:i $SetScoreAccumulation$%i(0,00000000)
+		:i $SetScoreDegradation$%i(0,00000000)
+		:i if NOT $ObjectExists$$id$ = $dialog_bg_anchor$
+			:i if NOT $GotParam$$quick_start$
+				:i $PauseGame$
+				:i $root_window$.$SetTags$$menu_state$ = $on$
+				:i $SpawnScript$$goal_trick_attack_high_score_menu$$params$ = :s{$restart_node$ = %GLOBAL%$restart_node$:s}
+			:i else 
+				:i $ResetSkaters$$node$ = %GLOBAL%$restart_node$
+			:i endif
+		:i else 
+			:i $ResetSkaters$$node$ = %GLOBAL%$restart_node$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_trick_attack_high_score_menu$
+	:i $kill_start_key_binding$
+	:i $PauseGame$
+	:i $pause_trick_text$
+	:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+		:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+	:i endif
+	:i $TantrumMessageKill$
+	:i $kill_speech_boxes$
+	:i $UpdateRecords$
+	:i if $NewRecord$
+		:i $high_scores_menu_enter_initials$$restart_node$ = %GLOBAL%$restart_node$
+		:i $FireEvent$$type$ = $focus$$target$ = $keyboard_vmenu$
+	:i else 
+		:i $high_scores_menu_create$$restart_node$ = %GLOBAL%$restart_node$
+	:i endif
+	:i $ResetComboRecords$
+:i endfunction
+:i function $goal_trickattack_expire$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i if NOT $GameModeEquals$$is_singlesession$
+		:i if NOT $GameModeEquals$$is_classic$
+			:i if $InSplitScreenGame$
+				:i $create_rankings$
+			:i else 
+				:i if $OnServer$
+					:i $SpawnScript$$wait_then_create_rankings$
+				:i else 
+					:i $create_rankings$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $AddGoal_TrickAttack$
+	:i $GoalManager_AddGoal$$name$ = $trickattack$:s{
+		:i $params$ = :s{$goal_trickattack_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_TrickAttack$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $trickattack$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $trickattack$
+:i endfunction
+:i function $TrickAttack_MenuStartRun$
+	:i $HighScore_StartTrickAttack$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $HighScore_StartTrickAttack$
+	:i $GoalManager_EditGoal$$name$ = $trickattack$$params$ = :s{$can_retry_goal$:s}
+	:i $GoalManager_ActivateGoal$$name$ = $trickattack$
+:i endfunction
+:i function $HighScore_StartGraffiti$
+	:i $GoalManager_EditGoal$$name$ = $graffiti$$params$ = :s{$can_retry_goal$:s}
+	:i $GoalManager_ActivateGoal$$name$ = $graffiti$
+	:i $dialog_box_exit$
+	:i $ResetSkaters$
+:i endfunction
+:i function $end_high_score_run$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $exit_pause_menu$
+	:i $GoalManager_DeactivateGoal$$name$ = $trickattack$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i :end

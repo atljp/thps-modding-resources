@@ -1,0 +1,726 @@
+
+:i function $high_scores_menu_enter_initials$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $PauseGame$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $kill_start_key_binding$
+	:i $GoalManager_HidePoints$
+	:i $GetInitialsString$
+	:i if NOT $GotParam$$allow_back$
+		:i $no_back$ = $no_back$
+	:i endif
+	:i if $IsNgc$
+		:i %GLOBAL%$heap$ = $TopDown$
+	:i endif
+	:i $create_onscreen_keyboard$:s{
+		:i $text$ = %GLOBAL%$string$
+		:i $no_back$ = %GLOBAL%$no_back$
+		:i $keyboard_done_script$ = $high_scores_menu_entered_initials$
+		:i  isNull 
+		:i $keyboard_title$ = %s(14,"ENTER INITIALS")
+		:i $min_length$ = %i(1,00000001)
+		:i $max_length$ = %i(3,00000003)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+:i endfunction
+:i function $high_scores_menu_entered_initials$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetInitialsString$$string$ = %GLOBAL%$string$
+	:i $UpdateInitials$
+	:i $destroy_onscreen_keyboard$
+	:i if $GameModeEquals$$is_classic$
+		:i if NOT $GotParam$$just_started_game$
+			:i $launch_ss_menu$$from_ss_menu$ = %GLOBAL%$from_ss_menu$
+		:i else 
+			:i $launch_select_skater_menu$ isNull 
+		:i endif
+	:i else 
+		:i $high_scores_menu_create$$new_initials$ = %GLOBAL%$string$$restart_node$ = %GLOBAL%$restart_node$
+	:i endif
+:i endfunction
+:i function $high_scores_menu_create$
+	:i if $GameModeEquals$$is_classic$
+		:i if  ($classic_mode_in_end_run_sequence$ = %i(1,00000001)) 
+			:i $GetInitialsString$
+			:i $new_initials$ = %GLOBAL%$string$
+		:i endif
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if NOT $GotParam$$from_options$
+		:i $PauseGame$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $menu_parts_anchor$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $make_new_themed_sub_menu$:s{
+			:i $menu_id$ = $high_scores_records_menu$
+			:i $title$ = %s(11,"HIGH SCORES")
+			:i $just$ = :a{$center$$center$:a}
+			:i $no_grad_bar$
+		:i :s}
+	:i else 
+		:i $make_new_themed_sub_menu$:s{
+			:i $menu_id$ = $high_scores_records_menu$
+			:i $title$ = %s(11,"HIGH SCORES")
+			:i $just$ = :a{$center$$center$:a}
+		:i :s}
+	:i endif
+	:i $AssignAlias$$id$ = $high_scores_records_menu$$alias$ = $sub_menu$
+	:i $kill_start_key_binding$
+	:i if $GotParam$$from_options$
+		:i $theme_background$$parent$ = $sub_menu$$id$ = $bg_box_vmenu$$width$ = %i(5,00000005)$pos$ = %vec2(320.000000,60.000000)$num_parts$ = %i(11,0000000b)$z_priority$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $bg_box_vmenu$$scale$ = %vec2(1.000000,0.980000)
+		:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+			:i $event_handlers$ = :a{:s{$pad_choose$$generic_menu_pad_back$$params$ = :s{$callback$ = $high_scores_menu_exit$$from_options$$no_unload_textures$:s}:s}
+				:i :s{$pad_start$$generic_menu_pad_back$$params$ = :s{$callback$ = $high_scores_menu_exit$$from_options$$no_unload_textures$:s}:s}
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $high_scores_menu_exit$$from_options$$no_unload_textures$:s}:s}
+				:i :s{$pad_left$$high_scores_change_level$$params$ = :s{$level$ = %GLOBAL%$level$$level_name$ = %GLOBAL%$level_name$$minus$:s}:s}
+				:i :s{$pad_right$$high_scores_change_level$$params$ = :s{$level$ = %GLOBAL%$level$$level_name$ = %GLOBAL%$level_name$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $create_helper_text$$generic_helper_text_view_menu$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $sub_menu$
+			:i $texture$ = $black$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $scale$ = %vec2(109.500000,5.500000)
+			:i $pos$ = %vec2(320.000000,65.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %f(1.100000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $sub_menu$
+			:i $font$ = $Dialog$
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+			:i $text$ = %GLOBAL%$level_name$
+			:i $scale$ = %f(0.950000)
+			:i $pos$ = %vec2(220.000000,65.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $sub_menu$
+			:i $id$ = $high_scores_left_arrow$
+			:i $texture$ = $left_arrow$
+			:i $scale$ = %vec2(0.700000,0.600000)
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ - %vec2(5.000000,-3.000000)) 
+			:i $just$ = :a{$right$$top$:a}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $sub_menu$
+			:i $id$ = $high_scores_right_arrow$
+			:i $texture$ = $right_arrow$
+			:i $scale$ = %vec2(0.700000,0.600000)
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %GLOBAL%$width$ * %vec2(1.000000,0.000000) + %vec2(5.000000,4.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i %GLOBAL%$root_pos$ = %vec2(100.000000,50.000000)
+		:i %GLOBAL%$top_bar_b$ = %vec2(1.000000,34.000000)
+		:i %GLOBAL%$blue_pixel$ = %vec2(1.000000,15.000000)
+	:i else 
+		:i $pause_menu_gradient$$on$
+		:i $theme_background$$parent$ = $sub_menu$$id$ = $bg_box_vmenu$$width$ = %i(5,00000005)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %i(10,0000000a)$z_priority$ = %i(1,00000001)
+		:i if $GotParam$$from_pause$
+			:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+				:i $event_handlers$ = :a{:s{$pad_choose$$null_script$:s}
+					:i :s{$pad_back$$high_scores_menu_exit$$params$ = :s{$from_pause$ = $from_pause$:s}:s}
+					:i :s{$pad_start$$null_script$:s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+			:i $create_helper_text$$generic_helper_text_view_menu$
+		:i else 
+			:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+				:i $event_handlers$ = :a{:s{$pad_choose$$high_scores_menu_exit$$params$ = :s{$restart_node$ = %GLOBAL%$restart_node$:s}:s}
+					:i :s{$pad_start$$high_scores_menu_exit$$params$ = :s{$restart_node$ = %GLOBAL%$restart_node$:s}:s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+			:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(14,"\bm = Continue"):s}:a}
+		:i endif
+		:i %GLOBAL%$root_pos$ = %vec2(100.000000,53.000000)
+		:i %GLOBAL%$top_bar_b$ = %vec2(1.000000,36.000000)
+		:i %GLOBAL%$blue_pixel$ = %vec2(1.000000,35.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(109.750000,6.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %GLOBAL%$top_bar_b$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHT_BAR_COLOR$) 
+		:i $scale$ = %vec2(0.500000,0.500000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %GLOBAL%$blue_pixel$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(50,00000032)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $font$ = $Dialog$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $text$ = %s(18,"5 BEST HIGH SCORES")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(21.000000,34.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_icon$
+		:i $texture$ = $black$
+		:i $pos$ = %GLOBAL%$root_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $scale$ = %vec2(97.000000,1.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(35.000000,57.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $FormatText$$ChecksumName$ = $stat_scores_icon$%s(11,"stat_scores")
+	:i %GLOBAL%$five_best_icon_scale$ = %vec2(1.520000,1.200000)
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(-10.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_scores_icon$
+		:i $texture$ = %GLOBAL%$stat_scores_icon$
+		:i $scale$ = %GLOBAL%$five_best_icon_scale$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$ICON_ON_VALUE$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(3.000000,46.299999)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(140.000000,-8.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(3.000000,66.000000)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(205.000000,-8.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $high_scores_menu_scores_icon$$offset$ = %vec2(-4.000000,1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(109.750000,6.000000)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(-20.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $font$ = $Dialog$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $text$ = %s(19,"5 BEST COMBO SCORES")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $FormatText$$ChecksumName$ = $stat_comboss_icon$%s(11,"stat_combos")
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(2.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_combos_icon$
+		:i $texture$ = %GLOBAL%$stat_comboss_icon$
+		:i $scale$ = %GLOBAL%$five_best_icon_scale$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$ICON_ON_VALUE$) 
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $high_scores_menu_combos_icon$$offset$ = %vec2(0.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_lower_yellow_bar$
+		:i $texture$ = $black$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %vec2(109.750000,0.500000)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(-22.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = $high_scores_menu_scores_icon$$offset$ = %vec2(10.000000,-3.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_five_best_high_scores_vmenu$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = $high_scores_menu_combos_icon$$offset$ = %vec2(10.000000,-3.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_five_best_combos_vmenu$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $high_scores_menu_lower_yellow_bar$$offset$ = %vec2(0.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $high_scores_menu_longest_tricks_vmenu$
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(6.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $high_scores_menu_fill_menus$$level$ = %GLOBAL%$level$$new_initials$ = %GLOBAL%$new_initials$
+	:i if $GotParam$$no_animate$
+		:i $finish_themed_sub_menu$$time$ = %f(0.000000)
+	:i else 
+		:i $finish_themed_sub_menu$
+	:i endif
+:i endfunction
+:i function $high_scores_menu_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $menu_parts_anchor$
+	:i endif
+	:i if $GotParam$$from_pause$
+		:i $goto$$create_options_menu$
+	:i endif
+	:i if  ($classic_mode_in_end_run_sequence$ = %i(1,00000001)) 
+		:i $classic_mode_do_end_run_stats$
+		:i return
+		
+	:i endif
+	:i $restore_start_key_binding$
+	:i if $GotParam$$from_options$
+		:i $create_setup_options_menu$
+	:i else 
+		:i $GoalManager_ShowPoints$
+		:i if $VibrationIsOn$%i(0,00000000)
+			:i $VibrationOff$%i(0,00000000)
+			:i $VibrationOn$%i(0,00000000)
+		:i else 
+			:i $VibrationOff$%i(0,00000000)
+		:i endif
+		:i if $GotParam$$restart_node$
+			:i $exit_pause_menu$
+			:i $ResetSkaters$
+		:i else 
+			:i $create_pause_menu$$no_exit$
+		:i endif
+	:i endif
+:i endfunction
+:i function $high_scores_change_level$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+			:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+					:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $DEVKIT_ONLY$
+						:i if  (%GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) ) 
+							:i continue
+							
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to  (%GLOBAL%$array_size$) 
+	:i if $GotParam$$minus$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$%i(4294967295,ffffffff)) 
+		:i $printf$%GLOBAL%$index$
+		:i %GLOBAL%$to_repeat$ = %GLOBAL%$index$
+		:i if  (%GLOBAL%$index$ > %i(4294967295,ffffffff)) 
+			:i while
+				
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+					:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+						:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+							:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $DEVKIT_ONLY$
+								:i if $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $flag$
+									:i if $GetGlobalFlag$$flag$ =  ( ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) ->$flag$) 
+										:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+										:i continue
+										
+									:i else 
+										:i if  ($all_levels_unlocked$ = %i(1,00000001)) 
+											:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+											:i continue
+											
+										:i endif
+									:i endif
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%i(0,00000000):a}) ->$level_num$) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+			:i loop_to %GLOBAL%$to_repeat$
+		:i else 
+			:i %GLOBAL%$index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+			:i while
+				
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+					:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+						:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+							:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $DEVKIT_ONLY$
+								:i if $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $flag$
+									:i if $GetGlobalFlag$$flag$ =  ( ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) ->$flag$) 
+										:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+										:i continue
+										
+									:i else 
+										:i if  ($all_levels_unlocked$ = %i(1,00000001)) 
+											:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+											:i continue
+											
+										:i endif
+									:i endif
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{ (%GLOBAL%$array_size$%i(4294967292,fffffffc)) :a}) ->$level_num$) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+			:i loop_to %GLOBAL%$to_repeat$
+		:i endif
+	:i else 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$index$ <  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) ) 
+			:i %GLOBAL%$times$ =  (%GLOBAL%$array_size$ - %GLOBAL%$index$%i(4294967295,ffffffff)) 
+			:i while
+				
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+					:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+						:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+							:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $DEVKIT_ONLY$
+								:i if $StructureContains$$structure$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) $flag$
+									:i if $GetGlobalFlag$$flag$ =  ( ( ($level_select_menu_level_info$) :a{%GLOBAL%$index$:a}) ->$flag$) 
+										:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+										:i continue
+										
+									:i else 
+										:i if  ($all_levels_unlocked$ = %i(1,00000001)) 
+											:i %GLOBAL%$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+											:i continue
+											
+										:i endif
+									:i endif
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i %GLOBAL%$level$ = %i(1,00000001)
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to  (%GLOBAL%$times$) 
+		:i else 
+			:i %GLOBAL%$level$ = %i(9,00000009)
+		:i endif
+	:i endif
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$)  = %GLOBAL%$level$) 
+			:i %GLOBAL%$level_name$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) 
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $PlaySound$$MenuUp$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $high_scores_menu_create$$level$ = %GLOBAL%$level$$level_name$ = %GLOBAL%$level_name$$from_options$$no_animate$$no_load_textures$
+	:i if $GotParam$$minus$
+		:i $RunScriptOnScreenElement$$id$ = $high_scores_left_arrow$$menu_blink_arrow$
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = $high_scores_right_arrow$$menu_blink_arrow$
+	:i endif
+:i endfunction
+:i function $high_scores_menu_fill_menus$
+	:i $GetLevelRecords$$level$ = %GLOBAL%$level$
+	:i $GetArraySize$ (%GLOBAL%$highscores$->$RecordTable$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $high_scores_menu_add_five_best_item$:s{
+			:i $parent$ = $high_scores_menu_five_best_high_scores_vmenu$
+			:i $place$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i $initials$ =  ( ( (%GLOBAL%$highscores$->$RecordTable$) :a{%GLOBAL%$index$:a}) ->$initials$) 
+			:i $score$ =  ( ( (%GLOBAL%$highscores$->$RecordTable$) :a{%GLOBAL%$index$:a}) ->$value$) 
+			:i $new_initials$ = %GLOBAL%$new_initials$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetArraySize$ (%GLOBAL%$bestcombos$->$RecordTable$) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $high_scores_menu_add_five_best_item$:s{
+			:i $parent$ = $high_scores_menu_five_best_combos_vmenu$
+			:i $place$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i $initials$ =  ( ( (%GLOBAL%$bestcombos$->$RecordTable$) :a{%GLOBAL%$index$:a}) ->$initials$) 
+			:i $score$ =  ( ( (%GLOBAL%$bestcombos$->$RecordTable$) :a{%GLOBAL%$index$:a}) ->$value$) 
+			:i $new_initials$ = %GLOBAL%$new_initials$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i %GLOBAL%$c$ = %sc(1,".")
+	:i if $German$
+		:i %GLOBAL%$c$ = %sc(1,",")
+	:i endif
+	:i if $French$
+		:i %GLOBAL%$c$ = %sc(1,",")
+	:i endif
+	:i $FormatText$$TextName$ = $score$%s(11,"%i%c%f sec.")$i$ =  ( (%GLOBAL%$longestgrind$->$value$ / %i(100,00000064)) ) $c$ = %GLOBAL%$c$$f$ =  ( (%GLOBAL%$longestgrind$->$value$)  -  ( (%GLOBAL%$longestgrind$->$value$ / %i(100,00000064))  * %i(100,00000064)) ) 
+	:i $high_scores_menu_add_longest_trick_item$:s{
+		:i $header$ = %s(14,"Longest grind:")
+		:i $initials$ =  (%GLOBAL%$longestgrind$->$initials$) 
+		:i $score$ = %GLOBAL%$score$
+		:i $new_initials$ = %GLOBAL%$new_initials$
+	:i :s}
+	:i $FormatText$$TextName$ = $score$%s(11,"%i%c%f sec.")$i$ =  ( (%GLOBAL%$longestmanual$->$value$ / %i(100,00000064)) ) $c$ = %GLOBAL%$c$$f$ =  ( (%GLOBAL%$longestmanual$->$value$)  -  ( (%GLOBAL%$longestmanual$->$value$ / %i(100,00000064))  * %i(100,00000064)) ) 
+	:i $high_scores_menu_add_longest_trick_item$:s{
+		:i $header$ = %s(15,"Longest manual:")
+		:i $initials$ =  (%GLOBAL%$longestmanual$->$initials$) 
+		:i $score$ = %GLOBAL%$score$
+		:i $new_initials$ = %GLOBAL%$new_initials$
+	:i :s}
+	:i $FormatText$$TextName$ = $score$%s(11,"%i%c%f sec.")$i$ =  ( (%GLOBAL%$longestliptrick$->$value$ / %i(100,00000064)) ) $c$ = %GLOBAL%$c$$f$ =  ( (%GLOBAL%$longestliptrick$->$value$)  -  ( (%GLOBAL%$longestliptrick$->$value$ / %i(100,00000064))  * %i(100,00000064)) ) 
+	:i $high_scores_menu_add_longest_trick_item$:s{
+		:i $header$ = %s(12,"Longest lip:")
+		:i $initials$ =  (%GLOBAL%$longestliptrick$->$initials$) 
+		:i $score$ = %GLOBAL%$score$
+		:i $new_initials$ = %GLOBAL%$new_initials$
+	:i :s}
+	:i $FormatText$$TextName$ = $score$%s(9,"%i tricks")$i$ =  (%GLOBAL%$longestcombo$->$value$) 
+	:i $high_scores_menu_add_longest_trick_item$:s{
+		:i $header$ = %s(14,"Longest combo:")
+		:i $initials$ =  (%GLOBAL%$longestcombo$->$initials$) 
+		:i $score$ = %GLOBAL%$score$
+		:i $new_initials$ = %GLOBAL%$new_initials$
+	:i :s}
+:i endfunction
+:i function $high_scores_menu_add_five_best_item$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i %GLOBAL%$scale$ = %f(0.850000)
+	:i $FormatText$$TextName$ = $place_string$%s(3,"%i)")$i$ = %GLOBAL%$place$
+	:i $FormatText$$TextName$ = $score_string$%s(2,"%i")$i$ = %GLOBAL%$score$$UseCommas$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $dims$ = %vec2(400.000000,15.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$place_string$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %vec2(19.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$initials$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %vec2(71.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$score_string$
+		:i $pos$ = %vec2(250.000000,0.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $just$ = :a{$right$$top$:a}
+	:i :s}
+	:i $highlight$ = %i(0,00000000)
+	:i if $GotParam$$in_arcade_machine$
+		:i if  ($GotParam$$target_index$) 
+			:i if  (%GLOBAL%$target_index$ = %GLOBAL%$place$) 
+				:i %GLOBAL%$highlight$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i else 
+		:i if  ($GotParam$$new_initials$) 
+			:i if  (%GLOBAL%$new_initials$ = %GLOBAL%$initials$) 
+				:i %GLOBAL%$highlight$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$highlight$ = %i(1,00000001)) 
+		:i $GetScreenElementPosition$:s{
+			:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(1,00000001):s}
+		:i :s}
+		:i if $GotParam$$in_arcade_machine$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $texture$ = $white2$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(50,00000032):a}
+				:i $scale$ = %vec2(33.000000,1.800000)
+				:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(-56.000000,2.000000)) 
+				:i $just$ = :a{$left$$top$:a}
+				:i $z_priority$ = %f(1.100000)
+			:i :s}
+		:i else 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $texture$ = $black$
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+				:i $scale$ = %vec2(109.000000,3.700000)
+				:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(-185.000000,2.000000)) 
+				:i $just$ = :a{$left$$top$:a}
+				:i $z_priority$ = %f(1.100000)
+			:i :s}
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(0,00000000):s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(1,00000001):s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(2,00000002):s}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $high_scores_menu_add_longest_trick_item$
+	:i $SetScreenElementLock$$id$ = $high_scores_menu_longest_tricks_vmenu$$off$
+	:i %GLOBAL%$scale$ = %f(0.850000)
+	:i $FormatText$$TextName$ = $score_string$%s(2,"%i")$i$ = %GLOBAL%$score$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $high_scores_menu_longest_tricks_vmenu$
+		:i $dims$ = %vec2(400.000000,16.500000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$header$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %vec2(12.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$initials$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %vec2(195.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $Dialog$
+		:i $text$ = %GLOBAL%$score_string$
+		:i $pos$ = %vec2(320.000000,0.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$scale$
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i if  ($GotParam$$new_initials$) 
+		:i if  (%GLOBAL%$new_initials$ = %GLOBAL%$initials$) 
+			:i $GetScreenElementPosition$:s{
+				:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(1,00000001):s}
+			:i :s}
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $texture$ = $black$
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+				:i $scale$ = %vec2(109.000000,4.100000)
+				:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(-185.000000,0.000000)) 
+				:i $just$ = :a{$left$$top$:a}
+				:i $z_priority$ = %f(1.100000)
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(1,00000001):s}
+				:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{%GLOBAL%$anchor_id$$child$ = %i(2,00000002):s}
+				:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i :end

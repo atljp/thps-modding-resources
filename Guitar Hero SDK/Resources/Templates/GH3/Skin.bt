@@ -1,0 +1,43 @@
+//------------------------------------------------
+// GH3 .skin file
+//------------------------------------------------
+
+#include "../Common.bt"
+#include "Material.bt"
+#include "Scene.bt"
+
+typedef struct
+{
+    uint filesize <bgcolor=CL_SINGLEVALUE, comment="Filesize - 48">;
+    uint faba[7] <bgcolor=CL_PADDING, hidden=true>;
+
+    local int starter_offset = FTell();
+
+    ubyte material_version <bgcolor=CL_SINGLEVALUE>;
+    ubyte unknown_byte <bgcolor=CL_FLOATS>;
+
+    short material_count <bgcolor=CL_SINGLEVALUE>;
+
+    RelativeOffset pt_scenestart(starter_offset) <bgcolor=CL_POINTER>;
+
+    int unk <bgcolor=CL_SINGLEVALUE>;
+    int null <bgcolor=CL_PADDING>;
+
+    GH3Material material[material_count] <optimize=false>;
+
+    // Ideally at this point, we should be at the scene start
+    // (This should be BABEFACE)
+    // If not though, we'll skip there ourselves
+
+    FSeek(AbsOffset(pt_scenestart));
+
+    QBKey babeface <bgcolor=0x222222, fgcolor=0x6666FF>;
+
+    uint padding_count <bgcolor=CL_SINGLEVALUE>;
+    byte padding[padding_count-4] <hidden=true, bgcolor=CL_PADDING>;
+    int pre_scene_int <bgcolor=CL_SINGLEVALUE, comment="Should be 234">;
+
+    GH3Scene scene(starter_offset);
+} SkinFile_GH3;
+
+SkinFile_GH3 skin_file;

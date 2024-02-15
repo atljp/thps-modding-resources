@@ -1,0 +1,361 @@
+//------------------------------------------------
+// Core QB item
+//------------------------------------------------
+
+#define FLAG_HASPARENT                      0x01
+#define FLAG_GLOBALITEM                     0x20     
+#define FLAG_GLOBALITEM_WPC                 0x04
+#define FLAG_STRUCT_GH3                     0x80        // In a GH3 struct
+#define FLAG_STRUCT_WPC                     0x10
+
+#define ITEMTYPE_FLOATS                     0x00
+#define ITEMTYPE_INTEGER                    0x01
+#define ITEMTYPE_FLOAT                      0x02
+#define ITEMTYPE_STRING                     0x03
+#define ITEMTYPE_WIDESTRING                 0x04
+#define ITEMTYPE_PAIR                       0x05
+#define ITEMTYPE_VECTOR                     0x06
+#define ITEMTYPE_SCRIPT                     0x07
+#define ITEMTYPE_STRUCT                     0x0A
+#define ITEMTYPE_TSTRING                    0x0B
+#define ITEMTYPE_ARRAY                      0x0C
+#define ITEMTYPE_QBKEY                      0x0D
+#define ITEMTYPE_POINTER                    0x1A
+#define ITEMTYPE_LOCALSTRING                0x1C
+#define ITEMTYPE_STRUCTHEADER               0x99        // 010 use only
+
+#ifndef LAST_ITEM_TYPE
+    #define LAST_ITEM_TYPE 1
+    local uint lastQBArrayType = 0;
+#endif
+
+struct QBItem;
+struct QBItemInfo;
+struct QBItemData;
+struct QBItemSharedProps;
+
+string TypeToString(QBItemInfo &info)
+{
+    local string s;
+
+    switch (info.item_type)
+    {   
+        case ITEMTYPE_FLOAT:
+            s = "Float";
+            break;
+
+        case ITEMTYPE_FLOATS:
+            s = "Floats";
+            break;
+
+        case ITEMTYPE_INTEGER:
+            s = "Integer";
+            break;
+
+        case ITEMTYPE_SCRIPT:
+            s = "Script";
+            break;
+    
+        case ITEMTYPE_QBKEY:
+            s = "QBKey";
+            break;
+
+        case ITEMTYPE_PAIR:
+            s = "Pair";
+            break;
+        
+        case ITEMTYPE_VECTOR:
+            s = "Vector";
+            break;
+
+        case ITEMTYPE_POINTER:
+            s = "Data Pointer";
+            break;
+
+        case ITEMTYPE_STRING:
+            s = "String";
+            break;
+            
+        case ITEMTYPE_TSTRING:
+            s = "TString";
+            break;
+
+        case ITEMTYPE_WIDESTRING:
+            s = "Wide String";
+            break;
+
+        case ITEMTYPE_STRUCT:
+            s = "Struct";
+            break;
+
+        case ITEMTYPE_ARRAY:
+            s = "Array";
+            break;
+
+        case ITEMTYPE_STRUCTHEADER:
+            s = "StructHeader";
+            break;
+
+        case ITEMTYPE_LOCALSTRING:
+            s = "Localized String";
+            break;
+
+        default:
+            SPrintf(s, "Unknown Type: %x", info.item_type);
+            break;
+    }
+
+    return s;
+}
+
+#include "QBFloat.bt"
+#include "QBInteger.bt"
+#include "QBLocalString.bt"
+#include "QBChecksum.bt"
+#include "QBStruct.bt"
+#include "QBArray.bt"
+#include "QBScript.bt"
+
+typedef struct (QBItemInfo &info)
+{
+    QBKey id <bgcolor=CL_CHECKSUM>;
+
+    local ubyte is_global;
+    
+    if (info.flags & FLAG_GLOBALITEM_WPC)
+        IsThawQB = 1;
+
+    // Global items have a .pak identifier!
+    if (info.flags & FLAG_GLOBALITEM || info.flags & FLAG_GLOBALITEM_WPC)
+        is_global = 1;
+
+    // Disallow odd struct types
+    if (info.flags & FLAG_STRUCT_GH3)
+        is_global = 0;
+    if (info.flags & FLAG_HASPARENT)
+        is_global = 0;
+        
+    // THAW struct item, not global
+    if (info.qb_type == 0 && (info.flags & 0x01))
+        is_global = 0;
+    
+    if (is_global)
+        QBKey pak_name <bgcolor=CL_CHECKSUM>;
+
+    // Floats have float values, obviously
+    if (info.item_type == ITEMTYPE_FLOAT)
+        float value <bgcolor=CL_SINGLEVALUE>;
+        
+    // These have QBKey values
+    else if (info.item_type == ITEMTYPE_QBKEY || info.item_type == ITEMTYPE_LOCALSTRING || info.item_type == ITEMTYPE_POINTER)
+        QBKey value <bgcolor=CL_SINGLEVALUE>;
+
+    // Plain value
+    else
+        int value <bgcolor=CL_SINGLEVALUE>;
+
+    uint next_item <bgcolor=CL_POINTER>;
+
+} QBItemSharedProps;
+
+//-------------------------------------------------------------
+
+typedef struct
+{
+    local uint item_type;
+    local ubyte is_vector_float;
+
+    ubyte zero_a <bgcolor=CL_SINGLEVALUE>;
+    ubyte flags <bgcolor=CL_SINGLEVALUE>;
+    ubyte qb_type <bgcolor=CL_SINGLEVALUE>;
+    ubyte zero_b <bgcolor=CL_SINGLEVALUE>;
+
+    // SPECIALIZED GH3 TYPES
+    if (flags & FLAG_STRUCT_GH3)
+    {
+        item_type = flags & 0x7F;
+    }
+    else if (qb_type == 0 && (flags & 0x01))
+    {
+        item_type = (flags >> 1);
+    }
+    
+    // Hack for THAW structscript
+    else if ((flags & 0x01) && qb_type > 0x10)
+    {
+        item_type = (flags >> 1);
+    }
+    else
+    {
+        // What QB type is this item?
+        if (flags == 0 && qb_type == 1)
+            item_type = ITEMTYPE_STRUCTHEADER;
+        else
+            item_type = qb_type;
+    }
+
+    if (lastQBArrayType == 6)
+        is_vector_float = 1;
+
+} QBItemInfo <read=ReadQBItemInfo>;
+
+string ReadQBItemInfo(QBItemInfo &info)
+{
+    local string s = TypeToString(info);
+
+    if (info.flags & FLAG_GLOBALITEM)
+        SPrintf(s, "[Global Item] %s", s);
+
+    if (info.flags & FLAG_HASPARENT)
+        SPrintf(s, "[Has Parent] %s", s);
+
+    return s;
+}
+
+//-------------------------------------------------------------
+
+typedef struct (QBItemInfo &info)
+{
+    // Floats don't have anything fancy, just data!
+    if (info.item_type == ITEMTYPE_FLOATS)
+    {
+        if (info.is_vector_float)
+            float values[3];
+        else
+            float values[2];
+        return;
+    }
+
+    switch (info.item_type)
+    {
+        // Simple single-value types
+        case ITEMTYPE_FLOAT:
+        case ITEMTYPE_INTEGER:
+        case ITEMTYPE_LOCALSTRING:
+        case ITEMTYPE_QBKEY:
+        case ITEMTYPE_POINTER:
+            QBItemSharedProps props(info);
+            break;
+
+        case ITEMTYPE_PAIR:
+        case ITEMTYPE_VECTOR:
+            QBItemSharedProps props(info);
+            FSeek(props.value);
+
+            QBItemInfo float_info;
+
+            float_info.is_vector_float = (info.item_type == ITEMTYPE_VECTOR);
+
+            QBItemData float_obj(float_info);
+
+            break;
+
+        case ITEMTYPE_STRUCT:
+            QBItemSharedProps props(info);
+            FSeek(props.value);
+            QBStructData struct_props();
+            break;
+
+        case ITEMTYPE_TSTRING:
+        case ITEMTYPE_STRING:
+            QBItemSharedProps props(info);
+            FSeek(props.value);
+            string text;
+            SkipTo(4);
+            break;
+
+        case ITEMTYPE_WIDESTRING:
+            QBItemSharedProps props(info);
+            FSeek(props.value);
+            
+            if (IsThawQB)
+                string text;
+            else
+                wstring text;
+                
+            SkipTo(4);
+            break;
+
+        case ITEMTYPE_ARRAY:
+            QBItemSharedProps props(info);
+            FSeek(props.value);
+            QBArrayNode list;
+            break;
+
+        case ITEMTYPE_SCRIPT:
+            QBItemSharedProps props(info);
+            
+            if (info.flags & 0x01)
+            {
+                QBStructScriptProps script_props(props, props.next_item - props.value);
+            }
+            else
+                QBScriptProps script_props(props);
+            break;
+    }
+
+} QBItemData;
+
+//-------------------------------------------------------------
+
+typedef struct
+{
+    QBItemInfo info;
+    QBItemData data(info);
+} QBItem <read=ReadQBItem>;
+
+string ReadQBItem(QBItem &itm)
+{
+    local string typeString;
+    local string finalString;
+
+    typeString = TypeToString(itm.info);
+
+    switch (itm.info.item_type)
+    {
+        case ITEMTYPE_FLOAT:
+            SPrintf(finalString, "%s: %s, %f", ReadQBKey(itm.data.props.id), typeString, itm.data.props.value);
+            break;
+
+        case ITEMTYPE_INTEGER:
+            SPrintf(finalString, "%s: %s, %d", ReadQBKey(itm.data.props.id), typeString, itm.data.props.value);
+            break;
+
+        case ITEMTYPE_PAIR:
+            SPrintf(finalString, "%s: %s, (%f, %f)", ReadQBKey(itm.data.props.id), typeString, itm.data.float_obj.values[0], itm.data.float_obj.values[1]);
+            break;
+
+        case ITEMTYPE_VECTOR:
+            SPrintf(finalString, "%s: %s, (%f, %f, %f)", ReadQBKey(itm.data.props.id), typeString, itm.data.float_obj.values[0], itm.data.float_obj.values[1], itm.data.float_obj.values[2]);
+            break;
+
+        case ITEMTYPE_LOCALSTRING:
+            SPrintf(finalString, "%s: %s, %s", ReadQBKey(itm.data.props.id), typeString, ReadQBKey(itm.data.props.value));
+            break;
+
+        case ITEMTYPE_QBKEY:
+            SPrintf(finalString, "%s: %s, %s", ReadQBKey(itm.data.props.id), typeString, ReadQBKey(itm.data.props.value));
+            break;
+
+        case ITEMTYPE_TSTRING:
+        case ITEMTYPE_STRING:
+        case ITEMTYPE_WIDESTRING:
+            SPrintf(finalString, "%s: %s, %s", ReadQBKey(itm.data.props.id), typeString, itm.data.text);
+            break;
+
+        case ITEMTYPE_SCRIPT:
+        case ITEMTYPE_STRUCT:
+            SPrintf(finalString, "%s: %s", ReadQBKey(itm.data.props.id), typeString);
+            break;
+
+        case ITEMTYPE_ARRAY:
+            SPrintf(finalString, "%s: %s (%s), %d items", ReadQBKey(itm.data.props.id), typeString, TypeToString(itm.data.list.first_item_info), itm.data.list.number_of_items);
+            break;
+
+        default:
+            finalString = typeString;
+            break;
+    }
+
+    return finalString;
+}

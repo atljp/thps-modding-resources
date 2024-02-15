@@ -1,0 +1,84 @@
+//------------------------------------------------
+// THAW .fnt.psp file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+typedef struct
+{
+    ushort shift <bgcolor=CL_SINGLEVALUE>;
+    int charCode <bgcolor=CL_SINGLEVALUE>;
+} THAWPSPGlyph <read=ReadTHAWPSPGlyph>;
+
+string ReadTHAWPSPGlyph(THAWPSPGlyph &glyph)
+{
+    local string s;
+
+    return SPrintf(s, "%c: %d", glyph.charCode, glyph.shift);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    ubyte r <bgcolor=0xffccaa>;
+    ubyte g <bgcolor=0xffccaa>;
+    ubyte b <bgcolor=0xffccaa>;
+    ubyte a <bgcolor=0xffccaa>;
+} THAWPSPColor;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    float x1 <comment="(x1 * 4096.0) / imgWidth">;
+    float y1 <comment="(y1 * 4096.0) / imgWidth">;
+    float x2 <comment="(x2 * 4096.0) / imgWidth">;
+    float y2 <comment="(y2 * 4096.0) / imgWidth">;
+    ushort width;
+    ushort height;
+    uint unk;
+} THAWPSPGlyphData <read=ReadTHAWPSPGlyphData>;
+
+string ReadTHAWPSPGlyphData(THAWPSPGlyphData &data)
+{
+    local string s;
+
+    return SPrintf(s, "(%dx%d), [%f, %f], [%f, %f], %d", data.width, data.height, data.x1, data.y1, data.x2, data.y2, data.unk);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    uint fontHeight <bgcolor=CL_SINGLEVALUE, comment="(fontHeight * 4096.0) / imgWidth">;
+    uint vShift <bgcolor=CL_SINGLEVALUE, comment="(vShift * 4096.0) / imgWidth">;
+    ushort unkA <bgcolor=CL_SINGLEVALUE>;
+    ushort glyphCount <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte glyphIndices[288] <bgcolor=0xcccccc>;
+    uint imgBytes <bgcolor=CL_SINGLEVALUE, comment="Num bytes in image">;
+    RelativeOffset pt_glyphData(0) <bgcolor=CL_POINTER>;
+    RelativeOffset pt_imageData(0) <bgcolor=CL_POINTER>;
+    RelativeOffset pt_palette(0) <bgcolor=CL_POINTER>;
+    RelativeOffset pt_shiftGlyphs(0) <bgcolor=CL_POINTER>;
+    ubyte unkSkipMe[172] <bgcolor=0xaaaaaa>;
+
+    uint imgWidth <bgcolor=CL_SINGLEVALUE>;
+    uint imgHeight <bgcolor=CL_SINGLEVALUE>;
+    ubyte imgSkipMe[28] <bgcolor=0xaaaaaa>;
+
+    THAWPSPGlyph shiftGlyphs[glyphCount];
+    SkipTo(16);
+
+    ubyte imgPixels[imgWidth * imgHeight] <bgcolor=0xaaffaa>;
+    SkipTo(16);
+
+    THAWPSPColor palette[256];
+    SkipTo(16);
+
+    THAWPSPGlyphData glyphData[glyphCount] <bgcolor=0xaaccff>;
+} THAWPSPFont;
+
+LittleEndian();
+THAWPSPFont font_file;

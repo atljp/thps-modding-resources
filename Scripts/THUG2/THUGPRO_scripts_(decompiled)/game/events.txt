@@ -1,0 +1,218 @@
+
+:i $display_event_arrows$ = %i(0,00000000)
+:i function $ClearExceptionGroup$
+	:i $ClearEventHandlerGroup$ isNull 
+	:i $OnExceptionRun$
+:i endfunction
+:i function $BroadcastEvent$
+	:i $LaunchEvent$ isNull $Broadcast$
+:i endfunction
+:i function $ClearExceptions$
+	:i $ClearEventHandlerGroup$$Default$
+	:i $OnExceptionRun$
+:i endfunction
+:i function $ClearException$
+	:i $ClearEventHandler$ isNull 
+	:i $OnExceptionRun$
+:i endfunction
+:i function $ClearAllExceptionGroups$
+	:i $ClearEventHandlerGroup$$all_groups$
+	:i $OnExceptionRun$
+:i endfunction
+:i function $Obj_SetException$
+	:i $SetException$ isNull 
+:i endfunction
+:i function $Obj_ClearException$
+	:i $ClearException$ isNull 
+:i endfunction
+:i function $Obj_ClearExceptions$
+	:i $ClearExceptions$ isNull 
+:i endfunction
+:i function $BlockUntilDetailedEvent$
+	:i $SetEventHandler$$Ex$ = %GLOBAL%$Type$$Scr$ = $BlockUntilDetailedEvent_FilterEvent$$Params$ = :s{$BlockUntilDetailedEvent_EventDetails$ = %GLOBAL%$Details$:s}$Group$ = $BlockUntilDetailedEvent_Group$
+	:i $Block$
+	:i $ClearEventHandlerGroup$$BlockUntilDetailedEvent_Group$
+:i endfunction
+:i function $BlockUntilDetailedEvent_FilterEvent$
+	:i if  (%GLOBAL%$BlockUntilDetailedEvent_EventDetails$ <  isNull ) 
+		:i $UnBlockInterruptedScript$
+	:i endif
+:i endfunction
+:i $StateToEntryEventMapping$ = :s{
+	:i $Skater_InAir$ = $SkaterEnterAir$
+	:i $Skater_InBail$ = $SkaterEnterBail$
+	:i $Skater_OnRail$ = $SkaterEnterRail$
+	:i $Skater_Skitching$ = $SkaterEnterSkitch$
+	:i $Skater_InManual$ = $SkaterEnterManual$
+	:i $Skater_InRevert$ = $SkaterEnterRevert$
+	:i $Skater_OnGround$ = $SkaterEnterGround$
+	:i $Skater_OnWall$ = $SkaterEnterWall$
+	:i $Skater_InWallplant$ = $SkaterEnterWallplant$
+	:i $Skater_InRevert$ = $SkaterEnterRevert$
+	:i $Skater_OnLip$ = $SkaterEnterLip$
+	:i $Skater_EndOfRun$ = $SkaterEnterEndOfRun$
+	:i $Skater_OnLadder$ = $SkaterEnterLadder$
+	:i $Skater_InHang$ = $SkaterEnterHang$
+:i :s}
+:i $StateToExitEventMapping$ = :s{
+	:i $Skater_InAir$ = $SkaterExitAir$
+	:i $Skater_InBail$ = $SkaterExitBail$
+	:i $Skater_OnRail$ = $SkaterExitRail$
+	:i $Skater_Skitching$ = $SkaterExitSkitch$
+	:i $Skater_InManual$ = $SkaterExitManual$
+	:i $Skater_InRevert$ = $SkaterExitRevert$
+	:i $Skater_OnGround$ = $SkaterExitGround$
+	:i $Skater_OnWall$ = $SkaterExitWall$
+	:i $Skater_InWallplant$ = $SkaterExitWallplant$
+	:i $Skater_InRevert$ = $SkaterExitRevert$
+	:i $Skater_OnLip$ = $SkaterExitLip$
+	:i $Skater_EndOfRun$ = $SkaterExitEndOfRun$
+	:i $Skater_OnLadder$ = $SkaterExitLadder$
+	:i $Skater_InHang$ = $SkaterExitHang$
+:i :s}
+:i $SubStateToEntryEventMapping$ = :s{
+	:i $Flip$ = $SkaterEnterFlip$
+	:i $Grab$ = $SkaterEnterGrab$
+	:i $Transfer$ = $SkaterEnterTransfer$
+	:i $AcidDrop$ = $SkaterEnterAcidDrop$
+	:i $BankDrop$ = $SkaterEnterBankDrop$
+:i :s}
+:i $SubStateToExitEventMapping$ = :s{
+	:i $Flip$ = $SkaterExitFlip$
+	:i $Grab$ = $SkaterExitGrab$
+	:i $Transfer$ = $SkaterExitTransfer$
+	:i $AcidDrop$ = $SkaterExitAcidDrop$
+	:i $BankDrop$ = $SkaterExitBankDrop$
+:i :s}
+:i $StateToSubStateExitEventMask$ = :s{
+	:i $Skater_None$ = :a{:a}
+	:i $Skater_InAir$ = :a{$SkaterExitTransfer$$SkaterExitAcidDrop$$SkaterExitBankDrop$:a}
+	:i $Skater_InBail$ = :a{:a}
+	:i $Skater_OnRail$ = :a{:a}
+	:i $Skater_Skitching$ = :a{:a}
+	:i $Skater_InManual$ = :a{:a}
+	:i $Skater_InRevert$ = :a{:a}
+	:i $Skater_OnGround$ = :a{:a}
+	:i $Skater_OnWall$ = :a{:a}
+	:i $Skater_InWallplant$ = :a{:a}
+	:i $Skater_OnLip$ = :a{:a}
+	:i $Skater_EndOfRun$ = :a{:a}
+	:i $Skater_OnLadder$ = :a{:a}
+	:i $Skater_InHang$ = :a{:a}
+:i :s}
+:i function $LaunchStateChangeEvent$
+	:i $NewState$ = %GLOBAL%$State$
+	:i $GetTags$
+	:i $LaunchAllSubStateExitEvents$$NewState$ = %GLOBAL%$NewState$
+	:i if  (%GLOBAL%$NewState$ = %GLOBAL%$State$) 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$StateExitEvent$
+		:i $LaunchEvent$$Broadcast$$Type$ = %GLOBAL%$StateExitEvent$
+	:i endif
+	:i $LaunchEvent$$Broadcast$$Type$ =  ($StateToEntryEventMapping$->%GLOBAL%$NewState$) 
+	:i $SetTags$$StateExitEvent$ =  ($StateToExitEventMapping$->%GLOBAL%$NewState$) $State$ = %GLOBAL%$NewState$
+:i endfunction
+:i function $LaunchSubStateEntryEvent$
+	:i $LaunchEvent$$Broadcast$$Type$ =  ($SubStateToEntryEventMapping$->%GLOBAL%$SubState$) 
+	:i $GetTags$
+	:i $NewExitEvent$ =  ($SubStateToExitEventMapping$->%GLOBAL%$SubState$) 
+	:i $SubStateExitEventList$ =  (%GLOBAL%$SubStateExitEventList$ + :s{%GLOBAL%$NewExitEvent$:s}) 
+	:i $SetTags$$SubStateExitEventList$ = %GLOBAL%$SubStateExitEventList$
+:i endfunction
+:i function $LaunchSubStateExitEvent$
+	:i $LaunchEvent$$Broadcast$$Type$ =  ($SubStateToExitEventMapping$->%GLOBAL%$SubState$) 
+	:i $GetTags$
+	:i $SubStateExitEventList$ =  (%GLOBAL%$SubStateExitEventList$ -  ($SubStateToExitEventMapping$->%GLOBAL%$SubState$) ) 
+	:i $SetTags$$SubStateExitEventList$ = %GLOBAL%$SubStateExitEventList$
+:i endfunction
+:i function $InitializeStateChangeEvent$
+	:i $GetTags$
+	:i if $GotParam$$StateExitEvent$
+		:i $LaunchAllSubStateExitEvents$$NewState$ = $Skater_None$
+		:i $LaunchEvent$$Broadcast$$Type$ = %GLOBAL%$StateExitEvent$
+	:i endif
+	:i $SetProps$$Remove_Tags$ = :a{$StateExitEvent$:a}
+	:i $SetTags$$State$ = $Skater_None$$SubStateExitEventList$ = :s{:s}
+:i endfunction
+:i function $LaunchAllSubStateExitEvents$
+	:i $GetTags$
+	:i if NOT $GotParam$$SubStateExitEventList$
+		:i return
+		
+	:i endif
+	:i $MaskedSubStateExitEventList$ =  (%GLOBAL%$SubStateExitEventList$ -  ($StateToSubStateExitEventMask$->%GLOBAL%$NewState$) ) 
+	:i $LaunchEvent$$Broadcast$$Type$ = %GLOBAL%$MaskedSubStateExitEventList$
+	:i $SubStateExitEventList$ =  (%GLOBAL%$SubStateExitEventList$ - %GLOBAL%$MaskedSubStateExitEventList$) 
+	:i $SetTags$$SubStateExitEventList$ = %GLOBAL%$SubStateExitEventList$
+:i endfunction
+:i function $SkaterEventDebug$
+	:i $KillSpawnedScript$$Name$ = $TestEventListener$
+	:i $SpawnScript$$TestEventListener$
+:i endfunction
+:i function $TestEventListener$
+	:i $SetEventHandler$$Ex$ = $SkaterEnterAir$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterAir$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitAir$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitAir$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterGround$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterGround$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitGround$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitGround$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterBail$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterBail$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitBail$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitBail$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterRail$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterRail$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitRail$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitRail$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterSkitch$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterSkitch$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitSkitch$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitSkitch$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterManual$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterManual$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitManual$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitManual$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterWall$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterWall$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitWall$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitWall$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterWallplant$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterWallplant$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitWallplant$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitWallplant$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterRevert$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterRevert$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitRevert$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitRevert$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterLip$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterLip$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitLip$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitLip$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterLadder$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterLadder$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitLadder$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitLadder$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterHang$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterHang$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitHang$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitHang$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterEndOfRun$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterEndOfRun$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitEndOfRun$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitEndOfRun$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterFlip$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterFlip$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitFlip$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitFlip$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterGrab$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterGrab$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitGrab$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitGrab$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterTransfer$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterTransfer$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitTransfer$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitTransfer$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterAcidDrop$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterAcidDrop$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitAcidDrop$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitAcidDrop$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterLanded$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterLanded$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterLandedClean$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterLandedClean$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterBailed$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterBailed$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterTrickDisplayed$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterTrickDisplayed$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterSpinDisplayed$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterSpinDisplayed$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterCombo$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterCombo$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitCombo$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitCombo$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterJump$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterJump$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterOffEdge$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterOffEdge$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterWallplant$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterWallplant$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterWallpush$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterWallpush$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterPointRail$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterPointRail$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterSkating$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterSkating$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitSkating$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitSkating$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterWalking$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterWalking$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitWalking$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitWalking$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterNollie$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterNollie$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitNollie$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitNollie$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterPressure$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterPressure$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitPressure$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitPressure$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterVertAir$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterVertAir$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitVertAir$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitVertAir$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterEnterSpecial$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterEnterSpecial$:s}
+	:i $SetEventHandler$$Ex$ = $SkaterExitSpecial$$Scr$ = $ReportEvent$$Params$ = :s{$EventName$ = $SkaterExitSpecial$:s}
+	:i $Block$
+:i endfunction
+:i function $ReportEvent$
+	:i $printf$%s(13,"=++ Event: %a")$a$ = %GLOBAL%$EventName$
+:i endfunction
+:i :end

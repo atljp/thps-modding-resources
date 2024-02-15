@@ -1,0 +1,220 @@
+$skater_swapping_teammate_name$ = $none$
+:i function $swap_skaters_get_current_name$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$skater_family$ = $family_pro$) 
+		:i return
+		$name$ = $pro_teammate$
+	:i endif
+	:i return
+	$name$ = %GLOBAL%$name$
+:i endfunction
+:i function $swap_skaters_setup$
+	:i $Obj_ClearExceptions$
+	:i $Obj_GetId$
+	:i $setup_ped_speech$:s{
+		:i $ped_id$ = %GLOBAL%$objId$
+		:i $accept_text$ = %s(20,"Press \m5 to switch.")
+		:i $swap_skaters$
+		:i $swap_skaters_params$ = :s{
+			:i $objId$ = %GLOBAL%$objId$
+			:i $profile_name$ = %GLOBAL%$profile_name$
+			:i $restart_node$ = %GLOBAL%$restart_node$
+			:i $activation_script$ = %GLOBAL%$activation_script$
+			:i $activation_script_params$ = %GLOBAL%$activation_script_params$
+		:i :s}
+		:i $activation_script$ = %GLOBAL%$activation_script$
+		:i $activation_script_params$ = %GLOBAL%$activation_script_params$
+	:i :s}
+	:i %GLOBAL%$objId$.$Obj_SpawnScript$$swap_skaters_set_avoid_exception$
+:i endfunction
+:i function $swap_skaters$$obj_1$ = $skater$
+	:i $GoalManager_ClearLastGoal$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$objId$$script_name$ = $setup_ped_speech$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$objId$$script_name$ = $ped_speech_got_trigger$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$objId$$script_name$ = $swap_skaters_set_avoid_exception$
+	:i %GLOBAL%$objId$.$Obj_ClearException$$ObjectOutofRadius$
+	:i %GLOBAL%$objId$.$Obj_ClearException$$ObjectInRadius$
+	:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i if $IsSkaterOnVehicle$
+		:i $GetTags$
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i $reset_gurney$$no_ai$$show_gurney$
+		:i else 
+			:i $was_on_vehicle$ = %i(1,00000001)
+		:i endif
+		:i $segway_reenable_gurney$
+		:i $SkaterVehicleOff$
+		:i $SkaterLoopingSound_TurnOn$
+	:i endif
+	:i $remove_all_anim_subsets$
+	:i $TurnOffLevelParticles$
+	:i $SwapObjectModels$$obj_1$ = %GLOBAL%$obj_1$$obj_2$ = %GLOBAL%$objId$
+	:i if  (%GLOBAL%$profile_name$ = $custom$) 
+		:i %GLOBAL%$objId$.$ped_disable_bones$
+	:i else 
+		:i %GLOBAL%$objId$.$ped_enable_bones$
+	:i endif
+	:i $SetSwappedSkaterName$$profile_name$ = %GLOBAL%$profile_name$$return_params$
+	:i $RefreshSwappedSkaterData$$return_params$
+	:i if $GotParam$$restart_node$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+		:i $skater$.$RemoveSkaterFromWorld$
+		:i $wait$%i(1,00000001)$frame$
+		:i $skater$.$AddSkaterToWorld$
+	:i endif
+	:i if $GotParam$$motoskateboard$
+		:i $MotoSkateboardOn$
+		:i if $walking$
+			:i $CleanUp_WalkingtoSkating$
+			:i $SwitchToSkatingPhysics$
+			:i $MakeSkaterGoto$$OnGroundAI$
+		:i endif
+	:i else 
+		:i $MotoSkateboardOff$
+	:i endif
+	:i if $GotParam$$vehicle_params$
+		:i $Vehicle_Start$$Params$ = %GLOBAL%$vehicle_params$
+	:i else 
+		:i if $GotParam$$was_on_vehicle$
+			:i $KillObjectAnim$$current$
+			:i $MakeSkaterGoto$$OnGroundAI$
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$no_ped_setup$
+		:i if $GotParam$$was_on_vehicle$
+			:i $TerminateObjectsScripts$$id$ = %GLOBAL%$objId$
+			:i $get_skater_index_from_name$$name$ = %GLOBAL%$old_profile_name$
+			:i if $StructureContains$$vehicle_params$$structure$ =  ($master_skater_list$:a{%GLOBAL%$skater_index$:a}) 
+				:i $old_vehicle_params$ =  ($master_skater_list$:a{%GLOBAL%$skater_index$:a}->$vehicle_params$) 
+				:i %GLOBAL%$objId$.$Obj_PlayAnim$$anim$ =  (%GLOBAL%$old_vehicle_params$->$idle_anim$) $cycle$
+			:i endif
+		:i else 
+			:i if %GLOBAL%$objId$.$Obj_HasComponent$$PedLogic$
+				:i $RunScriptOnObject$:s{
+					:i $id$ = %GLOBAL%$objId$
+					:i $Ped_InitAI$
+					:i $Params$ = :s{
+						:i $Stand$
+						:i $GetAttention$
+						:i $should_look_at_skater$ = %i(0,00000000)
+					:i :s}
+				:i :s}
+				:i %GLOBAL%$objId$.$Ped_SetLogicState$$STATE_standing$
+			:i else 
+				:i %GLOBAL%$objId$.$Obj_PlayAnim$$anim$ = $Ped_M_SkateIdle1$$cycle$
+			:i endif
+		:i endif
+		:i $RunScriptOnObject$:s{
+			:i $id$ = %GLOBAL%$objId$
+			:i $setup_ped_speech$
+			:i $Params$ = :s{
+				:i $ped_id$ = %GLOBAL%$objId$
+				:i $accept_text$ = %s(20,"Press \m5 to switch.")
+				:i $swap_skaters$
+				:i $swap_skaters_params$ = :s{
+					:i $objId$ = %GLOBAL%$objId$
+					:i $profile_name$ = %GLOBAL%$old_profile_name$
+					:i $restart_node$ = %GLOBAL%$restart_node$
+					:i $activation_script$ = %GLOBAL%$activation_script$
+					:i $activation_script_params$ = %GLOBAL%$activation_script_params$
+				:i :s}
+				:i $activation_script$ = %GLOBAL%$activation_script$
+				:i $activation_script_params$ = %GLOBAL%$activation_script_params$
+			:i :s}
+		:i :s}
+		:i %GLOBAL%$objId$.$Obj_SpawnScript$$swap_skaters_set_avoid_exception$
+	:i endif
+	:i %GLOBAL%$objId$.$SetTags$$profile_name$ = %GLOBAL%$old_profile_name$
+	:i $UnPauseSkaters$
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $SetSwappedSkaterName$
+	:i $get_current_skater_name$
+	:i %GLOBAL%$old_profile_name$ = %GLOBAL%$name$
+	:i $SelectCurrentSkater$$name$ =  (%GLOBAL%$profile_name$) 
+	:i if $GotParam$$return_params$
+		:i $RemoveParameter$$return_params$
+		:i return
+		 isNull 
+	:i endif
+:i endfunction
+:i function $RefreshSwappedSkaterData$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $UpdateTrickMappings$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $set_correct_graffiti_textures$ isNull 
+	:i if $GotParam$$return_params$
+		:i $RemoveParameter$$return_params$
+		:i return
+		 isNull 
+	:i endif
+:i endfunction
+:i function $ResetSkaterToCustom$
+	:i $printf$%s(16,"Resetting Skater")
+	:i if $IsSkaterOnVehicle$
+		:i $GetTags$
+		:i if  (%GLOBAL%$racemode$ = $gurney$) 
+			:i $reset_gurney$$no_ai$$show_gurney$
+			:i $SkaterVehicleOff$
+		:i else 
+			:i $was_on_vehicle$ = %i(1,00000001)
+		:i endif
+		:i if $NodeExists$$TRG_Gurney_Ghost$
+			:i $segway_reenable_gurney$
+		:i endif
+		:i $SkaterVehicleOff$
+		:i $remove_all_anim_subsets$
+		:i $SkaterLoopingSound_TurnOn$
+	:i endif
+	:i $RestoreAllSwappedObjectModels$
+	:i $SelectCurrentSkater$$name$ = $custom$
+	:i $RefreshSwappedSkaterData$
+	:i $ResetSkaters$
+:i endfunction
+:i function $swap_skaters_wait_and_reset_avoid_exception$
+	:i $wait$%i(20,00000014)$gameframes$
+	:i $swap_skaters_set_avoid_exception$
+:i endfunction
+:i function $swap_skaters_set_avoid_exception$
+	:i $Obj_SetInnerAvoidRadius$%i(3,00000003)
+	:i $Obj_GetId$
+	:i $SetEventHandlerOnObject$:s{
+		:i $object$ = %GLOBAL%$objId$
+		:i $exception$
+		:i $ex$ = $ObjectInAvoidRadius$
+		:i $scr$ = $goal_pro_bounce_skater$
+		:i $Params$ = :s{$reset_script$ = $swap_skaters_wait_and_reset_avoid_exception$:s}
+	:i :s}
+:i endfunction
+:i function $swap_skaters_get_current_skater_name$
+	:i %GLOBAL%$objId$.$GetTags$
+	:i if $GotParam$$model_name$
+		:i return
+		$model_name$ = %GLOBAL%$model_name$
+	:i endif
+:i endfunction
+:i function $swap_skaters_get_vehicle_params$
+	:i $skater$.$GetTags$
+	:i return
+	$skater_vehicle_params$ = %GLOBAL%$vehicle_params$
+:i endfunction
+:i function $play_swappable_pro_intro_cameras$
+	:i if NOT $IsAlive$$name$ = $TRG_Ped_TeammateIntroPro$
+		:i $Create$$name$ = $TRG_Ped_TeammateIntroPro$
+	:i endif
+	:i if $CompositeObjectExists$$name$ = $TRG_Ped_TeammateIntroPro$
+		:i $SwapObjectModels$$obj_1$ = $TRG_Ped_TeammateIntroPro$$obj_2$ = $skater$
+	:i endif
+	:i if NOT $GotParam$$intro_cameras$
+		:i $script_assert$%s(26,"no intro_cameras specified")
+	:i endif
+	:i $PlayIntroCameras$$goal_intro_cameras$ = %GLOBAL%$intro_cameras$$letterbox$
+	:i if $CompositeObjectExists$$name$ = $TRG_Ped_TeammateIntroPro$
+		:i $SwapObjectModels$$obj_1$ = $TRG_Ped_TeammateIntroPro$$obj_2$ = $skater$
+	:i endif
+	:i $Kill$$name$ = $TRG_Ped_TeammateIntroPro$
+:i endfunction
+:i :end

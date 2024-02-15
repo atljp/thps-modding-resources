@@ -1,0 +1,1439 @@
+
+:i $goal_editor_placement_mode$ = %i(0,00000000)
+:i $in_create_a_goal$ = %i(0,00000000)
+:i function $set_in_create_a_goal$
+	:i $Change$$in_create_a_goal$ = %i(1,00000001)
+:i endfunction
+:i function $reset_in_create_a_goal$
+	:i $Change$$in_create_a_goal$ = %i(0,00000000)
+:i endfunction
+:i function $my_exit_pause_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $off$:s}
+	:i if $CustomParkMode$$editing$
+		:i if NOT $GotParam$$DoNotSwitchEditorState$
+			:i $SetParkEditorState$$state$ = $edit$
+			:i $SetParkEditorPauseMode$$unpause$
+		:i endif
+	:i endif
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $parked_create_a_goal$
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $SwitchOffRailEditor$
+	:i $DisassociateFromObject$
+	:i $my_exit_pause_menu$
+	:i $SetParkEditorPauseMode$$pause$
+	:i $PauseSkaters$
+	:i $HideSkaterAndMiscSkaterEffects$
+	:i $kill_start_key_binding$
+	:i $create_existing_goals_menu$
+	:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $existing_goals_menu_back$
+	:i $reset_in_create_a_goal$
+	:i $goto$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}
+:i endfunction
+:i function $create_existing_goals_menu$
+	:i if NOT $GameModeEquals$$is_creategoals$
+		:i $ScriptAssert$%s(30,"Game mode is not CreateGoals !")
+	:i endif
+	:i $menu3d_hide$
+	:i $hide_current_goal$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $set_in_create_a_goal$
+	:i $array_size$ = %i(0,00000000)
+	:i $GetCurrentLevel$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$level$$b$ = $Load_Sk5Ed_gameplay$
+		:i $level$ = $Load_Sk5Ed$
+	:i endif
+	:i $GoalEditor$.$GetEditedGoalsInfo$$level$ = %GLOBAL%$level$
+	:i if $GotParam$$EditedGoalsInfo$
+		:i $GetArraySize$%GLOBAL%$EditedGoalsInfo$
+	:i endif
+	:i $pause_menu_gradient$$on$
+	:i $num_lines$ =  (%GLOBAL%$array_size$ + %i(2,00000002)) 
+	:i if  (%GLOBAL%$num_lines$ > %i(8,00000008)) 
+		:i $num_lines$ = %i(8,00000008)
+	:i endif
+	:i $make_new_themed_scrolling_menu$$title$ = %s(13,"CREATED GOALS")$dims$ =  (%vec2(300.000000,0.000000) + %vec2(0.000000,1.000000) * %i(23,00000017) * %GLOBAL%$num_lines$) 
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $existing_goals_menu_back$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+		:i $params$ = :s{$last_item$:s}
+	:i else 
+		:i $params$ = :s{:s}
+	:i endif
+	:i if $GoalEditor$.$MaxEditedGoalsReached$$level$ = %GLOBAL%$level$
+		:i $params$ =  (%GLOBAL%$params$ + :s{$not_focusable$ = $not_focusable$:s}) 
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $first_item$
+		:i $text$ = %s(15,"Create new goal")
+		:i $pad_choose_script$ = $create_goal_type_select_menu$
+		:i $centered$ = %i(1,00000001)
+		:i $no_bg$
+		:i %GLOBAL%$params$
+	:i :s}
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i $params$ = :s{
+				:i $text$ =  ( (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}) ->$view_goals_text$) 
+				:i $pad_choose_script$ = $select_created_goal$
+				:i $pad_choose_params$ = :s{$goal_id$ =  ( (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}) ->$goal_id$) :s}
+				:i $centered$
+				:i $no_bg$
+			:i :s}
+			:i if  (%GLOBAL%$i$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) ) 
+				:i $params$ =  (%GLOBAL%$params$ + :s{$last_item$:s}) 
+			:i endif
+			:i $theme_menu_add_item$%GLOBAL%$params$
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $finish_themed_scrolling_menu$
+:i endfunction
+:i function $select_created_goal$
+	:i $end_current_goal_run$
+	:i $GoalEditor$.$SetCurrentEditorGoal$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_edit_goal_menu$$go_back_to_goal_list_menu$
+:i endfunction
+:i $goals_menu_info$ = 
+:i :a{
+	:i :s{
+		:i $name$ = %s(13,"SKATE letters")
+		:i $type$ = $skate$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(13,"COMBO letters")
+		:i $type$ = $combo$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(10,"High Score")
+		:i $type$ = $HighScore$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(10,"High Combo")
+		:i $type$ = $HighCombo$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(12,"Skate-Tricks")
+		:i $type$ = $Skatetris$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(18,"Combo Skate-Tricks")
+		:i $type$ = $ComboSkatetris$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(9,"Tricktris")
+		:i $type$ = $TrickTris$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(17,"Trick to the Beat")
+		:i $type$ = $TrickBeat$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(17,"Checkpoint / Race")
+		:i $type$ = $race$
+	:i :s}
+	:i :s{
+		:i $name$ = %s(3,"Gap")
+		:i $type$ = $gap$
+	:i :s}
+	:i :a}
+:i function $create_goal_type_select_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_goal_panel_messages$
+	:i $set_in_create_a_goal$
+	:i $make_new_themed_sub_menu$$title$ = %s(16,"SELECT GOAL TYPE")
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_existing_goals_menu$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $CreateGapList$
+	:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+		:i $no_gaps$ = %i(1,00000001)
+	:i endif
+	:i $RemoveParameter$$GapList$
+	:i $GetArraySize$$goals_menu_info$
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$i$ = %i(0,00000000)) 
+			:i $first_item$ = $first_item$
+		:i else 
+			:i $RemoveParameter$$first_item$
+		:i endif
+		:i $not_focusable$ =  ($goals_menu_info$:a{%GLOBAL%$i$:a}->$not_focusable$) 
+		:i if  ($goals_menu_info$:a{%GLOBAL%$i$:a}->$type$ = $gap$) 
+			:i if $CustomParkMode$$editing$
+				:i if $GotParam$$no_gaps$
+					:i $not_focusable$ = $not_focusable$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$num_gaps_got$ = %i(0,00000000)) 
+					:i $not_focusable$ = $not_focusable$
+				:i endif
+			:i endif
+		:i endif
+		:i $theme_menu_add_item$:s{
+			:i %GLOBAL%$first_item$
+			:i $not_focusable$ = %GLOBAL%$not_focusable$
+			:i $text$ =  ($goals_menu_info$:a{%GLOBAL%$i$:a}->$name$) 
+			:i $pad_choose_script$ = $goal_editor_set_type$
+			:i $pad_choose_params$ = :s{$type$ =  ($goals_menu_info$:a{%GLOBAL%$i$:a}->$type$) :s}
+			:i $centered$ = %i(1,00000001)
+		:i :s}
+		:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(4,"Done")
+		:i $pad_choose_script$ = $create_existing_goals_menu$
+		:i $last_item$
+		:i $centered$ = %i(1,00000001)
+		:i $last_menu_item$ = %i(1,00000001)
+	:i :s}
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $edit_goal_pad_start$
+	:i $generic_menu_pad_choose_sound$
+	:i $GoalEditor$.$Suspend$
+	:i $set_in_create_a_goal$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GoalEditor$.$GoalHasAllPositionsSet$
+		:i $text$ = %s(18,"Quit editing goal?")
+	:i else 
+		:i $text$ = %s(28,"Quit editing and erase goal?")
+	:i endif
+	:i $create_dialog_box$:s{$title$ = %s(4,"Quit")
+		:i $text$ = %GLOBAL%$text$
+		:i $pos$ = %vec2(310.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pad_back_script$ = $edit_goal_continue$
+		:i $pad_back_params$ = :s{$make_sound$:s}
+		:i $buttons$ = 
+		:i :a{
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $edit_goal_continue$:s}
+			:i :s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $edit_goal_quit$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $edit_goal_continue$
+	:i if $GotParam$$make_sound$
+		:i $generic_menu_pad_back_sound$
+	:i endif
+	:i $dialog_box_exit$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = 
+		:i :a{
+			:i :s{
+				:i $pad_start$
+				:i $edit_goal_pad_start$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i $create_cag_helper_text$
+	:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $Debounce$$Triangle$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $GoalEditor$.$Unsuspend$
+:i endfunction
+:i function $edit_goal_quit$
+	:i $GoalEditor$.$RefreshGoalCursorPosition$
+	:i $dialog_box_exit$
+	:i $Change$$goal_editor_placement_mode$ = %i(0,00000000)
+	:i if $GoalEditor$.$GoalHasAllPositionsSet$
+		:i $create_edit_goal_menu$$go_back_to_goal_list_menu$
+	:i else 
+		:i $edit_goal_menu_back$
+	:i endif
+:i endfunction
+:i function $goal_editor_set_type$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $end_current_goal_run$
+	:i $HideSkaterAndMiscSkaterEffects$
+	:i $destroy_goal_panel_messages$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = 
+		:i :a{
+			:i :s{
+				:i $pad_start$
+				:i $edit_goal_pad_start$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i $delete_goal_editor_marker_objects$
+	:i if $GoalEditor$.$FindUnfinishedGoal$$type$ = %GLOBAL%$type$
+		:i $GoalEditor$.$EditGoal$
+	:i else 
+		:i $goal_name$ = %s(0,"")
+		:i $GetArraySize$$goals_menu_info$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if  (%GLOBAL%$type$ =  ($goals_menu_info$:a{%GLOBAL%$index$:a}->$type$) ) 
+				:i $goal_name$ =  ($goals_menu_info$:a{%GLOBAL%$index$:a}->$name$) 
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i if $GoalEditor$.$GoalExists$$goal_name$ = %GLOBAL%$goal_name$
+			:i $suffix$ = %i(2,00000002)
+			:i while
+				
+				:i $FormatText$$TextName$ = $new_name$%s(5,"%s %d")$s$ = %GLOBAL%$goal_name$$d$ = %GLOBAL%$suffix$
+				:i if NOT $GoalEditor$.$GoalExists$$goal_name$ = %GLOBAL%$new_name$
+					:i continue
+					
+				:i endif
+				:i $suffix$ =  (%GLOBAL%$suffix$ + %i(1,00000001)) 
+			:i loop_to 
+			:i $goal_name$ = %GLOBAL%$new_name$
+		:i endif
+		:i $GoalEditor$.$NewEditorGoal$
+		:i $GoalEditor$.$SetEditorGoalType$$type$ = %GLOBAL%$type$
+		:i $GoalEditor$.$SetEditorGoalName$$name$ = %GLOBAL%$goal_name$
+	:i endif
+	:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $Debounce$$Triangle$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $GoalEditor$.$unpause$
+	:i $GoalEditor$.$Unsuspend$
+	:i $GoalEditor$.$Unhide$
+	:i $Change$$goal_editor_placement_mode$ = %i(1,00000001)
+	:i if $CustomParkMode$$editing$
+		:i $GetParkEditorCursorPos$
+		:i $RebuildParkNodeArray$
+	:i else 
+		:i $skater$.$GetLastGroundPos$
+	:i endif
+	:i $GoalEditor$.$EditorCam_Initialise$$position$ = %GLOBAL%$pos$
+	:i $SetActiveCamera$$id$ = $GoalEditor$
+	:i $create_cag_helper_text$$PedPosition$
+:i endfunction
+:i function $create_cag_helper_text$
+	:i if $GotParam$$PedPosition$
+		:i %GLOBAL%$cag_helper_text$ = $cag_helper_text_no_back$
+		:i if $IsXBox$
+			:i %GLOBAL%$cag_helper_text$ = $cag_helper_text_no_back_xbox$
+		:i endif
+		:i if $IsNGC$
+			:i %GLOBAL%$cag_helper_text$ = $cag_helper_text_no_back_ngc$
+		:i endif
+	:i else 
+		:i %GLOBAL%$cag_helper_text$ = $cag_helper_text$
+		:i if $IsXBox$
+			:i %GLOBAL%$cag_helper_text$ = $cag_helper_text_xbox$
+		:i endif
+		:i if $IsNGC$
+			:i %GLOBAL%$cag_helper_text$ = $cag_helper_text_ngc$
+		:i endif
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $create_helper_text$%GLOBAL%$cag_helper_text$$parent$ = $root_window$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+:i endfunction
+:i function $create_edit_goal_menu$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $destroy_goal_panel_messages$
+	:i $SetParkEditorPauseMode$$pause$
+	:i $pause_menu_gradient$$on$
+	:i $set_in_create_a_goal$
+	:i $make_new_themed_sub_menu$$title$ = %s(9,"EDIT GOAL")
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i if $GotParam$$go_back_to_goal_list_menu$
+		:i $back_params$ = :s{$go_back_to_goal_list_menu$:s}
+	:i else 
+		:i $back_params$ = :s{:s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $edit_goal_menu_back$$params$ = %GLOBAL%$back_params$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i switch %GLOBAL%$goal_type$
+		:i case $HighScore$
+			:i $high_score_text$ = %s(14,"Set High Score")
+			:i endcase
+		case $HighCombo$
+			:i $high_score_text$ = %s(20,"Set High Combo Score")
+			:i end_switch
+	
+	:i switch %GLOBAL%$goal_type$
+		:i case $HighScore$
+			:i endcase
+		case $HighCombo$
+			:i $theme_menu_add_number_item$:s{
+				:i $text$ = %GLOBAL%$high_score_text$
+				:i $id$ = $goal_score$
+				:i $min$ = %i(0,00000000)
+				:i $max$ = %i(1000000000,3b9aca00)
+				:i $step$ = %i(1000000,000f4240)
+				:i $value$ = %GLOBAL%$score$
+				:i $pad_left_script$ = $goal_update_score$
+				:i $pad_right_script$ = $goal_update_score$
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i endcase
+		case $Skatetris$
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(17,"Edit Skate-Tricks")
+				:i $pad_choose_script$ = $create_edit_skatetris_menu$$pad_choose_params$ = %GLOBAL%$back_params$
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i endcase
+		case $ComboSkatetris$
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(26,"   Edit Combo Skate-Tricks")
+				:i $pad_choose_script$ = $create_edit_skatetris_menu$$pad_choose_params$ = %GLOBAL%$back_params$
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i endcase
+		case $TrickTris$
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(14,"Edit Tricktris")
+				:i $pad_choose_script$ = $create_edit_skatetris_menu$$pad_choose_params$ = %GLOBAL%$back_params$
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i endcase
+		case $TrickBeat$
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(11,"Edit Tricks")
+				:i $pad_choose_script$ = $create_edit_skatetris_menu$$pad_choose_params$ = :s{%GLOBAL%$back_params$$TrickBeat$:s}
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i endcase
+		case $gap$
+			:i $RemoveParameter$$not_focusable$
+			:i $CreateGapList$
+			:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+				:i $extra_text$ = %s(19,"Error! Gaps deleted")
+				:i $not_focusable$ = %i(1,00000001)
+			:i else 
+				:i if $GotParam$$Gaps$
+					:i $GetArraySize$%GLOBAL%$Gaps$
+					:i $FormatText$$TextName$ = $extra_text$%s(14,"%d gaps chosen")$d$ = %GLOBAL%$array_size$
+				:i else 
+					:i $extra_text$ = %s(14,"No gaps chosen")
+				:i endif
+			:i endif
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(9,"Pick gaps")
+				:i $not_focusable$ = %GLOBAL%$not_focusable$
+				:i $extra_text$ = %GLOBAL%$extra_text$
+				:i $pad_choose_script$ = $create_gap_select_menu$
+				:i $first_item$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(14,"Required Trick")
+				:i $extra_text$ = %GLOBAL%$required_trick_name$
+				:i $pad_choose_script$ = $input_required_trick_name$
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i :s}
+			:i end_switch
+	
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(14,"Edit Positions")
+		:i $pad_choose_script$ = $edit_goal$
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+	:i :s}
+	:i $theme_menu_add_number_item$:s{
+		:i $text$ = %s(14,"Set Time Limit")
+		:i $id$ = $goal_time$
+		:i $min$ = %i(15,0000000f)
+		:i $max$ = %i(3600,00000e10)
+		:i $step$ = %i(5,00000005)
+		:i $value$ = %GLOBAL%$time_limit$
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_left_script$ = $goal_update_time_limit$
+		:i $pad_right_script$ = $goal_update_time_limit$
+	:i :s}
+	:i if  (%GLOBAL%$goal_type$ = $race$) 
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(19,"Per-Checkpoint Time")
+			:i $id$ = $goal_checkpoint_time$
+			:i $min$ = %i(0,00000000)
+			:i $max$ = %i(60,0000003c)
+			:i $step$ = %i(1,00000001)
+			:i $value$ = %GLOBAL%$race_per_checkpoint_time$
+			:i $pad_left_script$ = $goal_update_checkpoint_time$
+			:i $pad_right_script$ = $goal_update_checkpoint_time$
+			:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i :s}
+		:i $goal_update_checkpoint_time$$value$ = %GLOBAL%$race_per_checkpoint_time$
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(4,"Laps")
+			:i $id$ = $goal_laps$
+			:i $min$ = %i(1,00000001)
+			:i $max$ = %i(10,0000000a)
+			:i $step$ = %i(1,00000001)
+			:i $value$ = %GLOBAL%$race_total_laps$
+			:i $pad_left_script$ = $goal_update_laps$
+			:i $pad_right_script$ = $goal_update_laps$
+			:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i :s}
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(9,"Name Goal")
+		:i $extra_text$ = %GLOBAL%$view_goals_text$
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_choose_script$ = $name_goal$
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(8,"Name Ped")
+		:i $extra_text$ = %GLOBAL%$ped_name$
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_choose_script$ = $name_goal_ped$
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(13,"Set Goal Text")
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_choose_script$ = $set_goal_text$
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(16,"Edit Win Message")
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_choose_script$ = $edit_goal_win_message$
+	:i :s}
+	:i switch %GLOBAL%$goal_type$
+		:i case $TrickBeat$
+			:i endcase
+		case $Skatetris$
+			:i endcase
+		case $ComboSkatetris$
+			:i endcase
+		case $TrickTris$
+			:i $nullscript$
+			:i endcase
+		default 
+			:i $theme_menu_add_number_item$:s{
+				:i $text$ = %s(7,"Control")
+				:i $text_pos$ = %vec2(75.000000,-5.000000)
+				:i $id$ = $goal_control$
+				:i $value$ = %i(3,00000003)
+			:i :s}
+			:i $update_control_text$$control_type$ = %GLOBAL%$control_type$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $goal_control$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_left$$goal_update_control$$params$ = :s{$dir$ = %i(4294967295,ffffffff):s}:s}
+					:i :s{$pad_right$$goal_update_control$:s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+			:i end_switch
+	
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(11,"Delete Goal")
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $pad_choose_script$ = $delete_goal$
+		:i $no_sound$
+	:i :s}
+	:i if NOT $CustomParkMode$$editing$
+		:i $RemoveParameter$$not_focusable$
+		:i if  (%GLOBAL%$goal_type$ = $gap$) 
+			:i if NOT $GotParam$$Gaps$
+				:i $not_focusable$ = $not_focusable$
+			:i endif
+		:i endif
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(9,"Test Goal")
+			:i $text_pos$ = %vec2(75.000000,-5.000000)
+			:i $pad_choose_script$ = $test_goal$
+			:i $not_focusable$ = %GLOBAL%$not_focusable$
+		:i :s}
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(4,"Done")
+		:i $pad_choose_script$ = $edit_goal_menu_back$
+		:i $no_sound$
+		:i $last_item$
+		:i $text_pos$ = %vec2(75.000000,-5.000000)
+		:i $last_menu_item$ = %i(1,00000001)
+	:i :s}
+	:i $finish_themed_sub_menu$
+	:i $create_helper_text$$generic_helper_text_up_down_adjust$
+:i endfunction
+:i function $generate_control_name$
+	:i switch %GLOBAL%$control_type$
+		:i case $junkercar$
+			:i return
+			$control_text$ = %s(10,"Muscle Car")
+			:i endcase
+		case $RallyCar$
+			:i return
+			$control_text$ = %s(9,"Rally Car")
+			:i endcase
+		case $ImpalaCar$
+			:i return
+			$control_text$ = %s(11,"Trashed Car")
+			:i endcase
+		case $TaxiCar$
+			:i return
+			$control_text$ = %s(8,"Taxi Car")
+			:i endcase
+		case $PoliceCar$
+			:i return
+			$control_text$ = %s(10,"Police Car")
+			:i endcase
+		case $ElCaminoCar$
+			:i return
+			$control_text$ = %s(10,"Surfer Car")
+			:i endcase
+		case $LadaCar$
+			:i return
+			$control_text$ = %s(11,"Russian Car")
+			:i endcase
+		case $MiniBajaCar$
+			:i return
+			$control_text$ = %s(13,"Mini Baja Car")
+			:i endcase
+		case $LimoCar$
+			:i return
+			$control_text$ = %s(9,"Limousine")
+			:i endcase
+		case $Forklift$
+			:i return
+			$control_text$ = %s(8,"Forklift")
+			:i endcase
+		case $Walk$
+			:i return
+			$control_text$ = %s(4,"Walk")
+			:i endcase
+		case $skate$
+			:i return
+			$control_text$ = %s(5,"Skate")
+			:i endcase
+		case $WalkOnly$
+			:i return
+			$control_text$ = %s(9,"Walk Only")
+			:i endcase
+		case $SecurityCart$
+			:i return
+			$control_text$ = %s(13,"Security Cart")
+			:i endcase
+		case $GardnersCart$
+			:i return
+			$control_text$ = %s(15,"Gardener's Cart")
+			:i endcase
+		case $Blimp$
+			:i return
+			$control_text$ = %s(5,"Blimp")
+			:i endcase
+		case $BusUK$
+			:i return
+			$control_text$ = %s(6,"Bus UK")
+			:i endcase
+		case $RcCar$
+			:i return
+			$control_text$ = %s(6,"RC Car")
+			:i endcase
+		case $Tauruscar$
+			:i return
+			$control_text$ = %s(6,"Taurus")
+			:i endcase
+		case $PickupTruck$
+			:i return
+			$control_text$ = %s(12,"Pickup Truck")
+			:i endcase
+		case $WranglerCar$
+			:i return
+			$control_text$ = %s(13,"Jeep Wrangler")
+			:i endcase
+		case $SportsCar$
+			:i return
+			$control_text$ = %s(10,"Sports Car")
+			:i endcase
+		case $Mini_kart$
+			:i return
+			$control_text$ = %s(7,"Go Kart")
+			:i endcase
+		default 
+			:i return
+			$control_text$ = %s(28,"Update goal_editor_menu.q !!")
+			:i end_switch
+	
+:i endfunction
+:i function $update_control_text$
+	:i $generate_control_name$$control_type$ = %GLOBAL%$control_type$
+	:i $SetScreenElementProps$:s{$id$ = :s{$goal_control$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$control_text$:s}
+	:i $GetStackedScreenElementPos$$X$$id$ = :s{$goal_control$$child$ = %i(3,00000003):s}$offset$ = %vec2(3.000000,2.000000)
+	:i $SetScreenElementProps$:s{$id$ = :s{$goal_control$$child$ = %i(5,00000005):s}$pos$ = %GLOBAL%$pos$:s}
+:i endfunction
+:i $control_types_basic$ = :a{$skate$$skate$$Walk$$RallyCar$$junkercar$$ImpalaCar$$PoliceCar$$SecurityCart$$GardnersCart$$ElCaminoCar$$LadaCar$$MiniBajaCar$$LimoCar$$Forklift$$BusUK$$RcCar$$Tauruscar$$WranglerCar$$PickupTruck$$SportsCar$$Mini_kart$:a}
+:i function $goal_update_control$$dir$ = %i(1,00000001)
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $control_types$ = $control_types_basic$
+	:i $GetArraySize$%GLOBAL%$control_types$
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i if $ChecksumEquals$$a$ =  (%GLOBAL%$control_types$:a{%GLOBAL%$i$:a}) $b$ = %GLOBAL%$control_type$
+			:i continue
+			
+		:i endif
+		:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if NOT  (%GLOBAL%$i$ < %GLOBAL%$array_size$) 
+		:i $printf$%s(53,"Control type %s not found in list of available types!")$s$ = %GLOBAL%$control_type$
+		:i return
+		
+	:i endif
+	:i $i$ =  (%GLOBAL%$i$ + %GLOBAL%$dir$) 
+	:i if NOT  (%GLOBAL%$i$ < %GLOBAL%$array_size$) 
+		:i $i$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$i$ < %i(0,00000000)) 
+		:i $i$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+	:i endif
+	:i $control_type$ =  (%GLOBAL%$control_types$:a{%GLOBAL%$i$:a}) 
+	:i $GoalEditor$.$SetGoalControlType$%GLOBAL%$control_type$
+	:i $update_control_text$$control_type$ = %GLOBAL%$control_type$
+:i endfunction
+:i function $edit_goal_menu_back$
+	:i $edit_goal_menu_exit$$no_exit_pause$
+	:i $generic_menu_pad_choose_sound$
+	:i if $CustomParkMode$$editing$
+		:i $parked_continue_editing$
+	:i else 
+		:i $create_existing_goals_menu$
+	:i endif
+:i endfunction
+:i function $create_gap_select_menu$
+	:i $CreateGapList$
+	:i $num_menu_lines$ = %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$num_menu_lines$ > %i(10,0000000a)) 
+		:i $num_menu_lines$ = %i(10,0000000a)
+	:i endif
+	:i if  (%GLOBAL%$num_menu_lines$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_themed_scrolling_menu$$title$ = %s(11,"SELECT GAPS")$dims$ =  (%vec2(300.000000,0.000000) + %vec2(0.000000,1.000000) * %i(23,00000017) * %GLOBAL%$num_menu_lines$) 
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_edit_goal_menu$:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i $params$ = :s{:s}
+			:i if  (%GLOBAL%$i$ = %i(0,00000000)) 
+				:i $params$ = :s{$first_item$:s}
+			:i endif
+			:i if  (%GLOBAL%$i$ = %GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+				:i $params$ =  (%GLOBAL%$params$ + :s{$last_item$:s}) 
+			:i endif
+			:i if $CustomParkMode$$editing$
+			:i else 
+				:i if  (%GLOBAL%$GapList$:a{%GLOBAL%$i$:a}->$times$ = %i(0,00000000)) 
+					:i $params$ =  (%GLOBAL%$params$ + :s{$not_focusable$ = $not_focusable$:s}) 
+				:i endif
+			:i endif
+			:i if $GoalEditor$.$EditedGoalGotGap$$gap_number$ = %GLOBAL%$i$
+				:i $value$ = %i(1,00000001)
+			:i else 
+				:i $value$ = %i(0,00000000)
+			:i endif
+			:i $FormatText$$ChecksumName$ = $id$%s(7,"check%d")$d$ = %GLOBAL%$i$
+			:i $theme_menu_add_checkbox_item$:s{
+				:i $value$ = %GLOBAL%$value$
+				:i $id$ = %GLOBAL%$id$
+				:i $text$ =  (%GLOBAL%$GapList$:a{%GLOBAL%$i$:a}->$gap_name$) 
+				:i $pad_choose_script$ = $toggle_gap_on_off$
+				:i $pad_choose_params$ = :s{$gap_number$ = %GLOBAL%$i$:s}
+				:i $focus_script$ = $gap_select_menu_focus$
+				:i $focus_params$ =  (%GLOBAL%$GapList$:a{%GLOBAL%$i$:a}) 
+				:i %GLOBAL%$params$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $no_bg$ = $no_bg$
+			:i :s}
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $finish_themed_scrolling_menu$$wide_menu$
+:i endfunction
+:i function $toggle_gap_on_off$
+	:i if $GoalEditor$.$EditedGoalGotGap$$gap_number$ = %GLOBAL%$gap_number$
+		:i $GoalEditor$.$EditedGoalRemoveGap$$gap_number$ = %GLOBAL%$gap_number$
+		:i $theme_set_checkbox$$value$ = %i(0,00000000)
+	:i else 
+		:i $GoalEditor$.$EditedGoalAddGap$$gap_number$ = %GLOBAL%$gap_number$
+		:i $theme_set_checkbox$$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $gap_select_menu_focus$
+	:i if NOT $CustomParkMode$$editing$
+		:i $gap_menu_focus_show_gap$ isNull 
+	:i endif
+	:i $theme_checkbox_focus$
+:i endfunction
+:i function $create_edit_skatetris_menu$
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i if  (%GLOBAL%$goal_type$ = $TrickBeat$) 
+		:i $gotopreserveparams$$create_key_combos_menu$
+	:i endif
+	:i $count_chosen_combo_sets$
+	:i if  (%GLOBAL%$num_chosen_combo_sets$ = %i(0,00000000)) 
+		:i $gotopreserveparams$$create_key_combos_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i switch %GLOBAL%$goal_type$
+		:i case $ComboSkatetris$
+			:i $make_new_themed_sub_menu$$title$ = %s(18,"COMBO SKATE-TRICKS")
+			:i endcase
+		case $TrickTris$
+			:i $make_new_themed_sub_menu$$title$ = %s(14,"EDIT TRICKTRIS")
+			:i endcase
+		default 
+			:i $make_new_themed_sub_menu$$title$ = %s(17,"EDIT SKATE-TRICKS")
+			:i end_switch
+	
+	:i if $GotParam$$go_back_to_goal_list_menu$
+		:i $back_params$ = :s{$go_back_to_goal_list_menu$:s}
+	:i else 
+		:i $back_params$ = :s{:s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_edit_goal_menu$$params$ = %GLOBAL%$back_params$:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $first_item$
+		:i $text$ = %s(10,"Key combos")
+		:i $pad_choose_script$ = $create_key_combos_menu$
+		:i $pad_choose_params$ = :s{%GLOBAL%$back_params$ isNull :s}
+		:i $centered$ = %i(1,00000001)
+	:i :s}
+	:i $theme_menu_add_number_item$:s{
+		:i $text$ = %s(4,"Spin")
+		:i $id$ = $goal_spin$
+		:i $min$ = %i(0,00000000)
+		:i $max$ = %i(900,00000384)
+		:i $step$ = %i(180,000000b4)
+		:i $avoid$ = %i(180,000000b4)
+		:i $value$ = %GLOBAL%$spin$
+		:i $pad_left_script$ = $goal_update_spin$
+		:i $pad_right_script$ = $goal_update_spin$
+	:i :s}
+	:i $goal_update_spin$$value$ = %GLOBAL%$spin$
+	:i switch %GLOBAL%$goal_type$
+		:i case $ComboSkatetris$
+			:i if $GotParam$$single_combo$
+				:i $value$ = %i(1,00000001)
+				:i $params$ = :s{:s}
+				:i $NoSkatetrisParams$ = %i(1,00000001)
+			:i else 
+				:i $value$ = %i(0,00000000)
+				:i $params$ = :s{$on$:s}
+			:i endif
+			:i $theme_menu_add_checkbox_item$:s{
+				:i $value$ = %GLOBAL%$value$
+				:i $id$ = $SingleCombo$
+				:i $text$ = %s(12,"Single Combo")
+				:i $pad_choose_script$ = $change_single_combo$$pad_choose_params$ = %GLOBAL%$params$
+			:i :s}
+			:i if NOT $GotParam$$NoSkatetrisParams$
+				:i $max$ = %GLOBAL%$max_tricks$
+			:i else 
+				:i $max$ = %i(15,0000000f)
+			:i endif
+			:i if  (%GLOBAL%$combo_size$ > %GLOBAL%$max$) 
+				:i $combo_size$ = %GLOBAL%$max$
+				:i $GoalEditor$.$SetGoalSpecificParams$$combo_size$ = %GLOBAL%$max$
+			:i endif
+			:i $theme_menu_add_number_item$:s{
+				:i $text$ = %s(10,"Combo size")
+				:i $id$ = $goal_combo_size$
+				:i $min$ = %i(1,00000001)
+				:i $max$ = %GLOBAL%$max$
+				:i $step$ = %i(1,00000001)
+				:i $value$ = %GLOBAL%$combo_size$
+				:i $pad_left_script$ = $goal_update_combo_size$
+				:i $pad_right_script$ = $goal_update_combo_size$
+			:i :s}
+			:i endcase
+		case $TrickTris$
+			:i $theme_menu_add_number_item$:s{
+				:i $text$ = %s(10,"Block size")
+				:i $id$ = $goal_block_size$
+				:i $min$ = %i(1,00000001)
+				:i $max$ = %i(15,0000000f)
+				:i $step$ = %i(1,00000001)
+				:i $value$ = %GLOBAL%$tricktris_block_size$
+				:i $pad_left_script$ = $goal_update_tricktris_block_size$
+				:i $pad_right_script$ = $goal_update_tricktris_block_size$
+			:i :s}
+			:i $theme_menu_add_number_item$:s{
+				:i $text$ = %s(12,"Total to win")
+				:i $id$ = $goal_total_to_win$
+				:i $min$ = %i(1,00000001)
+				:i $max$ = %i(1000,000003e8)
+				:i $step$ = %i(1,00000001)
+				:i $value$ = %GLOBAL%$tricktris_total_to_win$
+				:i $pad_left_script$ = $goal_update_tricktris_total_to_win$
+				:i $pad_right_script$ = $goal_update_tricktris_total_to_win$
+			:i :s}
+			:i $NoSkatetrisParams$ = %i(1,00000001)
+			:i end_switch
+	
+	:i if NOT $GotParam$$NoSkatetrisParams$
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(21,"Acceleration interval")
+			:i $id$ = $goal_acceleration_interval$
+			:i $min$ = %i(1,00000001)
+			:i $max$ = %i(10,0000000a)
+			:i $step$ = %i(1,00000001)
+			:i $value$ = %GLOBAL%$acceleration_interval$
+			:i $pad_left_script$ = $goal_update_acceleration_interval$
+			:i $pad_right_script$ = $goal_update_acceleration_interval$
+		:i :s}
+		:i $percent$ =  (%GLOBAL%$acceleration_percent$ * %i(100,00000064) + %f(0.010000)) 
+		:i $CastToInteger$$percent$
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(20,"Acceleration percent")
+			:i $id$ = $goal_acceleration_percent$
+			:i $min$ = %i(1,00000001)
+			:i $max$ = %i(100,00000064)
+			:i $step$ = %i(1,00000001)
+			:i $value$ = %GLOBAL%$percent$
+			:i $pad_left_script$ = $goal_update_acceleration_percent$
+			:i $pad_right_script$ = $goal_update_acceleration_percent$
+		:i :s}
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(10,"Trick time")
+			:i $id$ = $goal_trick_time$
+			:i $min$ = %i(5,00000005)
+			:i $max$ = %i(3000,00000bb8)
+			:i $step$ = %i(5,00000005)
+			:i $value$ = %GLOBAL%$trick_time$
+			:i $pad_left_script$ = $goal_update_trick_time$
+			:i $pad_right_script$ = $goal_update_trick_time$
+		:i :s}
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(26,"Stop adding tricks at time")
+			:i $id$ = $goal_time_to_stop_adding_tricks$
+			:i $min$ = %i(5,00000005)
+			:i $max$ =  (%GLOBAL%$time_limit$%i(4294967291,fffffffb)) 
+			:i $step$ = %i(5,00000005)
+			:i $value$ = %GLOBAL%$time_to_stop_adding_tricks$
+			:i $pad_left_script$ = $goal_update_time_to_stop_adding_tricks$
+			:i $pad_right_script$ = $goal_update_time_to_stop_adding_tricks$
+		:i :s}
+		:i $theme_menu_add_number_item$:s{
+			:i $text$ = %s(10,"Max tricks")
+			:i $id$ = $goal_max_tricks$
+			:i $min$ = %i(1,00000001)
+			:i $max$ = %i(15,0000000f)
+			:i $step$ = %i(1,00000001)
+			:i $value$ = %GLOBAL%$max_tricks$
+			:i $pad_left_script$ = $goal_update_max_tricks$
+			:i $pad_right_script$ = $goal_update_max_tricks$
+		:i :s}
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(4,"Done")
+		:i $pad_choose_script$ = $create_edit_goal_menu$
+		:i $pad_choose_params$ = %GLOBAL%$back_params$
+		:i $last_menu_item$ = %i(1,00000001)
+	:i :s}
+	:i $finish_themed_sub_menu$
+	:i $create_helper_text$$generic_helper_text_up_down_adjust$
+:i endfunction
+:i function $count_chosen_combo_sets$
+	:i $GetArraySize$$cag_key_combos$
+	:i $num_chosen_combo_sets$ = %i(0,00000000)
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i if $GoalEditor$.$GetKeyComboSet$$set_index$ = %GLOBAL%$i$
+				:i $num_chosen_combo_sets$ =  (%GLOBAL%$num_chosen_combo_sets$ + %i(1,00000001)) 
+			:i endif
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$num_chosen_combo_sets$ = %GLOBAL%$num_chosen_combo_sets$
+:i endfunction
+:i function $update_combo_sets_done_focusability$
+	:i $count_chosen_combo_sets$
+	:i if  (%GLOBAL%$num_chosen_combo_sets$ > %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{$id$ = $combo_sets_done$$child$ = %i(0,00000000)$focusable$:s}
+		:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_color$
+		:i $SetScreenElementProps$:s{$id$ = :s{$combo_sets_done$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$off_color$:s}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = $combo_sets_done$$child$ = %i(0,00000000)$not_focusable$:s}
+		:i $SetScreenElementProps$:s{$id$ = :s{$combo_sets_done$$child$ = %i(0,00000000):s}$rgba$ = :a{%i(64,00000040);%i(64,00000040);%i(64,00000040);%i(64,00000040):a}:s}
+	:i endif
+:i endfunction
+:i function $create_key_combos_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_themed_sub_menu$$title$ = %s(17,"SELECT KEY COMBOS")
+	:i if $GotParam$$go_back_to_goal_list_menu$
+		:i $back_params$ = :s{$go_back_to_goal_list_menu$:s}
+	:i else 
+		:i $back_params$ = :s{:s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_edit_goal_menu$$params$ = %GLOBAL%$back_params$:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $GetArraySize$$cag_key_combos$
+	:i if $GotParam$$TrickBeat$
+		:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$ - %i(4,00000004)) 
+	:i endif
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i $params$ = :s{:s}
+			:i if  (%GLOBAL%$i$ = %i(0,00000000)) 
+				:i $params$ = :s{$first_item$:s}
+			:i endif
+			:i if $GoalEditor$.$GetKeyComboSet$$set_index$ = %GLOBAL%$i$
+				:i $value$ = %i(1,00000001)
+			:i else 
+				:i $value$ = %i(0,00000000)
+			:i endif
+			:i $FormatText$$ChecksumName$ = $id$%s(7,"check%d")$d$ = %GLOBAL%$i$
+			:i $theme_menu_add_checkbox_item$:s{
+				:i $value$ = %GLOBAL%$value$
+				:i $id$ = %GLOBAL%$id$
+				:i $text$ =  ($cag_key_combos$:a{%GLOBAL%$i$:a}->$text$) 
+				:i $pad_choose_script$ = $toggle_keycombo_set_on_off$
+				:i $pad_choose_params$ = :s{$set_index$ = %GLOBAL%$i$:s}
+				:i %GLOBAL%$params$
+			:i :s}
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if  (%GLOBAL%$goal_type$ = $TrickBeat$) 
+		:i $pad_choose$ = $create_edit_goal_menu$
+	:i else 
+		:i $pad_choose$ = $create_edit_skatetris_menu$
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(4,"Done")
+		:i $id$ = $combo_sets_done$
+		:i $pad_choose_script$ = %GLOBAL%$pad_choose$
+		:i $pad_choose_params$ = %GLOBAL%$back_params$
+		:i $last_menu_item$ = %i(1,00000001)
+	:i :s}
+	:i $update_combo_sets_done_focusability$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $toggle_keycombo_set_on_off$
+	:i if $GoalEditor$.$GetKeyComboSet$$set_index$ = %GLOBAL%$set_index$
+		:i $GoalEditor$.$RemoveKeyComboSet$$set_index$ = %GLOBAL%$set_index$
+		:i $theme_set_checkbox$$value$ = %i(0,00000000)
+	:i else 
+		:i $GoalEditor$.$AddKeyComboSet$$set_index$ = %GLOBAL%$set_index$
+		:i $theme_set_checkbox$$value$ = %i(1,00000001)
+	:i endif
+	:i $update_combo_sets_done_focusability$
+:i endfunction
+:i function $goal_update_spin$
+	:i $GoalEditor$.$SetGoalSpecificParams$$spin$ = %GLOBAL%$value$
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{$id$ = :s{$goal_spin$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off"):s}
+		:i $goal_spin$.$theme_menu_update_number_item_right_arrow$
+	:i endif
+:i endfunction
+:i function $change_single_combo$
+	:i if $GotParam$$on$
+		:i $GoalEditor$.$SetGoalSpecificParams$$single_combo$
+	:i else 
+		:i $GoalEditor$.$RemoveGoalSpecificFlag$$single_combo$
+	:i endif
+	:i $create_edit_skatetris_menu$
+	:i if NOT $GotParam$$on$
+		:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+		:i $validate_max_tricks$$max_tricks$ = %GLOBAL%$max_tricks$$combo_size$ = %GLOBAL%$combo_size$
+	:i endif
+:i endfunction
+:i function $goal_update_combo_size$
+	:i $GoalEditor$.$SetGoalSpecificParams$$combo_size$ = %GLOBAL%$value$
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i if NOT $GotParam$$single_combo$
+		:i if $GotParam$$max_tricks$
+			:i $validate_max_tricks$$max_tricks$ = %GLOBAL%$max_tricks$$combo_size$ = %GLOBAL%$combo_size$
+		:i endif
+	:i endif
+:i endfunction
+:i function $validate_max_tricks$
+	:i $RemoveParameter$$update_required$
+	:i while
+		
+		:i $blocks$ =  (%GLOBAL%$max_tricks$ / %GLOBAL%$combo_size$) 
+		:i if  (%GLOBAL%$blocks$%i(4294967295,ffffffff) + %GLOBAL%$blocks$ * %GLOBAL%$combo_size$ < %i(17,00000011)) 
+			:i continue
+			
+		:i endif
+		:i $update_required$ = %i(1,00000001)
+		:i $max_tricks$ =  (%GLOBAL%$max_tricks$%i(4294967295,ffffffff)) 
+	:i loop_to %i(20,00000014)
+	:i if $GotParam$$update_required$
+		:i $GoalEditor$.$SetGoalSpecificParams$$max_tricks$ = %GLOBAL%$max_tricks$
+		:i $FireEvent$$target$ = $goal_max_tricks$$type$ = $pad_left$$data$ = :s{$value$ = %GLOBAL%$max_tricks$$NoStep$:s}
+	:i endif
+:i endfunction
+:i function $goal_update_tricktris_block_size$
+	:i $GoalEditor$.$SetGoalSpecificParams$$tricktris_block_size$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_tricktris_total_to_win$
+	:i $GoalEditor$.$SetGoalSpecificParams$$tricktris_total_to_win$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_acceleration_interval$
+	:i $GoalEditor$.$SetGoalSpecificParams$$acceleration_interval$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_acceleration_percent$
+	:i $GoalEditor$.$SetGoalSpecificParams$$acceleration_percent$ =  (%GLOBAL%$value$ / %f(100.000000)) 
+:i endfunction
+:i function $goal_update_trick_time$
+	:i $GoalEditor$.$SetGoalSpecificParams$$trick_time$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_time_to_stop_adding_tricks$
+	:i $GoalEditor$.$SetGoalSpecificParams$$time_to_stop_adding_tricks$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_max_tricks$
+	:i $GoalEditor$.$SetGoalSpecificParams$$max_tricks$ = %GLOBAL%$value$
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i if $GotParam$$combo_size$
+		:i $FireEvent$$target$ = $goal_combo_size$$type$ = $pad_left$$data$ = :s{$max$ = %GLOBAL%$value$$NoStep$:s}
+		:i if  (%GLOBAL%$combo_size$ > %GLOBAL%$value$) 
+			:i $combo_size$ = %GLOBAL%$value$
+			:i $GoalEditor$.$SetGoalSpecificParams$$combo_size$ = %GLOBAL%$combo_size$
+			:i $FireEvent$$target$ = $goal_combo_size$$type$ = $pad_left$$data$ = :s{$value$ = %GLOBAL%$combo_size$$NoStep$:s}
+		:i endif
+		:i $RemoveParameter$$update_required$
+		:i while
+			
+			:i $blocks$ =  (%GLOBAL%$max_tricks$ / %GLOBAL%$combo_size$) 
+			:i if  (%GLOBAL%$blocks$%i(4294967295,ffffffff) + %GLOBAL%$blocks$ * %GLOBAL%$combo_size$ < %i(17,00000011)) 
+				:i continue
+				
+			:i endif
+			:i $update_required$ = %i(1,00000001)
+			:i $combo_size$ =  (%GLOBAL%$combo_size$ + %i(1,00000001)) 
+		:i loop_to %i(20,00000014)
+		:i if $GotParam$$update_required$
+			:i $GoalEditor$.$SetGoalSpecificParams$$combo_size$ = %GLOBAL%$combo_size$
+			:i $FireEvent$$target$ = $goal_combo_size$$type$ = $pad_left$$data$ = :s{$value$ = %GLOBAL%$combo_size$$NoStep$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $input_required_trick_name$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $max_length$ = %i(50,00000032)
+		:i $keyboard_cancel_script$ = $cag_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_required_trick_name$
+		:i $keyboard_title$ = %s(14,"REQUIRED TRICK")
+		:i $text$ = %GLOBAL%$required_trick_name$
+	:i :s}
+:i endfunction
+:i function $set_required_trick_name$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $GoalEditor$.$SetGoalSpecificParams$$required_trick_name$ = %GLOBAL%$string$
+	:i $cag_cancel_keyboard$
+:i endfunction
+:i function $test_goal$
+	:i $edit_goal_menu_exit$
+	:i $show_all_hud_items$
+	:i $UnpauseGame$
+	:i $skater$.$Vibrate$$off$
+	:i $GoalManager_ShowPoints$
+	:i $GoalManager_ShowGoalPoints$
+	:i $GoalEditor$.$GetCurrentEditedGoalId$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$testing_goal$:s}
+	:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_InitGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $pausemusic$%i(0,00000000)
+	:i $pausestream$%i(0,00000000)
+:i endfunction
+:i function $edit_goal$
+	:i $edit_goal_menu_exit$$DoNotSwitchEditorState$$NoDeactivate$
+	:i $destroy_goal_panel_messages$
+	:i $PauseGame$
+	:i $delete_goal_editor_marker_objects$
+	:i $SetActiveCamera$$id$ = $GoalEditor$
+	:i $set_in_create_a_goal$
+	:i $pause_trick_text$
+	:i $end_current_goal_run$
+	:i if $LevelIs$$Load_Sk5Ed$
+		:i $SwitchOffRailEditor$
+		:i $SetParkEditorPauseMode$$pause$
+	:i endif
+	:i $PauseSkater$%i(0,00000000)
+	:i $HideSkaterAndMiscSkaterEffects$
+	:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $Debounce$$Triangle$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $GoalEditor$.$unpause$
+	:i $GoalEditor$.$Unsuspend$
+	:i $GoalEditor$.$Unhide$
+	:i $Change$$goal_editor_placement_mode$ = %i(1,00000001)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = 
+		:i :a{
+			:i :s{
+				:i $pad_start$
+				:i $edit_goal_pad_start$
+			:i :s}
+			:i :a}
+	:i :s}
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalId$
+	:i if $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_RemoveGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $GoalEditor$.$EditGoal$
+	:i $SetActiveCamera$$id$ = $GoalEditor$
+	:i $create_cag_helper_text$$PedPosition$
+:i endfunction
+:i function $name_goal$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $max_length$ = %i(16,00000010)
+		:i $min_length$ = %i(1,00000001)
+		:i $keyboard_cancel_script$ = $cag_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_cag_goal_name$
+		:i $keyboard_title$ = %s(9,"GOAL NAME")
+		:i $text$ = %GLOBAL%$view_goals_text$
+	:i :s}
+:i endfunction
+:i function $cag_cancel_keyboard$
+	:i $destroy_onscreen_keyboard$
+	:i $create_edit_goal_menu$
+:i endfunction
+:i function $set_cag_goal_name$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $GoalEditor$.$SetEditorGoalName$$name$ = %GLOBAL%$string$
+	:i $cag_cancel_keyboard$
+:i endfunction
+:i function $name_goal_ped$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $max_length$ = %i(16,00000010)
+		:i $keyboard_cancel_script$ = $cag_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_cag_ped_name$
+		:i $keyboard_title$ = %s(8,"PED NAME")
+		:i $text$ = %GLOBAL%$ped_name$
+	:i :s}
+:i endfunction
+:i function $set_cag_ped_name$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $GoalEditor$.$SetEditorPedName$$name$ = %GLOBAL%$string$
+	:i $cag_cancel_keyboard$
+:i endfunction
+:i function $set_goal_text$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $text_block$
+		:i $max_length$ = %i(99,00000063)
+		:i $keyboard_cancel_script$ = $cag_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_cag_goal_text$
+		:i $keyboard_title$ = %s(9,"GOAL TEXT")
+		:i $text$ = %GLOBAL%$goal_description$
+	:i :s}
+:i endfunction
+:i function $set_cag_goal_text$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $GoalEditor$.$SetEditorGoalDescription$$text$ = %GLOBAL%$string$
+	:i $cag_cancel_keyboard$
+:i endfunction
+:i function $goal_update_score$
+	:i $GoalEditor$.$SetGoalScore$%GLOBAL%$value$
+:i endfunction
+:i function $goal_update_time_limit$
+	:i $GoalEditor$.$SetGoalTimeLimit$%GLOBAL%$value$
+:i endfunction
+:i function $goal_update_laps$
+	:i $GoalEditor$.$SetGoalSpecificParams$$race_total_laps$ = %GLOBAL%$value$
+:i endfunction
+:i function $goal_update_checkpoint_time$
+	:i $GoalEditor$.$SetGoalSpecificParams$$race_per_checkpoint_time$ = %GLOBAL%$value$
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{$id$ = :s{$goal_checkpoint_time$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off"):s}
+		:i $goal_checkpoint_time$.$theme_menu_update_number_item_right_arrow$
+	:i endif
+:i endfunction
+:i function $edit_goal_win_message$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $text_block$
+		:i $max_length$ = %i(99,00000063)
+		:i $keyboard_cancel_script$ = $cag_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_goal_win_message$
+		:i $keyboard_title$ = %s(11,"WIN MESSAGE")
+		:i $text$ = %GLOBAL%$win_message$
+	:i :s}
+:i endfunction
+:i function $set_goal_win_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $GoalEditor$.$SetEditorGoalWinMessage$$text$ = %GLOBAL%$string$
+	:i $cag_cancel_keyboard$
+:i endfunction
+:i function $delete_goal$
+	:i $edit_goal_menu_exit$$no_exit_pause$
+	:i $generic_menu_pad_choose_sound$
+	:i $set_in_create_a_goal$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i $FormatText$$TextName$ = $text$%s(45,"Are you sure you want to delete the goal %s ?")$s$ = %GLOBAL%$view_goals_text$
+	:i $create_dialog_box$:s{$title$ = %s(11,"Delete Goal")
+		:i $text$ = %GLOBAL%$text$
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $buttons$ = 
+		:i :a{
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $delete_created_goal_dont_accept$:s}
+			:i :s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $delete_created_goal_accept$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $delete_created_goal_accept$
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $GoalEditor$.$RemovedCreatedGoal$
+	:i $create_existing_goals_menu$
+	:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i endif
+:i endfunction
+:i function $delete_created_goal_dont_accept$
+	:i $dialog_box_exit$
+	:i $create_edit_goal_menu$
+:i endfunction
+:i function $edit_goal_menu_exit$
+	:i $reset_in_create_a_goal$
+	:i $skater$.$Vibrate$$off$
+	:i if $GotParam$$no_exit_pause$
+	:i else 
+		:i if $GotParam$$DoNotSwitchEditorState$
+			:i $my_exit_pause_menu$$DoNotSwitchEditorState$
+		:i else 
+			:i $my_exit_pause_menu$
+		:i endif
+		:i $end_current_goal_run$
+	:i endif
+	:i if NOT $GotParam$$NoDeactivate$
+		:i $DeactivateGoalEditor$
+	:i endif
+	:i $GoalEditor$.$GetCurrentEditedGoalInfo$
+	:i if $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_RemoveGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if NOT $GoalEditor$.$GoalHasAllPositionsSet$
+		:i $GoalEditor$.$RemovedCreatedGoal$
+		:i $DontAddTheGoal$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$goal_type$ = $gap$) 
+		:i if NOT $GotParam$$Gaps$
+			:i $DontAddTheGoal$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$DontAddTheGoal$
+		:i $GoalEditor$.$AddEditedGoalToGoalManager$$MarkUnbeaten$
+	:i endif
+	:i if $IsAlive$$name$ = %GLOBAL%$pro_name$
+		:i %GLOBAL%$pro_name$.$Die$
+	:i endif
+	:i if NOT $GotParam$$DontAddTheGoal$
+		:i $GoalEditor$.$WriteEditedGoalNodePositions$
+		:i $GoalManager_InitializeGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if $GotParam$$no_exit_pause$
+		:i $PauseSkater$%i(0,00000000)
+		:i $UnpauseGame$
+		:i $PauseGame$
+	:i endif
+:i endfunction
+:i function $DeactivateGoalEditor$
+	:i $GoalEditor$.$Hide$
+	:i $GoalEditor$.$Suspend$
+	:i if $ObjectExists$$id$ = $helper_text_anchor$
+		:i $DestroyScreenElement$$id$ = $helper_text_anchor$
+	:i endif
+	:i $delete_goal_editor_marker_objects$
+	:i if $CustomParkMode$$editing$
+		:i $SetActiveCamera$$id$ = $parked_cam$
+	:i else 
+		:i $SetActiveCamera$$id$ = $skatercam0$
+		:i $UnPauseSkater$%i(0,00000000)
+		:i $skater$.$AddSkaterToWorld$
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,41 @@
+//------------------------------------------------
+// THAW 360 - .skin file
+//------------------------------------------------
+
+#include "../Common.bt"
+#include "Material_X360.bt"
+#include "Scene_X360.bt"
+
+typedef struct
+{
+    int filesize <bgcolor=CL_SINGLEVALUE, comment="Filesize - 52">;
+    int faabaa[7] <bgcolor=CL_PADDING, hidden=true>;
+
+    local int starter_offset = FTell();
+
+    ubyte material_version <bgcolor=CL_SINGLEVALUE>;
+    ubyte unknown_byte <bgcolor=CL_FLOATS>;
+
+    short material_count <bgcolor=CL_SINGLEVALUE>;
+
+    RelativeOffset pt_scenestart(starter_offset) <bgcolor=CL_POINTER>;
+
+    int unk <bgcolor=CL_SINGLEVALUE>;
+    int null <bgcolor=CL_PADDING>;
+
+    THAW360Material materials[material_count] <optimize=false>;
+
+    FSeek(AbsOffset(pt_scenestart));
+
+    QBKey BABEFACE <bgcolor=CL_PARSED>;
+
+    // -- Odd section
+    uint pad_length <bgcolor=CL_SINGLEVALUE>;
+    ubyte padding[pad_length-4] <bgcolor=CL_PADDING, hidden=true>;
+
+    int pre_scene_int <bgcolor=CL_SINGLEVALUE>;
+    
+    THAW360Scene scene;
+} THAW360Skin;
+
+THAW360Skin skin_file;

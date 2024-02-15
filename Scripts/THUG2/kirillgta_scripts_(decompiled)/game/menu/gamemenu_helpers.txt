@@ -1,0 +1,1258 @@
+
+:i $lens_flare_visible_before_pause$ = %i(1,00000001)
+:i function $handle_pause_continue$
+	:i $root_window$.$GetTags$
+	:i if $GotParam$$pause_controller$
+		:i if NOT  (%GLOBAL%$pause_controller$ = %GLOBAL%$device_num$) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $exit_pause_menu$
+:i endfunction
+:i $is_changing_levels$ = %i(0,00000000)
+:i function $handle_start_pressed$
+	:i $root_window$.$GetTags$
+	:i if  ($is_changing_levels$ = %i(1,00000001)) 
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i return
+		
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$menu_state$$b$ = $on$
+		:i if $GotParam$$pause_controller$
+			:i if NOT  (%GLOBAL%$pause_controller$ = %i(4294967295,ffffffff)) 
+				:i if NOT  (%GLOBAL%$device_num$ = %GLOBAL%$pause_controller$) 
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT $InNetGame$
+			:i $UnpauseGame$
+		:i endif
+		:i $exit_pause_menu$
+		:i $change$$inside_pause$ = %i(0,00000000)
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$menu_state$$b$ = $off$
+		:i $change$$viewer_buttons_enabled$ = %i(0,00000000)
+		:i if NOT $InMultiPlayerGame$
+			:i if NOT $ControllerBoundToSkater$$controller$ = %GLOBAL%$device_num$$skater$ = %i(0,00000000)
+				:i return
+				
+			:i endif
+		:i else 
+			:i if $InSplitScreenGame$
+				:i if NOT $ControllerBoundToSkater$$controller$ = %GLOBAL%$device_num$$skater$ = %i(0,00000000)
+					:i if NOT $ControllerBoundToSkater$$controller$ = %GLOBAL%$device_num$$skater$ = %i(1,00000001)
+						:i return
+						
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $SetTags$$pause_controller$ = %GLOBAL%$device_num$
+		:i $possibly_remove_temp_special_trick$
+		:i $KillSpawnedScript$$name$ = $goal_accept_trigger$
+		:i if NOT $InNetGame$
+			:i $GetSkaterId$
+			:i if $GetSkaterCamAnimParams$$skater$ = %GLOBAL%$objId$
+				:i if  (%GLOBAL%$allow_pause$ = %i(0,00000000)) 
+					:i return
+					
+				:i endif
+			:i endif
+			:i $printf$%s(56,"-------------------- PAUSING GAME ----------------------")
+			:i $PauseGame$
+			:i $GoalManager_PauseAllGoals$
+			:i $wait$%i(1,00000001)$gameframe$
+		:i endif
+		:i $set_pause_menu_allow_continue$
+		:i $create_pause_menu$$device_num$ = %GLOBAL%$device_num$
+	:i endif
+:i endfunction
+:i function $set_pause_menu_allow_continue$
+	:i if $GotParam$$off$
+		:i $root_window$.$SetTags$$no_exit_pause_menu$ = %i(1,00000001)
+	:i else 
+		:i $root_window$.$RemoveTags$$tags$ = :a{$no_exit_pause_menu$:a}
+	:i endif
+:i endfunction
+:i function $set_custom_restart$
+	:i $skater$.$SetCustomRestart$$Set$
+:i endfunction
+:i function $skip_to_custom_restart$
+	:i $skater$.$SkipToCustomRestart$
+:i endfunction
+:i function $set_sub_bg$:s{$parent$ = $current_menu_anchor$
+		:i $pos$ = %vec2(326.000000,115.000000)
+		:i $scale$ = %vec2(1.170000,1.100000)
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $options_bg$
+		:i $draw_behind_parent$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $just$ = %GLOBAL%$just$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $hide_everything$
+	:i $DoScreenElementMorph$$id$ = $root_window$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+:i endfunction
+:i function $unhide_everything$
+	:i $DoScreenElementMorph$$id$ = $root_window$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+:i endfunction
+:i function $hide_all_hud_items$
+	:i $dialog_box_exit$$no_pad_start$ isNull 
+	:i if $ScreenElementExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $first_time_goal_info$
+		:i $DestroyScreenElement$$id$ = $first_time_goal_info$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i $change$$camera_hud_is_hidden$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $cutscene_camera_hud_anchor$$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $nightvision_hud_anchor$
+		:i $change$$nightvision_hud_is_hidden$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $nightvision_hud_anchor$$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$$id$ = $the_time$$hide$
+	:i endif
+	:i if NOT $GotParam$$ignore_speech_boxes$
+		:i $hide_speech_boxes$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $digital_timer_anchor$
+		:i $SetScreenElementProps$$id$ = $digital_timer_anchor$$hide$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $new_ammo_message$
+		:i $DestroyScreenElement$$id$ = $new_ammo_message$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $new_ammo_message2$
+		:i $DestroyScreenElement$$id$ = $new_ammo_message2$
+	:i endif
+	:i $hide_panel_messages$
+	:i $menu3d_hide$
+	:i $pause_balance_meter$
+	:i $pause_run_timer$
+	:i $hide_goal_panel_messages$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $hide_3d_goal_arrow$
+	:i $hide_landing_msg$
+	:i $hide_console_window$
+	:i $goal_skate_hide_letters$
+	:i $hide_combo_letters$
+	:i $hide_net_scores$
+	:i $hide_stat_message$
+	:i $hide_comp_text$
+	:i $MaybeHideLensFlare$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $InMultiPlayerGame$
+			:i $change$$lens_flare_visible_before_pause$ =  ($DoUpdateLensFlare$) 
+			:i $change$$DoUpdateLensFlare$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $hide_tips$
+	:i $pause_trick_text$
+	:i $hide_death_msg$
+	:i $GoalListReminderHide$
+	:i $TantrumMessageHide$
+	:i if NOT $GotParam$$dont_disable_screen_effects$
+		:i $pause_bloom_off$
+	:i endif
+	:i $kill_blur$
+:i endfunction
+:i function $show_all_hud_items$
+	:i $show_panel_messages$
+	:i $GoalManager_ShowGoalPoints$
+	:i $GoalManager_ShowPoints$
+	:i $unhide_3d_goal_arrow$
+	:i $unhide_landing_msg$
+	:i $unhide_stat_message$
+	:i $unhide_tips$
+	:i $goal_skate_unhide_letters$
+	:i $unhide_combo_letters$
+	:i $unhide_death_msg$
+	:i $unhide_comp_text$
+	:i $GoalListReminderShow$
+	:i $TantrumMessageShow$
+	:i $unpause_trick_text$
+	:i if NOT $InNetGame$
+		:i $unpause_trick_text$
+	:i endif
+	:i $Unpause_Balance_Meter$
+	:i $unpause_run_timer$
+	:i $pause_bloom_on$
+	:i $unhide_speech_boxes$
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i if  ($camera_hud_is_hidden$ = %i(1,00000001)) 
+			:i $change$$camera_hud_is_hidden$ = %i(0,00000000)
+			:i $DoScreenElementMorph$$id$ = $cutscene_camera_hud_anchor$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $nightvision_hud_anchor$
+		:i if  ($nightvision_hud_is_hidden$ = %i(1,00000001)) 
+			:i $change$$nightvision_hud_is_hidden$ = %i(0,00000000)
+			:i $DoScreenElementMorph$$id$ = $nightvision_hud_anchor$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$$id$ = $the_time$$unhide$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $digital_timer_anchor$
+		:i $SetScreenElementProps$$id$ = $digital_timer_anchor$$unhide$
+	:i endif
+	:i $show_goal_panel_messages$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $InMultiPlayerGame$
+			:i $change$$DoUpdateLensFlare$ = %i(1,00000001)
+			:i $UnHideLensFlare$
+		:i endif
+	:i endif
+	:i if NOT $InMultiPlayerGame$
+		:i $GoalManager_ShowPoints$
+		:i if NOT $GoalManager_HasActiveGoals$
+			:i $GoalManager_ShowGoalPoints$
+		:i else 
+			:i $GoalManager_HideGoalPoints$
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+	:i if  ($HIDEHUD$ = %i(1,00000001)) 
+		:i $printf$%s(6,"hiding")
+		:i $hide_root_window$
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $GoalManager_HideGoalPoints$
+		:i $GoalManager_HidePoints$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $unhide_console_window$
+	:i else 
+		:i $hide_console_window$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $unhide_net_scores$
+	:i else 
+		:i $hide_net_scores$
+	:i endif
+:i endfunction
+:i function $hide_speech_boxes$
+	:i if $ScreenElementExists$$id$ = $speech_box_anchor$
+		:i $SetScreenElementProps$$id$ = $speech_box_anchor$$block_events$
+		:i $DoScreenElementMorph$$id$ = $speech_box_anchor$$scale$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+		:i $SetScreenElementProps$$id$ = $goal_start_dialog$$block_events$
+		:i $DoScreenElementMorph$$id$ = $goal_start_dialog$$scale$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+		:i $SetScreenElementProps$$id$ = $ped_speech_dialog$$block_events$
+		:i $DoScreenElementMorph$$id$ = $ped_speech_dialog$$scale$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_retry_anchor$
+		:i $SetScreenElementProps$$id$ = $goal_retry_anchor$$block_events$
+		:i $DoScreenElementMorph$$id$ = $goal_retry_anchor$$scale$ = %i(0,00000000)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_hint_dialog$
+		:i $SetScreenElementProps$$id$ = $ped_hint_dialog$$block_events$
+		:i $DoScreenElementMorph$$id$ = $ped_hint_dialog$$scale$ = %i(0,00000000)$relative_scale$
+	:i endif
+:i endfunction
+:i function $unhide_speech_boxes$
+	:i if $ScreenElementExists$$id$ = $speech_box_anchor$
+		:i $SetScreenElementProps$$id$ = $speech_box_anchor$$unblock_events$
+		:i $DoScreenElementMorph$$id$ = $speech_box_anchor$$scale$ = %i(1,00000001)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+		:i $SetScreenElementProps$$id$ = $goal_start_dialog$$unblock_events$
+		:i $DoScreenElementMorph$$id$ = $goal_start_dialog$$scale$ = %i(1,00000001)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+		:i $SetScreenElementProps$$id$ = $ped_speech_dialog$$unblock_events$
+		:i $DoScreenElementMorph$$id$ = $ped_speech_dialog$$scale$ = %i(1,00000001)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_retry_anchor$
+		:i $SetScreenElementProps$$id$ = $goal_retry_anchor$$unblock_events$
+		:i $DoScreenElementMorph$$id$ = $goal_retry_anchor$$scale$ = %i(1,00000001)$relative_scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_hint_dialog$
+		:i $SetScreenElementProps$$id$ = $ped_hint_dialog$$block_events$
+		:i $DoScreenElementMorph$$id$ = $ped_hint_dialog$$scale$ = %i(1,00000001)$relative_scale$
+	:i endif
+:i endfunction
+:i function $kill_speech_boxes$
+	:i if $ScreenElementExists$$id$ = $speech_box_anchor$
+		:i $DestroyScreenElement$$id$ = $speech_box_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_start_dialog$
+		:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_retry_anchor$
+		:i $DestroyScreenElement$$id$ = $goal_retry_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ped_hint_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_hint_dialog$
+	:i endif
+:i endfunction
+:i function $hide_landing_msg$
+	:i if $ObjectExists$$id$ = $perfect$
+		:i $DoScreenElementMorph$$id$ = $perfect$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $perfect2$
+		:i $DoScreenElementMorph$$id$ = $perfect2$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_landing_msg$
+	:i if $ObjectExists$$id$ = $perfect$
+		:i $DoScreenElementMorph$$id$ = $perfect$$time$ = %i(0,00000000)$alpha$ = %f(0.500000)
+	:i endif
+	:i if $ObjectExists$$id$ = $perfect2$
+		:i $DoScreenElementMorph$$id$ = $perfect2$$time$ = %i(0,00000000)$alpha$ = %f(0.500000)
+	:i endif
+:i endfunction
+:i function $hide_3d_goal_arrow$
+	:i if $ScreenElementExists$$id$ = $DesignerCreated_3DArrowPointer$
+		:i $DoScreenElementMorph$$id$ = $DesignerCreated_3DArrowPointer$$pos$ = %vec2(320.000000,-300.000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $race_arrow$
+		:i $DoScreenElementMorph$$id$ = $race_arrow$$pos$ = %vec2(320.000000,-300.000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ctf_arrow$
+		:i $DoScreenElementMorph$$id$ = $ctf_arrow$$pos$ = %vec2(320.000000,-300.000000)
+	:i endif
+:i endfunction
+:i function $unhide_3d_goal_arrow$
+	:i if $ScreenElementExists$$id$ = $DesignerCreated_3DArrowPointer$
+		:i $DoScreenElementMorph$$id$ = $DesignerCreated_3DArrowPointer$$pos$ = %vec2(320.000000,70.000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $race_arrow$
+		:i $DoScreenElementMorph$$id$ = $race_arrow$$pos$ = %vec2(320.000000,70.000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $ctf_arrow$
+		:i $DoScreenElementMorph$$id$ = $ctf_arrow$$pos$ = %vec2(320.000000,70.000000)
+	:i endif
+:i endfunction
+:i function $hide_net_scores$
+	:i if $ObjectExists$$id$ = $net_score_1$
+		:i $DoScreenElementMorph$$id$ = $net_score_1$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_2$
+		:i $DoScreenElementMorph$$id$ = $net_score_2$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_3$
+		:i $DoScreenElementMorph$$id$ = $net_score_3$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_4$
+		:i $DoScreenElementMorph$$id$ = $net_score_4$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_5$
+		:i $DoScreenElementMorph$$id$ = $net_score_5$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_6$
+		:i $DoScreenElementMorph$$id$ = $net_score_6$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_7$
+		:i $DoScreenElementMorph$$id$ = $net_score_7$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_8$
+		:i $DoScreenElementMorph$$id$ = $net_score_8$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_net_scores$
+	:i if $ObjectExists$$id$ = $net_score_1$
+		:i $DoScreenElementMorph$$id$ = $net_score_1$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_2$
+		:i $DoScreenElementMorph$$id$ = $net_score_2$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_3$
+		:i $DoScreenElementMorph$$id$ = $net_score_3$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_4$
+		:i $DoScreenElementMorph$$id$ = $net_score_4$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_5$
+		:i $DoScreenElementMorph$$id$ = $net_score_5$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_6$
+		:i $DoScreenElementMorph$$id$ = $net_score_6$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_7$
+		:i $DoScreenElementMorph$$id$ = $net_score_7$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+	:i if $ObjectExists$$id$ = $net_score_8$
+		:i $DoScreenElementMorph$$id$ = $net_score_8$$time$ = %i(0,00000000)$scale$ = %f(0.900000)
+	:i endif
+:i endfunction
+:i function $hide_current_goal$
+	:i if $ObjectExists$$id$ = $current_goal$
+		:i $DoScreenElementMorph$$id$ = $current_goal$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DoScreenElementMorph$$id$ = $mp_goal_text$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $sc_goal_text$
+		:i $DoScreenElementMorph$$id$ = $sc_goal_text$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $Eric_score$
+		:i $DoScreenElementMorph$$id$ = $Eric_score$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $hide_key_combo_text$
+:i endfunction
+:i $comp_texts$ = :a{$Eric_Text$$Ron_Text$$Johnny_Text$$Chicken_Text$$Raven_Text$$final_scores$$goal_comp_out_of_bounds_warning$:a}
+:i function $hide_comp_text$
+	:i $GetArraySize$$comp_texts$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$id$ =  ($comp_texts$:a{%GLOBAL%$index$:a}) 
+		:i if $ObjectExists$$id$ = %GLOBAL%$id$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $unhide_comp_text$
+	:i $GetArraySize$$comp_texts$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$id$ =  ($comp_texts$:a{%GLOBAL%$index$:a}) 
+		:i if $ObjectExists$$id$ = %GLOBAL%$id$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $unhide_current_goal$
+	:i if $ObjectExists$$id$ = $current_goal$
+		:i $DoScreenElementMorph$$id$ = $current_goal$$time$ = %i(0,00000000)$scale$ = %f(0.830000)
+	:i endif
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DoScreenElementMorph$$id$ = $mp_goal_text$$time$ = %i(0,00000000)$scale$ = %f(0.830000)
+	:i endif
+	:i if $ObjectExists$$id$ = $sc_goal_text$
+		:i $DoScreenElementMorph$$id$ = $sc_goal_text$$time$ = %i(0,00000000)$scale$ = %f(0.830000)
+	:i endif
+	:i if $ObjectExists$$id$ = $Eric_score$
+		:i $DoScreenElementMorph$$id$ = $Eric_score$$time$ = %i(0,00000000)$scale$ = %f(0.830000)
+	:i endif
+	:i $unhide_key_combo_text$
+:i endfunction
+:i function $hide_death_msg$
+	:i if $ObjectExists$$id$ = $death_message$
+		:i $DoScreenElementMorph$$id$ = $death_message$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_death_msg$
+	:i if $ObjectExists$$id$ = $death_message$
+		:i $DoScreenElementMorph$$id$ = $death_message$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $hide_tips$
+	:i if $ObjectExists$$id$ = $skater_hint$
+		:i $DoScreenElementMorph$$id$ = $skater_hint$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,11050.000000)
+	:i endif
+:i endfunction
+:i function $unhide_tips$
+	:i if $ObjectExists$$id$ = $skater_hint$
+		:i $DoScreenElementMorph$$id$ = $skater_hint$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,150.000000)
+	:i endif
+:i endfunction
+:i function $pause_rain$
+	:i if $IsSoundPlaying$$TestLight01$
+		:i $change$$Paused_Light_Rain$ = %i(1,00000001)
+	:i endif
+	:i if $IsSoundPlaying$$TestMedium02$
+		:i $change$$Paused_Heavy_Rain$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $unpause_rain$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if  ($Paused_Light_Rain$ = %i(1,00000001)) 
+			:i if $IsSoundPlaying$$TestLight01$
+				:i if NOT $GotParam$$dont_unpause_rain_sounds$
+					:i if  ($Inside_Light_Rain$ = %i(1,00000001)) 
+						:i $SetSoundParams$$TestLight01$$vol$ =  ($LightRainVolume$ * %f(0.100000)) 
+					:i else 
+						:i $SetSoundParams$$TestLight01$$vol$ = $LightRainVolume$
+					:i endif
+				:i endif
+			:i endif
+			:i $change$$Paused_Light_Rain$ = %i(0,00000000)
+		:i endif
+		:i if  ($Paused_Heavy_Rain$ = %i(1,00000001)) 
+			:i if $IsSoundPlaying$$TestLight02$
+				:i if NOT $GotParam$$dont_unpause_rain_sounds$
+					:i if  ($Inside_Heavy_Rain$ = %i(1,00000001)) 
+						:i $SetSoundParams$$TestLight02$$vol$ =  ($LightRainVolume$ * %f(0.100000)) 
+					:i else 
+						:i $SetSoundParams$$TestLight02$$vol$ = $LightRainVolume$
+					:i endif
+				:i endif
+			:i endif
+			:i if $IsSoundPlaying$$TestMedium02$
+				:i if NOT $GotParam$$dont_unpause_rain_sounds$
+					:i if  ($Inside_Heavy_Rain$ = %i(1,00000001)) 
+						:i $SetSoundParams$$TestMedium02$$vol$ =  ($MediumRainVolume$ * %f(0.100000)) 
+					:i else 
+						:i $SetSoundParams$$TestMedium02$$vol$ = $MediumRainVolume$
+					:i endif
+				:i endif
+			:i endif
+			:i $change$$Paused_Heavy_Rain$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $menu_quit_no$
+	:i $generic_menu_pad_back_sound$
+	:i $dialog_box_exit$
+	:i $create_pause_menu$
+:i endfunction
+:i function $bootstrap_quit$
+	:i $dialog_box_exit$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $skater$.$DisablePlayerInput$
+	:i $PauseGame$
+	:i $Cleanup$
+	:i $DisplayLoadingScreen$%s(18,"loadscrn_marketing")
+	:i $wait$%i(5,00000005)$seconds$
+	:i $exitdemo$
+:i endfunction
+:i function $change_gamemode_career$
+	:i $printf$%s(39,"********** CHANGING GAME MODE TO CAREER")
+	:i $EnableSun$
+	:i $SetGameType$$career$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $change_gamemode_classic$
+	:i $printf$%s(40,"********** CHANGING GAME MODE TO CLASSIC")
+	:i $EnableSun$
+	:i $SetGameType$$classic$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $change_gamemode_net$
+	:i $printf$%s(39,"********** CHANGING GAME MODE TO NET!!!")
+	:i $DisableSun$
+	:i $SetGameType$$net$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $change_gamemode_singlesession$
+	:i $EnableSun$
+	:i $SetGameType$$singlesession$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $change_gamemode_freeskate_2p$
+	:i $DisableSun$
+	:i $SetGameType$$freeskate2p$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $change_gamemode_creategoals$
+	:i $EnableSun$
+	:i $SetGameType$$creategoals$
+	:i $SetCurrentGameType$
+:i endfunction
+:i function $menu_select$$menu_select_script$ = $item_chosen$
+	:i if $GotParam$$stop_streams$
+		:i $StopStream$
+	:i endif
+	:i if $GotParam$$stop_vibration$
+	:i endif
+	:i $exit_pause_menu$
+	:i %GLOBAL%$menu_select_script$
+:i endfunction
+:i function $item_chosen$$menu_id$ = $current_menu_anchor$
+	:i $printf$%s(11,"item_chosen")
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$menu_id$$animate_out$$callback$ = $create_pause_menu$
+:i endfunction
+:i function $make_text_menu_item$:s{$focus_script$ = $do_scale_up$
+		:i $unfocus_script$ = $do_scale_down$
+		:i $pad_choose_script$ = $item_chosen$
+		:i $pad_back_script$ = $exit_pause_menu$
+		:i $font_face$ = $small$:s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$$parent$ = $current_menu$
+		:i $id$ = %GLOBAL%$id$
+		:i $text$ = %GLOBAL%$text$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$%GLOBAL%$focus_script$:s}
+			:i :s{$unfocus$%GLOBAL%$unfocus_script$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_back$%GLOBAL%$pad_back_script$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $make_sprite_menu_item$
+	:i $make_theme_menu_item$ isNull $dims$ = %vec2(300.000000,18.000000)$no_angle$
+:i endfunction
+:i function $make_toggle_menu_item$:s{$font$ = $small$
+		:i $child_pos$ = :s{%vec2(210.000000,0.000000)$relative$:s}
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $child_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $just$ = :a{$right$$top$:a}
+		:i $child_just$ = :a{$left$$top$:a}
+		:i $child_scale$ = %i(1,00000001)
+		:i $focus_script$ = $do_scale_up$
+		:i $unfocus_script$ = $do_scale_down$
+		:i $pad_choose_script$ = $item_chosen$
+		:i $toggle_text$ = %s(3,"off")
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$
+		:i $parent$ = $current_menu$
+		:i $id$ = %GLOBAL%$id$
+		:i $font$ = %GLOBAL%$font$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $just$ = %GLOBAL%$just$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $event_handlers$ = :a{
+			:i :s{$focus$%GLOBAL%$focus_script$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$%GLOBAL%$unfocus_script$$params$ = %GLOBAL%$unfocus_params$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $font$ = %GLOBAL%$font$
+		:i $pos$ = %GLOBAL%$child_pos$
+		:i $rgba$ = %GLOBAL%$child_rgba$
+		:i $just$ = %GLOBAL%$child_just$
+		:i $text$ = %GLOBAL%$toggle_text$
+		:i $scale$ = %GLOBAL%$child_scale$
+	:i :s}
+:i endfunction
+:i function $toggle_menu_item_on$:s{
+		:i $toggle_text$ = %s(2,"on")
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $text$ = %GLOBAL%$toggle_text$
+	:i :s}
+:i endfunction
+:i function $toggle_menu_item_off$:s{
+		:i $toggle_text$ = %s(3,"off")
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $text$ = %GLOBAL%$toggle_text$
+	:i :s}
+:i endfunction
+:i function $animate_in$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $entering$:s}
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$menu_id$
+	:i $DoMorph$$time$ = %f(0.070000)$scale$ = %f(1.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.070000)$scale$ = %f(0.950000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.070000)$scale$ = %f(1.000000)
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $on$:s}
+	:i if NOT $GotParam$$dont_unblock$
+		:i $SetButtonEventMappings$$unblock_menu_input$
+	:i endif
+:i endfunction
+:i function $menu_onscreen$$menu_id$ = $current_menu_anchor$
+	:i $DoMorph$$scale$ = %i(1,00000001)$time$ = %i(0,00000000)
+	:i if $GotParam$$pos$
+		:i $DoMorph$$pos$ = %GLOBAL%$pos$
+	:i endif
+	:i $SetProps$$just$ = :a{$center$$center$:a}
+	:i $GetTags$
+	:i if $GotParam$$focus_child$
+		:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$menu_id$$data$ = :s{$child_id$ = %GLOBAL%$focus_child$:s}
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$id$
+	:i endif
+	:i if NOT $GotParam$$preserve_menu_state$
+		:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $on$:s}
+	:i endif
+:i endfunction
+:i function $animate_out$$menu_id$ = $current_menu_anchor$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $leaving$:s}
+	:i $GetTags$
+	:i $SetProps$$just$ = :a{$center$$center$:a}
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(1.000000)
+	:i $DoMorph$$time$ = %f(0.070000)$scale$ = %f(1.300000)
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.400000)$alpha$ = %f(0.050000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %f(0.000000)$alpha$ = %i(0,00000000)
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $off$:s}
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $DestroyScreenElement$$id$ = %GLOBAL%$menu_id$
+	:i $SetButtonEventMappings$$unblock_menu_input$
+:i endfunction
+:i function $menu_offscreen$
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $off$:s}
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $GetTags$
+	:i $FireEvent$$type$ = $unfocus$$target$ = %GLOBAL%$id$
+	:i $DestroyScreenElement$$id$ = %GLOBAL%$id$$recurse$
+:i endfunction
+:i function $scale_sprite_up$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $wait$%f(0.200000)$second$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(4.500000)$alpha$ = %i(0,00000000)$rot_angle$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$rot_angle$ = %i(0,00000000)$scale$ = %f(0.950000)$alpha$ = %f(0.550000)
+:i endfunction
+:i function $scale_sprite_down$
+	:i $DoMorph$$time$ = %i(0,00000000)$rot_angle$ = %i(0,00000000)$scale$ = %i(0,00000000)
+:i endfunction
+:i function $do_scale_up$$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(100,00000064):a}
+	:i $GetTags$
+	:i $SetProps$$rgba$ = %GLOBAL%$rgba$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $do_scale_down$$rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+	:i if NOT $GotParam$$no_sound$
+		:i $generic_menu_pad_up_down_sound$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $do_random_effect$
+	:i $SetProps$$no_blur_effect$
+	:i $SetProps$$rgba$ = %GLOBAL%$rgba$
+:i endfunction
+:i function $do_random_effect$
+	:i $GetTags$
+	:i $SetTags$$random_effect_done$ = %i(0,00000000)
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect2$
+	:i while
+		
+		:i $GetTags$
+		:i if  (%GLOBAL%$random_effect_done$ = %i(1,00000001)) 
+			:i $SetTags$$random_effect_done$ = %i(0,00000000)
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect2$$params$ = :s{
+				:i $id$ = %GLOBAL%$id$
+				:i $effect$ = select(2f,45, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8):OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12):OFFSET(13):OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19):OFFSET(20):OFFSET(21):OFFSET(22):OFFSET(23):OFFSET(24):OFFSET(25):OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29):OFFSET(30):OFFSET(31):OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35):OFFSET(36):OFFSET(37):OFFSET(38):OFFSET(39):OFFSET(40):OFFSET(41):OFFSET(42):OFFSET(43):OFFSET(44)
+					 :POS(0) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(1) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(2) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(3) %i(8,00000008)
+				:BREAKTO(45)
+					 :POS(4) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(5) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(6) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(7) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(8) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(9) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(10) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(11) %i(10,0000000a)
+				:BREAKTO(45)
+					 :POS(12) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(13) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(14) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(15) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(16) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(17) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(18) %i(8,00000008)
+				:BREAKTO(45)
+					 :POS(19) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(20) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(21) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(22) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(23) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(24) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(25) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(26) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(27) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(28) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(29) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(30) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(31) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(32) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(33) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(34) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(35) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(36) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(37) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(38) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(39) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(40) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(41) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(42) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(43) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(44) %i(1,00000001) :POS(45) 
+					:i  isNull 
+				:i :s}
+			:i endif
+			:i $wait$%i(4,00000004)$frame$
+		:i loop_to 
+	:i endfunction
+	:i function $do_random_effect2$$orig_rot$ = %i(0,00000000)
+		:i switch %GLOBAL%$effect$
+			:i case %i(1,00000001)
+				:i $DoMorph$$time$ = %f(0.040000)$scale$ = %vec2(1.200000,0.970000)$alpha$ = %f(0.100000)$relative_scale$$rot_angle$ =  (%i(4294967288,fffffff8) + %GLOBAL%$orig_rot$) 
+				:i $DoMorph$$time$ = %f(0.040000)$scale$ = %i(1,00000001)$alpha$ = %i(1,00000001)$relative_scale$$rot_angle$ =  (%i(0,00000000) + %GLOBAL%$orig_rot$) 
+				:i endcase
+			case %i(2,00000002)
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,0.500000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(1.500000,-1.000000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,0.500000)$relative$:s}
+				:i endcase
+			case %i(3,00000003)
+				:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)$scale$ = %f(1.200000)$relative_scale$
+				:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$scale$ = %i(1,00000001)$relative_scale$
+				:i endcase
+			case %i(4,00000004)
+				:i $SetProps$$blur_effect$
+				:i $do_blur_effect_highlight$
+				:i $SetProps$$no_blur_effect$
+				:i endcase
+			case %i(5,00000005)
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-1.500000,0.500000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(3.000000,-1.000000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-1.500000,0.500000)$relative$:s}
+				:i endcase
+			case %i(6,00000006)
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,1.500000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(1.500000,-3.000000)$relative$:s}
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,1.500000)$relative$:s}
+				:i endcase
+			case %i(7,00000007)
+				:i $SetProps$$blur_effect$
+				:i $do_blur_effect_accept$
+				:i $SetProps$$no_blur_effect$
+				:i endcase
+			case %i(8,00000008)
+				:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.300000)$relative_scale$
+				:i $DoMorph$$time$ = %f(0.050000)$scale$ = %i(1,00000001)$relative_scale$
+				:i endcase
+			case %i(9,00000009)
+				:i $DoMorph$$time$ = %f(0.040000)$scale$ = %vec2(0.950000,0.650000)$alpha$ = %f(0.800000)$relative_scale$
+				:i $DoMorph$$time$ = %f(0.040000)$scale$ = %i(1,00000001)$alpha$ = %i(1,00000001)$relative_scale$
+				:i endcase
+			case %i(10,0000000a)
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-2.000000,0.000000)$relative$:s}$rot_angle$ =  (%i(0,00000000) + %GLOBAL%$orig_rot$) 
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(4.000000,0.000000)$relative$:s}$rot_angle$ =  (%i(2,00000002) + %GLOBAL%$orig_rot$) 
+				:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-2.000000,0.000000)$relative$:s}$rot_angle$ =  (%i(0,00000000) + %GLOBAL%$orig_rot$) 
+				:i endcase
+			default 
+				:i $SetProps$$blur_effect$
+				:i $do_blur_effect$
+				:i $SetProps$$no_blur_effect$
+				:i end_switch
+		
+		:i $SetTags$$random_effect_done$ = %i(1,00000001)
+	:i endfunction
+	:i function $do_random_effect_paused$
+		:i $GetTags$
+		:i $SetTags$$random_effect_done$ = %i(0,00000000)
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect_paused_2$
+		:i while
+			
+			:i $GetTags$
+			:i if  (%GLOBAL%$random_effect_done$ = %i(1,00000001)) 
+				:i $SetTags$$random_effect_done$ = %i(0,00000000)
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect_paused_2$$params$ = :s{
+					:i $id$ = %GLOBAL%$id$
+					:i $effect$ = select(2f,46, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(46):OFFSET(47):OFFSET(48):OFFSET(49):OFFSET(50):OFFSET(51):OFFSET(52):OFFSET(53):OFFSET(54):OFFSET(55):OFFSET(56):OFFSET(57):OFFSET(58):OFFSET(59):OFFSET(60):OFFSET(61):OFFSET(62):OFFSET(63):OFFSET(64):OFFSET(65):OFFSET(66):OFFSET(67):OFFSET(68):OFFSET(69):OFFSET(70):OFFSET(71):OFFSET(72):OFFSET(73):OFFSET(74):OFFSET(75):OFFSET(76):OFFSET(77):OFFSET(78):OFFSET(79):OFFSET(80):OFFSET(81):OFFSET(82):OFFSET(83):OFFSET(84):OFFSET(85):OFFSET(86):OFFSET(87):OFFSET(88):OFFSET(89):OFFSET(90):OFFSET(91)
+						 :POS(46) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(47) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(48) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(49) %i(8,00000008)
+					:BREAKTO(92)
+						 :POS(50) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(51) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(52) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(53) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(54) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(55) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(56) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(57) %i(10,0000000a)
+					:BREAKTO(92)
+						 :POS(58) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(59) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(60) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(61) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(62) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(63) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(64) %i(8,00000008)
+					:BREAKTO(92)
+						 :POS(65) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(66) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(67) %i(9,00000009)
+					:BREAKTO(92)
+						 :POS(68) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(69) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(70) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(71) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(72) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(73) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(74) %i(6,00000006)
+					:BREAKTO(92)
+						 :POS(75) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(76) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(77) %i(9,00000009)
+					:BREAKTO(92)
+						 :POS(78) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(79) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(80) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(81) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(82) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(83) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(84) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(85) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(86) %i(2,00000002)
+					:BREAKTO(92)
+						 :POS(87) %i(3,00000003)
+					:BREAKTO(92)
+						 :POS(88) %i(5,00000005)
+					:BREAKTO(92)
+						 :POS(89) %i(6,00000006)
+					:BREAKTO(92)
+						 :POS(90) %i(7,00000007)
+					:BREAKTO(92)
+						 :POS(91) %i(1,00000001) :POS(92) 
+					:i :s}
+				:i endif
+				:i $wait$%i(10,0000000a)$frame$
+			:i loop_to 
+		:i endfunction
+		:i function $do_random_effect_paused_2$
+			:i switch %GLOBAL%$effect$
+				:i case %i(1,00000001)
+					:i $DoMorph$$time$ = %f(0.040000)$alpha$ = %f(0.100000)
+					:i $DoMorph$$time$ = %f(0.040000)$alpha$ = %f(0.200000)
+					:i endcase
+				case %i(2,00000002)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+					:i endcase
+				case %i(3,00000003)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %f(0.600000)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+					:i endcase
+				case %i(4,00000004)
+					:i $SetProps$$blur_effect$
+					:i $do_blur_effect_highlight$
+					:i $SetProps$$no_blur_effect$
+					:i endcase
+				case %i(5,00000005)
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-1.500000,0.500000)$relative$:s}
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(3.000000,-1.000000)$relative$:s}
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-1.500000,0.500000)$relative$:s}
+					:i endcase
+				case %i(6,00000006)
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,1.500000)$relative$:s}
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(1.500000,-3.000000)$relative$:s}
+					:i $DoMorph$$time$ = %f(0.050000)$pos$ = :s{%vec2(-0.750000,1.500000)$relative$:s}
+					:i endcase
+				case %i(7,00000007)
+					:i $DoMorph$$time$ = %f(0.400000)$alpha$ = %i(0,00000000)
+					:i $DoMorph$$time$ = %i(4,00000004)$alpha$ = %i(0,00000000)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+					:i endcase
+				case %i(8,00000008)
+					:i $DoMorph$$time$ = %i(1,00000001)$alpha$ = %i(0,00000000)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+					:i endcase
+				case %i(9,00000009)
+					:i $DoMorph$$time$ = %f(0.040000)$alpha$ = %f(0.800000)
+					:i $DoMorph$$time$ = %f(0.040000)$alpha$ = %i(1,00000001)
+					:i endcase
+				case %i(10,0000000a)
+					:i $DoMorph$$time$ = %i(3,00000003)$alpha$ = %i(0,00000000)
+					:i $DoMorph$$time$ = %f(0.050000)$alpha$ = %i(1,00000001)
+					:i endcase
+				default 
+					:i $SetProps$$blur_effect$
+					:i $do_blur_effect$
+					:i $SetProps$$no_blur_effect$
+					:i end_switch
+			
+			:i $SetTags$$random_effect_done$ = %i(1,00000001)
+		:i endfunction
+		:i function $hide_root_window$
+			:i $DoScreenElementMorph$$id$ = $root_window$$scale$ = %i(0,00000000)
+		:i endfunction
+		:i function $unhide_root_window$
+			:i $DoScreenElementMorph$$id$ = $root_window$$scale$ = %i(1,00000001)
+		:i endfunction
+		:i function $generic_menu_update_arrows$$menu_id$ = $current_menu$
+			:i if NOT $ObjectExists$$id$ = %GLOBAL%$up_arrow_id$
+				:i return
+				
+			:i endif
+			:i if NOT $ObjectExists$$id$ = %GLOBAL%$down_arrow_id$
+				:i return
+				
+			:i endif
+			:i if $MenuSelectedIndexIs$$id$ = %GLOBAL%$menu_id$$first$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$up_arrow_id$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$up_arrow_id$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i :s}
+			:i endif
+			:i if $MenuSelectedIndexIs$$id$ = %GLOBAL%$menu_id$$last$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$down_arrow_id$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$down_arrow_id$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i :s}
+			:i endif
+		:i endfunction
+		:i function $generic_menu_pad_back$
+			:i $printf$%s(35,"generic_menu_pad_back Parameters = ")
+			:i $generic_menu_pad_back_sound$
+			:i if $GotParam$$callback$
+				:i %GLOBAL%$callback$ isNull 
+			:i endif
+		:i endfunction
+		:i function $generic_menu_pad_choose$
+			:i if $GotParam$$callback$
+				:i %GLOBAL%$callback$ isNull 
+			:i endif
+		:i endfunction
+		:i function $generic_menu_buzzer_sound$
+			:i $PlaySound$$GUI_Buzzer01$$vol$ = %i(100,00000064)
+		:i endfunction
+		:i function $generic_menu_pad_back_sound$
+			:i $StopSound$$SK6_Menu_Back$
+			:i $PlaySound$$SK6_Menu_Back$
+		:i endfunction
+		:i function $generic_menu_pad_up_down_sound$
+		:i endfunction
+		:i function $generic_menu_pad_choose_sound$
+			:i $StopSound$$ThisMenuSelectSound$
+			:i $PlaySound$$SK6_Menu_Select$$vol$ = %i(100,00000064)$id$ = $ThisMenuSelectSound$
+		:i endfunction
+		:i $disable_menu_sounds$ = %i(0,00000000)
+		:i function $generic_menu_up_or_down_sound$$menu_id$ = $current_menu$
+			:i if  ($disable_menu_sounds$ = %i(0,00000000)) 
+				:i if $GotParam$$up$
+					:i $PlaySound$$SK6_Menu_Move$$pitch$ = %i(120,00000078)$vol$ = %i(50,00000032)
+				:i endif
+				:i if $GotParam$$down$
+					:i $PlaySound$$SK6_Menu_Move$$pitch$ = %i(100,00000064)$vol$ = %i(50,00000032)
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $generic_menu_scroll_sideways_sound$
+			:i if  ($disable_menu_sounds$ = %i(0,00000000)) 
+				:i $PlaySound$$MenuUp$$vol$ = %i(100,00000064)
+			:i endif
+		:i endfunction
+		:i function $parked_scroll_sideways_sound$
+			:i $PlaySound$$MenuUp$$vol$ = %i(100,00000064)
+		:i endfunction
+		:i function $generic_keyboard_sound$
+		:i endfunction
+		:i function $theme_menu_pad_choose_sound$
+			:i $StopSound$$ThisMenuSelectSound$
+			:i $PlaySound$$SK6_Menu_Select$$vol$ = %i(100,00000064)$id$ = $ThisMenuSelectSound$
+		:i endfunction
+		:i function $generic_pause_exit_sound$
+			:i $StopSound$$SK6_Menu_Back$
+			:i $PlaySound$$SK6_Menu_Back$
+		:i endfunction
+		:i function $pause_show_deck$$active_viewport$ = %i(0,00000000)$node$ = $TRG_Restart01$$parent$ = $root_window$
+			:i $kill_pause_deck$
+			:i if NOT $ObjectExists$$id$ = $skater$
+				:i return
+				
+			:i endif
+			:i if $IsObserving$
+				:i return
+				
+			:i endif
+			:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$parent$
+				:i $printf$%s(48,"WARNING: pause_show_deck couldn't find parent %s")$s$ = %GLOBAL%$parent$
+				:i return
+				
+			:i endif
+			:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+			:i if $GotParam$$no_slide$
+				:i $pos$ = %vec2(360.000000,220.000000)
+			:i else 
+				:i $pos$ = %vec2(800.000000,220.000000)
+			:i endif
+			:i $GetSkaterId$
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$objId$$part$ = $board$
+				:i $CreateScreenElement$:s{
+					:i $parent$ = %GLOBAL%$parent$
+					:i $type$ = $Element3d$
+					:i $id$ = $pause_deck$
+					:i $SkeletonName$ = $thps6_human$
+					:i $CloneModel$ = %GLOBAL%$objId$
+					:i $CloneModelGeoms$ = :a{$board$:a}
+					:i $TexDictOffset$ = %i(20,00000014)
+					:i $pos$ = %GLOBAL%$pos$
+					:i $CameraZ$ = %i(4294967290,fffffffa)
+					:i $scale$ = %f(0.120000)
+					:i $Tilt$ = %i(0,00000000)
+					:i $PivotPoint$ = %vec3(0.000000,4.120000,0.000000)
+					:i $active_viewport$ = %GLOBAL%$active_viewport$
+					:i $AngleOrderXYZ$
+					:i $anglex$ = %f(-1.570000)
+					:i $angley$ = %i(0,00000000)
+					:i $anglez$ = %f(0.400000)
+				:i :s}
+				:i $spawnscript$$rotate_pause_deck$%GLOBAL%$no_slide$
+			:i endif
+		:i endfunction
+		:i function $kill_pause_deck$
+			:i if $ObjectExists$$id$ = $pause_deck$
+				:i $KillSpawnedScript$$name$ = $rotate_pause_deck$
+				:i $DestroyScreenElement$$id$ = $pause_deck$
+			:i endif
+		:i endfunction
+		:i function $rotate_pause_deck$
+			:i if NOT $ObjectExists$$id$ = $pause_deck$
+				:i return
+				
+			:i endif
+			:i $rot_angle$ = %i(0,00000000)
+			:i $DoScreenElementMorph$$time$ = %f(0.250000)$id$ = $pause_deck$$pos$ = %vec2(360.000000,220.000000)
+			:i while
+				
+				:i if NOT $ObjectExists$$id$ = $pause_deck$
+					:i return
+					
+				:i endif
+				:i $SetScreenElementProps$$id$ = $pause_deck$$angley$ = %GLOBAL%$rot_angle$
+				:i $rot_angle$ =  (%GLOBAL%$rot_angle$ + %f(0.062500)) 
+				:i $wait$%i(1,00000001)$gameframes$
+			:i loop_to 
+		:i endfunction
+		:i function $fadetoblack$$time$ = %f(0.500000)$alpha$ = %f(0.500000)$z_priority$ = %i(9000,00002328)$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}$scale$ = %vec2(300.000000,200.000000)$texture$ = $black$$id$ = $screenfader$$pos$ = %vec2(320.000000,240.000000)$parent$ = $root_window$
+			:i if $GotParam$$on$
+				:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$id$
+					:i $SetScreenElementLock$$off$$id$ = %GLOBAL%$parent$
+					:i if NOT $GotParam$$create_script$
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = %GLOBAL%$parent$
+							:i $id$ = %GLOBAL%$id$
+							:i $texture$ = %GLOBAL%$texture$
+							:i $pos$ = %GLOBAL%$pos$
+							:i $rgba$ = %GLOBAL%$rgba$
+							:i $just$ = :a{$center$$center$:a}
+							:i $scale$ = %GLOBAL%$scale$
+							:i $alpha$ = %i(0,00000000)
+							:i $z_priority$ = %GLOBAL%$z_priority$
+							:i $no_zwrite$
+						:i :s}
+					:i else 
+						:i %GLOBAL%$create_script$
+					:i endif
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %GLOBAL%$time$$alpha$ = %GLOBAL%$alpha$
+				:i endif
+			:i endif
+			:i if $GotParam$$off$
+				:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %GLOBAL%$time$$alpha$ = %i(0,00000000)
+					:i if NOT  (%GLOBAL%$time$ = %f(0.000000)) 
+						:i $printf$%s(7,"waiting")
+						:i $wait$%GLOBAL%$time$$seconds$
+					:i endif
+					:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+						:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+					:i endif
+				:i endif
+			:i endif
+		:i endfunction
+		:i :end
+		

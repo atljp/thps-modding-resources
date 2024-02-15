@@ -1,0 +1,2480 @@
+
+:i $got_intial_lighting$ = %i(0,00000000)
+:i $current_lighting$ = %i(0,00000000)
+:i $step_multiplier$ = %i(10,0000000a)
+:i $lock_color_values$ = %i(0,00000000)
+:i $toggle_dir0$ = %i(1,00000001)
+:i $toggle_dir1$ = %i(1,00000001)
+:i $amb_mod_lo$ = %i(0,00000000)
+:i $amb_mod_hi$ = %i(0,00000000)
+:i $dir0_head$ = %i(0,00000000)
+:i $dir0_pitch$ = %i(0,00000000)
+:i $dir0_mod_hi$ = %i(0,00000000)
+:i $dir0_mod_lo$ = %i(0,00000000)
+:i $dir1_head$ = %i(0,00000000)
+:i $dir1_pitch$ = %i(0,00000000)
+:i $dir1_mod_hi$ = %i(0,00000000)
+:i $dir1_mod_lo$ = %i(0,00000000)
+:i $amb_mod2_lo$ = %i(0,00000000)
+:i $amb_mod2_hi$ = %i(0,00000000)
+:i $dir0_head2$ = %i(0,00000000)
+:i $dir0_pitch2$ = %i(0,00000000)
+:i $dir0_mod2_hi$ = %i(0,00000000)
+:i $dir0_mod2_lo$ = %i(0,00000000)
+:i $dir1_head2$ = %i(0,00000000)
+:i $dir1_pitch2$ = %i(0,00000000)
+:i $dir1_mod2_lo$ = %i(0,00000000)
+:i $dir1_mod2_hi$ = %i(0,00000000)
+:i $ambient_red2$ = %i(0,00000000)
+:i $ambient_green2$ = %i(0,00000000)
+:i $ambient_blue2$ = %i(0,00000000)
+:i $red_02$ = %i(0,00000000)
+:i $green_02$ = %i(0,00000000)
+:i $blue_02$ = %i(0,00000000)
+:i $red_12$ = %i(0,00000000)
+:i $green_12$ = %i(0,00000000)
+:i $blue_12$ = %i(0,00000000)
+:i $lev_red$ = %i(128,00000080)
+:i $lev_green$ = %i(128,00000080)
+:i $lev_blue$ = %i(128,00000080)
+:i $lev_vct$ = %i(128,00000080)
+:i $lev_vcp$ = %i(0,00000000)
+:i $fog_red$ = %i(128,00000080)
+:i $fog_green$ = %i(128,00000080)
+:i $fog_blue$ = %i(128,00000080)
+:i $fog_alpha$ = %i(0,00000000)
+:i $fog_dist$ = %i(0,00000000)
+:i $fog_state$ = %i(0,00000000)
+:i $sky_red$ = %i(128,00000080)
+:i $sky_green$ = %i(128,00000080)
+:i $sky_blue$ = %i(128,00000080)
+:i $last_dir0_red$ = %i(0,00000000)
+:i $last_dir0_green$ = %i(0,00000000)
+:i $last_dir0_blue$ = %i(0,00000000)
+:i $last_dir1_red$ = %i(0,00000000)
+:i $last_dir1_green$ = %i(0,00000000)
+:i $last_dir1_blue$ = %i(0,00000000)
+:i $rain_or_snow$ = %i(0,00000000)
+:i $rain_rate$ = %i(0,00000000)
+:i $rain_height$ = %i(2000,000007d0)
+:i $rain_frames$ = %i(40,00000028)
+:i $rain_length$ = %i(100,00000064)
+:i $rain_blend$ = %i(6,00000006)
+:i $rain_fixed$ = %i(64,00000040)
+:i $rain_red$ = %i(0,00000000)
+:i $rain_green$ = %i(0,00000000)
+:i $rain_blue$ = %i(0,00000000)
+:i $rain_alpha$ = %i(0,00000000)
+:i $rain_red2$ = %i(0,00000000)
+:i $rain_green2$ = %i(0,00000000)
+:i $rain_blue2$ = %i(0,00000000)
+:i $rain_alpha2$ = %i(0,00000000)
+:i $splash_red$ = %i(255,000000ff)
+:i $splash_green$ = %i(255,000000ff)
+:i $splash_blue$ = %i(255,000000ff)
+:i $splash_alpha$ = %i(255,000000ff)
+:i $splash_rate$ = %i(0,00000000)
+:i $splash_life$ = %i(8,00000008)
+:i $splash_size$ = %i(16,00000010)
+:i $splash_blend$ = %i(6,00000006)
+:i $splash_fixed$ = %i(64,00000040)
+:i $snow_rate$ = %i(0,00000000)
+:i $snow_height$ = %i(500,000001f4)
+:i $snow_frames$ = %i(254,000000fe)
+:i $snow_size$ = %i(4,00000004)
+:i $snow_blend$ = %i(6,00000006)
+:i $snow_fixed$ = %i(64,00000040)
+:i $snow_red$ = %i(128,00000080)
+:i $snow_green$ = %i(128,00000080)
+:i $snow_blue$ = %i(128,00000080)
+:i $snow_alpha$ = %i(128,00000080)
+:i function $launch_lighting_tool$$set$ = $character$
+	:i $UnpauseGame$
+	:i $makeskatergoto$$freezeskater$
+	:i $SetAnalogStickActiveForMenus$%i(0,00000000)
+	:i if  ($got_intial_lighting$ = %i(0,00000000)) 
+		:i $get_level_light_values$
+		:i $change$$got_intial_lighting$ = %i(1,00000001)
+	:i else 
+		:i %GLOBAL%$color$ =  ($lev_red$ +  ($lev_green$ * %i(256,00000100))  +  ($lev_blue$ * %i(65536,00010000)) ) 
+		:i %GLOBAL%$sky$ =  ($sky_red$ +  ($sky_green$ * %i(256,00000100))  +  ($sky_blue$ * %i(65536,00010000)) ) 
+		:i $lighting$$color$ = %GLOBAL%$color$$sky$ = %GLOBAL%$sky$
+	:i endif
+	:i $removeparameter$$device_num$
+	:i $removeparameter$$controller_num$
+	:i $removeparameter$$type$
+	:i $TODManager_GetTimeMultiplier$
+	:i $TODManager_SetTimeMultiplier$%i(0,00000000)
+	:i $create_lighting_tool$ isNull $remember_colors$
+:i endfunction
+:i function $create_lighting_tool$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if  (%GLOBAL%$set$ = $character$) 
+		:i if  ($current_lighting$ = %i(3,00000003)) 
+			:i $change$$current_lighting$ = %i(0,00000000)
+		:i else 
+			:i if  ($current_lighting$ > %i(3,00000003)) 
+				:i $change$$current_lighting$ = %i(2,00000002)
+			:i endif
+		:i endif
+	:i else 
+		:i if  ($current_lighting$ < %i(3,00000003)) 
+			:i $change$$current_lighting$ = %i(12,0000000c)
+		:i else 
+			:i if  ($current_lighting$ > %i(12,0000000c)) 
+				:i $change$$current_lighting$ = %i(3,00000003)
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$set$ = $character$) 
+		:i switch $current_lighting$
+			:i case %i(0,00000000)
+				:i $menu_title$ = %s(7,"AMBIENT")
+				:i endcase
+			case %i(1,00000001)
+				:i $menu_title$ = %s(3,"ONE")
+				:i endcase
+			case %i(2,00000002)
+				:i $menu_title$ = %s(3,"TWO")
+				:i endcase
+			default 
+				:i $change$$current_lighting$ = %i(0,00000000)
+				:i $menu_title$ = %s(7,"AMBIENT")
+				:i end_switch
+		
+	:i else 
+		:i switch $current_lighting$
+			:i case %i(3,00000003)
+				:i $menu_title$ = %s(5,"LEVEL")
+				:i endcase
+			case %i(4,00000004)
+				:i $menu_title$ = %s(3,"FOG")
+				:i endcase
+			case %i(5,00000005)
+				:i $menu_title$ = %s(3,"SKY")
+				:i endcase
+			case %i(6,00000006)
+				:i $menu_title$ = %s(4,"TIME")
+				:i endcase
+			case %i(7,00000007)
+				:i $menu_title$ = %s(4,"RAIN")
+				:i endcase
+			case %i(8,00000008)
+				:i $menu_title$ = %s(10,"RAIN COLOR")
+				:i endcase
+			case %i(9,00000009)
+				:i $menu_title$ = %s(12,"SPLASH COLOR")
+				:i endcase
+			case %i(10,0000000a)
+				:i $menu_title$ = %s(6,"SPLASH")
+				:i endcase
+			case %i(11,0000000b)
+				:i $menu_title$ = %s(4,"SNOW")
+				:i endcase
+			case %i(12,0000000c)
+				:i $menu_title$ = %s(10,"SNOW COLOR")
+				:i endcase
+			default 
+				:i $change$$current_lighting$ = %i(3,00000003)
+				:i $menu_title$ = %s(5,"LEVEL")
+				:i end_switch
+		
+	:i endif
+	:i $GetCurrentLightingValues$
+	:i $set_current_tod_values$
+	:i if $GotParam$$remember_colors$
+		:i $change$$amb_mod2_lo$ =  ($amb_mod_lo$) 
+		:i $change$$amb_mod2_hi$ =  ($amb_mod_hi$) 
+		:i $change$$dir0_head2$ =  ($dir0_head$) 
+		:i $change$$dir0_pitch2$ =  ($dir0_pitch$) 
+		:i $change$$dir0_mod2_hi$ =  ($dir0_mod_hi$) 
+		:i $change$$dir0_mod2_lo$ =  ($dir0_mod_lo$) 
+		:i $change$$dir1_head2$ =  ($dir1_head$) 
+		:i $change$$dir1_pitch2$ =  ($dir1_pitch$) 
+		:i $change$$dir1_mod2_lo$ =  ($dir1_mod_lo$) 
+		:i $change$$dir1_mod2_hi$ =  ($dir1_mod_hi$) 
+		:i $change$$ambient_red2$ = %GLOBAL%$ambient_red$
+		:i $change$$ambient_green2$ = %GLOBAL%$ambient_green$
+		:i $change$$ambient_blue2$ = %GLOBAL%$ambient_blue$
+		:i $change$$red_02$ = %GLOBAL%$red_0$
+		:i $change$$green_02$ = %GLOBAL%$green_0$
+		:i $change$$blue_02$ = %GLOBAL%$blue_0$
+		:i $change$$red_12$ = %GLOBAL%$red_1$
+		:i $change$$green_12$ = %GLOBAL%$green_1$
+		:i $change$$blue_12$ = %GLOBAL%$blue_1$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $light_menu$
+		:i $vmenu_id$ = $light_vmenu$
+		:i $menu_title$ = %GLOBAL%$menu_title$
+		:i $type$ = $VMenu$
+		:i $dims$ = %vec2(200.000000,200.000000)
+		:i $padding_scale$ = %f(0.950000)
+		:i $pos$ = %vec2(50.000000,180.000000)
+	:i :s}
+	:i if  (%GLOBAL%$set$ = $character$) 
+		:i $create_helper_text$$helper_pos$ = %vec2(320.000000,410.000000)$scale$ = %f(0.950000)$helper_text_elements$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(21,"\m1=Back/Print Values"):s}
+			:i :a}
+		:i $create_helper_text$$anchor_id$ = $helper_text_anchor2$$scale$ = %f(0.950000)$helper_text_elements$ = :a{
+			:i :s{$text$ = %s(21,"\m0=toggle speed 1,10"):s}
+			:i :s{$text$ = %s(28,"\m3=link/unlink color values"):s}
+			:i :s{$text$ = %s(26,"\m4=toggle previous values"):s}
+			:i :a}
+		:i $removeparameter$$left$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $light_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$print_light_values$$params$ =  isNull :s}
+				:i :s{$pad_choose$$toggle_step_multiplier$$params$ = :s{:s}:s}
+				:i :s{$pad_square$$toggle_color_lock$$params$ = :s{:s}:s}
+				:i :s{$pad_circle$$toggle_old_colors$$params$ =  isNull :s}
+				:i :s{$pad_l1$$next_light$$params$ = :s{$left$ isNull :s}:s}
+				:i :s{$pad_r1$$next_light$$params$ = :s{ isNull :s}:s}
+				:i :s{$pad_r2$$toggle_light_menu_focus$$params$ = :s{$off$:s}:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $create_helper_text$$helper_pos$ = %vec2(320.000000,410.000000)$helper_text_elements$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(21,"\m1=Back/Print Values"):s}
+			:i :a}
+		:i $create_helper_text$$anchor_id$ = $helper_text_anchor2$$helper_text_elements$ = :a{
+			:i :s{$text$ = %s(21,"\m0=toggle speed 1,10"):s}
+			:i :s{$text$ = %s(28,"\m3=link/unlink color values"):s}
+			:i :a}
+		:i $removeparameter$$left$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $light_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$print_light_values$$params$ =  isNull :s}
+				:i :s{$pad_choose$$toggle_step_multiplier$$params$ = :s{:s}:s}
+				:i :s{$pad_square$$toggle_color_lock$$params$ = :s{:s}:s}
+				:i :s{$pad_l1$$next_light$$params$ = :s{$left$ isNull :s}:s}
+				:i :s{$pad_r1$$next_light$$params$ = :s{ isNull :s}:s}
+				:i :s{$pad_r2$$toggle_light_menu_focus$$params$ = :s{$off$:s}:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i if  ($toggle_dir0$ = %i(1,00000001)) 
+		:i $dir0_on_text$ = %s(2,"on")
+	:i else 
+		:i $dir0_on_text$ = %s(3,"off")
+	:i endif
+	:i if  ($toggle_dir1$ = %i(1,00000001)) 
+		:i $dir1_on_text$ = %s(2,"on")
+	:i else 
+		:i $dir1_on_text$ = %s(3,"off")
+	:i endif
+	:i if  ($fog_state$ = %i(1,00000001)) 
+		:i $fog_text$ = %s(2,"on")
+	:i else 
+		:i $fog_text$ = %s(3,"off")
+	:i endif
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = %GLOBAL%$ambient_red$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = %GLOBAL%$ambient_green$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = %GLOBAL%$ambient_blue$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod lo")$id$ = $menu_mod$$value$ = $amb_mod_lo$$pad_choose_script$ = $incr_mod_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod hi")$id$ = $menu_mod2$$value$ = $amb_mod_hi$$pad_choose_script$ = $incr_mod_val2$
+			:i endcase
+		case %i(1,00000001)
+			:i $make_light_tool_item$$text$ = %s(7,"heading")$id$ = $menu_heading$$value$ = $dir0_head$$pad_choose_script$ = $incr_heading_val$
+			:i $make_light_tool_item$$text$ = %s(5,"pitch")$id$ = $menu_pitch$$value$ = $dir0_pitch$$pad_choose_script$ = $incr_pitch_val$
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = %GLOBAL%$red_0$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = %GLOBAL%$green_0$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = %GLOBAL%$blue_0$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod lo")$id$ = $menu_mod1$$value$ = $dir0_mod_lo$$pad_choose_script$ = $incr_mod_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod hi")$id$ = $menu_mod2$$value$ = $dir0_mod_hi$$pad_choose_script$ = $incr_mod_val2$
+			:i $make_light_tool_item$$text$ = %s(5,"light")$id$ = $menu_onoff$$value_text$ = %GLOBAL%$dir0_on_text$$pad_choose_script$ = $toggle_dir_light_on_off$$params$ = :s{$index$ = %i(0,00000000):s}
+			:i endcase
+		case %i(2,00000002)
+			:i $make_light_tool_item$$text$ = %s(7,"heading")$id$ = $menu_heading$$value$ = $dir1_head$$pad_choose_script$ = $incr_heading_val$
+			:i $make_light_tool_item$$text$ = %s(5,"pitch")$id$ = $menu_pitch$$value$ = $dir1_pitch$$pad_choose_script$ = $incr_pitch_val$
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = %GLOBAL%$red_1$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = %GLOBAL%$green_1$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = %GLOBAL%$blue_1$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod lo")$id$ = $menu_mod1$$value$ = $dir1_mod_lo$$pad_choose_script$ = $incr_mod_val$
+			:i $make_light_tool_item$$text$ = %s(6,"mod hi")$id$ = $menu_mod2$$value$ = $dir1_mod_hi$$pad_choose_script$ = $incr_mod_val2$
+			:i $make_light_tool_item$$text$ = %s(5,"light")$id$ = $menu_onoff$$value_text$ = %GLOBAL%$dir1_on_text$$pad_choose_script$ = $toggle_dir_light_on_off$$params$ = :s{$index$ = %i(1,00000001):s}
+			:i endcase
+		case %i(3,00000003)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $lev_red$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $lev_green$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $lev_blue$$pad_choose_script$ = $incr_color_val$
+			:i endcase
+		case %i(4,00000004)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $fog_red$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $fog_green$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $fog_blue$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"alpha")$id$ = $menu_alpha$$value$ = $fog_alpha$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(8,"distance")$id$ = $menu_exp$$value$ = $fog_dist$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(3,"fog")$id$ = $menu_fog$$value$ = %GLOBAL%$fog_text$$pad_choose_script$ = $incr_color_val$
+			:i endcase
+		case %i(5,00000005)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $sky_red$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $sky_green$$pad_choose_script$ = $incr_color_val$
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $sky_blue$$pad_choose_script$ = $incr_color_val$
+			:i endcase
+		case %i(6,00000006)
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $light_vmenu$
+				:i $event_handlers$ = :a{:s{$pad_choose$$null_script$$params$ = :s{:s}:s}:a}$replace_handlers$
+			:i :s}
+			:i $make_text_sub_menu_item$$text$ = %s(3,"Day")$id$ = $menu_day$$pad_choose_script$ = $tod_light_set_instant$$pad_choose_params$ = :s{$tod_state$ = $afternoon$:s}
+			:i $make_text_sub_menu_item$$text$ = %s(7,"Morning")$id$ = $menu_morn$$pad_choose_script$ = $tod_light_set_instant$$pad_choose_params$ = :s{$tod_state$ = $morning$:s}
+			:i $make_text_sub_menu_item$$text$ = %s(7,"Evening")$id$ = $menu_even$$pad_choose_script$ = $tod_light_set_instant$$pad_choose_params$ = :s{$tod_state$ = $evening$:s}
+			:i $make_text_sub_menu_item$$text$ = %s(5,"Night")$id$ = $menu_night$$pad_choose_script$ = $tod_light_set_instant$$pad_choose_params$ = :s{$tod_state$ = $night$:s}
+			:i endcase
+		case %i(7,00000007)
+			:i if  ($rain_or_snow$ = %i(0,00000000)) 
+				:i $rain_text$ = %s(4,"rain")
+			:i else 
+				:i $rain_text$ = %s(4,"snow")
+			:i endif
+			:i $make_light_tool_item$$text$ = %s(9,"Rain/Snow")$id$ = $menu_rain$$value$ = %GLOBAL%$rain_text$$pad_choose_script$ = $toggle_rain_snow$
+			:i $make_light_tool_item$$text$ = %s(4,"rate")$id$ = $menu_rate$$value$ = $rain_rate$$pad_choose_script$ = $incr_rain_val$
+			:i $make_light_tool_item$$text$ = %s(6,"frames")$id$ = $menu_frames$$value$ = $rain_frames$$pad_choose_script$ = $incr_rain_val$
+			:i $make_light_tool_item$$text$ = %s(6,"height")$id$ = $menu_height$$value$ = $rain_height$$pad_choose_script$ = $incr_rain_val$
+			:i $make_light_tool_item$$text$ = %s(6,"length")$id$ = $menu_length$$value$ = $rain_length$$pad_choose_script$ = $incr_rain_val$
+			:i $get_rain_mode_string$
+			:i $make_light_tool_item$$text$ = %s(9,"blendmode")$id$ = $menu_blend$$value_text$ = %GLOBAL%$value_text$$pad_choose_script$ = $incr_rain_val$
+			:i $make_light_tool_item$$text$ = %s(8,"fixalpha")$id$ = $menu_fixed$$value$ = $rain_fixed$$pad_choose_script$ = $incr_rain_val$
+			:i endcase
+		case %i(8,00000008)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $rain_red$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $rain_green$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $rain_blue$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"alpha")$id$ = $menu_alpha$$value$ = $rain_alpha$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(4,"red2")$id$ = $menu_red2$$value$ = $rain_red2$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(6,"green2")$id$ = $menu_green2$$value$ = $rain_green2$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"blue2")$id$ = $menu_blue2$$value$ = $rain_blue2$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i $make_light_tool_item$$text$ = %s(6,"alpha2")$id$ = $menu_alpha2$$value$ = $rain_alpha2$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$rain$:s}
+			:i endcase
+		case %i(9,00000009)
+			:i $make_light_tool_item$$text$ = %s(4,"rate")$id$ = $menu_rate$$value$ = $splash_rate$$pad_choose_script$ = $incr_splash_val$
+			:i $make_light_tool_item$$text$ = %s(4,"life")$id$ = $menu_life$$value$ = $splash_life$$pad_choose_script$ = $incr_splash_val$
+			:i $make_light_tool_item$$text$ = %s(4,"size")$id$ = $menu_size$$value$ = $splash_size$$pad_choose_script$ = $incr_splash_val$
+			:i $get_rain_mode_string$$splash$
+			:i $make_light_tool_item$$text$ = %s(9,"blendmode")$id$ = $menu_blend$$value_text$ = %GLOBAL%$value_text$$pad_choose_script$ = $incr_splash_val$
+			:i $make_light_tool_item$$text$ = %s(8,"fixalpha")$id$ = $menu_fixed$$value$ = $splash_fixed$$pad_choose_script$ = $incr_splash_val$
+			:i endcase
+		case %i(10,0000000a)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $splash_red$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$splash$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $splash_green$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$splash$:s}
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $splash_blue$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$splash$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"alpha")$id$ = $menu_alpha$$value$ = $splash_alpha$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$splash$:s}
+			:i endcase
+		case %i(11,0000000b)
+			:i if  ($rain_or_snow$ = %i(0,00000000)) 
+				:i $rain_text$ = %s(4,"rain")
+			:i else 
+				:i $rain_text$ = %s(4,"snow")
+			:i endif
+			:i $make_light_tool_item$$text$ = %s(9,"Rain/Snow")$id$ = $menu_rain$$value$ = %GLOBAL%$rain_text$$pad_choose_script$ = $toggle_rain_snow$
+			:i $make_light_tool_item$$text$ = %s(4,"rate")$id$ = $menu_rate$$value$ = $snow_rate$$pad_choose_script$ = $incr_snow_val$
+			:i $make_light_tool_item$$text$ = %s(6,"frames")$id$ = $menu_frames$$value$ = $snow_frames$$pad_choose_script$ = $incr_snow_val$
+			:i $make_light_tool_item$$text$ = %s(6,"height")$id$ = $menu_height$$value$ = $snow_height$$pad_choose_script$ = $incr_snow_val$
+			:i $make_light_tool_item$$text$ = %s(4,"size")$id$ = $menu_size$$value$ = $snow_size$$pad_choose_script$ = $incr_snow_val$
+			:i $get_rain_mode_string$$snow$
+			:i $make_light_tool_item$$text$ = %s(9,"blendmode")$id$ = $menu_blend$$value_text$ = %GLOBAL%$value_text$$pad_choose_script$ = $incr_snow_val$
+			:i $make_light_tool_item$$text$ = %s(8,"fixalpha")$id$ = $menu_fixed$$value$ = $snow_fixed$$pad_choose_script$ = $incr_snow_val$
+			:i endcase
+		case %i(12,0000000c)
+			:i $make_light_tool_item$$text$ = %s(3,"red")$id$ = $menu_red$$value$ = $snow_red$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$snow$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"green")$id$ = $menu_green$$value$ = $snow_green$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$snow$:s}
+			:i $make_light_tool_item$$text$ = %s(4,"blue")$id$ = $menu_blue$$value$ = $snow_blue$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$snow$:s}
+			:i $make_light_tool_item$$text$ = %s(5,"alpha")$id$ = $menu_alpha$$value$ = $snow_alpha$$pad_choose_script$ = $incr_rain_color$$params$ = :s{$snow$:s}
+			:i endcase
+		default 
+			:i $change$$current_lighting$ = %i(0,00000000)
+			:i $create_lighting_tool$
+			:i end_switch
+	
+	:i $spawnscript$$update_directional_light_pos$
+	:i $FireEvent$$type$ = $focus$$target$ = $light_menu$
+:i endfunction
+:i function $tod_light_set_instant$
+	:i $TODManager_SetTODInstant$%GLOBAL%$tod_state$
+	:i $set_current_tod_values$
+:i endfunction
+:i function $set_current_tod_values$
+	:i $TODManager_GetCurrentTODParams$
+	:i $change$$lev_red$ =  (%GLOBAL%$tod_params$->$lev_red$) 
+	:i $change$$lev_green$ =  (%GLOBAL%$tod_params$->$lev_green$) 
+	:i $change$$lev_blue$ =  (%GLOBAL%$tod_params$->$lev_blue$) 
+	:i $fog_on$ =  (%GLOBAL%$tod_params$->$fog_on$) 
+	:i $change$$fog_red$ =  (%GLOBAL%$tod_params$->$fog_red$) 
+	:i $change$$fog_green$ =  (%GLOBAL%$tod_params$->$fog_green$) 
+	:i $change$$fog_blue$ =  (%GLOBAL%$tod_params$->$fog_blue$) 
+	:i $change$$fog_alpha$ =  (%GLOBAL%$tod_params$->$fog_alpha$) 
+	:i $change$$fog_dist$ =  (%GLOBAL%$tod_params$->$fog_dist$) 
+	:i $change$$sky_red$ =  (%GLOBAL%$tod_params$->$sky_red$) 
+	:i $change$$sky_green$ =  (%GLOBAL%$tod_params$->$sky_green$) 
+	:i $change$$sky_blue$ =  (%GLOBAL%$tod_params$->$sky_blue$) 
+	:i $change$$dir0_head$ =  (%GLOBAL%$tod_params$->$heading_0$) 
+	:i $change$$dir0_pitch$ =  (%GLOBAL%$tod_params$->$pitch_0$) 
+	:i $change$$dir1_head$ =  (%GLOBAL%$tod_params$->$heading_1$) 
+	:i $change$$dir1_pitch$ =  (%GLOBAL%$tod_params$->$pitch_1$) 
+	:i $change$$amb_mod_lo$ =  (%GLOBAL%$tod_params$->$ambient_mod_factor_lo$) 
+	:i $change$$amb_mod_hi$ =  (%GLOBAL%$tod_params$->$ambient_mod_factor_hi$) 
+:i endfunction
+:i function $toggle_old_colors$
+	:i $GetCurrentLightingValues$
+	:i $amb_modt_lo$ =  ($amb_mod_lo$) 
+	:i $amb_modt_hi$ =  ($amb_mod_hi$) 
+	:i $dir0_headt$ =  ($dir0_head$) 
+	:i $dir0_pitcht$ =  ($dir0_pitch$) 
+	:i $dir0_modt_lo$ =  ($dir0_mod_lo$) 
+	:i $dir0_modt_hi$ =  ($dir0_mod_hi$) 
+	:i $dir1_headt$ =  ($dir1_head$) 
+	:i $dir1_pitcht$ =  ($dir1_pitch$) 
+	:i $dir1_modt_lo$ =  ($dir1_mod_lo$) 
+	:i $dir1_modt_hi$ =  ($dir1_mod_hi$) 
+	:i $ambient_redt$ = %GLOBAL%$ambient_red$
+	:i $ambient_greent$ = %GLOBAL%$ambient_green$
+	:i $ambient_bluet$ = %GLOBAL%$ambient_blue$
+	:i $red_0t$ = %GLOBAL%$red_0$
+	:i $green_0t$ = %GLOBAL%$green_0$
+	:i $blue_0t$ = %GLOBAL%$blue_0$
+	:i $red_1t$ = %GLOBAL%$red_1$
+	:i $green_1t$ = %GLOBAL%$green_1$
+	:i $blue_1t$ = %GLOBAL%$blue_1$
+	:i $change$$amb_mod_lo$ =  ($amb_mod2_lo$) 
+	:i $change$$amb_mod_hi$ =  ($amb_mod2_hi$) 
+	:i $change$$dir0_head$ =  ($dir0_head2$) 
+	:i $change$$dir0_pitch$ =  ($dir0_pitch2$) 
+	:i $change$$dir0_mod_lo$ =  ($dir0_mod2_lo$) 
+	:i $change$$dir0_mod_hi$ =  ($dir0_mod2_hi$) 
+	:i $change$$dir1_head$ =  ($dir1_head2$) 
+	:i $change$$dir1_pitch$ =  ($dir1_pitch2$) 
+	:i $change$$dir1_mod_lo$ =  ($dir1_mod2_lo$) 
+	:i $change$$dir1_mod_hi$ =  ($dir1_mod2_hi$) 
+	:i $SetLightAmbientColor$$r$ =  ($ambient_red2$) $g$ =  ($ambient_green2$) $b$ =  ($ambient_blue2$) 
+	:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ =  ($red_02$) $g$ =  ($green_02$) $b$ =  ($blue_02$) 
+	:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ =  ($red_12$) $g$ =  ($green_12$) $b$ =  ($blue_12$) 
+	:i $change$$amb_mod2_lo$ = %GLOBAL%$amb_modt_lo$
+	:i $change$$amb_mod2_hi$ = %GLOBAL%$amb_modt_hi$
+	:i $change$$dir0_head2$ = %GLOBAL%$dir0_headt$
+	:i $change$$dir0_pitch2$ = %GLOBAL%$dir0_pitcht$
+	:i $change$$dir0_mod2_lo$ = %GLOBAL%$dir0_modt_lo$
+	:i $change$$dir0_mod2_hi$ = %GLOBAL%$dir0_modt_hi$
+	:i $change$$dir1_head2$ = %GLOBAL%$dir1_headt$
+	:i $change$$dir1_pitch2$ = %GLOBAL%$dir1_pitcht$
+	:i $change$$dir1_mod2_lo$ = %GLOBAL%$dir1_modt_lo$
+	:i $change$$dir1_mod2_hi$ = %GLOBAL%$dir1_modt_hi$
+	:i $change$$ambient_red2$ = %GLOBAL%$ambient_redt$
+	:i $change$$ambient_green2$ = %GLOBAL%$ambient_greent$
+	:i $change$$ambient_blue2$ = %GLOBAL%$ambient_bluet$
+	:i $change$$red_02$ = %GLOBAL%$red_0t$
+	:i $change$$green_02$ = %GLOBAL%$green_0t$
+	:i $change$$blue_02$ = %GLOBAL%$blue_0t$
+	:i $change$$red_12$ = %GLOBAL%$red_1t$
+	:i $change$$green_12$ = %GLOBAL%$green_1t$
+	:i $change$$blue_12$ = %GLOBAL%$blue_1t$
+	:i if $GotParam$$remember_colors$
+		:i $removeparameter$$remember_colors$
+	:i endif
+	:i $create_lighting_tool$ isNull 
+:i endfunction
+:i function $toggle_light_menu_focus$
+	:i if $ScreenElementExists$$id$ = $light_menu_focus_message$
+		:i $DestroyScreenElement$$id$ = $light_menu_focus_message$
+	:i endif
+	:i if $GotParam$$off$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $light_menu$
+		:i $SetScreenElementLock$$id$ = $light_menu$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $light_menu$
+			:i $id$ = $light_menu_focus_message$
+			:i $font$ = $small$
+			:i $text$ = %s(56,"Light tool unfocused.  Press R2 to bring back into focus")
+			:i $pos$ = %vec2(320.000000,40.000000)
+			:i $z_priority$ = %i(1000,000003e8)
+			:i $rgba$ = :a{%i(128,00000080)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{:s{$pad_r2$$toggle_light_menu_focus$$params$ = :s{$on$:s}:s}:a}
+		:i :s}
+	:i else 
+		:i if $GotParam$$on$
+			:i $FireEvent$$type$ = $focus$$target$ = $light_menu$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $root_window$
+				:i $event_handlers$ = :a{:s{$pad_r2$$null_script$$params$ = :s{:s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $get_level_light_values$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $this_level$ = $level_skateshop$
+		:i $no_fog$ = %i(1,00000001)
+	:i endif
+	:i if $LevelIs$$load_AU$
+		:i $this_level$ = $level_AU$
+	:i endif
+	:i if $LevelIs$$load_SC$
+		:i $this_level$ = $level_SC$
+	:i endif
+	:i if $LevelIs$$load_Default$
+		:i $this_level$ = $level_default$
+		:i $no_fog$ = %i(1,00000001)
+	:i endif
+	:i if $LevelIs$$load_TestLevel$
+		:i $this_level$ = $level_testlevel$
+		:i $no_fog$ = %i(1,00000001)
+	:i endif
+	:i $set_to_tod_values$$tod$ = %GLOBAL%$this_level$$level$$no_fog$ = %GLOBAL%$no_fog$
+:i endfunction
+:i function $reset_light_values$
+	:i $printf$%s(39,"Reset skater lighting to level defaults")
+	:i %GLOBAL%$setcolor$ = %i(0,00000000)
+	:i $change$$lev_red$ = %i(128,00000080)
+	:i $change$$lev_green$ = %i(128,00000080)
+	:i $change$$lev_blue$ = %i(128,00000080)
+	:i $change$$lev_vct$ = %i(128,00000080)
+	:i $change$$lev_vcp$ = %i(0,00000000)
+	:i $change$$fog_red$ = %i(128,00000080)
+	:i $change$$fog_green$ = %i(128,00000080)
+	:i $change$$fog_blue$ = %i(128,00000080)
+	:i $change$$fog_alpha$ = %i(50,00000032)
+	:i $change$$fog_dist$ = %i(15,0000000f)
+	:i $change$$sky_red$ = %i(128,00000080)
+	:i $change$$sky_green$ = %i(128,00000080)
+	:i $change$$sky_blue$ = %i(128,00000080)
+	:i $get_level_light_values$
+	:i $launch_lighting_tool$
+:i endfunction
+:i function $next_light$$max$ = %i(13,0000000d)
+	:i if $GotParam$$left$
+		:i $change$$current_lighting$ =  ($current_lighting$ - %i(1,00000001)) 
+	:i else 
+		:i $change$$current_lighting$ =  ($current_lighting$ + %i(1,00000001)) 
+	:i endif
+	:i if  ($current_lighting$ > %GLOBAL%$max$) 
+		:i $change$$current_lighting$ = %i(0,00000000)
+	:i else 
+		:i if  (%i(0,00000000) > $current_lighting$) 
+			:i $change$$current_lighting$ = %GLOBAL%$max$
+		:i endif
+	:i endif
+	:i $create_lighting_tool$ isNull 
+:i endfunction
+:i function $make_light_tool_item$:s{$focus_script$ = $do_scale_up$
+		:i $unfocus_script$ = $do_scale_down$
+		:i $pad_choose_script$ = $nullscript$
+		:i $font_face$ = $small$
+		:i $parent_menu_id$ = $current_menu$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $value$ = %i(100,00000064)
+	:i :s}
+	:i switch %GLOBAL%$id$
+		:i case $menu_red$
+			:i $rgba$ = :a{%i(80,00000050)%i(20,00000014)%i(20,00000014)%i(128,00000080):a}
+			:i endcase
+		case $menu_green$
+			:i $rgba$ = :a{%i(20,00000014)%i(80,00000050)%i(20,00000014)%i(128,00000080):a}
+			:i endcase
+		case $menu_blue$
+			:i $rgba$ = :a{%i(20,00000014)%i(20,00000014)%i(80,00000050)%i(128,00000080):a}
+			:i end_switch
+	
+	:i $unfocus_params$ = :s{$rgba$ = %GLOBAL%$rgba$:s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$parent_menu_id$
+		:i $id$ = %GLOBAL%$id$
+		:i $text$ = %GLOBAL%$text$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $event_handlers$ = :a{
+			:i :s{$focus$%GLOBAL%$focus_script$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$%GLOBAL%$unfocus_script$$params$ = %GLOBAL%$unfocus_params$:s}
+			:i :s{$pad_left$%GLOBAL%$pad_choose_script$$params$ = :s{$reverse$%GLOBAL%$params$:s}:s}
+			:i :s{$pad_right$%GLOBAL%$pad_choose_script$$params$ = :s{%GLOBAL%$params$:s}:s}
+			:i :a}
+	:i :s}
+	:i if NOT $GotParam$$value_text$
+		:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$value$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $pos$ = %vec2(150.000000,10.000000)
+		:i $text$ = %GLOBAL%$value_text$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %GLOBAL%$scale$
+	:i :s}
+:i endfunction
+:i function $incr_color_val$$step$ = %i(1,00000001)$max$ = %i(128,00000080)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i $GetCurrentLightingValues$
+	:i $set_current_tod_values$
+	:i $removeparameter$$random_effect_done$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i if  ($lock_color_values$ = %i(1,00000001)) 
+		:i $id$ = $menu_all$
+	:i endif
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $ambient_red$ =  (%GLOBAL%$ambient_red$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$ambient_red$ > %i(255,000000ff)) 
+						:i $ambient_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$ambient_red$) 
+							:i $ambient_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$ambient_red$
+					:i endcase
+				case $menu_green$
+					:i $ambient_green$ =  (%GLOBAL%$ambient_green$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$ambient_green$ > %i(255,000000ff)) 
+						:i $ambient_green$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$ambient_green$) 
+							:i $ambient_green$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$ambient_green$
+					:i endcase
+				case $menu_blue$
+					:i $ambient_blue$ =  (%GLOBAL%$ambient_blue$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$ambient_blue$ > %i(255,000000ff)) 
+						:i $ambient_blue$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$ambient_blue$) 
+							:i $ambient_blue$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$ambient_blue$
+					:i endcase
+				case $menu_all$
+					:i $ambient_red$ =  (%GLOBAL%$ambient_red$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$ambient_red$ > %i(255,000000ff)) 
+						:i $ambient_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$ambient_red$) 
+							:i $ambient_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $ambient_green$ = %GLOBAL%$ambient_red$
+					:i $ambient_blue$ = %GLOBAL%$ambient_red$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$ambient_red$
+					:i end_switch
+			
+			:i endcase
+		case %i(1,00000001)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $red_0$ =  (%GLOBAL%$red_0$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$red_0$ > %i(255,000000ff)) 
+						:i $red_0$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$red_0$) 
+							:i $red_0$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$red_0$
+					:i endcase
+				case $menu_green$
+					:i $green_0$ =  (%GLOBAL%$green_0$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$green_0$ > %i(255,000000ff)) 
+						:i $green_0$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$green_0$) 
+							:i $green_0$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$green_0$
+					:i endcase
+				case $menu_blue$
+					:i $blue_0$ =  (%GLOBAL%$blue_0$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$blue_0$ > %i(255,000000ff)) 
+						:i $blue_0$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$blue_0$) 
+							:i $blue_0$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$blue_0$
+					:i endcase
+				case $menu_all$
+					:i $red_0$ =  (%GLOBAL%$red_0$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$red_0$ > %i(255,000000ff)) 
+						:i $red_0$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$red_0$) 
+							:i $red_0$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $green_0$ = %GLOBAL%$red_0$
+					:i $blue_0$ = %GLOBAL%$red_0$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$red_0$
+					:i end_switch
+			
+			:i endcase
+		case %i(2,00000002)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $red_1$ =  (%GLOBAL%$red_1$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$red_1$ > %i(255,000000ff)) 
+						:i $red_1$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$red_1$) 
+							:i $red_1$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$red_1$
+					:i endcase
+				case $menu_green$
+					:i $green_1$ =  (%GLOBAL%$green_1$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$green_1$ > %i(255,000000ff)) 
+						:i $green_1$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$green_1$) 
+							:i $green_1$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$green_1$
+					:i endcase
+				case $menu_blue$
+					:i $blue_1$ =  (%GLOBAL%$blue_1$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$blue_1$ > %i(255,000000ff)) 
+						:i $blue_1$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$blue_1$) 
+							:i $blue_1$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$blue_1$
+					:i endcase
+				case $menu_all$
+					:i $red_1$ =  (%GLOBAL%$red_1$ + %GLOBAL%$step$) 
+					:i if  (%GLOBAL%$red_1$ > %i(255,000000ff)) 
+						:i $red_1$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > %GLOBAL%$red_1$) 
+							:i $red_1$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $green_1$ = %GLOBAL%$red_1$
+					:i $blue_1$ = %GLOBAL%$red_1$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$red_1$
+					:i end_switch
+			
+			:i endcase
+		case %i(3,00000003)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $change$$lev_red$ =  ($lev_red$ + %GLOBAL%$step$) 
+					:i if  ($lev_red$ > %i(255,000000ff)) 
+						:i $change$$lev_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_red$) 
+							:i $change$$lev_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_red$
+					:i endcase
+				case $menu_green$
+					:i $change$$lev_green$ =  ($lev_green$ + %GLOBAL%$step$) 
+					:i if  ($lev_green$ > %i(255,000000ff)) 
+						:i $change$$lev_green$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_green$) 
+							:i $change$$lev_green$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_green$
+					:i endcase
+				case $menu_blue$
+					:i $change$$lev_blue$ =  ($lev_blue$ + %GLOBAL%$step$) 
+					:i if  ($lev_blue$ > %i(255,000000ff)) 
+						:i $change$$lev_blue$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_blue$) 
+							:i $change$$lev_blue$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_blue$
+					:i endcase
+				case $menu_target$
+					:i $change$$lev_vct$ =  ($lev_vct$ + %GLOBAL%$step$) 
+					:i if  ($lev_vct$ > %i(255,000000ff)) 
+						:i $change$$lev_vct$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_vct$) 
+							:i $change$$lev_vct$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_vct$
+					:i endcase
+				case $menu_percent$
+					:i $change$$lev_vcp$ =  ($lev_vcp$ + %GLOBAL%$step$) 
+					:i if  ($lev_vcp$ > %i(100,00000064)) 
+						:i $change$$lev_vcp$ = %i(100,00000064)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_vcp$) 
+							:i $change$$lev_vcp$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_vcp$
+					:i endcase
+				case $menu_all$
+					:i $change$$lev_red$ =  ($lev_red$ + %GLOBAL%$step$) 
+					:i if  ($lev_red$ > %i(255,000000ff)) 
+						:i $change$$lev_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $lev_red$) 
+							:i $change$$lev_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $change$$lev_green$ = $lev_red$
+					:i $change$$lev_blue$ = $lev_red$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $lev_red$
+					:i end_switch
+			
+			:i endcase
+		case %i(4,00000004)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $change$$fog_red$ =  ($fog_red$ + %GLOBAL%$step$) 
+					:i if  ($fog_red$ > %i(255,000000ff)) 
+						:i $change$$fog_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_red$) 
+							:i $change$$fog_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_red$
+					:i endcase
+				case $menu_green$
+					:i $change$$fog_green$ =  ($fog_green$ + %GLOBAL%$step$) 
+					:i if  ($fog_green$ > %i(255,000000ff)) 
+						:i $change$$fog_green$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_green$) 
+							:i $change$$fog_green$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_green$
+					:i endcase
+				case $menu_blue$
+					:i $change$$fog_blue$ =  ($fog_blue$ + %GLOBAL%$step$) 
+					:i if  ($fog_blue$ > %i(255,000000ff)) 
+						:i $change$$fog_blue$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_blue$) 
+							:i $change$$fog_blue$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_blue$
+					:i endcase
+				case $menu_alpha$
+					:i $change$$fog_alpha$ =  ($fog_alpha$ + %GLOBAL%$step$) 
+					:i if  ($fog_alpha$ > %i(128,00000080)) 
+						:i $change$$fog_alpha$ = %i(128,00000080)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_alpha$) 
+							:i $change$$fog_alpha$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_alpha$
+					:i endcase
+				case $menu_exp$
+					:i $change$$fog_dist$ =  ($fog_dist$ +  (%f(0.500000) * %GLOBAL%$step$) ) 
+					:i if  ($fog_dist$ > %i(100000,000186a0)) 
+						:i $change$$fog_dist$ = %i(100000,000186a0)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_dist$) 
+							:i $change$$fog_dist$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_dist$
+					:i endcase
+				case $menu_fog$
+					:i if  ($fog_state$ = %i(0,00000000)) 
+						:i $change$$fog_state$ = %i(1,00000001)
+						:i $enablefog$
+						:i $value_text$ = %s(2,"on")
+					:i else 
+						:i $change$$fog_state$ = %i(0,00000000)
+						:i $disablefog$
+						:i $value_text$ = %s(3,"off")
+					:i endif
+					:i endcase
+				case $menu_all$
+					:i $change$$fog_red$ =  ($fog_red$ + %GLOBAL%$step$) 
+					:i if  ($fog_red$ > %i(255,000000ff)) 
+						:i $change$$fog_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $fog_red$) 
+							:i $change$$fog_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $change$$fog_green$ = $fog_red$
+					:i $change$$fog_blue$ = $fog_red$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $fog_red$
+					:i end_switch
+			
+			:i endcase
+		case %i(5,00000005)
+			:i switch %GLOBAL%$id$
+				:i case $menu_red$
+					:i $change$$sky_red$ =  ($sky_red$ + %GLOBAL%$step$) 
+					:i if  ($sky_red$ > %i(255,000000ff)) 
+						:i $change$$sky_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $sky_red$) 
+							:i $change$$sky_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $sky_red$
+					:i endcase
+				case $menu_green$
+					:i $change$$sky_green$ =  ($sky_green$ + %GLOBAL%$step$) 
+					:i if  ($sky_green$ > %i(255,000000ff)) 
+						:i $change$$sky_green$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $sky_green$) 
+							:i $change$$sky_green$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $sky_green$
+					:i endcase
+				case $menu_blue$
+					:i $change$$sky_blue$ =  ($sky_blue$ + %GLOBAL%$step$) 
+					:i if  ($sky_blue$ > %i(255,000000ff)) 
+						:i $change$$sky_blue$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $sky_blue$) 
+							:i $change$$sky_blue$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $sky_blue$
+					:i endcase
+				case $menu_all$
+					:i $change$$sky_red$ =  ($sky_red$ + %GLOBAL%$step$) 
+					:i if  ($sky_red$ > %i(255,000000ff)) 
+						:i $change$$sky_red$ = %i(255,000000ff)
+					:i else 
+						:i if  (%i(0,00000000) > $sky_red$) 
+							:i $change$$sky_red$ = %i(0,00000000)
+						:i endif
+					:i endif
+					:i $change$$sky_green$ = $sky_red$
+					:i $change$$sky_blue$ = $sky_red$
+					:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $sky_red$
+					:i end_switch
+			
+			:i end_switch
+	
+	:i if  ($lock_color_values$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$menu_red$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+		:i $SetScreenElementProps$$id$ = :s{$menu_green$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+		:i $SetScreenElementProps$$id$ = :s{$menu_blue$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i else 
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i endif
+	:i %GLOBAL%$color$ = %i(0,00000000)
+	:i $TODManager_GetCurrentTODParams$
+	:i $morning_params$ =  ($tod_manager_default_morning$) 
+	:i $afternoon_params$ =  ($tod_manager_default_afternoon$) 
+	:i $evening_params$ =  ($tod_manager_default_evening$) 
+	:i $night_params$ =  ($tod_manager_default_night$) 
+	:i $new_params$ = :s{
+		:i $ambient_red$ = %GLOBAL%$ambient_red$
+		:i $ambient_green$ = %GLOBAL%$ambient_green$
+		:i $ambient_blue$ = %GLOBAL%$ambient_blue$
+		:i $ambient_mod_factor_lo$ =  ($amb_mod_lo$) 
+		:i $ambient_mod_factor_hi$ =  ($amb_mod_hi$) 
+		:i $red_0$ = %GLOBAL%$red_0$
+		:i $green_0$ = %GLOBAL%$green_0$
+		:i $blue_0$ = %GLOBAL%$blue_0$
+		:i $red_1$ = %GLOBAL%$red_1$
+		:i $green_1$ = %GLOBAL%$green_1$
+		:i $blue_1$ = %GLOBAL%$blue_1$
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $lev_red$ =  ($lev_red$) 
+		:i $lev_green$ =  ($lev_green$) 
+		:i $lev_blue$ =  ($lev_blue$) 
+		:i $heading_0$ =  ($dir0_head$) 
+		:i $pitch_0$ =  ($dir0_pitch$) 
+		:i $heading_1$ =  ($dir1_head$) 
+		:i $pitch_1$ =  ($dir1_pitch$) 
+		:i $fog_red$ =  ($fog_red$) 
+		:i $fog_green$ =  ($fog_green$) 
+		:i $fog_blue$ =  ($fog_blue$) 
+		:i $fog_alpha$ =  ($fog_alpha$) 
+		:i $fog_dist$ =  ($fog_dist$) 
+		:i $fog_on$ = %GLOBAL%$fog_on$
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $state_length$ = %i(180000,0002bf20)
+	:i :s}
+	:i switch  (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i case $morning$
+			:i $morning_params$ = :s{ ($tod_manager_default_morning$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$morning_params$
+			:i endcase
+		case $afternoon$
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i endcase
+		case $evening$
+			:i $evening_params$ = :s{ ($tod_manager_default_evening$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$evening_params$
+			:i endcase
+		case $night$
+			:i $night_params$ = :s{ ($tod_manager_default_night$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$night_params$
+			:i endcase
+		default 
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i end_switch
+	
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i $SetLightAmbientColor$$r$ = %GLOBAL%$ambient_red$$g$ = %GLOBAL%$ambient_green$$b$ = %GLOBAL%$ambient_blue$
+			:i endcase
+		case %i(1,00000001)
+			:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %GLOBAL%$red_0$$g$ = %GLOBAL%$green_0$$b$ = %GLOBAL%$blue_0$
+			:i endcase
+		case %i(2,00000002)
+			:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %GLOBAL%$red_1$$g$ = %GLOBAL%$green_1$$b$ = %GLOBAL%$blue_1$
+			:i end_switch
+	
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(1,00000001)
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(2,00000002)
+		:i $sky$
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i if  ($current_lighting$ > %i(2,00000002)) 
+		:i $TODManager_SetTODInstant$ (%GLOBAL%$tod_params$->$current_state_name$) 
+	:i endif
+	:i if $IsTrue$$cutscene_is_playing$
+		:i $change$$todmanager_temp_tod_changed$ = %i(1,00000001)
+		:i $TODManager_SetTODInstant$ (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i $TODManager_ResetLevelLights$
+	:i endif
+:i endfunction
+:i function $incr_mod_val$$step$ = %f(0.010000)$max$ = %i(2,00000002)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i $removeparameter$$random_effect_done$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i $change$$amb_mod_lo$ =  ($amb_mod_lo$ + %GLOBAL%$step$) 
+			:i if  ($amb_mod_lo$ > %GLOBAL%$max$) 
+				:i $change$$amb_mod_lo$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $amb_mod_lo$) 
+				:i $change$$amb_mod_lo$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $amb_mod_lo$
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$dir0_mod_lo$ =  ($dir0_mod_lo$ + %GLOBAL%$step$) 
+			:i if  ($dir0_mod_lo$ > %GLOBAL%$max$) 
+				:i $change$$dir0_mod_lo$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir0_mod_lo$) 
+				:i $change$$dir0_mod_lo$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir0_mod_lo$
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$dir1_mod_lo$ =  ($dir1_mod_lo$ + %GLOBAL%$step$) 
+			:i if  ($dir1_mod_lo$ > %GLOBAL%$max$) 
+				:i $change$$dir1_mod_lo$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir1_mod_lo$) 
+				:i $change$$dir1_mod_lo$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir1_mod_lo$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i $SetDynamicLightModulationFactor$$ambient$$value$ = $amb_mod_lo$$value2$ = $amb_mod_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(0,00000000)$value$ = $dir0_mod_lo$$value2$ = $dir0_mod_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(1,00000001)$value$ = $dir1_mod_lo$$value2$ = $dir1_mod_hi$
+:i endfunction
+:i function $incr_mod_val2$$step$ = %f(0.010000)$max$ = %i(2,00000002)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i $removeparameter$$random_effect_done$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i $change$$amb_mod_hi$ =  ($amb_mod_hi$ + %GLOBAL%$step$) 
+			:i if  ($amb_mod_hi$ > %GLOBAL%$max$) 
+				:i $change$$amb_mod_hi$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $amb_mod_hi$) 
+				:i $change$$amb_mod_hi$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $amb_mod_hi$
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$dir0_mod_hi$ =  ($dir0_mod_hi$ + %GLOBAL%$step$) 
+			:i if  ($dir0_mod_hi$ > %GLOBAL%$max$) 
+				:i $change$$dir0_mod_hi$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir0_mod_hi$) 
+				:i $change$$dir0_mod_hi$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir0_mod_hi$
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$dir1_mod_hi$ =  ($dir1_mod_hi$ + %GLOBAL%$step$) 
+			:i if  ($dir1_mod_hi$ > %GLOBAL%$max$) 
+				:i $change$$dir1_mod_hi$ = %GLOBAL%$max$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir1_mod_hi$) 
+				:i $change$$dir1_mod_hi$ = %GLOBAL%$min$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir1_mod_hi$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i $SetDynamicLightModulationFactor$$ambient$$value$ = $amb_mod_lo$$value2$ = $amb_mod_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(0,00000000)$value$ = $dir0_mod_lo$$value2$ = $dir0_mod_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(1,00000001)$value$ = $dir1_mod_lo$$value2$ = $dir1_mod_hi$
+:i endfunction
+:i function $incr_heading_val$$step$ = %i(1,00000001)$max$ = %i(360,00000168)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i $TODManager_GetCurrentTODParams$
+	:i $set_current_tod_values$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i return
+			
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$dir0_head$ =  ($dir0_head$ + %GLOBAL%$step$) 
+			:i if  ($dir0_head$ > %GLOBAL%$max$) 
+				:i $change$$dir0_head$ = %GLOBAL%$min$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir0_head$) 
+				:i $change$$dir0_head$ = %GLOBAL%$max$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir0_head$
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$dir1_head$ =  ($dir1_head$ + %GLOBAL%$step$) 
+			:i if  ($dir1_head$ > %GLOBAL%$max$) 
+				:i $change$$dir1_head$ = %GLOBAL%$min$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir1_head$) 
+				:i $change$$dir1_head$ = %GLOBAL%$max$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir1_head$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i $TODManager_GetCurrentTODParams$
+	:i $morning_params$ =  ($tod_manager_default_morning$) 
+	:i $afternoon_params$ =  ($tod_manager_default_afternoon$) 
+	:i $evening_params$ =  ($tod_manager_default_evening$) 
+	:i $night_params$ =  ($tod_manager_default_night$) 
+	:i $new_params$ = :s{
+		:i $ambient_red$ =  (%GLOBAL%$tod_params$->$ambient_red$) 
+		:i $ambient_green$ =  (%GLOBAL%$tod_params$->$ambient_green$) 
+		:i $ambient_blue$ =  (%GLOBAL%$tod_params$->$ambient_blue$) 
+		:i $ambient_mod_factor_lo$ =  ($amb_mod_lo$) 
+		:i $ambient_mod_factor_hi$ =  ($amb_mod_hi$) 
+		:i $red_0$ =  (%GLOBAL%$tod_params$->$red_0$) 
+		:i $green_0$ =  (%GLOBAL%$tod_params$->$green_0$) 
+		:i $blue_0$ =  (%GLOBAL%$tod_params$->$blue_0$) 
+		:i $red_1$ =  (%GLOBAL%$tod_params$->$red_1$) 
+		:i $green_1$ =  (%GLOBAL%$tod_params$->$green_1$) 
+		:i $blue_1$ =  (%GLOBAL%$tod_params$->$blue_1$) 
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $lev_red$ =  ($lev_red$) 
+		:i $lev_green$ =  ($lev_green$) 
+		:i $lev_blue$ =  ($lev_blue$) 
+		:i $heading_0$ =  ($dir0_head$) 
+		:i $pitch_0$ =  ($dir0_pitch$) 
+		:i $heading_1$ =  ($dir1_head$) 
+		:i $pitch_1$ =  ($dir1_pitch$) 
+		:i $fog_red$ =  ($fog_red$) 
+		:i $fog_green$ =  ($fog_green$) 
+		:i $fog_blue$ =  ($fog_blue$) 
+		:i $fog_alpha$ =  ($fog_alpha$) 
+		:i $fog_dist$ =  ($fog_dist$) 
+		:i $fog_on$ = %GLOBAL%$fog_on$
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $state_length$ = %i(180000,0002bf20)
+	:i :s}
+	:i switch  (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i case $morning$
+			:i $morning_params$ = :s{ ($tod_manager_default_morning$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$morning_params$
+			:i endcase
+		case $afternoon$
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i endcase
+		case $evening$
+			:i $evening_params$ = :s{ ($tod_manager_default_evening$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$evening_params$
+			:i endcase
+		case $night$
+			:i $night_params$ = :s{ ($tod_manager_default_night$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$night_params$
+			:i endcase
+		default 
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i end_switch
+	
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(1,00000001)
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(2,00000002)
+		:i $sky$
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = $dir0_head$$pitch$ = $dir0_pitch$
+	:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = $dir1_head$$pitch$ = $dir1_pitch$
+	:i if $IsTrue$$cutscene_is_playing$
+		:i $TODManager_SetTODInstant$ (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i $change$$todmanager_temp_tod_changed$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $incr_pitch_val$$step$ = %i(1,00000001)$max$ = %i(360,00000168)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i $set_current_tod_values$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch $current_lighting$
+		:i case %i(0,00000000)
+			:i return
+			
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$dir0_pitch$ =  ($dir0_pitch$ + %GLOBAL%$step$) 
+			:i if  ($dir0_pitch$ > %GLOBAL%$max$) 
+				:i $change$$dir0_pitch$ = %GLOBAL%$min$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir0_pitch$) 
+				:i $change$$dir0_pitch$ = %GLOBAL%$max$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir0_pitch$
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$dir1_pitch$ =  ($dir1_pitch$ + %GLOBAL%$step$) 
+			:i if  ($dir1_pitch$ > %GLOBAL%$max$) 
+				:i $change$$dir1_pitch$ = %GLOBAL%$min$
+			:i endif
+			:i if  (%GLOBAL%$min$ > $dir1_pitch$) 
+				:i $change$$dir1_pitch$ = %GLOBAL%$max$
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $dir1_pitch$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = $dir0_head$$pitch$ = $dir0_pitch$
+	:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = $dir1_head$$pitch$ = $dir1_pitch$
+	:i $TODManager_GetCurrentTODParams$
+	:i $morning_params$ =  ($tod_manager_default_morning$) 
+	:i $afternoon_params$ =  ($tod_manager_default_afternoon$) 
+	:i $evening_params$ =  ($tod_manager_default_evening$) 
+	:i $night_params$ =  ($tod_manager_default_night$) 
+	:i $new_params$ = :s{
+		:i $ambient_red$ =  (%GLOBAL%$tod_params$->$ambient_red$) 
+		:i $ambient_green$ =  (%GLOBAL%$tod_params$->$ambient_green$) 
+		:i $ambient_blue$ =  (%GLOBAL%$tod_params$->$ambient_blue$) 
+		:i $ambient_mod_factor_lo$ =  ($amb_mod_lo$) 
+		:i $ambient_mod_factor_hi$ =  ($amb_mod_hi$) 
+		:i $red_0$ =  (%GLOBAL%$tod_params$->$red_0$) 
+		:i $green_0$ =  (%GLOBAL%$tod_params$->$green_0$) 
+		:i $blue_0$ =  (%GLOBAL%$tod_params$->$blue_0$) 
+		:i $red_1$ =  (%GLOBAL%$tod_params$->$red_1$) 
+		:i $green_1$ =  (%GLOBAL%$tod_params$->$green_1$) 
+		:i $blue_1$ =  (%GLOBAL%$tod_params$->$blue_1$) 
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $lev_red$ =  ($lev_red$) 
+		:i $lev_green$ =  ($lev_green$) 
+		:i $lev_blue$ =  ($lev_blue$) 
+		:i $heading_0$ =  ($dir0_head$) 
+		:i $pitch_0$ =  ($dir0_pitch$) 
+		:i $heading_1$ =  ($dir1_head$) 
+		:i $pitch_1$ =  ($dir1_pitch$) 
+		:i $fog_red$ =  ($fog_red$) 
+		:i $fog_green$ =  ($fog_green$) 
+		:i $fog_blue$ =  ($fog_blue$) 
+		:i $fog_alpha$ =  ($fog_alpha$) 
+		:i $fog_dist$ =  ($fog_dist$) 
+		:i $fog_on$ = %GLOBAL%$fog_on$
+		:i $sky_red$ =  ($sky_red$) 
+		:i $sky_green$ =  ($sky_green$) 
+		:i $sky_blue$ =  ($sky_blue$) 
+		:i $state_length$ = %i(180000,0002bf20)
+	:i :s}
+	:i switch  (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i case $morning$
+			:i $morning_params$ = :s{ ($tod_manager_default_morning$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$morning_params$
+			:i endcase
+		case $afternoon$
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i endcase
+		case $evening$
+			:i $evening_params$ = :s{ ($tod_manager_default_evening$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$evening_params$
+			:i endcase
+		case $night$
+			:i $night_params$ = :s{ ($tod_manager_default_night$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$night_params$
+			:i endcase
+		default 
+			:i $afternoon_params$ = :s{ ($tod_manager_default_afternoon$) %GLOBAL%$new_params$:s}
+			:i $cur_params$ = %GLOBAL%$afternoon_params$
+			:i end_switch
+	
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(1,00000001)
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(2,00000002)
+		:i $sky$
+		:i $transition_length$ = %i(90,0000005a)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_lightgroup$ = $indoor$:s}
+			:i :a}
+		:i $overwrite_current_state$ = %GLOBAL%$cur_params$
+		:i $morning$ = %GLOBAL%$morning_params$
+		:i $afternoon$ = %GLOBAL%$afternoon_params$
+		:i $evening$ = %GLOBAL%$evening_params$
+		:i $night$ = %GLOBAL%$night_params$
+	:i :s}
+	:i if $IsTrue$$cutscene_is_playing$
+		:i $TODManager_SetTODInstant$ (%GLOBAL%$tod_params$->$current_state_name$) 
+		:i $change$$todmanager_temp_tod_changed$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $GetCurrentLightingValues$
+	:i $GetLightCurrentColor$
+	:i return
+	 isNull 
+:i endfunction
+:i function $toggle_step_multiplier$
+	:i if  ($step_multiplier$ = %i(1,00000001)) 
+		:i $change$$step_multiplier$ = %i(10,0000000a)
+	:i else 
+		:i $change$$step_multiplier$ = %i(1,00000001)
+	:i endif
+	:i $printf$%s(20,"step_multiplier = %s")$s$ = $step_multiplier$
+:i endfunction
+:i function $toggle_color_lock$
+	:i $lock_color_values$ = %i(0,00000000)
+:i endfunction
+:i function $toggle_dir_light_on_off$
+	:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+		:i if  ($toggle_dir0$ = %i(1,00000001)) 
+			:i $GetCurrentLightingValues$
+			:i $change$$last_dir0_red$ = %GLOBAL%$red_0$
+			:i $change$$last_dir0_green$ = %GLOBAL%$green_0$
+			:i $change$$last_dir0_blue$ = %GLOBAL%$blue_0$
+			:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $change$$toggle_dir0$ = %i(0,00000000)
+			:i $SetScreenElementProps$$id$ = :s{$menu_onoff$$child$ = %i(0,00000000):s}$text$ = %s(3,"off")
+		:i else 
+			:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = $last_dir0_red$$g$ = $last_dir0_green$$b$ = $last_dir0_blue$
+			:i $change$$toggle_dir0$ = %i(1,00000001)
+			:i $SetScreenElementProps$$id$ = :s{$menu_onoff$$child$ = %i(0,00000000):s}$text$ = %s(2,"on")
+		:i endif
+	:i else 
+		:i if  (%GLOBAL%$index$ = %i(1,00000001)) 
+			:i if  ($toggle_dir1$ = %i(1,00000001)) 
+				:i $GetCurrentLightingValues$
+				:i $change$$last_dir1_red$ = %GLOBAL%$red_1$
+				:i $change$$last_dir1_green$ = %GLOBAL%$green_1$
+				:i $change$$last_dir1_blue$ = %GLOBAL%$blue_1$
+				:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+				:i $change$$toggle_dir1$ = %i(0,00000000)
+				:i $SetScreenElementProps$$id$ = :s{$menu_onoff$$child$ = %i(0,00000000):s}$text$ = %s(3,"off")
+			:i else 
+				:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = $last_dir1_red$$g$ = $last_dir1_green$$b$ = $last_dir1_blue$
+				:i $change$$toggle_dir1$ = %i(1,00000001)
+				:i $SetScreenElementProps$$id$ = :s{$menu_onoff$$child$ = %i(0,00000000):s}$text$ = %s(2,"on")
+			:i endif
+		:i else 
+			:i $printf$%s(40,"toggle_dir_light_on_off: bad index value")
+		:i endif
+	:i endif
+:i endfunction
+:i function $kill_lightlines_Max$
+	:i $killspawnedscript$$name$ = $update_directional_light_pos2$
+:i endfunction
+:i function $spawn_lightlines_Max$
+	:i $printstruct$ isNull 
+	:i $killspawnedscript$$name$ = $update_directional_light_pos2$
+	:i $spawnscript$:s{$update_directional_light_pos2$
+		:i $params$ = :s{$dir0_head$ = %GLOBAL%$h0$
+			:i $dir0_pitch$ = %GLOBAL%$p0$
+			:i $dir1_head$ = %GLOBAL%$h1$
+			:i $dir1_pitch$ = %GLOBAL%$p1$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $update_directional_light_pos2$
+	:i $printstruct$ isNull 
+	:i while
+		
+		:i $DrawDirectionalLightLines$$heading$ = %GLOBAL%$dir0_head$$pitch$ = %GLOBAL%$dir0_pitch$$r$ = %i(255,000000ff)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $DrawDirectionalLightLines$$heading$ = %GLOBAL%$dir1_head$$pitch$ = %GLOBAL%$dir1_pitch$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(255,000000ff)
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $SendCurrentLightingValuestoMax$
+	:i $printf$%s(30,"Sending Lighting Values to MAX")
+	:i $GetLightCurrentColor$
+	:i $printf$%s(53,"Ambient_Red = %a Ambient_Green = %b Ambient_Blue = %c")$a$ = %GLOBAL%$ambient_red$$b$ = %GLOBAL%$ambient_green$$c$ = %GLOBAL%$ambient_blue$$file$ = %s(12,"lighting.txt")
+	:i $GetDynamicLightModulationFactor$$ambient$
+	:i $printf$%s(38,"Ambient_Mod_lo = %d AmbientMod_hi = %e")$d$ = %GLOBAL%$mod_value_lo$$e$ = %GLOBAL%$mod_value_hi$$file$ = %s(12,"lighting.txt")$Append$
+	:i $printf$%s(35,"Red_0 = %e Green_0 = %f Blue_0 = %g")$e$ = %GLOBAL%$red_0$$f$ = %GLOBAL%$green_0$$g$ = %GLOBAL%$blue_0$$file$ = %s(12,"lighting.txt")$Append$
+	:i $getLightdirection$$index$ = %i(0,00000000)
+	:i $printf$%s(24,"Head_0 = %h Pitch_0 = %i")$h$ = %GLOBAL%$heading$$i$ = %GLOBAL%$pitch$$file$ = %s(12,"lighting.txt")$Append$
+	:i $GetDynamicLightModulationFactor$$directional$ = %i(0,00000000)
+	:i $printf$%s(27,"Mod_0_lo = %j Mod_0_hi = %k")$j$ = %GLOBAL%$mod_value_lo$$k$ = %GLOBAL%$mod_value_hi$$file$ = %s(12,"lighting.txt")$Append$
+	:i $printf$%s(35,"Red_1 = %k Green_1 = %l Blue_1 = %m")$k$ = %GLOBAL%$red_1$$l$ = %GLOBAL%$green_1$$m$ = %GLOBAL%$blue_1$$file$ = %s(12,"lighting.txt")$Append$
+	:i $getLightdirection$$index$ = %i(1,00000001)
+	:i $printf$%s(24,"Head_1 = %n Pitch_1 = %o")$n$ = %GLOBAL%$heading$$o$ = %GLOBAL%$pitch$$file$ = %s(12,"lighting.txt")$Append$
+	:i $GetDynamicLightModulationFactor$$directional$ = %i(1,00000001)
+	:i $printf$%s(27,"Mod_1_lo = %j Mod_1_hi = %k")$j$ = %GLOBAL%$mod_value_lo$$k$ = %GLOBAL%$mod_value_hi$$file$ = %s(12,"lighting.txt")$Append$
+:i endfunction
+:i function $maxscriptConnection$
+	:i $GetCurrentLevel$
+	:i $printf$%s(2,"%l")$l$ = %GLOBAL%$level$$file$ = %s(14,"Connection.txt")
+:i endfunction
+:i function $maxtest$
+	:i $getLightdirection$$index$ = %i(1,00000001)
+	:i $printf$%s(24,"Head_1 = %n Pitch_1 = %o")$n$ = %GLOBAL%$heading$$o$ = %GLOBAL%$pitch$
+	:i $GetDynamicLightModulationFactor$$directional$ = %i(1,00000001)
+	:i $printf$%s(27,"Mod_1_lo = %p Mod_1_hi = %q")$p$ = %GLOBAL%$mod_value_lo$$q$ = %GLOBAL%$mod_value_hi$
+	:i $getLightdirection$$index$ = %i(0,00000000)
+	:i $printstruct$ isNull 
+:i endfunction
+:i function $update_directional_light_pos$
+	:i while
+		
+		:i if  ($toggle_dir0$ = %i(1,00000001)) 
+			:i $DrawDirectionalLightLines$$heading$ = $dir0_head$$pitch$ = $dir0_pitch$$r$ = %i(255,000000ff)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $wait$%i(1,00000001)$gameframe$
+		:i endif
+		:i if  ($toggle_dir1$ = %i(1,00000001)) 
+			:i $DrawDirectionalLightLines$$heading$ = $dir1_head$$pitch$ = $dir1_pitch$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(255,000000ff)
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $set_to_tod_values$
+	:i if NOT $GotParam$$tod$
+		:i return
+		
+	:i endif
+	:i $change$$amb_mod_lo$ =  (%GLOBAL%$tod$->$ambient_mod_factor_lo$) 
+	:i $change$$amb_mod_hi$ =  (%GLOBAL%$tod$->$ambient_mod_factor_hi$) 
+	:i $change$$dir0_mod_lo$ =  (%GLOBAL%$tod$->$mod_factor_0_lo$) 
+	:i $change$$dir0_mod_hi$ =  (%GLOBAL%$tod$->$mod_factor_0_hi$) 
+	:i $change$$dir1_mod_lo$ =  (%GLOBAL%$tod$->$mod_factor_1_lo$) 
+	:i $change$$dir1_mod_hi$ =  (%GLOBAL%$tod$->$mod_factor_1_hi$) 
+	:i if NOT $GotParam$$level$
+		:i $change$$lev_red$ =  (%GLOBAL%$tod$->$lev_red$) 
+		:i $change$$lev_green$ =  (%GLOBAL%$tod$->$lev_green$) 
+		:i $change$$lev_blue$ =  (%GLOBAL%$tod$->$lev_blue$) 
+	:i else 
+	:i endif
+	:i if NOT $GotParam$$no_fog$
+		:i if $StructureContains$$structure$ = $tod$$fog_red$
+			:i $change$$fog_red$ =  (%GLOBAL%$tod$->$fog_red$) 
+			:i $change$$fog_green$ =  (%GLOBAL%$tod$->$fog_green$) 
+			:i $change$$fog_blue$ =  (%GLOBAL%$tod$->$fog_blue$) 
+			:i $change$$fog_alpha$ =  (%GLOBAL%$tod$->$fog_alpha$) 
+			:i $change$$fog_dist$ =  (%GLOBAL%$tod$->$fog_dist$) 
+		:i else 
+			:i $change$$fog_red$ = %i(0,00000000)
+			:i $change$$fog_green$ = %i(0,00000000)
+			:i $change$$fog_blue$ = %i(0,00000000)
+			:i $change$$fog_alpha$ = %i(0,00000000)
+			:i $change$$fog_dist$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $change$$fog_red$ = %i(0,00000000)
+		:i $change$$fog_green$ = %i(0,00000000)
+		:i $change$$fog_blue$ = %i(0,00000000)
+		:i $change$$fog_alpha$ = %i(0,00000000)
+		:i $change$$fog_dist$ = %i(0,00000000)
+	:i endif
+	:i $change$$sky_red$ = %i(128,00000080)
+	:i $change$$sky_green$ = %i(128,00000080)
+	:i $change$$sky_blue$ = %i(128,00000080)
+	:i $ambient_red$ =  (%GLOBAL%$tod$->$ambient_red$) 
+	:i $ambient_green$ =  (%GLOBAL%$tod$->$ambient_green$) 
+	:i $ambient_blue$ =  (%GLOBAL%$tod$->$ambient_blue$) 
+	:i $red_0$ =  (%GLOBAL%$tod$->$red_0$) 
+	:i $green_0$ =  (%GLOBAL%$tod$->$green_0$) 
+	:i $blue_0$ =  (%GLOBAL%$tod$->$blue_0$) 
+	:i $red_1$ =  (%GLOBAL%$tod$->$red_1$) 
+	:i $green_1$ =  (%GLOBAL%$tod$->$green_1$) 
+	:i $blue_1$ =  (%GLOBAL%$tod$->$blue_1$) 
+	:i $set_all_light_values$ isNull 
+:i endfunction
+:i function $set_all_light_values$
+	:i %GLOBAL%$color$ =  ($lev_red$ +  ($lev_green$ * %i(256,00000100))  +  ($lev_blue$ * %i(65536,00010000)) ) 
+	:i %GLOBAL%$sky$ =  ($sky_red$ +  ($sky_green$ * %i(256,00000100))  +  ($sky_blue$ * %i(65536,00010000)) ) 
+	:i $lighting$$color$ = %GLOBAL%$color$$sky$ = %GLOBAL%$sky$
+	:i if NOT $GotParam$$level_only$
+		:i $SetLightAmbientColor$$r$ = %GLOBAL%$ambient_red$$g$ = %GLOBAL%$ambient_green$$b$ = %GLOBAL%$ambient_blue$
+		:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %GLOBAL%$red_0$$g$ = %GLOBAL%$green_0$$b$ = %GLOBAL%$blue_0$
+		:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %GLOBAL%$red_1$$g$ = %GLOBAL%$green_1$$b$ = %GLOBAL%$blue_1$
+	:i endif
+	:i $SetFogColor$$r$ = $fog_red$$b$ = $fog_blue$$g$ = $fog_green$$a$ = $fog_alpha$
+	:i $SetFogDistance$$distance$ = $fog_dist$
+:i endfunction
+:i function $print_light_values$
+	:i $printf$%s(1," ")
+	:i $printf$%s(48,"<---------------------------------------------->")
+	:i $printf$%s(25,"Selected lighting values:")
+	:i $printf$%s(16,"ambient_red = %i")$i$ = %GLOBAL%$ambient_red$
+	:i $printf$%s(18,"ambient_green = %i")$i$ = %GLOBAL%$ambient_green$
+	:i $printf$%s(17,"ambient_blue = %i")$i$ = %GLOBAL%$ambient_blue$
+	:i $printf$%s(26,"ambient_mod_factor_lo = %i")$i$ = $amb_mod_lo$
+	:i $printf$%s(26,"ambient_mod_factor_hi = %i")$i$ = $amb_mod_hi$
+	:i $printf$%s(1," ")
+	:i if  ($toggle_dir0$ = %i(1,00000001)) 
+		:i $printf$%s(14,"heading_0 = %i")$i$ = $dir0_head$
+		:i $printf$%s(12,"pitch_0 = %i")$i$ = $dir0_pitch$
+		:i $printf$%s(10,"red_0 = %i")$i$ = %GLOBAL%$red_0$
+		:i $printf$%s(12,"green_0 = %i")$i$ = %GLOBAL%$green_0$
+		:i $printf$%s(11,"blue_0 = %i")$i$ = %GLOBAL%$blue_0$
+		:i $printf$%s(20,"mod_factor_0_lo = %i")$i$ = $dir0_mod_lo$
+		:i $printf$%s(20,"mod_factor_0_hi = %i")$i$ = $dir0_mod_hi$
+		:i $printf$%s(1," ")
+	:i endif
+	:i if  ($toggle_dir1$ = %i(1,00000001)) 
+		:i $printf$%s(14,"heading_1 = %i")$i$ = $dir1_head$
+		:i $printf$%s(12,"pitch_1 = %i")$i$ = $dir1_pitch$
+		:i $printf$%s(10,"red_1 = %i")$i$ = %GLOBAL%$red_1$
+		:i $printf$%s(12,"green_1 = %i")$i$ = %GLOBAL%$green_1$
+		:i $printf$%s(11,"blue_1 = %i")$i$ = %GLOBAL%$blue_1$
+		:i $printf$%s(20,"mod_factor_1_lo = %i")$i$ = $dir1_mod_lo$
+		:i $printf$%s(20,"mod_factor_1_hi = %i")$i$ = $dir1_mod_hi$
+		:i $printf$%s(23,"dir light 2 on/off = %i")$i$ = $toggle_dir1$
+		:i $printf$%s(1," ")
+	:i endif
+	:i $printf$%s(12,"lev_red = %i")$i$ = $lev_red$
+	:i $printf$%s(14,"lev_green = %i")$i$ = $lev_green$
+	:i $printf$%s(14,"lev_blue  = %i")$i$ = $lev_blue$
+	:i $printf$%s(1," ")
+	:i $printf$%s(13,"sky_red  = %i")$i$ = $sky_red$
+	:i $printf$%s(15,"sky_green  = %i")$i$ = $sky_green$
+	:i $printf$%s(14,"sky_blue  = %i")$i$ = $sky_blue$
+	:i $printf$%s(1," ")
+	:i $printf$%s(12,"fog_on  = %i")$i$ = $fog_state$
+	:i $printf$%s(13,"fog_red  = %i")$i$ = $fog_red$
+	:i $printf$%s(15,"fog_green  = %i")$i$ = $fog_green$
+	:i $printf$%s(14,"fog_blue  = %i")$i$ = $fog_blue$
+	:i $printf$%s(15,"fog_alpha  = %i")$i$ = $fog_alpha$
+	:i $printf$%s(14,"fog_dist  = %i")$i$ = $fog_dist$
+	:i $printf$%s(1," ")
+	:i $printf$%s(48,"<---------------------------------------------->")
+	:i $printf$%s(1," ")
+	:i $killspawnedscript$$name$ = $update_directional_light_pos$
+	:i $makeskatergoto$$ongroundai$
+	:i if $CutsceneFinished$
+		:i $pauseGame$
+	:i endif
+	:i $TODManager_SetTimeMultiplier$%GLOBAL%$TOD_Time_Multiplier$
+	:i $SetAnalogStickActiveForMenus$%i(1,00000001)
+	:i if $CutsceneFinished$
+		:i $launch_lighttool_sub_menu$
+	:i else 
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $light_menu$
+			:i $DestroyScreenElement$$id$ = $light_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $toggle_rain_snow$
+	:i if  ($rain_or_snow$ = %i(0,00000000)) 
+		:i $change$$rain_or_snow$ = %i(1,00000001)
+		:i $WeatherSetSnowActive$
+		:i $rain_text$ = %s(4,"snow")
+	:i else 
+		:i $change$$rain_or_snow$ = %i(0,00000000)
+		:i $WeatherSetRainActive$
+		:i $rain_text$ = %s(4,"rain")
+	:i endif
+	:i $SetScreenElementProps$$id$ = :s{$menu_rain$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$rain_text$
+:i endfunction
+:i function $incr_rain_val$$step$ = %i(1,00000001)$max$ = %i(128,00000080)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch %GLOBAL%$id$
+		:i case $menu_rate$
+			:i $change$$rain_rate$ =  ($rain_rate$ + %GLOBAL%$step$) 
+			:i if  ($rain_rate$ >  (%i(1024,00000400) / $rain_frames$) ) 
+				:i $change$$rain_rate$ =  (%i(1024,00000400) / $rain_frames$) 
+			:i else 
+				:i if  (%i(0,00000000) > $rain_rate$) 
+					:i $change$$rain_rate$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_rate$
+			:i $WeatherSetRainRate$$rain_rate$
+			:i endcase
+		case $menu_frames$
+			:i $change$$rain_frames$ =  ($rain_frames$ + %GLOBAL%$step$) 
+			:i if  ($rain_frames$ > %i(255,000000ff)) 
+				:i $change$$rain_frames$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(1,00000001) > $rain_frames$) 
+					:i $change$$rain_frames$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_frames$
+			:i $WeatherSetRainFrames$$rain_frames$
+			:i endcase
+		case $menu_height$
+			:i $change$$rain_height$ =  ($rain_height$ + %GLOBAL%$step$) 
+			:i if  ($rain_height$ > %i(3000,00000bb8)) 
+				:i $change$$rain_height$ = %i(3000,00000bb8)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_height$) 
+					:i $change$$rain_height$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_height$
+			:i $WeatherSetRainHeight$$rain_height$
+			:i endcase
+		case $menu_length$
+			:i $change$$rain_length$ =  ($rain_length$ + %GLOBAL%$step$) 
+			:i if  ($rain_length$ > %i(200,000000c8)) 
+				:i $change$$rain_length$ = %i(200,000000c8)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_length$) 
+					:i $change$$rain_length$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_length$
+			:i $WeatherSetRainLength$$rain_length$
+			:i endcase
+		case $menu_blend$
+			:i if NOT $GotParam$$reverse$
+				:i $change$$rain_blend$ =  ($rain_blend$ + %i(1,00000001)) 
+			:i else 
+				:i $change$$rain_blend$ =  ($rain_blend$ - %i(1,00000001)) 
+			:i endif
+			:i if  ($rain_blend$ > %i(10,0000000a)) 
+				:i $change$$rain_blend$ = %i(0,00000000)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_blend$) 
+					:i $change$$rain_blend$ = %i(10,0000000a)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$
+			:i $WeatherSetRainBlendMode$%GLOBAL%$checksum$ ($rain_fixed$ + %i(0,00000000)) 
+			:i endcase
+		case $menu_fixed$
+			:i $change$$rain_fixed$ =  ($rain_fixed$ + %GLOBAL%$step$) 
+			:i if  ($rain_fixed$ > %i(128,00000080)) 
+				:i $change$$rain_fixed$ = %i(128,00000080)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_fixed$) 
+					:i $change$$rain_fixed$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$
+			:i $WeatherSetRainBlendMode$%GLOBAL%$checksum$ ($rain_fixed$ + %i(0,00000000)) 
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_fixed$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+:i endfunction
+:i function $get_rain_mode_string$
+	:i if $GotParam$$splash$
+		:i $value$ = $splash_blend$
+	:i else 
+		:i if $GotParam$$snow$
+			:i $value$ = $snow_blend$
+		:i else 
+			:i $value$ = $rain_blend$
+		:i endif
+	:i endif
+	:i switch %GLOBAL%$value$
+		:i case %i(0,00000000)
+			:i $value_text$ = %s(5,"blend")
+			:i endcase
+		case %i(1,00000001)
+			:i $value_text$ = %s(3,"add")
+			:i endcase
+		case %i(2,00000002)
+			:i $value_text$ = %s(3,"sub")
+			:i endcase
+		case %i(3,00000003)
+			:i $value_text$ = %s(8,"modulate")
+			:i endcase
+		case %i(4,00000004)
+			:i $value_text$ = %s(8,"brighten")
+			:i endcase
+		case %i(5,00000005)
+			:i $value_text$ = %s(8,"fixblend")
+			:i endcase
+		case %i(6,00000006)
+			:i $value_text$ = %s(6,"fixadd")
+			:i endcase
+		case %i(7,00000007)
+			:i $value_text$ = %s(6,"fixsub")
+			:i endcase
+		case %i(8,00000008)
+			:i $value_text$ = %s(11,"fixmodulate")
+			:i endcase
+		case %i(9,00000009)
+			:i $value_text$ = %s(11,"fixbrighten")
+			:i endcase
+		case %i(10,0000000a)
+			:i $value_text$ = %s(7,"diffuse")
+			:i end_switch
+	
+	:i $FormatText$$checksumname$ = $checksum$%s(2,"%i")$i$ = %GLOBAL%$value_text$
+	:i return
+	:s{$value_text$ = %GLOBAL%$value_text$$checksum$ = %GLOBAL%$checksum$:s}
+:i endfunction
+:i function $incr_rain_color$$step$ = %i(1,00000001)$max$ = %i(128,00000080)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i if $GotParam$$splash$
+		:i $value_red$ =  ($splash_red$) 
+		:i $value_green$ =  ($splash_green$) 
+		:i $value_blue$ =  ($splash_blue$) 
+		:i $value_alpha$ =  ($splash_alpha$) 
+	:i endif
+	:i if $GotParam$$snow$
+		:i $value_red$ =  ($snow_red$) 
+		:i $value_green$ =  ($snow_green$) 
+		:i $value_blue$ =  ($snow_blue$) 
+		:i $value_alpha$ =  ($snow_alpha$) 
+	:i endif
+	:i if $GotParam$$rain$
+		:i $value_red$ =  ($rain_red$) 
+		:i $value_green$ =  ($rain_green$) 
+		:i $value_blue$ =  ($rain_blue$) 
+		:i $value_alpha$ =  ($rain_alpha$) 
+	:i endif
+	:i switch %GLOBAL%$id$
+		:i case $menu_red$
+			:i $value_red$ =  (%GLOBAL%$value_red$ + %GLOBAL%$step$) 
+			:i if  (%GLOBAL%$value_red$ > %i(255,000000ff)) 
+				:i $value_red$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > %GLOBAL%$value_red$) 
+					:i $value_red$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$value_red$
+			:i endcase
+		case $menu_blue$
+			:i $value_blue$ =  (%GLOBAL%$value_blue$ + %GLOBAL%$step$) 
+			:i if  (%GLOBAL%$value_blue$ > %i(255,000000ff)) 
+				:i $value_blue$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > %GLOBAL%$value_blue$) 
+					:i $value_blue$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$value_blue$
+			:i endcase
+		case $menu_green$
+			:i $value_green$ =  (%GLOBAL%$value_green$ + %GLOBAL%$step$) 
+			:i if  (%GLOBAL%$value_green$ > %i(255,000000ff)) 
+				:i $value_green$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > %GLOBAL%$value_green$) 
+					:i $value_green$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$value_green$
+			:i endcase
+		case $menu_alpha$
+			:i $value_alpha$ =  (%GLOBAL%$value_alpha$ + %GLOBAL%$step$) 
+			:i if  (%GLOBAL%$value_alpha$ > %i(255,000000ff)) 
+				:i $value_alpha$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > %GLOBAL%$value_alpha$) 
+					:i $value_alpha$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$value_alpha$
+			:i endcase
+		case $menu_red2$
+			:i $change$$rain_red2$ =  ($rain_red2$ + %GLOBAL%$step$) 
+			:i if  ($rain_red2$ > %i(255,000000ff)) 
+				:i $change$$rain_red2$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_red2$) 
+					:i $change$$rain_red2$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_red2$
+			:i endcase
+		case $menu_blue2$
+			:i $change$$rain_blue2$ =  ($rain_blue2$ + %GLOBAL%$step$) 
+			:i if  ($rain_blue2$ > %i(255,000000ff)) 
+				:i $change$$rain_blue2$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_blue2$) 
+					:i $change$$rain_blue2$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_blue2$
+			:i endcase
+		case $menu_green2$
+			:i $change$$rain_green2$ =  ($rain_green2$ + %GLOBAL%$step$) 
+			:i if  ($rain_green2$ > %i(255,000000ff)) 
+				:i $change$$rain_green2$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_green2$) 
+					:i $change$$rain_green2$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_green2$
+			:i endcase
+		case $menu_alpha2$
+			:i $change$$rain_alpha2$ =  ($rain_alpha2$ + %GLOBAL%$step$) 
+			:i if  ($rain_alpha2$ > %i(255,000000ff)) 
+				:i $change$$rain_alpha2$ = %i(255,000000ff)
+			:i else 
+				:i if  (%i(0,00000000) > $rain_alpha2$) 
+					:i $change$$rain_alpha2$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $rain_alpha2$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+	:i %GLOBAL%$color$ =  (%GLOBAL%$value_red$ +  (%GLOBAL%$value_green$ * %i(256,00000100))  +  (%GLOBAL%$value_blue$ * %i(65536,00010000))  +  (%GLOBAL%$value_alpha$ * %i(16777216,01000000)) ) 
+	:i if $GotParam$$splash$
+		:i $change$$splash_red$ = %GLOBAL%$value_red$
+		:i $change$$splash_green$ = %GLOBAL%$value_green$
+		:i $change$$splash_blue$ = %GLOBAL%$value_blue$
+		:i $change$$splash_alpha$ = %GLOBAL%$value_alpha$
+		:i $WeatherSetSplashColor$%GLOBAL%$color$
+	:i endif
+	:i if $GotParam$$snow$
+		:i $change$$snow_red$ = %GLOBAL%$value_red$
+		:i $change$$snow_green$ = %GLOBAL%$value_green$
+		:i $change$$snow_blue$ = %GLOBAL%$value_blue$
+		:i $change$$snow_alpha$ = %GLOBAL%$value_alpha$
+		:i $WeatherSetSnowColor$%GLOBAL%$color$
+	:i endif
+	:i if $GotParam$$rain$
+		:i $change$$rain_red$ = %GLOBAL%$value_red$
+		:i $change$$rain_green$ = %GLOBAL%$value_green$
+		:i $change$$rain_blue$ = %GLOBAL%$value_blue$
+		:i $change$$rain_alpha$ = %GLOBAL%$value_alpha$
+		:i %GLOBAL%$color2$ =  ($rain_red2$ +  ($rain_green2$ * %i(256,00000100))  +  ($rain_blue2$ * %i(65536,00010000))  +  ($rain_alpha2$ * %i(16777216,01000000)) ) 
+		:i $WeatherSetRainColor$$top$ = %GLOBAL%$color$$bottom$ = %GLOBAL%$color2$
+	:i endif
+:i endfunction
+:i function $incr_splash_val$$step$ = %i(1,00000001)$max$ = %i(128,00000080)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch %GLOBAL%$id$
+		:i case $menu_rate$
+			:i $change$$splash_rate$ =  ($splash_rate$ +  (%GLOBAL%$step$ / %f(20.000000)) ) 
+			:i if  ($splash_rate$ > %i(1,00000001)) 
+				:i $change$$splash_rate$ = %f(1.000000)
+			:i else 
+				:i if  (%i(0,00000000) > $splash_rate$) 
+					:i $change$$splash_rate$ = %f(0.000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $splash_rate$
+			:i $WeatherSetSplashRate$$splash_rate$
+			:i endcase
+		case $menu_life$
+			:i $change$$splash_life$ =  ($splash_life$ + %GLOBAL%$step$) 
+			:i if  ($splash_life$ > %i(100,00000064)) 
+				:i $change$$splash_life$ = %i(100,00000064)
+			:i else 
+				:i if  (%i(1,00000001) > $splash_life$) 
+					:i $change$$splash_life$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $splash_life$
+			:i $WeatherSetSplashLife$$splash_life$
+			:i endcase
+		case $menu_size$
+			:i $change$$splash_size$ =  ($splash_size$ + %GLOBAL%$step$) 
+			:i if  ($splash_size$ > %i(100,00000064)) 
+				:i $change$$splash_size$ = %i(100,00000064)
+			:i else 
+				:i if  (%i(0,00000000) > $splash_size$) 
+					:i $change$$splash_size$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $splash_size$
+			:i $WeatherSetSplashSize$$splash_size$
+			:i endcase
+		case $menu_blend$
+			:i if NOT $GotParam$$reverse$
+				:i $change$$splash_blend$ =  ($splash_blend$ + %i(1,00000001)) 
+			:i else 
+				:i $change$$splash_blend$ =  ($splash_blend$ - %i(1,00000001)) 
+			:i endif
+			:i if  ($splash_blend$ > %i(10,0000000a)) 
+				:i $change$$splash_blend$ = %i(0,00000000)
+			:i else 
+				:i if  (%i(0,00000000) > $splash_blend$) 
+					:i $change$$splash_blend$ = %i(10,0000000a)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$$splash$
+			:i $WeatherSetSplashBlendMode$%GLOBAL%$checksum$ ($splash_fixed$ + %i(0,00000000)) 
+			:i endcase
+		case $menu_fixed$
+			:i $change$$splash_fixed$ =  ($splash_fixed$ + %GLOBAL%$step$) 
+			:i if  ($splash_fixed$ > %i(128,00000080)) 
+				:i $change$$splash_fixed$ = %i(128,00000080)
+			:i else 
+				:i if  (%i(0,00000000) > $splash_fixed$) 
+					:i $change$$splash_fixed$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$$splash$
+			:i $WeatherSetSplashBlendMode$%GLOBAL%$checksum$ ($splash_fixed$ + %i(0,00000000)) 
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $splash_fixed$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+:i endfunction
+:i function $incr_snow_val$$step$ = %i(1,00000001)$max$ = %i(128,00000080)$min$ = %i(0,00000000)
+	:i $GetTags$
+	:i if $GotParam$$reverse$
+		:i $step$ =  (%i(4294967295,ffffffff) * %GLOBAL%$step$) 
+	:i endif
+	:i $step$ =  (%GLOBAL%$step$ * $step_multiplier$) 
+	:i switch %GLOBAL%$id$
+		:i case $menu_rate$
+			:i $change$$snow_rate$ =  ($snow_rate$ + %GLOBAL%$step$) 
+			:i if  ($snow_rate$ >  (%i(1024,00000400) / $snow_frames$) ) 
+				:i $change$$snow_rate$ =  (%i(1024,00000400) / $snow_frames$) 
+			:i else 
+				:i if  (%i(0,00000000) > $snow_rate$) 
+					:i $change$$snow_rate$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $snow_rate$
+			:i $WeatherSetSnowRate$$snow_rate$
+			:i endcase
+		case $menu_frames$
+			:i $change$$snow_frames$ =  ($snow_frames$ + %GLOBAL%$step$) 
+			:i if  ($snow_frames$ > %i(254,000000fe)) 
+				:i $change$$snow_frames$ = %i(254,000000fe)
+			:i else 
+				:i if  (%i(1,00000001) > $snow_frames$) 
+					:i $change$$snow_frames$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $snow_frames$
+			:i $WeatherSetSnowFrames$$snow_frames$
+			:i endcase
+		case $menu_height$
+			:i $change$$snow_height$ =  ($snow_height$ + %GLOBAL%$step$) 
+			:i if  ($snow_height$ > %i(3000,00000bb8)) 
+				:i $change$$snow_height$ = %i(3000,00000bb8)
+			:i else 
+				:i if  (%i(0,00000000) > $snow_height$) 
+					:i $change$$snow_height$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $snow_height$
+			:i $WeatherSetSnowHeight$$snow_height$
+			:i endcase
+		case $menu_size$
+			:i $change$$snow_size$ =  ($snow_size$ + %GLOBAL%$step$) 
+			:i if  ($snow_size$ > %i(200,000000c8)) 
+				:i $change$$snow_size$ = %i(200,000000c8)
+			:i else 
+				:i if  (%i(0,00000000) > $snow_size$) 
+					:i $change$$snow_size$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $snow_size$
+			:i $WeatherSetSnowSize$$snow_size$
+			:i endcase
+		case $menu_blend$
+			:i if NOT $GotParam$$reverse$
+				:i $change$$snow_blend$ =  ($snow_blend$ + %i(1,00000001)) 
+			:i else 
+				:i $change$$snow_blend$ =  ($snow_blend$ - %i(1,00000001)) 
+			:i endif
+			:i if  ($snow_blend$ > %i(10,0000000a)) 
+				:i $change$$snow_blend$ = %i(0,00000000)
+			:i else 
+				:i if  (%i(0,00000000) > $snow_blend$) 
+					:i $change$$snow_blend$ = %i(10,0000000a)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$$snow$
+			:i $WeatherSetSnowBlendMode$%GLOBAL%$checksum$ ($snow_fixed$ + %i(0,00000000)) 
+			:i endcase
+		case $menu_fixed$
+			:i $change$$snow_fixed$ =  ($snow_fixed$ + %GLOBAL%$step$) 
+			:i if  ($snow_fixed$ > %i(128,00000080)) 
+				:i $change$$snow_fixed$ = %i(128,00000080)
+			:i else 
+				:i if  (%i(0,00000000) > $snow_fixed$) 
+					:i $change$$snow_fixed$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $get_rain_mode_string$$snow$
+			:i $WeatherSetSnowBlendMode$%GLOBAL%$checksum$ ($snow_fixed$ + %i(0,00000000)) 
+			:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = $snow_fixed$
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$value_text$
+:i endfunction
+:i $poly_count_on$ = %i(0,00000000)
+:i function $show_poly_count$
+	:i if  ($poly_count_on$ = %i(0,00000000)) 
+		:i $change$$poly_count_on$ = %i(1,00000001)
+		:i $GetCurrentLevel$
+		:i if  (%GLOBAL%$level$ = $Load_sk5ed$) 
+			:i $killspawnedscript$$name$ = $refresh_poly_count_repeatedly$
+			:i $spawnscript$$refresh_poly_count_repeatedly$
+		:i else 
+			:i $refresh_poly_count$
+		:i endif
+	:i else 
+		:i $change$$poly_count_on$ = %i(0,00000000)
+		:i $killspawnedscript$$name$ = $refresh_poly_count_repeatedly$
+		:i $DestroyScreenElement$$id$ = $poly_count_anchor$
+		:i $DestroyScreenElement$$id$ = $tex_count_anchor$
+		:i if $ScreenElementExists$$id$ = $texture_list$
+			:i $DestroyScreenElement$$id$ = $texture_list$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_points_display$
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $goal_points_display$
+				:i $scale$ = %i(1,00000001)
+			:i :s}
+		:i endif
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score_sprite$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $goal_points_text$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $refresh_poly_count$
+	:i if  ($poly_count_on$ = %i(1,00000001)) 
+		:i if $ScreenElementExists$$id$ = $poly_count_anchor$
+			:i $DestroyScreenElement$$id$ = $poly_count_anchor$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $tex_count_anchor$
+			:i $DestroyScreenElement$$id$ = $tex_count_anchor$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $texture_list$
+			:i $DestroyScreenElement$$id$ = $texture_list$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_points_display$
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $goal_points_display$
+				:i $scale$ = %i(0,00000000)
+			:i :s}
+		:i endif
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score_sprite$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $goal_points_text$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $GetMetrics$
+		:i $FormatText$$TextName$ = $main_base$%s(10,"First = %m")$m$ =  ( (%GLOBAL%$metrics$->$mainscene$) ->$BasePolys$) $UseCommas$
+		:i $FormatText$$TextName$ = $main_other$%s(10,"Other = %m")$m$ =  ( ( (%GLOBAL%$metrics$->$mainscene$) ->$Polys$)  -  ( (%GLOBAL%$metrics$->$mainscene$) ->$BasePolys$) ) $UseCommas$
+		:i $FormatText$$TextName$ = $main_total$%s(10,"Total = %m")$m$ =  ( (%GLOBAL%$metrics$->$mainscene$) ->$Polys$) $UseCommas$
+		:i $FormatText$$TextName$ = $main_envmap$%s(11,"EnvMap = %m")$m$ =  ( (%GLOBAL%$metrics$->$mainscene$) ->$EnvMapPolys$) $UseCommas$
+		:i if $StructureContains$$structure$ = %GLOBAL%$metrics$$skyscene$
+			:i $FormatText$$TextName$ = $sky_base$%s(8,"Sky = %m")$m$ =  ( (%GLOBAL%$metrics$->$skyscene$) ->$BasePolys$) 
+		:i else 
+			:i $sky_base$ = %s(9,"Sky = N/A")
+		:i endif
+		:i if  ( (%GLOBAL%$metrics$->$scene$) ->$NULLEngineScene$) 
+			:i $rendered_objects$ = %s(11,"Obj   = N/A")
+			:i $rendered_meshes$ = %s(10,"Mesh = N/A")
+			:i $verts_per_poly$ = %s(10,"V/P  = N/A")
+			:i $polys_per_object$ = %s(10,"P/O  = N/A")
+			:i $polys_per_mesh$ = %s(10,"P/M  = N/A")
+		:i else 
+			:i $FormatText$$TextName$ = $rendered_objects$%s(10,"Obj   = %m")$m$ =  ( (%GLOBAL%$metrics$->$scene$) ->$objects$) 
+			:i $FormatText$$TextName$ = $rendered_meshes$%s(9,"Mesh = %m")$m$ =  ( (%GLOBAL%$metrics$->$scene$) ->$leaf$) 
+			:i $FormatText$$TextName$ = $verts_per_poly$%s(9,"V/P  = %m")$m$ =  ( (%GLOBAL%$metrics$->$scene$) ->$verts_per_poly$) 
+			:i $FormatText$$TextName$ = $polys_per_object$%s(9,"P/O  = %m")$m$ =  ( (%GLOBAL%$metrics$->$scene$) ->$polys_per_object$) 
+			:i $FormatText$$TextName$ = $polys_per_mesh$%s(9,"P/M  = %m")$m$ =  ( (%GLOBAL%$metrics$->$scene$) ->$polys_per_mesh$) 
+		:i endif
+		:i $lev_num$ =  ( ( (%GLOBAL%$metrics$->$mainscene$) ->$TextureMemory$)  / %i(1024,00000400)) 
+		:i $CastToInteger$$lev_num$
+		:i $FormatText$$TextName$ = $lev_tex$%s(10,"Lev = %m K")$m$ = %GLOBAL%$lev_num$
+		:i if $StructureContains$$structure$ = %GLOBAL%$metrics$$skyscene$
+			:i $sky_num$ =  ( ( (%GLOBAL%$metrics$->$skyscene$) ->$TextureMemory$)  / %i(1024,00000400)) 
+			:i $CastToInteger$$sky_num$
+			:i $FormatText$$TextName$ = $sky_tex$%s(10,"Sky = %m K")$m$ = %GLOBAL%$sky_num$
+		:i else 
+			:i $sky_tex$ = %s(9,"Sky = N/A")
+		:i endif
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $poly_count_anchor$
+			:i $pos$ = %vec2(30.000000,40.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $tex_count_anchor$
+			:i $pos$ = %vec2(460.000000,40.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(10,"Poly Count")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %GLOBAL%$main_base$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %GLOBAL%$main_other$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $text$ = %GLOBAL%$main_total$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,45.000000)
+			:i $text$ = %GLOBAL%$main_envmap$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,60.000000)
+			:i $text$ = %GLOBAL%$sky_base$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,75.000000)
+			:i $text$ = %GLOBAL%$rendered_objects$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,90.000000)
+			:i $text$ = %GLOBAL%$rendered_meshes$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,105.000000)
+			:i $text$ = %GLOBAL%$verts_per_poly$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,120.000000)
+			:i $text$ = %GLOBAL%$polys_per_object$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $poly_count_anchor$
+			:i $pos$ = %vec2(0.000000,135.000000)
+			:i $text$ = %GLOBAL%$polys_per_mesh$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $tex_count_anchor$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(11,"Texture Mem")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $tex_count_anchor$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %GLOBAL%$lev_tex$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $tex_count_anchor$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %GLOBAL%$sky_tex$
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $display_current_level_texture_values$
+		:i $removeparameter$$metrics$
+		:i $removeparameter$$main_base$
+		:i $removeparameter$$main_other$
+		:i $removeparameter$$main_envmap$
+		:i $removeparameter$$sky_base$
+		:i $removeparameter$$lev_tex$
+		:i $removeparameter$$sky_tex$
+	:i endif
+:i endfunction
+:i function $refresh_poly_count_repeatedly$
+	:i while
+		
+		:i $refresh_poly_count$
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $switch_off_poly_count_refresh$
+	:i $change$$poly_count_on$ = %i(0,00000000)
+	:i $killspawnedscript$$name$ = $refresh_poly_count_repeatedly$
+:i endfunction
+:i function $screen_outline$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i if $isps2$
+		:i if $ScreenElementExists$$id$ = $outline_anchor$
+			:i $DestroyScreenElement$$id$ = $outline_anchor$
+		:i endif
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $id$ = $outline_anchor$
+			:i $parent$ = $root_window$
+			:i $z_priority$ = %i(999,000003e7)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $outline_anchor$
+			:i $texture$ = $white2$
+			:i $scale$ = %vec2(0.150000,51.000000)
+			:i $pos$ = %vec2(18.000000,22.000000)
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $outline_anchor$
+			:i $texture$ = $white2$
+			:i $scale$ = %vec2(0.150000,51.000000)
+			:i $pos$ = %vec2(620.000000,22.000000)
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $outline_anchor$
+			:i $texture$ = $white2$
+			:i $scale$ = %vec2(75.000000,0.150000)
+			:i $pos$ = %vec2(20.000000,20.000000)
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $outline_anchor$
+			:i $texture$ = $white2$
+			:i $scale$ = %vec2(75.000000,0.150000)
+			:i $pos$ = %vec2(20.000000,430.000000)
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+	:i endif
+:i endfunction
+:i :end

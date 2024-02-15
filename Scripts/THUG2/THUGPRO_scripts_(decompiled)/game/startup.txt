@@ -1,0 +1,450 @@
+
+:i $enable_coim_object_debug$ = %i(0,00000000)
+:i $screen_element_heap$ = $FrontEnd$
+:i $debug_graffiti$ = %i(0,00000000)
+:i $ViewerModeOn$ = %i(0,00000000)
+:i $g_NoParticles$ = %i(0,00000000)
+:i $debug_cutscenes$ = %i(0,00000000)
+:i $output_cutscene_video$ = %i(0,00000000)
+:i $particle_heap_size$ = %i(71680,00011800)
+:i $particle_options_DEBUG$ = :s{
+	:i $show_particle_heap$ = %i(0,00000000)
+	:i $particle_warning_script$ = $FlexParticleWarning$
+:i :s}
+:i $lock_framerate$ = %i(0,00000000)
+:i $display_framerate_box$ = %i(0,00000000)
+:i $framerate_value$ = %f(0.000000)
+:i $show_filenames$ = %i(0,00000000)
+:i $output_tracking_lines$ = %i(0,00000000)
+:i $rail_arrows$ = %i(0,00000000)
+:i $show_all_trick_objects$ = %i(0,00000000)
+:i $entered_from_autolaunch$ = %i(0,00000000)
+:i $DontSpoofAdaptor$ = %i(0,00000000)
+:i $viewer_buttons_enabled$ = %i(1,00000001)
+:i $enable_view_goals_select_shortcut$ = %i(0,00000000)
+:i $wireframe_skins$ = %i(0,00000000)
+:i $DEMO_BUILD$ = %i(0,00000000)
+:i $GameInformerBuild$ = %i(0,00000000)
+:i $auto_change_chapter_and_stage$ = %i(0,00000000)
+:i $SHOWPOLYS_ONQUICKVIEW$ = %i(0,00000000)
+:i $THUGPRO_Footstep_Sounds_Changed$ = %i(0,00000000)
+:i function $load_permanent_prefiles$
+	:i $LoadPreFile$%s(11,"permtex.pre")
+	:i $LoadPreFile$%s(12,"casfiles.pre")
+:i endfunction
+:i function $load_permanent_assets$
+	:i $MemInitHeap$$name$ = %s(14,"SkProPermanent")$size$ = %i(12582912,00c00000)
+	:i $MemInitHeap$$name$ = %s(15,"SkProUnloadable")$size$ = %i(1048576,00100000)
+	:i $SetDefaultPermanent$%i(1,00000001)
+	:i $SetReferenceChecksum$%i(0,00000000)
+	:i $LoadPreFile$%s(13,"skeletons.pre")
+	:i $LoadPreFile$%s(8,"bits.pre")
+	:i $LoadPreFile$%s(18,"thugpro_models.pre")
+	:i $InitAnimCompressTable$%s(22,"anims\standardkeyq.bin")$q48$
+	:i $InitAnimCompressTable$%s(22,"anims\standardkeyt.bin")$t48$
+	:i $PushMemProfile$%s(15,"Animation Cache")
+	:i $InitAnimSystem$:s{
+		:i $AnimHeapSize$ = %i(337920,00052800)
+		:i $CacheBlockAlign$ = %i(3072,00000c00)
+		:i $DefCacheType$ = $fullres$
+		:i $MaxDegenerateAnims$ = %i(3,00000003)
+		:i $MaxAnimSubsets$ = %i(4,00000004)
+	:i :s}
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(14,"Collision Heap")
+	:i $MemInitHeap$$name$ = %s(9,"Collision")$size$ = %i(20480,00005000)
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(19,"Audio Stream header")
+	:i $LoadStreamHeader$%s(15,"streams\streams")
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(19,"Permanent Skeletons")
+	:i $skeletonload_all$
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(16,"Permanent Models")
+	:i $LoadAsset$%s(22,"models\arrow\arrow.tex")
+	:i $LoadAsset$%s(22,"models\arrow\arrow.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\arrow\arrow.tex$
+	:i $LoadAsset$%s(38,"models\special_arrow\special_arrow.tex")
+	:i $LoadAsset$%s(38,"models\special_arrow\special_arrow.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\special_arrow\special_arrow.tex$
+	:i $LoadAsset$%s(32,"models\ped_shadow\ped_shadow.tex")
+	:i $LoadAsset$%s(32,"models\ped_shadow\ped_shadow.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\ped_shadow\ped_shadow.tex$
+	:i $LoadAsset$%s(68,"models\gameobjects\pickups\doublecheeseburger\doublecheeseburger.tex")
+	:i $LoadAsset$%s(68,"models\gameobjects\pickups\doublecheeseburger\doublecheeseburger.mdl")$parent$ = $models\gameobjects\pickups\doublecheeseburger\doublecheeseburger.tex$
+	:i $LoadAsset$%s(48,"models\gameobjects\pickups\applepie\applepie.tex")
+	:i $LoadAsset$%s(48,"models\gameobjects\pickups\applepie\applepie.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\gameobjects\pickups\applepie\applepie.tex$
+	:i $LoadAsset$%s(48,"models\THUGPRO_GOAL_Arrow\THUGPRO_GOAL_Arrow.tex")
+	:i $LoadAsset$%s(48,"models\THUGPRO_GOAL_Arrow\THUGPRO_GOAL_Arrow.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\THUGPRO_GOAL_Arrow\THUGPRO_GOAL_Arrow.tex$
+	:i $LoadAsset$%s(29,"models\props\prop_snowman.tex")
+	:i $LoadAsset$%s(29,"models\props\prop_snowman.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\props\prop_snowman.tex$
+	:i $LoadAsset$%s(40,"models\GameObjects\Net\Rocket\Rocket.tex")
+	:i $LoadAsset$%s(40,"models\GameObjects\Net\Rocket\Rocket.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\GameObjects\Net\Rocket\Rocket.tex$
+	:i $LoadAsset$%s(40,"models\GameObjects\Net\Sprite\Sprite.tex")
+	:i $LoadAsset$%s(40,"models\GameObjects\Net\Sprite\Sprite.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\GameObjects\Net\Sprite\Sprite.tex$
+	:i $LoadAsset$%s(44,"models\GameObjects\Net\Snowball\Snowball.tex")
+	:i $LoadAsset$%s(44,"models\GameObjects\Net\Snowball\Snowball.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\GameObjects\Net\Snowball\Snowball.tex$
+	:i $LoadAsset$%s(44,"models\gameobjects\goal_money\goal_money.tex")
+	:i $LoadAsset$%s(44,"models\gameobjects\goal_money\goal_money.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\gameobjects\goal_money\goal_money.tex$
+	:i $LoadAsset$%s(36,"models\thugproarrow\thugproarrow.tex")
+	:i $LoadAsset$%s(36,"models\thugproarrow\thugproarrow.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\thugproarrow\thugproarrow.tex$
+	:i $LoadAsset$%s(38,"models\GameObjects\boombox\boombox.tex")
+	:i $LoadAsset$%s(38,"models\GameObjects\boombox\boombox.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\GameObjects\boombox\boombox.tex$
+	:i $PopMemProfile$
+	:i $load_special_items$
+	:i $PushMemProfile$%s(27,"Permanent Particle Textures")
+	:i $LoadParticleTexture$%s(31,"particles\dt_generic_particle01")$perm$
+	:i $LoadParticleTexture$%s(20,"bits\particle_test02")$perm$
+	:i $LoadParticleTexture$%s(8,"bits\sun")$perm$
+	:i $LoadParticleTexture$%s(17,"bits\apm_sun_C_01")$perm$
+	:i $LoadParticleTexture$%s(13,"bits\blood_01")$perm$
+	:i $LoadParticleTexture$%s(11,"bits\splash")$perm$
+	:i $LoadParticleTexture$%s(9,"bits\snow")$perm$
+	:i $LoadParticleTexture$%s(23,"particles\dt_nj_flame02")$perm$
+	:i $LoadParticleTexture$%s(24,"particles\dt_ironblast01")$perm$
+	:i $LoadParticleTexture$%s(19,"particles\dt_barf02")$perm$
+	:i $LoadParticleTexture$%s(18,"bits\cag_workspace")$perm$
+	:i $LoadParticleTexture$%s(21,"particles\apm_spark_4")$perm$
+	:i $LoadParticleTexture$%s(14,"bits\skidtrail")$perm$
+	:i $load_permanent_particle_textures$
+	:i $load_permanent_fast_particle_textures$
+	:i $load_permanent_shatter_textures$
+	:i $PopMemProfile$
+	:i $THUGPRO_GetProxyGlobal$$global$ = $g_NoParticles$
+	:i if $GotParam$$value$
+		:i $Change$$g_NoParticles$ = %GLOBAL%$value$
+	:i endif
+	:i $UnloadPreFile$%s(13,"skeletons.pre")
+	:i $UnloadPreFile$%s(8,"bits.pre")
+	:i $UnloadPreFile$%s(18,"thugpro_models.pre")
+	:i $SetDefaultPermanent$%i(0,00000000)
+	:i $PushMemProfile$%s(17,"Fonts and Bitmaps")
+	:i $MemPushContext$$BottomUpHeap$
+	:i $load_fonts_to_main_memory$
+	:i $MemPopContext$
+	:i $LoadPreFile$%s(16,"panelsprites.pre")
+	:i $LoadPreFile$%s(18,"thugpro_images.pre")
+	:i $MemPushContext$$PermanentTextureHeap$
+	:i $SHUFFLE_SPLASH_IMAGES$
+	:i $LoadTexture$ ( ($splash_images$) :a{ ($GLOBAL_SPLASH_RAND$) :a}) $dont_assert$
+	:i $MemPopContext$
+	:i $printf$%s(23,"load permanent_textures")
+	:i $load_textures_to_main_memory$$array$ = $permanent_textures$$heap$ = $PermanentTextureHeap$
+	:i $printf$%s(24,"load unloadable_textures")
+	:i $load_textures_to_main_memory$$array$ = $unloadable_textures$$heap$ = $UnloadableTextureHeap$
+	:i $UnloadPreFile$%s(16,"panelsprites.pre")$dont_assert$
+	:i $UnloadPreFile$%s(18,"thugpro_images.pre")$dont_assert$
+	:i $load_theme_textures_to_main_memory$
+	:i $load_update_level_select_textures_to_main_memory$
+	:i $load_skater_stickers_to_main_memory$:s{
+		:i $no_pre_file$ = %i(1,00000001)
+		:i $mem_context$ = $UnloadableTextureHeap$
+	:i :s}
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(15,"Permanent Anims")
+	:i if NOT  ($has_loaded_permanent_anims$) 
+		:i $do_load_permanent$
+		:i $do_load_unloadable$
+		:i $do_load_thugpro_permanent$
+		:i $Change$$has_loaded_permanent_anims$ = %i(1,00000001)
+	:i endif
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(20,"Multiplayer Textures")
+	:i $MemPushContext$$UnloadableTextureHeap$
+	:i $load_multiplayer_textures_to_main_memory$
+	:i $MemPopContext$
+	:i $PopMemProfile$
+:i endfunction
+:i $TEST_FONT_COLORS$ = :a{
+	:i :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+	:i :a{%i(110,0000006e)%i(30,0000001e)%i(15,0000000f)%i(108,0000006c):a}
+	:i :a{%i(50,00000032)%i(80,00000050)%i(112,00000070)%i(100,00000064):a}
+	:i :a{%i(9,00000009)%i(107,0000006b)%i(36,00000024)%i(100,00000064):a}
+	:i :a{%i(123,0000007b)%i(99,00000063)%i(3,00000003)%i(100,00000064):a}
+	:i :a{%i(0,00000000)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+	:i :a{%i(128,00000080)%i(0,00000000)%i(128,00000080)%i(100,00000064):a}
+	:i :a{%i(30,0000001e)%i(50,00000032)%i(80,00000050)%i(100,00000064):a}
+	:i :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+	:i :a{%i(50,00000032)%i(80,00000050)%i(112,00000070)%i(100,00000064):a}
+	:i :a{%i(120,00000078)%i(45,0000002d)%i(4,00000004)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(0,00000000)%i(128,00000080)%i(230,000000e6)%i(120,00000078):a}
+	:i :a{%i(200,000000c8)%i(90,0000005a)%i(11,0000000b)%i(120,00000078):a}
+	:i :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(120,00000078):a}
+	:i :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(120,00000078):a}
+	:i :a}
+:i function $load_fonts_to_main_memory$
+	:i $LoadPreFile$%s(17,"thugpro_fonts.pre")
+	:i $PushMemProfile$%s(5,"Fonts")
+	:i $LoadFont$%s(9,"testtitle")$char_spacing$ = %i(0,00000000)$space_spacing$ = %i(12,0000000c)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(12,"newtrickfont")$char_spacing$ = %i(0,00000000)$space_spacing$ = %i(10,0000000a)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(17,"newtrickfont_high")$char_spacing$ = %i(0,00000000)$space_spacing$ = %i(40,00000028)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(17,"newtrickfont_thug")$char_spacing$ = %i(0,00000000)$space_spacing$ = %i(10,0000000a)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(5,"small")$char_spacing$ = %f(1.500000)$space_spacing$ = %i(9,00000009)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(9,"small_rus")$char_spacing$ = %f(1.500000)$space_spacing$ = %i(9,00000009)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(10,"small_thug")$char_spacing$ = %f(-3.090000)$space_spacing$ = %i(12,0000000c)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(11,"small_thps4")$char_spacing$ = %f(0.500000)$space_spacing$ = %i(9,00000009)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$%s(12,"newtimerfont")$char_spacing$ = %i(4294967294,fffffffe)
+	:i $LoadFont$%s(6,"dialog")$char_spacing$ = %i(4294967293,fffffffd)$space_spacing$ = %i(12,0000000c)$color_tab$ = $TEST_FONT_COLORS$
+	:i $LoadFont$$buttons_font$
+	:i $PopMemProfile$
+	:i $UnloadPreFile$%s(17,"thugpro_fonts.pre")$dont_assert$
+:i endfunction
+:i function $load_special_items$
+	:i $PushMemProfile$%s(19,"Special Item Models")
+	:i $LoadAsset$%s(49,"Models\SpecialItems\FranklinKite\franklinkite.tex")
+	:i $LoadAsset$%s(50,"models\specialitems\FranklinKite\franklinkite.skin")$parent$ = $Models\SpecialItems\FranklinKite\franklinkite.tex$
+	:i $LoadAsset$%s(38,"models\specialitems\Sword\SI_Sword.tex")
+	:i $LoadAsset$%s(39,"models\specialitems\Sword\SI_Sword.skin")$parent$ = $models\specialitems\Sword\SI_Sword.tex$
+	:i $LoadAsset$%s(54,"models\specialitems\JugglingBalls\SI_JugglingBalls.tex")
+	:i $LoadAsset$%s(55,"models\specialitems\JugglingBalls\SI_JugglingBalls.skin")$parent$ = $models\specialitems\JugglingBalls\SI_JugglingBalls.tex$
+	:i $LoadAsset$%s(44,"models\specialitems\Chainsaw\SI_Chainsaw.tex")
+	:i $LoadAsset$%s(45,"models\specialitems\Chainsaw\SI_Chainsaw.skin")$parent$ = $models\specialitems\Chainsaw\SI_Chainsaw.tex$
+	:i $LoadAsset$%s(38,"models\Animals\Anl_Shark\Anl_shark.tex")
+	:i $LoadAsset$%s(39,"models\Animals\Anl_Shark\Anl_shark.skin")$parent$ = $models\Animals\Anl_Shark\Anl_shark.tex$
+	:i $LoadAsset$%s(41,"models\specialitems\spraycan\spraycan.tex")
+	:i $LoadAsset$%s(42,"models\specialitems\spraycan\spraycan.skin")$parent$ = $models\specialitems\spraycan\spraycan.tex$
+	:i $LoadAsset$%s(51,"models\specialitems\spraycan\si_spraycan_double.tex")
+	:i $LoadAsset$%s(52,"models\specialitems\spraycan\SI_SprayCan_Double.skin")$parent$ = $models\specialitems\spraycan\si_spraycan_double.tex$
+	:i $LoadAsset$%s(40,"models\specialitems\Hoagie\si_Hoagie.tex")
+	:i $LoadAsset$%s(41,"models\specialitems\Hoagie\si_Hoagie.skin")$parent$ = $models\specialitems\Hoagie\si_Hoagie.tex$
+	:i $LoadAsset$%s(46,"models\specialitems\DragTires\si_DragTires.tex")
+	:i $LoadAsset$%s(47,"models\specialitems\DragTires\si_DragTires.skin")$parent$ = $models\specialitems\DragTires\si_DragTires.tex$
+	:i $LoadAsset$%s(36,"models\specialitems\Flag\SI_Flag.tex")
+	:i $LoadAsset$%s(37,"models\specialitems\Flag\SI_Flag.skin")$parent$ = $models\specialitems\Flag\SI_Flag.tex$
+	:i $LoadAsset$%s(47,"models\specialitems\bustedboard\bustedboard.tex")
+	:i $LoadAsset$%s(48,"models\specialitems\bustedboard\bustedboard.skin")$parent$ = $models\specialitems\bustedboard\bustedboard.tex$
+	:i $LoadAsset$%s(45,"models\specialitems\extraboard\extraboard.tex")
+	:i $LoadAsset$%s(46,"models\specialitems\extraboard\extraboard.skin")$parent$ = $models\specialitems\extraboard\extraboard.tex$
+	:i $LoadAsset$%s(41,"models\specialitems\pizzabox\pizzabox.tex")
+	:i $LoadAsset$%s(42,"models\specialitems\pizzabox\pizzabox.skin")$parent$ = $models\specialitems\pizzabox\pizzabox.tex$
+	:i $LoadAsset$%s(46,"models\specialitems\Tongue\SEC_Gene_Tongue.tex")
+	:i $LoadAsset$%s(47,"models\specialitems\Tongue\SEC_Gene_Tongue.skin")$parent$ = $models\specialitems\Tongue\SEC_Gene_Tongue.tex$
+	:i $LoadAsset$%s(55,"models\specialitems\spraycan_ghetto\spraycan_ghetto.tex")
+	:i $LoadAsset$%s(56,"models\specialitems\spraycan_ghetto\spraycan_ghetto.skin")$parent$ = $models\specialitems\spraycan_ghetto\spraycan_ghetto.tex$
+	:i $LoadAsset$%s(39,"models\specialitems\BoomBox\BoomBox.tex")
+	:i $LoadAsset$%s(40,"models\specialitems\BoomBox\BoomBox.skin")$parent$ = $models\specialitems\BoomBox\BoomBox.tex$
+	:i $LoadAsset$%s(33,"models\specialitems\Flag\Flag.tex")
+	:i $LoadAsset$%s(34,"models\specialitems\Flag\Flag.skin")$parent$ = $models\specialitems\Flag\Flag.tex$
+	:i $LoadAsset$%s(37,"models\specialitems\Guitar\Guitar.tex")
+	:i $LoadAsset$%s(38,"models\specialitems\Guitar\Guitar.skin")$parent$ = $models\specialitems\Guitar\Guitar.tex$
+	:i $LoadAsset$%s(35,"models\specialitems\Skull\Skull.tex")
+	:i $LoadAsset$%s(36,"models\specialitems\Skull\Skull.skin")$parent$ = $models\specialitems\Skull\Skull.tex$
+	:i $LoadAsset$%s(40,"models\specialitems\spooky\si_spooky.tex")
+	:i $LoadAsset$%s(40,"models\specialitems\spooky\si_spooky.mdl")$parent$ = $models\specialitems\spooky\si_spooky.tex$
+	:i $PopMemProfile$
+:i endfunction
+:i function $load_permanent_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_thps6_human$ isNull 
+	:i $load_special_item_anims$ isNull 
+:i endfunction
+:i function $load_permanent_thugpro_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_thugpro$ isNull 
+	:i $animload_SI_Pizza$ isNull 
+	:i $animload_SI_tongue$ isNull 
+	:i $animload_SI_Boombox$ isNull 
+	:i $animload_si_generic_thugpro$ isNull 
+	:i $animload_SI_Flag2$ isNull 
+	:i $animload_SI_Skull$ isNull 
+:i endfunction
+:i function $load_unloadable_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_THPS6_human_unloadable$ isNull 
+:i endfunction
+:i function $load_net_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_THPS6_human_net$ isNull 
+	:i $load_special_item_anims$ isNull 
+:i endfunction
+:i function $load_special_item_anims$$LoadFunction$ = $LoadAnim$
+	:i $animload_SI_Prop_1$ isNull 
+	:i $animload_SI_Prop2$ isNull 
+	:i $animload_SI_Prop_3$ isNull 
+	:i $animload_SI_bustedboard$ isNull 
+	:i $animload_SI_Extraboard$ isNull 
+	:i $animload_SI_FranklinKite$ isNull 
+	:i $animload_SI_Shark$ isNull 
+	:i $animload_SI_flag$ isNull 
+:i endfunction
+:i function $init_light_manager$
+	:i $InitLightManager$$max_lights$ = %i(2,00000002)$max_diffuse_lights$ = %i(3,00000003)
+:i endfunction
+:i function $uninit_light_manager$
+	:i $UninitLightManager$
+:i endfunction
+:i function $init_environment$
+	:i $InitSun$:s{
+		:i $theta$ =  (%f(3.141590) / %f(4.000000)) 
+		:i $phi$ =  (%f(3.141590) / %f(6.000000)) 
+		:i $radius$ = %f(18000.000000)
+		:i $size$ = %f(7332.000000)
+		:i $texture$ = $sun$
+		:i $corona_texture$ = $apm_sun_C_01$
+		:i $lens_flare_data$ = $lens_flare_data$
+	:i :s}
+:i endfunction
+:i function $init_loading_bar$
+	:i $SetLoadingBarPos$$x$ = %i(258,00000102)$y$ = %i(400,00000190)
+	:i $SetLoadingBarSize$$width$ = %i(140,0000008c)$height$ = %i(8,00000008)
+	:i $SetLoadingBarStartColor$$r$ = %i(0,00000000)$g$ = %i(76,0000004c)$b$ = %i(129,00000081)
+	:i $SetLoadingBarEndColor$$r$ = %i(176,000000b0)$g$ = %i(211,000000d3)$b$ = %i(115,00000073)
+	:i $SetLoadingBarBorder$$width$ = %i(5,00000005)$height$ = %i(5,00000005)
+	:i $SetLoadingBarBorderColor$$r$ = %i(40,00000028)$g$ = %i(40,00000028)$b$ = %i(40,00000028)
+:i endfunction
+:i $All_Levels_Unlocked$ = %i(1,00000001)
+:i $bootstrap_build$ = %i(0,00000000)
+:i $UseLevelOverrideStats$ = %i(0,00000000)
+:i function $network_driver_startup$
+	:i $printf$%s(45,"*********************************************")
+	:i $printf$%s(22,"Loading net drivers...")
+	:i if $LoadNetworkDrivers$
+		:i $printf$%s(13,"**** SUCCESS!")
+	:i else 
+		:i $printf$%s(13,"**** FAILURE!")
+	:i endif
+	:i $printf$%s(45,"*********************************************")
+:i endfunction
+:i function $screen_element_startup$
+	:i $ScreenElementSystemInit$
+	:i $setup_main_button_event_mappings$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $tags$ = :s{$menu_state$ = $off$:s}
+	:i :s}
+	:i $FireEvent$$type$ = $focus$$target$ = $root_window$
+	:i $create_panel_stuff$
+:i endfunction
+:i $THUGPROSplashRandomValue$ = %i(4,00000004)
+:i function $default_system_startup$
+:i endfunction
+:i function $thug_pro_startup_function$
+	:i $THUGPRO_TogglePermanentPatches$
+	:i $THUGPRO_ParkEdHeighPatch$$off$
+	:i $Change$$temp_fixGaps$ = %i(1,00000001)
+	:i $PrintConfig$
+	:i $Change$$select_shift$ = %i(0,00000000)
+	:i $PushMemProfile$%s(23,"Pre-game initialization")
+	:i $CareerReset$
+	:i $ResetArcadeScores$
+	:i $SetSfxVolume$%i(100,00000064)
+	:i $SetMusicVolume$%i(0,00000000)
+	:i $SetRandomMode$%i(0,00000000)
+	:i $SetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+	:i $VibrationOn$
+	:i if $CD$
+		:i $Change$$UsePreFilesForLevelLoading$ = %i(1,00000001)
+		:i $Change$$DEVKIT_LEVELS$ = %i(0,00000000)
+		:i $Change$$All_Levels_Unlocked$ = %i(0,00000000)
+		:i $Change$$ApplyViewerObjModelToPlayer$ = %i(1,00000001)
+	:i else 
+		:i $Change$$All_Levels_Unlocked$ = %i(1,00000001)
+	:i endif
+	:i $screen_element_startup$
+	:i $SetScreenElementProps$$id$ = $root_window$$event_handlers$ = :a{:s{$pad_start$$nullscript$:s}:a}$replace_handlers$
+	:i $printf$%s(53,"replace_handlers to take away start key in load_level")
+	:i $setservermode$$on$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $PushMemProfile$%s(19,"Start & Join Server")
+	:i $StartServer$
+	:i $JoinServer$ isNull 
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(11,"Goal Editor")
+	:i $CreateGoalEditor$
+	:i $PopMemProfile$
+	:i $PushMemProfile$%s(11,"Rail Editor")
+	:i $CreateRailEditor$
+	:i $PopMemProfile$
+	:i $PopMemProfile$
+	:i if $English$
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_CUTSCENE_SUBTITLES$
+	:i endif
+	:i if $Bootstrap$
+		:i $Change$$bootstrap_build$ = %i(1,00000001)
+		:i $Change$$STARTGAME_FIRST_TIME$ = %i(1,00000001)
+		:i $Change$$BUMP_STATS$ = %i(0,00000000)
+		:i $Change$$All_Levels_Unlocked$ = %i(0,00000000)
+		:i $Change$$UsePreFilesForLevelLoading$ = %i(0,00000000)
+		:i $autolaunch$$level$ = $Load_default$$game$ = $freeskate$
+		:i $SpawnScript$$THUGPRO_Bootstrap_Startup$
+	:i else 
+		:i $Change$$BUMP_STATS$ = %i(1,00000001)
+		:i $Change$$has_accepted_dnas$ = %i(1,00000001)
+		:i $Change$$DontSpoofAdaptor$ = %i(1,00000001)
+		:i $autolaunch$$level$ = $Load_MainMenu$$game$ = $career$
+	:i endif
+:i endfunction
+:i function $thugpro_load_testlevel$
+	:i $change_level$$level$ = $Load_Test$$game$ = $freeskate$
+:i endfunction
+:i function $THUGPRO_Bootstrap_Menu_exit$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $UnPauseGame$
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $THUGPRO_Bootstrap_Menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $PauseGame$
+	:i $kill_start_key_binding$
+	:i $make_new_menu$$menu_id$ = $bootstrap_menu$$vmenu_id$ = $bootstrap_vmenu$$menu_title$ = %s(7,"THUGPRO")$type$ = $vscrollingmenu$$dims$ = %vec2(320.000000,200.000000)$pos$ = %vec2(30.000000,20.000000)
+	:i $SetScreenElementProps$:s{$id$ = $bootstrap_vmenu$$event_handlers$ = :a{
+			:i :s{$pad_back$$THUGPRO_Bootstrap_Menu_exit$:s}
+			:i :a}
+	:i :s}
+	:i $make_simple_line$$text$ = %s(15,"Load Test Level")$pad_choose_script$ = $thugpro_load_testlevel$
+	:i $make_simple_line$$text$ = %s(4,"Quit")$pad_choose_script$ = $THUGPRO_Bootstrap_Menu_Quit$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$
+:i endfunction
+:i function $THUGPRO_Bootstrap_Startup$
+	:i if $istrue$$bootstrap_build$
+		:i $SetNetworkMode$
+		:i $SetMemThreadSafe$$off$
+		:i if $ScreenElementExists$$id$ = $loadscreen_container$
+			:i $wait$%f(3.500000)$seconds$
+			:i $DestroyScreenElement$$id$ = $loadscreen_container$
+			:i $wait$%i(2,00000002)$frames$
+			:i $MemPushContext$$UnloadableTextureHeap$
+			:i $UnLoadTexture$$no_vram_alloc$ ( ($splash_images$) :a{ ($GLOBAL_SPLASH_RAND$) :a}) $dont_assert$
+			:i $MemPopContext$
+		:i else 
+			:i $FadeToBlack$$off$$time$ = %f(0.500000)
+			:i $wait$%f(0.500000)$seconds$
+		:i endif
+		:i $ForEachIn$ ($thugpro_generic_save_info$) $do$ = $thugpro_maybe_read_reg_key$$Params$ = :s{:s}
+		:i $Change$$auto_load_thugpro_data$ = %i(0,00000000)
+		:i $hide_panel_stuff$
+		:i $Change$$WALLPLANT_TRICK_OPTION$ = %i(0,00000000)
+		:i $thugpro_set_wallplant_trick$
+		:i $SetMusicVolume$%i(0,00000000)
+		:i $SetSfxVolume$%i(0,00000000)
+		:i $Change$$MusicVolOutsideBox$ = %i(0,00000000)
+		:i $Change$$FadeTempMusicVol$ = %i(0,00000000)
+		:i $THUGPRO_Bootstrap_Menu$
+	:i endif
+:i endfunction
+:i function $THUGPRO_Bootstrap_Menu_Quit$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $dialog_box_exit$
+	:i $QuitGame$
+:i endfunction
+:i function $fadein_fadeout$$text$ = %s(19,"you forgot the text")
+	:i $SetProps$$text$ = %GLOBAL%$text$
+	:i $DoMorph$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(1,00000001)
+	:i $wait$%i(5,00000005)$seconds$
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(2,00000002)$alpha$ = %i(0,00000000)
+:i endfunction
+:i $edit_graphics_corp_logo$ = :a{
+	:i :a}
+:i $edit_graphics_graphics$ = :a{
+	:i :a}
+:i $edit_graphics_illustrations$ = :a{
+	:i :a}
+:i $edit_graphics_logos$ = :a{
+	:i :a}
+:i $edit_graphics_odd$ = :a{
+	:i :a}
+:i $edit_graphics_premade$ = :a{
+	:i :a}
+:i :end

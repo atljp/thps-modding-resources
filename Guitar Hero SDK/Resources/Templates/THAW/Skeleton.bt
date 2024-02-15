@@ -1,0 +1,182 @@
+//------------------------------------------------
+// THAW .ske file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define CL_BONEVECTOR           0xffff66
+#define CL_BONEQUAT             0x66ffff
+#define CL_BONEMATRIX           0x6688ff
+#define CL_BONENAME             0xffaaff
+#define CL_BONEFLIPBONE         0xaa8888
+#define CL_BONETYPE             0x88aa88
+
+#define SKEVERSION_THAW         0
+#define SKEVERSION_THUG2        1
+#define SKEVERSION_THPS4        2
+
+local ubyte SkeVersion = SKEVERSION_THAW;
+
+LittleEndian();
+
+typedef struct
+{
+    Vec4 col_a <bgcolor=CL_BONEMATRIX>;
+    Vec4 col_b <bgcolor=CL_BONEMATRIX>;
+    Vec4 col_c <bgcolor=CL_BONEMATRIX>;
+    Vec4 col_d <bgcolor=CL_BONEMATRIX>;
+} THAWSkeletonMatrix;
+
+//------------------------------------------------
+
+local uint Pos_NameList = 0;
+local uint Pos_ParentList = 0;
+local uint Pos_FlipList = 0;
+local uint Pos_QuatVectors = 0;
+
+typedef struct
+{
+    ushort version_maybe <bgcolor=CL_SINGLEVALUE>;
+    
+    if (version_maybe == 2)
+        SkeVersion = SKEVERSION_THUG2;
+    else if (version_maybe == 1)
+        SkeVersion = SKEVERSION_THAW;
+    else
+        SkeVersion = SKEVERSION_THPS4;
+    
+    if (SkeVersion == SKEVERSION_THAW)
+    {
+        ushort header_length <bgcolor=CL_SINGLEVALUE>;
+        uint bone_count <bgcolor=CL_SINGLEVALUE>;
+        uint flags_maybe <bgcolor=CL_SINGLEVALUE>;
+        uint unk <bgcolor=CL_PADDING>;
+    
+        RelativeOffset pt_namelist(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_parentlist(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_fliplist(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_flipindexlist(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_bonetypes(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_endsection(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_matrices(0) <bgcolor=CL_POINTER>;
+        RelativeOffset pt_vectors(0) <bgcolor=CL_POINTER>;
+        
+        Pos_NameList = AbsOffset(pt_namelist);
+        Pos_ParentList = AbsOffset(pt_parentlist);
+        Pos_FlipList = AbsOffset(pt_fliplist);
+    }
+    else if (SkeVersion == SKEVERSION_THUG2)
+    {
+        SkipTo(4);
+        uint unk;
+        uint bone_count;
+        
+        Pos_NameList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_ParentList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_FlipList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_QuatVectors = FTell();
+    }
+    else if (SkeVersion == SKEVERSION_THPS4)
+    {
+        SkipTo(4);
+        
+        uint bone_count;
+        
+        Pos_NameList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_ParentList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_FlipList = FTell();
+        FSeek(FTell() + (4 * bone_count));
+        
+        Pos_QuatVectors = FTell();
+    }
+
+} THAWSkeletonHeader;
+
+THAWSkeletonHeader ske_header;
+
+//------------------------------------------------
+
+typedef struct (uint idx, THAWSkeletonHeader &header)
+{
+    local uint old_off = FTell();
+    
+    // Get name first
+    FSeek(Pos_NameList + (4*idx));
+    QBKey name <bgcolor=CL_BONENAME>;
+
+    // Parent
+    FSeek(Pos_ParentList + (4*idx));
+    QBKey parent <bgcolor=CL_CHECKSUM>;
+    
+    if (SkeVersion == SKEVERSION_THAW)
+    {
+        // Flip index
+        FSeek(AbsOffset(header.pt_flipindexlist) + (4*idx));
+        int flip_index <bgcolor=CL_SINGLEVALUE>;
+    }
+
+    // Flip
+    FSeek(Pos_FlipList + (4*idx));
+    QBKey flip_bone <bgcolor=CL_BONEFLIPBONE>;
+
+    // Bone type / priority
+    if (SkeVersion == SKEVERSION_THAW)
+    {
+        FSeek(AbsOffset(header.pt_bonetypes) + (4*idx));
+        uint bone_type <bgcolor=CL_BONETYPE>;
+    }
+
+    // Vector
+    if (SkeVersion == SKEVERSION_THUG2)
+    {
+        FSeek(Pos_QuatVectors + 16 + (32*idx));
+        Vec4 vector <bgcolor=CL_BONEVECTOR>;
+    }
+    else if (SkeVersion == SKEVERSION_THAW)
+    {
+        FSeek(AbsOffset(header.pt_vectors) + (16*idx));
+        Vec4 vector <bgcolor=CL_BONEVECTOR>;
+    }
+
+    // Quaternion
+    if (SkeVersion == SKEVERSION_THUG2)
+    {
+        FSeek(Pos_QuatVectors + (32*idx));
+        Vec4 quaternion <bgcolor=CL_BONEQUAT>;
+    }
+
+    // Local matrix
+    if (SkeVersion == SKEVERSION_THAW)
+    {
+        FSeek(AbsOffset(header.pt_matrices) + (64*idx));
+        THAWSkeletonMatrix matrix <bgcolor=CL_FLOATS>;
+    }
+    
+    FSeek(old_off);
+} THAWSkeletonBone <read=ReadTHAWBone>;
+
+string ReadTHAWBone(THAWSkeletonBone &bone)
+{
+    return ReadQBKey(bone.name);
+}
+
+local int l;
+
+for (l=0; l<ske_header.bone_count; l++)
+    THAWSkeletonBone bones(l, ske_header);
+
+if (SkeVersion == SKEVERSION_THAW)
+{
+    FSeek(AbsOffset(ske_header.pt_endsection));
+    QBKey odd_keys[32] <bgcolor=CL_PADDING>;
+}

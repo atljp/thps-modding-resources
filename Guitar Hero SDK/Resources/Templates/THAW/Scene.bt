@@ -1,0 +1,130 @@
+//------------------------------------------------
+// THAW scene
+//------------------------------------------------
+
+#define CL_SCENEPADDING         0x3366dd
+#define CL_SCENEVECTOR          0x5588ff
+#define CL_SCENEVALUE           0x6699ff
+#define CL_SCENEPOINTER         0x66ccff
+
+local uint Off_SceneStart = 0;
+local uint Off_Sectors = 0;
+local uint Off_CGeoms = 0;
+local uint Off_sMeshes = 0;
+local uint Off_Billboards = 0;
+
+local uint RunningSMeshIndex = 0;
+
+#include "SectorLink.bt"
+
+typedef struct
+{
+    uint unk[5] <bgcolor=CL_PADDING>;
+} HugePaddingObject;
+
+typedef struct
+{
+} SmallBounds;
+
+typedef struct
+{
+    local int l;
+    
+    local int sceneStart = FTell();
+    Off_SceneStart = sceneStart;
+    
+    Printf("CScene starts at %d\n", Off_SceneStart);
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        ushort version <bgcolor=CL_SCENEVALUE>;
+        
+        // XBox File!
+        if (version == 2)
+            IsXboxFile = 1;
+        
+        ushort scene_length <bgcolor=CL_SCENEVALUE>;
+    
+        // XBox files.
+        if (IsXboxFile)
+        {
+            ubyte skip_me[60] <hidden=true, bgcolor=CL_SCENEPADDING>;
+            
+            CBBox bounding_box <bgcolor=CL_SCENEVECTOR, comment="Bounding box">;
+            ubyte skip_me_b[28] <hidden=true, bgcolor=CL_SCENEPADDING>;
+            uint sector_count <bgcolor=CL_SCENEVALUE>;
+            
+            RelativeOffset pt_sectors(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_cGeoms(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_billboards(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_huge_padding(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start, stores 20-byte-long objects">;
+            RelativeOffset pt_sMeshes(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            
+            ubyte skip_me_yes[8] <hidden=true, bgcolor=CL_SCENEPADDING>;
+            uint unk_d <bgcolor=CL_SCENEVALUE, comment="Seems constant, usually 161">;
+        }
+        else
+        {
+            ubyte skip_me[32] <hidden=true, bgcolor=CL_SCENEPADDING>;
+        
+            CBBox bounding_box <bgcolor=CL_SCENEVECTOR, comment="Bounding box">;
+            Sphere bounding_sphere <bgcolor=CL_SCENEVECTOR, comment="XYZ sphere center, W radius">;
+        
+            // Number of unknown chunks
+            // Each of them seems to be 80 bytes in length
+            uint num_links <bgcolor=CL_SCENEVALUE>;
+        
+            ubyte skip_me_again[40] <hidden=true, bgcolor=CL_SCENEPADDING>;
+        
+            uint sector_count <bgcolor=CL_SCENEVALUE>;
+        
+            RelativeOffset pt_sectors(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_cGeoms(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_billboards(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            RelativeOffset pt_huge_padding(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start, stores 20-byte-long objects">;
+            RelativeOffset pt_sMeshes(sceneStart) <bgcolor=CL_SCENEPOINTER, comment="From scene start">;
+            ubyte skip_me_yes[16] <hidden=true, bgcolor=CL_SCENEPADDING>;
+            uint unk_d <bgcolor=CL_SCENEVALUE, comment="Seems constant, usually 161">;
+        }
+        
+        // Set global offsets to use later.
+        Off_Sectors = AbsOffset(pt_sectors);
+        Off_CGeoms = AbsOffset(pt_cGeoms);
+        Off_sMeshes = AbsOffset(pt_sMeshes);
+        Off_Billboards = AbsOffset(pt_billboards);
+    
+        FSeek(sceneStart + scene_length);
+    
+        if (!IsXboxFile && num_links > 0)
+        {
+            for (l=0; l<num_links; l++)
+                SectorLink links(num_links) <optimize=false>;
+        }
+    
+        FSeek(AbsOffset(pt_sectors));
+    
+        for (l=0; l<sector_count; l++)
+        {
+            CurrentSectorIndex = l;
+            Sector sectors <optimize=false>;
+        }
+    
+        if (sector_count && pt_huge_padding.offset > 0)
+        {
+            FSeek(AbsOffset(pt_huge_padding));
+            HugePaddingObject padding_objects[sector_count] <optimize=true, comment="Used internally">;
+        }
+    
+        // Pad to nearest 32-byte boundary with 0xAA
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG1 || SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        uint sector_count <bgcolor=CL_SCENEVALUE>;
+
+        for (l=0; l<sector_count; l++)
+        {
+            CurrentSectorIndex = l;
+            Sector sectors <optimize=false>;
+        }
+    }
+} Scene;

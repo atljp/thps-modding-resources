@@ -1,0 +1,80 @@
+//------------------------------------------------
+// GHWT:DE Rocker Profile
+//------------------------------------------------
+
+#include "Common.bt"
+#include "sTexture.bt"
+
+// ---------------------------
+
+typedef struct
+{
+    uint data_size <bgcolor=CL_SINGLEVALUE>;
+    ubyte packed_data[data_size] <bgcolor=CL_PARSED>;
+} ProfileFile_V1;
+
+// ---------------------------
+
+enum ProfileChunkType
+{
+    DataChunk = 0xDADADADA,
+    PhotoChunk = 0xFACEFACE
+};
+
+typedef struct
+{
+    ProfileChunkType chunk_type <bgcolor=CL_CHECKSUM, comment="Chunk identifier">; 
+    uint chunk_size <bgcolor=CL_SINGLEVALUE>;
+
+    if (chunk_type == PhotoChunk)
+    {
+        local uint start_pos = FTell();
+        BigEndian();
+        sTexture chunk_data;
+        LittleEndian();
+        FSeek(start_pos + chunk_size);
+    }
+    else
+        ubyte chunk_data[chunk_size] <bgcolor=CL_PARSED>;
+} ProfileChunk <read=ReadProfileChunk>;
+
+string ReadProfileChunk(ProfileChunk &chunk)
+{
+    return Str("%s (%08x, %d bytes)", EnumToString(chunk.chunk_type), chunk.chunk_type, chunk.chunk_size);
+}
+
+typedef struct
+{
+    while (!FEof())
+        ProfileChunk chunks <optimize=false>;
+
+} ProfileFile_V2;
+
+// ---------------------------
+
+typedef struct
+{
+    QBKey file_magic <bgcolor=CL_CHECKSUM, comment="Should be 0xBEEFBABE">;
+    uint version <bgcolor=CL_SINGLEVALUE>;
+    
+    switch (version)
+    {
+        case 1:
+            ProfileFile_V1 data;
+            break;
+
+        case 2:
+            ProfileFile_V2 data;
+            break;
+
+        default:
+            Printf("Unsupported version %d.\n", version);
+            return;
+            break;
+    }
+
+    
+} ProfileFile;
+
+LittleEndian();
+ProfileFile file;

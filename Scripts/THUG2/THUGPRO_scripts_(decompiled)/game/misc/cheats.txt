@@ -1,0 +1,333 @@
+
+:i $CHEAT_SUPER_BLOOD$ = $CHEAT_ON_1$
+:i $CHEAT_ALWAYS_SPECIAL$ = $CHEAT_ON_2$
+:i $CHEAT_PERFECT_RAIL$ = $CHEAT_ON_3$
+:i $CHEAT_STATS_13$ = $CHEAT_ON_4$
+:i $CHEAT_COOL_SPECIAL_TRICKS$ = $CHEAT_ON_5$
+:i $CHEAT_MATRIX$ = $CHEAT_ON_6$
+:i $CHEAT_PERFECT_MANUAL$ = $CHEAT_ON_7$
+:i $CHEAT_KID$ = $CHEAT_ON_8$
+:i $CHEAT_MOON$ = $CHEAT_ON_9$
+:i $CHEAT_SIM$ = $CHEAT_ON_10$
+:i $CHEAT_GORILLA$ = $CHEAT_ON_11$
+:i $CHEAT_PERFECT_SKITCH$ = $CHEAT_ON_12$
+:i $CHEAT_BIGHEAD$ = $CHEAT_ON_13$
+:i $CHEAT_HOVERBOARD$ = $CHEAT_ON_14$
+:i $CHEAT_SLOMO$ = $CHEAT_ON_15$
+:i $CHEAT_DISCO$ = $CHEAT_ON_16$
+:i $CHEAT_INVISIBLE$ = $CHEAT_ON_17$
+:i $CHEAT_FLAME$ = $CHEAT_ON_18$
+:i $CHEAT_INLINE$ = $CHEAT_ON_19$
+:i $CHEAT_FOCUS$ = $CHEAT_ON_10$
+:i function $client_toggle_cheat$
+	:i if $GotParam$$on$
+		:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$) 
+			:i return
+			
+		:i endif
+		:i $SetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+	:i else 
+		:i $UnSetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+	:i endif
+	:i if $ArrayContains$$array$ =  ($SERVER_LEVEL_FLAGS$) $contains$ = %GLOBAL%$cheat_flag$
+		:i if  ( ( ($LEVEL_ORIGINAL_GAME$)  = $THPS4$)  OR  ($LevelIs$$Load_NY$) ) 
+			:i $HandleProtrickObjects$$cheat_flag$ = %GLOBAL%$cheat_flag$
+		:i endif
+		:i $HandleLevelOptionObjects$
+	:i endif
+	:i if $ArrayContains$$array$ =  ($SERVER_FLAGS_GLOBAL_FLAGS$) $contains$ = %GLOBAL%$cheat_flag$
+		:i $HandleServerGlobalFlags$ isNull 
+	:i endif
+:i endfunction
+:i function $CreateServerRemovedYouDialog_Mods$
+	:i $HideLoadingScreen$
+	:i $GoalManager_DeactivateAllGoals$$force_all$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i $kill_net_panel_messages$
+	:i $force_close_rankings$$dont_retry$
+	:i $destroy_onscreen_keyboard$
+	:i $dialog_box_exit$
+	:i $exit_pause_menu$
+	:i if NOT $IsObserving$
+		:i $skater$.$Vibrate$$OFF$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $quit_dialog_anchor$
+		:i $DestroyScreenElement$$id$ = $quit_dialog_anchor$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $create_error_box$:s{
+		:i $title$ = $net_notice_msg$
+		:i $text$ = %s(110,"The server does not allow mods, and has chosen to remove you from this game. Press \bm to return to the lobby.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_removed_dialog$:s}:a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $toggle_cheat$
+	:i if $InNetGame$
+		:i if $OnServer$
+			:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$) 
+				:i $BroadcastOmnigon$ isNull $OFF$
+			:i else 
+				:i $BroadcastOmnigon$ isNull $on$
+			:i endif
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $OmnigonAllowed$ isNull 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $LastBroadcastedOmnigonWas$ isNull 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $LastBroadcastedOmnigonWas$$cheat_flag$ = $CHEAT_MADE_UP$
+		:i return
+		
+	:i endif
+	:i $GetTags$
+	:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$) 
+		:i $SetScreenelementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+		:i $UnSetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+		:i if $GotParam$$off_callback$
+			:i %GLOBAL%$off_callback$ isNull 
+		:i endif
+	:i else 
+		:i $SetScreenelementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$text$ = %s(2,"On")
+		:i $SetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+		:i if  (%GLOBAL%$cheat_flag$ = $CHEAT_BIGHEAD$) 
+			:i if $ScreenElementExists$$id$ = $menu_gorilla$
+				:i $SetScreenelementProps$$id$ = :s{$menu_gorilla$$child$ = %i(3,00000003):s}$text$ = %s(3,"Off")
+				:i $UnSetGlobalFlag$$flag$ = $CHEAT_GORILLA$
+			:i endif
+		:i endif
+		:i if  (%GLOBAL%$cheat_flag$ = $CHEAT_GORILLA$) 
+			:i if $ScreenElementExists$$id$ = $menu_bighead$
+				:i $SetScreenelementProps$$id$ = :s{$menu_bighead$$child$ = %i(0,00000000):s}$text$ = %s(3,"Off")
+				:i $UnSetGlobalFlag$$flag$ = $CHEAT_BIGHEAD$
+			:i endif
+		:i endif
+		:i if $GotParam$$on_callback$
+			:i %GLOBAL%$on_callback$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $unlock_all_cheat_codes$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_1$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_3$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_5$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_10$
+:i endfunction
+:i function $unlock_all_gameplay_cheat_codes$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_12$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_13$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_14$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_16$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_17$
+:i endfunction
+:i function $unlock_all_sponsors$
+:i endfunction
+:i function $unlock_all_cheats$
+	:i $unlock_all_gameplay_cheat_codes$
+	:i $cheat_unlockmovies$
+	:i $cheat_reallygivelevels$
+	:i $cheat_give_skaters$
+	:i $SetGlobalFlag$$flag$ = $CAREER_STARTED$
+	:i $unlock_all_sponsors$
+	:i $unlock_all_cutscenes$
+	:i $cheat_unlock_pedgroup1$
+	:i $cheat_unlock_pedgroup2$
+	:i $cheat_unlock_pedgroup3$
+	:i $cheat_unlock_pedgroup4$
+	:i $cheat_unlock_pedgroup5$
+	:i $cheat_unlock_pedgroup6$
+	:i $cheat_unlock_pedgroup7$
+	:i $cheat_unlock_pedgroup8$
+	:i $cheat_unlock_pedgroup9$
+:i endfunction
+:i function $cheat_give_skaters$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PRICE_PC$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SECRETPC2$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SHREK$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SOLDIER$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PHIL$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_HAND$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PAULIE$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_NIGEL$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_THPS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_STEVEO$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_JESSEJAMES$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_NATAS$
+	:i $cheat_give_story_skaters$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP1$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP2$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP3$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP4$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP5$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+:i endfunction
+:i function $unlock_PC_secret_character1$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PRICE_PC$
+:i endfunction
+:i function $unlock_PC_secret_character2$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SECRETPC2$
+:i endfunction
+:i function $cheat_give_story_skaters$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_BENFRANKLIN$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_BULLFIGHTER$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_GRAFFITITAGGER$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SHRIMPVENDOR$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_JESTER$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SHECKLER$
+:i endfunction
+:i function $cheat_sce_patchtest$
+	:i $SceAltPt$
+:i endfunction
+:i function $cheat_give_shrek$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SHREK$
+:i endfunction
+:i function $cheat_give_soldier$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_SOLDIER$
+:i endfunction
+:i function $cheat_give_phil$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PHIL$
+:i endfunction
+:i function $cheat_give_hand$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_HAND$
+:i endfunction
+:i function $cheat_give_paulie$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PAULIE$
+:i endfunction
+:i function $cheat_give_nigel$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_NIGEL$
+:i endfunction
+:i function $cheat_give_steveo$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_STEVEO$
+:i endfunction
+:i function $cheat_give_jesse$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_JESSEJAMES$
+:i endfunction
+:i function $cheat_give_thps$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_THPS$
+:i endfunction
+:i function $cheat_give_natas$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_NATAS$
+:i endfunction
+:i function $cheat_unlock_pedgroup1$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP1$
+:i endfunction
+:i function $cheat_unlock_pedgroup2$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP2$
+:i endfunction
+:i function $cheat_unlock_pedgroup3$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP3$
+:i endfunction
+:i function $cheat_unlock_pedgroup4$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP4$
+:i endfunction
+:i function $cheat_unlock_pedgroup5$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP5$
+:i endfunction
+:i function $cheat_unlock_pedgroup6$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+:i endfunction
+:i function $cheat_unlock_pedgroup7$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+:i endfunction
+:i function $cheat_unlock_pedgroup8$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+:i endfunction
+:i function $cheat_unlock_pedgroup9$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDS$
+	:i $SetGlobalFlag$$flag$ = $SKATER_UNLOCKED_PEDGROUP9$
+:i endfunction
+:i function $cheat_unlockmovies$
+	:i $SetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_WDT$
+	:i $SetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_PRO_BAILS$
+	:i $SetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_PRO_BAILS2$
+	:i $SetGlobalFlag$$flag$ = $MOVIE_UNLOCKED_NS_BAILS$
+:i endfunction
+:i function $cheat_xxx$
+	:i $printf$%s(27,"Cheat without a cheatscript")
+:i endfunction
+:i function $cheat_give_neversoft_skaters$
+	:i $change$$give_neversoft_skaters$ = %i(1,00000001)
+:i endfunction
+:i function $cheat_select_shift$
+	:i $change$$select_shift$ = %i(1,00000001)
+:i endfunction
+:i function $cheat_playsound_good$
+	:i $PlaySound$$CheatGood$
+:i endfunction
+:i function $cheat_playsound_bad$
+	:i $printf$%s(58,"******************Playing Cheat Bad Sound*****************")
+	:i $PlaySound$$CheatBad$
+:i endfunction
+:i function $cheat_reallygivelevels$
+	:i $printf$%s(16,"unlocking levels")
+	:i $change$$DEMO_BUILD$ = %i(0,00000000)
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_TR$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_BO$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_BA$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_BE$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_AU$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_NO$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_ST$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_SE$
+	:i $unlock_all_chapters$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_1$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_2$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_3$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_4$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_5$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_6$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_7$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_8$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_9$
+	:i $SetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_TR$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_BO$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_BA$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_BE$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_AU$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_NO$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_ST$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_SE$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_SE2$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_SC$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_PH$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_DJ$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_LA$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_CA$
+	:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_AP$
+:i endfunction
+:i function $cheat_unlock_always_special$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_12$
+:i endfunction
+:i function $cheat_unlock_perfect_rail$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_13$
+:i endfunction
+:i function $cheat_unlock_perfect_skitch$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_14$
+:i endfunction
+:i function $cheat_unlock_perfect_manual$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_16$
+:i endfunction
+:i function $cheat_unlock_moon_grav$
+	:i $SetGlobalFlag$$flag$ = $CHEAT_UNLOCKED_17$
+:i endfunction
+:i :end

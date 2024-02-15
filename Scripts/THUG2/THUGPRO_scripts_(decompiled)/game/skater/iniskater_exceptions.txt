@@ -1,0 +1,624 @@
+
+:i function $cas_handle_disqualifications$
+	:i $cas_disq_remove_logo$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $cas_disq_resolve_bare_torso$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $cas_disq_add_sleeves$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $cas_disq_set_eye_color$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $cas_disq_handle_remaining_problems$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+:i endfunction
+:i function $cas_disq_add_sleeves$
+	:i %GLOBAL%$just_changed_torso$ = %i(0,00000000)
+	:i if  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_torso$) 
+		:i %GLOBAL%$just_changed_torso$ = %i(1,00000001)
+	:i endif
+	:i if  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_torso$) 
+		:i %GLOBAL%$just_changed_torso$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$just_changed_torso$ = %i(1,00000001)) 
+		:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$
+			:i $targetParams$ = :s{$part$ = $sleeves$$desc_id$ = $None$:s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $cas_disq_resolve_bare_torso$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_torso$
+		:i $GetCurrentSkaterProfileIndex$
+		:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+		:i if $GotParam$$force_bare_torso$
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $SetPart$
+				:i $targetParams$ = :s{$part$ = $bare_torso$$desc_id$ = $bare torso$:s}
+			:i :s}
+		:i else 
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $SetPart$
+				:i $targetParams$ = :s{$part$ = $bare_torso$$desc_id$ = $None$:s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $cas_disq_set_eye_color$
+	:i if  ( ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_head$)  OR  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_head$) ) 
+		:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+		:i if $GotParam$$eyecolor$
+			:i $GetCurrentSkaterProfileIndex$
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $SetPart$
+				:i $targetParams$ = :s{$part$ = $eyes$$desc_id$ =  ( ($eyes$:a{%GLOBAL%$eyecolor$:a}) ->$desc_id$) :s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i $incompatible_female_pants$ = :a{$Leather$$Jogger$:a}
+:i $incompatible_male_pants$ = :a{$denim$$Denim Dirty$$Khaki$$Baggy Cargo$$Baggy CargoCamo$$Baggy Cargo 2$$Hawk Joe Cargo$:a}
+:i function $cas_disq_handle_remaining_problems$
+	:i if  ( ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_torso$)  OR  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_torso$) ) 
+		:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+		:i if $GotParam$$not_with_skeleton_arms$
+			:i $GetCurrentSkaterProfileIndex$
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = $accessory3$
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$desc_id$$b$ = $Skeletonarms$
+					:i $EditPlayerAppearance$:s{
+						:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+						:i $target$ = $SetPart$
+						:i $targetParams$ = :s{$part$ = $accessory3$$desc_id$ = $None$:s}
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i if  ( ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_legs$)  OR  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_legs$) ) 
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_legs$
+				:i %GLOBAL%$incompatible_array$ = $incompatible_male_pants$
+				:i %GLOBAL%$not_with_flag$ = $not_with_certain_male_pants$
+			:i else 
+				:i %GLOBAL%$incompatible_array$ = $incompatible_female_pants$
+				:i %GLOBAL%$not_with_flag$ = $not_with_certain_female_pants$
+			:i endif
+			:i %GLOBAL%$wearing_incompatible_pants$ = %i(0,00000000)
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i $GetArraySize$%GLOBAL%$incompatible_array$
+			:i while
+				
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$desc_id$$b$ =  (%GLOBAL%$incompatible_array$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$wearing_incompatible_pants$ = %i(1,00000001)
+					:i continue
+					
+				:i endif
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+			:i if  (%GLOBAL%$wearing_incompatible_pants$) 
+				:i $GetCurrentSkaterProfileIndex$
+				:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = $shoes$
+					:i $GetActualCASOptionStruct$$part$ = $shoes$$desc_id$ = %GLOBAL%$desc_id$
+					:i if $GotParam$%GLOBAL%$not_with_flag$
+						:i $EditPlayerAppearance$:s{
+							:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+							:i $target$ = $SetPart$
+							:i $targetParams$ = :s{$part$ = $shoes$$desc_id$ = $BareFeet$:s}
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $cas_disq_remove_logo$
+	:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if  ( ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_torso$)  OR  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_torso$) ) 
+		:i if NOT $GotParam$$supports_logo$
+			:i $GetCurrentSkaterProfileIndex$
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $ClearPart$
+				:i $targetParams$ = :s{$part$ = $front_logo$:s}
+			:i :s}
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $ClearPart$
+				:i $targetParams$ = :s{$part$ = $back_logo$:s}
+			:i :s}
+		:i else 
+			:i if $GotParam$$no_back_logo$
+				:i $EditPlayerAppearance$:s{
+					:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+					:i $target$ = $ClearPart$
+					:i $targetParams$ = :s{$part$ = $back_logo$:s}
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i if  ($ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $hat$) 
+		:i if NOT $GotParam$$supports_logo$
+			:i $EditPlayerAppearance$:s{
+				:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+				:i $target$ = $ClearPart$
+				:i $targetParams$ = :s{$part$ = $hat_logo$:s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $cas_temp_disq_remove_longsleeve_parts$
+	:i if NOT $GotParam$$open_skin$
+		:i $ClearPart$$part$ = $chest_tattoo$
+	:i endif
+	:i $ClearPart$$part$ = $back_tattoo$
+	:i $ClearPart$$part$ = $left_sleeve_tattoo$
+	:i $ClearPart$$part$ = $left_bicep_tattoo$
+	:i $ClearPart$$part$ = $left_forearm_tattoo$
+	:i $ClearPart$$part$ = $right_sleeve_tattoo$
+	:i $ClearPart$$part$ = $right_bicep_tattoo$
+	:i $ClearPart$$part$ = $right_forearm_tattoo$
+	:i $ClearPart$$part$ = $accessory1$
+	:i $ClearPart$$part$ = $accessory2$
+	:i if $GotParam$$hoody_up$
+		:i $ClearPart$$part$ = $hat$
+		:i $ClearPart$$part$ = $skater_f_hat_hair$
+		:i $ClearPart$$part$ = $skater_f_hair$
+		:i $ClearPart$$part$ = $skater_m_hat_hair$
+		:i $ClearPart$$part$ = $skater_m_hair$
+		:i $ClearPart$$part$ = $elbowpads$
+	:i endif
+	:i if $GotParam$$hoody_down$
+		:i $ClearPart$$part$ = $skater_f_backpack$
+		:i $ClearPart$$part$ = $skater_m_backpack$
+		:i $ClearPart$$part$ = $elbowpads$
+	:i endif
+	:i if $GotParam$$all_accessories$
+		:i $ClearPart$$part$ = $accessory3$
+	:i endif
+:i endfunction
+:i function $cas_temp_disq_remove_accessories$
+	:i $ClearPart$$part$ = $accessory1$
+	:i $ClearPart$$part$ = $accessory2$
+:i endfunction
+:i function $cas_temp_disq_set_lower_legs$
+	:i %GLOBAL%$should_force_lower_legs$ = %i(0,00000000)
+	:i if $GotPart$$part$ = $skater_m_legs$
+		:i %GLOBAL%$should_force_lower_legs$ = %i(1,00000001)
+		:i %GLOBAL%$leg_part$ = $skater_m_legs$
+		:i %GLOBAL%$lower_leg_part$ = $skater_m_lower_legs$
+	:i endif
+	:i if $GotPart$$part$ = $skater_f_legs$
+		:i %GLOBAL%$should_force_lower_legs$ = %i(1,00000001)
+		:i %GLOBAL%$leg_part$ = $skater_f_legs$
+		:i %GLOBAL%$lower_leg_part$ = $skater_f_lower_legs$
+	:i endif
+	:i if  (%GLOBAL%$should_force_lower_legs$) 
+		:i if $PartGotFlag$$part$ = %GLOBAL%$leg_part$$flag$ = $force_lower_legs_none$
+			:i %GLOBAL%$lower_leg_desc$ = $None$
+		:i else 
+			:i if $PartGotFlag$$part$ = %GLOBAL%$leg_part$$flag$ = $force_lower_legs_calves$
+				:i %GLOBAL%$lower_leg_desc$ = $Calves$
+			:i else 
+				:i if $PartGotFlag$$part$ = %GLOBAL%$leg_part$$flag$ = $force_lower_legs_full$
+					:i %GLOBAL%$lower_leg_desc$ = $Full Legs$
+				:i endif
+			:i endif
+		:i endif
+		:i if $GotParam$$lower_leg_desc$
+			:i $SetPart$$part$ = %GLOBAL%$lower_leg_part$$desc_id$ = %GLOBAL%$lower_leg_desc$
+		:i endif
+	:i endif
+:i endfunction
+:i function $cas_temp_disq_force_big_kneepads$
+	:i %GLOBAL%$should_force_big_kneepads$ = %i(0,00000000)
+	:i if $GotPart$$part$ = $skater_m_legs$
+		:i if $PartGotFlag$$part$ = $skater_m_legs$$flag$ = $force_big_kneepads$
+			:i %GLOBAL%$should_force_big_kneepads$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotPart$$part$ = $skater_f_legs$
+		:i if $PartGotFlag$$part$ = $skater_f_legs$$flag$ = $force_big_kneepads$
+			:i %GLOBAL%$should_force_big_kneepads$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$should_force_big_kneepads$) 
+		:i $GetPart$$part$ = $kneepads$
+		:i $GetActualCASOptionStruct$$part$ = $kneepads$$desc_id$ = %GLOBAL%$desc_id$
+		:i %GLOBAL%$use_default_hsv$ = %i(1,00000001)
+		:i $GetPart$$part$ = $kneepads$
+		:i if  (%GLOBAL%$use_default_hsv$ = %i(1,00000001)) 
+			:i if $GotParam$$default_h$
+				:i %GLOBAL%$use_default_hsv$ = %i(0,00000000)
+				:i %GLOBAL%$h$ = %GLOBAL%$default_h$
+				:i %GLOBAL%$s$ = %GLOBAL%$default_s$
+				:i %GLOBAL%$v$ = %GLOBAL%$default_v$
+				:i if NOT $GotParam$$default_s$
+					:i $script_assert$%s(27,"missing default_s parameter")
+				:i endif
+				:i if NOT $GotParam$$default_v$
+					:i $script_assert$%s(27,"missing default_v parameter")
+				:i endif
+			:i endif
+		:i endif
+		:i $SetPart$$part$ = $kneepads$$desc_id$ = $Knee Pads Big$$use_default_hsv$ = %GLOBAL%$use_default_hsv$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i endif
+:i endfunction
+:i function $cas_temp_disq_force_big_elbowpads$
+	:i %GLOBAL%$should_replace_elbowpads$ = %i(0,00000000)
+	:i if $GotPart$$part$ = $skater_m_torso$
+		:i if $PartGotFlag$$part$ = $skater_m_torso$$flag$ = $force_big_elbowpads$
+			:i %GLOBAL%$should_replace_elbowpads$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotPart$$part$ = $skater_f_torso$
+		:i if $PartGotFlag$$part$ = $skater_f_torso$$flag$ = $force_big_elbowpads$
+			:i %GLOBAL%$should_replace_elbowpads$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i %GLOBAL%$index$ = %i(1,00000001)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $accessory$%s(11,"accessory%n")$n$ = %GLOBAL%$index$
+		:i if $GotPart$$part$ = %GLOBAL%$accessory$
+			:i if $PartGotFlag$$part$ = %GLOBAL%$accessory$$flag$ = $force_big_elbowpads$
+				:i %GLOBAL%$should_replace_elbowpads$ = %i(1,00000001)
+				:i continue
+				
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(3,00000003)
+	:i if  (%GLOBAL%$should_replace_elbowpads$) 
+		:i $GetPart$$part$ = $elbowpads$
+		:i if NOT $GotParam$$desc_id$
+			:i $script_assert$%s(42,"GetPart didn't return an appropriate value")
+		:i endif
+		:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$desc_id$$SuffixString$ = %s(4," Big")
+		:i $GetActualCASOptionStruct$$part$ = $elbowpads$$desc_id$ = %GLOBAL%$desc_id$
+		:i %GLOBAL%$use_default_hsv$ = %i(1,00000001)
+		:i $GetPart$$part$ = $elbowpads$
+		:i if  (%GLOBAL%$use_default_hsv$ = %i(1,00000001)) 
+			:i if $GotParam$$default_h$
+				:i %GLOBAL%$use_default_hsv$ = %i(0,00000000)
+				:i %GLOBAL%$h$ = %GLOBAL%$default_h$
+				:i %GLOBAL%$s$ = %GLOBAL%$default_s$
+				:i %GLOBAL%$v$ = %GLOBAL%$default_v$
+				:i if NOT $GotParam$$default_s$
+					:i $script_assert$%s(27,"missing default_s parameter")
+				:i endif
+				:i if NOT $GotParam$$default_v$
+					:i $script_assert$%s(27,"missing default_v parameter")
+				:i endif
+			:i endif
+		:i endif
+		:i $SetPart$$part$ = $elbowpads$$desc_id$ = %GLOBAL%$appended_id$$use_default_hsv$ = %GLOBAL%$use_default_hsv$$h$ = %GLOBAL%$h$$s$ = %GLOBAL%$s$$v$ = %GLOBAL%$v$
+	:i endif
+:i endfunction
+:i function $check_for_non_standard_parts$
+	:i %GLOBAL%$clear_ok$ = %i(1,00000001)
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$player$$part$ = %GLOBAL%$part$
+	:i if $GotParam$$desc_id$
+		:i $GetArraySize$$skater_non_standard_parts$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$desc_id$$b$ =  ($skater_non_standard_parts$:a{%GLOBAL%$index$:a}->$desc_id$) 
+				:i %GLOBAL%$clear_ok$ = %i(0,00000000)
+				:i if $GotParam$$side$
+					:i if $StructureContains$$structure$ =  ($skater_non_standard_parts$:a{%GLOBAL%$index$:a}) $side$
+						:i if $ChecksumEquals$$a$ = %GLOBAL%$side$$b$ =  ($skater_non_standard_parts$:a{%GLOBAL%$index$:a}->$side$) 
+							:i %GLOBAL%$clear_ok$ = %i(0,00000000)
+						:i else 
+							:i %GLOBAL%$clear_ok$ = %i(1,00000001)
+						:i endif
+					:i endif
+				:i endif
+				:i if NOT  (%GLOBAL%$clear_ok$) 
+					:i continue
+					
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$clear_ok$ = %GLOBAL%$clear_ok$
+:i endfunction
+:i function $currently_editing_female$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterSex$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	$is_enabled$ =  (%GLOBAL%$is_male$ = %i(0,00000000)) 
+:i endfunction
+:i function $currently_editing_male$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterSex$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	$is_enabled$ =  (%GLOBAL%$is_male$ = %i(1,00000001)) 
+:i endfunction
+:i function $get_lockout_parts$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetArraySize$%GLOBAL%$parts$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i %GLOBAL%$found_parts$ = :a{:a}
+	:i %GLOBAL%$found$ = %i(0,00000000)
+	:i while
+		
+		:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+			:i $GetActualCASOptionStruct$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) $desc_id$ = %GLOBAL%$desc_id$
+			:i if $GotParam$$lockout_parts$
+				:i %GLOBAL%$found_parts$ =  (%GLOBAL%$found_parts$ + %GLOBAL%$lockout_parts$) 
+				:i %GLOBAL%$found$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$found$) 
+		:i return
+		$lockout_parts$ = %GLOBAL%$found_parts$
+	:i endif
+:i endfunction
+:i function $check_for_lockout_parts$
+	:i %GLOBAL%$ret_val$ = %i(1,00000001)
+	:i if  ( ($GotParam$$parts$)  AND  ($GotParam$$menu_parts$) ) 
+		:i $get_lockout_parts$$parts$ = %GLOBAL%$parts$
+		:i if $GotParam$$lockout_parts$
+			:i $GetArraySize$%GLOBAL%$lockout_parts$
+			:i %GLOBAL%$num_lockout_parts$ = %GLOBAL%$array_size$
+			:i $GetArraySize$%GLOBAL%$menu_parts$
+			:i %GLOBAL%$num_menu_parts$ = %GLOBAL%$array_size$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i if  (%GLOBAL%$ret_val$ = %i(0,00000000)) 
+					:i continue
+					
+				:i endif
+				:i %GLOBAL%$index2$ = %i(0,00000000)
+				:i while
+					
+					:i if $ChecksumEquals$$a$ =  (%GLOBAL%$menu_parts$:a{%GLOBAL%$index2$:a}) $b$ =  (%GLOBAL%$lockout_parts$:a{%GLOBAL%$index$:a}) 
+						:i %GLOBAL%$ret_val$ = %i(0,00000000)
+						:i continue
+						
+					:i endif
+					:i %GLOBAL%$index2$ =  (%GLOBAL%$index2$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$num_menu_parts$
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$num_lockout_parts$
+		:i endif
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$ret_val$
+:i endfunction
+:i function $check_if_group_editable$
+	:i %GLOBAL%$retVal$ = %i(1,00000001)
+	:i if $GotParam$$not_with_scaling_cheats$
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_GORILLA$
+			:i %GLOBAL%$retVal$ = %i(0,00000000)
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_KID$
+			:i %GLOBAL%$retVal$ = %i(0,00000000)
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_BIGHEAD$
+			:i %GLOBAL%$retVal$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_part_editable$
+	:i %GLOBAL%$retVal$ = %i(0,00000000)
+	:i if $GotParam$$part$
+		:i $GetCurrentSkaterProfileIndex$
+		:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+			:i if  (%GLOBAL%$desc_id$ = $None$) 
+				:i %GLOBAL%$retVal$ = %i(0,00000000)
+			:i else 
+				:i %GLOBAL%$retVal$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$retVal$) 
+		:i if $GotParam$$extra_script$
+			:i %GLOBAL%$extra_script$%GLOBAL%$extra_script_params$
+			:i %GLOBAL%$retVal$ = %GLOBAL%$is_enabled$
+		:i endif
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_hands_selected$$parts$ = :a{$skater_m_hands$$skater_f_hands$:a}
+	:i %GLOBAL%$retVal$ = %i(0,00000000)
+	:i $GetCurrentSkaterProfileIndex$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+			:i if  (%GLOBAL%$desc_id$ = $Hands$) 
+				:i %GLOBAL%$retVal$ = %i(0,00000000)
+			:i else 
+				:i %GLOBAL%$retVal$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(2,00000002)
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_parts_editable$
+	:i %GLOBAL%$retVal$ = %i(0,00000000)
+	:i if $GotParam$$parts$
+		:i $GetArraySize$%GLOBAL%$parts$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i $GetCurrentSkaterProfileIndex$
+		:i while
+			
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+				:i if  (%GLOBAL%$desc_id$ = $None$) 
+					:i %GLOBAL%$retVal$ = %i(0,00000000)
+				:i else 
+					:i %GLOBAL%$retVal$ = %i(1,00000001)
+					:i continue
+					
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_part_logoable$
+	:i %GLOBAL%$retVal$ = %i(0,00000000)
+	:i if $GotParam$$extra_script$
+		:i %GLOBAL%$extra_script$%GLOBAL%$extra_script_params$
+		:i if  (%GLOBAL%$is_enabled$ = %i(0,00000000)) 
+			:i return
+			$is_enabled$ = %GLOBAL%$is_enabled$
+		:i endif
+	:i endif
+	:i if $GotParam$$parts$
+		:i $GetArraySize$%GLOBAL%$parts$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetCurrentSkaterProfileIndex$
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+				:i $GetActualCASOptionStruct$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) $desc_id$ = %GLOBAL%$desc_id$
+				:i if $GotParam$$supports_logo$
+					:i %GLOBAL%$retVal$ = %i(1,00000001)
+					:i continue
+					
+				:i else 
+					:i %GLOBAL%$retVal$ = %i(0,00000000)
+					:i continue
+					
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_part_back_logoable$
+	:i if $GotParam$$extra_script$
+		:i %GLOBAL%$extra_script$%GLOBAL%$extra_script_params$
+		:i if  (%GLOBAL%$is_enabled$ = %i(0,00000000)) 
+			:i return
+			$is_enabled$ = %GLOBAL%$is_enabled$
+		:i endif
+	:i endif
+	:i $check_if_part_logoable$ isNull 
+	:i if  (%GLOBAL%$is_enabled$ = %i(1,00000001)) 
+		:i if $GotParam$$parts$
+			:i $GetArraySize$%GLOBAL%$parts$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $GetCurrentSkaterProfileIndex$
+				:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+					:i $GetActualCASOptionStruct$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) $desc_id$ = %GLOBAL%$desc_id$
+					:i if $GotParam$$no_back_logo$
+						:i return
+						$is_enabled$ = %i(0,00000000)
+					:i endif
+				:i endif
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$is_enabled$
+:i endfunction
+:i function $check_if_item_accessible$
+	:i %GLOBAL%$retVal$ = %i(1,00000001)
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $GetActualCASOptionStruct$$part$ = %GLOBAL%$part$$desc_id$ = %GLOBAL%$desc_id$
+	:i if $GotParam$$lockout_flags$
+		:i $GetArraySize$%GLOBAL%$lockout_flags$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i if $GotParam$ (%GLOBAL%$lockout_flags$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$retVal$ = %i(0,00000000)
+				:i continue
+				
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_part_colorable$
+	:i %GLOBAL%$retVal$ = %i(0,00000000)
+	:i if $GotParam$$extra_script$
+		:i %GLOBAL%$extra_script$%GLOBAL%$extra_script_params$
+		:i if  (%GLOBAL%$is_enabled$ = %i(0,00000000)) 
+			:i return
+			$is_enabled$ = %GLOBAL%$is_enabled$
+		:i endif
+	:i endif
+	:i if $GotParam$$parts$
+		:i $GetArraySize$%GLOBAL%$parts$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetCurrentSkaterProfileIndex$
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+				:i if  (%GLOBAL%$desc_id$ = $None$) 
+					:i %GLOBAL%$retVal$ = %i(0,00000000)
+					:i continue
+					
+				:i else 
+					:i $GetActualCASOptionStruct$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) $desc_id$ = %GLOBAL%$desc_id$
+					:i if $GotParam$$no_color$
+						:i %GLOBAL%$retVal$ = %i(0,00000000)
+						:i continue
+						
+					:i else 
+						:i %GLOBAL%$retVal$ = %i(1,00000001)
+						:i continue
+						
+					:i endif
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i function $check_if_sleeve_colorable$
+	:i $check_if_part_colorable$ isNull 
+	:i if  (%GLOBAL%$is_enabled$ = %i(0,00000000)) 
+		:i return
+		$is_enabled$ = %GLOBAL%$is_enabled$
+	:i endif
+	:i if $GotParam$$parts$
+		:i $GetArraySize$%GLOBAL%$parts$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetCurrentSkaterProfileIndex$
+			:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) 
+				:i $GetActualCASOptionStruct$$part$ =  (%GLOBAL%$parts$:a{%GLOBAL%$index$:a}) $desc_id$ = %GLOBAL%$desc_id$
+				:i if $GotParam$$multicolor$
+					:i %GLOBAL%$retVal$ = %GLOBAL%$multicolor$
+					:i continue
+					
+				:i else 
+					:i %GLOBAL%$retVal$ = %i(0,00000000)
+					:i continue
+					
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$is_enabled$ = %GLOBAL%$retVal$
+:i endfunction
+:i :end

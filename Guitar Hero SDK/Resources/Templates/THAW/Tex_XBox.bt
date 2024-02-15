@@ -1,0 +1,63 @@
+// .tex file, basically container for IMG files
+
+#include "../Common.bt"
+
+#define NO_STANDALONE_IMG
+#include "Img.bt"
+
+typedef struct
+{
+    // Guesstimate padding amount, not going to bother doing math
+    // We'll see what we have, not what it should be
+
+    local int off = FTell();
+    local int tester = ReadUByte(off);
+    local int pad_count = 0;
+
+    if (tester == 239)
+    {
+        while (tester == 239)
+        {
+            byte EFPadding <bgcolor=CL_PADDING>;
+            pad_count ++;
+            off ++;
+            tester = ReadUByte(off);
+        }
+    }
+} EFPaddingBlock <read=ReadEFPaddingBlock>;
+
+string ReadEFPaddingBlock(EFPaddingBlock &block)
+{
+    local string s;
+
+    return SPrintf(s, "%d padding bytes", block.pad_count);
+}
+
+typedef struct (int ct)
+{
+    THAWXboxImg textures[ct] <optimize=false>;
+} TextureBlock;
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_CHECKSUM>;
+    short constant <bgcolor=CL_PADDING>;
+
+    ushort texture_count <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset metadata_start(0) <bgcolor=CL_POINTER>;
+
+    uint tex_math_num <bgcolor=CL_SINGLEVALUE, comment="metadata_start + (texcount * 44)">;
+    uint null <hidden=true, bgcolor=CL_PADDING>;
+
+    uint texLog <bgcolor=CL_SINGLEVALUE, comment="Used in EF calculation">;
+    uint always_28 <bgcolor=CL_SINGLEVALUE>;
+
+    EFPaddingBlock ef_padding;
+
+    FSeek(AbsOffset(metadata_start));
+
+    TextureBlock texture_list(texture_count);
+} TexFile;
+
+LittleEndian();
+TexFile tex;

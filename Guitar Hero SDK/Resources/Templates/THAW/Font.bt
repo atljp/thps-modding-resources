@@ -1,0 +1,138 @@
+//------------------------------------------------
+// THAW .fnt.wpc file
+//  (Apparently the same for PSP fonts?)
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define NO_STANDALONE_IMG
+#include "Img.bt"
+
+LittleEndian();
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct (uint index)
+{
+    local uint glyph_index = index;
+    ubyte value <bgcolor=CL_FLOATS>;
+} THAWGlyphCode <read=ReadTHAWGlyphCode>;
+
+string ReadTHAWGlyphCode(THAWGlyphCode &code)
+{
+    local string s;
+
+    if (code.glyph_index >= 32)
+        return SPrintf(s, "%c: %d", code.glyph_index, code.value);
+
+    return SPrintf(s, ": %d", code.value);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    float u0 <bgcolor=CL_FLOATS>;
+    float v0 <bgcolor=CL_FLOATS>;
+    float u1 <bgcolor=CL_FLOATS>;
+    float v1 <bgcolor=CL_FLOATS>;
+    ushort w <bgcolor=CL_SINGLEVALUE>;
+    ushort h <bgcolor=CL_SINGLEVALUE>;
+    ushort BaseLine <bgcolor=CL_SINGLEVALUE>;
+    
+    ubyte align_to_four[2] <hidden=true>;
+} SChar;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    ubyte r <bgcolor=CL_SINGLEVALUE>;
+    ubyte g <bgcolor=CL_SINGLEVALUE>;
+    ubyte b <bgcolor=CL_SINGLEVALUE>;
+    ubyte a <bgcolor=CL_SINGLEVALUE>;
+} THAWPaletteColor;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    ushort always_two <bgcolor=CL_SINGLEVALUE>;
+    ushort always_twenty <bgcolor=CL_SINGLEVALUE>;
+    uint clut_depth_maybe <bgcolor=CL_SINGLEVALUE>;
+    ushort original_width <bgcolor=CL_SINGLEVALUE>;
+    ushort original_height <bgcolor=CL_SINGLEVALUE>;
+    ushort resized_width <bgcolor=CL_SINGLEVALUE>;
+    ushort resized_height <bgcolor=CL_SINGLEVALUE>;
+    ubyte mips_maybe <bgcolor=CL_SINGLEVALUE>;
+    ubyte unk_eight <bgcolor=CL_SINGLEVALUE>;
+    ubyte ps2_color_maybe <bgcolor=CL_SINGLEVALUE>;
+    ubyte bpp_maybe <bgcolor=CL_SINGLEVALUE>;
+    uint color_count <bgcolor=CL_SINGLEVALUE>;
+
+    THAWPaletteColor colors[color_count];
+} THAWPaletteTable;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    uint DefaultHeight <bgcolor=CL_SINGLEVALUE>;
+    uint DefaultBase <bgcolor=CL_SINGLEVALUE>;
+    uint constant <bgcolor=CL_SINGLEVALUE>;
+
+    // Fonts specify 288 characters by decimal
+    // byte starting from offset 0x12
+	//
+	// Each byte corresponds to the GLYPH INDEX
+	// that will be used for the character
+
+    local int l;
+    local int highest_glyph;
+
+    for (l=0; l<256; l++)
+    {
+        THAWGlyphCode Map(l) <bgcolor=CL_FLOATS>;
+
+        if (Map.value > highest_glyph)
+            highest_glyph = Map.value;
+    }
+    
+    for (l=0; l<32; l++)
+    {
+        THAWGlyphCode SpecialMap(l) <bgcolor=CL_FLOATS>;
+
+        if (SpecialMap.value > highest_glyph)
+            highest_glyph = SpecialMap.value;
+    }
+
+    Printf("Highest glyph index: %d\n", highest_glyph);
+
+    uint const_junk_a <hidden=true, bgcolor=CL_PADDING>;
+    uint const_junk_b <hidden=true, bgcolor=CL_PADDING>;
+    ushort const_junk_c <hidden=true, bgcolor=CL_PADDING>;
+
+    uint odd_num <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte skip_me[62] <bgcolor=CL_PADDING>;
+
+    RelativeOffset pt_palette(0) <bgcolor=CL_POINTER>;
+
+    // Loop through glyphs
+    local uint test_int = ReadInt();
+    
+    while (test_int != 0xABADD00D && !FEof())
+    {
+        SChar pChars <optimize=true>;
+        test_int = ReadInt();
+    }
+} SFont;
+
+typedef struct
+{
+    SFont font <comment="NxXbox::SFont?">;
+
+    THAWImg image;
+} THAWFont;
+
+THAWFont font_file;

@@ -1,0 +1,165 @@
+//------------------------------------------------
+// GH5+ .perf files
+//------------------------------------------------
+
+#include "Common.bt"
+
+// ---------------------------------
+
+#define CL_CAMNOTE_NUM              0xFFFFAA
+#define CL_CAMNOTE_LENGTH           0xEEEE99
+#define CL_CAMNOTE_MIDI             0xDDDD88
+
+typedef struct
+{
+    uint num <bgcolor=CL_CAMNOTE_NUM>;
+    ushort length <bgcolor=CL_CAMNOTE_LENGTH>;
+    ubyte midiNote <bgcolor=CL_CAMNOTE_MIDI>;
+} GH5CameraNote <read=Str("[%d] %d, %d ms long", this.num, this.midiNote, this.length)>;
+
+// ---------------------------------
+
+#define CL_ALM_PAK          0xFFAAFF
+#define CL_ALM_SET          0xEE99EE
+#define CL_ALM_FINGER       0xDD88DD
+#define CL_ALM_FRET         0xCC77CC
+#define CL_ALM_HAND         0xBB66BB
+#define CL_ALM_FACE         0xAA55AA
+#define CL_AL_DRUM          0xFFCCFF
+
+#define GH6_GUITAR          0xAA55AA
+#define GH6_BASS            0x1502B5
+#define GH6_VOX             0x009CA1
+#define GH6_DRUM            0x11A100
+#define GH6_UNK             0xA10000
+
+typedef struct
+{
+    NOTE_QBKEY pak <bgcolor=CL_ALM_PAK>;
+    NOTE_QBKEY anim_set <bgcolor=CL_ALM_SET>;
+    NOTE_QBKEY finger_anims <bgcolor=CL_ALM_FINGER>;
+    NOTE_QBKEY fret_anims <bgcolor=CL_ALM_FRET>;
+    NOTE_QBKEY hand_anims_maybe <bgcolor=CL_ALM_HAND>;
+    NOTE_QBKEY facial_anims <bgcolor=CL_ALM_FACE>;
+} GH5ActorLoopMember;
+
+typedef struct
+{
+    NOTE_QBKEY loop_1;
+    NOTE_QBKEY loop_2;
+    NOTE_QBKEY loop_3;
+    NOTE_QBKEY loop_4;
+    NOTE_QBKEY loop_5;
+    NOTE_QBKEY loop_6;
+    NOTE_QBKEY loop_7;
+    NOTE_QBKEY loop_8;
+    NOTE_QBKEY loop_9;
+    NOTE_QBKEY loop_10;
+    NOTE_QBKEY loop_11;
+    NOTE_QBKEY loop_12;
+    NOTE_QBKEY loop_13;
+    NOTE_QBKEY loop_14;
+    NOTE_QBKEY loop_15;
+    NOTE_QBKEY loop_16;
+    NOTE_QBKEY loop_17;
+    NOTE_QBKEY loop_18;
+    NOTE_QBKEY loop_19;
+    NOTE_QBKEY loop_20;
+    NOTE_QBKEY loop_21;
+    NOTE_QBKEY loop_22;
+    NOTE_QBKEY loop_23;
+    NOTE_QBKEY loop_24;
+    NOTE_QBKEY loop_25;
+    NOTE_QBKEY loop_26;
+    NOTE_QBKEY loop_27;
+    NOTE_QBKEY loop_28;
+    NOTE_QBKEY loop_29;
+    NOTE_QBKEY loop_30;
+    NOTE_QBKEY loop_31;
+    NOTE_QBKEY loop_32;
+    NOTE_QBKEY loop_33;
+    NOTE_QBKEY loop_34;
+    NOTE_QBKEY loop_35;
+    NOTE_QBKEY loop_36;
+    NOTE_QBKEY loop_37;
+    NOTE_QBKEY loop_38;
+    NOTE_QBKEY loop_39;
+    NOTE_QBKEY loop_40;
+    NOTE_QBKEY loop_41;
+    NOTE_QBKEY loop_42;
+    NOTE_QBKEY loop_43;
+    NOTE_QBKEY loop_44;
+    NOTE_QBKEY loop_45;
+    NOTE_QBKEY loop_46;
+    NOTE_QBKEY loop_47;
+    NOTE_QBKEY loop_48;
+    NOTE_QBKEY loop_49;
+    NOTE_QBKEY loop_50;
+} GH6ActorLoopMember;
+
+typedef struct
+{
+    GH5ActorLoopMember guitar;
+    GH5ActorLoopMember bass;
+    GH5ActorLoopMember singer;
+    GH5ActorLoopMember drum;
+
+    NOTE_QBKEY drumLoopsPak <bgcolor=CL_AL_DRUM>;
+    NOTE_QBKEY unk <bgcolor=CL_AL_DRUM>;
+    NOTE_QBKEY drumFacialAnims <bgcolor=CL_AL_DRUM>;
+} GH5ActorLoops;
+
+// ---------------------------------
+
+typedef struct
+{
+    GH6ActorLoopMember guitar <bgcolor=GH6_GUITAR>;
+    GH6ActorLoopMember bass <bgcolor=GH6_BASS>;
+    GH6ActorLoopMember singer <bgcolor=GH6_VOX>;
+    GH6ActorLoopMember drum <bgcolor=GH6_DRUM>;
+    GH6ActorLoopMember unk <bgcolor=GH6_UNK>;
+} GH6ActorLoops;
+
+// ---------------------------------
+
+typedef struct
+{
+    NOTE_QBKEY entryID <bgcolor=CL_CHECKSUM>;
+    uint entryCount <bgcolor=CL_SINGLEVALUE>;
+    NOTE_QBKEY entryType <bgcolor=CL_CHECKSUM>;
+
+    switch (entryType)
+    {
+        case gh5_camera_note:
+            GH5CameraNote camera_note[entryCount];
+            break;
+
+        case gh5_actor_loops:
+            GH5ActorLoops actor_loops[entryCount];
+            break;
+
+        case gh6_actor_loops:
+            GH6ActorLoops actor_loops[entryCount];
+            break;
+
+    }
+
+} PerfEntry <read=Str("[%s] [%s]:  %d entries", ReadNoteQBKey(this.entryType), ReadNoteQBKey(this.entryID), this.entryCount)>;
+
+// ---------------------------------
+
+typedef struct
+{
+    NOTE_QBKEY gameID <bgcolor=CL_CHECKSUM>;
+    NOTE_QBKEY dlcID <bgcolor=CL_CHECKSUM>;
+    uint numEntries <bgcolor=CL_SINGLEVALUE>;
+    NOTE_QBKEY perfKey <bgcolor=CL_CHECKSUM, comment="Literally \"perf\"">;
+
+    ubyte unkValues[12] <bgcolor=CL_FLOATS, hidden=true>;
+
+    //PerfEntry entry;
+    PerfEntry entry[numEntries] <optimize=false>;
+} PerfFile;
+
+BigEndian();
+PerfFile perf;

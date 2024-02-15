@@ -1,0 +1,126 @@
+//------------------------------------------------
+// PS3 console-specific data
+//------------------------------------------------
+
+typedef struct (uint bone_count)
+{
+    DJModelBone bones[bone_count] <optimize=false>;
+
+    uint meshCount <bgcolor=CL_SINGLEVALUE>;
+    SkipTo(16);
+
+    Vec4 vertex_scaling <bgcolor=CL_FLOATS, comment="Each vertex is * this value">;
+
+    // We can calculate where our mesh data would start!
+    // (Each mesh metadata block is 32 bytes long, they start HERE)
+
+    meshDataStart = FTell() + (32 * meshCount);
+
+    local uint i;
+
+    // Metadata
+    for (i=0; i<meshCount; i++)
+    {
+        // Calculate where our MESH should start!
+        // Each mesh block (from the mesh data start) is 288 bytes long
+
+        DJMeshMetadata_PS3 mesh_metadata(meshDataStart + (i * 288)) <optimize=true>;
+    }
+
+} DJModelBoneChunk_PS3;
+
+//-----------------------------
+// Texture atlas
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = FTell() + 288;
+
+    string atlas_name <bgcolor=CL_TEXATLAS_NAME>;
+
+    SkipTo(32);
+
+    string atlas_image <bgcolor=CL_TEXATLAS_NAME>;
+
+    ubyte unknown[ender - FTell()] <bgcolor=CL_TEXATLAS_PAD>;
+
+    FSeek(ender);
+} DJTextureAtlas_PS3 <read=Str("%s: %s", atlas_name, atlas_image)>;
+
+//-----------------------------
+// Material atlas
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = FTell() + 480;
+
+    char atlas_name[32] <bgcolor=CL_MATATLAS_NAME>;
+    uint texAtlasCount <bgcolor=CL_MATATLAS_VALUE, comment="Number of texture atlases">;
+    ubyte texAtlasIndices[texAtlasCount] <bgcolor=CL_MATATLAS_VALUE, comment="References to texture atlases">;
+
+    if (texAtlasCount < 8)
+        ubyte texAtlasPad[8 - texAtlasCount] <bgcolor=CL_MATATLAS_PAD, hidden=true>;
+
+    uint unk <bgcolor=CL_MATATLAS_VALUE, comment="Constant?">;
+
+    local uint shaderPos = FTell() + 176;
+    uint paramFlags <bgcolor=CL_MATATLAS_VALUE, comment="Maybe?">;
+    float paramFloat <bgcolor=CL_MATATLAS_VALUE, comment="???">;
+    ubyte paramUnk <bgcolor=CL_MATATLAS_VALUE, comment="What is this?">;
+    ubyte skip_me[3] <bgcolor=CL_MATATLAS_PARAMS, hidden=true>;
+    QBKey paramPageValue <bgcolor=CL_MATATLAS_VALUE, comment="Related to texture page">;
+
+    Vec4 shaderProperty[10] <bgcolor=CL_MATATLAS_VALUE, optimize=false>;
+
+    if ((shaderPos - FTell()) > 0)
+        ubyte paramPadding[shaderPos - FTell()] <comment="Unused?", bgcolor=CL_MATATLAS_PARAMS>;
+
+    char pixelShaderName[128] <bgcolor=CL_MATATLAS_SHADER>;
+    char vertexShaderName[128] <bgcolor=CL_MATATLAS_SHADER>;
+
+    FSeek(ender);
+
+    if (!(paramFlags & 0x40))
+        ubyte skip[160] <hidden=true>;
+
+} DJMaterialAtlas_PS3 <read=Str("%s", atlas_name)>;
+
+// ------------------
+
+typedef struct
+{
+    uint unkInt2 <bgcolor=CL_SINGLEVALUE>;
+    uint boneCount <bgcolor=CL_SINGLEVALUE>;
+    uint ps3Constant <bgcolor=CL_SINGLEVALUE, comment="Constant">;
+    uint entireBlockBytes <bgcolor=CL_SINGLEVALUE, comment="Size of this entire block, starting from block start">;
+    uint bonesMeshesSize <bgcolor=CL_SINGLEVALUE, comment="Size of bones + meshes">;
+    uint facesVerticesSize <bgcolor=CL_SINGLEVALUE, comment="Size of faces + vertices">;
+    ushort matAtlasCount <bgcolor=CL_SINGLEVALUE>;
+    ushort texAtlasCount <bgcolor=CL_SINGLEVALUE>;
+    
+    Vec3 bb_min_x <bgcolor=CL_FLOATS>;
+    float bb_min_x_float <bgcolor=CL_FLOATS>;
+    Vec3 bb_max_y <bgcolor=CL_FLOATS>;
+    float bb_max_y_float <bgcolor=CL_FLOATS>;
+
+    uint values[12];
+
+    // Calculate start of face / vertex blob start
+
+    faceVertBlobStart = FTell() + bonesMeshesSize;
+    DJModelBoneChunk_PS3 bone_blob(boneCount);
+
+    // Ideally, faces and vertices should have been already
+    // from the mesh structs. We will not re-define them since
+    // it will make jumping difficult in the template.
+
+    FSeek(faceVertBlobStart + facesVerticesSize);
+
+    DJTextureAtlas_PS3 texAtlases[texAtlasCount] <optimize=false>;
+    DJMaterialAtlas_PS3 matAtlases[matAtlasCount] <optimize=false>;
+
+} DJModelData_PS3;

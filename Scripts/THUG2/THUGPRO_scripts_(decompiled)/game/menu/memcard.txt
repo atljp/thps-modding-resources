@@ -1,0 +1,2524 @@
+
+:i $auto_load_thugpro_data$ = %i(1,00000001)
+:i $VERSION_OPTIONSANDPROS$ = %i(38,00000026)
+:i $VERSION_NETWORKSETTINGS$ = %i(10,0000000a)
+:i $VERSION_CAS$ = %i(22,00000016)
+:i $VERSION_CAT$ = %i(2,00000002)
+:i $VERSION_PARK$ = %i(6,00000006)
+:i $VERSION_CREATEDGOALS$ = %i(5,00000005)
+:i $VERSION_CREATEDGRAPHIC$ = %i(1,00000001)
+:i $MAX_MEMCARD_FILENAME_LENGTH$ = %i(15,0000000f)
+:i $SaveSize_OptionsAndPros$ = %i(90000,00015f90)
+:i $SaveSize_OptionsAndPros_PS2$ = %i(120000,0001d4c0)
+:i $SaveSize_NetworkSettings$ = %i(1100,0000044c)
+:i $SaveSize_Cat$ = %i(34000,000084d0)
+:i $SaveSize_Park$ = %i(35000,000088b8)
+:i $SaveSize_CreatedGoals$ = %i(100000,000186a0)
+:i $SaveSize_CreatedGraphic$ = %i(32000,00007d00)
+:i $CATIconSpaceRequired$ = %i(11,0000000b)
+:i $ParkIconSpaceRequired$ = %i(11,0000000b)
+:i $OptionsProsIconSpaceRequired$ = %i(12,0000000c)
+:i $NetworkSettingsIconSpaceRequired$ = %i(14,0000000e)
+:i $CreatedGoalsIconSpaceRequired$ = %i(12,0000000c)
+:i $CreatedGraphicIconSpaceRequired$ = %i(12,0000000c)
+:i $BadVersionNumber$ = %sc(12,"BAD VERSION!")
+:i $DamagedFile$ = %sc(8,"DAMAGED!")
+:i $NGCDamagedFile$ = %sc(13,"CORRUPT FILE!")
+:i $SavingOrLoading$ = $Saving$
+:i $PreviousProgressiveMode$ = $Off$
+:i function $save_previous_progressive_mode$
+	:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+		:i $Change$$PreviousProgressiveMode$ = $On$
+	:i else 
+		:i $Change$$PreviousProgressiveMode$ = $Off$
+	:i endif
+:i endfunction
+:i function $restore_previous_progressive_mode$
+	:i if $ChecksumEquals$$a$ =  ($PreviousProgressiveMode$) $b$ = $On$
+		:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i else 
+		:i $UnSetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i endif
+:i endfunction
+:i function $GetFileTypeName$
+	:i switch %GLOBAL%$file_type$
+		:i case $OptionsAndPros$
+			:i return
+			$filetype_name$ = %sc(13,"GAME PROGRESS")
+			:i endcase
+		case $NetworkSettings$
+			:i return
+			$filetype_name$ = %sc(12,"ONLINE PREFS")
+			:i endcase
+		case $Cas$
+			:i return
+			$filetype_name$ = %sc(6,"SKATER")
+			:i endcase
+		case $CAT$
+			:i return
+			$filetype_name$ = %sc(5,"TRICK")
+			:i endcase
+		case $Park$
+			:i return
+			$filetype_name$ = %sc(4,"PARK")
+			:i endcase
+		case $CreatedGoals$
+			:i return
+			$filetype_name$ = %sc(5,"GOALS")
+			:i endcase
+		case $CreatedGraphic$
+			:i if $GotParam$$Filter$
+				:i $THUGProSave_GetFilterDesc$$Filter$ = %GLOBAL%$Filter$
+				:i return
+				$filetype_name$ = %GLOBAL%$filetype_name$
+			:i endif
+			:i endcase
+		default 
+			:i return
+			$filetype_name$ = %sc(0,"")
+			:i end_switch
+	
+:i endfunction
+:i function $QuitToDashboard$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $PS2$
+			:i $ResetPS2$
+			:i endcase
+		case $XBox$
+			:i $GotoXboxDashboard$$memory$$total_blocks_needed$ = %GLOBAL%$total_blocks_needed$
+			:i endcase
+		case $NGC$
+			:i $ResetToIPL$
+			:i end_switch
+	
+:i endfunction
+:i function $destroy_pause_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $destroy_main_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+:i endfunction
+:i function $destroy_files_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+:i endfunction
+:i function $destroy_net_settings_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+:i endfunction
+:i function $destroy_internet_options_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+:i endfunction
+:i function $destroy_level_select$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+:i endfunction
+:i function $ResetAbortAndDoneScripts$
+	:i $Change$$DoneScript$ = $DefaultDoneScript$
+	:i $Change$$AbortScript$ = $DefaultAbortScript$
+	:i $Change$$RetryScript$ = $DefaultRetryScript$
+	:i $Change$$SavingOrLoading$ = $Saving$
+:i endfunction
+:i $DoneScript$ = $DefaultDoneScript$
+:i function $DefaultDoneScript$
+	:i $printf$%s(28,"DefaultDoneScript called !!!")
+:i endfunction
+:i $AbortScript$ = $DefaultAbortScript$
+:i function $DefaultAbortScript$
+	:i $printf$%s(29,"DefaultAbortScript called !!!")
+:i endfunction
+:i function $memcard_menus_cleanup$
+	:i $EnableReset$
+	:i $dialog_box_exit$$no_pad_start$
+	:i $destroy_files_menu$
+	:i $destroy_onscreen_keyboard$
+	:i if NOT  ($LevelIs$$Load_MainMenu$) 
+		:i if NOT $GoalManager_HasActiveGoals$
+		:i endif
+	:i endif
+	:i $pause_menu_gradient$$Off$
+:i endfunction
+:i function $back_to_main_menu2$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+		:i $launch_main_menu$
+	:i else 
+		:i $launch_main_menu$
+	:i endif
+:i endfunction
+:i function $career_autoload_launch_current_level$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i if NOT $GetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $PlaySongsInOrder$
+	:i else 
+		:i $PlaySongsRandomly$
+	:i endif
+	:i $change_level$$level$ = %GLOBAL%$level$
+:i endfunction
+:i function $back_to_pre_cagr_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $edit_graphic_create_pre_menu$
+:i endfunction
+:i function $back_to_pre_cas_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i if $ScreenElementExists$$id$ = $black_top_strip$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $black_top_strip$
+			:i $time$ = %i(0,00000000)
+			:i $alpha$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $create_pre_cas_menu$
+:i endfunction
+:i function $back_to_pause_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $restore_start_key_binding$
+	:i if  ($save_successful$ = %i(1,00000001)) 
+		:i $printf$%s(39,"save complete =========================")
+		:i $parked_quit$$level$ = $Load_MainMenu$
+	:i else 
+		:i $printf$%s(38,"save aborted =========================")
+		:i if $root_window$.$GetSingleTag$$save_return_to_pause_menu$
+			:i $root_window$.$RemoveTags$$tags$ = :a{$save_return_to_pause_menu$:a}
+			:i $create_pause_menu$
+			:i return
+			
+		:i endif
+		:i if $root_window$.$GetSingleTag$$save_return_to_game$
+			:i $root_window$.$RemoveTags$$tags$ = :a{$save_return_to_game$:a}
+			:i $ingame_save_return_to_game$
+			:i return
+			
+		:i endif
+		:i if $CustomParkMode$$editing$
+			:i $create_pause_menu$
+		:i else 
+			:i if $IsTrue$$fake_nigel_active$
+				:i $GetCurrentSkaterProfileIndex$
+				:i $RestoreTemporaryAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$name$ = $fake_nigel_temp_profile_save$$NoFaceTexture$
+			:i endif
+			:i if $InNetGame$
+				:i $create_pause_menu$
+			:i else 
+				:i $create_options_menu$
+			:i endif
+		:i endif
+	:i endif
+	:i $Change$$save_successful$ = %i(2,00000002)
+:i endfunction
+:i function $back_to_end_replay_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_in_game_end_replay_menu$
+:i endfunction
+:i function $back_to_net_settings_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_network_options_menu$
+:i endfunction
+:i function $back_to_beat_goal$
+	:i $memcard_menus_cleanup$
+	:i $GoalManager_ShowPoints$
+	:i $ResetAbortAndDoneScripts$
+	:i $goal_save_reject$
+:i endfunction
+:i function $back_to_select_skater$
+	:i $restore_previous_progressive_mode$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $launch_select_skater_menu$$no_reload_textures$
+:i endfunction
+:i function $back_to_options_menu$
+	:i $memcard_menus_cleanup$
+	:i $restore_previous_progressive_mode$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_setup_options_menu$
+:i endfunction
+:i function $back_to_career_options_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $restore_previous_progressive_mode$
+	:i $Skater$.$Unhide$
+	:i $create_gamemode_options_menu$
+:i endfunction
+:i function $back_to_created_park_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i if  ($still_in_net_area$ = %i(1,00000001)) 
+		:i $back_to_net_host_options$
+	:i else 
+		:i $return_to_created_park_menu$
+	:i endif
+:i endfunction
+:i function $load_loaded_created_park$
+	:i $dialog_box_exit$
+	:i if $LevelIs$$load_sk5ed_gameplay$
+		:i if $InNetGame$
+			:i $level_select_change_level$$level$ = $load_sk5ed_gameplay$ isNull $show_warning$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $return_to_created_park_menu$
+:i endfunction
+:i function $back_to_net_host_options$
+	:i $prefs$ = $network$
+	:i $field$ = %s(5,"level")
+	:i $string$ = %s(12,"Created Park")
+	:i $checksum$ = $load_sk5ed_gameplay$
+	:i $select_host_option$ isNull 
+	:i $Change$$still_in_net_area$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $host_options_menu$
+		:i $DestroyScreenElement$$id$ = $host_options_menu$
+	:i endif
+	:i $create_network_host_options_menu$
+:i endfunction
+:i function $back_to_internet_options_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i if  ($load_successful$ = %i(1,00000001)) 
+		:i $get_upload_description$$type$ = %GLOBAL%$type$$filename$ = %GLOBAL%$filename$
+	:i else 
+		:i $create_internet_options$
+	:i endif
+	:i $Change$$load_successful$ = %i(2,00000002)
+	:i $Change$$loadforupload$ = %i(0,00000000)
+:i endfunction
+:i function $back_to_cat_pause$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_CAT_pause_menu$
+:i endfunction
+:i function $back_to_pre_cat_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_pre_CAT_menu$
+:i endfunction
+:i function $back_to_edit_cat_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_CAT_menu$$load$ = %i(0,00000000)
+:i endfunction
+:i function $finish_loading_cat$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $auto_assign_cat_to_slot$
+:i endfunction
+:i function $back_to_edit_tricks_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $create_edit_tricks_menu$
+:i endfunction
+:i $RetryScript$ = $DefaultRetryScript$
+:i function $DefaultRetryScript$
+	:i $printf$%s(29,"DefaultRetryScript called !!!")
+:i endfunction
+:i function $mem_card_message_pause$
+	:i $DisableReset$
+	:i if NOT $GotParam$$NoTimerReset$
+		:i $ResetTimer$
+	:i endif
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i %GLOBAL%$CardCheckCounter$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT $CustomParkMode$$editing$
+			:i if $ScreenElementExists$$id$ = $controller_unplugged_dialog_anchor$
+				:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+				:i $goto$$NullScript$
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$NoCardRemovalCheck$
+			:i if  (%GLOBAL%$CardCheckCounter$ = %i(10,0000000a)) 
+				:i $DisableReset$
+				:i if NOT $CardIsInSlot$
+					:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+					:i $goto$$mcmess_ErrorNoCardInSlot$
+				:i endif
+				:i %GLOBAL%$CardCheckCounter$ = %i(0,00000000)
+			:i else 
+				:i %GLOBAL%$CardCheckCounter$ =  (%GLOBAL%$CardCheckCounter$ + %i(1,00000001)) 
+			:i endif
+		:i endif
+		:i if $TimeGreaterThan$%i(3,00000003)
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $check_card$
+	:i if NOT $CardIsInSlot$
+		:i $goto$$mcmess_ErrorNoCardInSlot$
+	:i endif
+	:i if $BadDevice$
+		:i $goto$$mcmess_BadDevice$
+	:i endif
+	:i if $CardIsDamaged$
+		:i $goto$$mcmess_DamagedCard$
+	:i endif
+	:i if NOT $SectorSizeOK$
+		:i if $CardIsDamaged$
+			:i $goto$$mcmess_DamagedCard$
+		:i else 
+			:i $goto$$mcmess_BadSectorSize$
+		:i endif
+	:i endif
+	:i if NOT $CardIsFormatted$
+		:i if $CardIsDamaged$
+			:i $goto$$mcmess_DamagedCard$
+		:i else 
+			:i if $GotParam$$Save$
+				:i $goto$$mcmess_ErrorNotFormatted$
+			:i else 
+				:i $goto$$mcmess_ErrorNotFormattedNoFormatOption$
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $IsXBox$
+		:i $mcmess_CheckingCard$
+		:i $mem_card_message_pause$
+		:i $dialog_box_exit$$no_pad_start$
+	:i endif
+:i endfunction
+:i $StopCheckingForCardRemoval$ = %i(0,00000000)
+:i function $CheckForCardRemoval$
+	:i $Change$$StopCheckingForCardRemoval$ = %i(0,00000000)
+	:i %GLOBAL%$CardCheckCounter$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$CardCheckCounter$ = %i(10,0000000a)) 
+			:i if NOT $CardIsInSlot$
+				:i $goto$$mcmess_ErrorNoCardInSlot$
+			:i endif
+			:i %GLOBAL%$CardCheckCounter$ = %i(0,00000000)
+		:i else 
+			:i %GLOBAL%$CardCheckCounter$ =  (%GLOBAL%$CardCheckCounter$ + %i(1,00000001)) 
+		:i endif
+		:i if NOT $ObjectExists$$id$ = %GLOBAL%$menu_id$
+			:i continue
+			
+		:i endif
+		:i if $IsTrue$$StopCheckingForCardRemoval$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $DoFormatCard$
+	:i $KillSpawnedScript$$name$ = $CheckForCardRemoval$
+	:i if NOT $IsNGC$
+		:i if $CardIsFormatted$
+			:i $goto$$DoneScript$
+		:i endif
+	:i endif
+	:i $ResetTimer$
+	:i $mcmess_FormattingCard$
+	:i $DisableReset$
+	:i if $FormatCard$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_FormatSuccessful$
+	:i else 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_FormatFailed$
+	:i endif
+:i endfunction
+:i function $launch_files_menu$
+	:i $memcard_menus_cleanup$
+	:i $create_files_menu$ isNull 
+:i endfunction
+:i function $create_files_menu$$pos_tweak$ = %vec2(-20.000000,-45.000000)
+	:i if $CustomParkMode$$editing$
+		:i if $ScreenElementExists$$id$ = $controller_unplugged_dialog_anchor$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$Save$
+		:i if NOT $InNetGame$
+			:i $UnloadAnimsAndCreateMemCardPools$
+		:i endif
+	:i endif
+	:i if $GotParam$$Save$
+		:i $Change$$SavingOrLoading$ = $Saving$
+	:i else 
+		:i $Change$$SavingOrLoading$ = $Loading$
+	:i endif
+	:i if NOT $CardIsInSlot$
+		:i $goto$$mcmess_ErrorNoCardInSlot$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i if $GotParam$$Save$
+		:i $menu_title$ = %sc(4,"SAVE")
+		:i $helper_text$ = $save_files_menu_helper_text$
+	:i else 
+		:i $menu_title$ = %sc(4,"LOAD")
+		:i $helper_text$ = $load_files_menu_helper_text$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $pos$ = %vec2(55.000000,40.000000)
+		:i $bg_pos$ = %vec2(318.000000,77.000000)
+		:i $top_bar_pos$ = %vec2(60.000000,95.000000)
+	:i else 
+		:i $pos$ = %vec2(55.000000,50.000000)
+		:i $bg_pos$ = %vec2(318.000000,87.000000)
+		:i $top_bar_pos$ = %vec2(60.000000,100.000000)
+	:i endif
+	:i $make_new_menu$:s{$menu_title$ = %s(0,"")
+		:i $padding_scale$ = %i(1,00000001)
+		:i $menu_id$ = $files_menu$
+		:i $vmenu_id$ = $files_vmenu$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $dims$ = %vec2(500.000000,192.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $type$ = $VScrollingMenu$
+		:i $scrolling_menu_id$ = $files_scrolling_menu$
+		:i $scrolling_menu_title_id$ = $files_scrolling_menu_title$
+		:i $scrolling_menu_offset$ = %vec2(0.000000,32.000000)
+		:i $dont_allow_wrap$ = $dont_allow_wrap$
+		:i $helper_text$ = %GLOBAL%$helper_text$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $reload_anims_then_run_abort_script$:s}:s}
+			:i :s{$pad_down$$menu_vert_blink_arrow$$params$ = :s{$id$ = $files_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$menu_vert_blink_arrow$$params$ = :s{$id$ = $files_menu_up_arrow$:s}:s}:a}:s}
+	:i $theme_background$$width$ = %f(6.500000)$pos$ = %GLOBAL%$bg_pos$$num_parts$ = %i(10,0000000a)$z_priority$ = %i(1,00000001)$static$ = $static$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $create_menu_background_title$$title$ = %GLOBAL%$menu_title$$bg_just$ = $right_nobg$$no_grain$$title_pos$ = %vec2(215.000000,64.000000)
+	:i else 
+		:i $create_menu_background_title$$title$ = %GLOBAL%$menu_title$$bg_just$ = $right_nobg$$no_grain$$title_pos$ = %vec2(205.000000,72.000000)
+	:i endif
+	:i $files_menu_add_top_bar$$pos$ = %GLOBAL%$top_bar_pos$
+	:i if $GotParam$$Save$
+		:i $GetMemCardDirectoryListing$
+		:i $GetMemCardSpaceAvailable$
+		:i $GetMemCardSpaceRequired$%GLOBAL%$FileType$
+		:i $RemoveParameter$$add_createnew_option$
+		:i if  (%GLOBAL%$TotalTHPS4FilesOnCard$ = %i(0,00000000)) 
+			:i if  ( (%GLOBAL%$SpaceAvailable$ < %GLOBAL%$SpaceRequired$)  OR  (%GLOBAL%$FilesLeft$ < %i(1,00000001)) ) 
+				:i $goto$$mcmess_ErrorNotEnoughRoomNoTHPSFilesExist$$params$ = :s{
+					:i $FileType$ = %GLOBAL%$FileType$
+					:i $SpaceRequired$ = %GLOBAL%$SpaceRequired$
+					:i $SpaceAvailable$ = %GLOBAL%$SpaceAvailable$
+				:i :s}
+			:i else 
+				:i %GLOBAL%$add_createnew_option$ = %i(1,00000001)
+			:i endif
+		:i else 
+			:i if  ( (%GLOBAL%$SpaceAvailable$ < %GLOBAL%$SpaceRequired$)  OR  (%GLOBAL%$FilesLeft$ < %i(1,00000001)) ) 
+				:i if NOT $GotParam$$DoNotShowNotEnoughRoomMessage$
+					:i $goto$$mcmess_ErrorNotEnoughRoomButTHPSFilesExist$$params$ = :s{$FileType$ = %GLOBAL%$FileType$$SpaceRequired$ = %GLOBAL%$SpaceRequired$:s}
+				:i endif
+			:i else 
+				:i if NOT $GotParam$$FilesLimitReached$
+					:i %GLOBAL%$add_createnew_option$ = %i(1,00000001)
+				:i endif
+			:i endif
+		:i endif
+		:i %GLOBAL%$prefix$ = %s(0,"")
+		:i if $GotParam$$Filter$
+			:i $THUGProSave_GetFilterPrefix$$Filter$ = %GLOBAL%$Filter$
+		:i endif
+		:i if $GotParam$$add_createnew_option$
+			:i $files_menu_add_item$:s{$file_type$ = %GLOBAL%$FileType$
+				:i $filename$ = %sc(24,"              Create new")
+				:i $file_size$ = %sc(0,"")
+				:i $pad_choose_script$ = $CreateNew$
+				:i $pad_choose_params$ = :s{$Filter$ = %GLOBAL%$Filter$:s}
+				:i $font$ = $small$
+				:i $icon_alpha$ = %f(0.000000)
+			:i :s}
+			:i $RemoveParameter$$DirectoryListing$
+			:i $GetMemCardDirectoryListing$$FileType$ = %GLOBAL%$FileType$
+		:i endif
+		:i $RemoveParameter$$add_createnew_option$
+	:i else 
+		:i $GetMemCardDirectoryListing$$FileType$ = %GLOBAL%$FileType$
+	:i endif
+	:i if $GotParam$$DirectoryListing$
+		:i if $GotParam$$Save$
+			:i $ForEachIn$%GLOBAL%$DirectoryListing$$Do$ = $files_menu_add_item$$params$ = :s{$pad_choose_script$ = $OKToOverwrite$$MenuFileType$ = %GLOBAL%$FileType$$Save$$Filter$ = %GLOBAL%$Filter$:s}
+		:i else 
+			:i $ForEachIn$%GLOBAL%$DirectoryListing$$Do$ = $files_menu_add_item$$params$ = :s{$pad_choose_script$ = $load$$Filter$ = %GLOBAL%$Filter$:s}
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$Save$
+			:i $goto$$mcmess_NoFiles$$params$ = :s{$MenuFileType$ = %GLOBAL%$FileType$:s}
+		:i endif
+	:i endif
+	:i $RemoveParameter$$DirectoryListing$
+	:i $files_menu_add_bottom_bar$ isNull 
+	:i if $ScreenElementExists$$id$ = $controller_unplugged_dialog_anchor$
+		:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$scale$ = %i(0,00000000)
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = $files_vmenu$
+	:i endif
+	:i $wait$%i(2,00000002)$gameframe$
+	:i if $ScreenElementExists$$id$ = $files_scrolling_menu$
+		:i $SetScreenElementProps$$id$ = $files_scrolling_menu$$reset_window_top$
+	:i endif
+	:i $CheckForCardRemoval$$menu_id$ = $files_menu$
+:i endfunction
+:i function $files_menu_add_item$$pad_choose_script$ = $NullScript$$font$ = $dialog$$icon_alpha$ = %f(1.000000)
+	:i $delete_button$ = $null$
+	:i $FormatText$$TextName$ = $tempfilename$%s(2,"%a")$a$ = %GLOBAL%$filename$
+	:i if  (%GLOBAL%$file_type$ = $CreatedGraphic$) 
+		:i $StringToCharArray$$string$ =  (%GLOBAL%$filename$) 
+		:i $FormatText$$TextName$ = $filePrefix$%s(6,"%a%b%c")$a$ =  (%GLOBAL%$char_array$:a{%i(0,00000000):a}) $b$ =  (%GLOBAL%$char_array$:a{%i(1,00000001):a}) $c$ =  (%GLOBAL%$char_array$:a{%i(2,00000002):a}) 
+		:i switch %GLOBAL%$Filter$
+			:i case $THUGProOptions$
+				:i if $GotParam$$Save$
+					:i %GLOBAL%$pad_choose_params$ = :s{$prefix$ = %GLOBAL%$filePrefix$:s}
+				:i endif
+				:i if NOT $StringEquals$$a$ = %s(3,"TP-")$b$ = %GLOBAL%$filePrefix$
+					:i return
+					
+				:i endif
+				:i %GLOBAL%$file_type_icon$ = $mem_tricks$
+				:i $GetArraySize$%GLOBAL%$char_array$
+				:i $tempString$ = %s(0,"")
+				:i $charIndex$ = %i(3,00000003)
+				:i while
+					
+					:i $FormatText$$TextName$ = $tempfilename$%s(4,"%a%b")$a$ = %GLOBAL%$tempString$$b$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$charIndex$:a}) 
+					:i %GLOBAL%$tempString$ =  (%GLOBAL%$tempfilename$) 
+					:i %GLOBAL%$charIndex$ =  (%GLOBAL%$charIndex$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+				:i endcase
+			case $LevelEditorSession$
+				:i if $GotParam$$Save$
+					:i %GLOBAL%$pad_choose_params$ = :s{$prefix$ = %GLOBAL%$filePrefix$:s}
+				:i endif
+				:i if NOT $StringEquals$$a$ = %s(3,"ED-")$b$ = %GLOBAL%$filePrefix$
+					:i return
+					
+				:i endif
+				:i %GLOBAL%$file_type_icon$ = $mem_park$
+				:i $GetArraySize$%GLOBAL%$char_array$
+				:i $tempString$ = %s(0,"")
+				:i $charIndex$ = %i(3,00000003)
+				:i while
+					
+					:i $FormatText$$TextName$ = $tempfilename$%s(4,"%a%b")$a$ = %GLOBAL%$tempString$$b$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$charIndex$:a}) 
+					:i %GLOBAL%$tempString$ =  (%GLOBAL%$tempfilename$) 
+					:i %GLOBAL%$charIndex$ =  (%GLOBAL%$charIndex$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+				:i endcase
+			case $TPNetworkOptions$
+				:i if $GotParam$$Save$
+					:i %GLOBAL%$pad_choose_params$ = :s{$prefix$ = %GLOBAL%$filePrefix$:s}
+				:i endif
+				:i if NOT $StringEquals$$a$ = %s(3,"NO-")$b$ = %GLOBAL%$filePrefix$
+					:i return
+					
+				:i endif
+				:i %GLOBAL%$file_type_icon$ = $mem_net$
+				:i $GetArraySize$%GLOBAL%$char_array$
+				:i $tempString$ = %s(0,"")
+				:i $charIndex$ = %i(3,00000003)
+				:i while
+					
+					:i $FormatText$$TextName$ = $tempfilename$%s(4,"%a%b")$a$ = %GLOBAL%$tempString$$b$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$charIndex$:a}) 
+					:i %GLOBAL%$tempString$ =  (%GLOBAL%$tempfilename$) 
+					:i %GLOBAL%$charIndex$ =  (%GLOBAL%$charIndex$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+				:i endcase
+			case $CustomTheme$
+				:i if $GotParam$$Save$
+					:i %GLOBAL%$pad_choose_params$ = :s{$prefix$ = %GLOBAL%$filePrefix$:s}
+				:i endif
+				:i if NOT $StringEquals$$a$ = %s(3,"CT-")$b$ = %GLOBAL%$filePrefix$
+					:i return
+					
+				:i endif
+				:i %GLOBAL%$file_type_icon$ = $mem_graphics$
+				:i $GetArraySize$%GLOBAL%$char_array$
+				:i $tempString$ = %s(0,"")
+				:i $charIndex$ = %i(3,00000003)
+				:i while
+					
+					:i $FormatText$$TextName$ = $tempfilename$%s(4,"%a%b")$a$ = %GLOBAL%$tempString$$b$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$charIndex$:a}) 
+					:i %GLOBAL%$tempString$ =  (%GLOBAL%$tempfilename$) 
+					:i %GLOBAL%$charIndex$ =  (%GLOBAL%$charIndex$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+				:i end_switch
+		
+	:i endif
+	:i $SwitchToTempPoolsIfTheyExist$
+	:i $unhighlight_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i $heap$ = $BottomUp$
+	:i if NOT  (%GLOBAL%$file_type$ = $CreatedGraphic$) 
+		:i $delete_button$ = $pad_square$
+	:i endif
+	:i if $GotParam$$Save$
+		:i if NOT  (%GLOBAL%$file_type$ = %GLOBAL%$MenuFileType$) 
+			:i $disable_item_overwrite$ = %i(1,00000001)
+			:i $unhighlight_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(50,00000032):a}
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $dims$ = %vec2(550.000000,24.000000)
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$files_menu_focus$$params$ =  isNull :s}
+			:i :s{$unfocus$$files_menu_unfocus$:s}
+			:i :s{%GLOBAL%$delete_button$$files_menu_delete$:s}
+			:i :a}
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if NOT $GotParam$$disable_item_overwrite$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$ isNull :s}
+				:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$ isNull :s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i %GLOBAL%$container_id$ = %GLOBAL%$id$
+	:i if $GotParam$$total_file_size$
+		:i if $isPal$
+			:i $FormatText$$TextName$ = $date$%s(8,"%d/%m/%y")$m$ = %GLOBAL%$month$$d$ = %GLOBAL%$day$$y$ = %GLOBAL%$year$
+			:i if  (%i(10,0000000a) > %GLOBAL%$minutes$) 
+				:i $mzero$ = %s(1,"0")
+			:i else 
+				:i $mzero$ = %s(0,"")
+			:i endif
+			:i $FormatText$$TextName$ = $time$%s(7,"%h:%z%m")$h$ = %GLOBAL%$hour$$m$ = %GLOBAL%$minutes$$z$ = %GLOBAL%$mzero$
+		:i else 
+			:i $FormatText$$TextName$ = $date$%s(8,"%m/%d/%y")$m$ = %GLOBAL%$month$$d$ = %GLOBAL%$day$$y$ = %GLOBAL%$year$
+			:i if  (%i(10,0000000a) > %GLOBAL%$minutes$) 
+				:i $mzero$ = %s(1,"0")
+			:i else 
+				:i $mzero$ = %s(0,"")
+			:i endif
+			:i if  (%GLOBAL%$hour$ < %i(12,0000000c)) 
+				:i $ampm$ = %s(2,"am")
+			:i else 
+				:i $ampm$ = %s(2,"pm")
+				:i $hour$ =  (%GLOBAL%$hour$ - %i(12,0000000c)) 
+			:i endif
+			:i if  (%GLOBAL%$hour$ = %i(0,00000000)) 
+				:i $hour$ = %i(12,0000000c)
+			:i endif
+			:i $FormatText$$TextName$ = $time$%s(9,"%h:%z%m%a")$h$ = %GLOBAL%$hour$$m$ = %GLOBAL%$minutes$$z$ = %GLOBAL%$mzero$$a$ = %GLOBAL%$ampm$
+		:i endif
+	:i endif
+	:i $RemoveParameter$$year$
+	:i $RemoveParameter$$month$
+	:i $RemoveParameter$$day$
+	:i $RemoveParameter$$hour$
+	:i $RemoveParameter$$minutes$
+	:i $RemoveParameter$$Seconds$
+	:i %GLOBAL%$container_id$.$SetTags$ isNull 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $scale$ = %f(0.730000)
+		:i $font$ = %GLOBAL%$font$
+		:i $text$ = %GLOBAL%$tempfilename$
+		:i $pos$ = %vec2(45.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+		:i $z_priority$ = %i(6,00000006)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if $GotParam$$total_file_size$
+		:i $FormatText$$TextName$ = $file_size_text$%sc(5,"%d KB")$d$ = %GLOBAL%$total_file_size$
+	:i else 
+		:i %GLOBAL%$file_size_text$ = %s(0,"")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $scale$ = %f(0.730000)
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$file_size_text$
+		:i $pos$ = %vec2(325.000000,2.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+		:i $z_priority$ = %i(6,00000006)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i switch %GLOBAL%$file_type$
+		:i case $OptionsAndPros$
+			:i %GLOBAL%$file_type_icon$ = $mem_career$
+			:i endcase
+		case $NetworkSettings$
+			:i %GLOBAL%$file_type_icon$ = $mem_net$
+			:i endcase
+		case $Park$
+			:i %GLOBAL%$file_type_icon$ = $mem_park$
+			:i endcase
+		case $replay$
+			:i %GLOBAL%$file_type_icon$ = $mem_replay$
+			:i endcase
+		case $Cas$
+			:i %GLOBAL%$file_type_icon$ = $mem_skater$
+			:i endcase
+		case $CAT$
+			:i %GLOBAL%$file_type_icon$ = $mem_tricks$
+			:i endcase
+		case $CreatedGoals$
+			:i %GLOBAL%$file_type_icon$ = $mem_goals$
+			:i endcase
+		case $CreatedGraphic$
+			:i %GLOBAL%$file_type_icon$ = %GLOBAL%$file_type_icon$
+			:i endcase
+		default 
+			:i %GLOBAL%$file_type_icon$ = $mem_bad$
+			:i end_switch
+	
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $scale$ = %f(0.730000)
+		:i $texture$ = %GLOBAL%$file_type_icon$
+		:i $pos$ = %vec2(25.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}
+		:i $scale$ = %f(0.720000)
+		:i $z_priority$ = %i(6,00000006)
+		:i $alpha$ = %GLOBAL%$icon_alpha$
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $local_id$ = $menu_bar$
+		:i $texture$ = $tp_menubar_bar$
+		:i $pos$ = %vec2(264.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.200000,0.400000)
+		:i $rgba$ = :a{%i(90,0000005a)%i(90,0000005a)%i(90,0000005a)%i(128,00000080):a}
+		:i $alpha$ = %f(0.000000)
+		:i $z_priority$ = %i(5,00000005)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $scale$ = %f(0.730000)
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$date$
+		:i $pos$ = %vec2(430.000000,2.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+		:i $z_priority$ = %i(6,00000006)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $scale$ = %f(0.730000)
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$time$
+		:i $pos$ = %vec2(500.000000,2.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+		:i $z_priority$ = %i(6,00000006)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $SwitchToRegularPools$
+:i endfunction
+:i function $files_menu_add_top_bar$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(550.000000,24.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$container_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $id$ = $files_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $pos$ = %vec2(250.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(-5.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %vec2(132.000000,6.700000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(60,0000003c):a}
+	:i :s}
+:i endfunction
+:i function $files_menu_add_bottom_bar$$text_scale$ = %f(1.000000)
+	:i $GetStackedScreenElementPos$$y$$id$ = $files_scrolling_menu$$offset$ = %vec2(0.000000,15.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$container_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $id$ = $files_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %vec2(240.000000,-15.000000)
+		:i $just$ = :a{$left$$bottom$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(131.000000,6.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(60,0000003c):a}
+	:i :s}
+	:i $bar_id$ = %GLOBAL%$id$
+	:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$container_id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(550.000000,24.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$info_section_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $files_menu_file_info$
+		:i $font$ = $small$
+		:i $text$ = %sc(0,"")
+		:i $pos$ = %vec2(20.000000,0.000000)
+		:i $scale$ = %GLOBAL%$text_scale$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$info_section_id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(550.000000,24.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$mem_info_id$ = %GLOBAL%$id$
+	:i $GetPlatform$
+	:i if $GotParam$$Save$
+		:i $GetMemCardSpaceRequired$%GLOBAL%$FileType$
+		:i switch %GLOBAL%$Platform$
+			:i case $XBox$
+				:i endcase
+			case $NGC$
+				:i $FormatText$:s{
+					:i $TextName$ = $LeftText$
+					:i %sc(13,"Needed: %n KB")
+					:i $n$ = %GLOBAL%$SpaceRequired$
+				:i :s}
+				:i endcase
+			case $PS2$
+				:i $FormatText$:s{
+					:i $TextName$ = $LeftText$
+					:i %sc(13,"Needed: %n KB")
+					:i $n$ = %GLOBAL%$SpaceRequired$
+				:i :s}
+				:i end_switch
+		
+	:i endif
+	:i $GetMemCardSpaceAvailable$
+	:i switch %GLOBAL%$Platform$
+		:i case $XBox$
+			:i if  (%GLOBAL%$SpaceAvailable$ > %i(49999,0000c34f)) 
+				:i $MiddleText$ = %sc(0,"")
+			:i else 
+				:i $FormatText$:s{
+					:i $TextName$ = $MiddleText$
+					:i %sc(11,"Free: %f KB")
+					:i $f$ = %GLOBAL%$SpaceAvailable$
+				:i :s}
+			:i endif
+			:i endcase
+		case $NGC$
+			:i $FormatText$:s{
+				:i $TextName$ = $MiddleText$
+				:i %sc(11,"Free: %f KB")
+				:i $f$ = %GLOBAL%$SpaceAvailable$
+			:i :s}
+			:i endcase
+		case $PS2$
+			:i if  (%GLOBAL%$SpaceAvailable$ < %i(3,00000003)) 
+				:i $displayed_space_available$ = %i(0,00000000)
+			:i else 
+				:i $displayed_space_available$ =  (%GLOBAL%$SpaceAvailable$%i(4294967294,fffffffe)) 
+			:i endif
+			:i $FormatText$:s{
+				:i $TextName$ = $MiddleText$
+				:i %sc(11,"Free: %f KB")
+				:i $f$ = %GLOBAL%$displayed_space_available$
+			:i :s}
+			:i end_switch
+	
+	:i $GetMaxTHPS4FilesAllowed$
+	:i $FormatText$:s{
+		:i $TextName$ = $RightText$
+		:i %sc(12,"Saves: %t/%m")
+		:i $t$ = %GLOBAL%$TotalTHPS4FilesOnCard$
+		:i $m$ = %GLOBAL%$MaxTHPS4FilesAllowed$
+	:i :s}
+	:i if $GotParam$$Save$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$mem_info_id$
+			:i $font$ = $small$
+			:i $pos$ = %vec2(20.000000,-9.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+			:i $scale$ = %GLOBAL%$text_scale$
+			:i $text$ = %GLOBAL%$LeftText$
+		:i :s}
+	:i endif
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(20.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$mem_info_id$
+		:i $font$ = $small$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$text_scale$
+		:i $text$ = %GLOBAL%$MiddleText$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(20.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$mem_info_id$
+		:i $font$ = $small$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %GLOBAL%$text_scale$
+		:i $text$ = %GLOBAL%$RightText$
+	:i :s}
+	:i $GetStackedScreenElementPos$$y$$id$ = %GLOBAL%$bar_id$$offset$ = %vec2(0.000000,-23.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$mem_info_id$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(65.800003,3.300000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.250000)
+	:i :s}
+:i endfunction
+:i function $files_menu_focus$
+	:i $GetTags$
+	:i if $GotParam$$disable_item_overwrite$
+		:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bm = Back"):s}
+			:i :s{$text$ = %s(12,"\bn = Delete"):s}
+			:i :a}
+	:i endif
+	:i %GLOBAL%$files_menu_file_info_text$ = %sc(0,"")
+	:i if NOT $GotParam$$Index$
+		:i $GetSummaryInfo$%GLOBAL%$file_type$$VaultData$ = $savevaultdata$
+	:i endif
+	:i if NOT  ( ($GotParam$$BadVersion$)  OR  ($GotParam$$Corrupt$) ) 
+		:i switch %GLOBAL%$file_type$
+			:i case $OptionsAndPros$
+				:i if $GotParam$$total_score$
+					:i $FormatText$:s{
+						:i $TextName$ = $files_menu_file_info_text$
+						:i %sc(15,"\c3 Skater File")
+					:i :s}
+				:i else 
+					:i $files_menu_file_info_text$ = %s(37,"\c3Old version: points not available!")
+				:i endif
+				:i endcase
+			case $NetworkSettings$
+				:i $FormatText$:s{
+					:i $TextName$ = $files_menu_file_info_text$
+					:i %sc(19,"\c3ONLINE PREFS: %i")
+					:i $i$ = %GLOBAL%$network_id$
+				:i :s}
+				:i endcase
+			case $Cas$
+				:i %GLOBAL%$files_menu_file_info_text$ = %sc(18,"\c3Create-a-Skater")
+				:i endcase
+			case $Park$
+				:i if NOT $GotParam$$MaxPlayers$
+					:i $MaxPlayers$ = %i(1,00000001)
+				:i endif
+				:i $colour$ = %sc(3,"\c3")
+				:i if $InNetGame$
+					:i $GetNetworkNumPlayers$
+					:i if  (%GLOBAL%$num_players$ > %GLOBAL%$MaxPlayers$) 
+						:i $colour$ = %sc(3,"\c2")
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$MaxPlayers$ = %i(1,00000001)) 
+					:i $FormatText$:s{
+						:i $TextName$ = $files_menu_file_info_text$
+						:i %sc(21,"%cPark for one player")
+						:i $c$ = %GLOBAL%$colour$
+						:i $d$ = %GLOBAL%$MaxPlayers$
+					:i :s}
+				:i else 
+					:i $FormatText$:s{
+						:i $TextName$ = $files_menu_file_info_text$
+						:i %sc(27,"%cPark for up to %d players")
+						:i $c$ = %GLOBAL%$colour$
+						:i $d$ = %GLOBAL%$MaxPlayers$
+					:i :s}
+				:i endif
+				:i endcase
+			case $replay$
+				:i $FormatText$:s{
+					:i $TextName$ = $files_menu_file_info_text$
+					:i %sc(13,"\c3Replay: %l")
+					:i $l$ = %GLOBAL%$LevelName$
+				:i :s}
+				:i endcase
+			case $CreatedGoals$
+				:i $FormatText$:s{
+					:i $TextName$ = $files_menu_file_info_text$
+					:i %sc(19,"\c3%i created goals")
+					:i $i$ = %GLOBAL%$num_edited_goals$
+				:i :s}
+				:i endcase
+			case $CAT$
+				:i if NOT $GotParam$$name$
+					:i $name$ = %s(1," ")
+				:i endif
+				:i $FormatText$:s{
+					:i $TextName$ = $files_menu_file_info_text$
+					:i %sc(11,"\c3NAME: %i")
+					:i $i$ = %GLOBAL%$name$
+				:i :s}
+				:i endcase
+			case $CreatedGraphic$
+				:i if $GotParam$$Filter$
+					:i switch %GLOBAL%$Filter$
+						:i case $THUGProOptions$
+							:i %GLOBAL%$files_menu_file_info_text$ = %sc(16,"\c3THUG Pro Save")
+							:i endcase
+						case $LevelEditorSession$
+							:i %GLOBAL%$files_menu_file_info_text$ = %sc(23,"\c3Level Editor Session")
+							:i endcase
+						case $TPNetworkOptions$
+							:i %GLOBAL%$files_menu_file_info_text$ = %sc(14,"\c3Net Options")
+							:i endcase
+						case $CustomTheme$
+							:i %GLOBAL%$files_menu_file_info_text$ = %sc(15,"\c3Custom Theme")
+							:i end_switch
+					
+				:i endif
+				:i end_switch
+		
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $files_menu_file_info$
+		:i $text$ = %GLOBAL%$files_menu_file_info_text$
+	:i :s}
+	:i $GetTags$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect2$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$text_twitch_effect2$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$text_twitch_effect2$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(7,00000007)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar$:s}
+		:i $alpha$ = %f(0.900000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $GetScreenElementDims$$id$ = $files_vmenu$
+	:i if  (%GLOBAL%$height$ > %i(216,000000d8)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $files_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $files_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $generic_menu_update_arrows$:s{
+			:i $menu_id$ = $files_vmenu$
+			:i $up_arrow_id$ = $files_menu_up_arrow$
+			:i $down_arrow_id$ = $files_menu_down_arrow$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $files_menu_unfocus$
+	:i $GetTags$
+	:i $unhighlight_rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+	:i if $GotParam$$disable_item_overwrite$
+		:i $unhighlight_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(50,00000032):a}
+		:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Accept"):s}
+			:i :s{$text$ = %s(12,"\bo = Delete"):s}
+			:i :a}
+	:i endif
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $scale$ = %f(0.730000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $scale$ = %f(0.730000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $scale$ = %f(0.730000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+		:i $scale$ = %f(0.730000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}
+		:i $scale$ = %f(0.730000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}
+		:i $z_priority$ = %i(6,00000006)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $scale$ = %f(0.720000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $menu_bar$:s}
+		:i $alpha$ = %f(0.000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}
+		:i $rgba$ = %GLOBAL%$unhighlight_rgba$
+	:i :s}
+:i endfunction
+:i function $files_menu_delete$
+	:i $GetTags$
+	:i if $GotParam$$Index$
+		:i if $GotParam$$Save$
+			:i $memcard_menus_cleanup$
+			:i $GetFileTypeName$$file_type$ = %GLOBAL%$file_type$
+			:i if $IsXBox$
+				:i $FormatText$:s{
+					:i $TextName$ = $DeleteText$
+					:i %sc(21,"Delete the %t\n'%s' ?")
+					:i $t$ = %GLOBAL%$filetype_name$
+					:i $s$ = %GLOBAL%$filename$
+				:i :s}
+			:i else 
+				:i $FormatText$:s{
+					:i $TextName$ = $DeleteText$
+					:i %sc(26,"Delete the %t file\n'%s' ?")
+					:i $t$ = %GLOBAL%$filetype_name$
+					:i $s$ = %GLOBAL%$filename$
+				:i :s}
+			:i endif
+			:i $create_snazzy_dialog_box$:s{
+				:i $title$ = %sc(6,"Delete")
+				:i $text$ = %GLOBAL%$DeleteText$
+				:i $pad_back_script$ = $launch_files_menu$
+				:i $pad_back_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}:s}
+					:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = $delete_file$$pad_choose_params$ =  isNull :s}
+					:i :a}
+			:i :s}
+			:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+		:i endif
+	:i endif
+:i endfunction
+:i function $delete_file$
+	:i $memcard_menus_cleanup$
+	:i $Change$$StopCheckingForCardRemoval$ = %i(1,00000001)
+	:i $ResetTimer$
+	:i $mcmess_DeletingFile$$FileType$ = %GLOBAL%$file_type$
+	:i $DisableReset$
+	:i if $DeleteMemCardFile$$CardFileName$ = %GLOBAL%$actual_file_name$$XBoxDirectoryName$ = %GLOBAL%$xbox_directory_name$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $EnableReset$
+		:i $create_snazzy_dialog_box$:s{
+			:i $title$ = %sc(7,"Deleted")
+			:i $text$ = %sc(17,"Delete successful")
+			:i $pad_back_script$ = $launch_files_menu$
+			:i $pad_back_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}
+			:i $buttons$ = :a{
+				:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}:s}
+				:i :a}
+		:i :s}
+		:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+	:i else 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_ErrorDeleteFailed$
+	:i endif
+:i endfunction
+:i function $delete_bad_file$
+	:i $memcard_menus_cleanup$
+	:i $ResetTimer$
+	:i $mcmess_DeletingFile$$FileType$ = %GLOBAL%$file_type$
+	:i $DisableReset$
+	:i if $DeleteMemCardFile$:s{
+			:i $CardFileName$ = %GLOBAL%$actual_file_name$
+			:i $XBoxDirectoryName$ = %GLOBAL%$xbox_directory_name$
+			:i $UserFileName$ = %GLOBAL%$filename$
+			:i $type$ = %GLOBAL%$file_type$
+		:i :s}
+		:i $EnableReset$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i if $GotParam$$GoBackToFilesMenu$
+			:i $create_snazzy_dialog_box$:s{
+				:i $title$ = %sc(7,"Deleted")
+				:i $text$ = %sc(17,"Delete successful")
+				:i $pad_back_script$ = $launch_files_menu$
+				:i $pad_back_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$:s}
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$FileType$ = %GLOBAL%$file_type$:s}:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $create_snazzy_dialog_box$:s{
+				:i $title$ = %sc(7,"Deleted")
+				:i $text$ = %sc(17,"Delete successful")
+				:i $pad_back_script$ = $AbortScript$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $AbortScript$:s}
+					:i :a}
+			:i :s}
+		:i endif
+		:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+	:i else 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_ErrorDeleteFailed$
+	:i endif
+:i endfunction
+:i function $NGC_delete_bad_file$
+	:i $memcard_menus_cleanup$
+	:i $ResetTimer$
+	:i $mcmess_DeletingFile$
+	:i $DisableReset$
+	:i if $DeleteMemCardFile$:s{
+			:i $CardFileName$ = %GLOBAL%$actual_file_name$
+			:i $UserFileName$ = %GLOBAL%$filename$
+			:i $type$ = %GLOBAL%$file_type$
+		:i :s}
+		:i $EnableReset$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $create_snazzy_dialog_box$:s{
+			:i $title$ = %sc(4,"File")
+			:i $text$ = %sc(17,"Delete successful")
+			:i $pad_back_script$ = $launch_files_menu$
+			:i $pad_back_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}
+			:i $buttons$ = :a{
+				:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$:s}:s}
+				:i :a}
+		:i :s}
+		:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+	:i else 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_ErrorDeleteFailed$
+	:i endif
+:i endfunction
+:i function $mcmess_SavingData_2$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$$Filter$ = %GLOBAL%$Filter$
+	:i $FormatText$:s{
+		:i $TextName$ = $text$
+		:i %sc(28,"Saving %f to hard disk ...\n")
+		:i $f$ = %GLOBAL%$filetype_name$
+	:i :s}
+	:i $create_dialog_box_with_wait$:s{
+		:i $title$ = %sc(10,"Saving ...")
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $text$ = %GLOBAL%$text$
+		:i $add_loading_anim$ = $add_loading_anim$
+	:i :s}
+:i endfunction
+:i function $mcmess_OverwritingData_2$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$$Filter$ = %GLOBAL%$Filter$
+	:i $FormatText$:s{
+		:i $TextName$ = $text$
+		:i %sc(33,"Overwriting %f to hard disk ...\n")
+		:i $f$ = %GLOBAL%$filetype_name$
+	:i :s}
+	:i $create_dialog_box_with_wait$:s{
+		:i $title$ = %sc(15,"Overwriting ...")
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $text$ = %GLOBAL%$text$
+		:i $add_loading_anim$ = $add_loading_anim$
+	:i :s}
+:i endfunction
+:i function $mcmess_LoadingData_2$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$$Filter$ = %GLOBAL%$Filter$
+	:i $FormatText$:s{
+		:i $TextName$ = $text$
+		:i %sc(31,"Loading %f from hard disk ...\n")
+		:i $f$ = %GLOBAL%$filetype_name$
+	:i :s}
+	:i $create_dialog_box_with_wait$:s{
+		:i $title$ = %sc(11,"Loading ...")
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $text$ = %GLOBAL%$text$
+		:i $add_loading_anim$ = $add_loading_anim$
+	:i :s}
+	:i $no_animate$ = %GLOBAL%$no_animate$
+:i endfunction
+:i function $OKToOverwrite$
+	:i if $GotParam$$NoGetTags$
+	:i else 
+		:i $GetTags$
+	:i endif
+	:i if  ( ($GotParam$$BadVersion$)  OR  ($GotParam$$Corrupt$) ) 
+		:i return
+		
+	:i endif
+	:i $DisableReset$
+	:i $GetMemCardSpaceRequired$%GLOBAL%$MenuFileType$
+	:i $GetMemCardSpaceAvailable$
+	:i $EnableReset$
+	:i if  (%GLOBAL%$SpaceRequired$ > %GLOBAL%$SpaceAvailable$ + %GLOBAL%$total_file_size$) 
+		:i $goto$$mcmess_ErrorNotEnoughRoomButTHPSFilesExist$$params$ = :s{
+			:i $Overwrite$
+			:i $FileType$ = %GLOBAL%$MenuFileType$
+			:i $SpaceRequired$ = %GLOBAL%$SpaceRequired$
+			:i $SpaceAvailable$ =  (%GLOBAL%$SpaceAvailable$ + %GLOBAL%$total_file_size$) 
+		:i :s}
+	:i endif
+	:i $memcard_menus_cleanup$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$file_type$$Filter$ = %GLOBAL%$Filter$
+	:i $FormatText$:s{
+		:i $TextName$ = $OverwriteText$
+		:i %sc(44,"OK to overwrite the existing %t file\n'%s' ?")
+		:i $t$ = %GLOBAL%$filetype_name$
+		:i $s$ = %GLOBAL%$filename$
+	:i :s}
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %sc(9,"Overwrite")
+		:i $text$ = %GLOBAL%$OverwriteText$
+		:i $pad_back_script$ = $launch_files_menu$
+		:i $pad_back_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$$Filter$ = %GLOBAL%$Filter$:s}
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$FileType$ = %GLOBAL%$MenuFileType$$Save$$Filter$ = %GLOBAL%$Filter$:s}:s}
+			:i :s{$font$ = $small$$text$ = %sc(3,"Yes")
+				:i $pad_choose_script$ = $DeleteOldSaveNew$
+				:i $pad_choose_params$ = 
+				:i :s{
+					:i $filename$ = %GLOBAL%$filename$
+					:i $old_file_type$ = %GLOBAL%$file_type$
+					:i $new_file_type$ = %GLOBAL%$MenuFileType$
+					:i $actual_file_name$ = %GLOBAL%$actual_file_name$
+					:i $Filter$ = %GLOBAL%$Filter$
+				:i :s}
+			:i :s}
+			:i :a}
+	:i :s}
+	:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+:i endfunction
+:i function $DeleteOldSaveNew$
+	:i $Save$:s{
+		:i $filename$ = %GLOBAL%$filename$
+		:i $file_type$ = %GLOBAL%$new_file_type$
+		:i $total_file_size$ = %GLOBAL%$total_file_size$
+		:i $Filter$ = %GLOBAL%$Filter$
+		:i $Overwrite$ = :s{$CardFileName$ = %GLOBAL%$actual_file_name$$UserFileName$ = %GLOBAL%$filename$$type$ = %GLOBAL%$old_file_type$:s}
+	:i :s}
+:i endfunction
+:i function $retry_launch_save_network_settings$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_save_network_settings$
+:i endfunction
+:i function $launch_save_network_settings$
+	:i $destroy_net_settings_menu$
+	:i $Change$$RetryScript$ = $retry_launch_save_network_settings$
+	:i $Change$$AbortScript$ = $back_to_net_settings_menu$
+	:i $Change$$DoneScript$ = $back_to_net_settings_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $NetworkSettings$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $NetworkSettings$
+:i endfunction
+:i function $retry_launch_save_internet_settings$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_save_internet_settings$
+:i endfunction
+:i function $launch_save_internet_settings$
+	:i $destroy_internet_options_menu$
+	:i $Change$$RetryScript$ = $retry_launch_save_internet_settings$
+	:i $Change$$AbortScript$ = $back_to_internet_options_menu$
+	:i $Change$$DoneScript$ = $back_to_internet_options_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $NetworkSettings$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $NetworkSettings$
+:i endfunction
+:i function $retry_launch_pause_menu_save_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_pause_menu_save_game_sequence$
+:i endfunction
+:i function $launch_pause_menu_save_game_sequence$
+	:i $destroy_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_pause_menu_save_game_sequence$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $OptionsAndPros$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $launch_ingame_menu_save_game_sequence$
+	:i if $GameModeEquals$$is_classic$
+		:i $root_window$.$SetTags$$save_return_to_pause_menu$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $PauseObjects$
+		:i $root_window$.$SetTags$$save_return_to_game$
+	:i endif
+	:i $launch_pause_menu_save_game_sequence$
+:i endfunction
+:i $save_successful$ = %i(2,00000002)
+:i function $retry_launch_pause_menu_save_park_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_pause_menu_save_park_sequence$
+:i endfunction
+:i function $launch_pause_menu_save_park_sequence$
+	:i $destroy_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_pause_menu_save_park_sequence$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $Park$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $Park$
+:i endfunction
+:i function $retry_launch_park_editor_save_park_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_park_editor_save_park_sequence$
+:i endfunction
+:i function $launch_park_editor_save_park_sequence$
+	:i $destroy_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_park_editor_save_park_sequence$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $Change$$save_successful$ = %i(0,00000000)
+	:i $check_card$$FileType$ = $Park$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $Park$
+:i endfunction
+:i function $retry_launch_pause_menu_load_park_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_pause_menu_load_park_sequence$
+:i endfunction
+:i function $launch_pause_menu_load_park_sequence$
+	:i $destroy_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_pause_menu_load_park_sequence$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $Park$$load$
+	:i $launch_files_menu$$load$$FileType$ = $Park$
+:i endfunction
+:i function $retry_launch_level_select_load_park_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_level_select_load_park_sequence$
+:i endfunction
+:i function $launch_level_select_load_park_sequence$
+	:i $destroy_level_select$
+	:i $Change$$RetryScript$ = $retry_launch_level_select_load_park_sequence$
+	:i $Change$$AbortScript$ = $back_to_created_park_menu$
+	:i $Change$$DoneScript$ = $load_loaded_created_park$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $Park$$load$
+	:i $launch_files_menu$$load$$FileType$ = $Park$
+:i endfunction
+:i $load_successful$ = %i(2,00000002)
+:i $loadforupload$ = %i(0,00000000)
+:i function $retry_launch_upload_file_sequence_cat$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_upload_file_sequence$$params$ = :s{$type$ = $CAT$:s}
+:i endfunction
+:i function $retry_launch_upload_file_sequence_cas$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_upload_file_sequence$$params$ = :s{$type$ = $OptionsAndPros$:s}
+:i endfunction
+:i function $retry_launch_upload_file_sequence_cag$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_upload_file_sequence$$params$ = :s{$type$ = $CreatedGoals$:s}
+:i endfunction
+:i function $retry_launch_upload_file_sequence_cap$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_upload_file_sequence$$params$ = :s{$type$ = $Park$:s}
+:i endfunction
+:i function $retry_launch_upload_file_sequence_cagr$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_upload_file_sequence$$params$ = :s{$type$ = $CreatedGraphic$:s}
+:i endfunction
+:i function $launch_upload_file_sequence$
+	:i $Change$$load_successful$ = %i(0,00000000)
+	:i switch %GLOBAL%$type$
+		:i case $CAT$
+			:i $Change$$loadforupload$ = %i(1,00000001)
+			:i $Change$$RetryScript$ = $retry_launch_upload_file_sequence_cat$
+			:i endcase
+		case $OptionsAndPros$
+			:i $Change$$loadforupload$ = %i(1,00000001)
+			:i $Change$$RetryScript$ = $retry_launch_upload_file_sequence_cas$
+			:i endcase
+		case $CreatedGoals$
+			:i $Change$$loadforupload$ = %i(1,00000001)
+			:i $Change$$RetryScript$ = $retry_launch_upload_file_sequence_cag$
+			:i endcase
+		case $Park$
+			:i $Change$$loadforupload$ = %i(1,00000001)
+			:i $Change$$RetryScript$ = $retry_launch_upload_file_sequence_cap$
+			:i endcase
+		case $CreatedGraphic$
+			:i $Change$$loadforupload$ = %i(1,00000001)
+			:i $Change$$RetryScript$ = $retry_launch_upload_file_sequence_cagr$
+			:i end_switch
+	
+	:i $Change$$AbortScript$ = $back_to_internet_options_menu$
+	:i $Change$$DoneScript$ = $back_to_internet_options_menu$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = %GLOBAL%$type$$load$
+	:i $launch_files_menu$$load$$FileType$ = %GLOBAL%$type$
+:i endfunction
+:i $savevaultdata$ = %i(0,00000000)
+:i function $retry_launch_download_save_sequence_cat$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_download_save_sequence$$params$ = :s{$file_type$ = $CAT$:s}
+:i endfunction
+:i function $retry_launch_download_save_sequence_cas$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_download_save_sequence$$params$ = :s{$file_type$ = $OptionsAndPros$:s}
+:i endfunction
+:i function $retry_launch_download_save_sequence_cag$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_download_save_sequence$$params$ = :s{$file_type$ = $CreatedGoals$:s}
+:i endfunction
+:i function $retry_launch_download_save_sequence_cap$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_download_save_sequence$$params$ = :s{$file_type$ = $Park$:s}
+:i endfunction
+:i function $retry_launch_download_save_sequence_cagr$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_download_save_sequence$$params$ = :s{$file_type$ = $CreatedGraphic$:s}
+:i endfunction
+:i function $launch_download_save_sequence$
+	:i if NOT $GotParam$$file_type$
+		:i $printf$%s(23,"missing param file_type")
+		:i return
+		
+	:i endif
+	:i switch %GLOBAL%$file_type$
+		:i case $CAT$
+			:i $Change$$RetryScript$ = $retry_launch_download_save_sequence_cat$
+			:i $Change$$savevaultdata$ = %i(1,00000001)
+			:i endcase
+		case $OptionsAndPros$
+			:i $Change$$RetryScript$ = $retry_launch_download_save_sequence_cas$
+			:i $Change$$savevaultdata$ = %i(1,00000001)
+			:i endcase
+		case $CreatedGoals$
+			:i $Change$$RetryScript$ = $retry_launch_download_save_sequence_cag$
+			:i $Change$$savevaultdata$ = %i(1,00000001)
+			:i endcase
+		case $Park$
+			:i $Change$$RetryScript$ = $retry_launch_download_save_sequence_cap$
+			:i $Change$$savevaultdata$ = %i(1,00000001)
+			:i endcase
+		case $CreatedGraphic$
+			:i $Change$$RetryScript$ = $retry_launch_download_save_sequence_cagr$
+			:i $Change$$savevaultdata$ = %i(1,00000001)
+			:i endcase
+		default 
+			:i $printf$%s(13,"bad file_type")
+			:i end_switch
+	
+	:i $Change$$AbortScript$ = $back_from_transfer_succeeded_dialog$
+	:i $Change$$DoneScript$ = $back_from_transfer_succeeded_dialog$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = %GLOBAL%$file_type$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = %GLOBAL%$file_type$
+:i endfunction
+:i function $retry_launch_save_cas_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_save_cas_sequence$
+:i endfunction
+:i function $launch_save_cas_sequence$
+	:i $destroy_main_menu$
+	:i if $ScreenElementExists$$id$ = $black_top_strip$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $black_top_strip$
+			:i $time$ = %i(0,00000000)
+			:i $alpha$ = %i(0,00000000)
+		:i :s}
+	:i endif
+	:i $Change$$RetryScript$ = $retry_launch_save_cas_sequence$
+	:i $Change$$AbortScript$ = $back_to_pre_cas_menu$
+	:i $Change$$DoneScript$ = $back_to_pre_cas_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $OptionsAndPros$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $OptionsAndPros$$from_cas$
+:i endfunction
+:i function $retry_launch_save_cat_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_save_cat_sequence$
+:i endfunction
+:i function $launch_save_cat_sequence$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$curren_menu_anchor$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$curren_menu_anchor$
+	:i endif
+	:i $Change$$RetryScript$ = $retry_launch_save_cat_sequence$
+	:i $Change$$AbortScript$ = $back_to_cat_pause$
+	:i $Change$$DoneScript$ = $back_to_cat_pause$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $CAT$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $CAT$
+:i endfunction
+:i function $retry_launch_skater_select_menu_save_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_options_menu_save_game_sequence$
+:i endfunction
+:i function $launch_skater_select_menu_save_game_sequence$$callback_script$ = $back_to_options_menu$
+	:i $destroy_main_menu$
+	:i $Change$$RetryScript$ = $retry_launch_skater_select_menu_save_game_sequence$
+	:i $Change$$AbortScript$ = %GLOBAL%$callback_script$
+	:i $Change$$DoneScript$ = %GLOBAL%$callback_script$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$Save$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$Save$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $retry_launch_options_menu_save_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_options_menu_save_game_sequence$
+:i endfunction
+:i function $launch_options_menu_save_game_sequence$
+	:i $destroy_main_menu$
+	:i $Change$$RetryScript$ = $retry_launch_options_menu_save_game_sequence$
+	:i $Change$$AbortScript$ = $back_to_options_menu$
+	:i $Change$$DoneScript$ = $back_to_options_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$Save$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$Save$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $retry_launch_beat_goal_save_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_beat_goal_save_game_sequence$
+:i endfunction
+:i function $launch_beat_goal_save_game_sequence$
+	:i $Change$$RetryScript$ = $retry_launch_beat_goal_save_game_sequence$
+	:i $Change$$AbortScript$ = $back_to_beat_goal$
+	:i $Change$$DoneScript$ = $back_to_beat_goal$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $OptionsAndPros$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $retry_launch_save_cagr_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_save_cagr_sequence$
+:i endfunction
+:i function $launch_save_cagr_sequence$
+	:i $destroy_main_menu$
+	:i $Change$$RetryScript$ = $retry_launch_save_cagr_sequence$
+	:i $Change$$AbortScript$ = $back_to_pre_cagr_menu$
+	:i $Change$$DoneScript$ = $back_to_pre_cagr_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $CreatedGraphic$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $CreatedGraphic$
+:i endfunction
+:i function $AppendDigitsToFilenameUntilNoClash$$max_chars$ = %i(15,0000000f)
+	:i if NOT $IsXBox$
+		:i $PauseMusic$%i(1,00000001)
+		:i $PauseStream$%i(1,00000001)
+	:i endif
+	:i %GLOBAL%$newfilename$ = %GLOBAL%$filename$
+	:i %GLOBAL%$i$ = %i(2,00000002)
+	:i while
+		
+		:i $DisableReset$
+		:i if NOT $MemCardFileExists$$name$ = %GLOBAL%$newfilename$$type$ = %GLOBAL%$file_type$
+			:i if NOT $IsXBox$
+				:i $PauseMusic$%i(4294967295,ffffffff)
+				:i $PauseStream$%i(4294967295,ffffffff)
+			:i endif
+			:i return
+			$filename$ = %GLOBAL%$newfilename$
+			:i continue
+			
+		:i endif
+		:i $AppendSuffix$$NewTextName$ = $newfilename$$text$ = %GLOBAL%$filename$$Suffix$ = %GLOBAL%$i$$MaxChars$ = %GLOBAL%$max_chars$
+		:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to 
+	:i if NOT $IsXBox$
+		:i $PauseMusic$%i(4294967295,ffffffff)
+		:i $PauseStream$%i(4294967295,ffffffff)
+	:i endif
+:i endfunction
+:i $save_name_allowed_characters$ = :a{%s(1,"1")%s(1,"2")%s(1,"3")%s(1,"4")%s(1,"5")%s(1,"6")%s(1,"7")%s(1,"8")%s(1,"9")%s(1,"0")
+	:i %s(1,"a")%s(1,"b")%s(1,"c")%s(1,"d")%s(1,"e")%s(1,"f")%s(1,"g")%s(1,"h")%s(1,"i")%s(1,"j")
+	:i %s(1,"k")%s(1,"l")%s(1,"m")%s(1,"n")%s(1,"o")%s(1,"p")%s(1,"q")%s(1,"r")%s(1,"s")%s(1,"t")
+	:i %s(1,"u")%s(1,"v")%s(1,"w")%s(1,"x")%s(1,"y")%s(1,"z")
+	:i %s(1,"A")%s(1,"B")%s(1,"C")%s(1,"D")%s(1,"E")%s(1,"F")%s(1,"G")%s(1,"H")%s(1,"I")%s(1,"J")
+	:i %s(1,"K")%s(1,"L")%s(1,"M")%s(1,"N")%s(1,"O")%s(1,"P")%s(1,"Q")%s(1,"R")%s(1,"S")%s(1,"T")
+	:i %s(1,"U")%s(1,"V")%s(1,"W")%s(1,"X")%s(1,"Y")%s(1,"Z")%s(1," ")%s(1,"`")%s(1,"%")%s(1,"\")%s(1,""):a}
+:i function $CreateNew$
+	:i $GetTags$
+	:i $memcard_menus_cleanup$
+	:i switch %GLOBAL%$file_type$
+		:i case $OptionsAndPros$
+			:i $GetCustomSkaterName$
+			:i %GLOBAL%$filename$ = %GLOBAL%$display_name$
+			:i endcase
+		case $NetworkSettings$
+			:i if NOT $IsXBox$
+				:i %GLOBAL%$filename$ = %sc(11,"Sys Lnk Set")
+			:i else 
+				:i %GLOBAL%$filename$ = %sc(12,"Online Prefs")
+			:i endif
+			:i endcase
+		case $CAT$
+			:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+			:i %GLOBAL%$filename$ = %GLOBAL%$name$
+			:i $allowed_characters$ = $save_name_allowed_characters$
+			:i endcase
+		case $Park$
+			:i $GetCustomParkName$
+			:i %GLOBAL%$filename$ = %GLOBAL%$name$
+			:i endcase
+		case $replay$
+			:i %GLOBAL%$filename$ = %sc(6,"Replay")
+			:i endcase
+		case $CreatedGoals$
+			:i %GLOBAL%$filename$ = %sc(13,"Created Goals")
+			:i endcase
+		case $CreatedGraphic$
+			:i %GLOBAL%$filename$ = %sc(12,"Unknown Save")
+			:i if $GotParam$$Filter$
+				:i $THUGProSave_GetFilterPrefix$$Filter$ = %GLOBAL%$Filter$
+				:i $THUGProSave_GetFilterDesc$$Filter$ = %GLOBAL%$Filter$
+				:i %GLOBAL%$filename$ =  (%GLOBAL%$filetype_name$) 
+			:i endif
+			:i endcase
+		default 
+			:i %GLOBAL%$filename$ = %sc(9,"Dooby Doo")
+			:i end_switch
+	
+	:i if  ($savevaultdata$ = %i(1,00000001)) 
+		:i $GetScriptString$
+		:i $filename$ = %GLOBAL%$string$
+	:i endif
+	:i $AppendDigitsToFilenameUntilNoClash$$file_type$ = %GLOBAL%$file_type$$filename$ = %GLOBAL%$filename$$max_chars$ = $MAX_MEMCARD_FILENAME_LENGTH$
+	:i $create_onscreen_keyboard$:s{
+		:i $allow_cancel$
+		:i $keyboard_cancel_script$ = $launch_files_menu$
+		:i $keyboard_cancel_params$ = :s{$FileType$ = %GLOBAL%$file_type$$Save$$Filter$ = %GLOBAL%$Filter$:s}
+		:i $keyboard_done_script$ = $CreateNew_Done$
+		:i $keyboard_title$ = %sc(9,"SAVE NAME")
+		:i $text$ = %GLOBAL%$filename$
+		:i $min_length$ = %i(1,00000001)
+		:i $max_length$ = $MAX_MEMCARD_FILENAME_LENGTH$
+		:i $FileType$ = %GLOBAL%$file_type$
+		:i $SavePrefix$ = %GLOBAL%$prefix$
+		:i $Filter$ = %GLOBAL%$Filter$
+		:i $allowed_characters$ = $save_name_allowed_characters$
+		:i $disable_special_character_tabs$
+	:i :s}
+	:i $CheckForCardRemoval$$menu_id$ = $keyboard_anchor$
+:i endfunction
+:i function $CreateNew_Done$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $memcard_menus_cleanup$
+	:i $FormatText$$TextName$ = $realfilename$%s(2,"%s")$s$ = %GLOBAL%$string$
+	:i if  ($savevaultdata$ = %i(0,00000000)) 
+		:i switch %GLOBAL%$FileType$
+			:i case $OptionsAndPros$
+				:i $SetCustomSkaterFilename$%GLOBAL%$string$
+				:i endcase
+			case $Park$
+				:i $SetCustomParkName$$name$ = %GLOBAL%$string$
+				:i $SetParkName$%GLOBAL%$string$
+				:i endcase
+			case $CreatedGraphic$
+				:i if $GotParam$$SavePrefix$
+					:i $FormatText$$TextName$ = $realfilename$%s(4,"%p%s")$s$ = %GLOBAL%$string$$p$ = %GLOBAL%$SavePrefix$
+					:i $edmsg2$%GLOBAL%$realfilename$
+				:i endif
+				:i endcase
+			case $CAT$
+				:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+				:i if  (%GLOBAL%$name$ = %s(0,"")) 
+					:i $set_new_CAT_param_values$$trick_index$ = %i(0,00000000)$name$ = %GLOBAL%$string$$can_spin$ = %GLOBAL%$can_spin$
+				:i endif
+				:i end_switch
+		
+	:i endif
+	:i $check_card$$FileType$ = %GLOBAL%$FileType$$Save$
+	:i $DisableReset$
+	:i if $MemCardFileExists$$name$ = %GLOBAL%$realfilename$$type$ = %GLOBAL%$FileType$
+		:i $OKToOverwrite$$NoGetTags$$filename$ = %GLOBAL%$realfilename$$file_type$ = %GLOBAL%$FileType$$MenuFileType$ = %GLOBAL%$FileType$$total_file_size$ = %GLOBAL%$total_file_size$$Filter$ = %GLOBAL%$Filter$
+	:i else 
+		:i $Save$$filename$ = %GLOBAL%$realfilename$$file_type$ = %GLOBAL%$FileType$$Filter$ = %GLOBAL%$Filter$
+	:i endif
+:i endfunction
+:i function $Save$
+	:i $memcard_menus_cleanup$
+	:i $WaitForAsyncLoadToFinish$
+	:i if  ($savevaultdata$ = %i(0,00000000)) 
+		:i switch %GLOBAL%$file_type$
+			:i case $Park$
+				:i $SetCustomParkName$$name$ = %GLOBAL%$filename$
+				:i $SetParkName$%GLOBAL%$filename$
+				:i endcase
+			case $OptionsAndPros$
+				:i $SetCustomSkaterFilename$%GLOBAL%$filename$
+				:i end_switch
+		
+	:i endif
+	:i $DisableReset$
+	:i $ResetTimer$
+	:i if $GotParam$$Overwrite$
+		:i $Change$$StopCheckingForCardRemoval$ = %i(1,00000001)
+		:i $mcmess_OverwritingData_2$$FileType$ = %GLOBAL%$file_type$$Filter$ = %GLOBAL%$Filter$
+		:i $Change$$StopCheckingForCardRemoval$ = %i(0,00000000)
+		:i if NOT $DeleteMemCardFile$$CardFileName$ =  (%GLOBAL%$Overwrite$->$CardFileName$) $UserFileName$ =  (%GLOBAL%$Overwrite$->$UserFileName$) $type$ =  (%GLOBAL%$Overwrite$->$type$) 
+			:i $RemoveMemCardPoolsAndLoadAnims$
+			:i $goto$$mcmess_ErrorOverwriteFailed$
+		:i endif
+		:i if $MemCardFileExists$$name$ = %GLOBAL%$filename$$type$ = %GLOBAL%$file_type$
+			:i $goto$$OKToOverwrite$$params$ = :s{$NoGetTags$$filename$ = %GLOBAL%$filename$$file_type$ = %GLOBAL%$file_type$$MenuFileType$ = %GLOBAL%$file_type$$total_file_size$ = %GLOBAL%$total_file_size$$Filter$ = %GLOBAL%$Filter$:s}
+		:i endif
+	:i else 
+		:i $mcmess_SavingData_2$$FileType$ = %GLOBAL%$file_type$$Filter$ = %GLOBAL%$Filter$
+	:i endif
+	:i $DisableReset$
+	:i if $SaveToMemoryCard$$name$ = %GLOBAL%$filename$$type$ = %GLOBAL%$file_type$$savevaultdata$ = $savevaultdata$
+		:i $RemoveMemCardPoolsAndLoadAnims$
+		:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+		:i if  ($save_successful$ = %i(0,00000000)) 
+			:i $Change$$save_successful$ = %i(1,00000001)
+			:i $goto$$AbortScript$$params$ = :s{$type$ = %GLOBAL%$file_type$:s}
+		:i else 
+			:i if $GotParam$$Overwrite$
+				:i $goto$$mcmess_OverwriteSuccessful$$params$ = :s{$type$ = %GLOBAL%$file_type$:s}
+			:i else 
+				:i $goto$$mcmess_SaveSuccessful$$params$ = :s{$type$ = %GLOBAL%$file_type$:s}
+			:i endif
+		:i endif
+	:i else 
+		:i $RemoveMemCardPoolsAndLoadAnims$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i if $GotParam$$Overwrite$
+			:i $goto$$mcmess_ErrorOverwriteFailed$
+		:i else 
+			:i $goto$$mcmess_ErrorSaveFailed$
+		:i endif
+	:i endif
+:i endfunction
+:i $DoAutoload$ = %i(1,00000001)
+:i $no_load$ = %i(0,00000000)
+:i $most_recent_save_exists$ = %i(0,00000000)
+:i $attempted_xbox_autoload$ = %i(0,00000000)
+:i $goto_secret_shop$ = %i(0,00000000)
+:i function $maybe_auto_load_from_memory_card$
+	:i if  ($DoAutoload$ = %i(0,00000000)) 
+		:i $SpawnScript$$wait_and_pause_skater$$params$ = :s{$time$ = %i(1,00000001)$dont_pause_music$ = %i(1,00000001):s}
+		:i if $ConnectedToPeer$
+			:i $SetNetworkMode$$INTERNET_MODE$
+			:i $change_gamemode_net$
+			:i $SetQuietMode$$Off$
+			:i $rejoin_lobby$
+			:i $kill_start_key_binding$
+		:i else 
+			:i $launch_main_menu$
+		:i endif
+	:i else 
+		:i $Change$$DoAutoload$ = %i(0,00000000)
+		:i if $IsInternetGameHost$
+			:i $CheckForCardOnBootup$
+		:i else 
+			:i if $IsJoiningInternetGame$
+				:i $CheckForCardOnBootup$
+			:i else 
+				:i if NOT $IsXBox$
+					:i if NOT $GotParam$$force_autoload$
+						:i $wait$%i(3,00000003)$gameframes$
+						:i if NOT $PadsPluggedIn$
+							:i $goto$$back_to_main_menu2$
+						:i endif
+						:i $SpawnScript$$wait_and_pause_skater$
+						:i $goto$$back_to_main_menu2$
+					:i else 
+						:i $SpawnScript$$wait_and_pause_skater$$params$ = :s{$time$ = %i(1,00000001):s}
+						:i $CheckForCardOnBootup$
+					:i endif
+				:i else 
+					:i $SpawnScript$$wait_and_pause_skater$
+					:i $CheckForCardOnBootup$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $CheckForCardOnBootup$
+	:i $ResetAbortAndDoneScripts$
+	:i $DisableReset$
+	:i if $CardIsInSlot$
+		:i if $BadDevice$
+			:i $Change$$RetryScript$ = $CheckForCardOnBootup$
+			:i $Change$$AbortScript$ = $back_to_main_menu2$
+			:i $goto$$mcmess_BadDevice$
+		:i else 
+			:i if $SectorSizeOK$
+				:i $goto$$auto_load$
+			:i else 
+				:i $Change$$RetryScript$ = $CheckForCardOnBootup$
+				:i $Change$$AbortScript$ = $back_to_main_menu2$
+				:i if $CardIsDamaged$
+					:i $goto$$mcmess_DamagedCard$
+				:i else 
+					:i $goto$$mcmess_BadSectorSize$
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i $Change$$RetryScript$ = $CheckForCardOnBootup$
+		:i $Change$$AbortScript$ = $back_to_main_menu2$
+		:i $goto$$mcmess_ErrorNoCardOnBootup$
+	:i endif
+:i endfunction
+:i $in_autoload$ = %i(0,00000000)
+:i function $auto_load$
+	:i $Change$$in_autoload$ = %i(1,00000001)
+	:i if  ($no_load$ = %i(0,00000000)) 
+		:i $memcard_menus_cleanup$
+	:i endif
+	:i if $IsInternetGameHost$
+		:i $Change$$AbortScript$ = $start_internet_game$
+		:i $Change$$DoneScript$ = $start_internet_game$
+	:i else 
+		:i if $IsJoiningInternetGame$
+			:i $Change$$AbortScript$ = $start_internet_game$
+			:i $Change$$DoneScript$ = $start_internet_game$
+		:i else 
+			:i $Change$$AbortScript$ = $back_to_main_menu2$
+			:i $Change$$DoneScript$ = $back_to_main_menu2$
+		:i endif
+	:i endif
+	:i $Change$$RetryScript$ = $auto_load$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $StopMusic$
+	:i $DisableReset$
+	:i if NOT $CardIsInSlot$
+		:i $goto$$mcmess_ErrorNoCardOnBootup$
+	:i endif
+	:i $ResetTimer$
+	:i $mcmess_CheckingCard$
+	:i $DisableReset$
+	:i if $BadDevice$
+		:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_BadDevice$
+	:i endif
+	:i if $CardIsDamaged$
+		:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_DamagedCard$
+	:i endif
+	:i if NOT $SectorSizeOK$
+		:i if $CardIsDamaged$
+			:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+			:i $goto$$mcmess_DamagedCard$
+		:i else 
+			:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+			:i $goto$$mcmess_BadSectorSize$
+		:i endif
+	:i endif
+	:i $DisableReset$
+	:i if NOT $CardIsFormatted$
+		:i if $CardIsDamaged$
+			:i $goto$$mcmess_DamagedCard$
+		:i else 
+			:i if $IsPS2$
+				:i $RemoveMemCardPoolsAndLoadAnims$
+				:i $KillSpawnedScript$$name$ = $wait_and_pause_skater$
+				:i $goto$$back_to_main_menu2$
+			:i else 
+				:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+				:i $goto$$mcmess_ErrorNotFormatted$$params$ = :s{$QuitText$ = %sc(27,"Continue without formatting")$BackScript$ = $NullScript$:s}
+			:i endif
+		:i endif
+	:i endif
+	:i if  ($no_load$ = %i(0,00000000)) 
+		:i $DisableReset$
+		:i $RemoveParameter$$MostRecentSave$
+		:i $GetMemCardDirectoryListing$
+		:i $GetMostRecentSave$%GLOBAL%$DirectoryListing$$NetworkSettings$
+		:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+		:i if NOT $CardIsInSlot$
+			:i $goto$$mcmess_ErrorNoCardOnBootup$
+		:i endif
+	:i endif
+	:i %GLOBAL%$did_load$ = %i(0,00000000)
+	:i if $GotParam$$MostRecentSave$
+		:i $Change$$most_recent_save_exists$ = %i(1,00000001)
+		:i $ResetTimer$
+		:i $mcmess_LoadingData$$FileType$ = $NetworkSettings$
+		:i $DisableReset$
+		:i if $LoadFromMemoryCard$$name$ =  (%GLOBAL%$MostRecentSave$->$filename$) $type$ = $NetworkSettings$
+			:i $GetPreferenceChecksum$$pref_type$ = $network$$config_type$
+		:i else 
+			:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+			:i $goto$$mcmess_ErrorLoadFailed$$params$ = :s{
+				:i  isNull 
+				:i $filename$ =  (%GLOBAL%$MostRecentSave$->$filename$) 
+				:i $actual_file_name$ =  (%GLOBAL%$MostRecentSave$->$actual_file_name$) 
+				:i $file_type$ = $NetworkSettings$
+			:i :s}
+		:i endif
+		:i %GLOBAL%$did_load$ = %i(1,00000001)
+	:i endif
+	:i $DisableReset$
+	:i $RemoveParameter$$MostRecentSave$
+	:i $GetMostRecentSave$%GLOBAL%$DirectoryListing$$OptionsAndPros$
+	:i if $GotParam$$MostRecentSave$
+		:i if  (%GLOBAL%$did_load$ = %i(0,00000000)) 
+			:i $ResetTimer$
+			:i $mcmess_LoadingData$$FileType$ = $OptionsAndPros$
+		:i endif
+		:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+		:i $DisableReset$
+		:i if NOT $LoadFromMemoryCard$$name$ =  (%GLOBAL%$MostRecentSave$->$filename$) $type$ = $OptionsAndPros$
+			:i $mem_card_message_pause$$NoTimerReset$$NoCardRemovalCheck$
+			:i $goto$$mcmess_ErrorLoadFailed$$params$ = :s{
+				:i  isNull 
+				:i $filename$ =  (%GLOBAL%$MostRecentSave$->$filename$) 
+				:i $actual_file_name$ =  (%GLOBAL%$MostRecentSave$->$actual_file_name$) 
+				:i $file_type$ = $OptionsAndPros$
+			:i :s}
+		:i endif
+		:i %GLOBAL%$did_load$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$did_load$ = %i(1,00000001)) 
+	:i endif
+	:i $DisableReset$
+	:i $GetMemCardSpaceAvailable$
+	:i $GetSaveSizes$
+	:i if $IsPS2$
+		:i if $isPal$
+			:i %GLOBAL%$TotalSpaceRequired$ = %GLOBAL%$SaveSize_OptionsAndPros$
+		:i else 
+			:i %GLOBAL%$TotalSpaceRequired$ =  (%GLOBAL%$SaveSize_OptionsAndPros$ + 
+			:i %GLOBAL%$SaveSize_Park$ + 
+			:i %GLOBAL%$SaveSize_CreateATrick$ + 
+			:i %GLOBAL%$SaveSize_Goals$ + 
+			:i %GLOBAL%$SaveSize_NetworkSettings$) 
+		:i endif
+	:i else 
+		:i %GLOBAL%$TotalSpaceRequired$ =  (%GLOBAL%$SaveSize_OptionsAndPros$ + 
+		:i %GLOBAL%$SaveSize_Park$ + 
+		:i %GLOBAL%$SaveSize_CreateATrick$ + 
+		:i %GLOBAL%$SaveSize_Goals$ + 
+		:i %GLOBAL%$SaveSize_CreatedGraphic$) 
+	:i endif
+	:i if  (%GLOBAL%$FilesLeft$ < %i(4,00000004)) 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$
+		:i $goto$$mcmess_ErrorNotEnoughSpaceToSaveAllTypes$
+	:i endif
+	:i if  (%GLOBAL%$SpaceAvailable$ < %GLOBAL%$TotalSpaceRequired$) 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$
+		:i $goto$$mcmess_ErrorNotEnoughSpaceToSaveAllTypes$
+	:i endif
+	:i $Change$$show_career_startup_menu$ = %i(0,00000000)
+	:i $Change$$in_autoload$ = %i(0,00000000)
+	:i if $IsInternetGameHost$
+		:i $start_internet_game$
+	:i else 
+		:i if $IsJoiningInternetGame$
+			:i $start_internet_game$
+		:i else 
+			:i $goto$$back_to_main_menu2$
+		:i endif
+	:i endif
+:i endfunction
+:i function $retry_launch_pause_menu_save_created_goals$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_pause_menu_save_created_goals$
+:i endfunction
+:i function $launch_pause_menu_save_created_goals$
+	:i $memcard_menus_cleanup$
+	:i $root_window$.$SetTags$$save_return_to_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_pause_menu_save_created_goals$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Saving$
+	:i $check_card$$FileType$ = $CreatedGoals$$Save$
+	:i $launch_files_menu$$Save$$FileType$ = $CreatedGoals$
+:i endfunction
+:i $DoInitialiseCreatedGoalsAfterLoading$ = %i(0,00000000)
+:i function $retry_launch_pause_menu_load_created_goals$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_pause_menu_load_created_goals$
+:i endfunction
+:i function $launch_pause_menu_load_created_goals$
+	:i $destroy_pause_menu$
+	:i $root_window$.$SetTags$$save_return_to_pause_menu$
+	:i $Change$$RetryScript$ = $retry_launch_pause_menu_load_created_goals$
+	:i $Change$$AbortScript$ = $back_to_pause_menu$
+	:i $Change$$DoneScript$ = $back_to_pause_menu$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $Change$$DoInitialiseCreatedGoalsAfterLoading$ = %i(1,00000001)
+	:i $check_card$$FileType$ = $CreatedGoals$
+	:i $launch_files_menu$$FileType$ = $CreatedGoals$
+:i endfunction
+:i function $launch_load_created_goals_from_select_goals_menu$
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $memcard_menus_cleanup$
+	:i $Change$$RetryScript$ = $launch_load_created_goals_from_select_goals_menu$
+	:i $Change$$AbortScript$ = $create_select_goals_menu$
+	:i $Change$$DoneScript$ = $create_select_goals_menu$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $Change$$DoInitialiseCreatedGoalsAfterLoading$ = %i(0,00000000)
+	:i $check_card$$FileType$ = $CreatedGoals$
+	:i $launch_files_menu$$FileType$ = $CreatedGoals$
+	:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $launch_load_created_goals_from_host_goals_menu$
+	:i $memcard_menus_cleanup$
+	:i $Change$$RetryScript$ = $launch_load_created_goals_from_host_goals_menu$
+	:i $Change$$AbortScript$ = $launch_network_host_options_menu$
+	:i $Change$$DoneScript$ = $host_options_goals_sub_menu_return$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $Change$$DoInitialiseCreatedGoalsAfterLoading$ = %i(0,00000000)
+	:i $check_card$$FileType$ = $CreatedGoals$
+	:i $launch_files_menu$$FileType$ = $CreatedGoals$
+:i endfunction
+:i function $launch_load_created_goals_from_game_options_menu$
+	:i $memcard_menus_cleanup$
+	:i $Change$$RetryScript$ = $launch_load_created_goals_from_game_options_menu$
+	:i $Change$$AbortScript$ = $create_network_game_options_menu$
+	:i $Change$$DoneScript$ = $game_options_goals_sub_menu_return$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $Change$$DoInitialiseCreatedGoalsAfterLoading$ = %i(0,00000000)
+	:i $check_card$$FileType$ = $CreatedGoals$
+	:i $launch_files_menu$$FileType$ = $CreatedGoals$
+:i endfunction
+:i function $retry_launch_load_network_settings$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_network_settings$
+:i endfunction
+:i function $loaded_network_preferences$
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$config_type$
+	:i switch %GLOBAL%$checksum$
+		:i case $config_sony$
+			:i $GetPreferenceString$$pref_type$ = $network$$config_type$
+			:i if NOT $ChooseNetConfig$$name$ = %GLOBAL%$ui_string$
+				:i $clear_config_type$
+				:i $clear_device_type$
+			:i endif
+			:i endcase
+		default 
+			:i $clear_config_type$
+			:i $clear_device_type$
+			:i end_switch
+	
+	:i $back_to_net_settings_menu$
+:i endfunction
+:i function $launch_load_network_settings$
+	:i $destroy_net_settings_menu$
+	:i $Change$$RetryScript$ = $retry_launch_load_network_settings$
+	:i $Change$$AbortScript$ = $back_to_net_settings_menu$
+	:i $Change$$DoneScript$ = $loaded_network_preferences$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $NetworkSettings$
+	:i $launch_files_menu$$FileType$ = $NetworkSettings$
+:i endfunction
+:i function $retry_launch_options_menu_load_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_options_menu_load_game_sequence$
+:i endfunction
+:i function $retry_launch_career_menu_load_game_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_career_menu_load_game_sequence$
+:i endfunction
+:i function $launch_career_menu_load_game_sequence$
+	:i $dialog_box_exit$
+	:i $destroy_main_menu$
+	:i $Skater$.$hide$
+	:i $Change$$RetryScript$ = $retry_launch_career_menu_load_game_sequence$
+	:i $Change$$AbortScript$ = $back_to_career_options_menu$
+	:i $Change$$DoneScript$ = $back_to_career_options_menu$
+	:i $save_previous_progressive_mode$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+	:i $check_card$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $launch_options_menu_load_game_sequence$
+	:i $destroy_main_menu$
+	:i $Change$$RetryScript$ = $retry_launch_options_menu_load_game_sequence$
+	:i $Change$$AbortScript$ = $back_to_options_menu$
+	:i $Change$$DoneScript$ = $back_to_options_menu$
+	:i $save_previous_progressive_mode$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+	:i $check_card$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$FileType$ = $OptionsAndPros$
+:i endfunction
+:i function $retry_launch_load_cas_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_cas_sequence$
+:i endfunction
+:i function $launch_load_cas_sequence$
+	:i $destroy_main_menu$
+	:i $save_previous_progressive_mode$
+	:i $Change$$AbortScript$ = $back_to_pre_cas_menu$
+	:i $Change$$DoneScript$ = $jump_to_edit_skater$
+	:i $Change$$RetryScript$ = $retry_launch_load_cas_sequence$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+	:i $check_card$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$FileType$ = $OptionsAndPros$$from_cas$
+:i endfunction
+:i function $retry_launch_load_cas_from_select_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_cas_from_select_sequence$
+:i endfunction
+:i function $launch_load_cas_from_select_sequence$
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $destroy_main_menu$
+	:i $dialog_box_exit$
+	:i $Change$$AbortScript$ = $launch_new_select_skater_menu$
+	:i $Change$$DoneScript$ = $launch_new_select_skater_menu$
+	:i $save_previous_progressive_mode$
+	:i $Change$$RetryScript$ = $retry_launch_load_cas_from_select_sequence$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+		:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+	:i else 
+		:i $SetSectionsToApplyWhenLoading$$ApplyStorySkater$
+	:i endif
+	:i $check_card$$FileType$ = $OptionsAndPros$
+	:i $launch_files_menu$$FileType$ = $OptionsAndPros$
+	:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $retry_launch_load_cat_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_cat_sequence$
+:i endfunction
+:i function $launch_load_cat_sequence$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $Change$$AbortScript$ = $back_to_pre_cat_menu$
+	:i $Change$$DoneScript$ = $back_to_edit_cat_menu$
+	:i $Change$$RetryScript$ = $retry_launch_load_cat_sequence$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $CAT$
+	:i $launch_files_menu$$FileType$ = $CAT$
+:i endfunction
+:i function $retry_launch_load_cat_sequence2$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_cat_sequence2$
+:i endfunction
+:i function $launch_load_cat_sequence2$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $Change$$loading_cat_from_edit_tricks$ = %i(1,00000001)
+	:i $Change$$AbortScript$ = $back_to_edit_tricks_menu$
+	:i $Change$$DoneScript$ = $finish_loading_cat$
+	:i $Change$$RetryScript$ = $retry_launch_load_cat_sequence2$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $CAT$
+	:i $launch_files_menu$$FileType$ = $CAT$
+:i endfunction
+:i function $retry_launch_load_cagr_sequence$
+	:i $memcard_menus_cleanup$
+	:i $goto$$launch_load_cagr_sequence$
+:i endfunction
+:i function $launch_load_cagr_sequence$
+	:i $destroy_main_menu$
+	:i $Change$$RetryScript$ = $retry_launch_load_cagr_sequence$
+	:i $Change$$AbortScript$ = $back_to_pre_cagr_menu$
+	:i $Change$$DoneScript$ = $load_cagr_sequence_done$
+	:i $Change$$SavingOrLoading$ = $Loading$
+	:i $check_card$$FileType$ = $CreatedGraphic$
+	:i $launch_files_menu$$FileType$ = $CreatedGraphic$
+:i endfunction
+:i function $load_cagr_sequence_done$
+	:i $dialog_box_exit$
+	:i $edit_graphic_create_main_menu$$new$ = %i(0,00000000)
+:i endfunction
+:i function $load$
+	:i $GetTags$
+	:i if $InNetGame$
+		:i if  (%GLOBAL%$file_type$ = $Park$) 
+			:i if NOT $GotParam$$MaxPlayers$
+				:i $MaxPlayers$ = %i(1,00000001)
+			:i endif
+			:i $GetNetworkNumPlayers$
+			:i if $InNetGame$
+				:i if  (%GLOBAL%$num_players$ > %GLOBAL%$MaxPlayers$) 
+					:i $memcard_menus_cleanup$
+					:i $goto$$mcmess_ErrorbadParkMaxPlayers$$params$ =  isNull 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if  ( ($GotParam$$BadVersion$)  OR  ($GotParam$$Corrupt$) ) 
+		:i if $IsNGC$
+			:i $memcard_menus_cleanup$
+			:i $goto$$mcmess_ErrorLoadFailed$$params$ = :s{ isNull $CorruptedData$$GoBackToFilesMenu$:s}
+		:i else 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $memcard_menus_cleanup$
+	:i $generic_menu_pad_choose_sound$
+	:i $ResetTimer$
+	:i $mcmess_LoadingData_2$$FileType$ = %GLOBAL%$file_type$$Filter$ = %GLOBAL%$Filter$
+	:i $DisableReset$
+	:i if $LoadFromMemoryCard$$name$ = %GLOBAL%$filename$$type$ = %GLOBAL%$file_type$$loadforupload$ = $loadforupload$
+		:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+		:i $mcmess_LoadingData_2$$FileType$ = %GLOBAL%$file_type$$no_animate$ = $no_animate$$Filter$ = %GLOBAL%$Filter$
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i if  ($load_successful$ = %i(0,00000000)) 
+			:i $Change$$load_successful$ = %i(1,00000001)
+			:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+			:i $goto$$AbortScript$$params$ = :s{$type$ = %GLOBAL%$file_type$$filename$ = %GLOBAL%$filename$:s}
+		:i else 
+			:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+			:i if  (%GLOBAL%$file_type$ = $Park$) 
+				:i if $InNetGame$
+					:i $goto$$DoneScript$$type$ = %GLOBAL%$file_type$
+				:i endif
+			:i endif
+			:i $goto$$mcmess_LoadSuccessful$$params$ = :s{$type$ = %GLOBAL%$file_type$$filename$ = %GLOBAL%$filename$:s}
+		:i endif
+	:i else 
+		:i $mem_card_message_pause$$XSkips$$NoTimerReset$$NoCardRemovalCheck$
+		:i $goto$$mcmess_ErrorLoadFailed$$params$ = :s{ isNull $GoBackToFilesMenu$:s}
+	:i endif
+:i endfunction
+:i function $post_load_from_memory_card$
+	:i if NOT $GotParam$$type$
+		:i $printstruct$ isNull 
+		:i $script_assert$%s(34,"Expected to find parameter 'type'!")
+	:i endif
+	:i switch %GLOBAL%$type$
+		:i case $OptionsAndPros$
+			:i $load_pro_skater$$name$ = $custom$
+			:i $cas_post_load$
+			:i endcase
+		case $Park$
+			:i $SetCustomParkName$$name$ = %GLOBAL%$name$
+			:i $SetParkName$%GLOBAL%$name$
+			:i if $CustomParkMode$$editing$
+				:i $InitialiseCreatedGoals$
+			:i endif
+			:i endcase
+		case $CreatedGoals$
+			:i $end_current_goal_run$
+			:i if $IsTrue$$DoInitialiseCreatedGoalsAfterLoading$
+				:i $InitialiseCreatedGoals$
+			:i endif
+			:i endcase
+		case $CreatedGraphic$
+			:i $thugpro_post_load_from_memory_card$$data_array$ = %GLOBAL%$layer_infos$
+			:i end_switch
+	
+:i endfunction
+:i function $UnloadAnimsAndCreateMemCardPools$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $LevelIs$$load_sk5ed$
+			:i $Change$$DebugPausedObjects$ = %i(1,00000001)
+			:i $CreateTemporaryMemCardPools$
+		:i endif
+	:i endif
+:i endfunction
+:i function $RemoveMemCardPoolsAndLoadAnims$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $LevelIs$$load_sk5ed$
+			:i return
+			
+		:i endif
+		:i $RemoveTemporaryMemCardPools$
+		:i $Change$$DebugPausedObjects$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $reload_anims_then_run_abort_script$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $RemoveMemCardPoolsAndLoadAnims$
+	:i $goto$$AbortScript$
+:i endfunction
+:i :end

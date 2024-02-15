@@ -1,0 +1,169 @@
+//------------------------------------------------
+// THP8 / THUG2Remix PSP .skin file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+local uint Off_Textures = 0;
+local uint Off_Materials = 0;
+local uint Off_Geometry = 0;
+
+struct MaterialNode;
+
+enum <ubyte> MaterialNodeType
+{
+    NODE_NOTHING = 0,
+    NODE_MATERIAL = 1,
+    NODE_MESH = 2,
+    NODE_MATPASS = 4
+};
+
+typedef struct
+{
+    QBKey id;
+    uint unkA;
+    uint unkB;
+    
+    MaterialNode properties;
+} MaterialPass;
+
+typedef struct
+{
+    ushort constant <bgcolor=CL_SINGLEVALUE>;
+    short weight_x_maybe <bgcolor=CL_SINGLEVALUE>;
+    short weight_y_maybe <bgcolor=CL_SINGLEVALUE>;
+    short uv_a <bgcolor=CL_SINGLEVALUE>;
+    short uv_b <bgcolor=CL_SINGLEVALUE>;
+    short unk <bgcolor=CL_SINGLEVALUE>;
+    short x <bgcolor=CL_SINGLEVALUE>;
+    short y <bgcolor=CL_SINGLEVALUE>;
+    short z <bgcolor=CL_SINGLEVALUE>;
+} MeshVertex;
+
+typedef struct
+{
+    uint mesh_flags;
+    RelativeOffset vertexDataOffset(Off_Geometry) <comment="Vertex offset relative to buffer start">;
+    uint zeroB;
+    
+    local uint old_off = FTell();
+    FSeek(AbsOffset(vertexDataOffset));
+    MeshVertex vertices_here[18];
+    FSeek(old_off);
+} MeshProperties;
+
+typedef struct
+{
+    QBKey id <bgcolor=CL_CHECKSUM>;
+    uint zero <bgcolor=CL_PARSED>;
+    ubyte color[4] <bgcolor=CL_SINGLEVALUE>;
+    
+    local uint pass_count = 0;
+    local ubyte testByte = ReadByte();
+            
+    while (testByte == NODE_MATPASS)
+    {
+        pass_count ++;
+        MaterialNode pass;
+        testByte = ReadByte();
+    }
+} Material <read=Str("%s", ReadQBKey(id))>;
+
+typedef struct
+{
+    MaterialNodeType nodeType <bgcolor=CL_SINGLEVALUE>;
+    ubyte nodeUnk <bgcolor=CL_SINGLEVALUE>;
+    ushort nodeZero <bgcolor=CL_PARSED, hidden=true>;
+    
+    switch (nodeType)
+    {
+        case NODE_MATPASS:
+            MaterialPass data;
+            break;
+            
+        case NODE_MESH:
+            MeshProperties data;
+            break;
+            
+        case NODE_MATERIAL:
+            Material data;
+            break;
+    }
+} MaterialNode <read=ReadMaterialNode>;
+
+string ReadMaterialNode(MaterialNode &node)
+{
+    switch (node.nodeType)
+    {
+        case NODE_MATERIAL:
+            return Str("[%d] %s: %s, %d passes", node.nodeUnk, EnumToString(node.nodeType), ReadQBKey(node.data.id), node.data.pass_count);
+            break;
+            
+        case NODE_MATPASS:
+            return Str("[%d] %s: %s", node.nodeUnk, EnumToString(node.nodeType), ReadQBKey(node.data.id));
+            break;
+            
+        case NODE_MESH:
+            return Str("[%d] %s: Verts @ %d, Flags: 0x%08x", node.nodeUnk, EnumToString(node.nodeType), AbsOffset(node.data.vertexDataOffset), node.data.mesh_flags);
+            break;
+            
+        default:
+            return Str("[%d] %s", node.nodeUnk, EnumToString(node.nodeType));
+            break;
+    }
+}
+
+typedef struct
+{
+    local ubyte testByte = ReadByte();
+    
+    while (testByte == NODE_MATERIAL)
+    {
+        MaterialNode material;
+        testByte = ReadByte();
+    }
+} MaterialList;
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_CHECKSUM>;
+    int unk <bgcolor=CL_SINGLEVALUE>;
+    uint unkB <bgcolor=CL_SINGLEVALUE>;
+    QBKey someKey <bgcolor=CL_CHECKSUM>;
+    uint unkC <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_textureChunk(0) <bgcolor=CL_POINTER>;
+    uint textureChunkSize <bgcolor=CL_SINGLEVALUE>;
+    uint textureChunkUnk <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_geometryChunk(0) <bgcolor=CL_POINTER>;
+    uint geometryChunkSize <bgcolor=CL_SINGLEVALUE, comment="Size of geometry chunk">;
+    uint geometryChunkUnk <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_materialsMaybe(0) <bgcolor=CL_POINTER>;
+    uint materialChunkSize <bgcolor=CL_SINGLEVALUE, comment="Size of material chunk">;
+    uint materialChunkUnk <bgcolor=CL_SINGLEVALUE>;
+    
+    Off_Textures = AbsOffset(pt_textureChunk);
+    Off_Geometry = AbsOffset(pt_geometryChunk);
+    Off_Materials = AbsOffset(pt_materialsMaybe);
+    
+    uint unkD <bgcolor=CL_SINGLEVALUE>;
+    uint unkE <bgcolor=CL_SINGLEVALUE>;
+    
+    ubyte unkByte <bgcolor=CL_PARSED>;
+    char filename[31] <bgcolor=CL_NAME>;
+    
+    MaterialList materials;
+    
+    local uint old_off = FTell();
+    
+    FSeek(AbsOffset(pt_textureChunk));
+    uint texture_chunk_here <bgcolor=0xAAAAAA>;
+    FSeek(AbsOffset(pt_geometryChunk));
+    uint geometry_chunk_here <bgcolor=0xAAAAAA>;
+    FSeek(AbsOffset(pt_materialsMaybe));
+    uint material_chunk_here <bgcolor=0xAAAAAA>;
+    
+    FSeek(old_off);
+} PSPSkin;
+
+LittleEndian();
+PSPSkin file;

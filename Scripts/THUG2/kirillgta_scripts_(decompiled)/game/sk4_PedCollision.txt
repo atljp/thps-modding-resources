@@ -1,0 +1,72 @@
+
+:i function $ped_initialize_collision_exceptions$
+	:i $GetTags$
+	:i switch %GLOBAL%$collision_mode$
+		:i case $fall$
+			:i $Obj_SetInnerAvoidRadius$%i(4,00000004)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_fall$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i endcase
+		case $knock$
+			:i $Obj_SetInnerAvoidRadius$%i(2,00000002)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_knockdown$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i endcase
+		case $avoid$
+			:i $Obj_SetInnerAvoidRadius$%i(8,00000008)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_avoidstop$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i endcase
+		case $bump$
+			:i $Obj_SetInnerAvoidRadius$%i(2,00000002)
+			:i $Obj_SetException$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $goal_pro_bounce_skater$
+			:i :s}
+			:i endcase
+		case $ignore$
+			:i $Obj_ClearException$$ObjectInAvoidRadius$
+			:i endcase
+		case $shot$
+			:i $Obj_SetInnerAvoidRadius$%i(8,00000008)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_shot$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i endcase
+		case $Explode$
+			:i $Obj_SetInnerAvoidRadius$%i(4,00000004)
+			:i $SetEventHandler$:s{
+				:i $ex$ = $ObjectInAvoidRadius$
+				:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_Explode$$event$ = $ObjectInAvoidRadius$:s}
+			:i :s}
+			:i end_switch
+	
+	:i $ped_initialize_projectile_exceptions$
+:i endfunction
+:i function $ped_initialize_projectile_exceptions$
+	:i $GetTags$
+	:i if NOT $GotParam$$skater$
+		:i $SetEventHandler$:s{
+			:i $ex$ = $ProjectileInAvoidRadius$
+			:i $scr$ = $Ped_Utils_EventHandler$$params$ = :s{$SetState$ = $STATE_shot$$event$ = $ProjectileInAvoidRadius$:s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $ped_return_to_precollision_state$
+	:i $SetTags$$pissed$ = %i(0,00000000)
+	:i $Ped_Utils_SetMiscEventHandlers$
+	:i $ped_initialize_collision_exceptions$
+	:i if $GetSingleTag$$collision_exception_return_state$
+		:i $goto$%GLOBAL%$collision_exception_return_state$
+	:i else 
+		:i $Ped_StateLogic_SetDefaultState$
+	:i endif
+:i endfunction
+:i :end

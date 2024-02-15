@@ -1,0 +1,60 @@
+typedef struct
+{
+    local string _name = "Unknown";
+    local string _className = "unknownClass";
+
+    HavokLocalFixup m_name;
+    HavokLocalFixup m_className;
+    hkVariant m_variant;
+
+    local uint old_pos = FTell();
+
+    if (m_name.fixup_dest)
+    {
+        FSeek(m_name.fixup_dest);
+        string _nv_name <hidden=true>;
+        _name = _nv_name;
+    }
+
+    if (m_className.fixup_dest)
+    {
+        FSeek(m_className.fixup_dest);
+        string _nv_classname <hidden=true>;
+        _className = _nv_classname;
+    }
+
+    FSeek(old_pos);
+} NamedVariant <read=Str("%s (%s)", _name, _className)>;
+
+typedef struct
+{
+    HavokLocalFixup m_namedVariants;
+    int m_numNamedVariants;
+
+    if (m_namedVariants.fixup_dest)
+    {
+        local uint old_pos = FTell();
+        FSeek(m_namedVariants.fixup_dest);
+
+        NamedVariant variants[m_numNamedVariants] <optimize=false>;
+
+        FSeek(old_pos);
+    }
+
+    /*
+    if (m_systems.m_size > 0 && m_systems.list_offset)
+    {
+        local uint old_pos = FTell();
+
+        FSeek(m_systems.list_offset);
+
+        local int i;
+        for (i=0; i<m_systems.m_size; i++)
+        {
+            HavokGlobalFixup system_links <optimize=false>;
+        }
+        
+        FSeek(old_pos);
+    }
+    */
+} hkRootLevelContainer;

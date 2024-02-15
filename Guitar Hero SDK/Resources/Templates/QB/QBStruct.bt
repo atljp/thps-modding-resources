@@ -1,0 +1,22 @@
+//------------------------------------------------
+// Structure
+//------------------------------------------------
+
+typedef struct ()
+{
+    uint header_marker <comment="Marks start of struct">;
+
+    RelativeOffset first_item(0) <bgcolor=CL_POINTER>;
+   
+    if (AbsOffset(first_item) > 0)
+    {
+        FSeek(AbsOffset(first_item));
+        QBItem child_item;
+    
+        while (child_item.data.props.next_item)
+        {
+            FSeek(child_item.data.props.next_item);
+            QBItem child_item;
+        }
+    }
+} QBStructData;

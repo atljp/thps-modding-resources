@@ -1,0 +1,712 @@
+
+:i $THUGPRO_CHAT_LOG$ = :a{:a}
+:i $chat_font$ = $dialog$
+:i $number_of_console_lines$ = %i(6,00000006)
+:i $default_number_of_console_lines$ = %i(9,00000009)
+:i $min_number_of_console_lines$ = %i(2,00000002)
+:i $max_number_of_console_lines$ = %i(20,00000014)
+:i $console_scale$ = %f(0.600000)
+:i $console_scale_step$ = %f(0.020000)
+:i $console_scale_min$ = %f(0.200000)
+:i $console_scale_max$ = %f(1.000000)
+:i $console_font_color$ = $text_color_c0$
+:i $console_dims$ = %vec2(750.000000,10.000000)
+:i $console_pos$ = %vec2(-40.000000,250.000000)
+:i $lobby_console_dims$ = %vec2(750.000000,4.000000)
+:i $lobby_console_pos$ = %vec2(-60.000000,280.000000)
+:i $console_wait_time$ = %i(40,00000028)
+:i $console_SpamFilter$ = %i(1,00000001)
+:i $console_FormatFilter$ = %i(1,00000001)
+:i $console_ParsingFilter$ = %i(0,00000000)
+:i $LastConsoleMessageId$ = $null$
+:i $console_width_min$ = %f(50.000000)
+:i $console_width_max$ = %f(1000.000000)
+:i $gone_char_toggle$ = %i(0,00000000)
+:i function $create_console$
+	:i if NOT $ObjectExists$$id$ = $console_message_vmenu$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $LevelIs$$Load_MainMenu$
+			:i $pos$ =  ($lobby_console_pos$) 
+		:i else 
+			:i $pos$ =  ($console_pos$) 
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $VMenu$
+			:i $parent$ = $root_window$
+			:i $id$ = $console_message_vmenu$
+			:i $padding_scale$ = %f(0.650000)
+			:i $font$ = $dialog$
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+			:i $pos$ = %GLOBAL%$pos$
+			:i $z_priority$ = %i(0,00000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $get_num_console_lines$
+	:i if $LevelIs$$Load_MainMenu$
+		:i return
+		$num_console_lines$ =  ($default_number_of_console_lines$) 
+	:i else 
+		:i return
+		$num_console_lines$ =  ($number_of_console_lines$) 
+	:i endif
+:i endfunction
+:i function $create_console_message$$text$ = %s(23,"Default console message")$rgba$ = :a{%i(113,00000071)%i(121,00000079)%i(127,0000007f)%i(80,00000050):a}
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $THUGPRO_StrLen$$string$ = %GLOBAL%$text$
+		:i if  (%GLOBAL%$length$ > %i(96,00000060)) 
+			:i return
+			
+		:i endif
+		:i $root_window$.$GetSingleTag$$menu_state$
+		:i if NOT $ObjectExists$$id$ = $console_message_vmenu$
+			:i $create_console$
+		:i endif
+		:i if NOT  (%GLOBAL%$menu_state$ = $on$) 
+			:i $unhide_console_window$
+		:i endif
+		:i $get_num_console_lines$
+		:i $SetScreenElementLock$$id$ = $console_message_vmenu$$off$
+		:i if $ScreenElementExists$$id$ = :s{$console_message_vmenu$$child$ =  (%GLOBAL%$num_console_lines$ - %i(1,00000001)) :s}
+			:i $DestroyScreenElement$$id$ = :s{$console_message_vmenu$$child$ = %i(0,00000000):s}
+		:i endif
+		:i if $LevelIs$$Load_MainMenu$
+			:i $dims$ =  ($lobby_console_dims$) 
+			:i $pos$ =  ($lobby_console_pos$) 
+			:i $max_chat_height$ = %i(140,0000008c)
+		:i else 
+			:i $dims$ =  ($console_dims$) 
+			:i $pos$ =  ($console_pos$) 
+			:i $max_chat_height$ = %i(100,00000064)
+		:i endif
+		:i if $GotParam$$join$
+			:i $rgba$ = :a{%i(0,00000000)%i(80,00000050)%i(0,00000000)%i(80,00000050):a}
+		:i else 
+			:i if $GotParam$$left$
+				:i $rgba$ = :a{%i(80,00000050)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+			:i endif
+		:i endif
+		:i %GLOBAL%$font$ =  ($chat_font$) 
+		:i if  (%GLOBAL%$font$ = $dialog$) 
+			:i $scale$ =  ($console_scale$) 
+		:i else 
+			:i $scale$ =  ($console_scale$) 
+			:i $shadow$ = $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i endif
+		:i $SetScreenElementProps$$id$ = $console_message_vmenu$$pos$ = %GLOBAL%$pos$
+		:i $FormatText$$textname$ = $message$%s(2,"%t")$t$ = %GLOBAL%$text$
+		:i if  ($console_SpamFilter$ = %i(1,00000001)) 
+			:i $ClearMessageFormat$$string$ = %GLOBAL%$message$
+			:i $FormatText$$checksumname$ = $check$%s(2,"%c")$c$ = %GLOBAL%$clean_string$
+			:i if  (%GLOBAL%$check$ = $LastConsoleMessageId$) 
+				:i return
+				
+			:i else 
+				:i $change$$LastConsoleMessageId$ = %GLOBAL%$check$
+			:i endif
+		:i endif
+		:i $split_consolemessage$$string$ = %GLOBAL%$message$$clean_color_format$
+		:i if  ( (%GLOBAL%$IsChatMessage$)  = %i(1,00000001)) 
+			:i if $ArrayContains$$array$ = $blacklist_player_array$$contains$ = %GLOBAL%$split_name$
+				:i return
+				
+			:i endif
+		:i endif
+		:i if  ($console_ParsingFilter$ = %i(1,00000001)) 
+			:i if  ( ($ArrayContains$$array$ = $whitelist_player_array$$contains$ = %GLOBAL%$split_name$)  OR  ($gone_thugpro_devteam_build$ = %i(1,00000001)) ) 
+				:i $check_command_exist$$string$ = %GLOBAL%$split_msg$
+				:i if NOT $GotParam$$not_a_command$
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i $ClearMessageFormat$$string$ = %GLOBAL%$message$
+		:i if $GotParam$$new_string$
+			:i %GLOBAL%$message$ = %GLOBAL%$new_string$
+		:i else 
+			:i return
+			
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $console_message_vmenu$
+			:i $font$ = %GLOBAL%$font$
+			:i $text$ = %GLOBAL%$message$
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $line_spacing$ = %f(0.800000)
+			:i $scale$ = %GLOBAL%$scale$
+			:i $not_focusable$
+			:i $dims$ = %GLOBAL%$dims$
+			:i $allow_expansion$
+			:i %GLOBAL%$shadow$
+			:i $shadow_rgba$ = %GLOBAL%$shadow_rgba$
+			:i $shadow_offs$ = %GLOBAL%$shadow_offs$
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i if NOT $GotParam$$DontStore$
+				:i $THUGPRO_ConsoleMessage$$string$ = %GLOBAL%$message$
+			:i endif
+		:i endif
+		:i while
+			
+			:i $total_height$ = %i(0,00000000)
+			:i $index$ = %GLOBAL%$num_console_lines$
+			:i while
+				
+				:i if $ScreenElementExists$$id$ = :s{$console_message_vmenu$$child$ =  (%GLOBAL%$num_console_lines$ - %GLOBAL%$index$) :s}
+					:i $GetScreenElementDims$$id$ = :s{$console_message_vmenu$$child$ =  (%GLOBAL%$num_console_lines$ - %GLOBAL%$index$) :s}
+					:i %GLOBAL%$total_height$ =  (%GLOBAL%$total_height$ + %GLOBAL%$height$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to 
+			:i if  (%GLOBAL%$total_height$ > %GLOBAL%$max_chat_height$) 
+				:i $DestroyScreenElement$$id$ = :s{$console_message_vmenu$$child$ = %i(0,00000000):s}
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to 
+		:i if $GotParam$$wait_and_die$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$console_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$ isNull :s}
+			:i return
+			
+		:i endif
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i if NOT $GotParam$$dont_die$
+				:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$console_message_wait_and_die$ isNull 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $hide_console_window$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_console_window$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $console_hide$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $RunScriptOnScreenElement$$id$ = $console_message_vmenu$$console_hide2$
+	:i endif
+:i endfunction
+:i function $console_hide2$
+	:i $DoMorph$$scale$ = %i(0,00000000)
+:i endfunction
+:i function $console_unhide$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $RunScriptOnScreenElement$$id$ = $console_message_vmenu$$console_unhide2$
+	:i endif
+:i endfunction
+:i function $console_unhide2$
+	:i $DoMorph$$scale$ = %i(1,00000001)
+:i endfunction
+:i function $console_clear$
+	:i $THUGPRO_ClearConsoleMessages$
+	:i if $ScreenElementExists$$id$ = $console_message_vmenu$
+		:i $DestroyScreenElement$$id$ = $console_message_vmenu$$preserve_parent$
+	:i endif
+:i endfunction
+:i function $console_destroy$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DestroyScreenElement$$id$ = $console_message_vmenu$
+	:i endif
+:i endfunction
+:i function $console_message_wait_and_die$$time$ =  ($console_wait_time$) 
+	:i if $GotParam$$editor$
+		:i %GLOBAL%$time$ = %i(5,00000005)
+		:i $DoMorph$$time$ = %f(0.000000)$alpha$ = %i(1,00000001)$scale$ = %f(0.000000)
+		:i $DoMorph$$time$ = %f(0.500000)$scale$ =  ($console_scale$) 
+	:i else 
+		:i $DoMorph$$time$ = %f(0.000000)$alpha$ = %i(0,00000000)
+		:i $DoMorph$$time$ = %f(0.300000)$alpha$ = %i(1,00000001)
+	:i endif
+	:i $wait$%GLOBAL%$time$$seconds$
+	:i if $GotParam$$editor$
+		:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.000000)
+	:i else 
+		:i $DoMorph$$time$ = %f(0.400000)$alpha$ = %i(0,00000000)
+	:i endif
+	:i $THUGPRO_ClearFirstMessage$
+	:i $Die$
+:i endfunction
+:i function $ClearMessageFormat$
+	:i if NOT $GotParam$$string$
+		:i $printf$%s(50,"ERROR: ClearMessageFormat needs a string parameter")
+		:i return
+		
+	:i endif
+	:i if  ($console_FormatFilter$ = %i(1,00000001)) 
+		:i $StripStringColorCodes$$string$ = %GLOBAL%$string$$isChatString$
+	:i else 
+		:i $StripStringColorCodes$$string$ = %GLOBAL%$string$$isChatString$$Clean$
+	:i endif
+	:i return
+	$new_string$ = %GLOBAL%$stripped_string$$clean_string$ = %GLOBAL%$stripped_string$
+:i endfunction
+:i function $split_consolemessage$
+	:i if NOT $GotParam$$string$
+		:i return
+		
+	:i endif
+	:i $temp_name$ = %s(0,"")
+	:i $temp_msg$ = %s(0,"")
+	:i $SplitConsoleMessage$$string$ = %GLOBAL%$string$
+	:i if $GotParam$$clean_color_format$
+		:i $StripStringColorCodes$$string$ = %GLOBAL%$split_name$
+		:i %GLOBAL%$temp_name$ = %GLOBAL%$stripped_string$
+		:i $StripStringColorCodes$$string$ = %GLOBAL%$split_msg$
+		:i %GLOBAL%$temp_msg$ = %GLOBAL%$stripped_string$
+	:i endif
+	:i return
+	$split_name$ = %GLOBAL%$temp_name$$split_msg$ = %GLOBAL%$temp_msg$$split_sep$ = %s(6,"\c0 : ")$IsChatMessage$ = %GLOBAL%$IsChatMessage$
+:i endfunction
+:i function $get_clean_string$
+	:i if NOT $GotParam$$string$
+		:i return
+		
+	:i endif
+	:i $StripStringColorCodes$$string$ = %GLOBAL%$string$
+	:i return
+	$clean_string$ = %GLOBAL%$stripped_string$
+:i endfunction
+:i function $ConsoleOptions_Create_Menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,115.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,380.000000)
+		:i $menu_id$ = $console_options_menu$
+		:i $vmenu_id$ = $console_options_vmenu$
+		:i $scrolling_menu_id$ = $console_options_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text_toggle$
+	:i if $InNetGame$
+		:i %GLOBAL%$console_text$ = %s(12,"Chat Options")
+	:i else 
+		:i %GLOBAL%$console_text$ = %s(15,"Console Options")
+	:i endif
+	:i $create_menu_background_title$$title$ = %GLOBAL%$console_text$$bg_just$ = $right_scroll$$no_grain$
+	:i $SetScreenElementProps$:s{$id$ = $console_options_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :s{$pad_back$$create_predisplay_options_menu$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $console_options_vmenu$$alias$ = $current_menu$
+	:i $pause_menu_gradient$$on$
+	:i $Get_Font_Name$
+	:i $FormatText$$textname$ = $font_extra_text$%s(2,"%a")$a$ = %GLOBAL%$name$
+	:i $make_thpg_menu_item$:s{$text$ = %s(10,"Font Face ")$extra_text$ = %GLOBAL%$font_extra_text$$id$ = $ConsoleOptions_menu_font$$option_arrows$$pad_choose$$option_arrows_callback$ = $consoleoptions_change_font$:s}
+	:i $Get_FontColor_ValueAndName$
+	:i $FormatText$$textname$ = $fontcolor_extra_text$%s(2,"%b")$b$ = %GLOBAL%$name$
+	:i $make_thpg_menu_item$:s{$text$ = %s(11,"Font Color ")$extra_text$ = %GLOBAL%$fontcolor_extra_text$$id$ = $ConsoleOptions_menu_fontcolor$$option_arrows$$pad_choose$$option_arrows_callback$ = $consoleoptions_change_fontcolor$:s}
+	:i $FormatText$$textname$ = $linecount_extra_text$%s(2,"%c")$c$ =  ($number_of_console_lines$) 
+	:i $make_thpg_menu_item$:s{$text$ = %s(16,"Number of Lines ")$extra_text$ = %GLOBAL%$linecount_extra_text$$id$ = $ConsoleOptions_menu_linecount$$option_arrows$$pad_choose$$option_arrows_callback$ = $consoleoptions_change_linecount$$bar_length$ = %f(15.000000):s}
+	:i $FormatText$$textname$ = $scale_extra_text$%s(2,"%d")$d$ =  ($console_scale$) 
+	:i $make_thpg_menu_item$:s{$text$ = %s(14,"Console Scale ")$extra_text$ = %GLOBAL%$scale_extra_text$$id$ = $ConsoleOptions_menu_scale$$option_arrows$$pad_choose$$option_arrows_callback$ = $consoleoptions_change_scale$$bar_length$ = %f(15.500000):s}
+	:i $FormatText$$textname$ = $wait_time_extra_text$%s(2,"%d")$d$ =  ($console_wait_time$) 
+	:i $make_thpg_menu_item$:s{$text$ = %s(13,"Message Life ")$extra_text$ = %GLOBAL%$wait_time_extra_text$$id$ = $ConsoleOptions_menu_message_wait_time$$option_arrows$$pad_choose$$option_arrows_callback$ = $consoleoptions_change_message_wait_time$$bar_length$ = %f(14.500000):s}
+	:i if  ($console_SpamFilter$ = %i(1,00000001)) 
+		:i $temp_filter$ = %s(2,"On")
+	:i else 
+		:i $temp_filter$ = %s(3,"Off")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(12,"Spam Filter ")$extra_text$ = %GLOBAL%$temp_filter$$id$ = $ProCrastination_menu_spam_filter$$option_arrows$$pad_choose$$option_arrows_callback$ = $Toggle_Console_Spam_Filter$$bar_length$ = %f(14.500000):s}
+	:i if  ($console_FormatFilter$ = %i(1,00000001)) 
+		:i $temp_remove$ = %s(2,"On")
+	:i else 
+		:i $temp_remove$ = %s(3,"Off")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(20,"Color Format Filter ")$extra_text$ = %GLOBAL%$temp_remove$$id$ = $ProCrastination_menu_remove_format$$option_arrows$$pad_choose$$option_arrows_callback$ = $Toggle_Remove_Format$$bar_length$ = %f(17.000000):s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $hud_text$ = %s(3,"Off")
+	:i else 
+		:i $hud_text$ = %s(2,"On")
+	:i endif
+	:i if $InNetGame$
+		:i %GLOBAL%$console_text$ = %s(12,"Chat Window ")
+	:i else 
+		:i %GLOBAL%$console_text$ = %s(15,"Console Window ")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %GLOBAL%$console_text$$extra_text$ = %GLOBAL%$hud_text$$id$ = $menu_display_chatwindow$$option_arrows$$pad_choose$$option_arrows_callback$ = $toggle_display_chatwindow$$bar_length$ = %f(16.000000):s}
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $consoleoptions_change_font$
+	:i $checksum$ =  ($chat_font$) 
+	:i if $GotParam$$right$
+		:i switch %GLOBAL%$checksum$
+			:i case $dialog$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(5,"Small")
+				:i $change$$chat_font$ = $small$
+				:i endcase
+			case $small$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(5,"Clean")
+				:i $change$$chat_font$ = $small_rus$
+				:i endcase
+			case $small_rus$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(10,"Test Title")
+				:i $change$$chat_font$ = $testtitle$
+				:i endcase
+			case $testtitle$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(10,"Trick Font")
+				:i $change$$chat_font$ = $newtrickfont$
+				:i endcase
+			case $newtrickfont$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(7,"Default")
+				:i $change$$chat_font$ = $dialog$
+				:i end_switch
+		
+	:i else 
+		:i if $GotParam$$left$
+			:i switch %GLOBAL%$checksum$
+				:i case $dialog$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(10,"Trick Font")
+					:i $change$$chat_font$ = $newtrickfont$
+					:i endcase
+				case $newtrickfont$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(10,"Test Title")
+					:i $change$$chat_font$ = $testtitle$
+					:i endcase
+				case $testtitle$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(5,"Clean")
+					:i $change$$chat_font$ = $small_rus$
+					:i endcase
+				case $small_rus$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(5,"Small")
+					:i $change$$chat_font$ = $small$
+					:i endcase
+				case $small$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_font$$child$ = $extra_text$:s}$text$ = %s(7,"Default")
+					:i $change$$chat_font$ = $dialog$
+					:i end_switch
+			
+		:i endif
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(11,"consoleFont")$value$ =  ($chat_font$) 
+:i endfunction
+:i function $Get_Font_Name$
+	:i $checksum$ =  ($chat_font$) 
+	:i $name$ = %s(0,"")
+	:i switch %GLOBAL%$checksum$
+		:i case $dialog$
+			:i %GLOBAL%$name$ = %s(7,"Default")
+			:i endcase
+		case $small$
+			:i %GLOBAL%$name$ = %s(5,"Small")
+			:i endcase
+		case $small_rus$
+			:i %GLOBAL%$name$ = %s(5,"Clean")
+			:i endcase
+		case $testtitle$
+			:i %GLOBAL%$name$ = %s(10,"Test Title")
+			:i endcase
+		case $newtrickfont$
+			:i %GLOBAL%$name$ = %s(10,"Trick Font")
+			:i end_switch
+	
+	:i return
+	$name$ = %GLOBAL%$name$
+:i endfunction
+:i function $consoleoptions_change_fontcolor$
+	:i $checksum$ =  ($console_font_color$) 
+	:i if $GotParam$$right$
+		:i switch %GLOBAL%$checksum$
+			:i case $text_color_c0$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(3,"Red")
+				:i $change$$console_font_color$ = $text_color_c2$
+				:i endcase
+			case $text_color_c2$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Blue")
+				:i $change$$console_font_color$ = $text_color_c3$
+				:i endcase
+			case $text_color_c3$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(5,"Green")
+				:i $change$$console_font_color$ = $text_color_c4$
+				:i endcase
+			case $text_color_c4$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Yellow")
+				:i $change$$console_font_color$ = $text_color_c5$
+				:i endcase
+			case $text_color_c5$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Cyan")
+				:i $change$$console_font_color$ = $text_color_c6$
+				:i endcase
+			case $text_color_c6$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Purple")
+				:i $change$$console_font_color$ = $text_color_c7$
+				:i endcase
+			case $text_color_c7$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(9,"Dark Blue")
+				:i $change$$console_font_color$ = $text_color_c8$
+				:i endcase
+			case $text_color_c8$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(5,"White")
+				:i $change$$console_font_color$ = $text_color_c9$
+				:i endcase
+			case $text_color_c9$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(10,"Light Blue")
+				:i $change$$console_font_color$ = $text_color_ca$
+				:i endcase
+			case $text_color_ca$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Pink")
+				:i $change$$console_font_color$ = $text_color_cl$
+				:i endcase
+			case $text_color_cl$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Orange")
+				:i $change$$console_font_color$ = $text_color_cb$
+				:i endcase
+			case $text_color_cb$
+				:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(7,"Default")
+				:i $change$$console_font_color$ = $text_color_c0$
+				:i end_switch
+		
+	:i else 
+		:i if $GotParam$$left$
+			:i switch %GLOBAL%$checksum$
+				:i case $text_color_c0$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Orange")
+					:i $change$$console_font_color$ = $text_color_cb$
+					:i endcase
+				case $text_color_cb$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Pink")
+					:i $change$$console_font_color$ = $text_color_cl$
+					:i endcase
+				case $text_color_cl$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(10,"Light Blue")
+					:i $change$$console_font_color$ = $text_color_ca$
+					:i endcase
+				case $text_color_ca$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(5,"White")
+					:i $change$$console_font_color$ = $text_color_c9$
+					:i endcase
+				case $text_color_c9$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(9,"Dark Blue")
+					:i $change$$console_font_color$ = $text_color_c8$
+					:i endcase
+				case $text_color_c8$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Purple")
+					:i $change$$console_font_color$ = $text_color_c7$
+					:i endcase
+				case $text_color_c7$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Cyan")
+					:i $change$$console_font_color$ = $text_color_c6$
+					:i endcase
+				case $text_color_c6$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(6,"Yellow")
+					:i $change$$console_font_color$ = $text_color_c5$
+					:i endcase
+				case $text_color_c5$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(5,"Green")
+					:i $change$$console_font_color$ = $text_color_c4$
+					:i endcase
+				case $text_color_c4$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(4,"Blue")
+					:i $change$$console_font_color$ = $text_color_c3$
+					:i endcase
+				case $text_color_c3$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(3,"Red")
+					:i $change$$console_font_color$ = $text_color_c2$
+					:i endcase
+				case $text_color_c2$
+					:i $SetScreenElementProps$$id$ = :s{$ConsoleOptions_menu_fontcolor$$child$ = $extra_text$:s}$text$ = %s(7,"Default")
+					:i $change$$console_font_color$ = $text_color_c0$
+					:i end_switch
+			
+		:i endif
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(16,"consoleFontColor")$value$ =  ($console_font_color$) 
+:i endfunction
+:i function $Get_FontColor_ValueAndName$
+	:i $checksum$ =  ($console_font_color$) 
+	:i $value$ = %s(0,"")
+	:i $name$ = %s(0,"")
+	:i switch %GLOBAL%$checksum$
+		:i case $text_color_c0$
+			:i %GLOBAL%$value$ = %s(3,"\c0")
+			:i %GLOBAL%$name$ = %s(7,"Default")
+			:i endcase
+		case $text_color_c2$
+			:i %GLOBAL%$value$ = %s(3,"\c2")
+			:i %GLOBAL%$name$ = %s(3,"Red")
+			:i endcase
+		case $text_color_c3$
+			:i %GLOBAL%$value$ = %s(3,"\c3")
+			:i %GLOBAL%$name$ = %s(4,"Blue")
+			:i endcase
+		case $text_color_c4$
+			:i %GLOBAL%$value$ = %s(3,"\c4")
+			:i %GLOBAL%$name$ = %s(5,"Green")
+			:i endcase
+		case $text_color_c5$
+			:i %GLOBAL%$value$ = %s(3,"\c5")
+			:i %GLOBAL%$name$ = %s(6,"Yellow")
+			:i endcase
+		case $text_color_c6$
+			:i %GLOBAL%$value$ = %s(3,"\c6")
+			:i %GLOBAL%$name$ = %s(4,"Cyan")
+			:i endcase
+		case $text_color_c7$
+			:i %GLOBAL%$value$ = %s(3,"\c7")
+			:i %GLOBAL%$name$ = %s(6,"Purple")
+			:i endcase
+		case $text_color_c8$
+			:i %GLOBAL%$value$ = %s(3,"\c8")
+			:i %GLOBAL%$name$ = %s(9,"Dark Blue")
+			:i endcase
+		case $text_color_c9$
+			:i %GLOBAL%$value$ = %s(3,"\c9")
+			:i %GLOBAL%$name$ = %s(5,"White")
+			:i endcase
+		case $text_color_ca$
+			:i %GLOBAL%$value$ = %s(3,"\ca")
+			:i %GLOBAL%$name$ = %s(10,"Light Blue")
+			:i endcase
+		case $text_color_cl$
+			:i %GLOBAL%$value$ = %s(3,"\cl")
+			:i %GLOBAL%$name$ = %s(4,"Pink")
+			:i endcase
+		case $text_color_cb$
+			:i %GLOBAL%$value$ = %s(3,"\cb")
+			:i %GLOBAL%$name$ = %s(6,"Orange")
+			:i end_switch
+	
+	:i return
+	$value$ = %GLOBAL%$value$$name$ = %GLOBAL%$name$
+:i endfunction
+:i function $consoleoptions_change_linecount$
+	:i $new_value$ =  ($number_of_console_lines$) 
+	:i if $GotParam$$right$
+		:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$new_value$ >  ($max_number_of_console_lines$) ) 
+			:i %GLOBAL%$new_value$ =  ($min_number_of_console_lines$) 
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %i(1,00000001)) 
+			:i if  (%GLOBAL%$new_value$ <  ($min_number_of_console_lines$) ) 
+				:i %GLOBAL%$new_value$ =  ($max_number_of_console_lines$) 
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$number_of_console_lines$ = %GLOBAL%$new_value$
+	:i $FormatText$$textname$ = $msg$%s(2,"%i")$i$ =  ($number_of_console_lines$) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$ConsoleOptions_menu_linecount$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+	:i $thugpro_save_key_value$$Key$ = %s(15,"consoleNumLines")$value$ = %GLOBAL%$new_value$
+:i endfunction
+:i function $consoleoptions_change_scale$
+	:i $new_value$ =  ($console_scale$) 
+	:i if $GotParam$$right$
+		:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ +  ($console_scale_step$) ) 
+		:i if  (%GLOBAL%$new_value$ >  ($console_scale_max$) ) 
+			:i %GLOBAL%$new_value$ =  ($console_scale_min$) 
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ -  ($console_scale_step$) ) 
+			:i if  (%GLOBAL%$new_value$ <  ($console_scale_min$) ) 
+				:i %GLOBAL%$new_value$ =  ($console_scale_max$) 
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$console_scale$ = %GLOBAL%$new_value$
+	:i $FormatText$$textname$ = $msg$%s(2,"%i")$i$ =  ($console_scale$) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$ConsoleOptions_menu_scale$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+	:i $thugpro_save_key_value$$Key$ = %s(12,"consoleScale")$value$ = %GLOBAL%$new_value$
+:i endfunction
+:i function $consoleoptions_change_message_wait_time$
+	:i $new_value$ =  ($console_wait_time$) 
+	:i if $GotParam$$right$
+		:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$new_value$ > %i(200,000000c8)) 
+			:i %GLOBAL%$new_value$ = %i(15,0000000f)
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %i(1,00000001)) 
+			:i if  (%GLOBAL%$new_value$ < %i(15,0000000f)) 
+				:i %GLOBAL%$new_value$ = %i(200,000000c8)
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$console_wait_time$ = %GLOBAL%$new_value$
+	:i $FormatText$$textname$ = $msg$%s(2,"%i")$i$ =  ($console_wait_time$) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$ConsoleOptions_menu_message_wait_time$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+	:i $thugpro_save_key_value$$Key$ = %s(17,"console_wait_time")$value$ = %GLOBAL%$new_value$
+:i endfunction
+:i function $consoleoptions_change_width$
+	:i $new_value$ =  ($console_dims$) 
+	:i if $GotParam$$right$
+		:i if  (%GLOBAL%$new_value$->%vec2(1.000000,0.000000) = %f(1000.000000)) 
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %vec2(950.000000,0.000000)) 
+		:i else 
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %vec2(0.100000,0.000000)) 
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i if  (%GLOBAL%$new_value$->%vec2(1.000000,0.000000) = %f(50.000000)) 
+				:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %vec2(950.000000,0.000000)) 
+			:i else 
+				:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %vec2(0.100000,0.000000)) 
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$console_dims$ = %GLOBAL%$new_value$
+	:i $FormatText$$textname$ = $msg$%s(2,"%i")$i$ =  ( ($console_dims$) ->%vec2(1.000000,0.000000)) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$ConsoleOptions_menu_width$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+:i endfunction
+:i function $Toggle_Console_Spam_Filter$
+	:i if  ($console_SpamFilter$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_spam_filter$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+		:i $change$$console_SpamFilter$ = %i(0,00000000)
+	:i else 
+		:i if  ($console_SpamFilter$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_spam_filter$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+			:i $change$$console_SpamFilter$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(18,"console_SpamFilter")$value$ =  ($console_SpamFilter$) 
+:i endfunction
+:i function $Toggle_Console_Parsing$
+	:i if  ($console_ParsingFilter$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_command_parsing$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+		:i $change$$console_ParsingFilter$ = %i(0,00000000)
+	:i else 
+		:i if  ($console_ParsingFilter$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_command_parsing$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+			:i $change$$console_ParsingFilter$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $Toggle_Remove_Format$
+	:i if  ($console_FormatFilter$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_remove_format$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+		:i $change$$console_FormatFilter$ = %i(0,00000000)
+	:i else 
+		:i if  ($console_FormatFilter$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_remove_format$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+			:i $change$$console_FormatFilter$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(20,"console_FormatFilter")$value$ =  ($console_FormatFilter$) 
+:i endfunction
+:i :end

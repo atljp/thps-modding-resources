@@ -1,0 +1,137 @@
+
+:i $Goal_GenericScore_genericParams$ = :s{
+	:i $goal_text$ = %s(31,"Get a High Score: 15,000 Points")
+	:i $view_goals_text$ = %s(10,"High score")
+	:i $init$ = $Score_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $Score_activate$
+	:i $deactivate$ = $Score_Deactivate$
+	:i $expire$ = $Score_expire$
+	:i $fail$ = $Score_fail$
+	:i $success$ = $Score_success$
+	:i $trigger_obj_id$ = $TRG_G_GS_Pro$
+	:i $restart_node$ = $TRG_G_GS_RestartNode$
+	:i $start_pad_id$ = $G_GS_StartPad$
+	:i $score$ = %i(15000,00003a98)
+	:i $time$ = %i(120,00000078)
+	:i $already_displayed_win_message$ = %i(0,00000000)
+	:i $win_message_text$ = %s(21,"High Score: Complete!")
+	:i $record_type$ = $time$
+	:i $score_goal$
+:i :s}
+:i $Goal_HighScore_genericParams$ = :s{
+	:i $goal_text$ = %s(31,"Get a High Score: 15,000 Points")
+	:i $view_goals_text$ = %s(10,"High score")
+	:i $init$ = $Score_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $Score_activate$
+	:i $deactivate$ = $Score_Deactivate$
+	:i $expire$ = $Score_expire$
+	:i $fail$ = $Score_fail$
+	:i $success$ = $Score_success$
+	:i $trigger_obj_id$ = $TRG_G_HS_Pro$
+	:i $restart_node$ = $TRG_G_HS_RestartNode$
+	:i $start_pad_id$ = $G_HS_StartPad$
+	:i $score$ = %i(500000,0007a120)
+	:i $time$ = %i(120,00000078)
+	:i $already_displayed_win_message$ = %i(0,00000000)
+	:i $win_message_text$ = %s(21,"High Score: Complete!")
+	:i $record_type$ = $time$
+	:i $score_goal$
+:i :s}
+:i $Goal_ProScore_GenericParams$ = :s{
+	:i $goal_text$ = %s(30,"Get a Pro Score: 20,000 Points")
+	:i $view_goals_text$ = %s(9,"Pro score")
+	:i $init$ = $Score_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $Score_activate$
+	:i $deactivate$ = $Score_Deactivate$
+	:i $expire$ = $Score_expire$
+	:i $fail$ = $Score_fail$
+	:i $success$ = $Score_success$
+	:i $trigger_obj_id$ = $TRG_G_PS_Pro$
+	:i $restart_node$ = $TRG_G_PS_RestartNode$
+	:i $start_pad_id$ = $G_PS_StartPad$
+	:i $score$ = %i(20000,00004e20)
+	:i $time$ = %i(120,00000078)
+	:i $already_displayed_win_message$ = %i(0,00000000)
+	:i $win_message_text$ = %s(20,"Pro Score: Complete!")
+	:i $record_type$ = $time$
+	:i $score_goal$
+:i :s}
+:i $Goal_SickScore_GenericParams$ = :s{
+	:i $goal_text$ = %s(31,"Get a Sick Score: 30,000 Points")
+	:i $view_goals_text$ = %s(10,"Sick score")
+	:i $init$ = $Score_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $Score_activate$
+	:i $deactivate$ = $Score_Deactivate$
+	:i $expire$ = $Score_expire$
+	:i $fail$ = $Score_fail$
+	:i $success$ = $Score_success$
+	:i $trigger_obj_id$ = $TRG_G_SS_Pro$
+	:i $restart_node$ = $TRG_G_SS_RestartNode$
+	:i $start_pad_id$ = $G_SS_StartPad$
+	:i $score$ = %i(30000,00007530)
+	:i $time$ = %i(120,00000078)
+	:i $already_displayed_win_message$ = %i(0,00000000)
+	:i $win_message_text$ = %s(21,"Sick Score: Complete!")
+	:i $record_type$ = $time$
+	:i $score_goal$
+:i :s}
+:i function $Score_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $Score_activate$
+	:i if  ( ($GameModeEquals$$is_creategoals$)  OR  ($GameModeEquals$$is_goal_attack$) ) 
+		:i $SetScoreAccumulation$%i(1,00000001)
+		:i $SetScoreDegradation$%i(1,00000001)
+		:i $ResetScore$
+	:i endif
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $Score_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$winning_score$
+		:i $FormatText$$TextName$ = $text$%s(9,"Score: %i")$i$ = %GLOBAL%$winning_score$
+		:i $create_panel_message$:s{
+			:i $id$ = $goal_current_reward$
+			:i $text$ = %GLOBAL%$text$
+			:i $style$ = $goal_message_got_trickslot$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $Score_Deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$already_displayed_win_message$ = %i(0,00000000):s}
+	:i if NOT $GameModeEquals$$is_classic$
+		:i if NOT $InNetGame$
+			:i $SpawnScript$$goal_score_wait_and_reset_score$
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i $SetScoreAccumulation$%i(0,00000000)
+		:i $SetScoreDegradation$%i(0,00000000)
+	:i else 
+		:i if $GameModeEquals$$is_goal_attack$
+			:i $GetGoalsMode$
+			:i if NOT  (%GLOBAL%$goals$ = $goals_classic$) 
+				:i $SetScoreDegradation$%i(0,00000000)
+				:i $SetScoreAccumulation$%i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_score_wait_and_reset_score$
+	:i $wait$%i(1,00000001)$frame$
+	:i $ResetScore$
+:i endfunction
+:i function $Score_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $Score_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

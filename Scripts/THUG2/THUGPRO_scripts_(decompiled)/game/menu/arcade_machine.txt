@@ -1,0 +1,357 @@
+
+:i $default_arcade_scores$ = :a{
+	:i :s{$value$ = %i(50000,0000c350)$initials$ = %s(3,"AXX"):s}
+	:i :s{$value$ = %i(40000,00009c40)$initials$ = %s(3,"BXX"):s}
+	:i :s{$value$ = %i(30000,00007530)$initials$ = %s(3,"CXX"):s}
+	:i :s{$value$ = %i(20000,00004e20)$initials$ = %s(3,"DXX"):s}
+	:i :s{$value$ = %i(10000,00002710)$initials$ = %s(3,"EXX"):s}
+	:i :s{$value$ = %i(5000,00001388)$initials$ = %s(3,"FXX"):s}
+	:i :s{$value$ = %i(4000,00000fa0)$initials$ = %s(3,"GXX"):s}
+	:i :s{$value$ = %i(3000,00000bb8)$initials$ = %s(3,"HXX"):s}
+	:i :s{$value$ = %i(2000,000007d0)$initials$ = %s(3,"IXX"):s}
+	:i :s{$value$ = %i(1000,000003e8)$initials$ = %s(3,"JXX"):s}
+	:i :a}
+:i function $GetLocalArcadeArray$
+	:i $GetLevelRecords$
+	:i return
+	$scores_array$ =  (%GLOBAL%$ArcadeScores$->$recordtable$) 
+:i endfunction
+:i function $arcade_machine_write_score_text$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $GotParam$$original_arcade_goal_text$
+		:i $original_arcade_goal_text$ = %GLOBAL%$goal_text$
+	:i endif
+	:i $FormatText$$textname$ = $score_text$%s(22,"%a\nScore to Beat: %s!")$a$ = %GLOBAL%$original_arcade_goal_text$$s$ =  (%GLOBAL%$scores_array$:a{%i(0,00000000):a}->$value$) $UseCommas$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$goal_text$ = %GLOBAL%$score_text$
+		:i $original_arcade_goal_text$ = %GLOBAL%$original_arcade_goal_text$
+		:i $arcade_current_score_total$ = %i(0,00000000)
+	:i :s}
+:i endfunction
+:i function $arcade_machine_start_goal$
+	:i $GetLocalArcadeArray$
+	:i $arcade_machine_view_scores$ isNull 
+:i endfunction
+:i function $arcade_machine_setup_goal$
+	:i $change$$goal_utility_allow_end_goal_name$ = %GLOBAL%$goal_id$
+	:i $GetLocalArcadeArray$
+	:i $arcade_machine_write_score_text$ isNull 
+:i endfunction
+:i function $arcade_machine_cleanup_goal$
+	:i $change$$goal_utility_allow_end_goal_name$ = $null$
+:i endfunction
+:i function $arcade_machine_end_run$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $exit_pause_menu$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+	:i $GoalManager_ExpireGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $arcade_machine_view_scores$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $menu_parts_anchor$
+	:i endif
+	:i $hide_all_hud_items$$ignore_speech_boxes$
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $PauseMusic$%i(1,00000001)
+	:i if $ObjectExists$$id$ = $arcade_score_anchor$
+		:i $arcade_machine_finished_viewing$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $arcade_score_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,220.000000)
+	:i :s}
+	:i %GLOBAL%$root_pos$ =  (%vec2(125.000000,65.000000)) 
+	:i $LoadTexture$$no_vram_alloc$%s(30,"MultiplayerSprites/stat_scores")
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_color$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_color$
+	:i $Theme_GetIconOnColor$$return_value$ = $on_icon_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(98.000000,6.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(0.000000,34.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $font$ = $Dialog$
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $text$ = %s(30,"PRO SKATER MACHINE HIGH SCORES")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(18.000000,34.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $line_color$
+	:i $FormatText$$ChecksumName$ = $stat_scores_icon$%s(11,"stat_scores")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $id$ = $high_scores_menu_scores_icon$
+		:i $texture$ = %GLOBAL%$stat_scores_icon$
+		:i $scale$ = %vec2(2.500000,2.500000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(150.000000,65.000000)) 
+		:i $rgba$ = %GLOBAL%$line_color$
+		:i $just$ = :a{$left$$top$:a}
+		:i $alpha$ = %f(0.700000)
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $id$ = $menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(1.450000,1.200000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(3.000000,57.000000)) 
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $menu_anchor$
+		:i $id$ = $high_scores_vmenu$
+		:i $pos$ =  (%GLOBAL%$root_pos$ - %vec2(125.000000,65.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(3.000000,50.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(60.000000,50.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(3.000000,50.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(140.000000,50.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(120,00000078):a}
+		:i $scale$ = %vec2(98.000000,6.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(0.000000,240.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %f(1.100000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $arcade_score_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = %GLOBAL%$line_color$
+		:i $alpha$ = %f(0.400000)
+		:i $scale$ = %vec2(98.000000,50.000000)
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(0.000000,50.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967196,ffffff9c)
+	:i :s}
+	:i $arcade_machine_fill_scores$ isNull 
+	:i if NOT $GotParam$$success$
+		:i $WaitForEvent$$type$ = $speech_box_destroyed$
+		:i $arcade_machine_finished_viewing$ isNull 
+	:i else 
+		:i $AssignAlias$$id$ = $arcade_score_anchor$$alias$ = $current_menu_anchor$
+		:i $SetScreenElementProps$:s{$id$ = $high_scores_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_choose$$arcade_machine_finished_viewing$$params$ = :s{$need_unpause$ isNull :s}:s}
+				:i :s{$pad_start$$arcade_machine_finished_viewing$$params$ = :s{$need_unpause$ isNull :s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(14,"\bm = Continue"):s}:a}
+		:i $FireEvent$$type$ = $focus$$target$ = $high_scores_vmenu$
+	:i endif
+:i endfunction
+:i function $arcade_machine_finished_viewing$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $arcade_score_anchor$
+		:i $DestroyScreenElement$$id$ = $arcade_score_anchor$
+	:i endif
+	:i if $GotParam$$success$
+		:i $UpdateArcadeScores$$recordtable$ = %GLOBAL%$scores_array$
+		:i $ArcadeMachineAskForSave$
+		:i return
+		
+	:i endif
+	:i $root_window$.$SetTags$$menu_state$ = $off$
+	:i $UnloadTexture$%s(30,"MultiplayerSprites/stat_scores")
+	:i $GoalManager_UnPauseAllGoals$
+	:i $show_all_hud_items$
+	:i if $GotParam$$need_unpause$
+		:i $UnPauseGame$
+		:i $PauseMusic$%i(0,00000000)
+		:i $restore_start_key_binding$
+	:i endif
+:i endfunction
+:i function $ArcadeMachineAskForSave$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %s(4,"Save")
+		:i $text$ = %sc(23,"Would you like to save?")$text_dims$ = %vec2(300.000000,0.000000)
+		:i $no_bg$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"No")
+				:i $pad_choose_script$ = $arcade_machine_finished_viewing$
+				:i $pad_choose_params$ = :s{$need_unpause$:s}
+			:i :s}
+			:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = $ArcadeMachineSaveYes$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ArcadeMachineSaveYes$
+	:i $UnloadTexture$%s(30,"MultiplayerSprites/stat_scores")
+	:i $launch_pause_menu_save_game_sequence$
+:i endfunction
+:i function $arcade_machine_fill_scores$
+	:i $target$ = %i(4294967295,ffffffff)
+	:i if $GotParam$$target_index$
+		:i $target$ =  (%GLOBAL%$target_index$ + %i(1,00000001)) 
+	:i endif
+	:i $GetArraySize$%GLOBAL%$scores_array$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $high_scores_menu_add_five_best_item$:s{
+			:i $parent$ = $high_scores_vmenu$
+			:i $place$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i $initials$ =  ( (%GLOBAL%$scores_array$:a{%GLOBAL%$index$:a}) ->$initials$) 
+			:i $score$ =  ( (%GLOBAL%$scores_array$:a{%GLOBAL%$index$:a}) ->$value$) 
+			:i $target_index$ = %GLOBAL%$target$
+			:i $in_arcade_machine$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $arcade_machine_enter_initials$
+	:i $Skater$.$KillSpecial$$force$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $PauseGame$
+	:i $PauseMusic$%i(1,00000001)
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalManager_PauseAllGoals$
+	:i $hide_all_hud_items$
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $GetInitialsString$
+	:i $create_onscreen_keyboard$:s{
+		:i $text$ = %GLOBAL%$string$
+		:i $no_back$ = $no_back$
+		:i $keyboard_done_script$ = $arcade_machine_entered_initials$
+		:i  isNull 
+		:i $keyboard_title$ = %s(14,"ENTER INITIALS")
+		:i $min_length$ = %i(1,00000001)
+		:i $max_length$ = %i(3,00000003)
+	:i :s}
+:i endfunction
+:i function $arcade_machine_entered_initials$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetInitialsString$$string$ = %GLOBAL%$string$
+	:i $UpdateInitials$
+	:i while
+		
+		:i $GetTextElementLength$$id$ = $keyboard_current_string$
+		:i if  (%GLOBAL%$length$ < %GLOBAL%$max_length$) 
+			:i $TextElementConcatenate$$id$ = $keyboard_current_string$%s(1," ")
+			:i $RemoveParameter$$string$
+			:i $GetTextElementString$$id$ = $keyboard_current_string$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to %GLOBAL%$max_length$
+	:i $index$ = %GLOBAL%$target_index$
+	:i $temp$ =  (%GLOBAL%$scores_array$:a{%GLOBAL%$index$:a}) 
+	:i $SetArrayElement$$ArrayName$ = $scores_array$$index$ = %GLOBAL%$index$$newvalue$ = :s{$value$ = %GLOBAL%$totalscore$$initials$ = %GLOBAL%$string$:s}
+	:i $GetArraySize$%GLOBAL%$scores_array$
+	:i while
+		
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$index$ < %GLOBAL%$array_size$) 
+			:i $temp2$ =  (%GLOBAL%$scores_array$:a{%GLOBAL%$index$:a}) 
+			:i $SetArrayElement$$ArrayName$ = $scores_array$$index$ = %GLOBAL%$index$$newvalue$ = %GLOBAL%$temp$
+			:i $temp$ = %GLOBAL%$temp2$
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+	:i $destroy_onscreen_keyboard$
+	:i $arcade_machine_view_scores$$success$ isNull 
+:i endfunction
+:i function $arcade_machine_check_for_scores$
+	:i $success$ = %i(0,00000000)
+	:i $target_index$ = %i(0,00000000)
+	:i $GetLocalArcadeArray$
+	:i $GetArraySize$%GLOBAL%$scores_array$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$totalscore$ >  (%GLOBAL%$scores_array$:a{%GLOBAL%$index$:a}) ->$value$) 
+			:i $success$ = %i(1,00000001)
+			:i $target_index$ = %GLOBAL%$index$
+			:i if  (%GLOBAL%$target_index$ = %i(0,00000000)) 
+				:i $SpawnScript$$SFX_Arcade_Goal_Win$
+				:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+					:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+				:i endif
+			:i else 
+				:i $SpawnScript$$SFX_Arcade_Goal_Lose$
+			:i endif
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$success$ = %i(1,00000001)) 
+		:i $arcade_machine_enter_initials$ isNull 
+	:i endif
+:i endfunction
+:i function $GetDefaultArcadeArray$
+	:i $GoalManager_GetDifficultyLevel$
+	:i switch %GLOBAL%$difficulty_level$
+		:i case %i(0,00000000)
+			:i $diff_text$ = %s(4,"easy")
+			:i endcase
+		case %i(2,00000002)
+			:i $diff_text$ = %s(4,"sick")
+			:i endcase
+		default 
+			:i $diff_text$ = %s(6,"normal")
+			:i end_switch
+	
+	:i $FormatText$$ChecksumName$ = $arcade_array_name$%s(21,"default_arcade_scores")
+	:i if NOT $GlobalExists$$name$ = %GLOBAL%$arcade_array_name$$type$ = $array$
+		:i %GLOBAL%$arcade_array_name$ = $default_arcade_scores$
+	:i endif
+	:i return
+	$scores$ =  (%GLOBAL%$arcade_array_name$) 
+:i endfunction
+:i function $ResetArcadeScores$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) $level_prefix$
+			:i $GetDefaultArcadeArray$$level_prefix$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_prefix$) 
+			:i $UpdateArcadeScores$:s{$level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) $recordtable$ = %GLOBAL%$scores$:s}
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i :end

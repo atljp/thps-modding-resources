@@ -1,0 +1,82 @@
+// Block of faces
+
+#define CL_FACEPADDING 0x999955
+#define CL_FACEVALUE 0xcccc77
+#define CL_FACESHORT 0xbbbb66
+
+// ----------------------------------
+
+typedef struct
+{
+    ushort indices[3];
+} Triangle <read=ReadTriangle>;
+
+string ReadTriangle(Triangle &tri)
+{
+    local string s;
+    return SPrintf(s, "[%d, %d, %d]", tri.indices[0], tri.indices[1], tri.indices[2]);
+}
+
+// ----------------------------------
+
+typedef struct(int faceCount)
+{
+    // BH seems to start with sphere?
+    if (SkinFileVersion == SKIN_VERSION_BH)
+    {
+        if (SkinFilePlatform == SKIN_PLAT_XENON)
+        {
+            Vec4 vecA <bgcolor=CL_FACEVALUE>;
+            Vec4 vecB <bgcolor=CL_FACEVALUE>;
+        }
+    }
+
+    // WT has actual values here, hmm
+    else
+    {
+        byte null[12] <bgcolor=CL_FACEPADDING>;
+        int unk <bgcolor=CL_FACEVALUE>;
+        Int3 grouping_counts_reversed <bgcolor=CL_FACEVALUE, comment="VertexBlock groupings in reverse">;
+        int guessed_face_count <bgcolor=CL_FACEVALUE, comment="Usually face count">;
+    }
+
+    // ----------------
+
+    local int realFaceCount = Floor(faceCount / 3);
+    local float decimalGap = (faceCount / 3) - realFaceCount;
+   
+    if (decimalGap != 0.0)
+        Printf("WARNING: FACES HAVE BAD TRIANGLES");
+    else
+        Triangle tris[realFaceCount] <bgcolor=CL_FACESHORT>;
+
+    // What determines how many EE bytes there are?
+    local int eeByteCount = 0;
+    local int off = FTell();
+
+    if (!FEof())
+    {
+        local byte testByte = ReadByte(off);
+        
+        while (testByte == 0xEE && !FEof())
+        {
+            eeByteCount ++;
+            off ++;
+
+            if (off)
+                testByte = ReadByte(off);
+        }
+    
+        if (eeByteCount > 0)
+            byte eePadding[eeByteCount] <bgcolor=CL_PADDING>;
+    }
+
+} FaceBlock <read=ReadFaceBlock>;
+
+string ReadFaceBlock(FaceBlock &block)
+{
+    if (SkinFileVersion == SKIN_VERSION_BH)
+        return "";
+
+    return ReadInt3(block.grouping_counts_reversed) + ", " + Str("%d", block.guessed_face_count);
+}

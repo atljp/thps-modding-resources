@@ -1,0 +1,224 @@
+
+:i $goal_ctf_genericParams$ = :s{
+	:i $goal_text$ = %s(57,"Capture the other team's flag and return it to your base!")
+	:i $time$ = %i(30,0000001e)
+	:i $score$ = %i(1,00000001)
+	:i $net$
+	:i $init$ = $goal_ctf_init$
+	:i $activate$ = $goal_ctf_activate$
+	:i $deactivate$ = $goal_ctf_deactivate$
+	:i $active$ = $goal_ctf_active$
+	:i $goal_description$ = %s(17,"Capture the Flag!")
+:i :s}
+:i function $goal_ctf_init$
+:i endfunction
+:i function $goal_ctf_activate$
+	:i $GetNumTeams$
+	:i $create_team_flags$ isNull 
+	:i $PrintStruct$ isNull 
+	:i if  (%GLOBAL%$unlimited_time$ = %i(1,00000001)) 
+		:i if  (%GLOBAL%$score$ = %i(1,00000001)) 
+			:i $FormatText$$TextName$ = $msg_text$%s(47,"%aCapture the Flag\n\c0First to %s capture wins")$a$ =  ($gamemode_color$) $s$ = %GLOBAL%$score$
+		:i else 
+			:i $FormatText$$TextName$ = $msg_text$%s(48,"%aCapture the Flag\n\c0First to %s captures wins")$a$ =  ($gamemode_color$) $s$ = %GLOBAL%$score$
+		:i endif
+	:i else 
+		:i $FormatText$$TextName$ = $msg_text$%s(41,"%aCapture the Flag\n\c0Most captures wins")$a$ =  ($gamemode_color$) 
+	:i endif
+	:i if $InNetGame$
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+		:i $create_panel_block$$parent$ = $root_window$$id$ = $mp_goal_text$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$dims$ = %vec2(300.000000,0.000000)$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i $ResetScore$
+	:i if  (%GLOBAL%$unlimited_time$ = %i(0,00000000)) 
+		:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i endif
+	:i $StartCTFGame$
+:i endfunction
+:i function $goal_ctf_active$
+	:i if  (%GLOBAL%$unlimited_time$ = %i(1,00000001)) 
+		:i if $AnySkaterTotalScoreAtLeast$%GLOBAL%$score$
+			:i if $OnServer$
+				:i if $CalculateFinalScores$
+					:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+				:i endif
+			:i else 
+				:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_ctf_deactivate$
+	:i $printf$%s(35,"*************** goal_ctf_deactivate")
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $destroy_ctf_panel_message$
+	:i $hide_ctf_arrow$
+	:i $Kill_Team_Flags$
+	:i $EndCTFGame$
+	:i if $OnServer$
+		:i if $InInternetMode$
+			:i $ReportStats$$final$
+		:i endif
+	:i endif
+	:i if NOT  ($is_changing_levels$ = %i(1,00000001)) 
+		:i $create_rankings$$score_title_text$ = %s(8,"CAPTURES")
+	:i endif
+:i endfunction
+:i function $ctf_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $Addgoal_ctf$
+	:i $GoalManager_AddGoal$$name$ = $ctf$:s{
+		:i $params$ = :s{$goal_ctf_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $show_ctf_arrow$
+	:i if $IsObserving$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_GoalIsActive$$name$ = $ctf$
+		:i $printf$%s(23,"***** SHOWING CTF ARROW")
+		:i if $ObjectExists$$id$ = $ctf_arrow$
+			:i $printf$%s(21,"***** HIDING IT FIRST")
+			:i $hide_ctf_arrow$
+		:i endif
+		:i switch %GLOBAL%$team$
+			:i case %i(0,00000000)
+				:i $printf$%s(19,"***** target is red")
+				:i $target$ = $TRG_CTF_Red$
+				:i endcase
+			case %i(1,00000001)
+				:i $printf$%s(20,"***** target is blue")
+				:i $target$ = $TRG_CTF_Blue$
+				:i endcase
+			case %i(2,00000002)
+				:i $printf$%s(21,"***** target is green")
+				:i $target$ = $TRG_CTF_Green$
+				:i endcase
+			case %i(3,00000003)
+				:i $printf$%s(22,"***** target is yellow")
+				:i $target$ = $TRG_CTF_Yellow$
+				:i end_switch
+		
+		:i $printf$%s(18,"***** creating....")
+		:i $Create3dArrowPointer$$id$ = $ctf_arrow$$name$ = %GLOBAL%$target$$model$ = %s(9,"HUD_Arrow")
+	:i endif
+:i endfunction
+:i function $hide_ctf_arrow$
+	:i if $ObjectExists$$id$ = $ctf_arrow$
+		:i $DestroyScreenElement$$id$ = $ctf_arrow$
+	:i endif
+:i endfunction
+:i function $Startgoal_ctf$
+	:i $GoalManager_EditGoal$$name$ = $ctf$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $ctf$
+:i endfunction
+:i function $took_flag_other$
+	:i $printf$%s(23,"******* took flag other")
+	:i $FormatText$$TextName$ = $msg_text$%s(25,"%s has taken the %w flag.")$s$ = %GLOBAL%$String0$$w$ = %GLOBAL%$String1$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $took_flag_you$
+	:i $printf$%s(21,"******* took flag you")
+	:i $create_ctf_panel_message$$msg_text$ = %s(29,"Return the flag to your base!")
+	:i $FormatText$$TextName$ = $msg_text$%s(51,"You have taken the %s flag. Return it to your base!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $took_flag_yours$
+	:i $printf$%s(23,"******* took flag yours")
+	:i $FormatText$$TextName$ = $msg_text$%s(38,"%s has taken your flag! Hunt him down!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $stole_flag_other$
+	:i $printf$%s(24,"******* stole flag other")
+	:i $FormatText$$TextName$ = $msg_text$%s(26,"%s has stolen the %w flag.")$s$ = %GLOBAL%$String0$$w$ = %GLOBAL%$String1$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $stole_flag_you$
+	:i $printf$%s(22,"******* stole flag you")
+	:i $FormatText$$TextName$ = $msg_text$%s(52,"You have stolen the %s flag. Return it to your base!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $stole_flag_from_you$
+	:i $printf$%s(27,"******* stole flag from you")
+	:i $destroy_ctf_panel_message$
+	:i $FormatText$$TextName$ = $msg_text$%s(35,"%s has stolen the %w flag from you!")$s$ = %GLOBAL%$String0$$w$ = %GLOBAL%$String1$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+:i endfunction
+:i function $relocate_flag$
+	:i switch %GLOBAL%$team$
+		:i case %i(0,00000000)
+			:i $flag_name$ = $TRG_CTF_Red$
+			:i endcase
+		case %i(1,00000001)
+			:i $flag_name$ = $TRG_CTF_Blue$
+			:i endcase
+		case %i(2,00000002)
+			:i $flag_name$ = $TRG_CTF_Green$
+			:i endcase
+		case %i(3,00000003)
+			:i $flag_name$ = $TRG_CTF_Yellow$
+			:i end_switch
+	
+	:i if $NodeExists$%GLOBAL%$flag_name$
+		:i if $IsAlive$$name$ = %GLOBAL%$flag_name$
+			:i %GLOBAL%$flag_name$.$Die$
+		:i endif
+	:i endif
+	:i $create$$name$ = %GLOBAL%$flag_name$
+	:i if $OnServer$
+		:i %GLOBAL%$flag_name$.$Obj_SetException$$ex$ = $AnyObjectInRadius$$scr$ = $CTF_Team_Flag_Trigger$$params$ = :s{ isNull :s}
+	:i endif
+:i endfunction
+:i function $captured_your_flag$
+	:i $printf$%s(26,"******* captured your flag")
+	:i $FormatText$$TextName$ = $msg_text$%s(27,"%s has captured your flag.!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $captured_flag_other$
+	:i $printf$%s(27,"******* captured flag other")
+	:i $FormatText$$TextName$ = $msg_text$%s(28,"%s has captured the %w flag.")$s$ = %GLOBAL%$String0$$w$ = %GLOBAL%$String1$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $captured_flag_you$
+	:i $printf$%s(25,"******* captured flag you")
+	:i $destroy_ctf_panel_message$
+	:i $FormatText$$TextName$ = $msg_text$%s(30,"You have captured the %s flag.")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $retrieved_flag_you$
+	:i $printf$%s(26,"******* retrieved flag you")
+	:i $FormatText$$TextName$ = $msg_text$%s(26,"You retrieved the %s flag!")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $retrieved_flag_other$
+	:i $printf$%s(28,"******* retrieved flag other")
+	:i $FormatText$$TextName$ = $msg_text$%s(25,"%s retrieved the %w flag.")$s$ = %GLOBAL%$String0$$w$ = %GLOBAL%$String1$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $flag_returned$
+	:i $printf$%s(21,"******* flag returned")
+	:i $FormatText$$TextName$ = $msg_text$%s(32,"The %s has returned to its base.")$s$ = %GLOBAL%$String0$
+	:i $create_net_panel_message$$text$ = %GLOBAL%$msg_text$$style$ = $net_team_panel_message$
+	:i $relocate_flag$ isNull 
+:i endfunction
+:i function $create_ctf_panel_message$
+	:i $create_net_panel_message$ isNull 
+:i endfunction
+:i function $destroy_ctf_panel_message$
+	:i if $ObjectExists$$id$ = $net_panel_msg_bg$
+		:i $DestroyScreenElement$$id$ = $net_panel_msg_bg$
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,1419 @@
+
+:i function $SetTerrainParticleProperties$
+:i endfunction
+:i $Terrain_Types$ = :a{
+	:i :s{$checksum$ = $TERRAIN_DEFAULT$$desc$ = %s(7,"Default"):s}
+	:i :s{$checksum$ = $TERRAIN_CONCSMOOTH$$desc$ = %s(10,"ConcSmooth"):s}
+	:i :s{$checksum$ = $TERRAIN_CONCROUGH$$desc$ = %s(9,"ConcRough"):s}
+	:i :s{$checksum$ = $TERRAIN_METALSMOOTH$$desc$ = %s(11,"MetalSmooth"):s}
+	:i :s{$checksum$ = $TERRAIN_METALROUGH$$desc$ = %s(10,"MetalRough"):s}
+	:i :s{$checksum$ = $TERRAIN_METALCORRUGATED$$desc$ = %s(15,"MetalCorrugated"):s}
+	:i :s{$checksum$ = $TERRAIN_METALGRATING$$desc$ = %s(12,"MetalGrating"):s}
+	:i :s{$checksum$ = $TERRAIN_METALTIN$$desc$ = %s(8,"MetalTin"):s}
+	:i :s{$checksum$ = $TERRAIN_WOOD$$desc$ = %s(4,"Wood"):s}
+	:i :s{$checksum$ = $TERRAIN_WOODMASONITE$$desc$ = %s(12,"WoodMasonite"):s}
+	:i :s{$checksum$ = $TERRAIN_WOODPLYWOOD$$desc$ = %s(11,"WoodPlywood"):s}
+	:i :s{$checksum$ = $TERRAIN_WOODFLIMSY$$desc$ = %s(10,"WoodFlimsy"):s}
+	:i :s{$checksum$ = $TERRAIN_WOODSHINGLE$$desc$ = %s(11,"WoodShingle"):s}
+	:i :s{$checksum$ = $TERRAIN_WOODPIER$$desc$ = %s(8,"WoodPier"):s}
+	:i :s{$checksum$ = $TERRAIN_BRICK$$desc$ = %s(5,"Brick"):s}
+	:i :s{$checksum$ = $TERRAIN_TILE$$desc$ = %s(4,"Tile"):s}
+	:i :s{$checksum$ = $TERRAIN_ASPHALT$$desc$ = %s(7,"Asphalt"):s}
+	:i :s{$checksum$ = $TERRAIN_ROCK$$desc$ = %s(4,"Rock"):s}
+	:i :s{$checksum$ = $TERRAIN_GRAVEL$$desc$ = %s(6,"Gravel"):s}
+	:i :s{$checksum$ = $TERRAIN_SIDEWALK$$desc$ = %s(8,"Sidewalk"):s}
+	:i :s{$checksum$ = $TERRAIN_GRASS$$desc$ = %s(5,"Grass"):s}
+	:i :s{$checksum$ = $TERRAIN_GRASSDRIED$$desc$ = %s(10,"GrassDried"):s}
+	:i :s{$checksum$ = $TERRAIN_DIRT$$desc$ = %s(4,"Dirt"):s}
+	:i :s{$checksum$ = $TERRAIN_DIRTPACKED$$desc$ = %s(10,"DirtPacked"):s}
+	:i :s{$checksum$ = $TERRAIN_WATER$$desc$ = %s(5,"Water"):s}
+	:i :s{$checksum$ = $TERRAIN_ICE$$desc$ = %s(3,"Ice"):s}
+	:i :s{$checksum$ = $TERRAIN_SNOW$$desc$ = %s(4,"Snow"):s}
+	:i :s{$checksum$ = $TERRAIN_SAND$$desc$ = %s(4,"Sand"):s}
+	:i :s{$checksum$ = $TERRAIN_PLEXIGLASS$$desc$ = %s(10,"Plexiglass"):s}
+	:i :s{$checksum$ = $TERRAIN_FIBERGLASS$$desc$ = %s(10,"Fiberglass"):s}
+	:i :s{$checksum$ = $TERRAIN_CARPET$$desc$ = %s(6,"Carpet"):s}
+	:i :s{$checksum$ = $TERRAIN_CONVEYOR$$desc$ = %s(8,"Conveyor"):s}
+	:i :s{$checksum$ = $TERRAIN_CHAINLINK$$desc$ = %s(9,"Chainlink"):s}
+	:i :s{$checksum$ = $TERRAIN_METALFUTURE$$desc$ = %s(11,"MetalFuture"):s}
+	:i :s{$checksum$ = $TERRAIN_GENERIC1$$desc$ = %s(8,"Generic1"):s}
+	:i :s{$checksum$ = $TERRAIN_GENERIC2$$desc$ = %s(8,"Generic2"):s}
+	:i :s{$checksum$ = $TERRAIN_WHEELS$$desc$ = %s(6,"Wheels"):s}
+	:i :s{$checksum$ = $TERRAIN_WETCONC$$desc$ = %s(7,"WetConc"):s}
+	:i :s{$checksum$ = $TERRAIN_METALFENCE$$desc$ = %s(10,"MetalFence"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDTRAIN$$desc$ = %s(10,"GrindTrain"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDROPE$$desc$ = %s(9,"GrindRope"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDWIRE$$desc$ = %s(9,"Grindwire"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDCONC$$desc$ = %s(9,"GrindConc"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDROUNDMETALPOLE$$desc$ = %s(19,"GrindRoundMetalPole"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDCHAINLINK$$desc$ = %s(14,"GrindChainLink"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDMETAL$$desc$ = %s(10,"GrindMetal"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDWOODRAILING$$desc$ = %s(16,"GrindWoodRailing"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDWOODLOG$$desc$ = %s(12,"GrindWoodLog"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDWOOD$$desc$ = %s(9,"GrindWood"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDPLASTIC$$desc$ = %s(12,"GrindPlastic"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDELECTRICWIRE$$desc$ = %s(17,"GrindElectricWire"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDCABLE$$desc$ = %s(10,"GrindCable"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDCHAIN$$desc$ = %s(10,"GrindChain"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDPLASTICBARRIER$$desc$ = %s(19,"GrindPlasticBarrier"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDNEONLIGHT$$desc$ = %s(14,"GrindNeonLight"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDGLASSMONSTER$$desc$ = %s(17,"GrindGlassMonster"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDBANYONTREE$$desc$ = %s(15,"GrindBAnyOnTree"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDBRASSRAIL$$desc$ = %s(14,"GrindBrassRail"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDRUSTYRAIL$$desc$ = %s(14,"GrindRustyRail"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDCATWALK$$desc$ = %s(12,"GrindCatwalk"):s}
+	:i :s{$checksum$ = $TERRAIN_GRINDTANKTURRET$$desc$ = %s(15,"GrindTankTurret"):s}
+	:i :a}
+:i $Terrain_Actions$ = :a{
+	:i :s{$type$ = $TABLE_WHEELROLL$$action$ = $TA_ROLL$:s}
+	:i :s{$type$ = $TABLE_GRIND$$action$ = $TA_GRIND$:s}
+	:i :s{$type$ = $TABLE_JUMP$$action$ = $TA_OLLIE$:s}
+	:i :s{$type$ = $TABLE_LAND$$action$ = $TA_LAND$:s}
+	:i :s{$type$ = $TABLE_BONK$$action$ = $TA_BONK$:s}
+	:i :s{$type$ = $TABLE_GRINDJUMP$$action$ = $TA_GRINDJUMP$:s}
+	:i :s{$type$ = $TABLE_GRINDLAND$$action$ = $TA_GRINDLAND$:s}
+	:i :s{$type$ = $TABLE_SLIDE$$action$ = $TA_SLIDE$:s}
+	:i :s{$type$ = $TABLE_SLIDEJUMP$$action$ = $TA_SLIDEJUMP$:s}
+	:i :s{$type$ = $TABLE_SLIDELAND$$action$ = $TA_SLIDELAND$:s}
+	:i :s{$type$ = $TABLE_CESS$$action$ = $TA_REVERT$:s}
+	:i :a}
+:i $RollConcSmoothValues$ = :s{$maxPitch$ = %i(120,00000078)$minPitch$ = %i(30,0000001e):s}
+:i $RollConcRoughValues$ = :s{$maxPitch$ = %i(120,00000078)$minPitch$ = %i(10,0000000a):s}
+:i $OllieConcValues$ = :s{$maxPitch$ = %i(105,00000069)$minPitch$ = %i(98,00000062)$maxVol$ = %i(175,000000af)$minVol$ = %i(120,00000078):s}
+:i $SlideConcValues$ = :s{$maxPitch$ = %i(135,00000087)$minPitch$ = %i(100,00000064)$maxVol$ = %i(130,00000082)$minVol$ = %i(80,00000050):s}
+:i $LandConcValues$ = :s{$maxVol$ = %i(135,00000087)$minVol$ = %i(70,00000046):s}
+:i $BonkConcValues$ = :s{$maxVol$ = %i(140,0000008c)$minVol$ = %i(70,00000046):s}
+:i $RollMetalSmoothValues$ = :s{$maxPitch$ = %i(120,00000078)$minPitch$ = %i(30,0000001e):s}
+:i $RollMetalRoughValues$ = :s{$maxPitch$ = %i(120,00000078)$minPitch$ = %i(30,0000001e)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+:i $RollMetalCorrugatedValues$ = :s{$maxPitch$ = %i(250,000000fa)$minPitch$ = %i(150,00000096):s}
+:i $OllieMetalValues$ = :s{$maxVol$ = %i(140,0000008c)$minVol$ = %i(70,00000046):s}
+:i $LandMetalValues$ = :s{$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(40,00000028):s}
+:i $BonkMetalValues$ = :s{$maxVol$ = %i(100,00000064)$minVol$ = %i(30,0000001e):s}
+:i $RollWoodValues$ = :s{$maxPitch$ = %i(120,00000078)$minPitch$ = %i(30,0000001e)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+:i $RollWoodShingleValues$ = :s{$maxPitch$ = %i(80,00000050)$minPitch$ = %i(20,00000014)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+:i $OllieWoodValues$ = :s{$maxVol$ = %i(120,00000078)$minVol$ = %i(60,0000003c):s}
+:i $LandWoodValues$ = :s{$maxVol$ = %i(120,00000078)$minVol$ = %i(60,0000003c):s}
+:i $BonkWoodValues$ = :s{$maxVol$ = %i(90,0000005a)$minVol$ = %i(30,0000001e):s}
+:i function $SetTerrainDefault$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_DEFAULT$
+:i endfunction
+:i function $SetTerrainConcSmooth$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_CONCSMOOTH$
+:i endfunction
+:i function $SetTerrainMetalSmooth$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALSMOOTH$
+:i endfunction
+:i function $SetTerrainWood$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOOD$
+:i endfunction
+:i function $SetTerrainGrindWire$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDWIRE$
+:i endfunction
+:i function $SetTerrainConcRough$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_CONCROUGH$
+:i endfunction
+:i function $SetTerrainMetalRough$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALROUGH$
+:i endfunction
+:i function $SetTerrainMetalCorrugated$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALCORRUGATED$
+:i endfunction
+:i function $SetTerrainMetalGrating$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALGRATING$
+:i endfunction
+:i function $SetTerrainMetalTin$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALTIN$
+:i endfunction
+:i function $SetTerrainWoodMasonite$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOODMASONITE$
+:i endfunction
+:i function $SetTerrainWoodPlywood$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOODPLYWOOD$
+:i endfunction
+:i function $SetTerrainWoodFlimsy$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOODFLIMSY$
+:i endfunction
+:i function $SetTerrainWoodShingle$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOODSHINGLE$
+:i endfunction
+:i function $SetTerrainWoodPier$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WOODPIER$
+:i endfunction
+:i function $SetTerrainBrick$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_BRICK$
+:i endfunction
+:i function $SetTerrainTile$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_TILE$
+:i endfunction
+:i function $SetTerrainAsphalt$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_ASPHALT$
+:i endfunction
+:i function $SetTerrainRock$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_ROCK$
+:i endfunction
+:i function $SetTerrainGravel$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRAVEL$
+:i endfunction
+:i function $SetTerrainSidewalk$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_SIDEWALK$
+:i endfunction
+:i function $SetTerrainGrass$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRASS$
+:i endfunction
+:i function $SetTerrainGrassDried$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRASSDRIED$
+:i endfunction
+:i function $SetTerrainDirt$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_DIRT$
+:i endfunction
+:i function $SetTerrainDirtPacked$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_DIRTPACKED$
+:i endfunction
+:i function $SetTerrainWater$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WATER$
+:i endfunction
+:i function $SetTerrainIce$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_ICE$
+:i endfunction
+:i function $SetTerrainSnow$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_SNOW$
+:i endfunction
+:i function $SetTerrainSand$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_SAND$
+:i endfunction
+:i function $SetTerrainPlexiglass$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_PLEXIGLASS$
+:i endfunction
+:i function $SetTerrainFiberglass$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_FIBERGLASS$
+:i endfunction
+:i function $SetTerrainCarpet$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_CARPET$
+:i endfunction
+:i function $SetTerrainConveyor$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_CONVEYOR$
+:i endfunction
+:i function $SetTerrainChainlink$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_CHAINLINK$
+:i endfunction
+:i function $SetTerrainMetalFuture$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALFUTURE$
+:i endfunction
+:i function $SetTerrainGeneric1$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GENERIC1$
+:i endfunction
+:i function $SetTerrainGeneric2$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GENERIC2$
+:i endfunction
+:i function $SetTerrainWetConc$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_WETCONC$
+:i endfunction
+:i function $SetTerrainMetalFence$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_METALFENCE$
+:i endfunction
+:i function $SetTerrainGarbage$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_DIRT$
+:i endfunction
+:i function $SetTerrainGlass$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_PLEXIGLASS$
+:i endfunction
+:i function $SetTerrainBrickLarge$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_BRICK$
+:i endfunction
+:i function $SetTerrainGrindTrain$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDTRAIN$
+:i endfunction
+:i function $SetTerrainGrindRope$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDROPE$
+:i endfunction
+:i function $SetTerrainGrindConc$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDCONC$
+:i endfunction
+:i function $SetTerrainGrindRoundMetalPole$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDROUNDMETALPOLE$
+:i endfunction
+:i function $SetTerrainGrindChainLink$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDCHAINLINK$
+:i endfunction
+:i function $SetTerrainGrindMetal$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDMETAL$
+:i endfunction
+:i function $SetTerrainGrindWoodRailing$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDWOODRAILING$
+:i endfunction
+:i function $SetTerrainGrindWoodLog$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDWOODLOG$
+:i endfunction
+:i function $SetTerrainGrindWood$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDWOOD$
+:i endfunction
+:i function $SetTerrainGrindPlastic$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDPLASTIC$
+:i endfunction
+:i function $SetTerrainGrindElectricWire$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDELECTRICWIRE$
+:i endfunction
+:i function $SetTerrainGrindCable$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDCABLE$
+:i endfunction
+:i function $SetTerrainGrindChain$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDCHAIN$
+:i endfunction
+:i function $SetTerrainGrindPlasticBarrier$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDPLASTICBARRIER$
+:i endfunction
+:i function $SetTerrainGrindNeonLight$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDNEONLIGHT$
+:i endfunction
+:i function $SetTerrainGrindGlassMonster$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDGLASSMONSTER$
+:i endfunction
+:i function $SetTerrainGrindBanyonTree$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDBANYONTREE$
+:i endfunction
+:i function $SetTerrainGrindBrassRail$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDBRASSRAIL$
+:i endfunction
+:i function $SetTerrainGrindRustyRail$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDRUSTYRAIL$
+:i endfunction
+:i function $SetTerrainGrindCatwalk$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDCATWALK$
+:i endfunction
+:i function $SetTerrainGrindTankTurret$
+	:i $LoadTerrainSounds$$terrain$ = $TERRAIN_GRINDTANKTURRET$
+:i endfunction
+:i $TA_REVERT_CONC_UG2_CHANCE$ = %i(1,00000001)
+:i $TA_REVERT_CONC_AW_CHANCE$ = %i(0,00000000)
+:i $TA_OLLIE_CONC_UG2_CHANCE$ = %i(8,00000008)
+:i $TA_OLLIE_CONC19_UG2_CHANCE$ = %i(1,00000001)
+:i $TA_OLLIE_CONC_AW_CHANCE$ = %i(0,00000000)
+:i $TA_OLLIE_CONC19_AW_CHANCE$ = %i(0,00000000)
+:i $STANDARD_TERRAIN_DEFAULT$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(25,"Terrains\RollConcSmooth02")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(21,"Terrains\GrindMetal02")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideMetal02")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_sparks_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_CONCSMOOTH$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(25,"Terrains\RollConcSmooth02")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_sparks_params$:s}
+			:i :s{$APM_Debris01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_CONCROUGH$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(22,"Terrains\RollConcRough")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_sparks_params$:s}
+			:i :s{$APM_Debris01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_BRICK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(18,"Terrains\RollBrick")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_ASPHALT$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(20,"Terrains\RollAsphalt")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_SIDEWALK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(21,"Terrains\RollSidewalk")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WETCONC$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollWetConc_11")$loadVol$ = %i(70,00000046)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandWater")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(70,00000046):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALSMOOTH$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(27,"Terrains\RollMetalSmooth_11")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$loadVol$ = %i(120,00000078)$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandMetal")$LandMetalValues$:s}
+		:i $TA_BONK$ = :s{$sound$ = %s(21,"Terrains\BonkMetal_11")$BonkMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALROUGH$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(26,"Terrains\RollMetalRough_11")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$loadVol$ = %i(120,00000078)$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandMetal")$LandMetalValues$:s}
+		:i $TA_BONK$ = :s{$sound$ = %s(21,"Terrains\BonkMetal_11")$BonkMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALCORRUGATED$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(31,"Terrains\RollMetalCorrugated_11")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$loadVol$ = %i(120,00000078)$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandMetal")$LandMetalValues$:s}
+		:i $TA_BONK$ = :s{$sound$ = %s(21,"Terrains\BonkMetal_11")$BonkMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALGRATING$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(28,"Terrains\RollMetalGrating_11")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$loadVol$ = %i(120,00000078)$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandMetal")$LandMetalValues$:s}
+		:i $TA_BONK$ = :s{$sound$ = %s(21,"Terrains\BonkMetal_11")$BonkMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALTIN$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(21,"Terrains\RollMetalTin")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$loadVol$ = %i(120,00000078)$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandMetal")$LandMetalValues$:s}
+		:i $TA_BONK$ = :s{$sound$ = %s(21,"Terrains\BonkMetal_11")$BonkMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOOD$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollWood")$loadVol$ = %i(50,00000032)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(18,"Terrains\GrindWood")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(18,"Terrains\SlideWood")$pitch$ = %i(110,0000006e)$loadVol$ = %i(100,00000064)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOODMASONITE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(25,"Terrains\RollWoodMasonite")$loadVol$ = %i(50,00000032)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOODPLYWOOD$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(27,"Terrains\RollWoodPlywood_11")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOODFLIMSY$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollWoodFlimsy")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOODSHINGLE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(24,"Terrains\RollWoodShingle")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(80,00000050)$minPitch$ = %i(50,00000032)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WOODPIER$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(21,"Terrains\RollWoodPier")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_BONK$ = :s{$sound$ = %s(17,"Terrains\BonkWood")$BonkWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_ROCK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollRock")$loadVol$ = %i(200,000000c8)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050):s}
+		:i $TA_OLLIE$ = :s{$sound$ =  ($TP_OllieConcSFXType$) $maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRAVEL$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(19,"Terrains\RollGravel")$loadVol$ = %i(200,000000c8)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050):s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRASS$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(18,"Terrains\RollGrass")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertGrass")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterSkatingParticleParms$ = :a{
+			:i :s{$apm_grass01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRASSDRIED$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollGrassDried")$maxPitch$ = %i(50,00000032)$minPitch$ = %i(30,0000001e)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertGrass")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_DIRT$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertDirt")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterSkatingParticleParms$ = :a{
+			:i :s{$apm_dirt_puff01_particle_params$:s}
+			:i :a}
+		:i $SkaterStepParticleParms$ = :a{
+			:i :s{$apm_dirt_puff02_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_DIRTPACKED$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollDirtPacked")$loadVol$ = %i(75,0000004b)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(18,"Terrains\OllieWood"):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertDirt")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_WATER$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(21,"Terrains\RollWater_11")$loadVol$ = %i(150,00000096)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(50,00000032):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(19,"Terrains\OllieWater")$OllieConcValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(18,"Terrains\LandWater")$LandConcValues$:s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterSkatingParticleParms$ = :a{
+			:i :s{$apm_water_wake02_particle_params$:s}
+			:i :s{$apm_water_wake03_particle_params$:s}
+			:i :a}
+		:i $SkaterStepParticleParms$ = :a{
+			:i :s{$apm_Skater_splash03_fast_particle_params$:s}
+			:i :s{$apm_water_wake01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_ICE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(16,"Terrains\RollIce")$loadVol$ = %i(70,00000046)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_SNOW$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollSnow")$loadVol$ = %i(70,00000046)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_SAND$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollSand")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandDirt")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterSkatingParticleParms$ = :a{
+			:i :s{$apm_sand_puff01_particle_params$:s}
+			:i :a}
+		:i $SkaterStepParticleParms$ = :a{
+			:i :s{$apm_sand_puff02_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_TILE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(17,"Terrains\RollTile")$loadVol$ = %i(80,00000050)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_PLEXIGLASS$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollPlexiglass")$loadVol$ = %i(50,00000032)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertGlass")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_FIBERGLASS$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(23,"Terrains\RollFiberglass")$loadVol$ = %i(50,00000032)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertGlass")$loadVol$ = %i(180,000000b4):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_CARPET$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(19,"Terrains\RollCarpet")$loadVol$ = %i(100,00000064)$RollConcSmoothValues$:s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(17,"Skater\RevertWood")$loadVol$ = %i(150,00000096):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_CONVEYOR$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(21,"Terrains\RollConveyor")$loadVol$ = %i(70,00000046)$RollConcSmoothValues$:s}
+		:i $TA_OLLIE$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_LAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$LandConcValues$:s}
+		:i $TA_REVERT$ = :a{:s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_REVERT_CONC_UG2_CHANCE$$sound$ = %s(17,"Skater\RevertConc")$loadVol$ = %i(180,000000b4):s}
+					:i :s{$chance$ = $TA_REVERT_CONC_AW_CHANCE$$sound$ = %s(24,"Terrains\RevertConc_THAW")$loadVol$ = %i(180,000000b4):s}
+					:i :a}
+			:i :s}:a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_CHAINLINK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_BONK$ = :s{$sound$ = %s(22,"Terrains\BonkChainlink")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRIND$ = :s{$sound$ = %s(25,"Terrains\GrindMetalPole22")$maxPitch$ = %i(108,0000006c)$minPitch$ = %i(90,0000005a)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindChainLinkOn22")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(25,"Terrains\SlideMetalPole22")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindChainLinkOn22")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALFUTURE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_ROLL$ = :s{$sound$ = %s(24,"Terrains\RollMetalFuture")$loadVol$ = %i(700,000002bc)$RollMetalSmoothValues$:s}
+		:i $TA_OLLIE$ = :s{$sound$ = %s(25,"Terrains\OllieMetalFuture")$OllieMetalValues$:s}
+		:i $TA_LAND$ = :s{$sound$ = %s(24,"Terrains\LandMetalFuture")$LandMetalValues$:s}
+		:i $TA_REVERT$ = :s{$sound$ = %s(18,"Skater\RevertMetal")$loadVol$ = %i(200,000000c8):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GENERIC1$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_BONK$ = :s{$sound$ = %s(28,"Terrains\BonkMetalOutdoor_11")$loadVol$ = %i(100,00000064)$BonkMetalValues$:s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GENERIC2$ = :s{
+	:i $SoundActions$ = :s{
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_METALFENCE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_BONK$ = :s{$sound$ = %s(23,"Terrains\BonkMetalFence")$loadVol$ = %i(400,00000190)$BonkMetalValues$:s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDCONC$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(20,"Terrains\GrindConc04")$maxPitch$ = %i(90,0000005a)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(20,"Terrains\SlideConc14")$SlideConcValues$:s}
+		:i $TA_SLIDEJUMP$ = :a{
+			:i :s{
+				:i $soundAction$ = :a{
+					:i :s{$chance$ = $TA_OLLIE_CONC_UG2_CHANCE$$sound$ = %s(18,"Terrains\OllieConc")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_UG2_CHANCE$$sound$ = %s(20,"Terrains\OllieConc19")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC_AW_CHANCE$$sound$ = %s(23,"Terrains\OllieConc_THAW")$OllieConcValues$:s}
+					:i :s{$chance$ = $TA_OLLIE_CONC19_AW_CHANCE$$sound$ = %s(25,"Terrains\OllieConc19_THAW")$OllieConcValues$:s}
+					:i :a}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandConc")$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050)$loadVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_sparks_params$:s}
+			:i :s{$APM_Debris01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDROUNDMETALPOLE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(25,"Terrains\GrindMetalPole22")$maxPitch$ = %i(105,00000069)$minPitch$ = %i(85,00000055)$maxVol$ = %i(120,00000078)$minVol$ = %i(50,00000032):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindMetalPoleOn21")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(25,"Terrains\SlideMetalPole22")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(95,0000005f)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindMetalPoleOn21")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDCHAINLINK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(25,"Terrains\GrindMetalPole22")$maxPitch$ = %i(105,00000069)$minPitch$ = %i(85,00000055)$maxVol$ = %i(120,00000078)$minVol$ = %i(50,00000032):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindChainLinkOn22")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(25,"Terrains\SlideMetalPole22")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(95,0000005f)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindChainLinkOn22")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDMETAL$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(21,"Terrains\GrindMetal02")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideMetal02")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDWOODRAILING$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(25,"Terrains\GrindWoodRailing")$maxPitch$ = %i(150,00000096)$minPitch$ = %i(120,00000078)$maxVol$ = %i(100,00000064)$minVol$ = %i(50,00000032):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(130,00000082):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(150,00000096)$minPitch$ = %i(149,00000095):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(18,"Terrains\SlideWood")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(90,0000005a)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(130,00000082):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(150,00000096)$minPitch$ = %i(149,00000095):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDWOODLOG$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(18,"Terrains\GrindWood")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideWoodLog")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDWOOD$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(18,"Terrains\GrindWood")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(18,"Terrains\SlideWood")$pitch$ = %i(110,0000006e)$loadVol$ = %i(100,00000064)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :s{$apm_splinter01_particle_params$:s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDPLASTIC$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(21,"Terrains\GrindPlastic")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(90,0000005a)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\GrindPlastic")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDCHAIN$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(19,"Terrains\GrindChain")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideMetal02")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDELECTRICWIRE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(110,0000006e)$minPitch$ = %i(75,0000004b)$maxVol$ = %i(180,000000b4)$minVol$ = %i(80,00000050):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(200,000000c8)$minVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(150,00000096)$minVol$ = %i(80,00000050):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_elec_sparks_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDCABLE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(19,"Terrains\GrindCable")$maxPitch$ = %i(110,0000006e)$minPitch$ = %i(75,0000004b)$maxVol$ = %i(180,000000b4)$minVol$ = %i(80,00000050):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWire")$maxVol$ = %i(200,000000c8)$minVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(19,"Terrains\GrindCable")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(150,00000096)$minVol$ = %i(80,00000050):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(19,"Terrains\OllieMetal")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWire")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDPLASTICBARRIER$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(21,"Terrains\GrindPlastic")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(90,0000005a)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlidePlastic")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDNEONLIGHT$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(110,0000006e)$minPitch$ = %i(75,0000004b)$maxVol$ = %i(180,000000b4)$minVol$ = %i(80,00000050):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(200,000000c8)$minVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(150,00000096)$minVol$ = %i(80,00000050):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(180,000000b4)$minVol$ = %i(60,0000003c):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_elec_sparks_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDGLASSMONSTER$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(26,"Terrains\GrindGlassMonster")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(90,0000005a)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(26,"Terrains\GrindGlassMonster")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$$maxPitch$ = %i(130,00000082)$minPitch$ = %i(120,00000078):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064)$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(139,0000008b):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDBANYONTREE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(24,"Terrains\GrindBanyonTree")$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(24,"Terrains\GrindBanyonTree")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDBRASSRAIL$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(25,"Terrains\GrindMetalPole22")$maxPitch$ = %i(105,00000069)$minPitch$ = %i(85,00000055)$maxVol$ = %i(120,00000078)$minVol$ = %i(50,00000032):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindMetalPoleOn21")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(25,"Terrains\SlideMetalPole22")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(95,0000005f)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(28,"Terrains\GrindMetalPoleOff21")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(27,"Terrains\GrindMetalPoleOn21")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDRUSTYRAIL$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(28,"Terrains\SK6_GrindMetal0217b")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(31,"Terrains\SK6_GrindMetaloff0217b")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(30,"Terrains\SK6_GrindMetalon0217b")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(28,"Terrains\SK6_slideMetal0217b")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(70,00000046)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(31,"Terrains\SK6_GrindMetaloff0217b")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(30,"Terrains\SK6_GrindMetalon0217b")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064)$loadVol$ = %i(100,00000064):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDCATWALK$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(21,"Terrains\GrindMetal02")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideMetal02")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :a{
+			:i :s{
+				:i $useUpTo$ = %i(30,0000001e)
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn08")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :s{
+				:i $soundAction$ = :s{$sound$ = %s(23,"Terrains\GrindMetalOn02")$maxVol$ = %i(150,00000096)$minVol$ = %i(100,00000064)$maxPitch$ = %i(120,00000078)$minPitch$ = %i(100,00000064):s}
+			:i :s}
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDTANKTURRET$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(24,"Terrains\GrindTankTurret")$maxPitch$ = %i(115,00000073)$minPitch$ = %i(100,00000064)$maxVol$ = %i(120,00000078)$minVol$ = %i(20,00000014):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(23,"Terrains\LandTankTurret")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(21,"Terrains\SlideMetal02")$maxPitch$ = %i(140,0000008c)$minPitch$ = %i(100,00000064)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(24,"Terrains\GrindMetalOff02")$maxVol$ = %i(90,0000005a)$minVol$ = %i(70,00000046):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(23,"Terrains\LandTankTurret")$LandWoodValues$$loadVol$ = %i(100,00000064):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDTRAIN$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(19,"Terrains\GrindTrain")$loadVol$ = %i(100,00000064)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(200,000000c8)$minVol$ = %i(80,00000050):s}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDROPE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(23,"Terrains\GrindWireBench")$loadVol$ = %i(50,00000032)$pitch$ = %i(70,00000046)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(200,000000c8)$minVol$ = %i(80,00000050):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$OllieWoodValues$:s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$loadVol$ = %i(80,00000050)$maxVol$ = %i(100,00000064)$minVol$ = %i(60,0000003c):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(25,"Terrains\SlideWoodRailing")$loadVol$ = %i(50,00000032)$maxPitch$ = %i(100,00000064)$minPitch$ = %i(60,0000003c)$maxVol$ = %i(100,00000064)$minVol$ = %i(20,00000014):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(18,"Terrains\OllieWood")$loadVol$ = %i(80,00000050)$OllieWoodValues$:s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(17,"Terrains\LandWood")$loadVol$ = %i(80,00000050)$maxVol$ = %i(120,00000078)$minVol$ = %i(80,00000050):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $STANDARD_TERRAIN_GRINDWIRE$ = :s{
+	:i $SoundActions$ = :s{
+		:i $TA_GRIND$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(110,0000006e)$minPitch$ = %i(75,0000004b)$maxVol$ = %i(150,00000096)$minVol$ = %i(80,00000050):s}
+		:i $TA_GRINDJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(150,00000096)$minVol$ = %i(60,0000003c):s}
+		:i $TA_GRINDLAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(175,000000af)$minVol$ = %i(100,00000064):s}
+		:i $TA_SLIDE$ = :s{$sound$ = %s(23,"Terrains\GrindWireSpark")$maxPitch$ = %i(120,00000078)$minPitch$ = %i(80,00000050)$maxVol$ = %i(130,00000082)$minVol$ = %i(80,00000050):s}
+		:i $TA_SLIDEJUMP$ = :s{$sound$ = %s(23,"Terrains\OllieWireSpark")$maxVol$ = %i(150,00000096)$minVol$ = %i(60,0000003c):s}
+		:i $TA_SLIDELAND$ = :s{$sound$ = %s(22,"Terrains\LandWireSpark")$maxVol$ = %i(130,00000082)$minVol$ = %i(100,00000064):s}
+	:i :s}
+	:i $TreadActions$ = :s{
+		:i $SkaterGrindParticleParms$ = :a{
+			:i :s{$skater_elec_sparks_params$:s}
+			:i :a}
+		:i $SkaterSlideParticleParms$ = :a{
+			:i :a}
+	:i :s}
+:i :s}
+:i $TERRAIN_DEFAULT$ = $STANDARD_TERRAIN_DEFAULT$
+:i $TERRAIN_CONCSMOOTH$ = $STANDARD_TERRAIN_CONCSMOOTH$
+:i $TERRAIN_CONCROUGH$ = $STANDARD_TERRAIN_CONCROUGH$
+:i $TERRAIN_METALSMOOTH$ = $STANDARD_TERRAIN_METALSMOOTH$
+:i $TERRAIN_METALROUGH$ = $STANDARD_TERRAIN_METALROUGH$
+:i $TERRAIN_METALCORRUGATED$ = $STANDARD_TERRAIN_METALCORRUGATED$
+:i $TERRAIN_METALGRATING$ = $STANDARD_TERRAIN_METALGRATING$
+:i $TERRAIN_METALTIN$ = $STANDARD_TERRAIN_METALTIN$
+:i $TERRAIN_WOOD$ = $STANDARD_TERRAIN_WOOD$
+:i $TERRAIN_WOODMASONITE$ = $STANDARD_TERRAIN_WOODMASONITE$
+:i $TERRAIN_WOODPLYWOOD$ = $STANDARD_TERRAIN_WOODPLYWOOD$
+:i $TERRAIN_WOODFLIMSY$ = $STANDARD_TERRAIN_WOODFLIMSY$
+:i $TERRAIN_WOODSHINGLE$ = $STANDARD_TERRAIN_WOODSHINGLE$
+:i $TERRAIN_WOODPIER$ = $STANDARD_TERRAIN_WOODPIER$
+:i $TERRAIN_BRICK$ = $STANDARD_TERRAIN_BRICK$
+:i $TERRAIN_TILE$ = $STANDARD_TERRAIN_TILE$
+:i $TERRAIN_ASPHALT$ = $STANDARD_TERRAIN_ASPHALT$
+:i $TERRAIN_ROCK$ = $STANDARD_TERRAIN_ROCK$
+:i $TERRAIN_GRAVEL$ = $STANDARD_TERRAIN_GRAVEL$
+:i $TERRAIN_SIDEWALK$ = $STANDARD_TERRAIN_SIDEWALK$
+:i $TERRAIN_GRASS$ = $STANDARD_TERRAIN_GRASS$
+:i $TERRAIN_GRASSDRIED$ = $STANDARD_TERRAIN_GRASSDRIED$
+:i $TERRAIN_DIRT$ = $STANDARD_TERRAIN_DIRT$
+:i $TERRAIN_DIRTPACKED$ = $STANDARD_TERRAIN_DIRTPACKED$
+:i $TERRAIN_WATER$ = $STANDARD_TERRAIN_WATER$
+:i $TERRAIN_ICE$ = $STANDARD_TERRAIN_ICE$
+:i $TERRAIN_SNOW$ = $STANDARD_TERRAIN_SNOW$
+:i $TERRAIN_SAND$ = $STANDARD_TERRAIN_SAND$
+:i $TERRAIN_PLEXIGLASS$ = $STANDARD_TERRAIN_PLEXIGLASS$
+:i $TERRAIN_FIBERGLASS$ = $STANDARD_TERRAIN_FIBERGLASS$
+:i $TERRAIN_CARPET$ = $STANDARD_TERRAIN_CARPET$
+:i $TERRAIN_CONVEYOR$ = $STANDARD_TERRAIN_CONVEYOR$
+:i $TERRAIN_CHAINLINK$ = $STANDARD_TERRAIN_CHAINLINK$
+:i $TERRAIN_METALFUTURE$ = $STANDARD_TERRAIN_METALFUTURE$
+:i $TERRAIN_GENERIC1$ = $STANDARD_TERRAIN_GENERIC1$
+:i $TERRAIN_GENERIC2$ = $STANDARD_TERRAIN_GENERIC2$
+:i $TERRAIN_WHEELS$ = $STANDARD_TERRAIN_WHEELS$
+:i $TERRAIN_WETCONC$ = $STANDARD_TERRAIN_WETCONC$
+:i $TERRAIN_METALFENCE$ = $STANDARD_TERRAIN_METALFENCE$
+:i $TERRAIN_GRINDTRAIN$ = $STANDARD_TERRAIN_GRINDTRAIN$
+:i $TERRAIN_GRINDROPE$ = $STANDARD_TERRAIN_GRINDROPE$
+:i $TERRAIN_GRINDWIRE$ = $STANDARD_TERRAIN_GRINDWIRE$
+:i $TERRAIN_GRINDCONC$ = $STANDARD_TERRAIN_GRINDCONC$
+:i $TERRAIN_GRINDROUNDMETALPOLE$ = $STANDARD_TERRAIN_GRINDROUNDMETALPOLE$
+:i $TERRAIN_GRINDCHAINLINK$ = $STANDARD_TERRAIN_GRINDCHAINLINK$
+:i $TERRAIN_GRINDMETAL$ = $STANDARD_TERRAIN_GRINDMETAL$
+:i $TERRAIN_GRINDWOODRAILING$ = $STANDARD_TERRAIN_GRINDWOODRAILING$
+:i $TERRAIN_GRINDWOODLOG$ = $STANDARD_TERRAIN_GRINDWOODLOG$
+:i $TERRAIN_GRINDWOOD$ = $STANDARD_TERRAIN_GRINDWOOD$
+:i $TERRAIN_GRINDPLASTIC$ = $STANDARD_TERRAIN_GRINDPLASTIC$
+:i $TERRAIN_GRINDELECTRICWIRE$ = $STANDARD_TERRAIN_GRINDELECTRICWIRE$
+:i $TERRAIN_GRINDCABLE$ = $STANDARD_TERRAIN_GRINDCABLE$
+:i $TERRAIN_GRINDCHAIN$ = $STANDARD_TERRAIN_GRINDCHAIN$
+:i $TERRAIN_GRINDPLASTICBARRIER$ = $STANDARD_TERRAIN_GRINDPLASTICBARRIER$
+:i $TERRAIN_GRINDNEONLIGHT$ = $STANDARD_TERRAIN_GRINDNEONLIGHT$
+:i $TERRAIN_GRINDGLASSMONSTER$ = $STANDARD_TERRAIN_GRINDGLASSMONSTER$
+:i $TERRAIN_GRINDBANYONTREE$ = $STANDARD_TERRAIN_GRINDBANYONTREE$
+:i $TERRAIN_GRINDBRASSRAIL$ = $STANDARD_TERRAIN_GRINDBRASSRAIL$
+:i $TERRAIN_GRINDRUSTYRAIL$ = $STANDARD_TERRAIN_GRINDRUSTYRAIL$
+:i $TERRAIN_GRINDCATWALK$ = $STANDARD_TERRAIN_GRINDCATWALK$
+:i $TERRAIN_GRINDTANKTURRET$ = $STANDARD_TERRAIN_GRINDTANKTURRET$:end

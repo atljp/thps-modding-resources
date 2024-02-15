@@ -1,0 +1,33 @@
+//------------------------------------------------
+// THAW .tex file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define NO_STANDALONE_IMG
+#include "Img.bt"
+
+typedef struct
+{
+    QBKey magic_a <bgcolor=CL_CHECKSUM, comment="A bad dude!">;
+    ushort constant <bgcolor=CL_SINGLEVALUE, comment="Seems constant">;
+    ushort image_count <bgcolor=CL_SINGLEVALUE, comment="Num images">;
+
+    THAWImg images[image_count] <optimize=false>;
+} THAWTex;
+
+typedef struct
+{
+    uint version <bgcolor=CL_SINGLEVALUE, comment="Seems constant">;
+    uint image_count <bgcolor=CL_SINGLEVALUE, comment="Num images">;
+    
+    THUG2Img images[image_count] <optimize=false>;
+} THUG2Tex;
+
+LittleEndian();
+local int test_int = ReadInt();
+
+if (test_int == 0xABADD00D)
+    THAWTex tex_file;
+else
+    THUG2Tex tex_file;

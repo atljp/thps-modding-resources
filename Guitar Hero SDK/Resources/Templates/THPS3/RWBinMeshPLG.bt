@@ -1,0 +1,27 @@
+//------------------------------------------------
+// Bin Mesh PLG section.
+//------------------------------------------------
+
+#define CL_BINMESHVALUE             0xFF66FF
+
+enum RWBinMeshFlags
+{
+    TRI_LIST = 0,
+    TRI_STRIP = 1
+};
+
+typedef struct
+{
+    uint indices_count;
+    uint material_index;
+    uint indices[indices_count];
+} RWBinMesh <read=Str("Material %d, %d indices", material_index, indices_count)>;
+
+typedef struct
+{
+    RWBinMeshFlags flags <bgcolor=CL_BINMESHVALUE>;
+    uint mesh_count <bgcolor=CL_BINMESHVALUE>;
+    uint indices_count <bgcolor=CL_BINMESHVALUE>;
+    
+    RWBinMesh meshes[mesh_count] <optimize=false, bgcolor=CL_BINMESHVALUE>;
+} RWBinMeshPLG;

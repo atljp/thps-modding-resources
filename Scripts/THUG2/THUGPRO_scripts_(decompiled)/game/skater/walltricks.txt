@@ -1,0 +1,405 @@
+
+:i $StickerSlapDisabled$ = %i(0,00000000)
+:i $WALLPLANT_ALLOW_OLLIE$ = %i(0,00000000)
+:i $ENABLE_WALLRIDE_BOOSTPLANT$ = %i(0,00000000)
+:i $ENABLE_WALLRIDEPLANT$ = %i(0,00000000)
+:i $ENABLE_WALLRIDE_SPINS$ = %i(0,00000000)
+:i $WALLPLANT_TRICK_OPTION$ = %i(0,00000000)
+:i $WallRideExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Landed$$Scr$ = $Land$$Params$ = :s{$NoBlend$$IgnoreAirTime$:s}:s}
+	:i :s{$Exception$$Ex$ = $Ollied$$Scr$ = $Wallie$:s}
+	:i :s{$Exception$$Ex$ = $GroundGone$$Scr$ = $WallrideEnd$:s}
+	:i :s{$Exception$$Ex$ = $PointRail$$Scr$ = $PointRail$:s}
+	:i :s{$Exception$$Ex$ = $PointRailSpin$$Scr$ = $PointRailSpin$:s}
+	:i :s{$Exception$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$:s}
+	:i :a}
+:i function $WallRide$
+	:i $ResetAirStateCounters$
+	:i $change$$wall_ride_jump_out_speed$ = %i(40,00000028)
+	:i $ClearExceptions$
+	:i $ResetEventHandlersFromTable$$WallRideExceptionTable$
+	:i if NOT $IsTrue$$ENABLE_WALLRIDE_SPINS$
+		:i $CancelRotateDisplay$
+	:i endif
+	:i $LaunchStateChangeEvent$$State$ = $Skater_OnWall$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(40,00000028)
+	:i $Obj_ClearFlag$$FLAG_SKATER_MANUALCHEESE$
+	:i if $GotParam$$Left$
+		:i $move$$x$ = %f(36.000000)
+	:i else 
+		:i $move$$x$ = %f(-36.000000)
+	:i endif
+	:i if $BailIsOn$
+		:i $SetState$$Air$
+	:i endif
+	:i $BailOff$
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_BOOSTPLANT$
+		:i $ClearTrickQueue$
+	:i else 
+		:i if  ($ENABLE_WALLRIDE_BOOSTPLANT$ = %i(0,00000000)) 
+			:i $ClearTrickQueue$
+		:i endif
+	:i endif
+	:i if  ($WALLIEPLANT_INPUT_MODE$ = %i(0,00000000)) 
+		:i %GLOBAL%$WallRideTricks$ = $WallRideTricks_SingleTap$
+	:i else 
+		:i %GLOBAL%$WallRideTricks$ = $WallRideTricks_DoubleTap$
+	:i endif
+	:i if $IsTrue$$ENABLE_WALLRIDEPLANT$
+		:i if $GotParam$$Left$
+			:i $SetQueueTricks$%GLOBAL%$WallRideTricks$$WallridePlantRight$
+		:i else 
+			:i if $GotParam$$Right$
+				:i $SetQueueTricks$%GLOBAL%$WallRideTricks$$WallridePlantLeft$
+			:i endif
+		:i endif
+	:i else 
+		:i $SetQueueTricks$%GLOBAL%$WallRideTricks$
+	:i endif
+	:i $NollieOff$
+	:i $PressureOff$
+	:i $SetTrickScore$%i(200,000000c8)
+	:i $GetBoardTypeAndRevert$$Type$ = $WallRide$
+	:i if $GotParam$$Left$
+		:i if $Flipped$
+			:i if NOT $IsFlipAfterSet$
+				:i $BS_Wallride$ = %i(1,00000001)
+			:i endif
+		:i else 
+			:i if $IsFlipAfterSet$
+				:i $BS_Wallride$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i else 
+		:i if NOT $Flipped$
+			:i if NOT $IsFlipAfterSet$
+				:i $BS_Wallride$ = %i(1,00000001)
+			:i endif
+		:i else 
+			:i if $IsFlipAfterSet$
+				:i $BS_Wallride$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$BS_Wallride$
+		:i $SetTrickName$%sc(11,"BS Wallride")
+		:i $PlayAnim$$Anim$ = $WallRideBackTrans$$BlendPeriod$ = %f(0.000000)
+	:i else 
+		:i $SetTrickName$%sc(11,"FS Wallride")
+		:i $PlayAnim$$Anim$ = $WallRideFrontTrans$$BlendPeriod$ = %f(0.000000)
+	:i endif
+	:i if $BoardIsRotated$
+		:i $BoardRotate$$Normal$
+	:i endif
+	:i while
+		
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $WallrideTrail$
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+	:i if $GotParam$$BS_Wallride$
+		:i $PlayAnim$$Anim$ = $WallRideBackLoop$$BlendPeriod$ = %f(0.100000)$Cycle$
+	:i else 
+		:i $PlayAnim$$Anim$ = $WallRideFrontLoop$$BlendPeriod$ = %f(0.100000)$Cycle$
+	:i endif
+	:i $Display$
+	:i while
+		
+		:i $TweakTrick$%i(25,00000019)
+		:i $WallrideTrail$
+		:i $wait$%i(1,00000001)$frame$
+		:i $DoNextTrick$
+	:i loop_to 
+:i endfunction
+:i function $WallrideTrail$
+	:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Tail$$name$ = $skidtrail$$trail$$lifetime$ = %i(15,0000000f)
+	:i $TextureSplat$$size$ = %i(6,00000006)$radius$ = %i(0,00000000)$bone$ = $Bone_Board_Nose$$name$ = $skidtrail$$trail$$lifetime$ = %i(15,0000000f)
+:i endfunction
+:i function $WallrideEnd$
+	:i $BlendPeriodOut$%i(0,00000000)
+	:i $SetException$$Ex$ = $Landed$$Scr$ = $Land$
+	:i $ClearExceptions$
+	:i if $Inair$
+		:i $Goto$$Airborne$
+	:i endif
+:i endfunction
+:i function $Wallie$
+	:i $DoNextTrick$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$Duration$ = %f(0.100000)
+	:i $PlayAnim$$Anim$ = $Ollie$$BlendPeriod$ = %f(0.000000)
+	:i $SetTrickName$%sc(6,"Wallie")
+	:i $SetTrickScore$%i(250,000000fa)
+	:i $InAirExceptions$
+	:i $Display$
+	:i $Jump$
+	:i $WaitAnimWhilstChecking$
+	:i $Goto$$Airborne$$BlendPeriod$ = %i(0,00000000)
+:i endfunction
+:i $WallRideTricks_SingleTap$ = :a{:s{$Trigger$ = :s{$PressAndRelease$;$Up$;$x$;%i(500,000001f4):s}$Scr$ = $Trick_WallPlant$$Params$ = :s{$SingleTap$:s}:s}:a}
+:i $WallRideTricks_DoubleTap$ = :a{:s{$Trigger$ = :s{$TapTwiceRelease$;$Up$;$x$;%i(500,000001f4):s}$Scr$ = $Trick_WallPlant$$Params$ = :s{$DoubleTap$:s}:s}:a}
+:i $WallridePlantLeft$ = :a{:s{$Trigger$ = :s{$PressAndRelease$;$Left$;$x$;%i(500,000001f4):s}$Scr$ = $Trick_WallridePlant$:s}:a}
+:i $WallridePlantRight$ = :a{:s{$Trigger$ = :s{$PressAndRelease$;$Right$;$x$;%i(500,000001f4):s}$Scr$ = $Trick_WallridePlant$:s}:a}
+:i function $Trick_WallBoostPlant$
+:i endfunction
+:i function $Trick_ManualBoostPlant$
+:i endfunction
+:i function $Trick_WallPlant$
+	:i $hide_balance_meter$
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_BOOSTPLANT$
+		:i $ClearTrickQueue$
+	:i else 
+		:i if  ($ENABLE_WALLRIDE_BOOSTPLANT$ = %i(0,00000000)) 
+			:i $ClearTrickQueue$
+		:i endif
+	:i endif
+	:i $GetSingleTag$$boostplant_count$
+	:i $SetTags$$boostplant_count$ =  (%GLOBAL%$boostplant_count$ + %i(1,00000001)) 
+	:i $InAirExceptions$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$Duration$ = %f(0.100000)
+	:i $PlayAnim$$Anim$ = $Boneless$$BlendPeriod$ = %f(0.000000)
+	:i if  (%GLOBAL%$boostplant_count$ > %i(0,00000000)) 
+		:i if  (%GLOBAL%$boostplant_count$ < %i(2,00000002)) 
+			:i $SetTrickName$%sc(10,"BoostPlant")
+			:i $Display$
+		:i endif
+		:i if $Obj_FlagSet$$FLAG_SKATER_IN_THUG_BOOSTPLANT$
+			:i if $GotParam$$SingleTap$
+				:i $Jump$$speed$ = %i(225,000000e1)
+			:i else 
+				:i $Jump$$speed$ = %i(500,000001f4)
+			:i endif
+		:i else 
+			:i if $GotParam$$SingleTap$
+				:i $Jump$$speed$ = %i(425,000001a9)
+			:i else 
+				:i $Jump$$speed$ = %i(525,0000020d)
+			:i endif
+		:i endif
+	:i else 
+		:i $SetTrickName$%sc(11,"WalliePlant")
+		:i $SetTrickScore$%i(500,000001f4)
+		:i $Display$
+		:i $Jump$$BonelessHeight$
+	:i endif
+	:i $WaitAnimWhilstChecking$
+	:i $Goto$$Airborne$$BlendPeriod$ = %i(0,00000000)
+:i endfunction
+:i function $Trick_WallridePlant$
+	:i $change$$wall_ride_jump_out_speed$ = %i(256,00000100)
+	:i $ClearTrickQueue$
+	:i $InAirExceptions$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$Duration$ = %f(0.100000)
+	:i $PlayAnim$$Anim$ = $Ollie$$BlendPeriod$ = %f(0.000000)
+	:i $SetTrickName$%sc(13,"WallridePlant")
+	:i $SetTrickScore$%i(500,000001f4)
+	:i $Display$
+	:i $Jump$
+	:i $WaitAnimWhilstChecking$
+	:i $Goto$$Airborne$$BlendPeriod$ = %i(0,00000000)
+:i endfunction
+:i $WALLPLANT_WINDOW_UG$ = %i(450,000001c2)
+:i $WALLPLANT_WINDOW$ = %i(280,00000118)
+:i $Wallplant_Trick$ = 
+:i :a{
+	:i :a}
+:i $Wallplant_Trick2$ = 
+:i :a{
+	:i :a}
+:i $Wallplant_Trick_TP$ = 
+:i :a{
+	:i :s{$Press$;$x$;$WALLPLANT_WINDOW$:s}
+	:i :s{$InOrder$;$x$;$Down$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$x$;$DownLeft$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$x$;$DownRight$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$Down$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$DownLeft$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$DownRight$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :a}
+:i $Wallplant_Trick_UG$ = :a{
+	:i :s{$InOrder$;$x$;$Down$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$x$;$DownLeft$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$x$;$DownRight$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$Down$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$DownLeft$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :s{$InOrder$;$DownRight$;$x$;$WALLPLANT_WINDOW_UG$:s}
+	:i :a}
+:i $Post_Wallplant_No_Ollie_Window$ = %i(100,00000064)
+:i $Post_Wallplant_Allow_Ollie_Window$ = %i(250,000000fa)
+:i $WallplantOllie$ = 
+:i :a{
+	:i :s{$Trigger$ = :s{$Tap$;$x$;$Post_Wallplant_Allow_Ollie_Window$:s}$Scr$ = $Ollie$$Params$ = :s{$JumpSpeed$ = %i(200,000000c8)$FromWallplant$:s}:s}
+	:i :a}
+:i function $Air_Wallplant$
+	:i $ResetAirStateCounters$
+	:i $change$$EXITWPLOOP$ = %i(1,00000001)
+	:i if $StickerOn$
+		:i %GLOBAL%$StickerSlap$ = $StickerSlap$
+	:i endif
+	:i if $IsSkaterOnVehicle$
+		:i $Goto$$vehicle_wallplant$
+	:i endif
+	:i if $StickerOn$
+		:i $name$ = %s(12,"Sticker Slap")
+		:i $Score$ = %i(750,000002ee)
+		:i $Anim$ = $Wallplant_Sticker$
+	:i else 
+		:i $name$ = %s(9,"Wallplant")
+		:i $Score$ = %i(750,000002ee)
+		:i $Anim$ = $WallPlant_Ollie3$
+	:i endif
+	:i if $BailIsOn$
+		:i $Obj_SetFlag$$FLAG_SKATER_IN_NEUROPLANT$
+		:i $name$ = %s(11,"Neuro Plant")
+		:i $SetState$$Air$
+		:i $printf$%s(14,"WallPlant Bail")
+		:i $SetRollingFriction$%i(100,00000064)
+		:i $SetTrickName$%GLOBAL%$name$
+		:i $Display$
+		:i $Goto$$Bailsmack$$Params$ = :s{$smackAnim$ = $Bail_Wall_FWD_Regular$$SmackFriction$ = %i(75,0000004b):s}
+	:i endif
+	:i $Obj_ClearFlag$$FLAG_SKATER_MANUALCHEESE$
+	:i $PressureOff$
+	:i $NollieOff$
+	:i $InAirExceptions$
+	:i $ClearException$$Ollied$
+	:i $LaunchStateChangeEvent$$State$ = $Skater_InWallplant$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.100000)
+	:i if $GotParam$$StickerSlap$
+		:i $Flip$
+	:i endif
+	:i $PlayAnim$$Anim$ = %GLOBAL%$Anim$$BlendPeriod$ = %i(0,00000000)
+	:i $BlendPeriodOut$%i(0,00000000)
+	:i if $GotParam$$StickerSlap$
+		:i $BoardRotateAfter$
+	:i endif
+	:i $SetTrickName$%sc(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+	:i $SetTrickName$%GLOBAL%$name$
+	:i $SetTrickScore$%GLOBAL%$Score$
+	:i $Display$
+	:i if $GotParam$$StickerSlap$
+		:i $Obj_PlaySound$$SK6_StickerSlap_01$$vol$ = %i(150,00000096)$pitch$ = %vec2(98.000000,105.000000)
+	:i endif
+	:i $GetStartTime$
+	:i while
+		
+		:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+		:i if  (%GLOBAL%$ElapsedTime$ > $Post_Wallplant_No_Ollie_Window$) 
+			:i continue
+			
+		:i endif
+		:i $DoNextTrick$
+		:i $wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+	:i $ClearEventBuffer$$Buttons$ = :a{$x$:a}$OlderThan$ = %i(0,00000000)
+	:i if  ($WALLPLANT_ALLOW_OLLIE$ = %i(1,00000001)) 
+		:i $SetSkaterAirTricks$$AllowWallplantOllie$
+	:i endif
+	:i $GetStartTime$
+	:i while
+		
+		:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+		:i if  (%GLOBAL%$ElapsedTime$ > $Post_Wallplant_Allow_Ollie_Window$) 
+			:i continue
+			
+		:i endif
+		:i $DoNextTrick$
+		:i $wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+	:i $SetSkaterAirTricks$
+	:i $WaitAnimWhilstChecking$
+	:i $TurnOffSpecialItem$
+	:i $Goto$$Airborne$
+:i endfunction
+:i function $Vert_Wallplant$
+	:i $LaunchStateChangeEvent$$State$ = $Skater_InWallplant$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(100,00000064)$Duration$ = %f(0.100000)
+	:i $SetTrickName$%s(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+	:i $PlayAnim$$Anim$ = $VertPlant$$BlendPeriod$ = %f(0.000000)$speed$ = %f(1.000000)
+	:i $OnExitRun$$TagClearFlagsScript$
+	:i $SetTrickName$%sc(17,"Vert Sticker Slap")
+	:i $SetTrickScore$%i(750,000002ee)
+	:i $Display$
+	:i $Obj_SpawnScript$$SFX_Vert_Wallplant_with_wait$
+	:i $GetStartTime$
+	:i while
+		
+		:i $GetElapsedTime$$StartTime$ = %GLOBAL%$StartTime$
+		:i if  (%GLOBAL%$ElapsedTime$ > $Post_Wallplant_No_Ollie_Window$) 
+			:i continue
+			
+		:i endif
+		:i $DoNextTrick$
+		:i $wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+	:i $ClearEventBuffer$$Buttons$ = :a{$x$:a}$OlderThan$ = %i(0,00000000)
+	:i $WaitAnim$%i(60,0000003c)$Percent$
+	:i $Goto$$Airborne$
+:i endfunction
+:i function $SFX_Vert_Wallplant_with_wait$
+	:i if $StickerOn$
+		:i $wait$%f(0.300000)$seconds$
+		:i $Obj_PlaySound$$SK6_StickerSlap_01$$vol$ = %i(150,00000096)$pitch$ = %vec2(98.000000,105.000000)
+	:i endif
+:i endfunction
+:i function $Ground_Wallpush$
+	:i $Init_Wallpush$
+	:i if $Crouched$
+		:i $PlayAnim$$Anim$ = $Wallplant_Crouched$$BlendPeriod$ = %i(0,00000000)
+	:i else 
+		:i $PlayAnim$$Anim$ = $Wallplant_Standing$$BlendPeriod$ = %i(0,00000000)
+	:i endif
+	:i $BlendPeriodOut$%i(0,00000000)
+	:i $BoardRotateAfter$
+	:i $FlipAfter$
+	:i $SetTrickName$%sc(8,"Wallpush")
+	:i $SetTrickScore$%i(10,0000000a)
+	:i $Display$$Blockspin$
+	:i $WaitWhilstChecking$$AndManuals$$Duration$ = $Physics_Disallow_Rewallpush_Duration$
+	:i $LandSkaterTricks$
+	:i $WaitAnimWhilstChecking$$AndManuals$
+	:i if $AnimEquals$$Wallplant_Standing$
+		:i if $Crouched$
+			:i $PlayAnim$$Anim$ = $Idle$
+			:i $DoNextTrick$
+			:i $DoNextManualTrick$
+			:i $wait$%i(1,00000001)$GameFrame$
+		:i endif
+	:i endif
+	:i $Goto$$OnGroundAi$
+:i endfunction
+:i function $Manual_CancelWallpushEvent$
+	:i $CancelWallpush$
+:i endfunction
+:i $Wallpush_Trick$ = :s{$name$ = %sc(8,"Wallpush")$Score$ = %i(10,0000000a)
+	$NoBlend$$FlipAfter$$Anim$ = $Wallplant_NoseManual$$BalanceAnim$ = $Manual_Range$$BalanceAnim2$ = $Manual_Range2$$BalanceAnim3$ = $Manual_Range3$$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$ExtraTricks2$ = $ManualBranches$$ExtraTricks$ = $FlatlandBranches$$AllowWallpush$:s}
+:i $NoseWallpush_Trick$ = :s{$name$ = %sc(8,"Wallpush")$Score$ = %i(10,0000000a)
+	$NoBlend$$FlipAfter$$Anim$ = $Wallplant_Manual$$BalanceAnim$ = $NoseManual_Range$$BalanceAnim2$ = $NoseManual_Range$$Nollie$$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$ExtraTricks2$ = $NoseManualBranches$$ExtraTricks$ = $FlatlandBranches$$AllowWallpush$:s}
+:i function $Manual_Wallpush$
+	:i $GetSingleTag$$in_manual_land$
+	:i if $GotParam$$in_manual_land$
+		:i if  (%GLOBAL%$in_manual_land$ = %i(1,00000001)) 
+			:i $Ground_Wallpush$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $Init_Wallpush$
+	:i $BlendPeriodOut$%i(0,00000000)
+	:i if $GotParam$$ToNoseManual$
+		:i $Goto$$ManualLink$$Params$ = :s{$NoseWallpush_Trick$:s}
+	:i else 
+		:i $Goto$$ManualLink$$Params$ = :s{$Wallpush_Trick$:s}
+	:i endif
+:i endfunction
+:i function $Init_Wallpush$
+	:i $BroadcastEvent$$Type$ = $SkaterWallpush$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(50,00000032)$Duration$ = %f(0.150000)
+:i endfunction
+:i :end

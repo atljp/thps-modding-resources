@@ -1,0 +1,99 @@
+// Actual object / mesh
+// (WARRIORS OF ROCK)
+
+typedef struct (int scene_start)
+{
+    Sphere bounding_sphere <bgcolor=CL_MESHFLOATS>;
+
+    // Is next value 0?
+    // If not, this an... odd WoR mesh
+
+    local uint strange_wor = 0;
+
+    local uint wor_peek = ReadInt();
+    if (wor_peek == 0)
+        byte wor_skip[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+    else
+        strange_wor = 1;
+
+    RelativeOffset uv_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    ubyte uv_stride <bgcolor=CL_MESHVALUE>;
+    ubyte uv_unk <bgcolor=CL_MESHPADDING>;
+
+    ushort vertex_count_b <bgcolor=CL_MESHVALUE>;
+
+    // Get back on track
+    if (strange_wor)
+        byte ff_a[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    byte ff_b[4] <hidden=true, bgcolor=CL_MESHPADDING>;
+    uint mesh_flags <bgcolor=CL_MESHVALUE>;
+
+    byte ff_c[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    RelativeOffset face_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+    byte ff_d[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    uint face_block_length <bgcolor=CL_MESHVALUE>;
+
+    byte null_a[4] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    uint unkValA <bgcolor=CL_MESHVALUE>;
+    ushort unkValB <bgcolor=CL_MESHVALUE>;
+    ushort unkValC <bgcolor=CL_MESHVALUE>;
+
+    byte ff_e[4] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    QBKey material <bgcolor=CL_MESHCHECKSUM>;
+
+    byte ff_f[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+    byte null_b[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    int face_type <bgcolor=CL_MESHVALUE, comment="Face type">;
+    
+    RelativeOffset vert_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    byte skip_f[14] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    ushort face_count <bgcolor=CL_MESHVALUE>;
+    ushort vertex_count <bgcolor=CL_MESHVALUE>;
+
+    byte null_c[4] <hidden=true, bgcolor=CL_MESHPADDING>;
+    ubyte single_bone <bgcolor=CL_MESHVALUE>;
+    byte null_d <hidden=true, bgcolor=CL_MESHPADDING>;
+   
+    uint mesh_flags_b <bgcolor=CL_MESHVALUE, comment="Mesh flags??">;
+
+    byte skip_g[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    // Read geometry data
+    local int old_off = FTell();
+
+    // UV's
+    FSeek(AbsOffset(uv_start));
+    UVBlock uvs(vertex_count, uv_stride, mesh_flags);
+
+    // Vertices (SubMesh Cafe)
+    // Unweighted meshes have values in the UV block
+    //if (vert_start.offset != 0xFFFFFFFF)
+    if (mesh_flags & MESHFLAG_HASWEIGHTS)
+    {
+        FSeek(AbsOffset(vert_start));
+        VertexBlock vertices(vertex_count, mesh_flags, true);
+    }
+
+    // Faces
+    FSeek(AbsOffset(face_start));
+    FaceBlock faces(face_count);
+
+    // Return
+    FSeek(old_off);
+    return;
+
+} sMesh_WOR <read=ReadWORMesh>;
+
+string ReadWORMesh(sMesh_WOR &themesh)
+{
+    return Str("Mat: %s, [0x%08x], %d verts, %d faces, %d UVstride", ReadQBKey(themesh.material), themesh.mesh_flags_b, themesh.vertex_count, themesh.face_count, themesh.uv_stride);
+}

@@ -1,0 +1,55 @@
+//------------------------------------------------
+// GH3-like sMesh header
+//------------------------------------------------
+
+#define CL_MESHFLOATS 0x66ee44
+#define CL_MESHPOINTER 0xaaff88
+#define CL_MESHVALUE 0x99dd77
+#define CL_MESHPADDING 0x88aa88
+#define CL_MESHCHECKSUM 0x77dddd
+
+typedef struct (int scene_start)
+{
+    Vec4 floats <bgcolor=CL_MESHFLOATS>;
+
+    ushort unka <bgcolor=CL_MESHVALUE>;
+    ushort unkb <bgcolor=CL_MESHVALUE>;
+
+    QBKey material <bgcolor=CL_MESHCHECKSUM>;
+
+    uint const_not_flags <bgcolor=CL_MESHVALUE>;
+    uint mesh_flags <bgcolor=CL_MESHVALUE>;
+    ushort skip_me[2] <bgcolor=CL_MESHPADDING>;
+
+    ushort face_short_count <bgcolor=CL_MESHVALUE>;
+    ushort vertex_count <bgcolor=CL_MESHVALUE>;
+
+    uint strange_const <bgcolor=CL_MESHVALUE>;
+
+    uint zeros[5] <bgcolor=CL_MESHPADDING, hidden=true>;
+
+    RelativeOffset uv_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    uint negs[2] <bgcolor=CL_MESHPADDING, hidden=true>;
+    uint uv_length <bgcolor=CL_MESHVALUE>;
+
+    // 7 is a weird number, double check this in the future
+    ubyte jank[7] <bgcolor=CL_MESHPADDING, hidden=true>;
+
+    ubyte uv_unk[2] <bgcolor=CL_MESHPADDING, hidden=true>;
+    ubyte uv_one <bgcolor=CL_MESHVALUE>;
+    ubyte uv_stride <bgcolor=CL_MESHVALUE>;
+    ubyte uv_unknown <bgcolor=CL_MESHVALUE>;
+
+    RelativeOffset face_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+    RelativeOffset vert_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    uint skipper_a <bgcolor=CL_MESHPADDING, hidden=true>;
+
+    uint unk_sixtyfour <bgcolor=CL_MESHVALUE>;
+
+    uint skipper_b[3] <bgcolor=CL_MESHPADDING, hidden=true>;
+
+    ubyte usually_five <bgcolor=CL_MESHVALUE>;
+    ubyte byte_skip[7] <bgcolor=CL_MESHPADDING, hidden=true>;
+} GH3MeshHeader;

@@ -1,0 +1,30 @@
+//------------------------------------------------
+// THAW sector link
+//  (I'm not actually sure if this is a link,
+//  but it has two sector names and kind of makes sense)
+//------------------------------------------------
+
+typedef struct (uint num_links)
+{
+    QBKey parent_sector <bgcolor=CL_CHECKSUM>;
+    ushort always_zero <bgcolor=CL_PADDING>;
+    ushort link_index <bgcolor=CL_SINGLEVALUE>;
+
+    // Link 0 always has extra section, why?
+    if (link_index == 0)
+    {
+        short always_neg_one <bgcolor=CL_PADDING>;
+        short always_zero <bgcolor=CL_PADDING>;
+    }
+
+    uint zero <bgcolor=CL_PARSED>;
+
+    // These are read as columns, not rows!
+    Vec4 matrix_col_x <bgcolor=CL_FLOATS>;
+    Vec4 matrix_col_y <bgcolor=CL_FLOATS>;
+    Vec4 matrix_col_z <bgcolor=CL_FLOATS>;
+    Vec4 matrix_col_w <bgcolor=CL_FLOATS>;
+
+    if (link_index < num_links-1)
+        QBKey child_sector <bgcolor=CL_CHECKSUM>;
+} SectorLink;

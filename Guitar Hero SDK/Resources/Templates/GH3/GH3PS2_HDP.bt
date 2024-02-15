@@ -1,0 +1,70 @@
+//------------------------------------------------
+// HDP-D file for GH3 PS2
+//------------------------------------------------
+
+#include "../Common.bt"
+
+local uint numPDEntries = 0;
+
+//---------------------------
+
+typedef struct
+{
+    int fileCount <bgcolor=CL_SINGLEVALUE, comment="Number of files in this folder">;
+    QBKey checksum <bgcolor=CL_CHECKSUM, comment="Checksum of folder path">;
+    RelativeOffset pt_data(0) <bgcolor=CL_POINTER, comment="Offset in DATAPD file of first file in folder">;  
+} ChecksumEntry <read=Str("%s at %d [%d in folder]", ReadQBKey(checksum), AbsOffset(pt_data), fileCount)>;
+
+typedef struct
+{
+    while(true)
+    {
+        ChecksumEntry entry <optimize=false>;
+
+        if (entry.fileCount == 0xffffffff)
+            break;
+    }
+} FolderBlock;
+
+//---------------------------
+
+typedef struct
+{
+    uint sectorIndex <bgcolor=CL_SINGLEVALUE, comment="Index * 2048 is data start in WAD">;
+    uint dataLength <bgcolor=CL_SINGLEVALUE, comment="Length of data in the WAD">;
+    QBKey checksum <bgcolor=CL_CHECKSUM, comment="Checksum is the file only, no folders">;
+} FileEntry <read=Str("%s at %d in WAD, sector %d (%d bytes long)", ReadQBKey(checksum), sectorIndex * 2048, sectorIndex, dataLength)>;
+
+typedef struct
+{
+    FileEntry entries[numPDEntries] <optimize=false>;
+} FileBlock;
+
+//---------------------------
+
+typedef struct
+{
+    uint num_entries <bgcolor=CL_SINGLEVALUE>;
+    numPDEntries = num_entries;
+
+    RelativeOffset file_start(0) <bgcolor=CL_POINTER>;
+    RelativeOffset folder_start(0) <bgcolor=CL_POINTER>;
+    uint unkOffset <bgcolor=CL_POINTER>;
+    
+    if (folder_start.offset != 0)
+    {
+        FSeek(AbsOffset(folder_start));
+        FolderBlock sums;
+    }
+    
+    if (file_start.offset != 0)
+    {
+        FSeek(AbsOffset(file_start));
+        FileBlock files;
+    }
+
+    
+} HDPDFile;
+
+LittleEndian();
+HDPDFile file;

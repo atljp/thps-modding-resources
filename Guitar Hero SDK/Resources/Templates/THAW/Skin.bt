@@ -1,0 +1,75 @@
+//------------------------------------------------
+// THAW .mdl / .skin file
+//------------------------------------------------
+
+#define SKIN_VERSION_THAW                   0
+#define SKIN_VERSION_THUG1                  1
+#define SKIN_VERSION_THUG2                  2
+
+local ubyte IsXboxFile;
+local ubyte SkinFileVersion;
+
+#include "../Common.bt"
+#include "Constants.bt"
+
+#include "MeshData.bt"
+#include "SectorInfo.bt"
+#include "Sector.bt"
+#include "Scene.bt"
+#include "Material.bt"
+#include "DisqualifyBlock.bt"
+
+LittleEndian();
+
+typedef struct
+{
+    // -- TONY HAWK'S AMERICAN WASTELAND
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        RelativeOffset disqual_offset(32) <bgcolor=CL_POINTER>;
+        uint fa_padding[7] <hidden=true, bgcolor=CL_PADDING>;
+        
+        MaterialBlockStart = FTell();
+        ubyte material_version <bgcolor=CL_SINGLEVALUE>;
+        ubyte always_sixteen <bgcolor=CL_SINGLEVALUE>;
+        ushort material_count <bgcolor=CL_SINGLEVALUE>;
+    
+        // (AKA material block size)
+        RelativeOffset pt_babeface(32) <bgcolor=CL_POINTER>;
+    
+        uint babeface_size <bgcolor=CL_SINGLEVALUE, comment="Size of 0xBABEFACE and padding bytes - Becomes scene pointer internally">;
+        int pt_materials <bgcolor=CL_SINGLEVALUE, comment="Used internally, points to materials?">;
+    
+        // Materials!
+        Material materials[material_count] <optimize=false>;
+    
+        FSeek(AbsOffset(pt_babeface));
+    
+        QBKey babeface <bgcolor=CL_IMPORTANT_BG, fgcolor=CL_IMPORTANT_FG>;
+    
+        uint unk_object_bytes <bgcolor=CL_SINGLEVALUE, comment="Number of bytes to store ??? objects">;
+    
+        // 234 should come here, followed by 0
+        if ( (uint)(unk_object_bytes / 4) > 0 )
+            uint unk_object_refs[(uint)(unk_object_bytes / 4)] <bgcolor=CL_PADDING, comment="Used internally, stores pointers">;
+    
+        Scene scene <comment="Nx::CPlatScene">;
+    
+        if (disqual_offset.offset > 0)
+        {
+            FSeek(AbsOffset(disqual_offset));
+            DisqualifyBlock disqualifiers;
+        }
+    }
+    
+    // -- TONY HAWK'S UNDERGROUND 1 / 2
+    else if (SkinFileVersion == SKIN_VERSION_THUG2 || SkinFileVersion == SKIN_VERSION_THUG1)
+    {
+        uint ones[3] <bgcolor=CL_SINGLEVALUE>;
+        uint material_count <bgcolor=CL_SINGLEVALUE>;
+        
+        Material materials[material_count] <optimize=false>;
+        
+        Scene scene <comment="Nx::CPlatScene">;
+    }
+} SkinFile;

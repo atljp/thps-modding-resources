@@ -1,0 +1,47 @@
+// Geometry block
+
+#define CL_GEOMVALUE            0x66FFFF
+#define CL_GEOMDOUBLE           0x55EEEE
+#define CL_GEOMPADDING          0x33BBBB
+
+typedef struct
+{
+    int values[4];
+} Geom_Vec4;
+
+// -----------
+
+typedef struct
+{
+    short a;
+    short b;
+} Geom_DoubleShort <read=ReadGeomDoubleShort>;
+
+string ReadGeomDoubleShort(Geom_DoubleShort &shr)
+{
+    local string s;
+    return SPrintf(s, "[%f, %f]", shr.a / 32768.0, shr.b / 32768.0);
+}
+
+// -----------
+
+typedef struct
+{
+    Geom_DoubleShort dub <bgcolor=CL_GEOMDOUBLE>;
+    int values[16] <bgcolor=CL_GEOMVALUE>;
+} Geom_Oddity;
+
+// -----------
+
+typedef struct
+{
+    int block_length <bgcolor=CL_SINGLEVALUE>;
+    local uint start_off = FTell();
+    ushort lzssMarker <bgcolor=CL_GEOMVALUE>;
+
+    FSeek((start_off + block_length) - 8);
+    uint unk_varies;
+    uint unk;
+
+    FSeek(start_off + block_length);
+} Geometry;

@@ -1,0 +1,32 @@
+typedef struct
+{
+    uint funcStart;
+    uint funcLength;
+    uint strPointer;
+
+    local uint oldOff = FTell();
+    FSeek(strPointer);
+    string str;
+    FSeek(oldOff);
+
+} funcThing <read=ReadFuncThing>;
+
+string ReadFuncThing(funcThing &thing)
+{
+    local string s;
+
+    return SPrintf(s, "[%x] %s, %d bytes long", thing.funcStart, thing.str, thing.funcLength);
+}
+
+LittleEndian();
+
+local uint firstStr = 0;
+local int i;
+
+while (firstStr == 0 || (firstStr > 0 && FTell() < firstStr))
+{
+    funcThing things <optimize=false>;
+
+    if (firstStr == 0)
+        firstStr = things.strPointer;
+}

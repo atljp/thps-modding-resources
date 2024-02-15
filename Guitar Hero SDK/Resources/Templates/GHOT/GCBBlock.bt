@@ -1,0 +1,35 @@
+//------------------------------------------------
+// GCB block
+// A block in the GCB that contains certain objects
+//------------------------------------------------
+
+typedef struct
+{
+    short count <bgcolor=CL_COUNT>;
+    short null <bgcolor=CL_PADDING>;
+
+    int pointers[count] <bgcolor=CL_POINTER>;
+
+    local uint i;
+    local uint oldOff = FTell();
+
+    for (i=0; i<count; i++)
+    {
+        FSeek(pointers[i]);
+        GCBObject object;
+    }
+
+    FSeek(oldOff);
+} GCBBlock <read=ReadGCBBlock>;
+
+string ReadGCBBlock(GCBBlock &block)
+{
+    local string s;
+    local string objectString;
+
+    objectString = "";
+    if (block.count > 0)
+        SPrintf(objectString, " (%s)", ReadGCBObject(block.object[0]));
+
+    return SPrintf(s, "%d objects%s", block.count, objectString);
+}

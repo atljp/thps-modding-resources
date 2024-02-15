@@ -1,0 +1,122 @@
+
+:i function $Ped_SetDefaults$
+	:i $RemoveTags$
+	:i $ClearEventHandler$$ObjectInAttentionRadius$
+	:i $SetTags$$collision_mode$ = $ignore$
+	:i $SetTags$$talking_mode$ = $friendly$
+	:i $SetTags$$move_type$ = $walk$
+	:i $SetTags$$is_goal_ped$ = %i(0,00000000)
+	:i $SetTags$$talking_radius$ = %i(30,0000001e)
+	:i $SetTags$$collision_exception_return_state$ = $Ped_StateLogic_SetDefaultState$
+	:i $SetTags$$pissed$ = %i(0,00000000)
+	:i $SetTags$$should_look_at_skater$ = %i(1,00000001)
+	:i $SetTags$$ped_init$ = %i(1,00000001)
+	:i if NOT $InNetGame$
+		:i if $GotParam$$NameCheck$
+			:i if $Skater$.$SkaterIsNamed$%GLOBAL%$PedName$
+				:i $Obj_GetId$
+				:i %GLOBAL%$objID$.$Obj_InitModelFromProfile$:s{
+					:i $struct$ = $Ped_Skateboard_A$
+					:i $use_asset_manager$ = %i(1,00000001)
+					:i $texDictOffset$ = %i(0,00000000)
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$Skater$
+		:i $SetTags$:s{$move_type$ = $skate$:s}
+		:i $Ped_SetIsSkater$%i(1,00000001)
+	:i else 
+		:i if $GotParam$$stand$
+			:i $SetTags$:s{$move_type$ = $stand$:s}
+			:i if $GotParam$$standing_anims$
+				:i $SetTags$:s{$standing_anims$ = %GLOBAL%$standing_anims$:s}
+			:i endif
+		:i else 
+			:i $SetTags$$move_type$ = $walk$
+		:i endif
+	:i endif
+:i endfunction
+:i function $Ped_InitAI$
+	:i $SK4_PedScript$ isNull 
+:i endfunction
+:i function $SK4_PedScript$
+	:i $Ped_SetDefaults$ isNull 
+	:i $SetTags$ isNull 
+	:i if $GotParam$$Avoid$
+		:i $SetTags$$collision_mode$ = $Avoid$
+	:i endif
+	:i if $GotParam$$Fall$
+		:i $SetTags$$collision_mode$ = $Fall$
+	:i endif
+	:i if $GotParam$$shot$
+		:i $SetTags$$collision_mode$ = $shot$
+	:i endif
+	:i if $GotParam$$Knock$
+		:i $SetTags$$collision_mode$ = $Knock$
+	:i endif
+	:i if $GotParam$$bump$
+		:i $SetTags$$collision_mode$ = $bump$
+	:i endif
+	:i if $GotParam$$ignore$
+		:i $SetTags$$collision_mode$ = $ignore$
+	:i endif
+	:i if $GotParam$$friendly$
+		:i $SetTags$$talking_mode$ = $friendly$
+	:i endif
+	:i if $GotParam$$Mean$
+		:i $SetTags$$talking_mode$ = $Mean$
+	:i endif
+	:i if $GotParam$$Explode$
+		:i $SetTags$$collision_mode$ = $Explode$
+	:i endif
+	:i if $GotParam$$GoalPed$
+		:i $SetTags$$is_goal_ped$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$oldschool$
+		:i if NOT $GotParam$$stand$
+			:i $Ped_InitPath$
+		:i endif
+		:i if $GotParam$$Skater$
+			:i $Ped_SetIsSkater$%i(1,00000001)
+			:i $Ped_SetLogicState$$generic_skater$
+		:i else 
+			:i if $GotParam$$stand$
+				:i $Ped_SetLogicState$$generic_standing$
+				:i $ped_standing_idle$
+			:i else 
+				:i $Ped_SetLogicState$$generic$
+				:i $goto$$Ped_IdleState$
+			:i endif
+		:i endif
+	:i else 
+		:i $ped_initialize_collision_exceptions$
+		:i $Obj_StickToGround$$distAbove$ = %i(3,00000003)$distBelow$ = %i(6,00000006)
+		:i $Obj_StickToGround$$off$
+		:i $ped_initialize_movement$ isNull 
+		:i if NOT $GotParam$$stand$
+			:i $Ped_InitPath$
+		:i endif
+		:i $Ped_Utils_SetMiscEventHandlers$
+		:i $Ped_StateLogic_SetDefaultState$
+	:i endif
+:i endfunction
+:i function $ped_initialize_movement$
+	:i if $GetSingleTag$$move_type$
+		:i if NOT  (%GLOBAL%$move_type$ = $stand$) 
+			:i $Obj_SetPathTurnDist$%f(2.500000)$feet$
+			:i $GetSingleTag$$speed$
+			:i if  (%GLOBAL%$move_type$ = $skate$) 
+				:i if NOT $GotParam$$speed$
+					:i $speed$ = %i(25,00000019)
+				:i endif
+			:i else 
+				:i if NOT $GotParam$$speed$
+					:i $speed$ = random%vec2(5.000000,10.000000)
+				:i endif
+			:i endif
+			:i $Obj_SetPathVelocity$%GLOBAL%$speed$$fps$
+		:i endif
+	:i endif
+:i endfunction
+:i :end

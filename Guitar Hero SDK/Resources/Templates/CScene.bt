@@ -1,0 +1,78 @@
+// Called NxCGeom_Buffer in IDA
+
+local uint CGeom_Pos = 0;
+local uint EAPad_Pos = 0;
+
+#include "CGeom.bt"
+#include "CSector.bt"
+#include "SceneHeader.bt"
+#include "NodeMeshTable.bt"
+
+// ---------
+
+#include "UVBlock.bt"
+#include "VertexBlock.bt"
+#include "FaceBlock.bt"
+
+#define CL_MESHFLOATS       0x66ee44
+#define CL_MESHPOINTER      0xaaff88
+#define CL_MESHVALUE        0x99dd77
+#define CL_MESHPADDING      0x88aa88
+#define CL_MESHCHECKSUM     0x77dddd
+
+// ---------
+
+#include "sMesh.bt"
+#include "sMesh_WOR.bt"
+#include "sMesh_BH.bt"
+#include "sMesh_THPG.bt"
+#include "sMesh_GHM.bt"
+
+#define SECTORFLAG_NOGEOMETRY               0x00000020
+
+typedef struct
+{
+    NS_SceneHeader header;
+    EAPad_Pos = AbsOffset(header.pt_eaPadding);
+
+    // Store where our CGeoms would start.
+    // For each sector, we will read its CGeom.
+    // Each sector is 96 bytes long.
+
+    if (SkinFileVersion == SKIN_VERSION_THP8)
+        CGeom_Pos = FTell() + (80 * header.sector_count);
+    else
+        CGeom_Pos = FTell() + (96 * header.sector_count);
+
+    // Regardless of game version, this is the same
+    CSector sectors[header.sector_count] <optimize=false>;
+    
+    FSeek(CGeom_Pos);
+    byte LstHead_List[header.big_padding_size] <bgcolor=CL_PADDING, comment="Holds Lst::Head objects, one per sector. Each is 20 bytes. Pad to nearest 16.">;
+
+    FSeek(AbsOffset(header.pt_sMesh));
+
+    local int m;
+    for (m=0; m<header.sMesh_count; m++)
+    {
+        if (SkinFileVersion == SKIN_VERSION_GHWOR)
+            sMesh_WOR sMeshes(header.scene_start) <comment="sMesh">;
+        else if (SkinFileVersion == SKIN_VERSION_BH)
+            sMesh_BH sMeshes(header.scene_start) <comment="sMesh">;
+        else if (SkinFileVersion == SKIN_VERSION_THPG || SkinFileVersion == SKIN_VERSION_THP8 || SkinFileVersion == SKIN_VERSION_GH3)
+            sMesh_THPG sMeshes(header.scene_start) <comment="sMesh">;
+        else if (SkinFileVersion == SKIN_VERSION_GHM)
+            sMesh_GHM sMeshes(header.scene_start) <comment="sMesh">;
+        else
+            sMesh sMeshes(header.scene_start) <comment="sMesh">;
+    }
+    
+    local uint old_off = FTell();
+    
+    if (header.pt_QTRETable.offset >= 0)
+    {
+        FSeek(AbsOffset(header.pt_QTRETable));
+        NodeMeshTable nodeMeshTable;
+        FSeek(old_off);
+    }
+} CScene;

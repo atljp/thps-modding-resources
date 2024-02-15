@@ -1,0 +1,66 @@
+//------------------------------------------------
+// GH5 PS2 mesh, probably
+//------------------------------------------------
+
+#include "GH5PS2MeshData.bt"
+
+#define CL_MESHSINGLE 0xffff66
+#define CL_MESHPAD 0xdddd44
+#define CL_MESHUNK 0xcccc33
+
+typedef struct
+{
+    uint number <bgcolor=CL_MESHSINGLE>;
+    uint null <hidden=true, bgcolor=CL_MESHPAD>;
+    uint same <bgcolor=CL_MESHSINGLE>;
+
+    ushort countOfUnk <bgcolor=CL_MESHSINGLE>;
+    ushort unkNumB <bgcolor=CL_MESHSINGLE>;
+
+    uint same_c <bgcolor=CL_MESHSINGLE>;
+    uint same_d <bgcolor=CL_MESHSINGLE>;
+
+    local uint unkStart = FTell();
+
+    uint same_e <bgcolor=CL_MESHSINGLE>;
+    uint null_b <hidden=true, bgcolor=CL_MESHPAD>;
+
+    uint shared_a <bgcolor=CL_MESHSINGLE>;
+    uint null_c <hidden=true, bgcolor=CL_MESHPAD>;
+
+    uint shared_b <bgcolor=CL_MESHSINGLE>;
+    uint null_d <hidden=true, bgcolor=CL_MESHPAD>;
+
+    ushort same_f <bgcolor=CL_MESHSINGLE>;
+    ushort same_g <bgcolor=CL_MESHSINGLE>;
+
+    uint null_e <hidden=true, bgcolor=CL_MESHPAD>;
+    uint same_h <bgcolor=CL_MESHSINGLE>;
+
+    uint null_f <hidden=true, bgcolor=CL_MESHPAD>;
+
+    local ubyte testbyte;
+
+    while (!FEof())
+    {
+        testbyte = ReadByte();
+        if (testbyte == 0xFC)
+            break;
+        else
+            FSeek(FTell() + 1);
+    }
+
+    // This should be a VIF flush command
+    // Otherwise, we're finished reading our meshes
+
+    local int tester = ReadInt();
+    while (tester != 0x11000000)
+    {
+        GH5PS2MeshData data;
+        tester = ReadInt();
+    }
+
+    VIFCommand VIF_Flush;
+    SkipTo(16);
+
+} GH5PS2Mesh;

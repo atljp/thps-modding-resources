@@ -1,0 +1,39 @@
+//------------------------------------------------
+// Guitar Hero iPhone: IGZ file
+//------------------------------------------------
+
+#include "Common.bt"
+
+typedef struct
+{
+    local uint chunkStart = FTell();
+
+    char magic[4] <bgcolor=CL_PARSED>;
+    uint version <bgcolor=CL_SINGLEVALUE, comment="???">;
+    uint unkA;
+    uint zero;
+    uint fileCount;
+    uint sizeB;
+    RelativeOffset nextChunkPos(chunkStart) <bgcolor=CL_POINTER>;
+    uint unkB;
+    uint unkC <comment="Filesize - unkC = unkD">;
+    uint unkD <comment="Filesize - unkD">;
+    uint unkE;
+    uint unkF;
+    uint unkG;
+} IGZChunk;
+
+typedef struct
+{
+    while (true)
+    {
+        IGZChunk chunk;
+        if (chunk.nextChunkPos.offset)
+            FSeek(AbsOffset(chunk.nextChunkPos));
+        else
+            break;
+    }
+} IGZFile;
+
+LittleEndian();
+IGZFile chunk;

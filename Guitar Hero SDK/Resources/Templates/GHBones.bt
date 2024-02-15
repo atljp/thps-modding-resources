@@ -1,0 +1,22 @@
+//------------------------------------------------
+// GHTools .ghbones file
+//------------------------------------------------
+
+#include "Common.bt"
+
+typedef struct
+{
+    uint nameLength <bgcolor=CL_NAME_LENGTH>;
+    char name[nameLength] <bgcolor=CL_NAME>;
+} GHBone <read=Str("%s", name)>;
+
+typedef struct
+{
+    char magic[4] <bgcolor=CL_CHECKSUM>;
+    uint boneCount <bgcolor=CL_SINGLEVALUE>;
+
+    GHBone bones[boneCount] <optimize=false>;
+} GHBonesFile;
+
+BigEndian();
+GHBonesFile file;

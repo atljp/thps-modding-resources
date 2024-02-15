@@ -1,0 +1,176 @@
+//------------------------------------------------
+// GH3 material file
+//------------------------------------------------
+
+#define CL_MATNAME 0xddffff
+#define CL_MATCHECKSUM 0xbbffff
+#define CL_MATVALUE 0x77bbbb
+#define CL_MATPOINTER 0x99dddd
+#define CL_MATPADDING 0x668888
+#define CL_MATALPHA 0x77ffcc
+#define CL_MATPROPERTY_PRE 0x55aadd
+#define CL_MATPROPERTY_POST 0x77ccff
+
+typedef struct
+{
+    local uint matStart = FTell();
+
+    QBKey material_name <bgcolor=CL_MATNAME>;
+    QBKey material_name_b <bgcolor=CL_MATNAME>;
+    uint zeros_a[38] <bgcolor=CL_MATPADDING, hidden=true>;
+    QBKey template <bgcolor=CL_MATCHECKSUM>;
+    uint zero <bgcolor=CL_MATPADDING, hidden=true>;
+    uint prePropCount <bgcolor=CL_MATVALUE>;
+    RelativeOffset prePropOffset(matStart) <bgcolor=CL_MATPOINTER>;
+    uint postPropCount <bgcolor=CL_MATVALUE>;
+    RelativeOffset postPropOffset(matStart) <bgcolor=CL_MATPOINTER>;
+    uint sampleCount <bgcolor=CL_MATVALUE>;
+    RelativeOffset sampleOffset(matStart) <bgcolor=CL_MATPOINTER>;
+
+    uint usually_zero <bgcolor=CL_MATPADDING, hidden=true>;
+
+    uint material_size <bgcolor=CL_MATVALUE>;
+
+    uint usually_zero_b <bgcolor=CL_MATPADDING, hidden=true>;
+    uint material_flags <bgcolor=CL_MATVALUE>;
+    uint usually_zero_c <bgcolor=CL_MATPADDING, hidden=true>;
+    float alpha_maybe <bgcolor=CL_MATVALUE>;
+    MaterialBlendMode material_blend <bgcolor=CL_MATVALUE>;
+    uint bloom <bgcolor=CL_MATVALUE>;
+
+    uint usually_zero_d <bgcolor=CL_MATPADDING, hidden=true>;
+
+    uint material_size_b <bgcolor=CL_MATVALUE>;
+
+    ubyte alpha_cutoff <bgcolor=CL_MATVALUE, comment="Pixels below this are discarded">;
+    byte usually_two <bgcolor=CL_MATVALUE>;
+    UVWrapMode uv_wrap_mode[8] <bgcolor=CL_MATVALUE, comment="UV wrap mode for a pass">;
+
+    uint zero_skip_b[14] <bgcolor=CL_MATPADDING, hidden=true>;
+
+    if (prePropCount > 0)
+    {
+        FSeek(AbsOffset(prePropOffset));
+        Vec4 pre_props[prePropCount] <bgcolor=CL_MATPROPERTY_PRE>;
+    }
+
+    if (postPropCount > 0)
+    {
+        FSeek(AbsOffset(postPropOffset));
+        Vec4 post_props[postPropCount] <bgcolor=CL_MATPROPERTY_POST>;
+    }
+
+    if (sampleCount > 0)
+    {
+        FSeek(AbsOffset(sampleOffset));
+        QBKey tex_samples[sampleCount] <bgcolor=CL_MATCHECKSUM>;
+    }
+
+    FSeek(matStart + material_size);
+} GH3Material <read=ReadGH3Material>;
+
+string ReadGH3Material(GH3Material &mat)
+{
+    local string s;
+
+    return SPrintf(s, "%s, Template: %s, %d samps", ReadQBKey(mat.material_name), ReadQBKey(mat.template), mat.sampleCount);
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+#define CL_THPROP_PADDING 0x886666
+#define CL_THPROP_CHECKSUM 0xbbff99
+#define CL_THPROP_VALUE 0xaa8888
+#define CL_THPROP_POINTER 0xcc8888
+
+typedef struct
+{
+    local uint material_start = FTell();
+
+    int null_a <bgcolor=CL_THPROP_PADDING, hidden=true>;
+    QBKey template <bgcolor=CL_THPROP_CHECKSUM>;
+
+    int texSampleCount <bgcolor=CL_THPROP_VALUE, comment="Number of texture samples">;
+    RelativeOffset pt_texSamples(material_start) <bgcolor=CL_THPROP_POINTER>;
+
+    int vsPropertyCount <bgcolor=CL_THPROP_VALUE, comment="Number of vertex shader properties">;
+    RelativeOffset pt_vsProperties(material_start) <bgcolor=CL_THPROP_POINTER>;
+
+    int psPropertyCount <bgcolor=CL_THPROP_VALUE, comment="Number of pixel shader properties">;
+    RelativeOffset pt_psProperties(material_start) <bgcolor=CL_THPROP_POINTER>;
+
+    int unk_a <bgcolor=CL_THPROP_VALUE>;
+    int flags_maybe <bgcolor=CL_THPROP_VALUE>;
+
+    byte null[16] <bgcolor=CL_THPROP_PADDING, hidden=true>;
+
+    int flags_maybe_b <bgcolor=CL_THPROP_VALUE>;
+
+    byte null_b[20] <bgcolor=CL_THPROP_PADDING, hidden=true>;
+
+    local int p, bg_color;
+    local uint old_off = FTell();
+
+    if (vsPropertyCount > 0)
+    {
+        FSeek(AbsOffset(pt_vsProperties));
+        for (p=0; p<vsPropertyCount; p++)
+        {
+            Vec4 vs_properties<bgcolor=CL_MATPROPERTY_VS, optimize=false>;
+        }
+    }
+
+    if (psPropertyCount > 0)
+    {
+        FSeek(AbsOffset(pt_psProperties));
+        for (p=0; p<psPropertyCount; p++)
+        {
+            Vec4 ps_properties<bgcolor=CL_MATPROPERTY_PS, optimize=false>;
+        }
+    }
+
+    if (texSampleCount > 0)
+    {
+        FSeek(AbsOffset(pt_texSamples));
+        QBKey tex_samples[texSampleCount] <bgcolor=CL_MATCHECKSUM, comment="Texture samples">;
+    }
+
+    FSeek(old_off);
+    SkipTo(16);
+
+} THP8MaterialProperties;
+
+typedef struct
+{
+    local int material_start = FTell();
+
+    QBKey checksum <bgcolor=CL_MATALPHA, comment="Main checksum for material">;
+    QBKey name_checksum <bgcolor=CL_MATALPHA, comment="Name checksum for material">;
+    uint one;
+    uint zero_b;
+
+    ubyte eight;
+    ubyte one_b;
+    ushort dead_key;
+
+    if (dead_key == 0xDEAD)
+        return;
+
+    byte null_constant[148] <bgcolor=CL_MATPADDING, hidden=true>;
+
+    // Textures start here? A bit odd
+    QBKey fake_samples[3] <bgcolor=CL_MATCHECKSUM, comment="FAKE texture samples">;
+
+    byte null_constant_b[116] <bgcolor=CL_MATPADDING, hidden=true>;
+    int neg_1 <bgcolor=CL_MATPADDING, hidden=true>;
+
+    RelativeOffset pt_properties(g_SkinCoreStart) <bgcolor=CL_MATPOINTER, comment="Pointer to material properties">;
+    int unk_b <bgcolor=CL_MATVALUE, comment="???">;
+
+    local uint old_off = FTell();
+    FSeek(AbsOffset(pt_properties));
+    
+    THP8MaterialProperties props;
+
+    FSeek(old_off);
+} THP8Material <read=Str("Blah")>;

@@ -1,0 +1,35 @@
+//------------------------------------------------
+// PFX file, maps out node prefixes
+//------------------------------------------------
+
+#include "Common.bt"
+
+local uint pfxListPosition;
+
+typedef struct
+{
+    QBKey id <bgcolor=CL_CHECKSUM, comment="???">;
+    uint listOffset <bgcolor=CL_SINGLEVALUE, comment="Offset in the index list">;
+    uint numNodes <bgcolor=CL_SINGLEVALUE, comment="Number of nodes">;
+
+    local uint old_offset = FTell();
+
+    if (numNodes > 0)
+    {
+        FSeek(pfxListPosition + listOffset);
+        ushort shorts[numNodes] <bgcolor=CL_PARSED>;
+        FSeek(old_offset);
+    }
+
+} PrefixMapping <read=Str("%s @%d, %d %s", ReadQBKey(id), listOffset, numNodes, numNodes == 1 ? "node" : "nodes")>;
+
+typedef struct
+{
+    QBKey nodeArrayKey <bgcolor=CL_CHECKSUM, comment="z_myzone_NodeArray">;
+    uint prefixCount <bgcolor=CL_SINGLEVALUE, comment="Number of prefix mappings">;
+
+    pfxListPosition = FTell() + (12 * prefixCount);
+    PrefixMapping prefixMappings[prefixCount] <optimize=false>;
+} PFXFile;
+
+PFXFile file;

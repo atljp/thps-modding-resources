@@ -1,0 +1,134 @@
+// Main .skin file
+
+#define SKIN_VERSION_GHWT               0
+#define SKIN_VERSION_GH3                1
+#define SKIN_VERSION_GHWOR              2
+#define SKIN_VERSION_BH                 3
+#define SKIN_VERSION_THPG               4
+#define SKIN_VERSION_THP8               5
+#define SKIN_VERSION_GHM                6
+#define SKIN_VERSION_GH5                7
+#define SKIN_VERSION_GHWT360            8
+#define SKIN_VERSION_THAW360            9
+
+#define SKIN_PLAT_XENON                 0
+#define SKIN_PLAT_PS3                   1
+
+#include "Common.bt"
+
+#include "Material.bt"
+#include "GH3/Material.bt"
+#include "CScene.bt"
+#include "SkinFooter.bt"
+
+local uint SkinFilePlatform = SKIN_PLAT_XENON;
+local uint SkinFileVersion = SKIN_VERSION_GHWT;
+local uint g_SkinFileIsWOR = 0;
+local uint g_SkinCoreStart = 0;
+
+typedef struct
+{
+    local uint list_start = FTell();
+
+    ubyte material_version <bgcolor=CL_SINGLEVALUE>;
+    ubyte unknown_byte <bgcolor=CL_FLOATS>;
+
+    local int is_thpg = 0;
+    local int is_wor = 0;
+
+    short material_count <bgcolor=CL_SINGLEVALUE>;
+
+    uint list_size <bgcolor=CL_SINGLEVALUE, comment="Size of the material list">;
+
+    // -------------------------
+
+    RelativeOffset material_list(list_start) <bgcolor=CL_POINTER>;
+    int null <bgcolor=CL_PADDING>;
+
+    local int f;
+
+    for (f=0; f<material_count; f++)
+    {
+        if (material_version == 3)
+        {
+            THP8Material materials <optimize=false>;
+            if (materials.dead_key == 0xDEAD)
+                break;
+        }
+        else if (SkinFileVersion == SKIN_VERSION_THPG || SkinFileVersion == SKIN_VERSION_GH3)
+            GH3Material materials <optimize=false>;
+        else
+            Material materials <optimize=false>;
+    }
+
+    FSeek(list_start + list_size);
+
+    local uint babe_face_peek = ReadInt();
+
+    if (babe_face_peek == 0xBABEFACE)
+    {
+        QBKey babeface <bgcolor=CL_IMPORTANT_BG, fgcolor=CL_IMPORTANT_FG>;
+    
+        int padding_count <hidden=true, bgcolor=CL_SINGLEVALUE>;
+        byte padding[padding_count-4] <hidden=true, bgcolor=CL_PADDING>;
+    
+        int pre_scene_int <bgcolor=CL_SINGLEVALUE>;
+    }
+    else
+    {
+        is_wor = 1;
+        SkipTo(128);
+    }
+} MaterialList;
+
+typedef struct
+{
+    MaterialList materials;
+    CScene scene;
+} SkinFileCore;
+
+typedef struct
+{
+    g_SkinFileIsWOR = 0;
+    g_SkinCoreStart = 0;
+
+    // What is our first byte?
+    // If it's a 0, then it's probably little endian
+    // (If not, you should REALLY not have files this big)
+    
+    local ubyte peekByte = ReadByte();
+    
+    if (peekByte == 0)
+        BigEndian();
+    else
+        LittleEndian();
+
+    // -----------------
+
+    local int fixed = 0;
+
+    uint disqual_offset <bgcolor=CL_SINGLEVALUE, comment="Offset from core start">;
+    int faabaa[7] <bgcolor=CL_PADDING, hidden=true>;
+
+    // (WoR meshes, etc. start at 128)
+    // (If this is 0, then we have more padding to go!)
+
+    local ubyte version_peek = ReadByte();
+    if (version_peek == 0)
+    {
+        g_SkinFileIsWOR = 1;
+        Printf("version_peek 0, probably WoR mesh\n");
+        FSeek(128);
+    }
+   
+    g_SkinCoreStart = FTell();
+    SkinFileCore core;
+
+    // Read footer
+    if (disqual_offset > 0)
+    {
+        FSeek(g_SkinCoreStart + disqual_offset);
+        if (!FEof())
+            SkinFooter footer;
+    }
+} SkinFile;

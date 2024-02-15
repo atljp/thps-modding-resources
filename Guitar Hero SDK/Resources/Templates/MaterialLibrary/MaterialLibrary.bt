@@ -1,0 +1,49 @@
+// MaterialLibrary file
+
+#include "../Common.bt"
+#include "MaterialOffset.bt"
+#include "MaterialTemplate.bt"
+
+local uint MaterialLibraryVersion;
+local uint TemplateListStart;
+local uint ShaderListStart;
+
+typedef struct
+{
+    uint m_fileTag <bgcolor=CL_CHECKSUM>;
+    uint m_version <bgcolor=CL_SINGLEVALUE>;
+    MaterialLibraryVersion = m_version;
+
+    uint m_materialTemplateTextureCount <bgcolor=CL_SINGLEVALUE>;
+
+    local uint offsetStart = (MaterialLibraryVersion == 2) ? 20 : 16;
+
+    // Guesstimate where our MAT_START will be, this is important for our offsets
+    local uint matStartGuess = offsetStart + (4 * m_materialTemplateTextureCount) + 4;
+
+    RelativeOffset m_microcodeOffset(matStartGuess) <bgcolor=CL_SINGLEVALUE, comment="Pointer to shader list, relative to material start">;
+    ShaderListStart = AbsOffset(m_microcodeOffset);
+
+    if (MaterialLibraryVersion == 2)
+        RelativeOffset pt_version2Unk(matStartGuess) <bgcolor=CL_POINTER, comment="Not in version 3, X360 related?">;
+
+    MaterialOffsetBlock m_ppMaterialTemplate(m_materialTemplateTextureCount, matStartGuess) <comment="Contains relative offsets to all templates">;
+
+    uint templateBlockSize <bgcolor=CL_SINGLEVALUE, comment="Size of the template block">;
+    local uint32 MAT_START = FTell();
+    TemplateListStart = FTell();
+
+    MaterialTemplateBlock templates(m_materialTemplateTextureCount, MAT_START);
+
+    //------------------------------------------------------
+
+    // Microcode block. This actually contains
+    // the shaders. Pixel and vertex HLSL microcode.
+
+    FSeek(AbsOffset(m_microcodeOffset));
+    uint MICROCODE_IS_HERE;
+    
+} Nx_CMaterialTemplateTable;
+
+BigEndian();
+Nx_CMaterialTemplateTable materialTable <comment="Nx::CMaterialTemplateTable">;

@@ -1,0 +1,240 @@
+//------------------------------------------------
+// GH5+ .note.xen file
+// Contains note information, probably?
+//------------------------------------------------
+
+#include "Common.bt"
+
+#define CL_STAR_TIME            0xFFFF66
+#define CL_STAR_LENGTH          0xEEEE55
+
+typedef struct
+{
+    uint time <bgcolor=CL_STAR_TIME>;
+    ushort length <bgcolor=CL_STAR_LENGTH>;
+} GH5StarNote <read=Str("%d: %d ms long", this.time, this.length)>;
+
+// ---------------------------------
+
+#define CL_INSNOTE_TIME             0xAAAAFF
+#define CL_INSNOTE_VALUE            0x9999EE
+
+typedef struct
+{
+    uint time <bgcolor=CL_INSNOTE_TIME>;
+    uint value <bgcolor=CL_INSNOTE_VALUE>;
+} GH5InstrumentNote <read=Str("%d: %d", this.time, this.value)>;
+
+// ---------------------------------
+
+#define CL_VOCALMARKER_TIME         0xAAFFFF
+#define CL_VOCALMARKER_LYRIC        0xAACCFF
+
+typedef struct
+{  
+    uint time <bgcolor=CL_VOCALMARKER_TIME>;
+    wchar_t lyric[128] <bgcolor=CL_VOCALMARKER_LYRIC>;
+} GH5VocalMarkerNote <read=Str("%d: %s", this.time, this.lyric)>;
+
+// ---------------------------------
+
+#define CL_VOCALLYRIC_TIME         0xFFAAFF
+#define CL_VOCALLYRIC_LYRIC        0xCCAACC
+
+typedef struct
+{
+    uint time <bgcolor=CL_VOCALLYRIC_TIME>;
+    wchar_t lyric[32] <bgcolor=CL_VOCALLYRIC_LYRIC>;
+} GH5VocalLyric <read=Str("%d: %s", this.time, this.lyric)>;
+
+// ---------------------------------
+
+#define CL_MARKER_TIME          0xFFDDBB
+#define CL_MARKER_TEXT          0xFFCCAA
+
+typedef struct
+{
+    uint time <bgcolor=CL_MARKER_TIME>;
+    QBKey text <bgcolor=CL_MARKER_TEXT>;
+} GH5MarkerNote <read=Str("%d: %s", this.time, ReadQBKey(this.text))>;
+
+// ---------------------------------
+
+#define CL_FRETBAR              0xFFCCFF
+
+typedef struct
+{
+    uint time <bgcolor=CL_FRETBAR>;
+} GH5FretbarNote <read=Str("%d", this.time)>;
+
+// ---------------------------------
+
+#define CL_VOCALPHRASE          0xFFAAAA
+
+typedef struct
+{
+    uint time <bgcolor=CL_VOCALPHRASE>;
+} GH5VocalPhrase <read=Str("%d", this.time)>;
+
+// ---------------------------------
+
+#define CL_VOCALNOTE_TIME       0xCCCCFF
+#define CL_VOCALNOTE_LENGTH     0xBBBBEE
+#define CL_VOCALNOTE_NOTE       0xAAAADD
+
+typedef struct
+{  
+    uint time <bgcolor=CL_VOCALNOTE_TIME>;
+    ushort length <bgcolor=CL_VOCALNOTE_LENGTH>;
+    ubyte note <bgcolor=CL_VOCALNOTE_NOTE>;
+} GH5VocalNote <read=Str("%d: %d, %d ms long", this.time, this.note, this.length)>;
+
+// ---------------------------------
+
+#define CL_TIMESIG_TIME         0xAAFFAA
+#define CL_TIMESIG_NUM          0x99EE99
+#define CL_TIMESIG_DEN          0x88DD88
+
+typedef struct
+{
+    uint time <bgcolor=CL_TIMESIG_TIME>;
+    ubyte numerator <bgcolor=CL_TIMESIG_NUM>;
+    ubyte denominator <bgcolor=CL_TIMESIG_DEN>;
+} GH5TimesigNote <read=Str("%d: %d/%d", this.time, this.numerator, this.denominator)>;
+
+// ---------------------------------
+
+#define CL_DRUMFILL_START       0x7799CC
+#define CL_DRUMFILL_END         0x6688BB
+
+typedef struct
+{
+    uint timeStart <bgcolor=CL_DRUMFILL_START>;
+    uint timeEnd <bgcolor=CL_DRUMFILL_END>;
+} GH5DrumFillNote <read=Str("%dms - %dms", this.timeStart, this.timeEnd)>;
+
+// ---------------------------------
+
+#define CL_DRUMNOTE_TIME        0xAAAAFF
+#define CL_DRUMNOTE_UNK         0x9999EE
+#define CL_DRUMNOTE_UNKB        0x8888DD
+
+typedef struct
+{
+    uint time <bgcolor=CL_DRUMNOTE_TIME>;
+    uint unk <bgcolor=CL_DRUMNOTE_UNK>;
+    ubyte unkB <bgcolor=CL_DRUMNOTE_UNKB>;
+} GH6ExpertDrumNote <read=Str("%d: %d, %d", this.time, this.unk, this.unkB)>;
+
+// ---------------------------------
+
+#define CL_BANDMOMENT_TIME      0x77CC99
+#define CL_BANDMOMENT_LENGTH    0x66BB88
+
+typedef struct
+{
+    uint time <bgcolor=CL_BANDMOMENT_TIME>;
+    uint length <bgcolor=CL_BANDMOMENT_LENGTH>;
+} GH5BandMomentNote <read=Str("%d: %d ms long (?)", this.time, this.length)>;
+
+// ---------------------------------
+
+#define CL_FREEFORM_TIME        0xDDBB55
+#define CL_FREEFORM_LENGTH      0xCCAA44
+#define CL_FREEFORM_UNK         0xBB9933
+
+typedef struct
+{
+    uint time <bgcolor=CL_FREEFORM_TIME>;
+    uint length <bgcolor=CL_FREEFORM_LENGTH>;
+    ushort unk <bgcolor=CL_FREEFORM_UNK>;
+} GH5VocalFreeformNote <read=Str("%d: %d ms long, %d (?)", this.time, this.length, this.unk)>;
+
+// ---------------------------------
+
+typedef struct
+{
+    NOTE_QBKEY entryID <bgcolor=CL_CHECKSUM>;
+    uint entryCount <bgcolor=CL_SINGLEVALUE>;
+    NOTE_QBKEY entryType <bgcolor=CL_CHECKSUM>;
+    uint entryElementSize <bgcolor=CL_SINGLEVALUE>;
+
+    switch (entryType)
+    {
+        case gh5_star_note:
+            GH5StarNote star_notes[entryCount];
+            break;
+
+        case gh5_vocal_marker_note:
+            GH5VocalMarkerNote vocal_markers[entryCount];
+            break;
+
+        case gh5_vocal_lyric:
+            GH5VocalLyric vocal_lyrics[entryCount];
+            break;
+
+        case gh5_marker_note:
+            GH5MarkerNote marker_notes[entryCount];
+            break;
+
+        case gh5_fretbar_note:
+            GH5FretbarNote fretbars[entryCount];
+            break;
+
+        case gh5_timesig_note:
+            GH5TimesigNote timesigs[entryCount];
+            break;
+
+        case gh5_instrument_note:
+            GH5InstrumentNote instrument_notes[entryCount];
+            break;
+
+        case gh6_expert_drum_note:
+            GH6ExpertDrumNote drum_notes[entryCount];
+            break;
+
+        case gh5_vocal_note:
+            GH5VocalNote vocal_notes[entryCount];
+            break;
+
+        case gh5_vocal_phrase:
+            GH5VocalPhrase vocal_phrases[entryCount];
+            break;
+
+        case gh5_drumfill_note:
+            GH5DrumFillNote fill_notes[entryCount];
+            break;
+
+        case gh5_band_moment_note:
+            GH5BandMomentNote moment_notes[entryCount];
+            break;
+
+        case gh5_vocal_freeform_note:
+            GH5VocalFreeformNote freeform_notes[entryCount];
+            break;
+
+        default:
+            if ((entryElementSize * entryCount) > 0)
+                ubyte data[entryElementSize * entryCount] <bgcolor=0xbbbbbb>;
+            break;
+    }
+
+} NoteEntry <read=Str("[%s] [%s]:  %d entries", ReadNoteQBKey(this.entryType), ReadNoteQBKey(this.entryID), this.entryCount)>;
+
+// ---------------------------------
+
+typedef struct
+{
+    NOTE_QBKEY gameID <bgcolor=CL_CHECKSUM>;
+    NOTE_QBKEY dlcID <bgcolor=CL_CHECKSUM>;
+    uint numEntries <bgcolor=CL_SINGLEVALUE>;
+    NOTE_QBKEY noteKey <bgcolor=CL_CHECKSUM, comment="Literally \"note\"">;
+    ubyte zeros[12] <bgcolor=CL_PADDING, hidden=true>;
+
+    NoteEntry entry[numEntries] <optimize=false>;
+} NoteFile;
+
+// ---------------------------------
+
+BigEndian();
+NoteFile file;

@@ -1,0 +1,433 @@
+//------------------------------------------------
+// GH5 PS2 meshdata
+//------------------------------------------------
+
+#define MD_PREFLOAT     0x66aa66
+
+#define MD_SEVENTEEN    0xffff66
+#define MD_CONSTANT     0x22ff22
+#define MD_UNK          0x11ee11
+#define MD_COUNT        0x66ff66
+#define MD_ONES         0xff99ff
+
+#define MD_POS          0x00ccff
+#define MD_NORMALX      0xaaaaaa
+#define MD_NORMALY      0xbbbbbb
+#define MD_NORMALZ      0xcccccc
+#define MD_UV           0x0000ff
+#define MD_WEIGHT       0x4444ff
+
+#define MD_CONX         0xffffff
+#define MD_CONY         0xeeeeee
+#define MD_CONZ         0xdddddd
+#define MD_CONU         0xbbbbbb
+
+//----------------------------------------------
+
+typedef struct
+{
+    short x <bgcolor=MD_POS>;
+    short y <bgcolor=MD_POS>;
+    short z <bgcolor=MD_POS>;
+
+    // Values are div by 256.0
+
+} GH5PS2VertexPos <read=ReadGH5PS2VertexPos>;
+
+string ReadGH5PS2VertexPos(GH5PS2VertexPos &vp)
+{
+    local string s;
+    return SPrintf(s, "[%f, %f, %f]", vp.x / 256.0, vp.y / 256.0, vp.z / 256.0);
+}
+
+//----------------------------------------------
+
+typedef struct
+{
+    byte x <bgcolor=MD_NORMALX>;
+    byte y <bgcolor=MD_NORMALY>;
+    byte z <bgcolor=MD_NORMALZ>;
+
+    // Values are div by 256.0
+
+} GH5PS2VertexNormal <read=ReadGH5PS2VertexNormal>;
+
+string ReadGH5PS2VertexNormal(GH5PS2VertexNormal &nrm)
+{
+    local string s;
+
+    return SPrintf(s, "[%f, %f, %f]", nrm.x / 128.0, nrm.y / 128.0, nrm.z / 128.0);
+}
+
+//----------------------------------------------
+
+typedef struct
+{
+    short u <bgcolor=MD_UV>;
+    short v <bgcolor=MD_UV>;
+
+    ushort a <bgcolor=MD_WEIGHT>;
+    ushort b <bgcolor=MD_WEIGHT>;
+
+    // UV is div by 4096.0
+
+} GH5PS2VertexUV <read=ReadGH5PS2VertexUV>;
+
+string ReadGH5PS2VertexUV(GH5PS2VertexUV &uv)
+{
+    local string s;
+
+    return SPrintf(s, "[%f, %f], %08x, %08x %s", uv.u / 4096.0, uv.v / 4096.0, uv.a, uv.b, (uv.b & 0x8000) ? "" : "BREAK");
+}
+
+//----------------------------------------------
+
+// Seems to be face related, these values are unknown
+
+typedef struct
+{
+    ushort unkA <bgcolor=MD_CONX>;
+    ushort unkB <bgcolor=MD_CONY>;
+    ushort unkC <bgcolor=MD_CONZ>;
+    ushort unkD <bgcolor=MD_CONZ>;
+} GH5PS2Strip <read=ReadGH5PS2Strip>;
+
+string ReadGH5PS2Strip(GH5PS2Strip &strip)
+{
+    local string s;
+
+    local string flagString = (strip.unkA & 0x80) ? "Y" : "N";
+
+    return SPrintf(s, "%04x, %04x, %04x, %04x", strip.unkA, strip.unkB, strip.unkC, strip.unkD);
+}
+
+//----------------------------------------------
+
+// https://github.com/PCSX2/pcsx2/blob/master/pcsx2/Vif_Codes.cpp#L782C24-L782C38
+#define VIF_NOP         0x00
+#define VIF_STCYCL      0x01        // Start cycle
+#define VIF_OFFSET      0x02
+#define VIF_BASE        0x03
+#define VIF_ITOP        0x04        // ??
+#define VIF_STMOD       0x05        // ??
+#define VIF_MSKPATH3    0x06
+#define VIF_FLUSH       0x11        // Flush previous model
+#define VIF_MSCAL       0x14        // ??
+#define VIF_MSCNT       0x17        // Execute current VIF commands (MSCNT)
+#define VIF_STMASK      0x20        // ??
+#define VIF_DIRECT      0x50        // ??
+
+// The WL field of the STCYCL VIFcode is set to 1, 
+// the CL is set to the vertex stride (= number of clusters).
+
+typedef struct
+{
+    ubyte num <bgcolor=MD_SEVENTEEN>;
+    ubyte junk[2] <bgcolor=MD_SEVENTEEN>;
+    ubyte command <bgcolor=MD_SEVENTEEN>;
+} VIFCommand <read=ReadVIFCommand>;
+
+string ReadVIFCommand(VIFCommand &vif)
+{
+    local string s;
+    local string cmdString;
+
+    switch (vif.command)
+    {
+        case VIF_NOP:
+            cmdString = "NOP";
+            break;
+            
+        case VIF_OFFSET:
+            cmdString = "OFFSET";
+            break;
+
+        case VIF_STCYCL:
+            cmdString = "STCYCL";
+            break;
+    
+        case VIF_ITOP:
+            cmdString = "ITOP";
+            break;
+
+        case VIF_STMOD:
+            cmdString = "STMOD";
+            break;
+            
+        case VIF_FLUSH:
+            cmdString = "FLUSH";
+            break;
+
+        case VIF_MSCAL:
+            cmdString = "MSCAL";
+            break;
+
+        case VIF_MSCNT:
+            cmdString = "MSCNT (EXECUTE)";
+            break;
+
+        case VIF_STMASK:
+            cmdString = "STMASK";
+            break;
+
+        case VIF_DIRECT:
+            cmdString = "DIRECT";
+            break;
+
+        default:
+            cmdString = "???";
+            break;
+    }
+    
+    local string unpackString = "";
+    
+    if (vif.command >= 0x60 && vif.command <= 0x7F)
+    {
+        local uint vl = (vif.command & 0x03);
+        local uint vn = (vif.command >> 2) & 0x03;
+        
+        local string vlString = "";
+        local string vnString = "";
+        
+        switch (vl)
+        {
+            case 0:
+                vlString = "32";
+                break;
+                
+            case 1:
+                vlString = "16";
+                break;
+                
+            case 2:
+                vlString = "8";
+                break;
+                
+            case 3:
+                vlString = "5";
+                break;
+        }
+        
+        switch (vn)
+        {
+            case 0:
+                vnString = "S";
+                break;
+                
+            case 1:
+                vnString = "V2";
+                break;
+                
+            case 2:
+                vnString = "V3";
+                break;
+                
+            case 3:
+                vnString = "V4";
+                break;
+        }
+        
+        unpackString = Str(" [vl:%s, vn:%s]", vlString, vnString);
+            
+        switch (vif.command)
+        {
+            case 0x60:
+            case 0x70:
+                cmdString = "UNPACK (S-32)";
+                break;
+                
+            case 0x61:
+            case 0x71:
+                cmdString = "UNPACK (S-16)";
+                break;
+                
+            case 0x62:
+            case 0x72:
+                cmdString = "UNPACK (S-8)";
+                break;
+                
+            case 0x64:
+            case 0x74:
+                cmdString = "UNPACK (V2-32)";
+                break;
+                
+            case 0x65:
+            case 0x75:
+                cmdString = "UNPACK (V2-16)";
+                break;
+                
+            case 0x66:
+            case 0x76:
+                cmdString = "UNPACK (V2-8)";
+                break;
+                
+            case 0x68:
+            case 0x78:
+                cmdString = "UNPACK (V3-32)";
+                break;
+                
+            case 0x69:
+            case 0x79:
+                cmdString = "UNPACK (V3-16)";
+                break;
+                
+            case 0x6A:
+            case 0x7A:
+                cmdString = "UNPACK (V3-8)";
+                break;
+                
+            case 0x6C:
+            case 0x7C:
+                cmdString = "UNPACK (V4-32)";
+                break;
+                
+            case 0x6D:
+            case 0x7D:
+                cmdString = "UNPACK (V4-16)";
+                break;
+                
+            default:
+                cmdString = "UNPACK (??)";
+                break;
+        }
+    }
+
+    return SPrintf(s, "%s: %d cycles / clusters%s", cmdString, vif.num, unpackString);
+}
+
+// https://gtamods.com/wiki/Native_Data_PLG_(RW_Section)
+
+typedef struct
+{
+    uint value <bgcolor=MD_UNK>;
+    
+    local ushort address = (value & 0xFFFF);
+    local ubyte count = (value >> 16) & 0xFF;
+    local ubyte typeFlags = (value >> 24) & 0xFF;
+} DMATag <read=ReadDMATag>;
+
+#define VN_1COMP            0
+#define VN_2COMP            1
+#define VN_3COMP            2
+#define VN_4COMP            3
+
+#define VL_32BIT            0           // UNPACK_S
+#define VL_16BIT            1           // UNPACK_V2
+#define VL_8BIT             2           // UNPACK_V4
+#define VL_RGB5A1           3           // UNPACK_V4_5
+
+string ReadDMATag(DMATag &vif)
+{
+    local string s;
+
+    // Type flags!
+    // https://forum.xentax.com/viewtopic.php?p=52272#p52244
+
+    //      VN VL
+    // 0000 00 00
+
+    // https://github.com/PCSX2/pcsx2/blob/master/pcsx2/Vif_Unpack.cpp#L221
+    local ubyte vl = (vif.typeFlags & 0x03);
+    local ubyte vn = (vif.typeFlags >> 2) & 0x03;
+
+    local string vlString = "??";
+    local string vnString = "??";
+
+    switch (vl)
+    {
+        case VL_32BIT:
+            vlString = "32bit (UNPACK_S)";
+            break;
+
+        case VL_16BIT:
+            vlString = "16bit (UNPACK_V2)";
+            break;
+
+        case VL_8BIT:
+            vlString = "8bit (UNPACK_V4)";
+            break;
+
+        case VL_RGB5A1:
+            vlString = "16bit rgb5a1 (UNPACK_V4_5)";
+            break;
+    }
+
+    switch (vn)
+    {
+        case VN_1COMP:
+            vnString = " x 1";
+            break;
+   
+        case VN_2COMP:
+            vnString = " x 2";
+            break;
+
+        case VN_3COMP:
+            vnString = " x 3";
+            break;
+
+        case VN_4COMP:
+            vnString = " x 4";
+            break;
+    }
+
+    return SPrintf(s, "@%d, %d element(s), %s%s", vif.address, vif.count, vlString, vnString);
+}
+
+//----------------------------------------------
+
+typedef struct
+{
+    VIFCommand unk_cmd <comment="???">;
+    VIFCommand vertex_nop <comment="Clear out VU1 for vertex data">;
+    VIFCommand strip_nop <comment="Clear out VU1 for strip(?) data">;
+
+    // Peek and make sure the first VIF command is for verts
+    // If it isn't, we should find the one that is
+
+    local uint attempt = 0;
+    local uint oldOff;
+
+    while (true && attempt < 20)
+    {
+        oldOff = FTell();
+
+        FSeek(oldOff + 3);
+        if (ReadByte() == 0x01)
+        {
+            FSeek(oldOff);
+            break;
+        }
+
+        FSeek(oldOff + 4);
+    }
+
+    VIFCommand VIF_Start_Vertices;
+
+    // -- VERTEX POSITIONS ---------------------
+    DMATag posCommand;
+    GH5PS2VertexPos pos[posCommand.count];
+    SkipTo(4);
+
+    // -- VERTEX NORMALS(?) --------------------
+    DMATag nrmCommand;
+    GH5PS2VertexNormal nrm[nrmCommand.count];
+    SkipTo(4);
+
+    // -- VERTEX UV / WEIGHT(?)  ---------------
+    DMATag uvCommand;
+    GH5PS2VertexUV uv[uvCommand.count];
+
+    VIFCommand VIF_Start_Faces;
+
+    // -- STRIP INFO --------------------------------
+    // DMATag stripCommand;
+    VIFCommand stripCommand;
+    VIFCommand stripCommandB;
+    VIFCommand stripCommandC;
+    // GH5PS2Strip strip[stripCommand.count];
+
+    // -- VIF command to end mesh ----------------------------
+    VIFCommand VIF_Execute;
+
+} GH5PS2MeshData;

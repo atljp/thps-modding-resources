@@ -1,0 +1,184 @@
+
+:i $Goal_Collect_GenericParams$ = :s{
+	:i $goal_text$ = %s(17,"Collect x things!")
+	:i $view_goals_text$ = %s(20,"Generic collect text")
+	:i $goal_description$ = %s(32,"Generic collect goal description")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_collect_init$
+	:i $uninit$ = $goal_uninit$
+	:i $active$ = $goal_collect_active$
+	:i $activate$ = $goal_collect_activate$
+	:i $deactivate$ = $goal_collect_deactivate$
+	:i $expire$ = $goal_collect_expire$
+	:i $fail$ = $goal_collect_fail$
+	:i $success$ = $goal_collect_success$
+	:i $restart_node$ = $TRG_G_COLLECT_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_COLLECT_Pro$
+	:i $goal_collect_object_init_script$ = $set_goal_collect_exception$
+	:i $goal_flags$ = :a{
+		:i $got_1$
+		:i $got_2$
+		:i $got_3$
+		:i $got_4$
+		:i $got_5$
+		:i :a}
+	:i $goal_collect_objects$ = :a{
+		:i :s{$id$ = $TRG_G_COLLECT_FratBoy01$$scr$ = $goal_collect_got_object$$flag$ = $got_1$:s}
+		:i :s{$id$ = $TRG_G_COLLECT_FratBoy02$$scr$ = $goal_collect_got_object$$flag$ = $got_2$:s}
+		:i :s{$id$ = $TRG_G_COLLECT_FratBoy03$$scr$ = $goal_collect_got_object$$flag$ = $got_3$:s}
+		:i :s{$id$ = $TRG_G_COLLECT_FratBoy04$$scr$ = $goal_collect_got_object$$flag$ = $got_4$:s}
+		:i :s{$id$ = $TRG_G_COLLECT_FratBoy05$$scr$ = $goal_collect_got_object$$flag$ = $got_5$:s}
+		:i :a}
+	:i $start_pad_id$ = $G_COLLECT_StartPad$
+	:i $wait_and_win_started$ = %i(0,00000000)
+	:i $record_type$ = $time$
+:i :s}
+:i function $goal_collect_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+	:i $ForEachIn$:s{
+		:i %GLOBAL%$goal_collect_objects$
+		:i $do$ = $goal_collect_update_from_goal_flags$
+		:i $params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i :s}
+:i endfunction
+:i function $goal_collect_update_from_goal_flags$
+	:i if $GotParam$$flag$
+		:i if $GoalManager_GoalFlagSet$$name$ = %GLOBAL%$goal_id$$flag$ = %GLOBAL%$flag$
+			:i if $ObjectExists$$id$ = %GLOBAL%$id$
+				:i %GLOBAL%$id$.$Obj_Invisible$
+			:i endif
+		:i else 
+		:i endif
+	:i endif
+:i endfunction
+:i function $init_goal_collect_object$
+	:i if $GotParam$$id$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$trigger_obj_id$$b$ = %GLOBAL%$id$
+			:i $GoalManager_SetGoalFlag$$name$ = %GLOBAL%$goal_id$%GLOBAL%$flag$%i(1,00000001)
+		:i else 
+			:i %GLOBAL%$id$.$Obj_Visible$
+			:i $RunScriptOnObject$$id$ = %GLOBAL%$id$%GLOBAL%$goal_collect_object_init_script$$params$ =  isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $set_goal_collect_exception$$goal_collect_object_inner_radius$ = %i(6,00000006)
+	:i $Obj_ClearExceptions$
+	:i $Obj_SetInnerRadius$%GLOBAL%$goal_collect_object_inner_radius$
+	:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = %GLOBAL%$scr$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$flag$ = %GLOBAL%$flag$:s}
+:i endfunction
+:i function $goal_collect_got_object$
+	:i $Obj_ClearExceptions$
+	:i $PlaySound$$GapSound_11$$vol$ = %i(100,00000064)
+	:i $GoalManager_SetGoalFlag$$name$ = %GLOBAL%$goal_id$%GLOBAL%$flag$%i(1,00000001)
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i $FormatText$$TextName$ = $collect_text$%s(11,"%c of %n %t")$c$ = %GLOBAL%$num_flags_set$$t$ = %GLOBAL%$collect_type$$n$ = %GLOBAL%$num_flags$
+		:i $create_panel_message$$text$ = %GLOBAL%$collect_text$$style$ = $goal_collect_text$
+	:i endif
+:i endfunction
+:i function $goal_collect_text$
+	:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}$pos$ = %vec2(320.000000,115.000000)
+	:i $wait$%i(1000,000003e8)
+	:i $Die$
+:i endfunction
+:i function $goal_collect_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $FormatText$$ChecksumName$ = $script_id$%s(43,"%s_goal_collect_wait_and_initialize_objects")$s$ = %GLOBAL%$goal_name$
+	:i $SpawnScript$$goal_collect_wait_and_initialize_objects$$id$ = %GLOBAL%$script_id$$params$ =  isNull 
+:i endfunction
+:i function $goal_collect_wait_and_initialize_objects$
+	:i if NOT $GotParam$$quick_start$
+		:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+		:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $GetArraySize$%GLOBAL%$goal_collect_objects$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$array_element$ =  (%GLOBAL%$goal_collect_objects$:a{%GLOBAL%$index$:a}) 
+		:i if $GoalManager_GoalFlagSet$$name$ = %GLOBAL%$goal_id$$flag$ =  (%GLOBAL%$array_element$->$flag$) 
+			:i %GLOBAL%$object_id$ =  (%GLOBAL%$array_element$->$id$) 
+			:i %GLOBAL%$object_id$.$Obj_Invisible$
+			:i %GLOBAL%$object_id$.$Obj_ClearExceptions$
+		:i else 
+			:i $init_goal_collect_object$:s{
+				:i %GLOBAL%$array_element$
+				:i $goal_id$ = %GLOBAL%$goal_id$
+				:i $trigger_obj_id$ = %GLOBAL%$trigger_obj_id$
+				:i $goal_collect_object_init_script$ = %GLOBAL%$goal_collect_object_init_script$
+			:i :s}
+			:i if $GotParam$$create_collect_arrows$
+				:i $goal_collect_add_arrow$:s{
+					:i %GLOBAL%$array_element$
+					:i $goal_name$ = %GLOBAL%$goal_name$
+					:i $index$ = %GLOBAL%$index$
+				:i :s}
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i while
+		
+		:i if $GetNextArrayElement$%GLOBAL%$goal_collect_objects$
+			:i $goal_collect_run_init_script$%GLOBAL%$element$
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $goal_collect_run_init_script$
+	:i if $GotParam$$init_script$
+		:i %GLOBAL%$init_script$ isNull 
+	:i endif
+:i endfunction
+:i function $goal_collect_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_collect_deactivate$
+	:i $FormatText$$ChecksumName$ = $script_id$%s(43,"%s_goal_collect_wait_and_initialize_objects")$s$ = %GLOBAL%$goal_name$
+	:i $KillSpawnedScript$$id$ = %GLOBAL%$script_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$wait_and_win_started$ = %i(0,00000000):s}
+	:i if $GotParam$$trigger_obj_id$
+		:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_collect_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_collect_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_collect_add_arrow$
+	:i if NOT $IsAlive$$name$ = %GLOBAL%$id$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$arrow_height$
+		:i %GLOBAL%$arrow_height$ = %i(100,00000064)
+	:i endif
+	:i %GLOBAL%$arrow_pos$ =  (%vec3(0.000000,1.000000,0.000000) * %GLOBAL%$arrow_height$) 
+	:i if NOT $GotParam$$arrow_model$
+		:i %GLOBAL%$arrow_model$ = %s(9,"goalarrow")
+	:i endif
+	:i $FormatText$$ChecksumName$ = $arrow_id$%s(11,"%g_%i_arrow")$g$ = %GLOBAL%$goal_name$$i$ = %GLOBAL%$index$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$arrow_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$arrow_id$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $type$ = $Element3D$
+		:i $id$ = %GLOBAL%$arrow_id$
+		:i $model$ = %GLOBAL%$arrow_model$
+		:i $HoverParams$ = :s{$Amp$ = %f(9.500000)$Freq$ = %f(2.500000):s}
+		:i $AngVelY$ = %f(0.160000)
+		:i $ParentParams$ = :s{$name$ = %GLOBAL%$id$%GLOBAL%$arrow_pos$$IgnoreParentsYRotation$:s}
+	:i :s}
+:i endfunction
+:i :end

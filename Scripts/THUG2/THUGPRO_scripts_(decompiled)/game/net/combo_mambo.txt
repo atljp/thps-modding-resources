@@ -1,0 +1,79 @@
+
+:i $combo_score$ = %i(0,00000000)
+:i $goal_combomambo_genericParams$ = :s{
+	:i $goal_text$ = %s(38,"You must score the most points to win!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $init$ = $goal_combomambo_init$
+	:i $activate$ = $goal_combomambo_activate$
+	:i $deactivate$ = $goal_combomambo_deactivate$
+	:i $expire$ = $goal_combomambo_expire$
+	:i $goal_description$ = %s(12,"Combo Mambo!")
+:i :s}
+:i function $goal_combomambo_init$
+:i endfunction
+:i function $goal_combomambo_activate$
+	:i $Toggle_ShouldModulateColor$$off$
+	:i $FormatText$$TextName$ = $msg_text$%s(36,"%aCombo Mambo\n\c0Highest combo wins")$a$ =  ($gamemode_color$) 
+	:i if $InSplitScreenGame$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ = %vec2(720.000000,17.000000)
+	:i endif
+	:i if $InNetGame$
+		:i $create_panel_block$$id$ = $mp_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i $ResetScore$
+	:i $ResetComboRecords$
+:i endfunction
+:i function $goal_combomambo_deactivate$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+:i endfunction
+:i function $combomambo_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_combomambo_expire$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $printf$%s(22,"goal_combomambo_expire")
+	:i if $GameModeEquals$$is_singlesession$
+		:i $UpdateRecords$
+		:i $high_scores_menu_create$
+		:i $ResetComboRecords$
+	:i else 
+		:i if $OnServer$
+			:i $SpawnScript$$wait_then_create_rankings$$params$ = :s{$score_title_text$ = %s(10,"BEST COMBO"):s}
+		:i else 
+			:i $create_rankings$$score_title_text$ = %s(10,"BEST COMBO")
+		:i endif
+	:i endif
+:i endfunction
+:i function $AddGoal_combomambo$
+	:i $GoalManager_AddGoal$$name$ = $combomambo$:s{
+		:i $params$ = :s{$goal_combomambo_genericParams$ isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_combomambo$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $combomambo$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $combomambo$
+:i endfunction
+:i :end

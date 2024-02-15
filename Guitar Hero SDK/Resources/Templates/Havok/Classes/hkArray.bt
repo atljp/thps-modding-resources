@@ -1,0 +1,29 @@
+struct HavokGlobalFixup;
+
+typedef struct
+{
+    local int start_offset = FTell();
+    local int list_offset = LocalFixupDestination(FTell());
+
+    HavokLocalFixup m_data;
+    int m_size;
+    int m_capacityAndFlags;
+
+    if (list_offset >= 0)
+    {
+        local uint old_pos = FTell();
+        local uint i;
+
+        Printf("List offset at %d: %d\n", start_offset, list_offset);
+
+        FSeek(list_offset);
+
+        for (i=0; i<m_size; i++)
+        {
+            HavokGlobalFixup link <optimize=false>;
+        }
+
+        FSeek(old_pos);
+    }
+
+} hkArray <read=Str("%d items", m_size)>;

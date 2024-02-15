@@ -1,0 +1,143 @@
+// ------------------------------------
+// Various property types, usually
+// related to techniques or shaders
+// ------------------------------------
+
+#define PROPTYPE_NORMAL             4
+#define PROPTYPE_INTEGER            1
+#define PROPTYPE_FLOAT              0
+
+#define CL_UIPROP_NAME              0xFFAAFF
+#define CL_UIPROP_CHECKSUM          0xEE99EE
+#define CL_UIPROP_TYPE              0xDD88DD
+#define CL_UIPROP_LEN               0xCC77CC
+#define CL_UIPROP_VALUE             0xBB66BB
+
+typedef struct (uint MAT_START)
+{
+    RelativeOffset pt_propertyName(MAT_START) <bgcolor=CL_UIPROP_NAME>;
+    QBKey checksum <bgcolor=CL_UIPROP_CHECKSUM>;
+    uint propertyType <bgcolor=CL_UIPROP_TYPE, comment="If 0, uber value is a number">;
+    uint propValueLength <bgcolor=CL_UIPROP_LEN, comment="Number of bytes value takes up">;
+    RelativeOffset pt_PropertyValue(MAT_START) <bgcolor=CL_UIPROP_VALUE>;
+
+    local uint oldOff = FTell();
+
+    FSeek(AbsOffset(pt_propertyName));
+    string vPropertyName <bgcolor=0x66FFFF>;
+
+    FSeek(AbsOffset(pt_PropertyValue));
+
+    if (propertyType == PROPTYPE_FLOAT)
+        float vPropertyValue <bgcolor=0x66FFFF>;
+    else if (propertyType == PROPTYPE_INTEGER)
+        uint vPropertyValue <bgcolor=0x66FFFF>;
+    else
+        string vPropertyValue <bgcolor=0x66FFFF>;
+
+    FSeek(oldOff);
+
+} UIProperty <read=ReadUIProperty>;
+
+string ReadUIProperty(UIProperty &unk)
+{
+    local string s;
+
+    if (unk.propertyType == PROPTYPE_FLOAT)
+        return SPrintf(s, "[%d] %s - %s: %f", unk.propertyType, ReadQBKey(unk.checksum), unk.vPropertyName, unk.vPropertyValue);
+    else if (unk.propertyType == PROPTYPE_INTEGER)
+        return SPrintf(s, "[%d] %s - %s: %d", unk.propertyType, ReadQBKey(unk.checksum), unk.vPropertyName, unk.vPropertyValue);
+    else
+        return SPrintf(s, "[%d] %s - %s: %s", unk.propertyType, ReadQBKey(unk.checksum), unk.vPropertyName, unk.vPropertyValue);
+}
+
+//-----------------------------------------------------
+
+#define CL_SHADERPROP_OFFSET                    0xFFFFAA
+#define CL_SHADERPROP_CHECKSUM                  0xEEEE99
+#define CL_SHADERPROP_NUMBER                    0xDDDD88
+#define CL_SHADERPROP_UNKNOWN                   0xBBBB66
+
+#define SHADERPROPTYPE_NORMAL                   0
+#define SHADERPROPTYPE_SAMPLE                   3
+#define SHADERPROPTYPE_MATRIX                   5
+
+// Nx::CMaterialParameter
+typedef struct (uint MAT_START)
+{
+    RelativeOffset pt_propertyName(MAT_START) <bgcolor=CL_SHADERPROP_OFFSET>;
+    RelativeOffset pt_usuallyNull(MAT_START) <bgcolor=CL_SHADERPROP_OFFSET>;
+
+    RelativeOffset pt_sampleName(MAT_START) <bgcolor=CL_SHADERPROP_OFFSET, comment="Sample properties only">;
+    QBKey checksum <bgcolor=CL_SHADERPROP_CHECKSUM>;
+
+    ubyte someType <bgcolor=CL_SHADERPROP_NUMBER>;
+    ubyte uvIn <bgcolor=CL_SHADERPROP_NUMBER>;
+    ubyte unkA <bgcolor=CL_SHADERPROP_NUMBER>;
+    ubyte unkB <bgcolor=CL_SHADERPROP_NUMBER>;
+
+    uint indexA <bgcolor=CL_SHADERPROP_NUMBER>;
+    uint indexB <bgcolor=CL_SHADERPROP_NUMBER>;
+    uint indexInSkin <bgcolor=CL_SHADERPROP_NUMBER, comment="Index in the .skin material?">;
+    uint indexC <bgcolor=CL_SHADERPROP_NUMBER>;
+
+    // Default value for the property
+    uint defaultValueSize <bgcolor=CL_SHADERPROP_NUMBER>;
+    RelativeOffset pt_defaultValue(MAT_START) <bgcolor=CL_SHADERPROP_OFFSET>;
+
+    uint numUIProperties <bgcolor=CL_SHADERPROP_NUMBER>;
+    RelativeOffset pt_UIProperties(MAT_START) <bgcolor=CL_SHADERPROP_OFFSET>;
+
+    local uint old_off = FTell();
+    local int i;
+
+    FSeek(AbsOffset(pt_propertyName));
+    string propName <bgcolor=0xFFFF66>;
+
+    if (pt_sampleName.offset >= 0)
+    {
+        FSeek(AbsOffset(pt_sampleName));
+        string sampleName <bgcolor=0xFF88AA>;
+    }
+
+    if (pt_defaultValue.offset >= 0 && defaultValueSize > 0)
+    {
+        FSeek(AbsOffset(pt_defaultValue));
+        local uint defCount = (uint) (defaultValueSize/4);
+    
+        LittleEndian();
+        float defaultvalue[defCount] <bgcolor=0xAAAAFF>;
+        BigEndian();
+    }
+
+    if (pt_UIProperties.offset >= 0 && numUIProperties > 0)
+    {
+        FSeek(AbsOffset(pt_UIProperties));
+
+        for (i=0; i<numUIProperties; i++)
+            UIProperty uiProperty(MAT_START);
+    }
+
+    FSeek(old_off);
+
+} ShaderProperty <read=ReadShaderProperty>;
+
+string ReadShaderProperty(ShaderProperty &unk)
+{
+    local string s;
+    local string typeString;
+
+    if (unk.someType == SHADERPROPTYPE_SAMPLE)
+        typeString = "[SAMP]";
+    else if (unk.someType == SHADERPROPTYPE_MATRIX)
+        typeString = "[MATR]";
+    else
+        typeString = "[VALU]";
+
+    local uint numValues = (uint) (unk.defaultValueSize / 4);
+
+    if (unk.someType == SHADERPROPTYPE_SAMPLE && unk.pt_sampleName.offset >= 0)
+        return SPrintf(s, "%s %d. %s - %s (%s), UV %d", typeString, unk.indexInSkin, ReadQBKey(unk.checksum), unk.propName, unk.sampleName, unk.uvIn);
+    else
+        return SPrintf(s, "%s %d. %s - %s: %d values", typeString, unk.indexInSkin, ReadQBKey(unk.checksum), unk.propName, numValues);
+}

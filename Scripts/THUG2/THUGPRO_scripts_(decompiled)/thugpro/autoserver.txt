@@ -1,0 +1,1085 @@
+
+:i $FLAG_ENABLE_PARSING$ = %i(0,00000000)
+:i $FCFS_HostIndex$ = %i(1,00000001)
+:i $FCFS_CurrentHostName$ = %s(5,"empty")
+:i $AutoServer_PausedTimer$ = %i(0,00000000)
+:i $AutoServer_CurrentTime$ = %i(0,00000000)
+:i $AutoServer_BreakTime$ = %i(30,0000001e)
+:i $AutoLevel_Cycle$ = %i(0,00000000)
+:i $AutoLevel_GamesPlayed$ = %i(0,00000000)
+:i $AutoLevel_TotalGamesToPlay$ = %i(5,00000005)
+:i $AutoLevel_RecentLevelIndex$ = :a{%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff)%i(4294967295,ffffffff):a}
+:i $AutoGameMode_NextGameMode$ = $nettrickattack$
+:i $AutoGameMode_ShuffleType$ = %i(1,00000001)
+:i $AutoGameMode_Index$ = %i(0,00000000)
+:i function $AutoServer_Close_Rankings$
+	:i $Wait$%i(1,00000001)$second$
+	:i $exit_pause_menu$
+	:i $close_rankings$
+	:i $do_backend_retry$
+	:i if $IsHost$
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+			:i $change$$AutoLevel_GamesPlayed$ =  ($AutoLevel_GamesPlayed$ + %i(1,00000001)) 
+			:i $THUGPRO_AutoserverSetGamesPlayed$$games$ =  ($AutoLevel_GamesPlayed$) 
+		:i endif
+	:i endif
+:i endfunction
+:i function $update_auto_modes$
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i if  ($AutoLevel_GamesPlayed$ >  ($AutoLevel_TotalGamesToPlay$ - %i(1,00000001)) ) 
+			:i $change$$AutoLevel_GamesPlayed$ = %i(0,00000000)
+			:i $THUGPRO_AutoserverSetGamesPlayed$$games$ = %i(0,00000000)
+			:i $Wait$%i(3,00000003)$second$
+			:i $AutoLevel_ChangeLevel$
+			:i return
+			
+		:i else 
+			:i if  ($AutoLevel_GamesPlayed$ > $AutoLevel_TotalGamesToPlay$) 
+				:i $change$$AutoLevel_GamesPlayed$ = %i(0,00000000)
+				:i $THUGPRO_AutoserverSetGamesPlayed$$games$ = %i(0,00000000)
+			:i endif
+			:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+				:i $AutoServer_Reset_Timer$
+			:i endif
+		:i endif
+	:i else 
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+			:i $AutoServer_Reset_Timer$
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoServer_Reset_Timer$
+	:i $change$$AutoServer_CurrentTime$ = $AutoServer_BreakTime$
+	:i if NOT $GotParam$$from_menu$
+		:i $SpawnScript$$AutoServer_Break_Timer$
+	:i endif
+:i endfunction
+:i function $BroadcastBreakTime_Update$
+	:i if $IsHost$
+		:i return
+		
+	:i else 
+		:i $change$$AutoServer_CurrentTime$ = %GLOBAL%$time$
+		:i $AutoServer_Update_Timer_Element$$time$ = %GLOBAL%$time$
+		:i if NOT $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+			:i if $ScreenElementExists$$id$ = $autoserver_timer$
+				:i $DestroyScreenElement$$id$ = $autoserver_timer$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $BroadcastSetGamesPlayed$
+	:i if $IsHost$
+		:i return
+		
+	:i else 
+		:i $change$$AutoLevel_GamesPlayed$ = %GLOBAL%$games$
+	:i endif
+:i endfunction
+:i function $BroadcastSetGamesToPlay$
+	:i if $IsHost$
+		:i return
+		
+	:i else 
+		:i $change$$AutoLevel_TotalGamesToPlay$ = %GLOBAL%$games$
+	:i endif
+:i endfunction
+:i function $AutoServer_Broadcast_Info$
+	:i if $InNetGame$
+		:i if  ( ($IsHost$)  OR  (%GLOBAL%$function$ = %f(6.000000)) ) 
+			:i $RemoveParameter$$type$
+			:i $GetSkaterId$
+			:i $skaterId$ = %GLOBAL%$ObjId$
+			:i $TESTMESSAGE$ = %vec3(5555.000000,0.000000,0.000000)
+			:i $BroadcastProjectile$$ObjId$ = %GLOBAL%$skaterId$$type$ = %GLOBAL%$type$$pos$ = %GLOBAL%$TESTMESSAGE$$scale$ = %GLOBAL%$function$$radius$ = %GLOBAL%$value$$ammo_type$ = $none$
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoServer_Update_Timer$
+	:i if $IsHost$
+		:i return
+		
+	:i else 
+		:i $change$$AutoServer_CurrentTime$ = %GLOBAL%$time$
+		:i $AutoServer_Update_Timer_Element$$time$ = %GLOBAL%$time$
+	:i endif
+:i endfunction
+:i function $Server_HandleAutoServerMessages$
+	:i if  (%GLOBAL%$scale$ = %f(0.000000)) 
+		:i if $ScreenElementExists$$id$ = $autoserver_timer$
+			:i $DestroyScreenElement$$id$ = $autoserver_timer$
+		:i endif
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$scale$ = %f(3.000000)) 
+		:i $THUGPRO_UpdateClientInfo$$SkaterIndex$ = %GLOBAL%$radius$$skaterId$ = %GLOBAL%$skaterId$
+		:i $edmsg2$%s(29,"SkaterId:%a, SkaterIndex:'%i'")$a$ = %GLOBAL%$skaterId$$i$ = %GLOBAL%$SkaterIndex$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$scale$ = %f(6.000000)) 
+		:i if $IsHost$
+			:i $edmsg2$%s(13,"VOTED FOR: %l")$l$ =  ( ($level_select_menu_level_info$) :a{%GLOBAL%$radius$:a}->$text$) 
+			:i %GLOBAL%$temp_array$ = $level_select_menu_level_info$
+			:i $temp_struct$ = :s{
+				:i $text$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$radius$:a}) ->$text$) 
+				:i $Level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$radius$:a}) ->$Level$) 
+				:i $game$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$radius$:a}) ->$game$) 
+				:i $num_votes$ =  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$radius$:a}) ->$num_votes$)  + %i(1,00000001)) 
+				:i $enabled$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$radius$:a}) ->$enabled$) 
+			:i :s}
+			:i $SetArrayElement$:s{
+				:i $arrayname$ = $temp_array$
+				:i $index$ = %GLOBAL%$radius$
+				:i $newvalue$ = %GLOBAL%$temp_struct$
+			:i :s}
+			:i $level_select_menu_level_info$ = %GLOBAL%$temp_array$
+		:i endif
+		:i return
+		
+	:i endif
+:i endfunction
+:i function $AutoServer_Break_Timer$
+	:i if $IsHost$
+		:i $root_window$.$GetTags$
+		:i $AutoServer_Create_Timer_Element$
+		:i $AutoServer_Update_Timer_Element$$time$ =  ($AutoServer_CurrentTime$) 
+		:i $THUGPRO_AutoserverUpdateTimer$$time$ =  ($AutoServer_CurrentTime$) 
+		:i while
+			
+			:i if  ($AutoServer_CurrentTime$ > %i(4294967295,ffffffff)) 
+				:i if  ($AutoServer_CurrentTime$ = %i(0,00000000)) 
+					:i $AutoServer_Update_Timer_Element$$time$ =  ($AutoServer_CurrentTime$) 
+					:i $THUGPRO_AutoserverUpdateTimer$$time$ =  ($AutoServer_CurrentTime$) 
+					:i continue
+					
+				:i else 
+					:i if  ($AutoServer_PausedTimer$ = %i(1,00000001)) 
+						:i $DoScreenElementMorph$:s{
+							:i $id$ = $autoserver_timer$
+							:i $alpha$ = %i(0,00000000)
+						:i :s}
+						:i $Wait$%i(1,00000001)$frame$
+					:i else 
+						:i $DoScreenElementMorph$:s{
+							:i $id$ = $autoserver_timer$
+							:i $alpha$ = %i(1,00000001)
+						:i :s}
+						:i if NOT $NetworkGamePending$
+							:i if NOT $ChangeLevelPending$
+								:i $AutoServer_Update_Timer_Element$$time$ =  ($AutoServer_CurrentTime$) 
+								:i $THUGPRO_AutoserverUpdateTimer$$time$ =  ($AutoServer_CurrentTime$) 
+								:i $change$$AutoServer_CurrentTime$ =  ($AutoServer_CurrentTime$ - %i(1,00000001)) 
+								:i $Wait$%i(1,00000001)$second$
+							:i else 
+								:i $AutoServer_Update_Timer_Element$$time$ = %i(0,00000000)
+								:i $THUGPRO_AutoserverUpdateTimer$$time$ = %i(0,00000000)
+								:i $AutoServer_Destroy_Timer$
+							:i endif
+						:i else 
+							:i $AutoServer_Update_Timer_Element$$time$ = %i(0,00000000)
+							:i $THUGPRO_AutoserverUpdateTimer$$time$ = %i(0,00000000)
+							:i $AutoServer_Destroy_Timer$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i loop_to 
+		:i $chosen_host_game$
+		:i $AutoServer_Destroy_Timer$
+	:i endif
+:i endfunction
+:i function $AutoServer_Create_Timer_Element$$text$ = %s(12,"AutoServer: ")
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if $ScreenElementExists$$id$ = $autoserver_timer$
+		:i $DestroyScreenElement$$id$ = $autoserver_timer$
+	:i endif
+	:i $pos$ = %vec2(350.000000,34.000000)
+	:i $dims$ = %vec2(250.000000,100.000000)
+	:i $just$ = :a{$center$$center$:a}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $autoserver_timer$
+		:i $alpha$ = %f(0.600000)
+		:i $scale$ = %f(0.750000)
+		:i $z_priority$ = %i(1000,000003e8)
+		:i $dims$ = %GLOBAL%$dims$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = %GLOBAL%$just$
+	:i :s}
+	:i %GLOBAL%$container_id$ = $autoserver_timer$
+	:i if $GotParam$$text$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$container_id$
+			:i $local_id$ = $text2$
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$text$
+			:i $alpha$ = %i(1,00000001)
+			:i $scale$ = %f(0.850000)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = %GLOBAL%$just$
+			:i $internal_just$ = :a{$center$$center$:a}
+			:i $z_priority$ = %i(1003,000003eb)
+		:i :s}
+	:i endif
+	:i if $GotParam$$text$
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$container_id$$child$ = $text2$:s}$offset$ = %vec2(3.000000,11.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $local_id$ = $time$
+		:i $font$ = $dialog$
+		:i $text$ = %s(0,"")
+		:i $alpha$ = %i(1,00000001)
+		:i $scale$ = %f(0.850000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(204,000000cc)%i(51,00000033)%i(0,00000000)%i(120,00000078):a}
+		:i $z_priority$ = %i(1002,000003ea)
+	:i :s}
+	:i $AutoServer_Update_Timer_Element$$time$ =  ($AutoServer_BreakTime$) 
+:i endfunction
+:i function $AutoServer_Update_Timer_Element$
+	:i $GetTags$
+	:i $msg$ = %s(0,"")
+	:i if NOT $ScreenElementExists$$id$ = $autoserver_timer$
+		:i $AutoServer_Create_Timer_Element$
+	:i endif
+	:i if $GotParam$$time$
+		:i $FormatText$$textname$ = $msg2$%s(2,"%j")$j$ = %GLOBAL%$time$
+		:i %GLOBAL%$msg$ = %GLOBAL%$msg2$
+	:i else 
+		:i if $GotParam$$time_str$
+			:i %GLOBAL%$msg$ = %GLOBAL%$time_str$
+		:i endif
+	:i endif
+	:i $SetScreenElementProps$:s{$id$ = :s{$autoserver_timer$$child$ = $time$:s}$text$ = %GLOBAL%$msg$$rgba$ = :a{%i(204,000000cc)%i(51,00000033)%i(0,00000000)%i(120,00000078):a}:s}
+	:i if  (%GLOBAL%$time$ = %i(0,00000000)) 
+		:i if NOT $IsHost$
+			:i $AutoServer_Destroy_Timer$
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoServer_Destroy_Timer$
+	:i if $ScreenElementExists$$id$ = $autoserver_timer$
+		:i $DestroyScreenElement$$id$ = $autoserver_timer$
+	:i endif
+	:i if $IsHost$
+		:i $KillSpawnedScript$$Name$ = $AutoServer_Break_Timer$
+	:i endif
+:i endfunction
+:i function $AutoServerMenu_Toggle_Auto_Game_Mode$
+	:i if $IsHost$
+		:i if  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$) 
+			:i $Server_ShowMessageClient$$msg$ = %s(18,"Auto game mode off")
+			:i $SetScreenElementProps$$id$ = :s{$autogamemode_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+			:i $UnSetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_GAME_MODE$$off$
+		:i else 
+			:i $THUGPRO_AutoserverToggle$$on$
+			:i $Server_ShowMessageClient$$msg$ = %s(17,"Auto game mode on")
+			:i $SetScreenElementProps$$id$ = :s{$autogamemode_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+			:i $SetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_GAME_MODE$$on$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $RemoveParameter$$not_focusable$
+		:i else 
+			:i $not_focusable$ = $not_focusable$
+		:i endif
+		:i $DestroyIfObjectExist$$id$ = $autogamemode_menu_select_game$
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"Select Games")$id$ = $autogamemode_menu_select_game$$pad_choose_script$ = $AutoServerMenu_SelectGames_Create$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i endif
+:i endfunction
+:i function $AutoServerMenu_Toggle_Auto_Server$
+	:i if $IsHost$
+		:i if  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$) 
+			:i $THUGPRO_AutoserverToggle$$off$
+			:i $Server_ShowMessageClient$$msg$ =  ($SERVER_MSG_AUTOSERVER_OFF$) 
+			:i $SetScreenElementProps$$id$ = :s{$autoserver_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+			:i $UnSetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+			:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_SERVER_MODE$$off$
+			:i if $ScreenElementExists$$id$ = $autoserver_timer$
+				:i $DestroyScreenElement$$id$ = $autoserver_timer$
+			:i endif
+			:i $AutoServer_Destroy_Timer$
+		:i else 
+			:i $THUGPRO_AutoserverToggle$$on$
+			:i $Server_ShowMessageClient$$msg$ =  ($SERVER_MSG_AUTOSERVER_ON$) 
+			:i $SetScreenElementProps$$id$ = :s{$autoserver_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+			:i $SetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+			:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_SERVER_MODE$$on$
+			:i $change$$AutoServer_PausedTimer$ = %i(1,00000001)
+			:i $AutoServer_Reset_Timer$
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoServerMenu_Toggle_Auto_Server_Breaktime$
+	:i $new_value$ =  ($AutoServer_BreakTime$) 
+	:i if $GotParam$$right$
+		:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %i(5,00000005)) 
+		:i if  (%GLOBAL%$new_value$ > %i(300,0000012c)) 
+			:i %GLOBAL%$new_value$ = %i(5,00000005)
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %i(5,00000005)) 
+			:i if  (%GLOBAL%$new_value$ < %i(5,00000005)) 
+				:i %GLOBAL%$new_value$ = %i(300,0000012c)
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$AutoServer_BreakTime$ = %GLOBAL%$new_value$
+	:i $FormatText$$textname$ = $msg$%s(10,"%i Seconds")$i$ =  ($AutoServer_BreakTime$) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$autoserver_menu_intervals$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+	:i $AutoServer_Reset_Timer$$from_menu$
+:i endfunction
+:i function $AutoServerMenu_Toggle_Auto_Level$
+	:i if  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$) 
+		:i $Server_ShowMessageClient$$msg$ =  ($SERVER_MSG_AUTOLEVEL_OFF$) 
+		:i $SetScreenElementProps$$id$ = :s{$autolevel_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+		:i $UnSetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_LEVEL_MODE$$off$
+		:i $DestroyIfObjectExist$$id$ = $autolevel_menu_level_select$
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"Level Select")$id$ = $autolevel_menu_level_select$$pad_choose_params$ = :s{$from_autoserver$:s}$pad_choose_script$ = $launch_level_select_menu$$not_focusable$:s}
+		:i $DestroyIfObjectExist$$id$ = $autogamemode_menu_toggle$
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $autogamemode_extra_text0$ = %s(2,"On")
+		:i else 
+			:i $autogamemode_extra_text0$ = %s(3,"Off")
+		:i endif
+		:i $make_thpg_menu_item$:s{$text$ = %s(14,"Auto Game mode")$extra_text$ = %GLOBAL%$autogamemode_extra_text0$$id$ = $autogamemode_menu_toggle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Game_Mode$:s}
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $RemoveParameter$$not_focusable$
+		:i else 
+			:i $not_focusable$ = $not_focusable$
+		:i endif
+		:i $DestroyIfObjectExist$$id$ = $autogamemode_menu_select_game$
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"Select Games")$id$ = $autogamemode_menu_select_game$$pad_choose_script$ = $AutoServerMenu_SelectGames_Create$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i else 
+		:i $Server_ShowMessageClient$$msg$ =  ($SERVER_MSG_AUTOLEVEL_ON$) 
+		:i $SetScreenElementProps$$id$ = :s{$autolevel_menu_toggle$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+		:i $SetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i $BroadcastOmnigon$$cheat_flag$ = $FLAG_AUTO_LEVEL_MODE$$on$
+		:i $DestroyIfObjectExist$$id$ = $autolevel_menu_level_select$
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"Level Select")$id$ = $autolevel_menu_level_select$$pad_choose_params$ = :s{$from_autoserver$:s}$pad_choose_script$ = $launch_level_select_menu$:s}
+		:i $DestroyIfObjectExist$$id$ = $autogamemode_menu_toggle$
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $autogamemode_extra_text0$ = %s(2,"On")
+		:i else 
+			:i $autogamemode_extra_text0$ = %s(3,"Off")
+		:i endif
+		:i $make_thpg_menu_item$:s{$text$ = %s(14,"Auto Game mode")$extra_text$ = %GLOBAL%$autogamemode_extra_text0$$id$ = $autogamemode_menu_toggle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Game_Mode$:s}
+		:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+			:i $RemoveParameter$$not_focusable$
+		:i else 
+			:i $not_focusable$ = $not_focusable$
+		:i endif
+		:i $DestroyIfObjectExist$$id$ = $autogamemode_menu_select_game$
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"Select Games")$id$ = $autogamemode_menu_select_game$$pad_choose_script$ = $AutoServerMenu_SelectGames_Create$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i endif
+	:i $change$$level_rand_index$ = %i(0,00000000)
+	:i $change$$total_rand_levels$ = %i(0,00000000)
+:i endfunction
+:i function $AutoServerMenu_ToggleAutoLevelGameCount$
+	:i $_curerentTotalGamesToPlay$ =  ($AutoLevel_TotalGamesToPlay$) 
+	:i $new_value$ =  ($AutoLevel_TotalGamesToPlay$) 
+	:i if $GotParam$$right$
+		:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$new_value$ > %i(50,00000032)) 
+			:i %GLOBAL%$new_value$ = %i(1,00000001)
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i %GLOBAL%$new_value$ =  (%GLOBAL%$new_value$ - %i(1,00000001)) 
+			:i if  (%GLOBAL%$new_value$ < %i(1,00000001)) 
+				:i %GLOBAL%$new_value$ = %i(50,00000032)
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$AutoLevel_TotalGamesToPlay$ = %GLOBAL%$new_value$
+	:i if  (%GLOBAL%$new_value$ < %GLOBAL%$_curerentTotalGamesToPlay$) 
+		:i if  ($AutoLevel_GamesPlayed$ = %GLOBAL%$new_value$) 
+			:i $change$$AutoLevel_GamesPlayed$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  ($AutoLevel_TotalGamesToPlay$ > %i(1,00000001)) 
+		:i $msgend$ = %s(5,"Games")
+	:i else 
+		:i $msgend$ = %s(4,"Game")
+	:i endif
+	:i $FormatText$$textname$ = $msg$%s(5,"%i %j")$i$ =  ($AutoLevel_TotalGamesToPlay$) $j$ = %GLOBAL%$msgend$
+	:i $SetScreenElementProps$:s{$id$ = :s{$autolevel_menu_gamestoplay$$child$ = $extra_text$:s}$text$ = %GLOBAL%$msg$:s}
+	:i $THUGPRO_AutoserverSetGamesToPlay$$games$ =  ($AutoLevel_TotalGamesToPlay$) 
+:i endfunction
+:i function $AutoServerMenu_SelectGames_Create$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ScreenElementExists$$id$ = $LevelSelectMasterContainer$
+		:i $DestroyScreenElement$$id$ = $LevelSelectMasterContainer$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,180.000000)
+		:i $menu_id$ = $SelectGames_menu$
+		:i $vmenu_id$ = $SelectGames_vmenu$
+		:i $scrolling_menu_id$ = $SelectGames_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $SelectGames_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$AutoServerMenu_Create_Menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $AssignAlias$$id$ = $SelectGames_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(17,"select game types")$bg_just$ = $right_scroll$$no_grain$$scrolling_arrows$
+	:i if $IsTrue$$AutoGameMode_ShuffleType$
+		:i $autogamemode_extra_text0$ = %s(9,"Randomize")
+	:i else 
+		:i $autogamemode_extra_text0$ = %s(8,"In Order")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(14,"Rotation Mode:")$extra_text$ = %GLOBAL%$autogamemode_extra_text0$$id$ = $autogamemode_menu_shuffle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_GameModeShuffle$:s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(12,"Trick Attack")
+		:i $id$ = $menu_nettrickattack$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(0,00000000):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_nettrickattack$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_nettrickattack$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(14,"Scavenger Hunt")
+		:i $id$ = $menu_netscavengerhunt$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(1,00000001):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netscavengerhunt$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netscavengerhunt$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(10,"Elimiskate")
+		:i $id$ = $menu_netelimiskate$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(2,00000002):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netelimiskate$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netelimiskate$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(15,"Score Challenge")
+		:i $id$ = $menu_netscorechallenge$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(3,00000003):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netscorechallenge$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netscorechallenge$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(11,"Combo Mambo")
+		:i $id$ = $menu_netcombomambo$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(4,00000004):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netcombomambo$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netcombomambo$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(5,"Slap!")
+		:i $id$ = $menu_netslap$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(5,00000005):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netslap$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netslap$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(16,"King of the Hill")
+		:i $id$ = $menu_netking$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(6,00000006):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netking$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netking$$fast$
+	:i endif
+	:i if NOT $LevelIs$$load_practice$
+		:i $make_thpg_checkbox_item$:s{
+			:i $text$ = %s(8,"Graffiti")
+			:i $id$ = $menu_netgraffiti$
+			:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+		:i :s}
+		:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(7,00000007):a}->$enabled$) $b$ = %i(1,00000001)
+			:i $do_thpg_checkbox_item_on$$id$ = $menu_netgraffiti$$fast$
+		:i else 
+			:i $do_thpg_checkbox_item_off$$id$ = $menu_netgraffiti$$fast$
+		:i endif
+	:i endif
+	:i if NOT $LevelIs$$load_practice$
+		:i $make_thpg_checkbox_item$:s{
+			:i $text$ = %s(16,"Capture the Flag")
+			:i $id$ = $menu_netctf$
+			:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+		:i :s}
+		:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(9,00000009):a}->$enabled$) $b$ = %i(1,00000001)
+			:i $do_thpg_checkbox_item_on$$id$ = $menu_netctf$$fast$
+		:i else 
+			:i $do_thpg_checkbox_item_off$$id$ = $menu_netctf$$fast$
+		:i endif
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(9,"FireFight")
+		:i $id$ = $menu_netfirefight$
+		:i $pad_choose_script$ = $AutoGame_ToggleGameType$
+	:i :s}
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%i(10,0000000a):a}->$enabled$) $b$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_netfirefight$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_netfirefight$$fast$
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $AutoServerMenu_Toggle_AutoLevelCycle$
+	:i if  ($AutoLevel_Cycle$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$autolevel_menu_level_cycle$$child$ = $extra_text$:s}$text$ = %s(9,"Randomize")
+		:i $change$$AutoLevel_Cycle$ = %i(0,00000000)
+	:i else 
+		:i if  ($AutoLevel_Cycle$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{$autolevel_menu_level_cycle$$child$ = $extra_text$:s}$text$ = %s(8,"In Order")
+			:i $change$$AutoLevel_Cycle$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoServerMenu_Toggle_GameModeShuffle$
+	:i $GetTags$
+	:i if $IsHost$
+		:i if $IsTrue$$AutoGameMode_ShuffleType$
+			:i $change$$AutoGameMode_ShuffleType$ = %i(0,00000000)
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"In Order")
+		:i else 
+			:i $change$$AutoGameMode_ShuffleType$ = %i(1,00000001)
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(9,"Randomize")
+		:i endif
+	:i endif
+:i endfunction
+:i function $AutoGame_ToggleGameType$
+	:i $GetTags$
+	:i $temp_array$ = $net_game_type_info$
+	:i %GLOBAL%$_index$ = %i(0,00000000)
+	:i %GLOBAL%$_enabled$ = %i(0,00000000)
+	:i switch %GLOBAL%$id$
+		:i case $menu_nettrickattack$
+			:i %GLOBAL%$_index$ = %i(0,00000000)
+			:i endcase
+		case $menu_netscavengerhunt$
+			:i %GLOBAL%$_index$ = %i(1,00000001)
+			:i endcase
+		case $menu_netelimiskate$
+			:i %GLOBAL%$_index$ = %i(2,00000002)
+			:i endcase
+		case $menu_netscorechallenge$
+			:i %GLOBAL%$_index$ = %i(3,00000003)
+			:i endcase
+		case $menu_netcombomambo$
+			:i %GLOBAL%$_index$ = %i(4,00000004)
+			:i endcase
+		case $menu_netslap$
+			:i %GLOBAL%$_index$ = %i(5,00000005)
+			:i endcase
+		case $menu_netking$
+			:i %GLOBAL%$_index$ = %i(6,00000006)
+			:i endcase
+		case $menu_netgraffiti$
+			:i %GLOBAL%$_index$ = %i(7,00000007)
+			:i endcase
+		case $menu_netgoalattack$
+			:i %GLOBAL%$_index$ = %i(8,00000008)
+			:i endcase
+		case $menu_netctf$
+			:i %GLOBAL%$_index$ = %i(9,00000009)
+			:i endcase
+		case $menu_netfirefight$
+			:i %GLOBAL%$_index$ = %i(10,0000000a)
+			:i end_switch
+	
+	:i if $IntegerEquals$$a$ =  ($net_game_type_info$:a{%GLOBAL%$_index$:a}->$enabled$) $b$ = %i(1,00000001)
+		:i %GLOBAL%$_enabled$ = %i(0,00000000)
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+	:i else 
+		:i %GLOBAL%$_enabled$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+	:i endif
+	:i $temp_struct$ = :s{$Name$ =  ( ($net_game_type_info$:a{%GLOBAL%$_index$:a}) ->$Name$) $description$ =  ( ($net_game_type_info$:a{%GLOBAL%$_index$:a}) ->$description$) $checksum$ =  ( ($net_game_type_info$:a{%GLOBAL%$_index$:a}) ->$checksum$) $goal_script$ =  ( ($net_game_type_info$:a{%GLOBAL%$_index$:a}) ->$goal_script$) $icon$ =  ( ($net_game_type_info$:a{%GLOBAL%$_index$:a}) ->$icon$) $enabled$ = %GLOBAL%$_enabled$:s}
+	:i $SetArrayElement$:s{$arrayname$ = $temp_array$$index$ = %GLOBAL%$_index$$newvalue$ = %GLOBAL%$temp_struct$:s}
+:i endfunction
+:i function $AutoServerMenu_Create_Menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ScreenElementExists$$id$ = $LevelSelectMasterContainer$
+		:i $DestroyScreenElement$$id$ = $LevelSelectMasterContainer$
+	:i endif
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $AutoServer_menu$
+		:i $vmenu_id$ = $AutoServer_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $AutoServer_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$create_pre_network_host_options_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $AssignAlias$$id$ = $AutoServer_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(18,"autoserver options")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(16,"\b6/\b5 = Toggle"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Accept"):s}
+			:i :a}
+	:i :s}
+	:i if NOT $IsHost$
+		:i %GLOBAL%$not_focusable$ = $not_focusable$
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+		:i $autoserver_extra_text0$ = %s(2,"On")
+	:i else 
+		:i $autoserver_extra_text0$ = %s(3,"Off")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(11,"Auto Server")$extra_text$ = %GLOBAL%$autoserver_extra_text0$$id$ = $autoserver_menu_toggle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Server$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i $FormatText$$textname$ = $autoserver_extra_text1$%s(10,"%a Seconds")$a$ =  ($AutoServer_BreakTime$) 
+	:i $make_thpg_menu_item$:s{$text$ = %s(14,"Game Intervals")$extra_text$ = %GLOBAL%$autoserver_extra_text1$$id$ = $autoserver_menu_intervals$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Server_Breaktime$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i $autolevel_extra_text0$ = %s(2,"On")
+	:i else 
+		:i $autolevel_extra_text0$ = %s(3,"Off")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(10,"Auto Level")$extra_text$ = %GLOBAL%$autolevel_extra_text0$$id$ = $autolevel_menu_toggle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Level$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if  ($AutoLevel_Cycle$ = %i(1,00000001)) 
+		:i $temp_order$ = %s(8,"In Order")
+	:i else 
+		:i $temp_order$ = %s(9,"Randomize")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(11,"Level Cycle")$extra_text$ = %GLOBAL%$temp_order$$id$ = $autolevel_menu_level_cycle$$option_arrows$$pad_choose$$option_arrows_callback$ = $AutoServerMenu_Toggle_AutoLevelCycle$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if  ($AutoLevel_TotalGamesToPlay$ > %i(1,00000001)) 
+		:i $msg_games$ = %s(5,"Games")
+	:i else 
+		:i $msg_games$ = %s(4,"Game")
+	:i endif
+	:i $FormatText$$textname$ = $autolevel_extratext1$%s(5,"%a %b")$a$ =  ($AutoLevel_TotalGamesToPlay$) $b$ = %GLOBAL%$msg_games$
+	:i $make_thpg_menu_item$:s{$text$ = %s(15,"Level Intervals")$extra_text$ = %GLOBAL%$autolevel_extratext1$$id$ = $autolevel_menu_gamestoplay$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_ToggleAutoLevelGameCount$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if NOT $GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i %GLOBAL%$not_focusable$ = $not_focusable$
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(12,"Level Select")$id$ = $autolevel_menu_level_select$$pad_choose_params$ = :s{$from_autoserver$:s}$pad_choose_script$ = $launch_level_select_menu$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+		:i $autogamemode_extra_text0$ = %s(2,"On")
+	:i else 
+		:i $autogamemode_extra_text0$ = %s(3,"Off")
+	:i endif
+	:i $RemoveParameter$$not_focusable$
+	:i $make_thpg_menu_item$:s{$text$ = %s(14,"Auto Game mode")$extra_text$ = %GLOBAL%$autogamemode_extra_text0$$id$ = $autogamemode_menu_toggle$$option_arrows$$option_arrows_callback$ = $AutoServerMenu_Toggle_Auto_Game_Mode$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_GAME_MODE$
+		:i $RemoveParameter$$not_focusable$
+	:i else 
+		:i %GLOBAL%$not_focusable$ = $not_focusable$
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(12,"Select Games")$id$ = $autogamemode_menu_select_game$$pad_choose_script$ = $AutoServerMenu_SelectGames_Create$$not_focusable$ = %GLOBAL%$not_focusable$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $AutoLevel_ChangeLevel$
+	:i $AutoLevel_GenerateNextLevelIndex$
+	:i $GetCurrentLevel$
+	:i if $LevelIs$ ( ($level_select_menu_level_info$:a{%GLOBAL%$level_index$:a}) ->$Level$) 
+		:i $printf$%s(87,"AutoLevel_ChangeLevel-level_index(%i) equals current level index, this shouldn't happen")$i$ = %GLOBAL%$level_index$
+		:i $Wait$%i(1,00000001)$second$
+	:i else 
+		:i $level_select_change_level$$Level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$level_index$:a}) ->$Level$) 
+	:i endif
+:i endfunction
+:i function $AutoLevel_AddCurrentLevelIndexToRecentLevelIndex$
+	:i if NOT $GotParam$$current_index$
+		:i return
+		
+	:i endif
+	:i $temp_array$ = $AutoLevel_RecentLevelIndex$
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(19,00000013)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(18,00000012):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(18,00000012)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(17,00000011):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(17,00000011)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(16,00000010):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(16,00000010)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(15,0000000f):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(15,0000000f)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(14,0000000e):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(14,0000000e)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(13,0000000d):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(13,0000000d)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(12,0000000c):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(12,0000000c)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(11,0000000b):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(11,0000000b)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(10,0000000a):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(10,0000000a)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(9,00000009):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(9,00000009)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(8,00000008):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(8,00000008)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(7,00000007):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(7,00000007)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(6,00000006):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(6,00000006)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(5,00000005):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(5,00000005)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(4,00000004):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(4,00000004)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(3,00000003):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(3,00000003)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(2,00000002):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(2,00000002)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(1,00000001):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(1,00000001)$newvalue$ =  ($AutoLevel_RecentLevelIndex$:a{%i(0,00000000):a}) 
+	:i $SetArrayElement$$arrayname$ = $temp_array$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$current_index$
+	:i $AutoLevel_RecentLevelIndex$ = %GLOBAL%$temp_array$
+:i endfunction
+:i $level_rand_index$ = %i(0,00000000)
+:i $total_rand_levels$ = %i(0,00000000)
+:i function $AutoLevel_GenerateNextLevelIndex$
+	:i $GetCurrentLevel$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i $current_index$ = %i(4294967295,ffffffff)
+	:i $index$ = %i(0,00000000)
+	:i $low_index$ = %i(0,00000000)
+	:i $high_index$ = %GLOBAL%$array_size$
+	:i $maxSeen$ = %i(15,0000000f)
+	:i $printf$%s(12,"----------> ")
+	:i while
+		
+		:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$Level$)  = %GLOBAL%$Level$) 
+			:i %GLOBAL%$current_index$ = %GLOBAL%$index$
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  ( ($AutoLevel_Cycle$)  = %i(0,00000000)) 
+		:i if NOT  (%GLOBAL%$current_index$ = %i(4294967295,ffffffff)) 
+			:i $AutoLevel_AddCurrentLevelIndexToRecentLevelIndex$$current_index$ = %GLOBAL%$current_index$
+		:i endif
+	:i endif
+	:i if  ( ($AutoLevel_Cycle$)  = %i(1,00000001)) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$current_index$ + %i(1,00000001)) 
+		:i while
+			
+			:i if  (%GLOBAL%$index$ > %GLOBAL%$array_size$) 
+				:i %GLOBAL%$index$ = %i(0,00000000)
+			:i endif
+			:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$enabled$)  = %i(1,00000001)) 
+				:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) $contains$ = $Exclude$
+					:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$Exclude$)  = %i(0,00000000)) 
+						:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+						:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+						:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) $c$ = %GLOBAL%$index$
+						:i $printf$%GLOBAL%$temp$
+						:i return
+						$level_index$ = %GLOBAL%$index$
+					:i else 
+						:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i endif
+				:i else 
+					:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+					:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+					:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) $b$ = %GLOBAL%$index$
+					:i $printf$%GLOBAL%$temp$
+					:i return
+					$level_index$ = %GLOBAL%$index$
+				:i endif
+			:i else 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i endif
+		:i loop_to 
+	:i else 
+		:i $GetEnabledLevelCount$
+		:i if  (%GLOBAL%$level_count$ > %i(25,00000019)) 
+			:i %GLOBAL%$maxSeen$ = %i(20,00000014)
+		:i else 
+			:i if  (%GLOBAL%$level_count$ < %i(26,0000001a)) 
+				:i if  (%GLOBAL%$level_count$ > %i(19,00000013)) 
+					:i %GLOBAL%$maxSeen$ = %i(14,0000000e)
+				:i else 
+					:i if  (%GLOBAL%$level_count$ > %i(13,0000000d)) 
+						:i %GLOBAL%$maxSeen$ = %i(8,00000008)
+					:i else 
+						:i if  (%GLOBAL%$level_count$ > %i(4294967295,ffffffff)) 
+							:i %GLOBAL%$maxSeen$ = %i(4,00000004)
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $FormatText$$textname$ = $temp$%s(61,"----------> enabled level count(%a), max seen level count(%b)")$a$ = %GLOBAL%$level_count$$b$ = %GLOBAL%$maxSeen$
+		:i $printf$%GLOBAL%$temp$
+		:i if  ($level_rand_index$ = %i(0,00000000)) 
+			:i %GLOBAL%$low_index$ = %i(0,00000000)
+			:i %GLOBAL%$high_index$ = %GLOBAL%$array_size$
+			:i $change$$level_rand_index$ = %i(1,00000001)
+		:i else 
+			:i if  ($level_rand_index$ = %i(1,00000001)) 
+				:i %GLOBAL%$low_index$ = %i(0,00000000)
+				:i %GLOBAL%$high_index$ = %GLOBAL%$array_size$
+				:i $change$$level_rand_index$ = %i(2,00000002)
+			:i else 
+				:i if  ($level_rand_index$ = %i(2,00000002)) 
+					:i %GLOBAL%$low_index$ = %i(4294967285,fffffff5)
+					:i %GLOBAL%$high_index$ = %i(10,0000000a)
+					:i $AutoLevel_EnabledLevelExistsInRange$$low$ = %i(0,00000000)$high$ = %GLOBAL%$high_index$
+					:i if  (%GLOBAL%$has_valid$ = %i(0,00000000)) 
+						:i $AutoLevel_EnabledLevelExistsInRange$$low$ =  (%GLOBAL%$array_size$ - %i(11,0000000b)) $high$ = %GLOBAL%$array_size$
+						:i if  (%GLOBAL%$has_valid$ = %i(0,00000000)) 
+							:i %GLOBAL%$low_index$ = %i(0,00000000)
+							:i %GLOBAL%$high_index$ = %GLOBAL%$array_size$
+						:i endif
+					:i endif
+					:i $change$$level_rand_index$ = %i(0,00000000)
+				:i endif
+			:i endif
+		:i endif
+		:i while
+			
+			:i $GetRandomValue$$Name$ = $rand_num$$a$ = %GLOBAL%$low_index$$b$ = %GLOBAL%$high_index$$integer$
+			:i if  (%GLOBAL%$rand_num$ < %i(0,00000000)) 
+				:i %GLOBAL%$rand_num$ =  (%GLOBAL%$rand_num$ +  (%GLOBAL%$array_size$ + %i(1,00000001)) ) 
+			:i endif
+			:i if  (%GLOBAL%$level_count$ > %i(3,00000003)) 
+				:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$enabled$)  = %i(1,00000001)) 
+					:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) $contains$ = $Exclude$
+						:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$Exclude$)  = %i(0,00000000)) 
+							:i $AutoLevel_CheckCurrentLevelIndexInRecentLevelIndex$$index$ = %GLOBAL%$rand_num$$max_seen$ = %GLOBAL%$maxSeen$
+							:i if  (%GLOBAL%$contains$ = %i(0,00000000)) 
+								:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+								:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+								:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$text$) $c$ = %GLOBAL%$rand_num$
+								:i $printf$%GLOBAL%$temp$
+								:i return
+								$level_index$ = %GLOBAL%$rand_num$
+							:i endif
+						:i endif
+					:i else 
+						:i $AutoLevel_CheckCurrentLevelIndexInRecentLevelIndex$$index$ = %GLOBAL%$rand_num$$max_seen$ = %GLOBAL%$maxSeen$
+						:i if  (%GLOBAL%$contains$ = %i(0,00000000)) 
+							:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+							:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+							:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$text$) $c$ = %GLOBAL%$rand_num$
+							:i $printf$%GLOBAL%$temp$
+							:i return
+							$level_index$ = %GLOBAL%$rand_num$
+						:i endif
+					:i endif
+				:i endif
+			:i else 
+				:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$enabled$)  = %i(1,00000001)) 
+					:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) $contains$ = $Exclude$
+						:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$Exclude$)  = %i(0,00000000)) 
+							:i $GetCurrentLevel$
+							:i if $LevelIs$ ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$Level$) 
+							:i else 
+								:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+								:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+								:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$text$) $c$ = %GLOBAL%$rand_num$
+								:i $printf$%GLOBAL%$temp$
+								:i return
+								$level_index$ = %GLOBAL%$rand_num$
+							:i endif
+						:i endif
+					:i else 
+						:i $GetCurrentLevel$
+						:i if $LevelIs$ ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$Level$) 
+						:i else 
+							:i $temp_index$ =  ( ($total_rand_levels$)  + %i(1,00000001)) 
+							:i $change$$total_rand_levels$ = %GLOBAL%$temp_index$
+							:i $FormatText$$textname$ = $temp$%s(48,"----------> total(%a), next level(%b), index(%c)")$a$ =  ($total_rand_levels$) $b$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$rand_num$:a}) ->$text$) $c$ = %GLOBAL%$rand_num$
+							:i $printf$%GLOBAL%$temp$
+							:i return
+							$level_index$ = %GLOBAL%$rand_num$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $AutoLevel_EnabledLevelExistsInRange$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i if  (%GLOBAL%$array_size$ < %GLOBAL%$high$) 
+		:i %GLOBAL%$high$ = %GLOBAL%$array_size$
+	:i endif
+	:i if NOT $GotParam$$max_seen$
+		:i $max_seen$ = %i(15,0000000f)
+	:i endif
+	:i while
+		
+		:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$low$:a}) ->$enabled$)  = %i(1,00000001)) 
+			:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$low$:a}) $contains$ = $Exclude$
+				:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$low$:a}) ->$Exclude$)  = %i(0,00000000)) 
+					:i $AutoLevel_CheckCurrentLevelIndexInRecentLevelIndex$$index$ = %GLOBAL%$low$$max_seen$ = %GLOBAL%$max_seen$
+					:i if  (%GLOBAL%$contains$ = %i(0,00000000)) 
+						:i return
+						$has_valid$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i else 
+				:i $AutoLevel_CheckCurrentLevelIndexInRecentLevelIndex$$index$ = %GLOBAL%$low$$max_seen$ = %GLOBAL%$max_seen$
+				:i if  (%GLOBAL%$contains$ = %i(0,00000000)) 
+					:i return
+					$has_valid$ = %i(1,00000001)
+				:i endif
+			:i endif
+		:i endif
+		:i %GLOBAL%$low$ =  (%GLOBAL%$low$ + %i(1,00000001)) 
+	:i loop_to  (%GLOBAL%$high$ - %GLOBAL%$low$) 
+	:i return
+	$has_valid$ = %i(0,00000000)
+:i endfunction
+:i function $AutoLevel_CheckCurrentLevelIndexInRecentLevelIndex$
+	:i if NOT $GotParam$$max_seen$
+		:i $max_seen$ = %i(15,0000000f)
+	:i endif
+	:i if NOT $GotParam$$index$
+		:i return
+		$contains$ = %i(0,00000000)
+	:i endif
+	:i $contains$ = %i(0,00000000)
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ($AutoLevel_RecentLevelIndex$:a{%GLOBAL%$i$:a})  = %GLOBAL%$index$) 
+			:i %GLOBAL%$contains$ = %i(1,00000001)
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$max_seen$
+	:i return
+	$contains$ = %GLOBAL%$contains$
+:i endfunction
+:i function $GetEnabledLevelCount$
+	:i $enabled_count$ = %i(0,00000000)
+	:i $index$ = %i(0,00000000)
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i while
+		
+		:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$enabled$)  = %i(1,00000001)) 
+			:i %GLOBAL%$enabled_count$ =  (%GLOBAL%$enabled_count$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$level_count$ = %GLOBAL%$enabled_count$
+:i endfunction
+:i function $THUGPRO_FCFS_ChangeLevel$
+	:i if $IsHost$
+		:i if NOT $LevelIs$%GLOBAL%$Level$
+			:i $level_select_change_level$$Level$ = %GLOBAL%$Level$
+		:i endif
+	:i endif
+:i endfunction
+:i function $THUGPRO_FCFS_StartGame$
+	:i if $IsHost$
+		:i $chosen_host_game$
+	:i endif
+:i endfunction
+:i function $THUGPRO_FCFS_EndGame$
+	:i if $IsHost$
+		:i if $GameIsOver$
+			:i return
+			
+		:i endif
+		:i $kill_all_panel_messages$
+		:i if $InInternetMode$
+			:i if $OnServer$
+				:i $ReportStats$$final$
+			:i endif
+		:i endif
+		:i $EndNetworkGame$
+	:i endif
+:i endfunction
+:i function $THUGPRO_FCFS_SetGameOptions$
+	:i if $IsHost$
+		:i if NOT $GotParam$$pref_field$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$checksum$
+			:i return
+			
+		:i else 
+			:i if NOT  (%GLOBAL%$prefs$ = $network$) 
+				:i return
+				
+			:i endif
+		:i endif
+		:i if $ArrayContains$$array$ = $THUGPRO_FCFS_AllowedHostPreferences$$contains$ = %GLOBAL%$pref_field$
+			:i if  (%GLOBAL%$checksum$ = $netctf$) 
+				:i if NOT $InTeamGame$
+					:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(9,"team_mode")$checksum$ = $teams_two$$string$ = %s(1,"2")
+					:i $SetNumTeams$%i(2,00000002)
+				:i endif
+			:i endif
+			:i $SetPreferencesFromUI$$prefs$ = $network$ isNull 
+			:i switch %GLOBAL%$checksum$
+				:i case $netscorechallengecase$$scorechallenge$
+					:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $score_1000000$$score$ = %i(1000000,000f4240)$string$ = %s(16,"1,000,000 points")
+					:i endcase
+				case $netkingcase$$king$
+					:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $time_120$$time$ = %i(120,00000078)$string$ = %s(9,"2 minutes")
+					:i endcase
+				case $netctf$
+					:i $SetPreferencesFromUI$$prefs$ = %GLOBAL%$prefs$$field$ = %s(12,"target_score")$checksum$ = $score_5$$score$ = %i(5,00000005)$string$ = %s(10,"5 captures")
+					:i end_switch
+			
+		:i endif
+	:i endif
+:i endfunction
+:i $THUGPRO_FCFS_AllowedHostPreferences$ = :a{%s(10,"time_limit")%s(12,"stop_at_zero")%s(9,"game_type")%s(13,"ctf_game_type")%s(12,"target_score")%s(11,"score_reset")%s(9,"team_mode")%s(18,"team_graffiti_mode")%s(13,"friendly_fire")%s(19,"fireball_difficulty")
+	:i :a}
+:i function $AutoLevelMenu_Toggle_Level$
+	:i $GetTags$
+	:i $temp_array$ = $level_select_menu_level_info$
+	:i if  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$enabled$)  = %i(0,00000000)) 
+		:i $temp_struct$ = :s{$text$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) $Level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$Level$) $game$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$game$) $num_votes$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$num_votes$) $enabled$ = %i(1,00000001):s}
+		:i $SetArrayElement$:s{$arrayname$ = $temp_array$$index$ = %GLOBAL%$index$$newvalue$ = %GLOBAL%$temp_struct$:s}
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}$alpha$ = %i(1,00000001)
+		:i endif
+	:i else 
+		:i $GetEnabledLevelCount$
+		:i $count$ =  (%GLOBAL%$level_count$ - %i(1,00000001)) 
+		:i if  (%GLOBAL%$count$ < %i(2,00000002)) 
+			:i $PlaySound$$GUI_Buzzer01$
+			:i return
+			
+		:i else 
+			:i $temp_struct$ = :s{$text$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) $Level$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$Level$) $game$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$game$) $num_votes$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$num_votes$) $enabled$ = %i(0,00000000):s}
+			:i $SetArrayElement$:s{$arrayname$ = $temp_array$$index$ = %GLOBAL%$index$$newvalue$ = %GLOBAL%$temp_struct$:s}
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}$alpha$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i $level_select_menu_level_info$ = %GLOBAL%$temp_array$
+:i endfunction
+:i $AutoLevelMenu_Game_Modes$ = :a{
+	:i :s{$text$ = %s(5,"THPS1")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(5,"THPS2")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(5,"THPS3")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(5,"THPS4")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(5,"THUG1")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(5,"THUG2")$enabled$ = %i(1,00000001):s}
+	:i :s{$text$ = %s(4,"THAW")$enabled$ = %i(0,00000000):s}
+	:i :a}
+:i :end

@@ -1,0 +1,1324 @@
+
+:i function $Generic_LeavingGameAreaMessage$
+	:i if NOT $InSplitScreenGame$
+		:i $create_panel_message$$id$ = $leaving_message$$text$ = %s(17,"Leaving Game Area")
+	:i endif
+:i endfunction
+:i function $TRG_TP_SkaterDropIn_Script$
+	:i $MakeSkaterGoto$$dropin$
+:i endfunction
+:i function $SK3_KillSkater_sand$
+	:i if $Obj_FlagNotSet$$FLAG_SKATER_KILLING$
+		:i $Obj_SetFlag$$FLAG_SKATER_KILLING$
+		:i if $GotParam$$DeathSound$
+			:i $PlaySound$%GLOBAL%$DeathSound$
+		:i else 
+			:i $PlaySound$$Smashcake$
+		:i endif
+		:i if NOT $InSplitScreenGame$
+			:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+				:i if $GotParam$$Message1$
+					:i $create_panel_message$:s{
+						:i $style$ = $panel_message_death$
+						:i $id$ = $death_message$
+						:i $text$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3)
+							 :POS(0) %GLOBAL%$Message1$
+						:BREAKTO(4)
+							 :POS(1) %GLOBAL%$message2$
+						:BREAKTO(4)
+							 :POS(2) %GLOBAL%$message3$
+						:BREAKTO(4)
+							 :POS(3) %GLOBAL%$message4$ :POS(4) 
+						:i :s}
+					:i else 
+						:i $create_panel_message$:s{
+							:i $style$ = $panel_message_death$
+							:i $id$ = $death_message$
+							:i $text$ = select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8):OFFSET(9):OFFSET(10)
+								 :POS(5) %s(11,"EEK! Crabs!")
+							:BREAKTO(11)
+								 :POS(6) %s(16,"Litter Box Dive!")
+							:BREAKTO(11)
+								 :POS(7) %s(13,"Beach Comber!")
+							:BREAKTO(11)
+								 :POS(8) %s(19,"Sand In Your Shoes!")
+							:BREAKTO(11)
+								 :POS(9) %s(26,"The Seagulls Are Laughing!")
+							:BREAKTO(11)
+								 :POS(10) %s(16,"Stop Doing That!") :POS(11) 
+							:i :s}
+						:i endif
+					:i endif
+				:i endif
+				:i $SK3_Killskater_Finish$$sand$$r$ = %i(100,00000064)$g$ = %i(100,00000064)$b$ = %i(200,000000c8) isNull 
+			:i endif
+		:i endfunction
+		:i function $THUGPRO_SpinkeyDebounce$
+			:i switch  ($GLOBAL_ShoulderSpinButtons$) 
+				:i case $L2_R2$
+					:i $Debounce$$L2$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i $Debounce$$R2$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i endcase
+				case $L1_R1$
+					:i $Debounce$$L1$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i $Debounce$$R1$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i endcase
+				case $R1_R2$
+					:i $Debounce$$R1$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i $Debounce$$R2$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i endcase
+				case $L1_L2$
+					:i $Debounce$$L1$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i $Debounce$$L2$$time$ = %f(0.100000)$clear$ = %i(1,00000001)
+					:i end_switch
+			
+		:i endfunction
+		:i function $THUGPRO_Televator$
+			:i if $GotParam$$text$
+				:i if NOT $GotParam$$cut$
+					:i if NOT $InSplitScreenGame$
+						:i $create_panel_message$$id$ = $leaving_message$$font$ = $small$$text$ = %GLOBAL%$text$$pos$ = %vec2(320.000000,300.000000)$rgba$ = :a{%i(118,00000076);%i(110,0000006e);%i(14,0000000e);%i(128,00000080):a}
+					:i endif
+				:i endif
+			:i endif
+			:i if $GotParam$$sound$
+				:i $PlaySound$%GLOBAL%$sound$
+			:i else 
+				:i if $GotParam$$stream$
+					:i if NOT $IsStreamPlaying$%GLOBAL%$stream$
+						:i $PlayStream$%GLOBAL%$stream$$vol$ = %i(100,00000064)$priority$ = %i(101,00000065)
+					:i endif
+				:i endif
+			:i endif
+			:i if $GotParam$$freezeskater$
+				:i $MakeSkaterGoto$$freezeskater$
+			:i endif
+			:i if $GotParam$$node$
+				:i $sk3_teleporttonode$$nodename$ = %GLOBAL%$node$
+			:i endif
+			:i if $GotParam$$jumpboost$
+				:i if $walking$
+					:i $CleanUp_WalkingtoSkating$
+				:i endif
+				:i if NOT $IsSkaterOnVehicle$
+					:i $MakeSkaterGoto$$GroundGone$
+				:i endif
+				:i $Debounce$$x$$clear$ = %i(1,00000001)
+				:i $THUGPRO_AutoKick$$Off$
+				:i $SetSpeed$%GLOBAL%$ForWardPush$
+				:i $jump$
+				:i $trigger_jump_boost$$multi$ = %GLOBAL%$Boost$
+				:i $THUGPRO_AutoKick$$On$
+			:i endif
+		:i endfunction
+		:i $THUGPRO_G_HighScore$ = %i(400000,00061a80)
+		:i $THUGPRO_G_ProScore$ = %i(800000,000c3500)
+		:i $THUGPRO_G_SickScore$ = %i(1250000,001312d0)
+		:i $THUGPRO_G_AmScore$ = $THUGPRO_G_HighScore$
+		:i function $index_next_wraparound$:s{$index$ = %i(0,00000000):s}
+			:i if NOT $GotParam$$max$
+				:i return
+				%i(0,00000000)
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i if  (%GLOBAL%$index$ = %GLOBAL%$max$) 
+				:i %GLOBAL%$index$ = %i(0,00000000)
+			:i endif
+			:i return
+			$index$ = %GLOBAL%$index$
+		:i endfunction
+		:i function $index_previous_wraparound$:s{$index$ = %i(0,00000000):s}
+			:i if NOT $GotParam$$max$
+				:i return
+				%i(0,00000000)
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+			:i if  (%GLOBAL%$index$ = %i(4294967295,ffffffff)) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$max$ - %i(1,00000001)) 
+			:i endif
+			:i return
+			$index$ = %GLOBAL%$index$
+		:i endfunction
+		:i function $index_next_wraparound_2$:s{$index$ = %i(0,00000000)$min$ = %i(0,00000000):s}
+			:i if NOT $GotParam$$max$
+				:i return
+				
+			:i endif
+			:i if  (%GLOBAL%$index$ = %GLOBAL%$max$) 
+				:i return
+				$new_index$ = %GLOBAL%$min$
+			:i else 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i return
+				$new_index$ = %GLOBAL%$index$
+			:i endif
+		:i endfunction
+		:i function $index_previous_wraparound_2$:s{$index$ = %i(0,00000000)$min$ = %i(0,00000000):s}
+			:i if NOT $GotParam$$max$
+				:i return
+				
+			:i endif
+			:i if  (%GLOBAL%$index$ = %GLOBAL%$min$) 
+				:i return
+				$new_index$ = %GLOBAL%$max$
+			:i else 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+				:i return
+				$new_index$ = %GLOBAL%$index$
+			:i endif
+		:i endfunction
+		:i function $GetIndexOfItemContainingInt$
+			:i if NOT $GotParam$$array$
+				:i return
+				
+			:i endif
+			:i $GetArraySize$%GLOBAL%$array$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i if $StructureContains$$structure$ =  (%GLOBAL%$array$:a{%GLOBAL%$i$:a}) %GLOBAL%$name$
+					:i if $StringEquals$$a$ =  ( (%GLOBAL%$array$:a{ (%GLOBAL%$i$) :a}) ->$key$) $b$ = %GLOBAL%$value$
+						:i return
+						$index$ = %GLOBAL%$i$
+						:i continue
+						
+					:i endif
+				:i endif
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endfunction
+		:i function $get_index_of_item_in_array$
+			:i if NOT $GotParam$$array$
+				:i return
+				
+			:i endif
+			:i if NOT $GotParam$$item$
+				:i return
+				
+			:i endif
+			:i if NOT $GotParam$$type$
+				:i $type$ = $Checksum$
+			:i endif
+			:i $GetArraySize$%GLOBAL%$array$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i switch %GLOBAL%$type$
+					:i case $Checksum$
+						:i if $ChecksumEquals$$a$ = %GLOBAL%$item$$b$ =  (%GLOBAL%$array$:a{%GLOBAL%$i$:a}) 
+							:i return
+							$item_index$ = %GLOBAL%$i$
+						:i endif
+						:i endcase
+					case $String$
+						:i if $StringEquals$$a$ = %GLOBAL%$item$$b$ =  (%GLOBAL%$array$:a{%GLOBAL%$i$:a}) 
+							:i return
+							$item_index$ = %GLOBAL%$i$
+						:i endif
+						:i endcase
+					case $Int$
+						:i if $IntegerEquals$$a$ = %GLOBAL%$item$$b$ =  (%GLOBAL%$array$:a{%GLOBAL%$i$:a}) 
+							:i return
+							$item_index$ = %GLOBAL%$i$
+						:i endif
+						:i endcase
+					default 
+						:i $FormatText$$ChecksumName$ = $a$%s(2,"%a")$a$ = %GLOBAL%$item$
+						:i $FormatText$$ChecksumName$ = $b$%s(2,"%a")$a$ =  (%GLOBAL%$array$:a{%GLOBAL%$i$:a}) 
+						:i if $ChecksumEquals$$a$ = %GLOBAL%$a$$b$ = %GLOBAL%$b$
+							:i return
+							$item_index$ = %GLOBAL%$i$
+						:i endif
+						:i end_switch
+				
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endfunction
+		:i function $Ding$
+			:i $PlaySound$$GoalGood$$vol$ = %i(100,00000064)
+		:i endfunction
+		:i function $THUGPRO_SafeKill$
+			:i if $GotParam$$name$
+				:i if $IsAlive$$name$ = %GLOBAL%$name$
+					:i $Kill$$name$ = %GLOBAL%$name$
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $THUGPRO_SafeCreate$
+			:i if $GotParam$$name$
+				:i if NOT $IsAlive$$name$ = %GLOBAL%$name$
+					:i $Create$$name$ = %GLOBAL%$name$
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $THUGPRO_ForceCreate$
+			:i if $GotParam$$name$
+				:i if NOT $IsAlive$$name$ = %GLOBAL%$name$
+					:i $Create$$name$ = %GLOBAL%$name$
+				:i else 
+					:i $Kill$$name$ = %GLOBAL%$name$
+					:i $Create$$name$ = %GLOBAL%$name$
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $UnsetFlagsFromArray$
+			:i if $GotParam$$flags$
+				:i $GetArraySize$%GLOBAL%$flags$
+				:i $i$ = %i(0,00000000)
+				:i while
+					
+					:i $UnSetGlobalFlag$$flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) 
+					:i if NOT $GotParam$$no_broadcast$
+						:i if $IsHost$
+							:i $BroadcastOmnigon$$cheat_flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) $Off$
+						:i endif
+					:i endif
+					:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i else 
+				:i return
+				
+			:i endif
+		:i endfunction
+		:i function $UnsetFlagsExcept$
+			:i if $GotParam$$flags$
+				:i $GetArraySize$%GLOBAL%$flags$
+				:i $i$ = %i(0,00000000)
+				:i while
+					
+					:i if NOT $ChecksumEquals$$a$ = %GLOBAL%$ex_flag$$b$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) 
+						:i $printf$%s(41,"these are not the flags we're looking for")
+						:i $UnSetGlobalFlag$$flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) 
+						:i if NOT $GotParam$$no_broadcast$
+							:i if $IsHost$
+								:i $BroadcastOmnigon$$cheat_flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) $Off$
+							:i endif
+						:i endif
+					:i else 
+						:i if $GotParam$$toggle_flag$
+							:i $SetGlobalFlag$$flag$ = %GLOBAL%$ex_flag$
+							:i if NOT $GotParam$$no_broadcast$
+								:i if $IsHost$
+									:i $BroadcastOmnigon$$cheat_flag$ = %GLOBAL%$ex_flag$$On$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+					:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i else 
+				:i return
+				
+			:i endif
+		:i endfunction
+		:i function $GetNumFlagsSetFromArray$
+			:i if $GotParam$$flags$
+				:i $GetArraySize$%GLOBAL%$flags$
+				:i $i$ = %i(0,00000000)
+				:i $num_flags$ = %i(0,00000000)
+				:i while
+					
+					:i if $GetGlobalFlag$$flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) 
+						:i %GLOBAL%$num_flags$ =  (%GLOBAL%$num_flags$ + %i(1,00000001)) 
+					:i endif
+					:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i else 
+				:i return
+				$num_flags$ = %i(0,00000000)
+			:i endif
+			:i return
+			$num_flags$ = %GLOBAL%$num_flags$
+		:i endfunction
+		:i function $GetIndexOfSetFlag$
+			:i if $GotParam$$flags$
+				:i $GetArraySize$%GLOBAL%$flags$
+				:i $i$ = %i(0,00000000)
+				:i $flag_index$ = %i(0,00000000)
+				:i while
+					
+					:i if $GetGlobalFlag$$flag$ =  (%GLOBAL%$flags$:a{%GLOBAL%$i$:a}) 
+						:i %GLOBAL%$flag_index$ = %GLOBAL%$i$
+						:i continue
+						
+					:i endif
+					:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i else 
+				:i return
+				$flag_index$ = %i(4294967295,ffffffff)
+			:i endif
+			:i return
+			$flag_index$ = %GLOBAL%$flag_index$
+		:i endfunction
+		:i function $StringSplitNameMessage$
+			:i $StringToCharArray$$String$ = %GLOBAL%$String$
+			:i $GetArraySize$%GLOBAL%$char_array$
+			:i $item_index$ = %i(0,00000000)
+			:i $split_index$ = %i(0,00000000)
+			:i while
+				
+				:i if  (%GLOBAL%$char_array$:a{%GLOBAL%$item_index$:a} = %s(1," ")) 
+					:i $FormatText$$TextName$ = $split_chars$%s(2,"%a")$a$ =  ( (%GLOBAL%$char_array$:a{ (%GLOBAL%$item_index$) :a})  +  (%GLOBAL%$char_array$:a{ (%GLOBAL%$item_index$ + %i(1,00000001)) :a})  +  (%GLOBAL%$char_array$:a{ (%GLOBAL%$item_index$ + %i(2,00000002)) :a}) ) 
+					:i if $StringEquals$$a$ = %GLOBAL%$split_chars$$b$ = %s(3," : ")
+						:i %GLOBAL%$split_index$ = %GLOBAL%$item_index$
+						:i continue
+						
+					:i endif
+				:i endif
+				:i %GLOBAL%$item_index$ =  (%GLOBAL%$item_index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+			:i if  (%GLOBAL%$split_index$ > %i(0,00000000)) 
+				:i %GLOBAL%$item_index$ = %i(0,00000000)
+				:i $name_string$ = %s(0,"")
+				:i while
+					
+					:i $FormatText$$TextName$ = $name$%s(2,"%a")$a$ =  ( (%GLOBAL%$name_string$)  +  (%GLOBAL%$char_array$:a{ (%GLOBAL%$item_index$) :a}) ) 
+					:i %GLOBAL%$name_string$ = %GLOBAL%$name$
+					:i %GLOBAL%$item_index$ =  (%GLOBAL%$item_index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$split_index$
+				:i $msg_len$ =  ( (%GLOBAL%$array_size$)  -  (%GLOBAL%$split_index$ + %i(3,00000003)) ) 
+				:i %GLOBAL%$item_index$ =  (%GLOBAL%$split_index$ + %i(3,00000003)) 
+				:i $msg_string$ = %s(0,"")
+				:i while
+					
+					:i $FormatText$$TextName$ = $msg$%s(2,"%a")$a$ =  ( (%GLOBAL%$msg_string$)  +  (%GLOBAL%$char_array$:a{ (%GLOBAL%$item_index$) :a}) ) 
+					:i %GLOBAL%$msg_string$ = %GLOBAL%$msg$
+					:i %GLOBAL%$item_index$ =  (%GLOBAL%$item_index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$msg_len$
+				:i return
+				$name$ = %GLOBAL%$name_string$$msg$ = %GLOBAL%$msg_string$
+			:i endif
+		:i endfunction
+		:i function $THUGPRO_OutputNodeData$
+		:i endfunction
+		:i function $TeleportSkaterToNodeAndScatter$
+			:i if NOT $NodeExists$%GLOBAL%$node_name$
+				:i $ResetSkaters$
+				:i $edmsg$$text$ = %s(23,"node does not exist! %n")$params$ = :s{$n$ = %GLOBAL%$node_name$:s}$bad$$caller$ = $TeleportSkaterToNodeAndScatter$
+				:i return
+				
+			:i endif
+			:i $ResetSkaters$$node_name$ = %GLOBAL%$node_name$
+			:i if NOT $GotParam$$radius$
+				:i return
+				
+			:i endif
+			:i $Obj_GetPosition$
+			:i $posx$ =  (%GLOBAL%$pos$->%vec3(1.000000,0.000000,0.000000)) 
+			:i $posz$ =  (%GLOBAL%$pos$->%vec3(0.000000,0.000000,1.000000)) 
+			:i $resx$ =  ( ( (%GLOBAL%$posx$)  +  (%GLOBAL%$radius$) )  -  ( (%GLOBAL%$posx$)  -  (%GLOBAL%$radius$) ) ) 
+			:i $resz$ =  ( ( (%GLOBAL%$posz$)  +  (%GLOBAL%$radius$) )  -  ( (%GLOBAL%$posz$)  -  (%GLOBAL%$radius$) ) ) 
+			:i $GetRandomValue$$name$ = $newX$$a$ =  ( (%GLOBAL%$posx$)  -  (%GLOBAL%$radius$) ) $b$ =  ( (%GLOBAL%$posx$)  +  (%GLOBAL%$radius$) ) $Resolution$ = %GLOBAL%$resx$
+			:i $GetRandomValue$$name$ = $newZ$$a$ =  ( (%GLOBAL%$posz$)  -  (%GLOBAL%$radius$) ) $b$ =  ( (%GLOBAL%$posz$)  +  (%GLOBAL%$radius$) ) $Resolution$ = %GLOBAL%$resz$
+			:i $edmsg$$text$ = %s(25,"respawn offsets: x%x, z%z")$params$ = :s{$x$ = %GLOBAL%$newX$$z$ = %GLOBAL%$newZ$:s}$log_only$
+			:i $newpos$ =  ( (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$newX$)  +  (%vec3(0.000000,1.000000,0.000000) *  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) )  +  (%vec3(0.000000,0.000000,1.000000) * %GLOBAL%$newZ$) ) 
+			:i $Obj_MoveToPos$%GLOBAL%$newpos$
+		:i endfunction
+		:i function $THUGPRO_GetLevelInfo$
+			:i $GetLevelStructureName$
+			:i return
+			$load_script$ =  (%GLOBAL%$level_structure_name$->$load_script$) 
+		:i endfunction
+		:i function $DestroyIfObjectExist$
+			:i if $ObjectExists$$id$ = %GLOBAL%$id$
+				:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+			:i endif
+		:i endfunction
+		:i function $SetScreenElementProps_IfExists$
+			:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+				:i $SetScreenElementProps$ isNull 
+			:i endif
+		:i endfunction
+		:i $NET_PLAYER_IDS$ = :a{
+			:i $[00000000]$
+			:i $[00000001]$
+			:i $[00000002]$
+			:i $[00000003]$
+			:i $[00000004]$
+			:i $[00000005]$
+			:i $[00000006]$
+			:i $[00000007]$
+			:i $[00000008]$
+			:i $[00000009]$
+			:i $[0000000a]$
+			:i $[0000000b]$
+			:i $[0000000c]$
+			:i $[0000000d]$
+			:i $[0000000e]$
+			:i $[0000000f]$
+			:i $[00000010]$
+			:i :a}
+		:i function $get_skater_number$
+			:i $SkaterNum$ = %i(0,00000000)
+			:i $temp$ = %i(0,00000000)
+			:i while
+				
+				:i if $SkaterExists$$Skater$ = %GLOBAL%$SkaterNum$
+					:i if  ( ($NET_PLAYER_IDS$) :a{%GLOBAL%$SkaterNum$:a}) .$IsLocalSkater$
+						:i %GLOBAL%$temp$ = %GLOBAL%$SkaterNum$
+						:i continue
+						
+					:i endif
+				:i endif
+				:i %GLOBAL%$SkaterNum$ =  (%GLOBAL%$SkaterNum$ + %i(1,00000001)) 
+			:i loop_to %i(8,00000008)
+			:i return
+			$skater_number$ = %GLOBAL%$temp$
+		:i endfunction
+		:i function $THUGPRO_ResetPhysics_or_ResetSkaters$
+			:i if $IsTrue$$GameRunRespawns$
+				:i $ResetSkaters$
+			:i else 
+				:i if $Skater$.$walking$
+					:i $ResetPhysics$$Walk$
+				:i else 
+					:i $ResetPhysics$
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $THUGPRO_EnablePlayerInput$
+			:i $EnablePlayerInput$
+		:i endfunction
+		:i function $thugpro_DisablePlayerInput$
+			:i $DisablePlayerInput$
+		:i endfunction
+		:i function $Rail_Booster_Accelerate$
+			:i $Obj_GetId$
+			:i $Rail_Booster_Accelerate2$$name$ = $Rail_Booster_Accelerate2$
+			:i %GLOBAL%$ObjId$.$Obj_SpawnScript$$Rail_Booster_Accelerate2$$params$ =  isNull 
+		:i endfunction
+		:i function $Rail_Booster_Accelerate2$:s{$direction$ = %s(2,"up")$rate$ = %f(0.050000)$DownhillMulti$ = %i(5,00000005):s}
+			:i %GLOBAL%$OldPos$ = %i(0,00000000)
+			:i while
+				
+				:i $Skater$.$Obj_GetPosition$
+				:i if $Skater$.$OnRail$
+					:i $Skater$.$GetSpeed$
+					:i if  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000) > %GLOBAL%$OldPos$) 
+						:i $Skater$.$SetSpeed$ (%GLOBAL%$speed$ *  (%f(1.000000) +  (%GLOBAL%$rate$ * %f(2.000000)) ) ) 
+					:i endif
+					:i $wait$%i(1,00000001)$frames$
+					:i %GLOBAL%$OldPos$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+				:i else 
+					:i %GLOBAL%$OldPos$ = %i(0,00000000)
+					:i $KillSpawnedScript$$name$ = $Rail_Booster_Accelerate2$
+				:i endif
+			:i loop_to 
+		:i endfunction
+		:i function $Accelerate$
+			:i $GetTriggerArray$$onto$
+			:i if $TriggerType$%GLOBAL%$trigger_array$
+				:i $Obj_GetId$
+				:i if NOT %GLOBAL%$ObjId$.$walking$
+					:i if NOT $GetGlobalFlag$:s{
+							:i $flag$ = $FLAG_SKATER_ACCELERATING$
+						:i :s}
+						:i $SetGlobalFlag$:s{
+							:i $flag$ = $FLAG_SKATER_ACCELERATING$
+						:i :s}
+						:i %GLOBAL%$ObjId$.$Obj_SpawnScript$$Accelerate2$$params$ =  isNull 
+					:i endif
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Accelerate2$:s{$direction$ = %s(2,"up")$rate$ = %f(0.050000)$DownhillMulti$ = %i(5,00000005)$min_speed$ = %i(675,000002a3)$max$ = %i(1100,0000044c)$overrideTime$ = %i(5,00000005):s}
+			:i $OnExitRun$$killaccelerate$
+			:i %GLOBAL%$OldPos$ = %i(0,00000000)
+			:i %GLOBAL%$was_just_on_rail$ = %i(0,00000000)
+			:i $overridelimits$$max$ = %GLOBAL%$max$$friction$ = %i(0,00000000)$time$ = %GLOBAL%$overrideTime$$gravity$ = %i(0,00000000)
+			:i while
+				
+				:i if $OnLip$
+					:i $UnSetGlobalFlag$$flag$ = $FLAG_SKATER_ACCELERATING$
+					:i return
+					
+				:i endif
+				:i $Obj_GetPosition$
+				:i if $OnRail$
+					:i $GetSpeed$
+					:i if  (%GLOBAL%$speed$ < %f(1.000000)) 
+						:i %GLOBAL%$OldPos$ = %i(0,00000000)
+						:i $UnSetGlobalFlag$$flag$ = $FLAG_SKATER_ACCELERATING$
+						:i return
+						
+					:i endif
+					:i if  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000) > %GLOBAL%$OldPos$) 
+						:i $SetSpeed$ (%GLOBAL%$speed$ *  (%f(1.000000) + %GLOBAL%$rate$) ) 
+					:i endif
+					:i $wait$%i(1,00000001)$frames$
+					:i %GLOBAL%$OldPos$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+					:i %GLOBAL%$was_just_on_rail$ = %i(1,00000001)
+				:i else 
+					:i if  (%GLOBAL%$was_just_on_rail$ = %i(0,00000000)) 
+						:i if $Skater$.$OnGround$
+							:i if $GotParam$$BoostNoRail$
+								:i $GetSpeed$
+								:i if  (%GLOBAL%$speed$ < %GLOBAL%$min_speed$) 
+									:i if  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000) > %GLOBAL%$OldPos$) 
+										:i $SetSpeed$ (%GLOBAL%$speed$ *  (%f(1.000000) +  (%GLOBAL%$rate$ * %f(1.250000)) ) ) 
+									:i endif
+								:i endif
+								:i $wait$%i(1,00000001)$frames$
+								:i %GLOBAL%$OldPos$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+							:i endif
+						:i else 
+							:i %GLOBAL%$OldPos$ = %i(0,00000000)
+							:i $UnSetGlobalFlag$$flag$ = $FLAG_SKATER_ACCELERATING$
+							:i return
+							
+						:i endif
+					:i else 
+						:i %GLOBAL%$OldPos$ = %i(0,00000000)
+						:i $UnSetGlobalFlag$$flag$ = $FLAG_SKATER_ACCELERATING$
+						:i return
+						
+					:i endif
+					:i %GLOBAL%$OldPos$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+				:i endif
+				:i $wait$%i(1,00000001)$frame$
+			:i loop_to 
+		:i endfunction
+		:i function $killaccelerate$
+			:i $UnSetGlobalFlag$:s{
+				:i $flag$ = $FLAG_SKATER_ACCELERATING$
+			:i :s}
+		:i endfunction
+		:i function $Shaba_Boost_No_Rail$
+			:i $GetTriggerArray$$array$ = :a{:s{$jump$$Off$:s}:s{$grind$$Off$:s}:a}
+			:i if $TriggerType$%GLOBAL%$trigger_array$
+				:i if $GotParam$$jump_speed$
+					:i if $GotParam$$jump_multi$
+						:i $trigger_jump_boost$$speed$ = %GLOBAL%$jump_speed$$multi$ = %GLOBAL%$jump_multi$
+						:i $printf$%s(52,"triggering jump boost with jump speed AND multiplier")
+					:i else 
+						:i $trigger_jump_boost$$speed$ = %GLOBAL%$jump_speed$
+					:i endif
+				:i else 
+					:i if $GotParam$$jump_multi$
+						:i $trigger_jump_boost$$multi$ = %GLOBAL%$jump_multi$
+						:i $printf$%s(37,"triggering jump boost with multiplier")
+					:i else 
+						:i $printf$%s(15,"no jump boosts!")
+					:i endif
+				:i endif
+				:i if $GotParam$$set_speed$
+					:i if $GotParam$$speed_multi$
+						:i if NOT $Skater$.$walking$
+							:i $trigger_speed_boost$$speed$ = %GLOBAL%$set_speed$$multi$ = %GLOBAL%$speed_multi$
+							:i $printf$%s(52,"triggering speed boost with set speed AND multiplier")
+						:i endif
+					:i else 
+						:i if NOT $Skater$.$walking$
+							:i $trigger_speed_boost$$speed$ = %GLOBAL%$set_speed$
+						:i endif
+					:i endif
+				:i else 
+					:i if $GotParam$$speed_multi$
+						:i if NOT $Skater$.$walking$
+							:i $trigger_speed_boost$$multi$ = %GLOBAL%$speed_multi$
+							:i $printf$%s(38,"triggering speed boost with multiplier")
+						:i endif
+					:i else 
+						:i $printf$%s(16,"no speed boosts!")
+					:i endif
+				:i endif
+			:i endif
+		:i endfunction
+		:i $_randLastStream$ = $none$
+		:i function $Obj_PlayRandomStream$
+			:i if $GotParam$$streams$
+				:i if $IsArray$%GLOBAL%$streams$
+					:i $GetRandomArrayElement$%GLOBAL%$streams$
+					:i $Obj_PlayStream$ (%GLOBAL%$element$)  isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $PlayRandomStream$
+			:i if $GotParam$$streams$
+				:i if $IsArray$%GLOBAL%$streams$
+					:i $GetRandomArrayElement$%GLOBAL%$streams$
+					:i $PlayStream$ (%GLOBAL%$element$)  isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Obj_PlayRandomSound$
+			:i if $GotParam$$sounds$
+				:i if $IsArray$%GLOBAL%$sounds$
+					:i $GetRandomArrayElement$%GLOBAL%$sounds$
+					:i $Obj_PlaySound$ (%GLOBAL%$element$)  isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Obj_PlayRandomAnim$
+			:i if $GotParam$$anims$
+				:i if $IsArray$%GLOBAL%$anims$
+					:i $GetRandomArrayElement$%GLOBAL%$anims$
+					:i $Obj_PlayAnim$$anim$ =  (%GLOBAL%$element$)  isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Obj_CycleRandomAnim$
+			:i if $GotParam$$anims$
+				:i if $IsArray$%GLOBAL%$anims$
+					:i $GetRandomArrayElement$%GLOBAL%$anims$
+					:i $Obj_CycleAnim$$anim$ =  (%GLOBAL%$element$)  isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $WaitRandom$
+			:i if $GotParam$$a$
+				:i if $GotParam$$b$
+					:i $GetRandomValue$$name$ = $rand$$a$ = %GLOBAL%$a$$b$ = %GLOBAL%$b$
+					:i $wait$%GLOBAL%$rand$ isNull 
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $Bird_Generic$
+			:i $Obj_GetId$
+			:i if $GotParam$$randomize_orient$
+				:i $Obj_SetOrientation$$y$ = random%vec2(-15.000000,15.000000)
+				:i $RemoveParameter$$randomize_orient$
+			:i endif
+			:i if $GotParam$$bird_type$
+				:i switch %GLOBAL%$bird_type$
+					:i case $nosound$
+						:i %GLOBAL%$ObjId$.$SetTags$$_bird_type$ = $nosound$
+						:i %GLOBAL%$ObjId$.$SetTags$$_nosound$
+						:i endcase
+					case $seagull$
+						:i %GLOBAL%$ObjId$.$SetTags$$_bird_type$ = $seagull$
+						:i endcase
+					case $pigeon$
+						:i %GLOBAL%$ObjId$.$SetTags$$_bird_type$ = $pigeon$
+						:i endcase
+					case $can_bird$
+						:i %GLOBAL%$ObjId$.$SetTags$$_bird_type$ = $can_bird$
+						:i endcase
+					default 
+						:i %GLOBAL%$ObjId$.$SetTags$$_bird_type$ = $nosound$
+						:i %GLOBAL%$ObjId$.$SetTags$$_nosound$
+						:i end_switch
+				
+				:i $RemoveParameter$$bird_type$
+			:i endif
+			:i $Obj_ShadowOff$
+			:i $Obj_ClearExceptions$
+			:i $Obj_SetException$$Ex$ = $ObjectInRadius$$Scr$ = $Bird_Generic_Fly$$params$ =  isNull 
+			:i $Obj_SetInnerRadius$%i(15,0000000f)
+			:i while
+				
+				:i $Obj_CycleAnim$$anim$ = $Peck$$NumCycles$ = select(2f,8, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(12):OFFSET(13):OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19)
+						 :POS(12) %i(3,00000003)
+					:BREAKTO(20)
+						 :POS(13) %i(4,00000004)
+					:BREAKTO(20)
+						 :POS(14) %i(5,00000005)
+					:BREAKTO(20)
+						 :POS(15) %i(6,00000006)
+					:BREAKTO(20)
+						 :POS(16) %i(7,00000007)
+					:BREAKTO(20)
+						 :POS(17) %i(8,00000008)
+					:BREAKTO(20)
+						 :POS(18) %i(9,00000009)
+					:BREAKTO(20)
+						 :POS(19) %i(10,0000000a) :POS(20) 
+					:i $Obj_CycleAnim$$anim$ = $FlyHop$$NumCycles$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(21):OFFSET(22):OFFSET(23)
+							 :POS(21) %i(1,00000001)
+						:BREAKTO(24)
+							 :POS(22) %i(2,00000002)
+						:BREAKTO(24)
+							 :POS(23) %i(3,00000003) :POS(24) 
+					:i loop_to 
+				:i endfunction
+				:i function $Bird_Generic_Fly$
+					:i $Obj_GetId$
+					:i $Obj_ClearExceptions$
+					:i %GLOBAL%$ObjId$.$GetSingleTag$$_nosound$
+					:i if NOT $GotParam$$_nosound$
+						:i %GLOBAL%$ObjId$.$GetSingleTag$$_bird_type$
+						:i switch %GLOBAL%$_bird_type$
+							:i case $nosound$
+								:i endcase
+							case $seagull$
+								:i $StopStream$$SeagullFlyUpStream$
+								:i $wait$%i(1,00000001)$gameframe$
+								:i if NOT $IsStreamPlaying$$SeagullFlyUpStream$
+									:i $Obj_PlayRandomStream$$streams$ = :a{$AU_Seagull_Fly_Up_01$$AU_Seagull_Fly_Up_02$:a}$vol$ = %i(150,00000096)$id$ = $SeagullFlyUpStream$
+								:i endif
+								:i endcase
+							case $pigeon$
+								:i if NOT $IsStreamPlaying$$PigeonFlyUpSound$
+									:i $Obj_PlayStream$$NY_PigeonFly$$id$ = $PigeonFlyUpSound$$vol$ = %i(150,00000096)$dropoff$ = %i(200,000000c8)
+								:i endif
+								:i endcase
+							case $can_bird$
+								:i if NOT $IsStreamPlaying$$BirdFlyUpSound$
+									:i $Obj_PlayRandomStream$$streams$ = :a{$Can_Bird1$$Can_Bird2$:a}$vol$ = %i(150,00000096)$pitch$ = %i(70,00000046)$id$ = $BirdFlyUpSound$
+								:i endif
+								:i endcase
+							default 
+								:i end_switch
+						
+					:i endif
+					:i $Obj_PlayAnim$$anim$ = $Fly$$Cycle$
+					:i $Obj_MoveToRelPos$%vec3(0.000000,250.000000,0.000000)$speed$ = %i(12,0000000c)$Acceleration$ = %i(2,00000002)
+					:i $Obj_WaitMove$
+					:i $Obj_SetOuterRadius$%i(50,00000032)
+					:i $Obj_SetException$$Ex$ = $ObjectOutOfRadius$$Scr$ = $Bird_Generic_Return$$params$ =  isNull 
+				:i endfunction
+				:i function $Bird_Generic_Return$
+					:i $Obj_ClearExceptions$
+					:i $Obj_PlayAnim$$anim$ = $Fly$$Cycle$
+					:i $Obj_MoveToRelPos$%vec3(0.000000,-250.000000,0.000000)$speed$ = %i(8,00000008)$Acceleration$ = %i(2,00000002)
+					:i $Obj_WaitMove$
+					:i $RemoveParameter$$randomize_orientation$
+					:i $GoToPreserveParams$$Bird_Generic$
+				:i endfunction
+				:i function $SHARED_CPF_LA_BlownLeaf$
+					:i $Obj_RotX$$speed$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(25):OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29)
+							 :POS(25) %i(4294967056,ffffff10)
+						:BREAKTO(30)
+							 :POS(26) %i(4294967156,ffffff74)
+						:BREAKTO(30)
+							 :POS(27) %i(0,00000000)
+						:BREAKTO(30)
+							 :POS(28) %i(140,0000008c)
+						:BREAKTO(30)
+							 :POS(29) %i(240,000000f0) :POS(30) 
+						:i $Obj_RotY$$speed$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(31):OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35)
+								 :POS(31) %i(4294967056,ffffff10)
+							:BREAKTO(36)
+								 :POS(32) %i(4294967156,ffffff74)
+							:BREAKTO(36)
+								 :POS(33) %i(0,00000000)
+							:BREAKTO(36)
+								 :POS(34) %i(140,0000008c)
+							:BREAKTO(36)
+								 :POS(35) %i(240,000000f0) :POS(36) 
+							:i $Obj_RotZ$$speed$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(37):OFFSET(38):OFFSET(39):OFFSET(40):OFFSET(41)
+									 :POS(37) %i(4294967056,ffffff10)
+								:BREAKTO(42)
+									 :POS(38) %i(4294967156,ffffff74)
+								:BREAKTO(42)
+									 :POS(39) %i(0,00000000)
+								:BREAKTO(42)
+									 :POS(40) %i(140,0000008c)
+								:BREAKTO(42)
+									 :POS(41) %i(240,000000f0) :POS(42) 
+								:i select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(43):OFFSET(44):OFFSET(45):OFFSET(46)
+									 :POS(43) 
+									:i $Obj_MoveToRelPos$%vec3(0.000000,20.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,16.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,12.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,8.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,4.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-4.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-8.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-12.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-16.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-20.000000,0.000000)$time$ = %f(0.100000)
+									:i $wait$%f(0.100000)$seconds$
+								:BREAKTO(47)
+									 :POS(44) 
+									:i $Obj_MoveToRelPos$%vec3(0.000000,30.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,20.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,12.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,5.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,2.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-2.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-5.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-12.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-20.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-30.000000,0.000000)$time$ = %f(0.120000)
+									:i $wait$%f(0.120000)$seconds$
+								:BREAKTO(47)
+									 :POS(45) 
+									:i $Obj_MoveToRelPos$%vec3(0.000000,15.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,12.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,8.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,4.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,2.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-2.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-4.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-8.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-12.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-15.000000,0.000000)$time$ = %f(0.050000)
+									:i $wait$%f(0.050000)$seconds$
+								:BREAKTO(47)
+									 :POS(46) 
+									:i $Obj_MoveToRelPos$%vec3(0.000000,19.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,13.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,7.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,4.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,2.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-2.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-4.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-7.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-13.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$
+									:i $Obj_MoveToRelPos$%vec3(0.000000,-19.000000,0.000000)$time$ = %f(0.080000)
+									:i $wait$%f(0.080000)$seconds$ :POS(47) 
+									:i $Die$
+								:i endfunction
+								:i function $TP_Ped_Sit_Idle$
+									:i while
+										
+										:i while
+											
+											:i $GetRandomValue$$name$ = $RepeatCount$$a$ = %i(5,00000005)$b$ = %i(15,0000000f)$Resolution$ = %i(10,0000000a)$Integer$
+											:i select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(48):OFFSET(49):OFFSET(50):OFFSET(51):OFFSET(52)
+												 :POS(48) $GetRandomValue$$name$ = $RepeatIdle$$a$ = %i(5,00000005)$b$ = %i(50,00000032)$Resolution$ = %i(45,0000002d)$Integer$
+												:i $Obj_CycleAnim$$anim$ = $Ped_SIT_Idle$$NumCycles$ = %GLOBAL%$RepeatIdle$
+												:BREAKTO(53)
+													 :POS(49) $PlayAnimWithPartialAnimIfExists$$anim$ = $PED_SIT_Tap$
+												:BREAKTO(53)
+													 :POS(50) $PlayAnimWithPartialAnimIfExists$$anim$ = $PED_SIT_LookR$
+												:BREAKTO(53)
+													 :POS(51) $PlayAnimWithPartialAnimIfExists$$anim$ = $PED_SIT_LookL$
+												:BREAKTO(53)
+													 :POS(52) $PlayAnimWithPartialAnimIfExists$$anim$ = $Ped_SIt2SITB$
+												:i $Obj_WaitAnimFinished$
+												:i while
+													
+													:i select(2f,3, 01 00 01 00 01 00) :OFFSET(54):OFFSET(55):OFFSET(56)
+														 :POS(54) $GetRandomValue$$name$ = $RepeatIdleB$$a$ = %i(2,00000002)$b$ = %i(10,0000000a)$Resolution$ = %i(8,00000008)$Integer$
+														:i $Obj_CycleAnim$$anim$ = $Ped_sitB_idle$$NumCycles$ = %GLOBAL%$RepeatIdleB$
+														:BREAKTO(57)
+															 :POS(55) $PlayAnimWithPartialAnimIfExists$$anim$ = $Ped_sitB_lookL$
+														:BREAKTO(57)
+															 :POS(56) $PlayAnimWithPartialAnimIfExists$$anim$ = $Ped_sitB_LookR$ :POS(57) 
+														:i $Obj_WaitAnimFinished$
+													:i loop_to %i(5,00000005)
+													:i $PlayAnimWithPartialAnimIfExists$$anim$ = $Ped_SIt2SITB$$From$ = $end$$To$ = $Start$
+													:i $Obj_WaitAnimFinished$ :POS(53) 
+												:i loop_to %GLOBAL%$RepeatCount$
+											:i loop_to 
+										:i endfunction
+										:i function $TP_DoFlash$
+											:i $SpawnScript$$Real_TP_DoFlash$$params$ = :s{ isNull :s}
+										:i endfunction
+										:i function $Real_TP_DoFlash$$On$$time$ = %f(0.500000)$alpha$ = %f(1.000000)$texture$ = $white$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(64,00000040):a}$FadeOffTime$ = %f(0.500000)
+											:i if $GotParam$$duration$
+												:i $time$ = %GLOBAL%$duration$
+											:i endif
+											:i if $GotParam$$type$
+												:i switch %GLOBAL%$type$
+													:i case $red$
+														:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(64,00000040):a}
+														:i endcase
+													case $blue$
+														:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(128,00000080)%i(64,00000040):a}
+														:i endcase
+													case $black$
+														:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+														:i end_switch
+												
+											:i else 
+												:i %GLOBAL%$tmp_start_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+												:i if $GotParam$$start_r$
+													:i $SetArrayElement$$arrayname$ = $tmp_start_rgba$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$start_r$
+												:i endif
+												:i if $GotParam$$start_g$
+													:i $SetArrayElement$$arrayname$ = $tmp_start_rgba$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$start_g$
+												:i endif
+												:i if $GotParam$$start_b$
+													:i $SetArrayElement$$arrayname$ = $tmp_start_rgba$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$start_b$
+												:i endif
+												:i if $GotParam$$start_a$
+													:i $SetArrayElement$$arrayname$ = $tmp_start_rgba$$index$ = %i(3,00000003)$newvalue$ = %GLOBAL%$start_a$
+												:i endif
+												:i %GLOBAL%$tmp_end_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+												:i if $GotParam$$end_r$
+													:i $SetArrayElement$$arrayname$ = $tmp_end_rgba$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$end_r$
+												:i endif
+												:i if $GotParam$$end_g$
+													:i $SetArrayElement$$arrayname$ = $tmp_end_rgba$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$end_g$
+												:i endif
+												:i if $GotParam$$end_b$
+													:i $SetArrayElement$$arrayname$ = $tmp_end_rgba$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$end_b$
+												:i endif
+												:i if $GotParam$$end_a$
+													:i $SetArrayElement$$arrayname$ = $tmp_end_rgba$$index$ = %i(3,00000003)$newvalue$ = %GLOBAL%$end_a$
+												:i endif
+											:i endif
+											:i if $GotParam$$tmp_start_rgba$
+												:i $rgba$ = %GLOBAL%$tmp_start_rgba$
+											:i endif
+											:i if $GotParam$$tmp_end_rgba$
+												:i $end_rgba$ = %GLOBAL%$tmp_end_rgba$
+											:i else 
+												:i $end_rgba$ = %GLOBAL%$rgba$
+											:i endif
+											:i $fadetoblack$$On$$time$ = %GLOBAL%$time$$alpha$ = %GLOBAL%$alpha$$rgba$ = %GLOBAL%$rgba$$end_rgba$ = %GLOBAL%$end_rgba$$texture$ = %GLOBAL%$texture$$z_priority$ = %i(0,00000000)$id$ = $screenflash$
+											:i $wait$%GLOBAL%$time$$second$
+											:i $fadetoblack$$Off$$time$ = %GLOBAL%$FadeOffTime$$id$ = $screenflash$
+										:i endfunction
+										:i $CARPLANT_ENABLED$ = %i(1,00000001)
+										:i function $THUGPRO_TriggerCarPlant$
+											:i if $IsTrue$$CARPLANT_ENABLED$
+												:i $Obj_GetId$
+												:i $LaunchEvent$$type$ = $Carplant$$target$ = %GLOBAL%$ObjId$
+											:i endif
+										:i endfunction
+										:i function $THUGPRO_LaunchPanelMessage$
+											:i if $GetScriptString$
+												:i $FormatText$$TextName$ = $text$ isNull 
+												:i $create_panel_block$:s{$id$ = $sk3_panel_message_text$$font$ = $dialog$$text$ = %GLOBAL%$text$$style$ = $sk3_panel_message_style$$dims$ = %vec2(640.000000,25.000000)$time$ = %i(1000,000003e8)$scale$ = %f(1.300000)$just$ = :s{$left$$left$:s}$internal_just$ = :s{$left$$left$:s}$rgba$ = :s{%i(255,000000ff);%i(255,000000ff);%i(255,000000ff);%i(253,000000fd):s}
+												:i :s}
+											:i endif
+										:i endfunction
+										:i function $sk3_panel_message_style$
+											:i $DoMorph$$time$ = %f(0.000000)$pos$ = %vec2(320.000000,240.000000)
+											:i $wait$%f(1.500000)$seconds$
+											:i $DoMorph$$time$ = %f(0.500000)$scale$ = %f(0.000000)
+											:i $wait$%f(0.600000)$seconds$
+											:i $Die$
+										:i endfunction
+										:i $G_THAW_GRIND_COUNT_LOCAL$ = %i(0,00000000)
+										:i $G_THAW_GRIND_COUNT$ = :a{
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i %i(0,00000000)
+											:i :a}
+										:i function $grind_count_text$
+											:i $SetProps$:s{
+												:i $rgba$ = :a{
+													:i %i(128,00000080)
+													:i %i(128,00000080)
+													:i %i(128,00000080)
+													:i %i(128,00000080)
+													:i :a}
+											:i :s}
+											:i $wait$%i(1000,000003e8)
+											:i $Die$
+										:i endfunction
+										:i function $THAW_Grind_Counter$
+											:i if $IsLocalSkater$
+												:i if $OnRail$
+													:i $Change$$G_THAW_GRIND_COUNT_LOCAL$ =  ( ($G_THAW_GRIND_COUNT_LOCAL$)  + %i(1,00000001)) 
+													:i if NOT  ( ($G_THAW_GRIND_COUNT_LOCAL$)  = %i(1,00000001)) 
+														:i if  ( ($G_THAW_GRIND_COUNT_LOCAL$)  = %i(2,00000002)) 
+															:i $FormatText$$TextName$ = $THAW_Grind_Counter_Text$%s(14,"%a time around")$a$ =  ( ($G_THAW_GRIND_COUNT_LOCAL$) %i(4294967295,ffffffff)) 
+														:i else 
+															:i $FormatText$$TextName$ = $THAW_Grind_Counter_Text$%s(15,"%a times around")$a$ =  ( ($G_THAW_GRIND_COUNT_LOCAL$) %i(4294967295,ffffffff)) 
+														:i endif
+														:i $pos$ = %vec2(320.000000,100.000000)
+														:i $create_panel_message$$id$ = $message_THAW_Grind_Count$$text$ = %GLOBAL%$THAW_Grind_Counter_Text$$style$ = $grind_count_text$$pos$ = %GLOBAL%$pos$
+													:i endif
+													:i $KillSpawnedScript$$id$ = $THAW_Grind_Counter$
+													:i $SpawnScript$$THAW_Grind_Counter_End_Checker$$id$ = $THAW_Grind_Counter$
+												:i endif
+											:i endif
+										:i endfunction
+										:i function $THAW_Grind_Counter_End_Checker$
+											:i $ClearExceptionGroup$:s{
+												:i $THAW_Grind_Counter$
+											:i :s}
+											:i $SetException$:s{
+												:i $Ex$ = $SkaterEnterAir$
+												:i $Scr$ = $THUG3_Grind_Counter_Reset$
+												:i $Group$ = $THAW_Grind_Counter$
+											:i :s}
+											:i $SetException$:s{
+												:i $Ex$ = $SkaterEnterBail$
+												:i $Scr$ = $THUG3_Grind_Counter_Reset$
+												:i $Group$ = $THAW_Grind_Counter$
+											:i :s}
+											:i $block$
+										:i endfunction
+										:i function $THUG3_Grind_Counter_Reset$
+											:i $Change$$G_THAW_GRIND_COUNT_LOCAL$ = %i(0,00000000)
+										:i endfunction
+										:i function $RailAccelerate$
+											:i $KillSpawnedScript$$name$ = $RailAccelerate2$
+											:i $Obj_GetId$
+											:i %GLOBAL%$ObjId$.$Obj_SpawnScript$$RailAccelerate2$$params$ =  isNull 
+										:i endfunction
+										:i function $RailAccelerate2$$rate$ = %f(0.050000)
+											:i %GLOBAL%$OldPos$ = %i(0,00000000)
+											:i while
+												
+												:i if $OnRail$
+													:i $Obj_GetPosition$
+													:i %GLOBAL%$newpos$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+													:i if  (%GLOBAL%$newpos$ > %GLOBAL%$OldPos$) 
+														:i $GetSpeed$
+														:i $SetSpeed$ (%GLOBAL%$speed$ *  (%f(1.000000) + %GLOBAL%$rate$) ) 
+													:i endif
+													:i %GLOBAL%$OldPos$ = %GLOBAL%$newpos$
+													:i $wait$%i(1,00000001)$frames$
+												:i else 
+													:i continue
+													
+												:i endif
+											:i loop_to 
+										:i endfunction
+										:i function $THUG3_RailBoost$$Boost$ = %f(1.100000)$MaxSpeed$ = %i(1200,000004b0)
+											:i $GetTriggerArray$$array$ = :a{$land$$onto$:a}
+											:i if $TriggerType$%GLOBAL%$trigger_array$
+												:i $KillSpawnedScript$$name$ = $THUG3_RailBoost_Spawn$
+												:i $Obj_GetId$
+												:i %GLOBAL%$ObjId$.$Obj_SpawnScript$$THUG3_RailBoost_Spawn$$params$ = :s{$Boost$ = %GLOBAL%$Boost$$MaxSpeed$ = %GLOBAL%$MaxSpeed$:s}
+											:i endif
+										:i endfunction
+										:i function $THUG3_RailBoost_Spawn$
+											:i while
+												
+												:i if $OnRail$
+													:i $GetSpeed$
+													:i $speed$ =  (%GLOBAL%$speed$ * %GLOBAL%$Boost$) 
+													:i if  (%GLOBAL%$speed$ < %GLOBAL%$MaxSpeed$) 
+														:i $SetSpeed$%GLOBAL%$speed$
+													:i else 
+														:i $SetSpeed$%GLOBAL%$MaxSpeed$
+													:i endif
+												:i else 
+													:i continue
+													
+												:i endif
+												:i $wait$%i(2,00000002)$frames$
+											:i loop_to 
+										:i endfunction
+										:i function $Ped_Stand_Script$
+											:i $Ped_InitAI$$Stand$$avoid$
+										:i endfunction
+										:i function $Ped_TP_SkaterFlatland$
+											:i while
+												
+												:i select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(58):OFFSET(59):OFFSET(60):OFFSET(61):OFFSET(62):OFFSET(63)
+													
+													:i  :POS(58) $printf$%s(16,"#### casper ####")
+													:i $Obj_CycleAnim$$anim$ = $Casper_Init$
+													:i $Obj_CycleAnim$$anim$ = $Casper_Range$
+													:i $Obj_CycleAnim$$anim$ = $Casper_Range$
+													:i $Obj_CycleAnim$$anim$ = $Casper_Range$
+													:i $Obj_CycleAnim$$anim$ = $CasperFlip$
+													:i $Obj_CycleAnim$$anim$ = $Casper_Out$
+													:i 
+												:BREAKTO(64)
+													 :POS(59) $printf$%s(21,"#### anti casper ####")
+													:i $Obj_CycleAnim$$anim$ = $AntiCasper_Init$
+													:i $Obj_CycleAnim$$anim$ = $AntiCasper_Range$
+													:i $Obj_CycleAnim$$anim$ = $AntiCasper_Range$
+													:i $Obj_CycleAnim$$anim$ = $AntiCasper_Range$
+													:i $Obj_CycleAnim$$anim$ = $AntiCasperFlip$
+													:i $Obj_CycleAnim$$anim$ = $AntiCasper_Out$
+													:i 
+												:BREAKTO(64)
+													 :POS(60) $printf$%s(18,"#### one foot ####")
+													:i $Obj_CycleAnim$$anim$ = $OneFootManual_Init$
+													:i $Obj_CycleAnim$$anim$ = $OneFootManual_Range$
+													:i $Obj_CycleAnim$$anim$ = $OneFootManual_Range$
+													:i $Obj_CycleAnim$$anim$ = $PutDownManual$
+													:i 
+												:BREAKTO(64)
+													 :POS(61) $printf$%s(23,"#### one foot nose ####")
+													:i $Obj_CycleAnim$$anim$ = $OneFootNoseManual_Init$
+													:i $Obj_CycleAnim$$anim$ = $OneFootNoseManual_Range$
+													:i $Obj_CycleAnim$$anim$ = $OneFootNoseManual_Range$
+													:i $Obj_CycleAnim$$anim$ = $PutDownNosemanual$
+													:i 
+												:BREAKTO(64)
+													 :POS(62) $printf$%s(20,"#### truckstand ####")
+													:i $Obj_CycleAnim$$anim$ = $Truckstand_Init$
+													:i $Obj_CycleAnim$$anim$ = $Truckstand_Range$
+													:i $Obj_CycleAnim$$anim$ = $Truckstand_Range$
+													:i $Obj_CycleAnim$$anim$ = $Truckstand_Out$
+													:i 
+												:BREAKTO(64)
+													 :POS(63) $printf$%s(16,"#### mullen ####")
+													:i $Obj_CycleAnim$$anim$ = $MullenStart$
+													:i  :POS(64) 
+												:i while
+													
+													:i $Obj_CycleAnim$$anim$ = $idle$
+												:i loop_to random%vec2(1.000000,3.000000)
+											:i loop_to 
+										:i endfunction
+										:i function $THUGPRO_Skater_BoardOnFire$
+											:i if %GLOBAL%$colObjId$.$Obj_FlagNotSet$$FLAG_SKATER_IS_ON_FIRE$
+												:i %GLOBAL%$colObjId$.$Obj_SetFlag$$FLAG_SKATER_IS_ON_FIRE$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_FireParticlesOff$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_SmokeParticlesOff$
+												:i $wait$%i(1,00000001)$frame$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_FireParticlesOn$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_SmokeParticlesOn$
+												:i $wait$%i(20,00000014)$seconds$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_FireParticlesOff$
+												:i $wait$%i(3,00000003)$seconds$
+												:i %GLOBAL%$colObjId$.$Obj_ClearFlag$$FLAG_SKATER_IS_ON_FIRE$
+												:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_SmokeParticlesOff$
+											:i endif
+										:i endfunction
+										:i function $TP_FireParticlesOn$
+											:i $printf$%s(4,"Fire")
+											:i $SpawnSound$$TP_SFX_Skater_Ignite$
+											:i $CreateFlexibleParticleSystem$$name$ = $BurnMoFo$$params_script$ = $APM_flamingBOARD_particle_params$
+										:i endfunction
+										:i function $TP_FireParticlesOff$
+											:i $SpawnSound$$TP_SFX_Skater_Put_Out_Fire$
+											:i $DestroyFlexibleParticleSystem$$name$ = $BurnMoFo$
+										:i endfunction
+										:i function $TP_SmokeParticlesOn$
+											:i $printf$%s(4,"Fire")
+											:i $CreateFlexibleParticleSystem$$name$ = $SmokeyMoFo$$params_script$ = $apm_OILYsmoke_particle_params$
+										:i endfunction
+										:i function $TP_SmokeParticlesOff$
+											:i $DestroyFlexibleParticleSystem$$name$ = $SmokeyMoFo$
+										:i endfunction
+										:i function $TP_AllFireParticlesOff$
+											:i %GLOBAL%$colObjId$.$Obj_ClearFlag$$FLAG_SKATER_IS_ON_FIRE$
+											:i $SpawnSound$$BO_SFX_Skater_Put_Out_Fire$
+											:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_FireParticlesOff$
+											:i %GLOBAL%$colObjId$.$Obj_SpawnScript$$TP_SmokeParticlesOff$
+										:i endfunction
+										:i function $TP_SFX_Skater_Ignite$
+											:i %GLOBAL%$colObjId$.$Obj_PlayStream$$SK6_BO_SkaterIgnite$$vol$ = %i(300,0000012c)
+											:i %GLOBAL%$colObjId$.$Obj_PlaySound$$SK6_BO_FireLoop$$vol$ = %i(110,0000006e)$pitch$ = %i(120,00000078)
+										:i endfunction
+										:i function $TP_SFX_Skater_Put_Out_Fire$
+											:i %GLOBAL%$colObjId$.$Obj_StopSound$$SK6_BO_FireLoop$
+										:i endfunction
+										:i function $UTILS_CREATE_BASIC_MENU$$base_name$ = %s(4,"test")$menu_title$ = %s(4,"test")$menu_pos$ = %vec2(353.799988,143.500000)$menu_dims$ = %vec2(640.000000,180.000000)
+											:i if $ObjectExists$$id$ = $current_menu_anchor$
+												:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+											:i endif
+											:i if $ObjectExists$$id$ = $current_menu$
+												:i $DestroyScreenElement$$id$ = $current_menu$
+											:i endif
+											:i $destroy_menu_background_title$
+											:i $FormatText$$ChecksumName$ = $menu_id$%s(7,"%a_menu")$a$ = %GLOBAL%$base_name$
+											:i $FormatText$$ChecksumName$ = $vmenu_id$%s(8,"%a_vmenu")$a$ = %GLOBAL%$base_name$
+											:i $FormatText$$ChecksumName$ = $scrolling_menu_id$%s(16,"%a_scrollingmenu")$a$ = %GLOBAL%$base_name$
+											:i $make_new_menu$:s{
+												:i $pos$ = %GLOBAL%$menu_pos$
+												:i $internal_just$ = :a{$left$$top$:a}
+												:i $dims$ = %GLOBAL%$menu_dims$
+												:i $menu_id$ = %GLOBAL%$menu_id$
+												:i $vmenu_id$ = %GLOBAL%$vmenu_id$
+												:i $scrolling_menu_id$ = %GLOBAL%$scrolling_menu_id$
+												:i $type$ = $VScrollingMenu$
+												:i %GLOBAL%$menu_params$
+											:i :s}
+											:i $DoScreenElementMorph$$id$ = %GLOBAL%$vmenu_id$$alpha$ = %i(0,00000000)
+											:i $create_helper_text$$generic_helper_text$
+											:i if NOT $GotParam$$NO_BACKGROUND$
+												:i $create_menu_background_title$$title$ = %GLOBAL%$menu_title$$bg_just$ = $right_scroll$$no_grain$$scrolling_arrows$
+											:i endif
+											:i $SetScreenElementProps$:s{
+												:i $id$ = %GLOBAL%$vmenu_id$
+												:i $event_handlers$ = :a{
+													:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = %GLOBAL%$callback_script$:s}:s}
+													:i :a}
+											:i :s}
+										:i endfunction
+										:i function $UTILS_FOCUS_MENU_ITEM_BY_ID$
+											:i if $GotParam$$id$
+												:i if $ObjectExists$$id$ = %GLOBAL%$id$
+													:i $FireEvent$$type$ = $focus$$target$ = $current_menu$$data$ = :s{$child_id$ = %GLOBAL%$id$:s}
+													:i $wait$%i(1,00000001)$gameframes$
+													:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+													:i $wait$%i(1,00000001)$gameframes$
+													:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+												:i else 
+													:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+												:i endif
+											:i else 
+												:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+											:i endif
+										:i endfunction
+										:i function $UTILS_FINALIZE_BASIC_MENU$$base_name$ = %s(4,"test")
+											:i $FormatText$$ChecksumName$ = $menu_id$%s(7,"%a_menu")$a$ = %GLOBAL%$base_name$
+											:i $FormatText$$ChecksumName$ = $vmenu_id$%s(8,"%a_vmenu")$a$ = %GLOBAL%$base_name$
+											:i $AssignAlias$$id$ = %GLOBAL%$vmenu_id$$alias$ = $current_menu$
+											:i if $GotParam$$last_selected_item$
+												:i if $ObjectExists$$id$ = %GLOBAL%$last_selected_item$
+													:i $FireEvent$$type$ = $focus$$target$ = $current_menu$$data$ = :s{$child_id$ = %GLOBAL%$last_selected_item$:s}
+													:i $wait$%i(1,00000001)$gameframes$
+													:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+													:i $wait$%i(1,00000001)$gameframes$
+													:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+												:i else 
+													:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+												:i endif
+											:i else 
+												:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+											:i endif
+											:i $wait$%i(2,00000002)$gameframes$
+											:i $DoScreenElementMorph$$id$ = %GLOBAL%$vmenu_id$$alpha$ = %i(1,00000001)
+										:i endfunction
+										:i function $get_sick_score_text$
+											:i return
+											$sick_score_text$ = %s(33,"\c2MISSING TEXT (sick_score_text)")
+										:i endfunction
+										:i function $get_sick_score_easy_text$
+											:i return
+											$sick_score_easy_text$ = %s(38,"\c2MISSING TEXT (sick_score_easy_text)")
+										:i endfunction
+										:i function $get_pro_score_text$
+											:i return
+											$pro_score_text$ = %s(32,"\c2MISSING TEXT (pro_score_text)")
+										:i endfunction
+										:i function $get_pro_score_easy_text$
+											:i return
+											$pro_score_easy_text$ = %s(37,"\c2MISSING TEXT (pro_score_easy_text)")
+										:i endfunction
+										:i function $get_high_score_text$
+											:i return
+											$high_score_text$ = %s(33,"\c2MISSING TEXT (high_score_text)")
+										:i endfunction
+										:i function $get_high_score_easy_text$
+											:i return
+											$high_score_easy_text$ = %s(38,"\c2MISSING TEXT (high_score_easy_text)")
+										:i endfunction
+										:i function $get_high_combo_text$
+											:i return
+											$high_combo_text$ = %s(33,"\c2MISSING TEXT (high_combo_text)")
+										:i endfunction
+										:i function $get_high_combo_easy_text$
+											:i return
+											$high_combo_easy_text$ = %s(38,"\c2MISSING TEXT (high_combo_easy_text)")
+										:i endfunction
+										:i :end
+										

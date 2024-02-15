@@ -1,0 +1,70 @@
+//------------------------------------------------
+// X360 console specific data (DJH2)
+//------------------------------------------------
+
+typedef struct (uint bone_count)
+{
+    DJModelBone bones[bone_count] <optimize=false>;
+
+    uint meshCount <bgcolor=CL_SINGLEVALUE>;
+    float someFloat <bgcolor=CL_SINGLEVALUE>;
+    float zeroA <bgcolor=CL_FLOATS>;
+    float zeroB <bgcolor=CL_FLOATS>;
+
+    Vec4 vertex_scaling <bgcolor=CL_FLOATS, comment="Each vertex is * this value">;
+
+    // We can calculate where our mesh data would start!
+    // (Each mesh metadata block is 32 bytes long, they start HERE)
+
+    meshDataStart = FTell() + (32 * meshCount);
+
+    local uint i;
+
+    // Metadata
+    for (i=0; i<meshCount; i++)
+    {
+        // Calculate where our MESH should start!
+        // Each mesh block (from the mesh data start) is 288 bytes long
+
+        DJMeshMetadata_DJH2_X360 mesh_metadata(meshDataStart + (i * 288)) <optimize=true>;
+    }
+
+} DJModelBoneChunk_DJH2_X360;
+
+//-----------------------------
+// Main data
+//-----------------------------
+
+typedef struct
+{
+    uint unkInt2 <bgcolor=CL_SINGLEVALUE>;
+    uint boneCount <bgcolor=CL_SINGLEVALUE>;
+    uint x360Constant <bgcolor=CL_SINGLEVALUE, comment="Constant">;
+    uint entireBlockBytes <bgcolor=CL_SINGLEVALUE, comment="Size of this entire block, starting from block start">;
+    uint bonesMeshesSize <bgcolor=CL_SINGLEVALUE, comment="Size of bones + meshes">;
+    uint facesVerticesSize <bgcolor=CL_SINGLEVALUE, comment="Size of faces + vertices">;
+    ushort matAtlasCount <bgcolor=CL_SINGLEVALUE>;
+    ushort texAtlasCount <bgcolor=CL_SINGLEVALUE>;
+
+    Vec3 bb_min_x <bgcolor=CL_FLOATS>;
+    float bb_min_x_float <bgcolor=CL_FLOATS>;
+    Vec3 bb_max_y <bgcolor=CL_FLOATS>;
+    float bb_max_y_float <bgcolor=CL_FLOATS>;
+
+    uint zeroes[8] <bgcolor=CL_FLOATS>;
+
+    ubyte someByte <bgcolor=CL_SINGLEVALUE>;
+    ubyte someZeroes[3] <bgcolor=CL_FLOATS>;
+
+    float someFloat;
+    int someInt;
+
+    ubyte someByteB <bgcolor=CL_SINGLEVALUE>;
+    ubyte someZeroesB[3] <bgcolor=CL_FLOATS>;
+    
+    // Calculate start of face / vertex blob start
+
+    faceVertBlobStart = FTell() + bonesMeshesSize;
+    DJModelBoneChunk_DJH2_X360 bone_blob(boneCount);
+
+} DJModelData_DJH2_XBox;

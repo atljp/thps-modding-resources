@@ -1,0 +1,80 @@
+//------------------------------------------------
+// GH3 face block
+//------------------------------------------------
+
+#define CL_FACEPADDING 0x999955
+#define CL_FACEVALUE 0xcccc77
+#define CL_FACESHORT 0xbbbb66
+#define CL_FACETERM  0x999944
+
+typedef struct (uint shortCount, ubyte has_term)
+{
+    local uint s_count = shortCount;
+
+    ushort shorts[shortCount] <bgcolor=CL_FACESHORT>;
+
+    if (has_term)
+        ushort term <bgcolor=CL_FACETERM>;
+} GH3TriStrip <read=ReadGH3TriStrip>;
+
+string ReadGH3TriStrip(GH3TriStrip &strip)
+{
+    local string s;
+
+    return SPrintf(s, "%d indices", strip.s_count);
+}
+
+typedef struct(int shortCount, int meshFlags)
+{
+    local uint s_count = shortCount;
+    local uint strip_count = 0;
+
+    byte null[8] <bgcolor=CL_FACEPADDING>;
+    ubyte bones_maybe[4] <bgcolor=CL_FACEVALUE>;
+
+    uint vert_grouping_count[4] <bgcolor=CL_FACEVALUE>;
+    uint guessed_count_maybe <bgcolor=CL_FACEVALUE>;
+
+    local uint s;
+
+    local ushort peek;
+
+    local uint cur_strip_length;
+    local uint strip_offset = FTell();
+    local uint ind_start = FTell();
+
+    for (s=0; s<shortCount; s++)
+    {
+        // Calculate length of strip
+        FSeek(ind_start + (s * 2));
+
+        peek = ReadShort();
+        if (peek == 0x7FFF)
+        {
+            FSeek(strip_offset);
+            GH3TriStrip strip(cur_strip_length, true);
+            strip_count ++;
+            FSeek(ind_start + (s * 2));
+
+            cur_strip_length = 0;
+            strip_offset = FTell() + 2;
+        }
+        else
+            cur_strip_length ++;
+    }
+
+    if (cur_strip_length > 0)
+    {
+        FSeek(strip_offset);
+        GH3TriStrip strip(cur_strip_length, false);
+        strip_count++;
+    }
+
+} GH3FaceBlock <read=ReadGH3FaceBlock>;
+
+string ReadGH3FaceBlock(GH3FaceBlock &block)
+{
+    local string s;
+
+    return SPrintf(s, "%d face indices, %d strips", block.s_count, block.strip_count);
+}

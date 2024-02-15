@@ -1,0 +1,1845 @@
+
+:i $model_invisible$ = %s(21,"fireball\fireball.mdl")$model_Cube$ = %s(21,"fireball\fireball.mdl")$model_CubeWireframe_Red$ = %s(21,"fireball\fireball.mdl")$model_CubeWireframe_Green$ = %s(21,"fireball\fireball.mdl")$model_CubeWireframe_Blue$ = %s(21,"fireball\fireball.mdl")$model_node_red$ = %s(21,"fireball\fireball.mdl")$model_node_green$ = %s(21,"fireball\fireball.mdl")$model_node_blue$ = %s(21,"fireball\fireball.mdl")$model_node_yellow$ = %s(21,"fireball\fireball.mdl")$model_node_pink$ = %s(21,"fireball\fireball.mdl")
+:i function $PROXIM_InitTriggerScript$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_RADIUS$
+	:i %GLOBAL%$objID$.$Obj_SetInnerRadius$%GLOBAL%$_RADIUS$
+	:i %GLOBAL%$objID$.$Obj_SetOuterRadius$%GLOBAL%$_RADIUS$
+	:i %GLOBAL%$objID$.$Obj_ClearExceptions$
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofaRadius$
+	:i $ClearEventHandler$$SkaterEnterRail$
+	:i %GLOBAL%$objID$.$PROXIM_UpdateModels$
+	:i $SetEventHandler$$ex$ = $AnyObjectInRadius$$scr$ = $PROXIM_InTriggerRadius$$params$ = :s{$id$ = %GLOBAL%$objID$:s}
+:i endfunction
+:i function $PROXIM_InTriggerRadius$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$Obj_InitModel$$model$ =  ($model_CubeWireframe_Green$) 
+	:i $ClearEventHandler$$AnyObjectInRadius$
+	:i $ClearEventHandler$$ObjectOutofRadius$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_SKATER_STATE$
+	:i if  (%GLOBAL%$_TRIGGERED$ = %i(0,00000000)) 
+		:i %GLOBAL%$colObjId$.$GetSingleTag$$state$
+		:i switch %GLOBAL%$_SKATER_STATE$
+			:i case $STATE_RAIL$
+				:i if  (%GLOBAL%$state$ = $Skater_OnRail$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterRail$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_MANUAL$
+				:i if  (%GLOBAL%$state$ = $Skater_InManual$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterManual$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_AIR$
+				:i if  (%GLOBAL%$state$ = $Skater_InAir$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterAir$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitAir$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_VERT_AIR$
+				:i if %GLOBAL%$colObjId$.$InVertAir$
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterVertAir$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitVertAir$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_TRANSFER$
+				:i if  (%GLOBAL%$state$ = $Transfer$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterTransfer$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitTransfer$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_ACID$
+				:i if  (%GLOBAL%$state$ = $AcidDrop$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterAcidDrop$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitAcidDrop$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_LIP$
+				:i if  (%GLOBAL%$state$ = $Skater_OnLip$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterLip$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_WALLPLANT$
+				:i if  (%GLOBAL%$state$ = $Skater_InWallplant$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterWallplant$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_WALLRIDE$
+				:i if  (%GLOBAL%$state$ = $Skater_OnWall$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterWall$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitWall$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i endcase
+			case $STATE_NORMAL$
+				:i if  (%GLOBAL%$state$ = $Skater_OnGround$) 
+					:i %GLOBAL%$objID$.$Obj_SpawnScript$$PROXIM_NodeTrigger$
+				:i else 
+					:i $SetException$$ex$ = $SkaterEnterGround$$scr$ = $PROXIM_NodeTrigger$
+					:i $SetException$$ex$ = $SkaterExitGround$$scr$ = $PROXIM_NodeTrigger$
+				:i endif
+				:i end_switch
+		
+	:i endif
+	:i $SetEventHandler$$ex$ = $ObjectOutofRadius$$scr$ = $PROXIM_InitTriggerScript$
+:i endfunction
+:i function $PROXIM_NodeTrigger$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_SKATER_STATE$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__REQURED_TRICK$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__REQURED_GAP$
+	:i if  (%GLOBAL%$_TRIGGERED$ = %i(0,00000000)) 
+		:i %GLOBAL%$objID$.$SetTags$$_TRIGGERED$ = %i(1,00000001)
+		:i %GLOBAL%$objID$.$Obj_PlaySound$$GapSound_11$
+		:i if $GotParam$$__REQURED_TRICK$
+			:i $GetNumberOfTrickOccurrences_SUB$$TrickText$ = %GLOBAL%$__REQURED_TRICK$
+			:i if  (%GLOBAL%$num_occurrences$ > %i(0,00000000)) 
+				:i %GLOBAL%$objID$.$SetTags$$_TRIGGERED_TRICK$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i $wait$%i(20,00000014)$frames$
+		:i $LaunchEvent$$Broadcast$$Type$ = $Event_NodeInstantTrigger$
+	:i endif
+:i endfunction
+:i function $PROXIM_RootTriggerScript$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$GetSingleTag$$items$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_1$
+	:i switch %GLOBAL%$__CONDITION_1$
+		:i case $NO_MANUAL$
+			:i $ClearEventHandler$$SkaterEnterManual$
+			:i $ClearEventHandler$$SkaterEnterWalking$
+			:i $SetException$$ex$ = $SkaterEnterManual$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterWalking$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i endcase
+		case $NO_WALKING$
+			:i $ClearEventHandler$$SkaterEnterWalking$
+			:i $SetException$$ex$ = $SkaterEnterWalking$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i endcase
+		case $NO_RAIL$
+			:i $ClearEventHandler$$SkaterPointRail$
+			:i $ClearEventHandler$$SkaterEnterRail$
+			:i $ClearEventHandler$$SkaterEnterLip$
+			:i $SetException$$ex$ = $SkaterEnterRail$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterPointRail$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterLip$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i endcase
+		case $MANUAL_ONLY$
+			:i $ClearEventHandler$$SkaterEnterWalking$
+			:i $ClearEventHandler$$SkaterEnterLip$
+			:i $ClearEventHandler$$SkaterEnterSkitch$
+			:i $ClearEventHandler$$SkaterEnterRail$
+			:i $ClearEventHandler$$SkaterPointRail$
+			:i $SetException$$ex$ = $SkaterEnterWalking$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterLip$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterSkitch$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterRail$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterPointRail$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i endcase
+		case $RAIL_ONLY$
+			:i $ClearEventHandler$$SkaterEnterWalking$
+			:i $ClearEventHandler$$SkaterEnterManual$
+			:i $ClearEventHandler$$SkaterEnterSkitch$
+			:i $SetException$$ex$ = $SkaterEnterWalking$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterSkitch$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i $SetException$$ex$ = $SkaterEnterManual$$scr$ = $PROXIM_RootResetTriggerAndEvents$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+			:i endcase
+		default 
+			:i end_switch
+	
+	:i $ClearEventHandler$$SkaterLanded$
+	:i $ClearEventHandler$$SkaterBailed$
+	:i $ClearEventHandler$$Event_NodeInstantTrigger$
+	:i $SetException$$ex$ = $SkaterLanded$$scr$ = $PROXIM_RootSkaterLanded$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+	:i $SetException$$ex$ = $SkaterBailed$$scr$ = $PROXIM_RootSkaterBailed$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$:s}
+	:i $SetException$$ex$ = $Event_NodeInstantTrigger$$scr$ = $PROXIM_RootSkaterLanded$$params$ = :s{$objID$ = %GLOBAL%$objID$$items$ = %GLOBAL%$items$$__INSTANT$:s}
+:i endfunction
+:i function $PROXIM_RootResetTriggerAndEvents$
+	:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_CheckForCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_1$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_2$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_NO_GOAL$
+	:i if $GotParam$$_NO_GOAL$
+		:i %GLOBAL%$objID$.$GetSingleTag$$goal_text$
+	:i endif
+	:i if  (%GLOBAL%$__NUM_ITEMS_TRIGGERED$ > %i(0,00000000)) 
+		:i if $IntegerEquals$$a$ = %GLOBAL%$__NUM_ITEMS_TRIGGERED$$b$ = %GLOBAL%$__NUM_ITEMS$
+			:i switch %GLOBAL%$__CONDITION_1$
+				:i case $RAIL_ONLY$
+					:i $ClearEventHandler$$SkaterEnterWalking$
+					:i $ClearEventHandler$$SkaterEnterManual$
+					:i $ClearEventHandler$$SkaterEnterSkitch$
+					:i endcase
+				case $NO_RAIL$
+					:i $ClearEventHandler$$SkaterEnterRail$
+					:i $ClearEventHandler$$SkaterPointRail$
+					:i $ClearEventHandler$$SkaterEnterLip$
+					:i endcase
+				case $MANUAL_ONLY$
+					:i $ClearEventHandler$$SkaterEnterWalking$
+					:i $ClearEventHandler$$SkaterEnterLip$
+					:i $ClearEventHandler$$SkaterEnterSkitch$
+					:i $ClearEventHandler$$SkaterEnterRail$
+					:i $ClearEventHandler$$SkaterPointRail$
+					:i endcase
+				case $NO_MANUAL$
+					:i $ClearEventHandler$$SkaterEnterManual$
+					:i $ClearEventHandler$$SkaterEnterWalking$
+					:i endcase
+				case $NO_WALKING$
+					:i $ClearEventHandler$$SkaterEnterWalking$
+					:i endcase
+				default 
+					:i if NOT $GotParam$$_NO_GOAL$
+						:i $FormatText$$TextName$ = $_message_string$%s(13,"'%a' - Reset!")$a$ = %GLOBAL%$goal_text$
+						:i $Create_Panel_Message$$text$ = %GLOBAL%$_message_string$$id$ = $_msg_goal_failed$$style$ = $sloppy_style$
+						:i $PlaySound$$GUI_buzzer01$
+					:i endif
+					:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+					:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+					:i end_switch
+			
+		:i else 
+			:i if NOT $GotParam$$_NO_GOAL$
+				:i $FormatText$$TextName$ = $_message_string$%s(13,"'%a' - Reset!")$a$ = %GLOBAL%$goal_text$
+				:i $Create_Panel_Message$$text$ = %GLOBAL%$_message_string$$id$ = $_msg_goal_failed$$style$ = $sloppy_style$
+				:i $PlaySound$$GUI_buzzer01$
+			:i endif
+			:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+			:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $PROXIM_CheckForCompleted$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NAME_STRING$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_1$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_2$
+	:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$index$
+	:i %GLOBAL%$_name$.$GetSingleTag$$_TRIGGERED$
+	:i if  (%GLOBAL%$_TRIGGERED$ = %i(1,00000001)) 
+		:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ =  (%GLOBAL%$__NUM_ITEMS_TRIGGERED$ + %i(1,00000001)) 
+	:i else 
+	:i endif
+:i endfunction
+:i function $GetNumberOfTrickOccurrences_SUB$
+	:i $GetNumberOfTrickOccurrences$$TrickText$ = %GLOBAL%$TrickText$
+	:i if  (%GLOBAL%$number_of_occurrences$ > %i(0,00000000)) 
+		:i return
+		$num_occurrences$ = %GLOBAL%$number_of_occurrences$
+	:i endif
+	:i $FormatText$$TextName$ = $FS_String$%s(5,"FS %a")$a$ = %GLOBAL%$TrickText$
+	:i $GetNumberOfTrickOccurrences$$TrickText$ = %GLOBAL%$FS_String$
+	:i if  (%GLOBAL%$number_of_occurrences$ > %i(0,00000000)) 
+		:i return
+		$num_occurrences$ = %GLOBAL%$number_of_occurrences$
+	:i endif
+	:i $FormatText$$TextName$ = $BS_String$%s(5,"BS %a")$a$ = %GLOBAL%$TrickText$
+	:i $GetNumberOfTrickOccurrences$$TrickText$ = %GLOBAL%$BS_String$
+	:i return
+	$num_occurrences$ = %GLOBAL%$number_of_occurrences$
+:i endfunction
+:i function $PROXIM_RootSkaterBailed$
+	:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_CheckForCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_NO_GOAL$
+	:i if NOT $GotParam$$_NO_GOAL$
+		:i %GLOBAL%$objID$.$GetSingleTag$$goal_text$
+		:i if  (%GLOBAL%$__NUM_ITEMS_TRIGGERED$ > %i(0,00000000)) 
+			:i $PlaySound$$GUI_buzzer01$
+			:i $FormatText$$TextName$ = $_message_string$%s(14,"'%a' - Bailed!")$a$ = %GLOBAL%$goal_text$
+			:i $Create_Panel_Message$$text$ = %GLOBAL%$_message_string$$id$ = $_msg_goal_failed$$style$ = $sloppy_style$
+		:i endif
+	:i endif
+	:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+:i endfunction
+:i function $PROXIM_RootSkaterLanded$
+	:i $FAILED$ = %i(0,00000000)
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_1$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__CONDITION_2$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__TRIGGER_SCRIPT$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_NO_GOAL$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__REQURED_TRICK$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__REQURED_GAP$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NAME_STRING$
+	:i if $GotParam$$__INSTANT$
+		:i if NOT  (%GLOBAL%$__CONDITION_2$ = $INSTANT_TRIGGER$) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$__REQURED_TRICK$
+		:i $WasTrickDoneMoreThanOnce?$$items$ = %GLOBAL%$items$$__NAME_STRING$ = %GLOBAL%$__NAME_STRING$
+		:i if $GotParam$$No$
+			:i $FORCE_FAILED$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_CheckForCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS_TRIGGERED$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NUM_ITEMS$
+	:i if NOT $GotParam$$_NO_GOAL$
+		:i %GLOBAL%$objID$.$GetSingleTag$$__GOAL_FLAG$
+		:i %GLOBAL%$objID$.$GetSingleTag$$goal_id$
+		:i %GLOBAL%$objID$.$GetSingleTag$$goal_text$
+	:i endif
+	:i switch %GLOBAL%$__CONDITION_2$
+		:i case $TRIGGER_ONE$
+			:i if NOT $GotParam$$FORCE_FAILED$
+				:i if  (%GLOBAL%$__NUM_ITEMS_TRIGGERED$ > %i(0,00000000)) 
+					:i $FAILED$ = %i(0,00000000)
+				:i else 
+					:i $FAILED$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i $FAILED$ = %i(1,00000001)
+			:i endif
+			:i endcase
+		case $INSTANT_TRIGGER$
+			:i if NOT $GotParam$$FORCE_FAILED$
+				:i if $IntegerEquals$$a$ = %GLOBAL%$__NUM_ITEMS_TRIGGERED$$b$ = %GLOBAL%$__NUM_ITEMS$
+					:i $FAILED$ = %i(0,00000000)
+				:i else 
+					:i $FAILED$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i $FAILED$ = %i(1,00000001)
+			:i endif
+			:i endcase
+		default 
+			:i if NOT $GotParam$$FORCE_FAILED$
+				:i if $IntegerEquals$$a$ = %GLOBAL%$__NUM_ITEMS_TRIGGERED$$b$ = %GLOBAL%$__NUM_ITEMS$
+					:i $FAILED$ = %i(0,00000000)
+				:i else 
+					:i $FAILED$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i $FAILED$ = %i(1,00000001)
+			:i endif
+			:i end_switch
+	
+	:i if  (%GLOBAL%$FAILED$ = %i(0,00000000)) 
+		:i %GLOBAL%$objID$.$SetTags$$COMPLETED$ = %i(1,00000001)
+		:i if NOT $GotParam$$_NO_GOAL$
+			:i $FormatText$$TextName$ = $_message_string$%s(17,"'%a' - Completed!")$a$ = %GLOBAL%$goal_text$
+			:i $Create_Panel_Message$$text$ = %GLOBAL%$_message_string$$id$ = $_msg_goal_completed$$style$ = $perfect_style$$rgba$ = :a{%i(50,00000032)%i(150,00000096)%i(50,00000032)%i(128,00000080):a}
+			:i if $GoalManager_GoalExists$$Name$ = %GLOBAL%$goal_id$
+				:i $GoalManager_SetGoalFlag$$Name$ = %GLOBAL%$goal_id$ (%GLOBAL%$__GOAL_FLAG$) %i(1,00000001)
+			:i endif
+		:i endif
+		:i if $GotParam$$__TRIGGER_SCRIPT$
+			:i $edmsg2$%s(27,"calling __TRIGGER_SCRIPT %a")$a$ = %GLOBAL%$__TRIGGER_SCRIPT$
+			:i %GLOBAL%$__TRIGGER_SCRIPT$
+		:i endif
+		:i $ClearEventHandler$$SkaterLanded$
+		:i $ClearEventHandler$$SkaterBailed$
+		:i $ClearEventHandler$$Event_NodeInstantTrigger$
+		:i switch %GLOBAL%$__CONDITION_1$
+			:i case $RAIL_ONLY$
+				:i $ClearEventHandler$$SkaterEnterWalking$
+				:i $ClearEventHandler$$SkaterEnterManual$
+				:i endcase
+			case $NO_RAIL$
+				:i $ClearEventHandler$$SkaterEnterRail$
+				:i $ClearEventHandler$$SkaterPointRail$
+				:i $ClearEventHandler$$SkaterEnterLip$
+				:i endcase
+			case $MANUAL_ONLY$
+				:i $ClearEventHandler$$SkaterEnterWalking$
+				:i $ClearEventHandler$$SkaterEnterLip$
+				:i $ClearEventHandler$$SkaterEnterSkitch$
+				:i $ClearEventHandler$$SkaterEnterRail$
+				:i $ClearEventHandler$$SkaterPointRail$
+				:i endcase
+			case $NO_MANUAL$
+				:i $ClearEventHandler$$SkaterEnterManual$
+				:i $ClearEventHandler$$SkaterEnterWalking$
+				:i endcase
+			case $NO_WALKING$
+				:i $ClearEventHandler$$SkaterEnterWalking$
+				:i endcase
+			default 
+				:i $ClearEventHandler$$SkaterEnterManual$
+				:i $ClearEventHandler$$SkaterEnterWalking$
+				:i end_switch
+		
+	:i else 
+		:i if NOT $GotParam$$_NO_GOAL$
+			:i if  (%GLOBAL%$__NUM_ITEMS_TRIGGERED$ > %i(0,00000000)) 
+				:i $PlaySound$$GUI_buzzer01$
+				:i $FormatText$$TextName$ = $_message_string$%s(14,"'%a' - Failed!")$a$ = %GLOBAL%$goal_text$
+				:i $Create_Panel_Message$$text$ = %GLOBAL%$_message_string$$id$ = $_msg_goal_failed$$style$ = $sloppy_style$
+			:i endif
+		:i endif
+		:i %GLOBAL%$objID$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+		:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$objID$:s}
+	:i endif
+:i endfunction
+:i function $WasTrickDoneMoreThanOnce?$
+	:i $GetArraySize$%GLOBAL%$items$
+	:i $i$ = %i(0,00000000)
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$i$
+			:i %GLOBAL%$_name$.$GetSingleTag$$_TRIGGERED_TRICK$
+			:i if  (%GLOBAL%$_TRIGGERED_TRICK$ = %i(1,00000001)) 
+				:i return
+				$Yes$ = %i(1,00000001)
+			:i endif
+			:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$No$ = %i(1,00000001)
+:i endfunction
+:i function $WasGapDoneMoreThanOnce?$
+	:i $GetArraySize$%GLOBAL%$items$
+	:i $i$ = %i(0,00000000)
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$i$
+			:i %GLOBAL%$_name$.$GetSingleTag$$_TRIGGERED_GAP$
+			:i if  (%GLOBAL%$_TRIGGERED_GAP$ = %i(1,00000001)) 
+				:i return
+				$Yes$ = %i(1,00000001)
+			:i endif
+			:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i return
+	$No$ = %i(1,00000001)
+:i endfunction
+:i function $PROXIM_UpdateModels$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_TRIGGERED$
+	:i if $GotParam$$_TRIGGERED$
+		:i if  (%GLOBAL%$_TRIGGERED$ = %i(1,00000001)) 
+			:i %GLOBAL%$objID$.$Obj_InitModel$$model$ =  ($model_CubeWireframe_Green$) 
+		:i else 
+			:i %GLOBAL%$objID$.$Obj_InitModel$$model$ =  ($model_CubeWireframe_Red$) 
+		:i endif
+	:i else 
+		:i %GLOBAL%$objID$.$Obj_InitModel$$model$ =  ($model_CubeWireframe_Red$) 
+	:i endif
+:i endfunction
+:i function $PROXIM_ResetCompleted$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NAME_STRING$
+	:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$index$
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED_TRICK$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED_GAP$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$PROXIM_UpdateModels$
+:i endfunction
+:i function $PROXIM_Delete$
+	:i %GLOBAL%$objID$.$GetSingleTag$$__NAME_STRING$
+	:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$index$
+	:i $FormatText$$ChecksumName$ = $_checksum$%s(19,"%a_proxim_%i_string")$a$ = %GLOBAL%$__NAME_STRING$$i$ = %GLOBAL%$index$
+	:i $FormatText$$ChecksumName$ = $_rootChecksum$%s(9,"%a_string")$a$ = %GLOBAL%$__NAME_STRING$
+	:i if $ObjectExists$$id$ = %GLOBAL%$_name$
+		:i %GLOBAL%$_name$.$Die$
+	:i endif
+	:i $DestroyIfObjectExist$$id$ = %GLOBAL%$_checksum$
+	:i $DestroyIfObjectExist$$id$ = %GLOBAL%$_rootChecksum$
+:i endfunction
+:i function $PROXIM_HighlightGeometry$
+	:i $printf$%s(23,"Natas Spin Flash Called")
+	:i $SetLightGroup$$Name$ = %GLOBAL%$ObjName$$light_group$ = $goal_skate_the_line_colors$
+	:i while
+		
+		:i %GLOBAL%$parent$.$GetSingleTag$$COMPLETED$
+		:i if NOT $ObjectExists$$id$ = %GLOBAL%$parent$
+			:i continue
+			
+		:i endif
+		:i if  (%GLOBAL%$COMPLETED$ = %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+		:i $SetObjectColor$$color$ = %i(4286578688,ff800000)$Name$ = %GLOBAL%$ObjName$
+		:i $wait$%f(0.500000)$seconds$
+		:i $SetObjectColor$$color$ = %i(4278222848,ff008000)$Name$ = %GLOBAL%$ObjName$
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+	:i $SetLightGroup$$Name$ = %GLOBAL%$ObjName$$light_group$ = $outdoor$
+	:i $goto$$PROXIM_HighlightGeometry_Kill$$params$ = :s{$ObjName$ = %GLOBAL%$ObjName$:s}
+:i endfunction
+:i function $PROXIM_HighlightGeometry_Kill$
+	:i $SetLightGroup$$light_group$ = $outdoor$$Name$ = %GLOBAL%$Name$
+	:i $SetObjectColor_CurrentTOD$$Name$ = %GLOBAL%$ObjName$
+:i endfunction
+:i function $MaybeResetHighlightGeometry$
+	:i $SetLightGroup$$light_group$ = $outdoor$$Name$ = %GLOBAL%$Name$
+	:i $SetObjectColor_CurrentTOD$$Name$ = %GLOBAL%$Name$
+:i endfunction
+:i function $MaybeCreateProximNodes$
+	:i $FormatText$$ChecksumName$ = $_name$%s(12,"%a_proxim_%i")$a$ = %GLOBAL%$parent_name$$i$ = %GLOBAL%$index$
+	:i if $GotParam$$__SCALE$
+		:i $_scale_x$ = %GLOBAL%$__SCALE$
+		:i $_scale_y$ = %GLOBAL%$__SCALE$
+		:i $_scale_z$ = %GLOBAL%$__SCALE$
+		:i $_RADIUS$ =  (%f(8.000000) * %GLOBAL%$__SCALE$) 
+	:i else 
+		:i $_scale_x$ = %f(1.000000)
+		:i $_scale_y$ = %f(1.000000)
+		:i $_scale_z$ = %f(1.000000)
+		:i $_RADIUS$ = %f(8.000000)
+	:i endif
+	:i $CreateFromStructure$:s{
+		:i $Name$ = %GLOBAL%$_name$
+		:i $Pos$ = %GLOBAL%$__POS$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $TriggerScript$ = $PROXIM_InitTriggerScript$
+		:i $x$ = %GLOBAL%$_scale_x$
+		:i $y$ = %GLOBAL%$_scale_y$
+		:i $z$ = %GLOBAL%$_scale_z$
+		:i $model$ =  ($model_CubeWireframe_Red$) 
+	:i :s}
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED_TRICK$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_TRIGGERED_GAP$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_RADIUS$ = %GLOBAL%$_RADIUS$
+	:i %GLOBAL%$_name$.$SetTags$$_ALT_DONE$ = %i(0,00000000)
+	:i if NOT $StringEquals$$a$ = %s(8,"no trick")$b$ = %GLOBAL%$__REQURED_TRICK$
+		:i %GLOBAL%$_name$.$SetTags$$__REQURED_TRICK$ = %GLOBAL%$__REQURED_TRICK$
+	:i endif
+	:i if NOT $StringEquals$$a$ = %s(6,"no gap")$b$ = %GLOBAL%$__REQURED_GAP$
+		:i %GLOBAL%$_name$.$SetTags$$__REQURED_GAP$ = %GLOBAL%$__REQURED_GAP$
+	:i endif
+	:i if $GotParam$$SKATER_STATE$
+		:i %GLOBAL%$_name$.$SetTags$$_SKATER_STATE$ = %GLOBAL%$SKATER_STATE$
+		:i $FormatText$$ChecksumName$ = $_checksum$%s(19,"%a_proxim_%i_string")$a$ = %GLOBAL%$parent_name$$i$ = %GLOBAL%$index$
+		:i $FormatText$$TextName$ = $_string$%s(9,"proxim %a")$a$ = %GLOBAL%$SKATER_STATE$
+		:i $CreateScreenElement$:s{
+			:i $id$ = %GLOBAL%$_checksum$
+			:i $Type$ = $textElement$
+			:i $parent$ = $root_window$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$_string$
+			:i $scale$ = %f(1.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos3D$ = %GLOBAL%$__POS$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $shadow$
+			:i $shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $shadow_offs$ = %vec2(0.500000,0.500000)
+		:i :s}
+	:i else 
+		:i %GLOBAL%$_name$.$SetTags$$_SKATER_STATE$ = $STATE_NORMAL$
+	:i endif
+:i endfunction
+:i function $MaybeDeleteProximRootNodes$
+	:i $FormatText$$ChecksumName$ = $_name$%s(2,"%a")$a$ = %GLOBAL%$Name$
+	:i %GLOBAL%$_name$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$_name$:s}
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_Delete$$params$ = :s{$objID$ = %GLOBAL%$_name$:s}
+	:i if $GotParam$$highlight_nodes$
+		:i $GetArraySize$%GLOBAL%$highlight_nodes$
+		:i $i$ = %i(0,00000000)
+		:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+			:i while
+				
+				:i $MaybeResetHighlightGeometry$$Name$ =  (%GLOBAL%$highlight_nodes$:a{%GLOBAL%$i$:a}) 
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$_name$
+		:i %GLOBAL%$_name$.$Die$
+	:i endif
+:i endfunction
+:i function $MaybeResetProximRootNodes$
+	:i $FormatText$$ChecksumName$ = $_name$%s(2,"%a")$a$ = %GLOBAL%$Name$
+	:i %GLOBAL%$_name$.$Obj_SpawnScript$$PROXIM_RootTriggerScript$
+	:i %GLOBAL%$_name$.$SetTags$$EXIT$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$items$ = %GLOBAL%$items$
+	:i %GLOBAL%$_name$.$SetTags$$__NAME_STRING$ = %GLOBAL%$Name$
+	:i %GLOBAL%$_name$.$SetTags$$__NUM_ITEMS$ = %GLOBAL%$__NUM_ITEMS$
+	:i %GLOBAL%$_name$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_ALT_DONE$ = %i(0,00000000)
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $PROXIM_ResetCompleted$$params$ = :s{$objID$ = %GLOBAL%$_name$:s}
+:i endfunction
+:i function $MaybeCreateProximRootNode$
+	:i $FormatText$$ChecksumName$ = $_name$%s(2,"%a")$a$ = %GLOBAL%$Name$
+	:i $CreateFromStructure$:s{
+		:i $Name$ = %GLOBAL%$_name$
+		:i $Pos$ = %GLOBAL%$__POS$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $TriggerScript$ = $PROXIM_RootTriggerScript$
+		:i $model$ =  ($model_Cube$) 
+	:i :s}
+	:i $GetArraySize$%GLOBAL%$items$
+	:i %GLOBAL%$_name$.$SetTags$$EXIT$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$items$ = %GLOBAL%$items$
+	:i %GLOBAL%$_name$.$SetTags$$__NAME_STRING$ = %GLOBAL%$Name$
+	:i %GLOBAL%$_name$.$SetTags$$__NUM_ITEMS$ = %GLOBAL%$array_size$
+	:i $RemoveParameter$$array_size$
+	:i %GLOBAL%$_name$.$SetTags$$__NUM_ITEMS_TRIGGERED$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$_ALT_DONE$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$__CONDITION_1$ = %GLOBAL%$__CONDITION_1$
+	:i %GLOBAL%$_name$.$SetTags$$__CONDITION_2$ = %GLOBAL%$__CONDITION_2$
+	:i if $GotParam$$_NO_GOAL$
+		:i %GLOBAL%$_name$.$SetTags$$_NO_GOAL$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$__TRIGGER_SCRIPT$
+		:i %GLOBAL%$_name$.$SetTags$$__TRIGGER_SCRIPT$ = %GLOBAL%$__TRIGGER_SCRIPT$
+	:i endif
+	:i if NOT $GotParam$$_NO_GOAL$
+		:i %GLOBAL%$_name$.$SetTags$$__GOAL_FLAG$ = %GLOBAL%$__GOAL_FLAG$
+		:i %GLOBAL%$_name$.$SetTags$$goal_text$ = %GLOBAL%$goal_text$
+		:i %GLOBAL%$_name$.$SetTags$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+	:i %GLOBAL%$_name$.$SetTags$$COMPLETED$ = %i(0,00000000)
+	:i if $GotParam$$__REQURED_TRICK$
+		:i %GLOBAL%$_name$.$SetTags$$__REQURED_TRICK$ = %GLOBAL%$__REQURED_TRICK$
+	:i else 
+		:i %GLOBAL%$__REQURED_TRICK$ = %s(8,"no trick")
+	:i endif
+	:i if $GotParam$$__REQURED_GAP$
+		:i %GLOBAL%$_name$.$SetTags$$__REQURED_GAP$ = %GLOBAL%$__REQURED_GAP$
+	:i else 
+		:i %GLOBAL%$__REQURED_GAP$ = %s(6,"no gap")
+	:i endif
+	:i $ForEachIn$%GLOBAL%$items$$Do$ = $MaybeCreateProximNodes$$params$ = :s{$parent$ = %GLOBAL%$_name$$parent_name$ = %GLOBAL%$Name$$__REQURED_TRICK$ = %GLOBAL%$__REQURED_TRICK$$__REQURED_GAP$ = %GLOBAL%$__REQURED_GAP$:s}
+	:i if $GotParam$$highlight_nodes$
+		:i $GetArraySize$%GLOBAL%$highlight_nodes$
+		:i $i$ = %i(0,00000000)
+		:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+			:i while
+				
+				:i $SpawnScript$$PROXIM_HighlightGeometry$$id$ = $GOAL_BLINK_TEST$$params$ = :s{$parent$ = %GLOBAL%$_name$$parent_name$ = %GLOBAL%$Name$$ObjName$ =  (%GLOBAL%$highlight_nodes$:a{%GLOBAL%$i$:a}) :s}
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i $FormatText$$ChecksumName$ = $_checksum$%s(9,"%a_string")$a$ = %GLOBAL%$Name$
+	:i $FormatText$$TextName$ = $_string$%s(2,"%a")$a$ = %GLOBAL%$__CONDITION_1$
+	:i $CreateScreenElement$:s{
+		:i $id$ = %GLOBAL%$_checksum$
+		:i $Type$ = $textElement$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$_string$
+		:i $scale$ = %f(0.600000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos3D$ =  (%GLOBAL%$__POS$ + %vec3(0.000000,60.000000,0.000000)) 
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $shadow$
+		:i $shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $shadow_offs$ = %vec2(0.500000,0.500000)
+	:i :s}
+:i endfunction
+:i $__ANIM_IS_PLAYING$ = %i(0,00000000)
+:i $_ShowFocusNodes$ = %i(0,00000000)
+:i $SHP_CUTSCENE_FLYING_PED$ = %i(6,00000006)
+:i $SHP_CUTSCENE_FLYING_PED_WALK$ = %i(3,00000003)
+:i $SHP_CUTSCENE_DOORS$ = %i(12,0000000c)
+:i $SHP_CUTSCENE_NETS$ = %i(13,0000000d)
+:i function $play_thugpro_cutscene_anim$
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$Name$
+		:i return
+		
+	:i endif
+	:i $edmsg2$%s(34,"\c4play_thugpro_cutscene_anim (%a)")$a$ = %GLOBAL%$Name$
+	:i if $ScreenElementExists$$id$ = $CAMERA_BUTTON_EVENT_HANDLER$
+		:i $DestroyScreenElement$$id$ = $CAMERA_BUTTON_EVENT_HANDLER$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $id$ = $CAMERA_BUTTON_EVENT_HANDLER$
+		:i $parent$ = $root_window$
+		:i $Type$ = $ContainerElement$
+		:i $event_handlers$ = 
+		:i :a{
+			:i :a}
+	:i :s}
+	:i $FireEvent$$Type$ = $focus$$target$ = $CAMERA_BUTTON_EVENT_HANDLER$
+	:i $thugpro_cutscene_fake_letterboxing$
+	:i $hide_all_hud_items$$dont_disable_screen_effects$
+	:i if $GotParam$$speed$
+		:i $Editor_PlayCameraAnim$$Name$ = %GLOBAL%$Name$$speed$ = %GLOBAL%$speed$%GLOBAL%$fade$
+	:i else 
+		:i $Editor_PlayCameraAnim$$Name$ = %GLOBAL%$Name$%GLOBAL%$fade$
+	:i endif
+	:i $thugpro_cutscene_fake_letterboxing$$remove$
+	:i $show_all_hud_items$
+	:i $wait$%i(1,00000001)$seconds$
+	:i $Editor_ClenupCameraAnim$$Name$ = %GLOBAL%$Name$
+	:i if $ScreenElementExists$$id$ = $CAMERA_BUTTON_EVENT_HANDLER$
+		:i $DestroyScreenElement$$id$ = $CAMERA_BUTTON_EVENT_HANDLER$
+	:i endif
+:i endfunction
+:i function $thugpro_cutscene_fake_letterboxing$
+	:i if $ScreenElementExists$$id$ = $letterbox_anchor$
+		:i $DestroyScreenElement$$id$ = $letterbox_anchor$
+	:i endif
+	:i if $GotParam$$remove$
+		:i return
+		
+	:i else 
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $ContainerElement$
+		:i $id$ = $letterbox_anchor$
+		:i $parent$ = $root_window$
+		:i $z_priority$ = %i(999,000003e7)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,9.500000)
+		:i $Pos$ = %vec2(0.000000,-20.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(15,0000000f)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $Type$ = $SpriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,12.000000)
+		:i $Pos$ = %vec2(0.000000,392.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(15,0000000f)
+	:i :s}
+:i endfunction
+:i function $Editor_GoToNextCameraAnimFrame$
+	:i $printf$%s(30,"Editor_GoToNextCameraAnimFrame")
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$Name$
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$Name$.$GetSingleTag$$__CURRENT_FRAME_INDEX$
+	:i %GLOBAL%$index$ = %GLOBAL%$__CURRENT_FRAME_INDEX$
+	:i while
+		
+		:i $RemoveParameter$$_node_name$
+		:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$Name$$b$ = %GLOBAL%$index$
+		:i if $ObjectExists$$id$ = %GLOBAL%$_node_name$
+			:i $RemoveParameter$$__CHECKPOINT$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__CHECKPOINT$
+			:i if $GotParam$$__CHECKPOINT$
+				:i %GLOBAL%$Name$.$SetTags$$__SKIP_TO_FRAME$ = %i(1,00000001)
+				:i %GLOBAL%$Name$.$SetTags$$__SKIP_FRAME_INDEX$ = %GLOBAL%$index$
+				:i $editor_cam_parent$.$Obj_StopMoving$
+				:i continue
+				
+			:i endif
+		:i else 
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+:i endfunction
+:i function $PlaySkaterFollowCameraAnim$
+	:i if $IsTrue$$__ANIM_IS_PLAYING$
+		:i $PlaySkaterCamAnim$$stop$
+		:i $KillSkaterCamAnim$$all$
+		:i $restore_skater_camera$
+		:i return
+		
+	:i endif
+	:i $Change$$__ANIM_IS_PLAYING$ = %i(1,00000001)
+	:i if NOT $GotParam$$fov$
+		:i %GLOBAL%$fov$ = %i(70,00000046)
+	:i endif
+	:i $Skater$.$Obj_GetPosition$
+	:i %GLOBAL%$new_target_pos$ = %GLOBAL%$Pos$
+	:i if NOT $ObjectExists$$id$ = $editor_cam_parent$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $model$$model$ =  ($model_node_red$) :s}
+				:i :a}
+			:i $params$ = :s{$Name$ = $editor_cam_parent$$x$ = %f(0.100000)$y$ = %f(0.100000)$z$ = %f(0.100000):s}
+		:i :s}
+	:i endif
+	:i $editor_cam_parent$.$Obj_SetPosition$$position$ = %GLOBAL%$start_position$
+	:i if NOT $ObjectExists$$id$ = $editor_cam_target$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $model$$model$ =  ($model_node_green$) :s}
+				:i :a}
+			:i $params$ = :s{$Name$ = $editor_cam_target$$x$ = %f(0.050000)$y$ = %f(2.500000)$z$ = %f(0.050000):s}
+		:i :s}
+	:i endif
+	:i $editor_cam_target$.$Obj_SetPosition$$position$ = %GLOBAL%$new_target_pos$
+	:i $PlaySkaterCamAnim$$stop$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$:s{
+		:i $Skater$ = %i(0,00000000)
+		:i $targetid$ = $editor_cam_target$
+		:i $Name$ = $editor_cam$
+		:i $positionOffset$ =  (%GLOBAL%$start_position$ - %GLOBAL%$new_target_pos$) 
+		:i $play_hold$
+		:i $fov$ = %GLOBAL%$fov$
+		:i $virtual_cam$
+	:i :s}
+	:i $SetActiveCamera$$id$ = $editor_cam$
+	:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$end_position$$time$ = %GLOBAL%$time$
+	:i $editor_cam$.$Obj_SpawnScript$$_CameraFollowSkater$$params$ = :s{$fov$ = %GLOBAL%$fov$$start_position$ = %GLOBAL%$start_position$$end_position$ = %GLOBAL%$end_position$:s}
+	:i $wait$%GLOBAL%$time$$seconds$
+	:i if $GotParam$$fade$
+		:i $EditorCamera_DoFade$$out$$time$ = %f(0.500000)
+		:i $EditorCamera_DoFade$$time$ = %f(1.000000)$wait$
+	:i endif
+	:i $Change$$__ANIM_IS_PLAYING$ = %i(0,00000000)
+	:i $PlaySkaterCamAnim$$stop$
+	:i $KillSkaterCamAnim$$all$
+	:i $restore_skater_camera$
+	:i $editor_cam_parent$.$Obj_StopMoving$
+	:i if $GotParam$$fade$
+		:i $EditorCamera_DoFade$$time$ = %f(1.000000)$wait$
+		:i $EditorCamera_DoFade$$kill$
+	:i endif
+	:i if $ObjectExists$$id$ = $editor_cam$
+		:i $editor_cam$.$Obj_KillSpawnedScript$$Name$ = $_CameraFollowSkater$
+	:i endif
+	:i if $CompositeObjectExists$$Name$ = $editor_cam_parent$
+		:i $editor_cam_parent$.$Die$
+	:i endif
+	:i if $CompositeObjectExists$$Name$ = $editor_cam_target$
+		:i $editor_cam_target$.$Die$
+	:i endif
+:i endfunction
+:i function $_CameraFollowSkater$
+	:i $printf$%s(19,"_CameraFollowSkater")
+	:i while
+		
+		:i if NOT $IsTrue$$__ANIM_IS_PLAYING$
+			:i $PlaySkaterCamAnim$$stop$
+			:i $KillSkaterCamAnim$$all$
+			:i continue
+			
+		:i endif
+		:i $Skater$.$Obj_GetPosition$
+		:i %GLOBAL%$new_target_pos$ = %GLOBAL%$Pos$
+		:i $RemoveParameter$$Pos$
+		:i $editor_cam_target$.$Obj_SetPosition$$position$ = %GLOBAL%$new_target_pos$
+		:i $editor_cam_parent$.$Obj_GetPosition$
+		:i %GLOBAL%$new_parent_pos$ = %GLOBAL%$Pos$
+		:i $RemoveParameter$$Pos$
+		:i $PlaySkaterCamAnim$$stop$
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$:s{
+			:i $Skater$ = %i(0,00000000)
+			:i $targetid$ = $editor_cam_target$
+			:i $Name$ = $editor_cam$
+			:i $positionOffset$ =  (%GLOBAL%$new_parent_pos$ - %GLOBAL%$new_target_pos$) 
+			:i $play_hold$
+			:i $fov$ = %GLOBAL%$fov$
+			:i $virtual_cam$
+		:i :s}
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+:i endfunction
+:i function $Editor_GoToCameraAnimFrame$
+	:i $printf$%s(26,"Editor_GoToCameraAnimFrame")
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$Name$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$frame$
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $RemoveParameter$$_node_name$
+		:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$Name$$b$ = %GLOBAL%$index$
+		:i if $ObjectExists$$id$ = %GLOBAL%$_node_name$
+			:i $RemoveParameter$$__FRAME_NAME$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__FRAME_NAME$
+			:i if $GotParam$$__FRAME_NAME$
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$__FRAME_NAME$$b$ = %GLOBAL%$frame$ /  / 
+					:i $edmsg2$%s(23,"ChecksumEquals %a == %b")$a$ = %GLOBAL%$__FRAME_NAME$$b$ = %GLOBAL%$frame$ /  / 
+					:i $edmsg2$%s(8,"index %i")$i$ = %GLOBAL%$index$
+					:i %GLOBAL%$Name$.$SetTags$$__SKIP_TO_FRAME$ = %i(1,00000001)
+					:i %GLOBAL%$Name$.$SetTags$$__SKIP_FRAME_INDEX$ = %GLOBAL%$index$
+					:i $editor_cam_parent$.$Obj_StopMoving$
+					:i continue
+					
+				:i endif
+			:i endif
+		:i else 
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+:i endfunction
+:i function $Editor_ClenupCameraAnim$
+	:i $edmsg2$%s(30,"\c5Editor_ClenupCameraAnim(%a)")$a$ = %GLOBAL%$Name$
+	:i $wait$%f(0.200000)$seconds$
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$Name$
+		:i return
+		
+	:i endif
+	:i $Change$$__ANIM_IS_PLAYING$ = %i(0,00000000)
+	:i %GLOBAL%$parent_node_name$ = %GLOBAL%$Name$
+	:i $RemoveParameter$$Name$
+	:i if $CompositeObjectExists$$Name$ = $editor_cam_target$
+		:i $editor_cam_target$.$Obj_KillSpawnedScript$$Name$ = $_hideeditormodels$
+		:i $editor_cam_target$.$Die$
+	:i endif
+	:i if $CompositeObjectExists$$Name$ = $editor_cam_parent$
+		:i $editor_cam_parent$.$Obj_KillSpawnedScript$$Name$ = $_hideeditormodels$
+		:i $editor_cam_parent$.$Die$
+	:i endif
+	:i if $ObjectExists$$id$ = $editor_cam$
+		:i $editor_cam$.$Obj_KillSpawnedScript$$Name$ = $_CameraFollowObject$
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $RemoveParameter$$_node_name$
+		:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$parent_node_name$$b$ = %GLOBAL%$index$
+		:i if $CompositeObjectExists$$Name$ = %GLOBAL%$_node_name$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__TARGET_NAME$
+			:i if $GotParam$$__TARGET_NAME$
+				:i if $CompositeObjectExists$$Name$ = %GLOBAL%$__TARGET_NAME$
+					:i %GLOBAL%$__TARGET_NAME$.$Obj_KillSpawnedScript$$Name$ = $_FocusNode$
+					:i %GLOBAL%$__TARGET_NAME$.$Obj_KillSpawnedScript$$Name$ = $_hideeditormodels$
+					:i %GLOBAL%$__TARGET_NAME$.$Die$
+				:i endif
+			:i endif
+			:i %GLOBAL%$_node_name$.$Obj_KillSpawnedScript$$Name$ = $_hideeditormodels$
+			:i %GLOBAL%$_node_name$.$Die$
+		:i else 
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+	:i if $CompositeObjectExists$$Name$ = %GLOBAL%$parent_node_name$
+		:i %GLOBAL%$parent_node_name$.$Die$
+	:i endif
+	:i $PlaySkaterCamAnim$$stop$
+	:i $KillSkaterCamAnim$$all$
+:i endfunction
+:i function $Editor_PlayCameraAnim$
+	:i $printf$%s(21,"Editor_PlayCameraAnim")
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$Name$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$fade$
+		:i $EditorCamera_DoFade$$instant$$wait$$time$ = %f(1.500000)
+	:i endif
+	:i if NOT $GotParam$$debug$
+	:i endif
+	:i %GLOBAL%$parent_node_name$ = %GLOBAL%$Name$
+	:i $RemoveParameter$$Name$
+	:i if NOT $ObjectExists$$id$ = $editor_cam_target$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $model$$model$ =  ($model_node_green$) :s}
+				:i :a}
+			:i $params$ = :s{$Name$ = $editor_cam_target$$x$ = %f(0.050000)$y$ = %f(2.500000)$z$ = %f(0.050000):s}
+		:i :s}
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $editor_cam_parent$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $model$$model$ =  ($model_node_red$) :s}
+				:i :a}
+			:i $params$ = :s{$Name$ = $editor_cam_parent$$x$ = %f(0.100000)$y$ = %f(0.100000)$z$ = %f(0.100000):s}
+		:i :s}
+	:i endif
+	:i %GLOBAL%$new_target_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i %GLOBAL%$parent_node_name$.$GetSingleTag$$__FIRST_NODE$
+	:i if $GotParam$$__FIRST_NODE$
+		:i %GLOBAL%$__FIRST_NODE$.$Obj_GetPosition$
+		:i %GLOBAL%$first_node_pos$ = %GLOBAL%$Pos$
+		:i $RemoveParameter$$Pos$
+		:i $editor_cam_parent$.$Obj_SetPosition$$position$ = %GLOBAL%$first_node_pos$
+		:i %GLOBAL%$__FIRST_NODE$.$GetSingleTag$$__TARGET_NAME$
+		:i if $GotParam$$__TARGET_NAME$
+			:i if $ObjectExists$$id$ = %GLOBAL%$__TARGET_NAME$
+				:i $__TARGET_NAME$.$Obj_GetPosition$
+				:i %GLOBAL%$new_target_pos$ = %GLOBAL%$Pos$
+				:i $RemoveParameter$$Pos$
+				:i $editor_cam_target$.$Obj_SetPosition$$position$ = %GLOBAL%$new_target_pos$
+			:i endif
+		:i endif
+	:i endif
+	:i $PlaySkaterCamAnim$$stop$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$:s{
+		:i $Skater$ = %i(0,00000000)
+		:i $targetid$ = $editor_cam_target$
+		:i $Name$ = $editor_cam$
+		:i $positionOffset$ =  (%GLOBAL%$first_node_pos$ - %GLOBAL%$new_target_pos$) 
+		:i $play_hold$
+		:i $fov$ = %i(70,00000046)
+		:i $virtual_cam$
+	:i :s}
+	:i $SetActiveCamera$$id$ = $editor_cam$
+	:i $editor_cam$.$Obj_SpawnScript$$_CameraFollowObject$$params$ = :s{$ObjectName$ = $editor_cam_parent$$ParentName$ = %GLOBAL%$parent_node_name$%GLOBAL%$dynamic_fov$:s}
+	:i $editor_cam_parent$.$Obj_SpawnScript$$_hideeditormodels$$params$ = :s{$model$ =  ($model_node_red$) :s}
+	:i $editor_cam_target$.$Obj_SpawnScript$$_hideeditormodels$$params$ = :s{$model$ =  ($model_node_green$) :s}
+	:i $Change$$__ANIM_IS_PLAYING$ = %i(1,00000001)
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i %GLOBAL%$parent_node_name$.$SetTags$$__CURRENT_FRAME_INDEX$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$parent_node_name$.$SetTags$$__CURRENT_FRAME_INDEX$ = %GLOBAL%$index$
+		:i $RemoveParameter$$__SKIP_TO_FRAME$
+		:i %GLOBAL%$parent_node_name$.$GetSingleTag$$__SKIP_TO_FRAME$
+		:i $RemoveParameter$$__SKIP_FRAME_INDEX$
+		:i %GLOBAL%$parent_node_name$.$GetSingleTag$$__SKIP_FRAME_INDEX$
+		:i if NOT $IsTrue$$__ANIM_IS_PLAYING$
+			:i $PlaySkaterCamAnim$$stop$
+			:i $KillSkaterCamAnim$$all$
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$__HOLDTIME$ = %i(3,00000003)
+		:i if  (%GLOBAL%$__SKIP_TO_FRAME$ = %i(1,00000001)) 
+			:i $edmsg2$%s(21,"__SKIP_TO_FRAME %i %a")$i$ = %GLOBAL%$__SKIP_TO_FRAME$$a$ = %GLOBAL%$__SKIP_FRAME_INDEX$
+			:i %GLOBAL%$index$ = %GLOBAL%$__SKIP_FRAME_INDEX$
+			:i %GLOBAL%$parent_node_name$.$SetTags$$__SKIP_TO_FRAME$ = %i(0,00000000)
+			:i %GLOBAL%$parent_node_name$.$SetTags$$__SKIP_FRAME_INDEX$ = %i(0,00000000)
+		:i endif
+		:i $RemoveParameter$$_node_name$
+		:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$parent_node_name$$b$ = %GLOBAL%$index$
+		:i if $ObjectExists$$id$ = %GLOBAL%$_node_name$
+			:i if  (%GLOBAL%$__SKIP_TO_FRAME$ = %i(1,00000001)) 
+				:i %GLOBAL%$__HOLDTIME$ = %i(0,00000000)
+			:i else 
+				:i %GLOBAL%$_node_name$.$GetSingleTag$$__HOLDTIME$
+			:i endif
+			:i $RemoveParameter$$__TRIGGER_SCRIPT$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__TRIGGER_SCRIPT$
+			:i $RemoveParameter$$__FLAG$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__FLAG$
+			:i $RemoveParameter$$__FLAG_AFTER$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__FLAG_AFTER$
+			:i $RemoveParameter$$__FRAME_NAME$
+			:i %GLOBAL%$_node_name$.$GetSingleTag$$__FRAME_NAME$
+			:i if $GotParam$$__FRAME_NAME$
+				:i $FormatText$$TextName$ = $panel_message_string$%s(10,"frame - %a")$a$ = %GLOBAL%$__FRAME_NAME$
+				:i $Create_Panel_Message$$text$ = %GLOBAL%$panel_message_string$$id$ = $__camera_message$$style$ = $focustimelimit_style$
+			:i endif
+			:i if $GotParam$$__TRIGGER_SCRIPT$
+				:i $SpawnScript$%GLOBAL%$__TRIGGER_SCRIPT$
+			:i endif
+			:i if NOT $GotParam$$__FLAG_AFTER$
+				:i if $GotParam$$__FLAG$
+					:i $SetFlag$$flag$ = %GLOBAL%$__FLAG$
+				:i endif
+			:i endif
+			:i %GLOBAL%$_node_name$.$Obj_GetPosition$
+			:i %GLOBAL%$node_pos$ = %GLOBAL%$Pos$
+			:i $RemoveParameter$$Pos$
+			:i if $GotParam$$speed$
+				:i if  (%GLOBAL%$__HOLDTIME$ > %i(0,00000000)) 
+					:i $editor_cam_parent$.$Obj_GetDistanceToObject$%GLOBAL%$_node_name$
+					:i if  (%GLOBAL%$objectDistance$ < %f(40.000000)) 
+						:i $edmsg2$%s(17,"\c2node too close")
+						:i $RemoveParameter$$__TARGET_NAME$
+						:i %GLOBAL%$_node_name$.$GetSingleTag$$__TARGET_NAME$
+						:i if $GotParam$$__TARGET_NAME$
+							:i $editor_cam_target$.$Obj_GetDistanceToObject$%GLOBAL%$__TARGET_NAME$
+							:i if  (%GLOBAL%$objectDistance$ < %f(30.000000)) 
+								:i %GLOBAL%$_node_name$.$Obj_GetDistanceToObject$%GLOBAL%$__TARGET_NAME$
+								:i $edmsg2$%s(23,"\c3using target to node")$a$ = %GLOBAL%$__TARGET_NAME$
+							:i else 
+								:i $edmsg2$%s(15,"\c4using target")$a$ = %GLOBAL%$__TARGET_NAME$
+							:i endif
+						:i endif
+					:i endif
+					:i %GLOBAL%$__HOLDTIME_NEW$ =  (%GLOBAL%$objectDistance$ / %f(10.000000)) 
+					:i %GLOBAL%$__HOLDTIME_NEW$ =  (%GLOBAL%$__HOLDTIME_NEW$ / %GLOBAL%$speed$) 
+				:i endif
+			:i endif
+			:i if $GotParam$$speed$
+				:i if  (%GLOBAL%$__HOLDTIME$ > %i(0,00000000)) 
+					:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME_NEW$
+				:i else 
+					:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME$
+				:i endif
+			:i else 
+				:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME$
+			:i endif
+			:i %GLOBAL%$parent_node_name$.$SetTags$$__CURRENT_NODE$ = %GLOBAL%$_node_name$
+			:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+				:i if $GotParam$$fade$
+					:i $EditorCamera_DoFade$$in$$time$ = %f(1.000000)
+				:i endif
+			:i endif
+		:i else 
+			:i if $GotParam$$loop$
+				:i %GLOBAL%$index$ = %i(0,00000000)
+				:i $RemoveParameter$$_node_name$
+				:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$parent_node_name$$b$ = %GLOBAL%$index$
+				:i if $ObjectExists$$id$ = %GLOBAL%$_node_name$
+					:i %GLOBAL%$_node_name$.$GetSingleTag$$__HOLDTIME$
+					:i %GLOBAL%$_node_name$.$Obj_GetPosition$
+					:i %GLOBAL%$node_pos$ = %GLOBAL%$Pos$
+					:i $RemoveParameter$$Pos$
+					:i if $GotParam$$speed$
+						:i if  (%GLOBAL%$__HOLDTIME$ > %i(0,00000000)) 
+							:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME_NEW$
+						:i else 
+							:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME$
+						:i endif
+					:i else 
+						:i $editor_cam_parent$.$Obj_MoveToPos$%GLOBAL%$node_pos$$time$ = %GLOBAL%$__HOLDTIME$
+					:i endif
+					:i %GLOBAL%$parent_node_name$.$SetTags$$__CURRENT_NODE$ = %GLOBAL%$_node_name$
+				:i else 
+					:i continue
+					
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i endif
+		:i $RemoveParameter$$__TARGET_NAME$
+		:i %GLOBAL%$_node_name$.$GetSingleTag$$__TARGET_NAME$
+		:i if $GotParam$$__TARGET_NAME$
+			:i if $ObjectExists$$id$ = %GLOBAL%$__TARGET_NAME$
+				:i %GLOBAL%$__TARGET_NAME$.$Obj_GetPosition$
+				:i %GLOBAL%$target_pos$ = %GLOBAL%$Pos$
+				:i $RemoveParameter$$Pos$
+				:i if $GotParam$$speed$
+					:i if  (%GLOBAL%$__HOLDTIME$ > %i(0,00000000)) 
+						:i $editor_cam_target$.$Obj_MoveToPos$%GLOBAL%$target_pos$$time$ = %GLOBAL%$__HOLDTIME_NEW$
+						:i $editor_cam_parent$.$Obj_LookAtObject$$Name$ = $editor_cam_target$$time$ = %GLOBAL%$__HOLDTIME_NEW$
+						:i if $IsTrue$$_ShowFocusNodes$
+							:i %GLOBAL%$__TARGET_NAME$.$Obj_SpawnScript$$_FocusNode$$params$ = :s{$waitfor$$holdtime$ = %GLOBAL%$__HOLDTIME_NEW$:s}
+						:i endif
+						:i %GLOBAL%$__HOLDTIME$ = %GLOBAL%$__HOLDTIME_NEW$
+					:i else 
+						:i $editor_cam_target$.$Obj_MoveToPos$%GLOBAL%$target_pos$$time$ = %GLOBAL%$__HOLDTIME$
+						:i $editor_cam_parent$.$Obj_LookAtObject$$Name$ = $editor_cam_target$$time$ = %GLOBAL%$__HOLDTIME$
+						:i if $IsTrue$$_ShowFocusNodes$
+							:i %GLOBAL%$__TARGET_NAME$.$Obj_SpawnScript$$_FocusNode$$params$ = :s{$holdtime$ = %GLOBAL%$__HOLDTIME$:s}
+						:i endif
+					:i endif
+				:i else 
+					:i $editor_cam_target$.$Obj_MoveToPos$%GLOBAL%$target_pos$$time$ = %GLOBAL%$__HOLDTIME$
+					:i $editor_cam_parent$.$Obj_LookAtObject$$Name$ = $editor_cam_target$$time$ = %GLOBAL%$__HOLDTIME$
+					:i if $IsTrue$$_ShowFocusNodes$
+						:i %GLOBAL%$__TARGET_NAME$.$Obj_SpawnScript$$_FocusNode$$params$ = :s{$holdtime$ = %GLOBAL%$__HOLDTIME$:s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i if $GotParam$$speed$
+			:i while
+				
+				:i $wait$ (%GLOBAL%$__HOLDTIME$ / %i(60,0000003c)) $seconds$
+				:i if $editor_cam_parent$.$Obj_IsMoving$
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to  (%GLOBAL%$__HOLDTIME$ * %i(60,0000003c)) 
+		:i else 
+			:i $wait$%GLOBAL%$__HOLDTIME$$seconds$
+		:i endif
+		:i if $GotParam$$__FLAG_AFTER$
+			:i if $GotParam$$__FLAG$
+				:i $SetFlag$$flag$ = %GLOBAL%$__FLAG$
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+	:i if NOT $IsTrue$$__ANIM_IS_PLAYING$
+		:i $PlaySkaterCamAnim$$stop$
+		:i $KillSkaterCamAnim$$all$
+		:i $restore_skater_camera$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$fade$
+		:i $EditorCamera_DoFade$$out$$time$ = %f(0.500000)
+		:i $EditorCamera_DoFade$$time$ = %f(1.000000)$wait$
+	:i endif
+	:i $Change$$__ANIM_IS_PLAYING$ = %i(0,00000000)
+	:i $PlaySkaterCamAnim$$stop$
+	:i $KillSkaterCamAnim$$all$
+	:i $restore_skater_camera$
+	:i if $GotParam$$fade$
+		:i $EditorCamera_DoFade$$time$ = %f(1.000000)$wait$
+		:i $EditorCamera_DoFade$$kill$
+	:i endif
+:i endfunction
+:i function $EditorCamera_DoFade$
+	:i $printf$%s(19,"EditorCamera_DoFade")
+	:i if $GotParam$$instant$
+		:i $FadeToBlack$$on$$time$ = %f(0.000000)$alpha$ = %f(1.000000)
+	:i endif
+	:i if $GotParam$$kill$
+		:i $FadeToBlack$$off$$time$ = %f(0.000000)$alpha$ = %f(0.000000)
+	:i endif
+	:i if $GotParam$$in$
+		:i $FadeToBlack$$off$$time$ = %GLOBAL%$time$$alpha$ = %f(0.000000)
+	:i endif
+	:i if $GotParam$$out$
+		:i $FadeToBlack$$on$$time$ = %GLOBAL%$time$$alpha$ = %f(1.000000)
+	:i endif
+	:i if $GotParam$$wait$
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i endif
+:i endfunction
+:i function $_hideeditormodels$
+:i endfunction
+:i function $_CameraFollowObject$
+	:i $printf$%s(19,"_CameraFollowObject")
+	:i while
+		
+		:i if NOT $IsTrue$$__ANIM_IS_PLAYING$
+			:i $PlaySkaterCamAnim$$stop$
+			:i $KillSkaterCamAnim$$all$
+			:i continue
+			
+		:i endif
+		:i %GLOBAL%$ObjectName$.$Obj_GetPosition$
+		:i %GLOBAL%$new_cam_pos$ = %GLOBAL%$Pos$
+		:i $RemoveParameter$$Pos$
+		:i $editor_cam_target$.$Obj_GetPosition$
+		:i %GLOBAL%$new_target_pos$ = %GLOBAL%$Pos$
+		:i $RemoveParameter$$Pos$
+		:i if NOT $GotParam$$fov$
+			:i %GLOBAL%$fov$ = %i(70,00000046)
+		:i endif
+		:i if $GotParam$$dynamic_fov$
+			:i %GLOBAL%$ObjectName$.$Obj_GetDistanceToObject$$editor_cam_target$
+			:i %GLOBAL%$objectDistance$ =  (%GLOBAL%$objectDistance$ * %f(12.000000)) 
+			:i if  (%GLOBAL%$objectDistance$ < %f(500.000000)) 
+				:i %GLOBAL%$fov$ =  (%f(130.000000) -  (%GLOBAL%$objectDistance$ / %i(10,0000000a)) ) 
+			:i endif
+		:i endif
+		:i $PlaySkaterCamAnim$$stop$
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$:s{
+			:i $Skater$ = %i(0,00000000)
+			:i $targetid$ = $editor_cam_target$
+			:i $Name$ = $editor_cam$
+			:i $positionOffset$ =  (%GLOBAL%$new_cam_pos$ - %GLOBAL%$new_target_pos$) 
+			:i $play_hold$
+			:i $fov$ = %GLOBAL%$fov$
+			:i $virtual_cam$
+		:i :s}
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+:i endfunction
+:i function $_FocusNode$
+	:i $printf$%s(10,"_FocusNode")
+	:i if $IsTrue$$_ShowFocusNodes$
+		:i $Obj_InitModel$$model$ =  ($model_node_yellow$) 
+		:i if $GotParam$$waitfor$
+			:i while
+				
+				:i $wait$ (%GLOBAL%$__HOLDTIME$ / %i(60,0000003c)) $seconds$
+				:i if $editor_cam_parent$.$Obj_IsMoving$
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to  (%GLOBAL%$holdtime$ * %i(60,0000003c)) 
+		:i else 
+			:i $wait$%GLOBAL%$holdtime$$seconds$
+		:i endif
+		:i $Obj_InitModel$$model$ =  ($model_node_pink$) 
+	:i endif
+:i endfunction
+:i function $Editor_LoadCameraAnimParams$
+	:i $printf$%s(27,"Editor_LoadCameraAnimParams")
+	:i $edmsg2$%s(32,"Editor_LoadCameraAnimParams (%a)")$a$ = %GLOBAL%$Name$
+	:i $FormatText$$ChecksumName$ = $_name$%s(2,"%a")$a$ = %GLOBAL%$Name$
+	:i $CreateFromStructure$:s{
+		:i $Name$ = %GLOBAL%$_name$
+		:i $Pos$ =  (%GLOBAL%$params$->$__POS$) 
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $model$ =  ($model_Cube$) 
+	:i :s}
+	:i %GLOBAL%$_name$.$SetTags$$__CURRENT_FRAME_INDEX$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$__SKIP_TO_FRAME$ = %i(0,00000000)
+	:i %GLOBAL%$_name$.$SetTags$$__SKIP_FRAME_INDEX$ = %i(0,00000000)
+	:i $ForEachIn$ (%GLOBAL%$params$->$nodes$) $Do$ = $MaybeCreateCameraNodes$$params$ = :s{$parent$ = %GLOBAL%$_name$:s}
+:i endfunction
+:i function $MaybeCreateCameraNodes$
+	:i $printf$%s(22,"MaybeCreateCameraNodes")
+	:i %GLOBAL%$parent$.$GetSingleTag$$__NUM_NODES$
+	:i if NOT $GotParam$$__NUM_NODES$
+		:i %GLOBAL%$parent$.$SetTags$$__NUM_NODES$ = %i(0,00000000)
+		:i %GLOBAL%$__NUM_NODES$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$__POS$
+		:i $RemoveParameter$$_node_name$
+		:i $FormatText$$ChecksumName$ = $_node_name$%s(7,"%a_%b_a")$a$ = %GLOBAL%$parent$$b$ = %GLOBAL%$__NUM_NODES$
+		:i $CreateFromStructure$:s{
+			:i $Name$ = %GLOBAL%$_node_name$
+			:i $Pos$ = %GLOBAL%$__POS$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $model$ =  ($model_node_blue$) 
+			:i $x$ = %f(0.300000)
+			:i $y$ = %f(0.300000)
+			:i $z$ = %f(0.300000)
+		:i :s}
+		:i %GLOBAL%$_node_name$.$Obj_SpawnScript$$_hideeditormodels$$params$ = :s{$model$ =  ($model_node_blue$) :s}
+		:i %GLOBAL%$_node_name$.$SetTags$$__PARENT$ = %GLOBAL%$parent$
+		:i %GLOBAL%$parent$.$SetTags$$__FIRST_NODE$ = %GLOBAL%$_node_name$
+	:i endif
+	:i if $GotParam$$__CHECKPOINT$
+		:i %GLOBAL%$_node_name$.$SetTags$$__CHECKPOINT$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$__FRAME_NAME$
+		:i %GLOBAL%$_node_name$.$SetTags$$__FRAME_NAME$ = %GLOBAL%$__FRAME_NAME$
+		:i %GLOBAL%$_node_name$.$SetTags$$__CHECKPOINT$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$__TARGET$
+		:i $RemoveParameter$$_target_name$
+		:i $FormatText$$ChecksumName$ = $_target_name$%s(7,"%a_%b_b")$a$ = %GLOBAL%$parent$$b$ = %GLOBAL%$__NUM_NODES$
+		:i $CreateFromStructure$:s{
+			:i $Name$ = %GLOBAL%$_target_name$
+			:i $Pos$ = %GLOBAL%$__TARGET$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $model$ =  ($model_node_pink$) 
+			:i $x$ = %f(0.200000)
+			:i $y$ = %f(0.200000)
+			:i $z$ = %f(0.200000)
+		:i :s}
+		:i %GLOBAL%$_target_name$.$Obj_SpawnScript$$_hideeditormodels$$params$ = :s{$model$ =  ($model_node_pink$) :s}
+		:i %GLOBAL%$_node_name$.$SetTags$$__TARGET_NAME$ = %GLOBAL%$_target_name$
+		:i %GLOBAL%$_target_name$.$SetTags$$__PARENT$ = %GLOBAL%$_node_name$
+	:i endif
+	:i if $GotParam$$__HOLDTIME$
+		:i %GLOBAL%$_node_name$.$SetTags$$__HOLDTIME$ = %GLOBAL%$__HOLDTIME$
+		:i if $ObjectExists$$id$ = %GLOBAL%$_target_name$
+			:i %GLOBAL%$_target_name$.$SetTags$$__HOLDTIME$ = %GLOBAL%$__HOLDTIME$
+		:i endif
+	:i endif
+	:i if $GotParam$$__FLAG$
+		:i %GLOBAL%$_node_name$.$SetTags$$__FLAG$ = %GLOBAL%$__FLAG$
+		:i if $GotParam$$__FLAG_AFTER$
+			:i %GLOBAL%$_node_name$.$SetTags$$__FLAG_AFTER$ = %i(1,00000001)
+		:i endif
+		:i if $ObjectExists$$id$ = %GLOBAL%$_target_name$
+			:i %GLOBAL%$_target_name$.$SetTags$$__FLAG$ = %GLOBAL%$__FLAG$
+		:i endif
+	:i endif
+	:i if $GotParam$$fov$
+		:i %GLOBAL%$_node_name$.$SetTags$$__FOV$ = %GLOBAL%$fov$
+	:i endif
+	:i if $GotParam$$__TRIGGER_SCRIPT$
+		:i %GLOBAL%$_node_name$.$SetTags$$__TRIGGER_SCRIPT$ = %GLOBAL%$__TRIGGER_SCRIPT$
+		:i %GLOBAL%$_node_name$.$SetTags$$__TRIGGER_SCRIPT_TRIGGERD$ = %i(0,00000000)
+	:i endif
+	:i %GLOBAL%$parent$.$SetTags$$__NUM_NODES$ =  (%GLOBAL%$__NUM_NODES$ + %i(1,00000001)) 
+	:i %GLOBAL%$__NUM_NODES$ =  (%GLOBAL%$__NUM_NODES$ + %i(1,00000001)) 
+:i endfunction
+:i function $THUGPRO_CreateParticleNode$
+	:i if $IsTrue$$THUGRPO_ParticlesEnabled$
+		:i $THUGPRO_ForceCreate$$Name$ = %GLOBAL%$nodename$
+	:i endif
+:i endfunction
+:i function $THUGPRO_KillParticleNode$
+	:i if $IsTrue$$THUGRPO_ParticlesEnabled$
+		:i $FormatText$$ChecksumName$ = $_name$%s(16,"%a_fast_particle")$a$ = %GLOBAL%$nodename$
+		:i $DestroyFastParticleSystem$$Name$ = %GLOBAL%$_name$
+		:i $THUGPRO_SafeKill$$Name$ = %GLOBAL%$nodename$
+	:i endif
+:i endfunction
+:i function $GLOBAL_TP_Particle_SteamScript$
+	:i $THUGPRO_SpawnNodeParticles$$Type$ = $steam$
+:i endfunction
+:i $THUGRPO_ParticlesEnabled$ = %i(1,00000001)
+:i function $THUGPRO_SpawnNodeParticles$
+	:i if $IsTrue$$THUGRPO_ParticlesEnabled$
+		:i if $GotParam$$ParkEditor$
+			:i $Obj_GetId$
+			:i $nodename$ = %GLOBAL%$objID$
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$objID$$b$ = $[00000000]$
+				:i $edmsg2$%s(23,"\c2ERROR: INVALID OBJID")
+				:i return
+				
+			:i endif
+		:i else 
+			:i $GetNodeName$
+		:i endif
+		:i $FormatText$$ChecksumName$ = $_name$%s(16,"%a_fast_particle")$a$ = %GLOBAL%$nodename$
+		:i if NOT $GotParam$$ParkEditor$
+			:i $Obj_GetId$
+			:i %GLOBAL%$objID$.$Obj_GetPosition$
+		:i else 
+			:i $DestroyFastParticleSystem$$Name$ = %GLOBAL%$_name$
+		:i endif
+		:i switch %GLOBAL%$Type$
+			:i case $steam$
+				:i $particle_params$ = $apm_tp_steam01_fast_particle_params$
+				:i endcase
+			case $steam02$
+				:i $particle_params$ = $apm_tp_steam02_fast_particle_params$
+				:i endcase
+			case $BigSteam$
+				:i $particle_params$ = $apm_tp_BigSteam_fast_particle_params$
+				:i endcase
+			case $smoke$
+				:i $particle_params$ = $apm_tp_smoke01_fast_particle_params$
+				:i endcase
+			case $smoke02$
+				:i $particle_params$ = $apm_tp_smoke02_fast_particle_params$
+				:i endcase
+			case $bigsmoke$
+				:i $particle_params$ = $apm_tp_bigsmoke_fast_particle_params$
+				:i endcase
+			case $sparks$
+				:i $particle_params$ = $apm_tp_spark01_fast_particle_params$
+				:i endcase
+			case $sprinkler$
+				:i $particle_params$ = $apm_tp_sprinkler01_fast_particle_params$
+				:i endcase
+			case $sprinkler02$
+				:i $particle_params$ = $apm_tp_sprinkler02_fast_particle_params$
+				:i endcase
+			case $fire$
+				:i $particle_params$ = $apm_tp_fire_fast_particle_params$
+				:i end_switch
+		
+		:i if NOT $GotParam$$ParkEditor$
+			:i $CreateFastParticleSystem$$Name$ = %GLOBAL%$_name$$params_script$ = %GLOBAL%$particle_params$
+			:i %GLOBAL%$_name$.$Obj_SetPosition$$position$ = %GLOBAL%$Pos$
+		:i else 
+			:i $CreateFastParticleSystem$$Name$ = %GLOBAL%$_name$$params_script$ = %GLOBAL%$particle_params$$attachObjID$ = %GLOBAL%$objID$
+		:i endif
+	:i endif
+:i endfunction
+:i $apm_tp_fire_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $BoxDimsStart$ = %vec3(20.000000,20.000000,20.000000)
+	:i $Pos$ = %vec3(0.000000,20.000000,0.000000)
+	:i $MidPosition$ = %vec3(0.000000,100.000000,0.000000)
+	:i $EndPosition$ = %vec3(0.000000,200.000000,0.000000)
+	:i $BoxDimsMid$ = %vec3(20.000000,20.000000,20.000000)
+	:i $BoxDimsEnd$ = %vec3(20.000000,20.000000,20.000000)
+	:i $texture$ = $dt_flametest01$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(0,00000000)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(10,0000000a)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(70.000000)
+	:i $Lifetime$ = %f(1.500000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(20.000000)
+	:i $MidRadius$ = %f(12.000000)
+	:i $EndRadius$ = %f(9.000000)
+	:i $StartRadiusSpread$ = %f(5.000000)
+	:i $MidRadiusSpread$ = %f(5.000000)
+	:i $EndRadiusSpread$ = %f(5.000000)
+	:i $StartRGB$ = :a{%i(139,0000008b);%i(112,00000070);%i(80,00000050):a}
+	:i $StartAlpha$ = %i(99,00000063)
+	:i $ColorMidTime$ = %i(50,00000032)
+	:i $MidRGB$ = :a{%i(95,0000005f);%i(40,00000028);%i(0,00000000):a}
+	:i $MidAlpha$ = %i(128,00000080)
+	:i $EndRGB$ = :a{%i(23,00000017);%i(22,00000016);%i(21,00000015):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_steam01_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(2.898000,41.445999,-0.393000)
+	:i $EndPosition$ = %vec3(-32.067001,163.893005,-2.725000)
+	:i $BoxDimsStart$ = %vec3(28.963470,15.375239,28.963470)
+	:i $BoxDimsMid$ = %vec3(59.503052,37.197819,59.503052)
+	:i $BoxDimsEnd$ = %vec3(181.998581,105.532646,181.998581)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $apm_spray_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(0,00000000)
+	:i $MaxStreams$ = %i(1,00000001)
+	:i $SuspendDistance$ = %i(800,00000320)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(800,00000320)
+	:i $EmitRate$ = %f(4.000000)
+	:i $Lifetime$ = %f(5.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(35.000000)
+	:i $MidRadius$ = %f(75.000000)
+	:i $EndRadius$ = %f(150.000000)
+	:i $StartRadiusSpread$ = %f(50.000000)
+	:i $MidRadiusSpread$ = %f(0.000000)
+	:i $EndRadiusSpread$ = %f(30.000000)
+	:i $StartRGB$ = :a{%i(152,00000098);%i(152,00000098);%i(168,000000a8):a}
+	:i $StartAlpha$ = %i(7,00000007)
+	:i $ColorMidTime$ = %i(21,00000015)
+	:i $MidRGB$ = :a{%i(105,00000069);%i(110,0000006e);%i(121,00000079):a}
+	:i $MidAlpha$ = %i(20,00000014)
+	:i $EndRGB$ = :a{%i(51,00000033);%i(53,00000035);%i(58,0000003a):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_steam02_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(2.898000,41.445999,-0.393000)
+	:i $EndPosition$ = %vec3(-32.067001,163.893005,-2.725000)
+	:i $BoxDimsStart$ = %vec3(28.963470,15.375239,28.963470)
+	:i $BoxDimsMid$ = %vec3(59.503052,37.197819,59.503052)
+	:i $BoxDimsEnd$ = %vec3(181.998581,105.532646,181.998581)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $apm_spray_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(0,00000000)
+	:i $MaxStreams$ = %i(1,00000001)
+	:i $SuspendDistance$ = %i(800,00000320)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(800,00000320)
+	:i $EmitRate$ = %f(4.000000)
+	:i $Lifetime$ = %f(5.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(35.000000)
+	:i $MidRadius$ = %f(75.000000)
+	:i $EndRadius$ = %f(150.000000)
+	:i $StartRadiusSpread$ = %f(50.000000)
+	:i $MidRadiusSpread$ = %f(0.000000)
+	:i $EndRadiusSpread$ = %f(30.000000)
+	:i $StartRGB$ = :a{%i(255,000000ff);%i(255,000000ff);%i(50,00000032):a}
+	:i $StartAlpha$ = %i(7,00000007)
+	:i $ColorMidTime$ = %i(21,00000015)
+	:i $MidRGB$ = :a{%i(255,000000ff);%i(153,00000099);%i(51,00000033):a}
+	:i $MidAlpha$ = %i(20,00000014)
+	:i $EndRGB$ = :a{%i(151,00000097);%i(53,00000035);%i(58,0000003a):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_BigSteam_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(2.898000,41.445999,-0.393000)
+	:i $EndPosition$ = %vec3(-32.067001,163.893005,-2.725000)
+	:i $BoxDimsStart$ = %vec3(28.963470,15.375239,28.963470)
+	:i $BoxDimsMid$ = %vec3(59.503052,37.197819,59.503052)
+	:i $BoxDimsEnd$ = %vec3(181.998581,105.532646,181.998581)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $apm_spray_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(0,00000000)
+	:i $MaxStreams$ = %i(1,00000001)
+	:i $SuspendDistance$ = %i(800,00000320)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(800,00000320)
+	:i $EmitRate$ = %f(4.000000)
+	:i $Lifetime$ = %f(5.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(200.000000)
+	:i $MidRadius$ = %f(300.000000)
+	:i $EndRadius$ = %f(400.000000)
+	:i $StartRadiusSpread$ = %f(50.000000)
+	:i $MidRadiusSpread$ = %f(40.000000)
+	:i $EndRadiusSpread$ = %f(30.000000)
+	:i $StartRGB$ = :a{%i(152,00000098);%i(152,00000098);%i(168,000000a8):a}
+	:i $StartAlpha$ = %i(7,00000007)
+	:i $ColorMidTime$ = %i(21,00000015)
+	:i $MidRGB$ = :a{%i(105,00000069);%i(110,0000006e);%i(121,00000079):a}
+	:i $MidAlpha$ = %i(20,00000014)
+	:i $EndRGB$ = :a{%i(51,00000033);%i(53,00000035);%i(58,0000003a):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_smoke01_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(11.479000,71.987000,0.639000)
+	:i $EndPosition$ = %vec3(27.136999,247.669006,0.407000)
+	:i $BoxDimsStart$ = %vec3(25.417999,25.417999,25.417999)
+	:i $BoxDimsMid$ = %vec3(39.350693,39.350693,39.350693)
+	:i $BoxDimsEnd$ = %vec3(77.168152,77.168152,77.168152)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $ru_tb_puff_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(6.000000)
+	:i $Lifetime$ = %f(20.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(30.000000)
+	:i $MidRadius$ = %f(40.000000)
+	:i $EndRadius$ = %f(50.000000)
+	:i $StartRadiusSpread$ = %f(0.000000)
+	:i $MidRadiusSpread$ = %f(0.000000)
+	:i $EndRadiusSpread$ = %f(0.000000)
+	:i $StartRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $StartAlpha$ = %i(0,00000000)
+	:i $ColorMidTime$ = %i(13,0000000d)
+	:i $MidRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $MidAlpha$ = %i(71,00000047)
+	:i $EndRGB$ = :a{%i(55,00000037);%i(55,00000037);%i(55,00000037):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_smoke02_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(11.479000,71.987000,0.639000)
+	:i $EndPosition$ = %vec3(27.136999,127.668999,0.407000)
+	:i $BoxDimsStart$ = %vec3(25.417999,25.417999,25.417999)
+	:i $BoxDimsMid$ = %vec3(39.350693,39.350693,39.350693)
+	:i $BoxDimsEnd$ = %vec3(77.168152,77.168152,77.168152)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $ru_tb_puff_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(4.000000)
+	:i $Lifetime$ = %f(10.000000)
+	:i $MidPointPCT$ = %i(30,0000001e)
+	:i $StartRadius$ = %f(10.000000)
+	:i $MidRadius$ = %f(20.000000)
+	:i $EndRadius$ = %f(30.000000)
+	:i $StartRadiusSpread$ = %f(0.000000)
+	:i $MidRadiusSpread$ = %f(0.000000)
+	:i $EndRadiusSpread$ = %f(0.000000)
+	:i $StartRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $StartAlpha$ = %i(0,00000000)
+	:i $ColorMidTime$ = %i(13,0000000d)
+	:i $MidRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $MidAlpha$ = %i(71,00000047)
+	:i $EndRGB$ = :a{%i(55,00000037);%i(55,00000037);%i(55,00000037):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_bigsmoke_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $Type$ = $Default$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(2.898000,41.445999,-0.393000)
+	:i $EndPosition$ = %vec3(-32.067001,163.893005,-2.725000)
+	:i $BoxDimsStart$ = %vec3(28.963470,15.375239,28.963470)
+	:i $BoxDimsMid$ = %vec3(59.503052,37.197819,59.503052)
+	:i $BoxDimsEnd$ = %vec3(181.998581,105.532646,181.998581)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $apm_spray_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $UseColorMidTime$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Blend$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(0,00000000)
+	:i $MaxStreams$ = %i(1,00000001)
+	:i $SuspendDistance$ = %i(800,00000320)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(800,00000320)
+	:i $EmitRate$ = %f(8.000000)
+	:i $Lifetime$ = %f(5.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(500.000000)
+	:i $MidRadius$ = %f(500.000000)
+	:i $EndRadius$ = %f(500.000000)
+	:i $StartRadiusSpread$ = %f(50.000000)
+	:i $MidRadiusSpread$ = %f(0.000000)
+	:i $EndRadiusSpread$ = %f(30.000000)
+	:i $StartRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $StartAlpha$ = %i(90,0000005a)
+	:i $ColorMidTime$ = %i(13,0000000d)
+	:i $MidRGB$ = :a{%i(65,00000041);%i(65,00000041);%i(65,00000041):a}
+	:i $MidAlpha$ = %i(71,00000047)
+	:i $EndRGB$ = :a{%i(55,00000037);%i(55,00000037);%i(55,00000037):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_spark01_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $LocalSpace$
+	:i $MidPosition$ = %vec3(11.563000,-0.494000,2.815000)
+	:i $EndPosition$ = %vec3(17.270000,-6.718000,-5.318000)
+	:i $BoxDimsStart$ = %vec3(7.600350,2.053540,10.926832)
+	:i $BoxDimsMid$ = %vec3(34.320835,34.320835,34.320835)
+	:i $BoxDimsEnd$ = %vec3(30.046930,30.046930,30.046930)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $apm_spark_01$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(12.000000)
+	:i $Lifetime$ = %f(0.250000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(20.000000)
+	:i $MidRadius$ = %f(10.000000)
+	:i $EndRadius$ = %f(1.000000)
+	:i $StartRadiusSpread$ = %f(5.000000)
+	:i $MidRadiusSpread$ = %f(5.000000)
+	:i $EndRadiusSpread$ = %f(5.000000)
+	:i $StartRGB$ = :a{%i(191,000000bf);%i(250,000000fa);%i(255,000000ff):a}
+	:i $StartAlpha$ = %i(95,0000005f)
+	:i $EndRGB$ = :a{%i(103,00000067);%i(139,0000008b);%i(255,000000ff):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_sprinkler01_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $LocalSpace$
+	:i $BoxDimsStart$ = %vec3(12.508087,3.379562,12.584589)
+	:i $BoxDimsEnd$ = %vec3(446.790436,14.381295,446.790436)
+	:i $BoxDimsMid$ = %vec3(320.513000,26.007784,320.513000)
+	:i $MidPosition$ = %vec3(2.578000,101.666000,4.199000)
+	:i $EndPosition$ = %vec3(0.587000,-37.694000,2.194000)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $water_spray$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(200.000000)
+	:i $Lifetime$ = %f(1.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(3.000000)
+	:i $MidRadius$ = %f(5.000000)
+	:i $EndRadius$ = %f(7.000000)
+	:i $StartRadiusSpread$ = %f(2.000000)
+	:i $MidRadiusSpread$ = %f(5.000000)
+	:i $EndRadiusSpread$ = %f(5.000000)
+	:i $StartRGB$ = :a{%i(191,000000bf);%i(247,000000f7);%i(255,000000ff):a}
+	:i $StartAlpha$ = %i(58,0000003a)
+	:i $EndRGB$ = :a{%i(103,00000067);%i(139,0000008b);%i(255,000000ff):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i $apm_tp_sprinkler02_fast_particle_params$ = :s{
+	:i $Class$ = $ParticleObject$
+	:i $LocalSpace$
+	:i $BoxDimsStart$ = %vec3(12.508087,3.379562,12.584589)
+	:i $BoxDimsEnd$ = %vec3(446.790436,14.381295,446.790436)
+	:i $BoxDimsMid$ = %vec3(320.513000,26.007784,320.513000)
+	:i $MidPosition$ = %vec3(2.578000,101.666000,4.199000)
+	:i $EndPosition$ = %vec3(0.587000,-37.694000,2.194000)
+	:i $Pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $texture$ = $water_spray$
+	:i $CreatedAtStart$
+	:i $AbsentInNetGames$
+	:i $UseMidPoint$
+	:i $Type$ = $NEWFLAT$
+	:i $BlendMode$ = $Add$
+	:i $FixedAlpha$ = %i(128,00000080)
+	:i $AlphaCutoff$ = %i(1,00000001)
+	:i $MaxStreams$ = %i(2,00000002)
+	:i $SuspendDistance$ = %i(0,00000000)
+	:i $lod_dist1$ = %i(400,00000190)
+	:i $lod_dist2$ = %i(401,00000191)
+	:i $EmitRate$ = %f(200.000000)
+	:i $Lifetime$ = %f(1.000000)
+	:i $MidPointPCT$ = %i(50,00000032)
+	:i $StartRadius$ = %f(2.000000)
+	:i $MidRadius$ = %f(4.000000)
+	:i $EndRadius$ = %f(5.000000)
+	:i $StartRadiusSpread$ = %f(1.000000)
+	:i $MidRadiusSpread$ = %f(3.000000)
+	:i $EndRadiusSpread$ = %f(3.000000)
+	:i $StartRGB$ = :a{%i(191,000000bf);%i(247,000000f7);%i(255,000000ff):a}
+	:i $StartAlpha$ = %i(58,0000003a)
+	:i $EndRGB$ = :a{%i(103,00000067);%i(139,0000008b);%i(255,000000ff):a}
+	:i $EndAlpha$ = %i(0,00000000)
+:i :s}
+:i :end

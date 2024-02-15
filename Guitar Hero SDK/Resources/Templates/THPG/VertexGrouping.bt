@@ -1,0 +1,20 @@
+// Vertex grouping / "Piece"
+// This is sort of like a sub-chunk
+
+#include "Vertex.bt"
+
+typedef struct
+{
+    int vert_count_a <bgcolor=CL_VBVALUE>;
+    ubyte bone_indices[4] <bgcolor=CL_VBWEIGHT>;
+    QBKey face_texta <bgcolor=CL_VBPADDING>;
+    QBKey face_textb <bgcolor=CL_VBPADDING>;
+
+    THPGVertex vertices[vert_count_a] <optimize=false>;
+} THPGVertexGrouping <read=ReadTHPGVertexGrouping>;
+
+string ReadTHPGVertexGrouping(THPGVertexGrouping &group)
+{
+    local string s;
+    return SPrintf(s, "[%d, %d, %d, %d]", group.bone_indices[0], group.bone_indices[1], group.bone_indices[2], group.bone_indices[3]);
+}

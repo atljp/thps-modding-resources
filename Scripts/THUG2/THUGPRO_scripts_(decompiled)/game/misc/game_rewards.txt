@@ -1,0 +1,75 @@
+
+:i $want_game_complete_message$ = %i(0,00000000)
+:i $want_goal_complete_message$ = %i(0,00000000)
+:i $want_gaps_complete_message$ = %i(0,00000000)
+:i $want_goal_alt_message$ = %i(0,00000000)
+:i $want_completion_movie$ = %i(0,00000000)
+:i function $SetRewardFlagArray$
+:i endfunction
+:i function $GetDifficultyLevelRewards$
+:i endfunction
+:i function $GetGoalRewards$
+:i endfunction
+:i function $ProcessGameRewards$
+	:i $printf$%s(23,"Processing Game Rewards")
+	:i if $GameModeEquals$$is_career$
+		:i if $GetGlobalFlag$$flag$ = $CAREER_SEEN_GAME_COMPLETE_MESSAGE$
+			:i return
+			
+		:i endif
+		:i $GetArraySize$$CHAPTER_STATUS$
+		:i $GetCurrentChapter$
+		:i $GoalManager_GetActiveRewardPoints$
+		:i $GetCurrentPointsToAdvance$
+		:i if  (%GLOBAL%$active_points$ < %GLOBAL%$points_to_advance$) 
+			:i return
+			
+		:i endif
+		:i $SetGlobalFlag$$flag$ = $CAREER_SEEN_GAME_COMPLETE_MESSAGE$
+	:i else 
+		:i if $GetGlobalFlag$$flag$ = $CLASSIC_SEEN_GAME_COMPLETE_MESSAGE$
+			:i return
+			
+		:i endif
+		:i if NOT $LevelIs$$load_se2$
+			:i return
+			
+		:i endif
+		:i $GetClassicLevelGoalCount$
+		:i $GetClassicModeTargetGoalsComplete$
+		:i if  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+			:i return
+			
+		:i endif
+		:i $SetGlobalFlag$$flag$ = $CLASSIC_SEEN_GAME_COMPLETE_MESSAGE$
+	:i endif
+	:i $GetDifficultyLevelRewards$
+	:i $SetRewardFlagArray$$flags$ = %GLOBAL%$flags$
+	:i $change$$want_game_complete_message$ = %i(1,00000001)
+	:i $change$$want_completion_movie$ = %i(1,00000001)
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $ProcessGoalRewards$
+:i endfunction
+:i function $ProcessAllGapsReward$
+:i endfunction
+:i function $CheckNeedCompletionMessages$
+:i endfunction
+:i $waiting_for_complete_message$ = %i(0,00000000)
+:i function $DoCompletionMessages$
+:i endfunction
+:i function $DoCompletionMessagesNow$
+:i endfunction
+:i function $MaybePlayCreditsMovie$
+:i endfunction
+:i function $GameCompleteMessage$
+:i endfunction
+:i function $GoalCompleteMessage$
+:i endfunction
+:i function $AllGapsCompleteMessage$
+:i endfunction
+:i function $GetEndMovieParams$
+:i endfunction
+:i function $GetGoalMovieParams$
+:i endfunction
+:i :end

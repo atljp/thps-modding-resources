@@ -1,0 +1,660 @@
+
+:i $pager_window_title_color$ = :a{%i(60,0000003c)%i(128,00000080)%i(60,0000003c)%i(128,00000080):a}
+:i $pager_window_message_color$ = :a{%i(50,00000032)%i(90,0000005a)%i(128,00000080)%i(128,00000080):a}
+:i $pager_window_bg_alpha$ = %f(0.150000)
+:i $pager_message_count_pos$ = %vec2(25.000000,18.000000)
+:i function $pager_message_list_changed$
+	:i if $ScreenElementExists$$id$ = $pager_anchor$
+		:i $pager_window_refresh_content$$changed$
+	:i else 
+		:i if $GotParam$$deleted$
+			:i $update_pager_icon$$stop_flash$
+			:i return
+			
+		:i endif
+		:i if $GotParam$$priority_message$
+			:i $Obj_GetID$
+			:i $WaitUntilScreenClear$$object$ = %GLOBAL%$ObjID$$callback$ = $pager_window_create$
+			:i return
+			
+		:i endif
+		:i $update_pager_icon$$flash$
+	:i endif
+:i endfunction
+:i function $pager_window_create$$object$ = $skater$
+	:i $update_pager_icon$$stop_flash$
+	:i $hide_current_goal$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i if NOT $InNetGame$
+			:i if $InInternetMode$
+				:i if $ObjectExists$$id$ = $console_message_vmenu$
+					:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(0,00000000)
+				:i endif
+			:i endif
+		:i endif
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $spawnscript$$menu3d_animate_out$$params$ = :s{$die$:s}
+		:i $pause_menu_gradient$$off$
+	:i else 
+		:i if NOT $InNetGame$
+			:i $PauseGame$
+		:i endif
+		:i $GoalManager_PauseAllGoals$
+		:i $hide_all_hud_items$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $spawnscript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(500,000001f4):s}
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $pager_anchor$
+	:i :s}
+	:i $AssignAlias$$id$ = $pager_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$$generic_helper_text$
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $grad_bar$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = %GLOBAL%$grad_color$
+		:i $scale$ = %vec2(19.000000,1.000000)
+		:i $pos$ = %vec2(0.000000,83.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(35,00000023)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $pager_anchor$
+		:i $id$ = $pager_box_anchor$
+		:i $pos$ = %vec2(100.000000,83.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_bg$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,38.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %vec2(0.500000,38.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ = %f(0.200000)
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $GetScreenElementDims$$id$ = $pager_bg$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ =  (%GLOBAL%$height$ * %vec2(0.000000,1.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,0.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ = %f(0.200000)
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ =  (%GLOBAL%$width$ * %vec2(1.000000,0.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(0.500000,38.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ = %f(0.200000)
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $moto_phone$
+		:i $texture$ = $nokia_phone$
+		:i $pos$ = %vec2(40.000000,65.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $moto_phone$$pager_window_animate_phone$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $moto_logo$
+		:i $texture$ = $motorola$
+		:i $pos$ = %vec2(438.000000,4.000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %f(1.050000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_message_title$
+		:i $font$ = $dialog$
+		:i $pos$ = %vec2(140.000000,29.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $text$ = %s(0,"")
+		:i $rgba$ = $pager_window_title_color$
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,30.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,2.750000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ = $pager_window_bg_alpha$
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,50.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,0.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ =  ($pager_window_bg_alpha$ * %i(3,00000003)) 
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_message_box$
+		:i $font$ = $dialog$
+		:i $dims$ = %vec2(360.000000,0.000000)
+		:i $pos$ = %vec2(80.000000,53.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $text$ = %s(0,"")
+		:i $internal_scale$ = %f(0.900000)
+		:i $line_spacing$ = %f(0.700000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $rgba$ = $pager_window_message_color$
+		:i $scale$ = %i(1,00000001)
+		:i $allow_expansion$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_message_count$
+		:i $font$ = $dialog$
+		:i $pos$ = $pager_message_count_pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $text$ = %s(0,"")
+		:i $rgba$ = $pager_window_title_color$
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i if $InInternetMode$
+		:i if $AnyBuddyMessagesLeft$
+			:i $ShowNextBuddyMessage$
+		:i endif
+	:i endif
+	:i $pager_window_build_menu$ isNull 
+	:i $pager_window_refresh_content$ isNull 
+	:i $generic_menu_animate_in$$menu$ = $pager_box_anchor$$force$
+:i endfunction
+:i function $pager_window_add_menu_item$:s{$focus_script$ = $pager_window_focus_menu_item$
+		:i $unfocus_script$ = $pager_window_unfocus_menu_item$
+		:i $pad_choose_sound$ = $theme_menu_pad_choose_sound$
+		:i $pad_choose_params$ = :s{:s}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $local_id$ = %GLOBAL%$id$
+		:i $dims$ = %vec2(400.000000,20.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$%GLOBAL%$focus_script$$params$ = :s{$id$ = %GLOBAL%$id$:s}:s}
+			:i :s{$unfocus$%GLOBAL%$unfocus_script$$params$ = :s{$id$ = %GLOBAL%$id$:s}:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_sound$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_sound$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :a}
+	:i :s}
+	:i $container_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $local_id$ = $text$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $rgba$ = $pager_window_title_color$
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $local_id$ = $bg$
+		:i $texture$ = $white2$
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $scale$ = %vec2(55.000000,2.500000)
+	:i :s}
+:i endfunction
+:i function $pager_window_focus_menu_item$
+	:i $DoScreenElementMorph$$id$ = :s{$current_menu$$child$ = :s{%GLOBAL%$id$$child$ = $bg$:s}:s}$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $pager_window_unfocus_menu_item$
+	:i $DoScreenElementMorph$$id$ = :s{$current_menu$$child$ = :s{%GLOBAL%$id$$child$ = $bg$:s}:s}$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $pager_window_next_message$
+	:i if $InInternetMode$
+		:i if $AnyBuddyMessagesLeft$
+			:i $ShowNextBuddyMessage$
+		:i endif
+	:i endif
+	:i $current_menu$.$GetSingleTag$$CurrentMessageNum$
+	:i $current_menu$.$SetTags$$CurrentMessageNum$ =  (%GLOBAL%$CurrentMessageNum$ + %i(1,00000001)) 
+	:i $pager_window_refresh_content$ isNull 
+:i endfunction
+:i function $pager_window_prev_message$
+	:i $current_menu$.$GetSingleTag$$CurrentMessageNum$
+	:i $current_menu$.$SetTags$$CurrentMessageNum$ =  (%GLOBAL%$CurrentMessageNum$%i(4294967295,ffffffff)) 
+	:i $pager_window_refresh_content$
+:i endfunction
+:i function $pager_window_context_reply$
+	:i $current_menu$.$GetSingleTag$$reply_script$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i %GLOBAL%$reply_script$
+:i endfunction
+:i function $pager_window_context_reply_highlight$
+	:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.500000)$relative_scale$$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.500000)$relative_scale$$alpha$ = %i(1,00000001)
+	:i while
+		
+		:i $rot_angle$ = random%vec2(-2.000000,2.000000)
+		:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.100000)$relative_scale$$alpha$ = %i(1,00000001)
+		:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.900000)$relative_scale$$alpha$ = %f(0.700000)
+	:i loop_to %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.050000)$rot_angle$ = %i(0,00000000)$scale$ = %i(1,00000001)$relative_scale$$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $pager_window_maybe_play_sound$
+	:i if NOT $ScreenElementExists$$id$ = $current_menu$
+		:i return
+		
+	:i endif
+	:i $current_menu$.$GetSingleTag$$target_object$
+	:i if $GotParam$$target_object$
+		:i %GLOBAL%$target_object$.$GetPagerMessageCount$
+		:i if  (%GLOBAL%$PagerMessageCount$ < %i(2,00000002)) 
+			:i if NOT $current_menu$.$GetSingleTag$$reply_script$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $generic_menu_up_or_down_sound$ isNull 
+	:i endif
+:i endfunction
+:i function $pager_window_build_menu$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_box_menu$
+		:i $pos$ = %vec2(220.000000,230.000000)
+		:i $font$ = $dialog$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $pager_box_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_pause_exit_sound$:s}
+			:i :s{$pad_back$$pager_window_destroy$$params$ = %GLOBAL%$pad_back_params$:s}
+			:i :s{$pad_up$$pager_window_maybe_play_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$pager_window_maybe_play_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $pager_box_menu$$alias$ = $current_menu$
+	:i if NOT $InInternetMode$
+		:i $pager_window_add_menu_item$$text$ = %s(20,"CONTEXT REPLY BUTTON")$id$ = $context_reply$$pad_choose_script$ = $pager_window_context_reply$
+		:i $pager_window_add_menu_item$$text$ = %s(21,"READ PREVIOUS MESSAGE")$id$ = $prev$$pad_choose_script$ = $pager_window_prev_message$
+	:i endif
+	:i $pager_window_add_menu_item$$text$ = %s(17,"READ NEXT MESSAGE")$id$ = $next$$pad_choose_script$ = $pager_window_next_message$
+	:i if $InInternetMode$
+		:i if $GotParam$$nick$
+			:i $pager_window_add_menu_item$$text$ = %s(5,"REPLY")$id$ = $reply$$pad_choose_script$ = $message_buddy$$pad_choose_params$ = :s{ isNull $from_buddy_message$:s}
+		:i endif
+	:i endif
+	:i $pager_window_add_menu_item$$text$ = %s(4,"EXIT")$id$ = $exit$$pad_choose_script$ = $pager_window_destroy$
+	:i $spawnscript$$SK6_SFX_IncomingBeeper$
+	:i $PauseMusic$%i(1,00000001)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,215.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,11.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ = $pager_window_bg_alpha$
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,215.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(55.000000,0.500000)
+		:i $rgba$ = $pager_window_title_color$
+		:i $alpha$ =  ($pager_window_bg_alpha$ * %i(3,00000003)) 
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $current_menu$.$SetTags$$target_object$ = %GLOBAL%$object$
+	:i if NOT $InInternetMode$
+		:i %GLOBAL%$object$.$GetPagerMessageCount$
+		:i $current_menu$.$SetTags$$CurrentMessageNum$ = %GLOBAL%$PagerMessageCount$
+	:i else 
+		:i %GLOBAL%$object$.$GetFirstUnreadMessageNum$
+		:i $current_menu$.$SetTags$$CurrentMessageNum$ = %GLOBAL%$FirstUnreadMessageNum$
+	:i endif
+:i endfunction
+:i function $pager_window_update_buttons$
+	:i if $InInternetMode$
+		:i if NOT $AnyBuddyMessagesLeft$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $next$:s}
+				:i $not_focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$next$$child$ = $text$:s}:s}
+				:i $alpha$ = %f(0.200000)
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $next$:s}
+				:i $focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$next$$child$ = $text$:s}:s}
+				:i $alpha$ = %i(1,00000001)
+			:i :s}
+		:i endif
+	:i else 
+		:i if NOT  (%GLOBAL%$CurrentMessageNum$ > %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $prev$:s}
+				:i $not_focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$prev$$child$ = $text$:s}:s}
+				:i $alpha$ = %f(0.200000)
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $prev$:s}
+				:i $focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$prev$$child$ = $text$:s}:s}
+				:i $alpha$ = %i(1,00000001)
+			:i :s}
+		:i endif
+		:i if NOT  (%GLOBAL%$CurrentMessageNum$ < %GLOBAL%$PagerMessageCount$) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $next$:s}
+				:i $not_focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$next$$child$ = $text$:s}:s}
+				:i $alpha$ = %f(0.200000)
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $next$:s}
+				:i $focusable$
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$next$$child$ = $text$:s}:s}
+				:i $alpha$ = %i(1,00000001)
+			:i :s}
+		:i endif
+		:i if $current_menu$.$GetSingleTag$$reply_script$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $context_reply$:s}
+				:i $focusable$
+			:i :s}
+			:i $current_menu$.$GetSingleTag$$reply_text$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$context_reply$$child$ = $text$:s}:s}
+				:i $text$ = %GLOBAL%$reply_text$
+			:i :s}
+			:i $RunScriptOnScreenElement$$id$ = :s{$current_menu$$child$ = :s{$context_reply$$child$ = $text$:s}:s}$pager_window_context_reply_highlight$
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = $context_reply$:s}
+				:i $not_focusable$
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{$current_menu$$child$ = :s{$context_reply$$child$ = $text$:s}:s}
+				:i $text$ = %s(0,"")
+			:i :s}
+			:i $TerminateObjectsScripts$$id$ = :s{$current_menu$$child$ = :s{$context_reply$$child$ = $text$:s}:s}$script_name$ = $pager_window_context_reply_highlight$
+		:i endif
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $pager_window_destroy$
+	:i if $ScreenElementExists$$id$ = $pager_anchor$
+		:i $generic_menu_animate_out$$menu$ = $pager_box_anchor$
+		:i $DestroyScreenElement$$id$ = $pager_anchor$
+		:i $PauseMusic$%i(0,00000000)
+		:i $PauseStream$%i(1,00000001)
+	:i endif
+	:i if $InInternetMode$
+		:i if NOT $GotParam$$hide_ui$
+			:i if $InNetGame$
+				:i $create_pause_menu$
+			:i else 
+				:i $destroy_onscreen_keyboard$
+				:i if $ObjectExists$$id$ = $console_message_vmenu$
+					:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$alpha$ = %i(1,00000001)
+				:i endif
+				:i $create_network_select_games_menu$
+			:i endif
+		:i endif
+	:i else 
+		:i $create_pause_menu$
+	:i endif
+:i endfunction
+:i function $pager_window_get_message$
+	:i if  (%GLOBAL%$PagerMessageCount$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$target_object$.$GetPagerMessage$$message_num$ = %GLOBAL%$CurrentMessageNum$
+	:i return
+	%GLOBAL%$PagerMessage$
+:i endfunction
+:i function $pager_window_update_message_title$
+	:i if NOT $InInternetMode$
+		:i if  (%GLOBAL%$PagerMessageCount$ = %i(0,00000000)) 
+			:i $title$ = %s(1," ")
+		:i else 
+			:i $FormatText$$TextName$ = $title$%s(16,"TEXT MESSAGE %a:")$a$ = %GLOBAL%$CurrentMessageNum$
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $pager_message_title$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $pager_message_title$
+			:i $text$ = %GLOBAL%$title$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $pager_window_update_message_pane$
+	:i if $InInternetMode$
+		:i if NOT $GotParam$$nick$
+			:i $message$ = %s(28,"*** NO MESSAGES RECEIVED ***")
+		:i endif
+	:i else 
+		:i if  (%GLOBAL%$PagerMessageCount$ = %i(0,00000000)) 
+			:i $message$ = %s(28,"*** NO MESSAGES RECEIVED ***")
+		:i else 
+			:i $pager_window_get_message$ isNull 
+			:i if $GotParam$$from$
+				:i $FormatText$$TextName$ = $message$%s(16,"FROM: <%a>\n\n%b")$a$ = %GLOBAL%$from$$b$ = %GLOBAL%$message$
+			:i endif
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $pager_message_box$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $pager_message_box$
+			:i $text$ = %GLOBAL%$message$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i if $GotParam$$reply_script$
+			:i $current_menu$.$SetTags$$reply_script$ = %GLOBAL%$reply_script$
+		:i else 
+			:i $current_menu$.$RemoveTags$$tags$ = :a{$reply_script$:a}
+		:i endif
+		:i if $GotParam$$reply_text$
+			:i $current_menu$.$SetTags$$reply_text$ = %GLOBAL%$reply_text$
+		:i else 
+			:i $current_menu$.$SetTags$$reply_text$ = %s(5,"REPLY")
+		:i endif
+	:i endif
+:i endfunction
+:i function $pager_window_update_message_count$
+	:i if  (%GLOBAL%$PagerMessageCount$ = %i(0,00000000)) 
+		:i $counter$ = %s(1," ")
+	:i else 
+		:i $FormatText$$TextName$ = $counter$%s(5,"%a/%b")$a$ = %GLOBAL%$CurrentMessageNum$$b$ = %GLOBAL%$PagerMessageCount$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $pager_message_count$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $pager_message_count$
+			:i $text$ = %GLOBAL%$counter$
+		:i :s}
+	:i endif
+	:i if $GotParam$$changed$
+		:i $flash_message_count$ isNull 
+	:i endif
+:i endfunction
+:i function $pager_window_refresh_content$
+	:i if $InInternetMode$
+		:i $FormatText$$TextName$ = $title$%s(15,"Message from %s")$s$ = %GLOBAL%$nick$
+		:i $FormatText$$TextName$ = $message$%s(2,"%s")$s$ = %GLOBAL%$msg_body$
+	:i else 
+		:i $current_menu$.$GetSingleTag$$CurrentMessageNum$
+		:i $current_menu$.$GetSingleTag$$target_object$
+		:i %GLOBAL%$target_object$.$GetPagerMessageCount$
+		:i if  (%GLOBAL%$CurrentMessageNum$ > %GLOBAL%$PagerMessageCount$) 
+			:i $CurrentMessageNum$ = %GLOBAL%$PagerMessageCount$
+		:i endif
+		:i if NOT  (%GLOBAL%$CurrentMessageNum$ > %i(0,00000000)) 
+			:i $CurrentMessageNum$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $pager_window_update_message_title$ isNull 
+	:i $pager_window_update_message_pane$ isNull 
+	:i if NOT $InInternetMode$
+		:i $pager_window_update_message_count$ isNull 
+	:i endif
+	:i $pager_window_update_buttons$ isNull 
+	:i if NOT $InInternetMode$
+		:i $current_menu$.$SetTags$$CurrentMessageNum$ = %GLOBAL%$CurrentMessageNum$
+	:i endif
+:i endfunction
+:i function $pager_window_animate_phone$
+	:i while
+		
+		:i $DoMorph$$scale$ = %f(0.950000)$relative_scale$$time$ = %f(0.500000)$rot_angle$ = random%vec2(-7.000000,7.000000)
+		:i $DoMorph$$scale$ = %f(0.780000)$relative_scale$$time$ = %f(0.500000)$rot_angle$ = random%vec2(-7.000000,7.000000)
+	:i loop_to 
+:i endfunction
+:i function $update_pager_icon$
+	:i if $GotParam$$create$
+		:i $update_pager_icon$$kill$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $pager_new_message_icon$
+			:i $texture$ = $nokia_phone$
+			:i $pos$ = %vec2(205.000000,85.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %i(0,00000000)
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $z_priority$ = %i(50,00000032)
+			:i $rot_angle$ = %i(15,0000000f)
+		:i :s}
+	:i endif
+	:i if NOT $ScreenElementExists$$id$ = $pager_new_message_icon$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$kill$
+		:i $DestroyScreenElement$$id$ = $pager_new_message_icon$
+	:i endif
+	:i if $GotParam$$hide$
+		:i $DoScreenElementMorph$$id$ = $pager_new_message_icon$$alpha$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$show$
+		:i $DoScreenElementMorph$$id$ = $pager_new_message_icon$$alpha$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$flash$
+		:i $TerminateObjectsScripts$$id$ = $pager_new_message_icon$$script_name$ = $flash_pager_icon$
+		:i $RunScriptOnScreenElement$$id$ = $pager_new_message_icon$$flash_pager_icon$
+		:i $root_window$.$GetSingleTag$$menu_state$
+		:i if  (%GLOBAL%$menu_state$ = $off$) 
+			:i $spawnscript$$SK6_SFX_IncomingBeeper$
+		:i endif
+	:i endif
+	:i if $GotParam$$stop_flash$
+		:i $TerminateObjectsScripts$$id$ = $pager_new_message_icon$$script_name$ = $flash_pager_icon$
+		:i $DoScreenElementMorph$$id$ = $pager_new_message_icon$$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $flash_message_count$
+	:i $SetScreenElementLock$$id$ = $pager_box_anchor$$off$
+	:i if $ScreenElementExists$$id$ = $pager_message_count_ghost$
+		:i $DestroyScreenElement$$id$ = $pager_message_count_ghost$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $pager_box_anchor$
+		:i $id$ = $pager_message_count_ghost$
+		:i $font$ = $dialog$
+		:i $pos$ = $pager_message_count_pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $text$ = %GLOBAL%$counter$
+		:i $rgba$ = $pager_window_title_color$
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(6,00000006)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $pager_message_count_ghost$$message_count_animate$
+:i endfunction
+:i function $flash_pager_icon$
+	:i while
+		
+		:i $DoMorph$$scale$ = %f(0.400000)
+		:i $wait$%f(0.800000)$seconds$
+		:i $DoMorph$$scale$ = %i(0,00000000)
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $message_count_animate$
+	:i $DoMorph$$scale$ = %f(1.100000)$alpha$ = %f(0.300000)
+	:i $DoMorph$$scale$ = %f(1.700000)$alpha$ = %i(0,00000000)$time$ = %f(0.500000)
+	:i $die$
+:i endfunction
+:i :end

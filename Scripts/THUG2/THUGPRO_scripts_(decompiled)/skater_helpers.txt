@@ -1,0 +1,893 @@
+
+:i function $refresh_skater_model$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_MainMenu$
+		:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+	:i else 
+		:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+:i endfunction
+:i function $refresh_skater_model_for_cheats$
+	:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+	:i if $InSplitScreenGame$
+		:i %GLOBAL%$refresh_both_skaters$ = %i(1,00000001)
+		:i if $LevelIs$$Load_MainMenu$
+			:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$refresh_both_skaters$ = %i(1,00000001)) 
+		:i $RefreshSkaterScale$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterVisibility$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterScale$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+		:i $RefreshSkaterVisibility$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+	:i else 
+		:i $GetCurrentSkaterProfileIndex$
+		:i if $LevelIs$$Load_MainMenu$
+			:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+		:i else 
+			:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i endif
+		:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+		:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i endif
+:i endfunction
+:i function $load_pro_skater$
+	:i $SelectCurrentSkater$$name$ = %GLOBAL%$name$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $skaterselect_handle_skater_profile_stuff$ isNull 
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = %GLOBAL%$no_board$
+	:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+		:i $UpdateTrickMappings$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $set_correct_graffiti_textures$ isNull 
+:i endfunction
+:i $banned_sticker_textures$ = :a{%s(25,"thugpro/sticker_invisible")%s(20,"thugpro/logo_thugpro")%s(29,"thugpro/stickers/logo_thugpro")%s(29,"thugpro/stickers/sticker_mjay")%s(28,"thugpro/stickers/sticker_nug")%s(31,"thugpro/stickers/sticker_nuggod")%s(24,"thugpro/stickers/tags_ng")%s(26,"thugpro/stickers/tags_phun"):a}
+:i function $set_correct_graffiti_textures$
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(17,"no name specified")
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i if NOT  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i $GetSkaterID$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$name$ = $custom$) 
+		:i if NOT $GotParam$$tag_texture$
+			:i %GLOBAL%$tag_texture$ = %s(11,"Tags/cas_01")
+		:i endif
+		:i if $ArrayContains$$array$ = $banned_sticker_textures$$contains$ = %GLOBAL%$tag_texture$
+			:i %GLOBAL%$tag_texture$ = %s(11,"Tags/cas_01")
+			:i $printf$%s(38,"Woah! You can't use that tag texture..")
+		:i endif
+		:i %GLOBAL%$objID$.$SetGraffitiTexture$%GLOBAL%$tag_texture$
+	:i else 
+		:i %GLOBAL%$objID$.$SetGraffitiTexture$%GLOBAL%$tag_texture$
+	:i endif
+	:i if NOT $GotParam$$sticker_texture$
+		:i %GLOBAL%$sticker_texture$ = %s(32,"thugpro/stickers/sticker_thugpro")
+	:i else 
+		:i if $ArrayContains$$array$ = $banned_sticker_textures$$contains$ = %GLOBAL%$sticker_texture$
+			:i %GLOBAL%$sticker_texture$ = %s(32,"thugpro/stickers/sticker_thugpro")
+			:i $printf$%s(35,"Woah! You can't use that sticker...")
+		:i endif
+	:i endif
+	:i %GLOBAL%$objID$.$SetStickerTexture$%GLOBAL%$sticker_texture$
+:i endfunction
+:i function $scalingmenu_get_xyz$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+	:i if NOT $GotParam$$use_default_scale$
+		:i %GLOBAL%$use_default_scale$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$x$
+		:i %GLOBAL%$x$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$y$
+		:i %GLOBAL%$y$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$z$
+		:i %GLOBAL%$z$ = %i(100,00000064)
+	:i endif
+	:i if  (%GLOBAL%$use_default_scale$ = %i(1,00000001)) 
+		:i %GLOBAL%$x$ = %i(100,00000064)
+		:i %GLOBAL%$y$ = %i(100,00000064)
+		:i %GLOBAL%$z$ = %i(100,00000064)
+	:i endif
+	:i return
+	$x$ = %GLOBAL%$x$$y$ = %GLOBAL%$y$$z$ = %GLOBAL%$z$
+:i endfunction
+:i $EG_in_create_a_graphic$ = %i(0,00000000)
+:i $EG_TEST_GRAFFITI_AS_SPRITE$ = %i(1,00000001)
+:i $layer_infos_need_resetting$ = %i(0,00000000)
+:i $EG_creating_premade$ = %i(0,00000000)
+:i $EG_premade_key_color$ = :a{%i(60,0000003c);%i(60,0000003c);%i(60,0000003c);%i(128,00000080):a}
+:i $EG_selected_text_color$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+:i $EG_unselected_text_color$ = :a{%i(64,00000040);%i(64,00000040);%i(64,00000040);%i(128,00000080):a}
+:i $EG_unselectable_text_color$ = :a{%i(64,00000040);%i(64,00000040);%i(64,00000040);%i(64,00000040):a}
+:i $EG_selected_title_color$ = :a{%i(40,00000028);%i(40,00000028);%i(110,0000006e);%i(128,00000080):a}
+:i $EG_unselected_title_color$ = :a{%i(0,00000000);%i(0,00000000);%i(80,00000050);%i(128,00000080):a}
+:i $EG_selected_background_color$ = :a{%i(16,00000010);%i(16,00000010);%i(16,00000010);%i(128,00000080):a}
+:i $EG_unselected_background_color$ = :a{%i(64,00000040);%i(64,00000040);%i(64,00000040);%i(128,00000080):a}
+:i $EG_inuse_background_color$ = :a{%i(32,00000020);%i(32,00000020);%i(32,00000020);%i(128,00000080):a}
+:i $EG_unselected_image_color$ = :a{%i(64,00000040);%i(64,00000040);%i(64,00000040);%i(128,00000080):a}
+:i $EG_selected_image_color$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+:i $EG_image_background_color$ = :a{%i(32,00000020);%i(32,00000020);%i(32,00000020);%i(128,00000080):a}
+:i $EG_current_layer_menu_index$ = %i(0,00000000)
+:i $EG_current_layer_info_index$ = %i(0,00000000)
+:i $EG_thumb_scale$ = %vec2(0.325000,0.325000)
+:i $EG_thumb_pos$ = %vec2(47.000000,2.000000)
+:i $EG_canvas_scale_factor$ = %f(2.875000)
+:i $EG_canvas_pos_factor$ = %f(2.875000)
+:i $EG_canvas_base_z$ = %i(0,00000000)
+:i $EG_color_swatch_values$ = :a{
+	:i :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+	:i :a{%i(128,00000080);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(128,00000080);%i(64,00000040);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(128,00000080);%i(128,00000080);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(128,00000080);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(0,00000000);%i(128,00000080);%i(128,00000080):a}
+	:i :a{%i(80,00000050);%i(0,00000000);%i(128,00000080);%i(128,00000080):a}
+	:i :a{%i(128,00000080);%i(0,00000000);%i(80,00000050);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(50,00000032);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(45,0000002d);%i(22,00000016);%i(10,0000000a);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(50,00000032);%i(0,00000000);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(60,0000003c);%i(60,0000003c);%i(128,00000080):a}
+	:i :a{%i(0,00000000);%i(0,00000000);%i(50,00000032);%i(128,00000080):a}
+	:i :a{%i(50,00000032);%i(0,00000000);%i(50,00000032);%i(128,00000080):a}
+	:i :a}
+:i $EG_font_names$ = :a{
+	:i :s{
+		:i $name$ = %s(5,"graf1")
+		:i $spacing$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(5,"graf2")
+		:i $spacing$ = %f(0.800000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(5,"bold1")
+		:i $spacing$ = %f(0.650000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(6,"block1")
+		:i $spacing$ = %f(0.850000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(3,"ns1")
+		:i $spacing$ = %f(0.820000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(5,"sten1")
+		:i $spacing$ = %f(0.650000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(4,"spr1")
+		:i $spacing$ = %f(0.800000)
+	:i :s}
+	:i :s{
+		:i $name$ = %s(6,"threed")
+		:i $spacing$ = %f(0.450000)
+	:i :s}
+	:i :a}
+:i function $edit_graphic_set_layer_infos$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT  ( (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$texture_name$)  = %s(0,"")) 
+			:i $FormatText$$checksumname$ = $texture_id$%s(2,"%t")$t$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$texture_name$) 
+		:i else 
+			:i %GLOBAL%$texture_id$ = $none$
+		:i endif
+		:i $edit_graphic_change_layer_info_value$:s{
+			:i $use_current$ = %i(0,00000000)
+			:i $index$ = %GLOBAL%$index$
+			:i $change_texture_id$ = %GLOBAL%$texture_id$
+			:i $change_texture_name$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$texture_name$) 
+			:i $change_string$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$string$) 
+			:i $change_font_id$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$font_id$) 
+			:i $change_pos_x$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$pos_x$) 
+			:i $change_pos_y$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$pos_y$) 
+			:i $change_rot$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$rot$) 
+			:i $change_scale$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$scale$) 
+			:i $change_flip_h$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$flip_h$) 
+			:i $change_flip_v$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$flip_v$) 
+			:i $change_h$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$hsva$:a{%i(0,00000000):a}) 
+			:i $change_s$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$hsva$:a{%i(1,00000001):a}) 
+			:i $change_v$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$hsva$:a{%i(2,00000002):a}) 
+			:i $change_a$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$hsva$:a{%i(3,00000003):a}) 
+			:i $change_layer_id$ =  (%GLOBAL%$layer_infos$:a{%GLOBAL%$index$:a}->$layer_id$) 
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(10,0000000a)
+:i endfunction
+:i function $custom_graffiti_texture_test$
+	:i $CopyTexture$$src$ = $cas_texture_from_profile$$new$ = $dummy2$
+	:i $CreateTexture$:s{
+		:i $[00000043]$
+		:i $Width$ = %i(128,00000080)
+		:i $Height$ = %i(128,00000080)
+		:i $BitDepth$ = %i(32,00000020)
+		:i $[51533ecb]$ = %i(8,00000008)
+	:i :s}
+	:i $GetCurrentSkaterProfileIndex$
+:i endfunction
+:i $edit_graphics_backgrounds$ = :a{
+	:i %s(21,"CAGR/Backgrounds/bg_1")
+	:i %s(22,"CAGR/Backgrounds/bg_10")
+	:i %s(22,"CAGR/Backgrounds/bg_11")
+	:i %s(22,"CAGR/Backgrounds/bg_12")
+	:i %s(22,"CAGR/Backgrounds/bg_13")
+	:i %s(22,"CAGR/Backgrounds/bg_14")
+	:i %s(22,"CAGR/Backgrounds/bg_15")
+	:i %s(22,"CAGR/Backgrounds/bg_16")
+	:i %s(22,"CAGR/Backgrounds/bg_17")
+	:i %s(22,"CAGR/Backgrounds/bg_18")
+	:i %s(22,"CAGR/Backgrounds/bg_19")
+	:i %s(21,"CAGR/Backgrounds/bg_2")
+	:i %s(22,"CAGR/Backgrounds/bg_20")
+	:i %s(22,"CAGR/Backgrounds/bg_21")
+	:i %s(22,"CAGR/Backgrounds/bg_22")
+	:i %s(22,"CAGR/Backgrounds/bg_23")
+	:i %s(22,"CAGR/Backgrounds/bg_24")
+	:i %s(22,"CAGR/Backgrounds/bg_25")
+	:i %s(22,"CAGR/Backgrounds/bg_26")
+	:i %s(22,"CAGR/Backgrounds/bg_27")
+	:i %s(22,"CAGR/Backgrounds/bg_28")
+	:i %s(22,"CAGR/Backgrounds/bg_29")
+	:i %s(21,"CAGR/Backgrounds/bg_3")
+	:i %s(22,"CAGR/Backgrounds/bg_30")
+	:i %s(22,"CAGR/Backgrounds/bg_31")
+	:i %s(21,"CAGR/Backgrounds/bg_4")
+	:i %s(21,"CAGR/Backgrounds/bg_5")
+	:i %s(21,"CAGR/Backgrounds/bg_6")
+	:i %s(21,"CAGR/Backgrounds/bg_7")
+	:i %s(21,"CAGR/Backgrounds/bg_8")
+	:i %s(21,"CAGR/Backgrounds/bg_9")
+	:i :a}
+:i $edit_graphic_layer_infos$ = :a{
+	:i :s{
+		:i $texture_id$ = $bg_30$
+		:i $texture_name$ = %s(5,"bg_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(90,0000005a);%i(23,00000017);%i(128,00000080):a}
+		:i $layer_id$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(2,00000002)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(6,00000006)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(9,00000009)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(4,00000004)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(5,00000005)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(8,00000008)
+	:i :s}
+	:i :a}
+:i $edit_graphic_layer_infos_copy$ = :a{
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(2,00000002)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(6,00000006)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(9,00000009)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(4,00000004)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(5,00000005)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(8,00000008)
+	:i :s}
+	:i :a}
+:i $thugpro_layer_infos$ = :a{
+	:i :s{
+		:i $texture_id$ = $bg_30$
+		:i $texture_name$ = %s(5,"bg_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $bg_30$
+		:i $texture_name$ = %s(5,"bg_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(2,00000002)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(6,00000006)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(9,00000009)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(4,00000004)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(5,00000005)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(1.000000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(8,00000008)
+	:i :s}
+	:i :a}
+:i function $edit_graphic_change_layer_info_value$$use_current$ = %i(1,00000001)
+	:i %GLOBAL%$tmpArray$ = $edit_graphic_layer_infos$
+	:i if  (%GLOBAL%$use_current$ = %i(1,00000001)) 
+		:i %GLOBAL%$info_index$ = $EG_current_layer_info_index$
+	:i else 
+		:i %GLOBAL%$info_index$ = %GLOBAL%$index$
+	:i endif
+	:i $edit_graphic_get_array_info_vals$$index$ = %GLOBAL%$info_index$
+	:i if  ($GotParam$$change_texture_id$) 
+		:i %GLOBAL%$texture_id$ = %GLOBAL%$change_texture_id$
+	:i endif
+	:i if  ($GotParam$$change_texture_name$) 
+		:i %GLOBAL%$texture_name$ = %GLOBAL%$change_texture_name$
+	:i endif
+	:i if  ($GotParam$$change_string$) 
+		:i %GLOBAL%$string$ = %GLOBAL%$change_string$
+	:i endif
+	:i if  ($GotParam$$change_font_id$) 
+		:i %GLOBAL%$font_id$ = %GLOBAL%$change_font_id$
+	:i endif
+	:i if  ($GotParam$$change_canvas_id$) 
+		:i %GLOBAL%$canvas_id$ = %GLOBAL%$change_canvas_id$
+	:i endif
+	:i if  ($GotParam$$change_pos_x$) 
+		:i %GLOBAL%$pos_x$ = %GLOBAL%$change_pos_x$
+	:i endif
+	:i if  ($GotParam$$change_pos_y$) 
+		:i %GLOBAL%$pos_y$ = %GLOBAL%$change_pos_y$
+	:i endif
+	:i if  ($GotParam$$change_rot$) 
+		:i %GLOBAL%$rot$ = %GLOBAL%$change_rot$
+	:i endif
+	:i if  ($GotParam$$change_scale$) 
+		:i %GLOBAL%$scale$ = %GLOBAL%$change_scale$
+	:i endif
+	:i if  ($GotParam$$change_flip_h$) 
+		:i %GLOBAL%$flip_h$ = %GLOBAL%$change_flip_h$
+	:i endif
+	:i if  ($GotParam$$change_flip_v$) 
+		:i %GLOBAL%$flip_v$ = %GLOBAL%$change_flip_v$
+	:i endif
+	:i if  ($GotParam$$change_h$) 
+		:i $SetArrayElement$$arrayname$ = $hsva$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$change_h$
+	:i endif
+	:i if  ($GotParam$$change_s$) 
+		:i $SetArrayElement$$arrayname$ = $hsva$$index$ = %i(1,00000001)$newvalue$ = %GLOBAL%$change_s$
+	:i endif
+	:i if  ($GotParam$$change_v$) 
+		:i $SetArrayElement$$arrayname$ = $hsva$$index$ = %i(2,00000002)$newvalue$ = %GLOBAL%$change_v$
+	:i endif
+	:i if  ($GotParam$$change_a$) 
+		:i $SetArrayElement$$arrayname$ = $hsva$$index$ = %i(3,00000003)$newvalue$ = %GLOBAL%$change_a$
+	:i endif
+	:i if  ($GotParam$$change_layer_id$) 
+		:i %GLOBAL%$layer_id$ = %GLOBAL%$change_layer_id$
+	:i endif
+	:i $SetArrayElement$:s{
+		:i $arrayname$ = $tmpArray$
+		:i $index$ = %GLOBAL%$info_index$
+		:i $newvalue$ = :s{
+			:i $texture_id$ = %GLOBAL%$texture_id$
+			:i $texture_name$ = %GLOBAL%$texture_name$
+			:i $string$ = %GLOBAL%$string$
+			:i $canvas_id$ = %GLOBAL%$canvas_id$
+			:i $font_id$ = %GLOBAL%$font_id$
+			:i $pos_x$ = %GLOBAL%$pos_x$
+			:i $pos_y$ = %GLOBAL%$pos_y$
+			:i $rot$ = %GLOBAL%$rot$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $flip_h$ = %GLOBAL%$flip_h$
+			:i $flip_v$ = %GLOBAL%$flip_v$
+			:i $hsva$ = %GLOBAL%$hsva$
+			:i $layer_id$ = %GLOBAL%$layer_id$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $edit_graphic_get_array_info_vals$
+	:i return
+	 ($edit_graphic_layer_infos$:a{%GLOBAL%$index$:a}) 
+:i endfunction
+:i function $edit_graphic_prepare_sprite_infos$
+	:i %GLOBAL%$sprite_infos$ = :a{:a}
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$layer_info_index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$layer_id$)  = %GLOBAL%$index$) 
+				:i continue
+				
+			:i endif
+			:i %GLOBAL%$layer_info_index$ =  (%GLOBAL%$layer_info_index$ + %i(1,00000001)) 
+		:i loop_to %i(10,0000000a)
+		:i if  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$texture_id$)  = $none$) 
+			:i if NOT  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$string$)  = %s(0,"")) 
+				:i $edit_graphic_prepare_text_sprite_infos$$info_index$ = %GLOBAL%$layer_info_index$
+				:i %GLOBAL%$sprite_infos$ =  (%GLOBAL%$sprite_infos$ + %GLOBAL%$text_infos$) 
+			:i endif
+		:i else 
+			:i %GLOBAL%$posx$ =  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$pos_x$)  - %i(32,00000020)) 
+			:i %GLOBAL%$posy$ =  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$pos_y$)  - %i(32,00000020)) 
+			:i $HSVtoRGB$$hsv$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$hsva$) 
+			:i %GLOBAL%$tmp_array$ = :a{
+				:i :s{
+					:i $texture_id$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$texture_id$) 
+					:i $pos_x$ = %GLOBAL%$posx$
+					:i $pos_y$ = %GLOBAL%$posy$
+					:i $rot$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$rot$) 
+					:i $scale$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$scale$) 
+					:i $flip_h$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$flip_h$) 
+					:i $flip_v$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$flip_v$) 
+					:i $rgba$ = %GLOBAL%$rgb$
+					:i $layer_id$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$layer_info_index$:a}->$layer_id$) 
+				:i :s}
+				:i :a}
+			:i %GLOBAL%$sprite_infos$ =  (%GLOBAL%$sprite_infos$ + %GLOBAL%$tmp_array$) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i $RemoveParameter$$layer_info_index$
+	:i loop_to %i(10,0000000a)
+	:i return
+	$sprite_infos$ = %GLOBAL%$sprite_infos$
+:i endfunction
+:i function $edit_graphic_prepare_text_sprite_infos$
+	:i %GLOBAL%$layer_string$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$string$) 
+	:i $StringToCharArray$$string$ = %GLOBAL%$layer_string$
+	:i $GetArraySize$%GLOBAL%$char_array$
+	:i %GLOBAL%$font_spacing$ =  ($EG_font_names$:a{ ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$font_id$) :a}->$spacing$) 
+	:i %GLOBAL%$container_scale$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$scale$) 
+	:i %GLOBAL%$char_image_size$ =  ( (%f(64.000000) / %GLOBAL%$array_size$)  * %GLOBAL%$container_scale$) 
+	:i %GLOBAL%$container_pos_x$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$pos_x$) 
+	:i %GLOBAL%$char_x_pos$ =  ( (%i(0,00000000) -  ( (%GLOBAL%$char_image_size$ * %GLOBAL%$array_size$)  / %i(2,00000002)) )  +  (%GLOBAL%$char_image_size$ / %i(2,00000002)) ) 
+	:i %GLOBAL%$char_y_pos$ = %i(0,00000000)
+	:i %GLOBAL%$font$ =  ($EG_font_names$:a{ ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$font_id$) :a}->$name$) 
+	:i %GLOBAL%$scale$ =  (%GLOBAL%$char_image_size$ / %f(64.000000)) 
+	:i if NOT  (%GLOBAL%$array_size$ = %i(1,00000001)) 
+		:i if NOT  (%GLOBAL%$font_spacing$ = %i(0,00000000)) 
+			:i %GLOBAL%$scale$ =  (%GLOBAL%$scale$ *  (%i(1,00000001) / %GLOBAL%$font_spacing$) ) 
+		:i endif
+	:i endif
+	:i %GLOBAL%$rot$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$rot$) 
+	:i $HSVtoRGB$$hsv$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$hsva$) 
+	:i %GLOBAL%$text_infos$ = :a{:a}
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$char$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+		:i if  (%GLOBAL%$char$ = %s(1," ")) 
+			:i $FormatText$$checksumname$ = $texture$%s(4,"%f_a")$f$ = %GLOBAL%$font$$l$ = %GLOBAL%$char$
+			:i %GLOBAL%$rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+		:i else 
+			:i $FormatText$$checksumname$ = $texture$%s(5,"%f_%l")$f$ = %GLOBAL%$font$$l$ = %GLOBAL%$char$
+			:i %GLOBAL%$rgba$ = %GLOBAL%$rgb$
+		:i endif
+		:i $Get2DPosFrom2DVec$$magnitude$ = %GLOBAL%$char_x_pos$$theta$ = %GLOBAL%$rot$
+		:i %GLOBAL%$tmp_array$ = :a{
+			:i :s{
+				:i $texture_id$ = %GLOBAL%$texture$
+				:i $pos_x$ =  (%GLOBAL%$x$ +  (%GLOBAL%$container_pos_x$ - %i(32,00000020)) ) 
+				:i $pos_y$ =  (%GLOBAL%$y$ +  ( ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$pos_y$)  - %i(32,00000020)) ) 
+				:i $rot$ = %GLOBAL%$rot$
+				:i $scale$ = %GLOBAL%$scale$
+				:i $flip_h$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$flip_h$) 
+				:i $flip_v$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$flip_v$) 
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $layer_id$ =  ($edit_graphic_layer_infos$:a{%GLOBAL%$info_index$:a}->$layer_id$) 
+			:i :s}
+			:i :a}
+		:i %GLOBAL%$text_infos$ =  (%GLOBAL%$text_infos$ + %GLOBAL%$tmp_array$) 
+		:i %GLOBAL%$char_x_pos$ =  (%GLOBAL%$char_x_pos$ + %GLOBAL%$char_image_size$) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i %GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) 
+	:i %GLOBAL%$reverse_infos$ = :a{:a}
+	:i while
+		
+		:i %GLOBAL%$tmp_array$ = :a{:s{ (%GLOBAL%$text_infos$:a{%GLOBAL%$index$:a}) :s}:a}
+		:i %GLOBAL%$reverse_infos$ =  (%GLOBAL%$reverse_infos$ + %GLOBAL%$tmp_array$) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$text_infos$ = %GLOBAL%$reverse_infos$
+:i endfunction:end

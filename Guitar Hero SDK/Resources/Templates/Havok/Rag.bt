@@ -1,0 +1,88 @@
+//------------------------------------------------
+// Havok HKNX .rag file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#include "ClassList.bt"
+
+#include "SectionHeader.bt"
+#include "ClassNames.bt"
+#include "DataSection.bt"
+#include "Section.bt"
+
+// ----------------------------------------------------
+
+local uint HAVOK_VERSION = 5;
+
+local uint absStart_classnames = 0;
+local uint absStart_types = 0;
+local uint absStart_data = 0;
+
+local uint num_classnames = 0;
+
+// ----------------------------------------------------
+
+typedef struct
+{
+    // both endian agnostic (byte symmetric)
+    hkInt32 m_magic[2] <optimize=false, bgcolor=CL_PADDING, comment="Constant">;
+
+    hkInt32 m_userTag <bgcolor=CL_NAME>;
+
+    // Unless our version is MASSIVE, then the next
+    // byte will be 0! We can use this to check
+    // which endian we should read the rest of the file in
+   
+    local ubyte testByte = ReadByte();
+
+    if (testByte == 0)
+        BigEndian();
+    else
+        LittleEndian();
+
+    hkInt32 m_fileVersion <bgcolor=CL_SINGLEVALUE>;
+
+    // pointer size
+    // endian
+    // padding options
+    // base class
+
+    // hkUint8 m_layoutRules[4] <optimize=false, bgcolor=CL_SINGLEVALUE>;
+
+    hkUint8 pointer_size <bgcolor=CL_SINGLEVALUE>;
+    hkUint8 endian <bgcolor=CL_SINGLEVALUE, comment="0 on x360/PS3, 1 on PC">;
+    hkUint8 padding_options <bgcolor=CL_SINGLEVALUE>;
+    hkUint8 base_class <bgcolor=CL_SINGLEVALUE, comment="Always 1">;
+
+    // Number of packfilesections following this header.
+    hkInt32 m_numSections <bgcolor=CL_SINGLEVALUE, comment="Always 3">;
+
+    // Where the content's data structure is (section and offset within that section).
+    hkInt32 m_contentsSectionIndex <bgcolor=CL_SINGLEVALUE, comment="Always 2">;
+    hkInt32 m_contentsSectionOffset <bgcolor=CL_POINTER, comment="Always 0">;
+
+    // Where the content's class name is (section and offset within that section).
+    hkInt32 m_contentsClassNameSectionIndex <bgcolor=CL_SINGLEVALUE, comment="Always 0">;
+    hkInt32 m_contentsClassNameSectionOffset <bgcolor=CL_POINTER>;
+
+    // Future expansion
+    char m_contentsVersion[16] <bgcolor=CL_NAME>;
+
+    hkInt32 m_pad[2] <optimize=false, bgcolor=CL_PADDING>;
+
+    SkipTo(16);
+
+    // Set as global in case we need it later
+    HAVOK_VERSION = m_fileVersion.value;
+} hkPackfileHeader <read=Str("%s (v%d)", m_contentsVersion, m_fileVersion.value)>;
+
+// ----------------------------------------------------
+
+typedef struct
+{
+    hkPackfileHeader m_header;
+    HavokSection m_sections[m_header.m_numSections.value] <optimize=false>;
+} HavokRagdollFile;
+
+HavokRagdollFile file; 

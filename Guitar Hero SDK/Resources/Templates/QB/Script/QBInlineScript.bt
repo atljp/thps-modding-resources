@@ -1,0 +1,322 @@
+//------------------------------------------------
+// QB Script
+// This is an actual uncompiled QB script
+//------------------------------------------------
+
+#ifdef IS_INLINE_SCRIPT_FILE
+    #include "QBInlinePackStruct.bt"
+#else
+    #include "Script/QBInlinePackStruct.bt"
+#endif
+
+typedef struct
+{
+    local uint token_pos = FTell();
+    ubyte token;
+
+    switch (token)
+    {
+        // Single-value tokens.
+        case 0x00:
+        case 0x01:
+        case 0x3C:
+        case 0x3E:
+        case 0x3F:
+        case 0x05:
+        case 0x06:
+        case 0x07:
+        case 0x20:
+        case 0x29:
+        case 0x2D:
+        case 0x3D:
+        case 0x30:
+        case 0x32:
+        case 0x39:
+        case 0x42:
+        case 0x09:
+        case 0x0E:
+        case 0x0F:
+        case 0x28:
+        case 0x03:
+        case 0x04:
+        case 0x2C:
+        case 0x21:
+        case 0x23:
+        case 0x24:
+        case 0x0B:
+            break;
+
+        case 0x16:
+            QBKey key;
+            break;
+
+        case 0x17:
+            int value;
+            break;
+
+        case 0x1A:
+            float value;
+            break;
+    
+        case 0x1B:
+            uint textLength;
+            string text;
+            break;
+
+        case 0x1E:
+            float values[3];
+            break;
+
+        case 0x1F:
+            float values[2];
+            break;
+
+        case 0x26:
+            ushort lastComparison;
+            break;
+
+        case 0x27:
+            ushort nextComparison;
+            ushort lastComparison;
+            break;
+            
+        case 0x2B:
+            QBKey checksum;
+            string text;
+            break;
+
+        case 0x2E:
+            uint jumpAmount;
+            break;
+
+        case 0x2f:
+            uint numItems;
+            ushort weights[numItems];
+            uint offsets[numItems];
+            break;
+
+        case 0x47:
+            ushort jumpAmount;
+            break;
+
+        case 0x48:
+            ushort jumpAmount;
+            break;
+
+        case 0x49:
+            ushort jumpAmount;
+            break;
+            
+        case 0x4A:
+            QBInlinePackStruct data;
+            break;
+
+        default:
+            Printf("Unknown token at %d: %x\n", token_pos, token);
+            break;
+    }
+
+} QBScriptItem <read=ReadQBScriptItem>;
+
+string ReadQBScriptItem(QBScriptItem &item)
+{
+    local string s;
+
+    switch (item.token)
+    {
+        case 0x00:
+            return "End File";
+            break;
+            
+        case 0x01:
+            return "Newline";
+            break;
+        
+        case 0x03:
+            return "{";
+            break;
+
+        case 0x04:
+            return "}";
+            break;
+
+        case 0x05:
+            return "[";
+            break;
+
+        case 0x06:
+            return "]";
+            break;
+
+        case 0x07:
+            return "=";
+            break;
+
+        case 0x08:
+            return ".";
+            break;
+
+        case 0x0B:
+            return "+";
+            break;
+
+        case 0x0E:
+            return "(";
+            break;
+
+        case 0x0F:
+            return ")";
+            break;
+
+        case 0x14:
+            return ">";
+            break;
+
+        case 0x16:
+            return SPrintf(s, "QBKey: %s", ReadQBKey(item.key));
+            break;
+
+        case 0x17:
+            return SPrintf(s, "%d", item.value);
+            break;
+
+        case 0x1A:
+            return SPrintf(s, "%f", item.value);
+            break;
+
+        case 0x1B:
+            return SPrintf(s, "\"%s\"", item.text);
+            break;
+
+        case 0x1E:
+            return SPrintf(s, "Vector: (%f, %f, %f)", item.values[0], item.values[1], item.values[2]);
+            break;
+
+        case 0x1F:
+            return SPrintf(s, "Pair: (%f, %f)", item.values[0], item.values[1]);
+            break;
+
+        case 0x20:
+            return "Loop (Begin)";
+
+        case 0x21:
+            return "End loop";
+
+        case 0x22:
+            return "Exit loop";
+            
+        case 0x23:
+            return "Script";
+
+        case 0x24:
+            return "Endscript";
+            break;
+
+        case 0x26:
+            return "Else";
+            break;
+
+        case 0x27:
+            return "Elseif";
+            break;
+
+        case 0x28:
+            return "Endif";
+            break;
+
+        case 0x29:
+            return "Return";
+            break;
+            
+        case 0x2B:
+            return Str("Symbol Token: %s (%s)", ReadQBKey(item.checksum), item.text);
+            break;
+
+        case 0x2C:
+            return "AllArgs";
+            break;
+
+        case 0x2E:
+            return "Long jump";
+            break;
+        
+        case 0x2F:
+            return "Random";
+            break;
+
+        case 0x2D:
+            return "Argument";
+            break;
+
+        case 0x30:
+            return "Random Range";
+            break;
+
+        case 0x32:
+            return "Or";
+            break;
+    
+        case 0x33:
+            return "And";
+            break;
+            
+        case 0x39:
+            return "Not";
+            break;
+
+        case 0x3C:
+            return "Switch";
+            break;
+
+        case 0x3D:
+            return "EndSwitch";
+            break;
+
+        case 0x3E:
+            return "Case";
+            break;
+
+        case 0x3F:
+            return "Default";
+            break;
+
+        case 0x42:
+            return ":";
+            break;
+
+        case 0x47:
+            return "Fast If";
+            break;
+        
+        case 0x48:
+            return "Fast Else";
+            break;
+
+        case 0x49:
+            return "Short Jump";
+            break;
+
+        case 0x4A:
+            return "Inline Pack Struct";
+            break;
+
+        case 0x4B:
+            return "Argument Pack (Globalmap)";
+            break;
+
+        default:
+            return SPrintf(s, "0x%x", item.token);
+            break;
+    }
+}
+
+typedef struct (uint scriptSize)
+{
+    local uint startPos = FTell();
+
+    while (FTell() < startPos + scriptSize && !FEof())
+    {
+        QBScriptItem item;  
+    } 
+
+} QBInlineScript;

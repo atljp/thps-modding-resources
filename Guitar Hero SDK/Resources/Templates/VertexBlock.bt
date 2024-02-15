@@ -1,0 +1,31 @@
+// Vertex block
+//  (Also called SubMesh Cafe for obvious reasons)
+
+#define CL_VBPADDING 0x6688cc
+#define CL_VBVALUE 0x88aaee
+#define CL_VBWEIGHT 0xaaccff
+#define CL_VBFLOAT 0x6699cc
+
+#include "VertexGrouping.bt"
+
+typedef struct (int vertexCount, int meshFlags, ubyte is_x360)
+{
+    // See why it's called submesh cafe?
+    int cafeMagic[4] <hidden=true, bgcolor=CL_VBPADDING>;
+    int null <hidden=true, bgcolor=CL_VBPADDING>;
+
+    // How many vertices are assigned to 1, 2, 3 weights?
+    Int3 grouping_counts <bgcolor=CL_VBVALUE>;
+
+    local int total_groups = grouping_counts.values[0] + grouping_counts.values[1] + grouping_counts.values[2];
+    local int i;
+
+    for (i=0; i<total_groups; i++)
+        VertexGrouping groups(is_x360) <optimize=false>;
+
+} VertexBlock <read=ReadVertexBlock>;
+
+string ReadVertexBlock(VertexBlock &block)
+{
+    return ReadInt3(block.grouping_counts);
+}

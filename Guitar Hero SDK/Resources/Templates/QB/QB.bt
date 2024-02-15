@@ -1,0 +1,36 @@
+//------------------------------------------------
+// Core QB file
+//------------------------------------------------
+
+local ubyte IsThawQB = 0;
+
+#include "../Common.bt"
+#include "QBItem.bt"
+
+#define CL_QBHEADER             0xaaaaaa
+
+typedef struct
+{
+    while (!FEof())
+        QBItem item;
+} QBContents;
+
+typedef struct
+{
+    ubyte header_size <bgcolor=CL_QBHEADER, comment="Always 0x1C">;
+    ubyte skip_a[7] <bgcolor=CL_QBHEADER, hidden=true>;
+
+    uint size_or_identifier <bgcolor=CL_QBHEADER, comment="GHWT is 0x0C080204, WoR is 0">;
+    ubyte skip_b[8] <bgcolor=CL_QBHEADER, hidden=true>;
+} QBHeader <read=Str("%s", (size_or_identifier == 0x0C080204) ? "GHWT File" : "GH:WoR File")>;
+
+typedef struct
+{
+    uint flags <bgcolor=CL_SINGLEVALUE, comment="Used at runtime">;
+    uint filesize <bgcolor=CL_SINGLEVALUE>;
+
+    QBHeader header;
+    QBContents contents;
+} QBFile;
+
+QBFile main_qb;

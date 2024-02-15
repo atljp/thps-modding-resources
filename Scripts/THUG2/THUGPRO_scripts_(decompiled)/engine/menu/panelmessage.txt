@@ -1,0 +1,310 @@
+
+:i function $kill_panel_message_if_it_exists$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $kill_panel_messages$
+	:i $kill_panel_message_if_it_exists$$id$ = $panel_message_layer$
+:i endfunction
+:i function $hide_panel_messages$
+	:i if $ScreenElementExists$$id$ = $panel_message_layer$
+		:i $DoScreenElementMorph$$id$ = $panel_message_layer$$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $show_panel_messages$
+	:i if $ScreenElementExists$$id$ = $panel_message_layer$
+		:i $DoScreenElementMorph$$id$ = $panel_message_layer$$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $create_panel_message_layer_if_needed$
+	:i if NOT $ScreenElementExists$$id$ = $panel_message_layer$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $panel_message_layer$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_panel_message$:s{$text$ = %s(21,"Default panel message")
+		:i $pos$ = %vec2(320.000000,70.000000)
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(100,00000064):a}
+		:i $font_face$ = $testtitle$
+		:i $time$ = %i(1500,000005dc)
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $just$ = :a{$center$$center$:a}
+		:i $parent$ = $panel_message_layer$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i if $GotParam$$id$
+		:i $kill_panel_message_if_it_exists$$id$ = %GLOBAL%$id$
+	:i endif
+	:i if $GotParam$$shadow$
+		:i %GLOBAL%$shadow$ = $shadow$
+		:i %GLOBAL%$shadow_offs$ = %vec2(1.000000,1.000000)
+		:i %GLOBAL%$shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i endif
+	:i $create_panel_message_layer_if_needed$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$id$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $text$ = %GLOBAL%$text$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = %GLOBAL%$just$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+		:i $not_focusable$
+		:i %GLOBAL%$shadow$
+		:i $shadow_offs$ = %GLOBAL%$shadow_offs$
+		:i $shadow_rgba$ = %GLOBAL%$shadow_rgba$
+	:i :s}
+	:i if $GotParam$$style$
+		:i if $GotParam$$params$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ = %GLOBAL%$params$
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ =  isNull 
+		:i endif
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i endif
+:i endfunction
+:i function $create_panel_sprite$:s{$pos$ = %vec2(320.000000,60.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $parent$ = $panel_message_layer$
+	:i :s}
+	:i if $GotParam$$id$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$kill_panel_message$
+		:i endif
+	:i endif
+	:i $create_panel_message_layer_if_needed$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = %GLOBAL%$texture$
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if $GotParam$$style$
+		:i if $GotParam$$params$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ = %GLOBAL%$params$
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ =  isNull 
+		:i endif
+	:i else 
+		:i if $GotParam$$time$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_panel_block$:s{$text$ = %s(21,"Default panel message")
+		:i $pos$ = %vec2(320.000000,60.000000)
+		:i $dims$ = %vec2(250.000000,0.000000)
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(100,00000064):a}
+		:i $font_face$ = $small$
+		:i $time$ = %i(2000,000007d0)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $scale$ = %f(0.800000)
+		:i $parent$ = $panel_message_layer$
+	:i :s}
+	:i $create_panel_message_layer_if_needed$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i if $GotParam$$id$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$id$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $text$ = %GLOBAL%$text$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = %GLOBAL%$just$
+		:i $internal_just$ = %GLOBAL%$internal_just$
+		:i $line_spacing$ = %GLOBAL%$line_spacing$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i $allow_expansion$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i if $GotParam$$style$
+		:i if $GotParam$$params$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ = %GLOBAL%$params$
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$style$$params$ =  isNull 
+		:i endif
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i endif
+:i endfunction
+:i function $create_intro_panel_block$:s{$text$ = %s(27,"Default intro panel message")
+		:i $pos$ = %vec2(320.000000,60.000000)
+		:i $dims$ = %vec2(250.000000,0.000000)
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(100,00000064):a}
+		:i $font_face$ = $small$
+		:i $time$ = %i(2000,000007d0)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $scale$ = %f(1.000000)
+		:i $parent$ = $panel_message_layer$
+	:i :s}
+	:i $create_panel_message_layer_if_needed$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i if $GotParam$$id$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$id$
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i %GLOBAL%$the_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = %GLOBAL%$the_id$
+		:i $font$ = %GLOBAL%$font_face$
+		:i $text$ = %GLOBAL%$text$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = %GLOBAL%$just$
+		:i $internal_just$ = %GLOBAL%$internal_just$
+		:i $line_spacing$ = %GLOBAL%$line_spacing$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %GLOBAL%$scale$
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i $allow_expansion$
+		:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(3,00000003)) 
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i if $GotParam$$create_bg$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $texture$ = $goal_grad$
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(300.000000,0.000000)) 
+			:i $scale$ = %vec2(21.000000,10.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $alpha$ = %f(0.400000)
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(1,00000001)) 
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $texture$ = $goal_grad$
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(300.000000,-20.000000)) 
+			:i $scale$ = %vec2(21.000000,1.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $alpha$ = %f(0.600000)
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(1,00000001)) 
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $texture$ = $goal_grad$
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(300.000000,20.000000)) 
+			:i $scale$ = %vec2(21.000000,1.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $alpha$ = %f(0.600000)
+			:i $flip_v$
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(1,00000001)) 
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(320.000000,0.000000)) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %vec2(13.000000,1.000000)
+			:i $texture$ = $roundbar_middle$
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(2,00000002)) 
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(20,00000014):a}
+		:i :s}
+		:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(-16.000000,16.000000)) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %i(1,00000001)
+			:i $texture$ = $roundbar_tip_left$
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(2,00000002)) 
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(20,00000014):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = %GLOBAL%$the_id$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %GLOBAL%$width$ * %vec2(1.000000,0.000000) + %vec2(16.000000,16.000000)) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %i(1,00000001)
+			:i $texture$ = $roundbar_tip_right$
+			:i $z_priority$ =  (%GLOBAL%$z_priority$ + %i(2,00000002)) 
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(20,00000014):a}
+		:i :s}
+	:i endif
+	:i if $GotParam$$style$
+		:i if $GotParam$$params$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_id$%GLOBAL%$style$$params$ = %GLOBAL%$params$
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_id$%GLOBAL%$style$$params$ =  isNull 
+		:i endif
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i endif
+:i endfunction
+:i function $panel_message_wait_and_die$$time$ = %i(1500,000005dc)
+	:i $wait$%GLOBAL%$time$
+	:i $Die$
+:i endfunction
+:i function $kill_panel_message$
+	:i $Die$
+:i endfunction
+:i function $hide_panel_message$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $hide$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $show_panel_message$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $unhide$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $destroy_panel_message$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i %GLOBAL%$id$.$Die$
+	:i endif
+:i endfunction
+:i :end

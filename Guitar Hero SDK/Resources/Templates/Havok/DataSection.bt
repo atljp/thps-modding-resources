@@ -1,0 +1,420 @@
+#define CL_LOCALFIXUP           0xC4FFFF
+#define CL_GLOBALFIXUP          CL_POINTER
+
+local uint first_object_pos;
+
+//------------------------------------------------
+
+typedef struct
+{
+    RelativeOffset PointFrom(absStart_data) <bgcolor=CL_POINTER, comment="From">;
+    RelativeOffset PointTo(absStart_data) <bgcolor=CL_POINTER, comment="To">;
+
+    local uint old_off = FTell();
+
+    FSeek(AbsOffset(PointFrom));
+    uint source <bgcolor=CL_LOCALFIXUP>;
+
+    FSeek(AbsOffset(PointTo));
+    uint dest <bgcolor=CL_LOCALFIXUP>;
+
+    FSeek(old_off);
+} LocalFixup <read=Str("%d -> %d", AbsOffset(PointFrom), AbsOffset(PointTo))>;
+
+typedef struct (uint ptr_count)
+{
+    LocalFixup fixups[ptr_count] <optimize=false>;
+} LocalFixupBlock;
+
+//------------------------------------------------
+
+void CreateHavokObject(uint offset)
+{
+    // No offset? Use current pos
+    if (!offset)
+        offset = FTell();
+
+    FSeek(offset);
+
+    // All classes seem to start at 16 byte boundary... I hope
+    SkipTo(16);
+
+    // Get class name
+    local string className = ClassNameAtOffset(FTell());
+
+    switch (className)
+    {
+        case "hkpWorldCinfo":
+            hkpWorldCinfo object;
+            break;
+    
+        case "hkpDefaultConvexListFilter":
+            hkpDefaultConvexListFilter object;
+            break;
+
+        case "hkpPhysicsSystem":
+            hkpPhysicsSystem object;
+            break;
+
+        case "hkpRigidBody":
+            hkpRigidBody object;
+            break;
+
+        case "hkpPhysicsData":
+            hkpPhysicsData object;
+            break;
+
+        case "hkpCapsuleShape":
+            hkpCapsuleShape object;
+            break;
+
+        case "hkpConvexTranslateShape":
+            hkpConvexTranslateShape object;
+            break;
+    
+        case "hkpBoxShape":
+            hkpBoxShape object;
+            break;
+    
+        case "hkRootLevelContainer":
+            hkRootLevelContainer object;
+            break;
+
+        case "hkpConstraintInstance":
+            hkpConstraintInstance object;
+            break;
+
+        case "hkpRagdollConstraintData":
+            hkpRagdollConstraintData object;
+            break;
+
+        case "hkpLimitedHingeConstraintData":
+            hkpLimitedHingeConstraintData object;
+            break;
+
+        default:
+            Printf("Unknown class at %d: %s\n", FTell(), className);
+            break;
+    }
+}
+
+typedef struct
+{
+    local uint old_off = FTell();
+
+    local int fixup_dest = GlobalFixupDestination(old_off);
+
+    if (fixup_dest)
+        CreateHavokObject(fixup_dest);
+
+    FSeek(old_off);
+
+    hkInt32 null_offset <hidden=true>;
+} HavokGlobalFixup;
+
+typedef struct
+{
+    local uint old_off = FTell();
+    local int fixup_dest = LocalFixupDestination(old_off);
+
+    if (fixup_dest)
+    {
+            FSeek(fixup_dest);
+            uint DESTINATION_HERE <bgcolor=CL_LOCALFIXUP>;
+    }
+
+    FSeek(old_off);
+
+    hkInt32 null_offset <hidden=true>;
+} HavokLocalFixup;
+
+//------------------------------------------------
+
+typedef struct
+{
+    RelativeOffset ChunkOffset(absStart_data) <bgcolor=CL_POINTER>;
+    uint section_index <bgcolor=CL_PADDING>;
+    RelativeOffset ClassNameOffset(absStart_classnames) <bgcolor=CL_POINTER>;
+
+    if (!first_object_pos)
+        first_object_pos = AbsOffset(ChunkOffset);
+
+    local uint old_pos = FTell();
+
+    // Get class name
+    FSeek(AbsOffset(ClassNameOffset));
+    string ClassName;
+
+    FSeek(old_pos);
+
+} VirtualFixup <read=ReadVirtualFixup>;
+
+string ReadVirtualFixup(VirtualFixup &cm)
+{
+    local string s;
+    return SPrintf(s, "%s at %d", cm.ClassName, AbsOffset(cm.ChunkOffset));
+}
+
+typedef struct (uint ptr_count)
+{
+    VirtualFixup mapping[ptr_count] <optimize=false>;
+} VirtualFixupBlock;
+
+//------------------------------------------------
+
+typedef struct
+{
+    RelativeOffset PointFrom(absStart_data) <bgcolor=CL_POINTER, comment="May be in chunk">;
+    uint SectionIndex <bgcolor=CL_SINGLEVALUE, comment="Index of section that it points to">;
+    RelativeOffset PointTo(absStart_data) <bgcolor=CL_POINTER, comment="Beginning of child">;
+
+    local uint old_off = FTell();
+
+    FSeek(AbsOffset(PointFrom));
+    uint source <bgcolor=CL_GLOBALFIXUP>;
+
+    FSeek(AbsOffset(PointTo));
+    uint dest <bgcolor=CL_GLOBALFIXUP>;
+
+    FSeek(old_off);
+
+} GlobalFixup <read=ReadGlobalFixup>;
+
+string ReadGlobalFixup(GlobalFixup &le)
+{
+    local string s;
+
+    return SPrintf(s, "[%d] %d -> %d", le.SectionIndex, AbsOffset(le.PointFrom), AbsOffset(le.PointTo));
+}
+
+typedef struct (uint ptr_count)
+{
+    local int i;
+    local uint PeekVal;
+
+    for (i=0; i<ptr_count; i++)
+    {
+        PeekVal = ReadUInt();
+
+        if (PeekVal == 0xFFFFFFFF)
+            continue;
+        
+        GlobalFixup Link <optimize=false>;
+    }
+} GlobalFixupBlock;
+
+//------------------------------------------------
+
+local uint start_dataBegin;
+
+local uint start_localFixups;
+local uint num_localFixups;
+
+local uint start_globalFixups;
+local uint num_globalFixups;
+
+local uint start_virtualFixups;
+local uint num_virtualFixups;
+
+// --------------------------
+// Given the position of
+// a global fixup, let's try to find
+// where its destination
+// will lead to!
+// --------------------------
+
+int GlobalFixupDestination(uint pointer_pos)
+{
+    local int old_off, i;
+    local int ptr_start, ptr_dest;
+
+    // Data pointers haven't been set yet
+    if (!start_globalFixups)
+        return -1;
+
+    old_off = FTell();
+
+    // -------
+
+    if (num_globalFixups > 0)
+    {
+        FSeek(start_globalFixups);
+
+        for (i=0; i<num_globalFixups; i++)
+        {
+            ptr_start = absStart_data + ReadInt();
+            FSkip(4);
+
+            ReadInt();
+            FSkip(4);
+
+            ptr_dest = absStart_data + ReadInt();
+            FSkip(4);
+
+            if (ptr_start == pointer_pos)
+                return ptr_dest;
+        }
+    }
+
+    // -------
+
+    FSeek(old_off);
+
+    return -1;
+}
+
+// --------------------------
+// Given the position of
+// a pointer, let's try to find
+// where its destination
+// will lead to!
+// --------------------------
+
+int LocalFixupDestination(int pointer_pos)
+{
+    local int old_off, i;
+    local int ptr_start, ptr_dest;
+
+    // Data pointers haven't been set yet
+    if (!start_localFixups)
+        return -1;
+
+    old_off = FTell();
+
+    // -------
+
+    if (num_localFixups > 0)
+    {
+        FSeek(start_localFixups);
+
+        for (i=0; i<num_localFixups; i++)
+        {
+            ptr_start = absStart_data + ReadInt();
+            FSkip(4);
+
+            ptr_dest = absStart_data + ReadInt();
+            FSkip(4);
+
+            if (ptr_start == pointer_pos)
+            {
+                FSeek(old_off);
+                return ptr_dest;
+            }
+        }
+    }
+
+    // -------
+
+    FSeek(old_off);
+    return -1;
+}
+
+//------------------------------------------------
+
+// --------------------------
+// Given an offset, let's try to
+// get the name of the Havok object
+// that exists there! (If any)
+// --------------------------
+
+string ClassNameAtOffset(uint pos)
+{
+    if (!start_virtualFixups)
+        return "Unknown";
+
+    local uint old_pos = FTell();
+
+    // -------------
+    
+    FSeek(start_virtualFixups);
+
+    local int pt_object, pt_classname;
+    local int i;
+
+    if (num_virtualFixups > 0)
+    {
+        for (i=0; i<num_virtualFixups; i++)
+        {
+            pt_object = absStart_data + ReadInt();
+            FSkip(4);
+
+            ReadInt();
+            FSkip(4);
+
+            pt_classname = absStart_classnames + ReadInt();
+            FSkip(4);
+
+            // Does the offset match what we're looking for?
+            if (pt_object == pos)
+            {
+                FSeek(old_pos);
+                return ReadString(pt_classname, -1);
+            }
+        }
+    }
+
+    // -------------
+
+    FSeek(old_pos);
+    
+    return "Unknown";
+}
+
+//------------------------------------------------
+
+typedef struct
+{
+    local uint old_pos = FTell();
+
+    // --------------------------------
+    
+    // Get sizes of our sections
+
+    local int section_size_lf = (AbsOffset(header.m_globalFixupsOffset) - AbsOffset(header.m_localFixupsOffset));
+    local int object_count_lf = section_size_lf / 8;
+
+    local int section_size_gf = (AbsOffset(header.m_virtualFixupsOffset) - AbsOffset(header.m_globalFixupsOffset));
+    local int object_count_gf = section_size_gf / 12;
+
+    local int section_size_vf = (AbsOffset(header.m_exportsOffset) - AbsOffset(header.m_virtualFixupsOffset));
+    local int object_count_vf = section_size_vf / 12; 
+
+    Printf("Had %d local fix-ups\n", object_count_lf);
+    Printf("Had %d global fix-ups\n", object_count_gf);
+    Printf("Had %d virtual fix-ups\n", object_count_vf);
+
+    num_localFixups = object_count_lf;
+    num_globalFixups = object_count_gf;
+    num_virtualFixups = object_count_vf;
+
+    // --------------------------------
+    // Do DataPointer section first, we may need this later
+
+    FSeek(AbsOffset(header.m_localFixupsOffset));
+    start_localFixups = FTell();
+    LocalFixupBlock localFixups(object_count_lf);
+
+    // --------------------------------
+    // Do LinkedEntries section first, we may need this later
+
+    FSeek(AbsOffset(header.m_globalFixupsOffset));
+    start_globalFixups = FTell();
+    GlobalFixupBlock globalFixups(object_count_gf);
+
+    // --------------------------------
+    // Do ClassMapping last, this could refer to previous sections
+
+    FSeek(AbsOffset(header.m_virtualFixupsOffset));
+    start_virtualFixups = FTell();
+    VirtualFixupBlock virtualFixups(object_count_vf);
+
+    // --------------------------------
+
+    // Read first object if we can!
+    if (first_object_pos)
+        CreateHavokObject(first_object_pos);
+
+    // --------------------------------
+
+    FSeek(AbsOffset(header.m_exportsOffset));
+} HavokPackData;

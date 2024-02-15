@@ -1,0 +1,326 @@
+
+:i $level_select_last_level_played$ = :a{$load_sch$:a}
+:i $level_select_focus_target1$ = %i(0,00000000)
+:i $level_select_focus_target2$ = %i(0,00000000)
+:i $return_to_level$ = :a{$null$:a}
+:i $still_in_net_area$ = %i(0,00000000)
+:i $globe_target_x$ = %f(89.000000)
+:i $globe_target_y$ = %f(0.000000)
+:i $globe_target_dot_num$ = %i(0,00000000)
+:i $globe_new_target_x$ = %f(0.000000)
+:i $globe_state$ = $still$
+:i $globe_piece_size$ = %i(64,00000040)
+:i $globe_interpolation$ = %f(0.000000)
+:i $globe_vel$ = %i(0,00000000)
+:i $globe_pos$ = %f(0.000000)
+:i $globe_idle_frames$ = %i(0,00000000)
+:i $level_select_last_gamemode_processed$ = %i(0,00000000)
+:i $level_select_last_demoflag_processed$ = %i(0,00000000)
+:i $level_select_last_dot_count$ = %i(0,00000000)
+:i $level_select_item_current_index$ = %i(0,00000000)
+:i $created_park_warning$ = %i(0,00000000)
+:i $g_hack_push_topdownheap$ = %i(0,00000000)
+:i $level_select_current_list_index$ = %i(0,00000000)
+:i function $launch_level_select_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $level_select_info_panel$
+		:i $DestroyScreenElement$$id$ = $level_select_info_panel$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $main_menu_bg_anchor$
+		:i $DestroyScreenElement$$id$ = $main_menu_bg_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$$id$ = $the_time$$hide$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+	:i else 
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$$name$ = $skateshop_board_select_cam$$play_hold$
+	:i endif
+	:i if $GotParam$$from_server_options$
+		:i $change$$in_server_options$ = %i(1,00000001)
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i %GLOBAL%$pad_back_script$ = $THUGPRO_LevelSelect_menu_exit$
+	:i $levelselect_test$ isNull 
+:i endfunction
+:i function $do_arrow_effect$
+	:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.100000)$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+	:i $DoMorph$$scale$ = %f(1.000000)$time$ = %f(0.100000)$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+:i endfunction
+:i function $check_level_dot_valid$
+	:i return
+	$valid$ = %i(1,00000001)
+:i endfunction
+:i function $get_num_levels_unlocked$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i return
+	$num_unlocked$ = %GLOBAL%$array_size$
+:i endfunction
+:i function $created_park_menu_add_item$
+	:i $highlight_bar_scale$ = %vec2(1.600000,0.700000)
+	:i $centered$ = $centered$
+	:i $no_bg$ = $no_bg$
+	:i $theme_menu_add_item$ isNull 
+:i endfunction
+:i function $network_level_select_pad_back$
+	:i %GLOBAL%$net_pad_back$ = %i(1,00000001)
+	:i $THUGPRO_LevelSelect_menu_exit$ isNull 
+:i endfunction
+:i function $kill_level_select_scripts$
+	:i $level_select_get_info_panel_script$
+	:i $KillSpawnedScript$$name$ = $level_select_build_info_panel_common_bits$
+	:i $KillSpawnedScript$$name$ = %GLOBAL%$info_panel_script$
+:i endfunction
+:i function $created_park_launch$
+	:i if  ($in_server_options$ = %i(1,00000001)) 
+		:i $GetParkEditorMaxPlayers$
+		:i $GetNetworkNumPlayers$
+		:i if $inNetGame$
+		:i endif
+	:i endif
+	:i $GetParkEditorMaxPlayers$
+	:i $GetNetworkNumPlayers$
+	:i if $inNetGame$
+	:i endif
+	:i if  ($in_server_options$ = %i(1,00000001)) 
+		:i $level$ = $load_sk5ed_gameplay$
+		:i $string$ = %s(12,"Created Park")
+		:i if $LevelIs$$Load_MainMenu$
+			:i if  ($in_server_options$ = %i(1,00000001)) 
+				:i $THUGPRO_LevelSelect_menu_exit$ isNull 
+			:i else 
+				:i $level_select_change_level$ isNull 
+			:i endif
+		:i else 
+			:i $level_select_change_level$ isNull 
+		:i endif
+	:i else 
+		:i if $inNetGame$
+			:i $change$$created_park_warning$ = %i(0,00000000)
+			:i $level_select_change_level$$level$ = $load_sk5ed_gameplay$ isNull $show_warning$
+		:i else 
+			:i $level_select_change_level$$level$ = $load_sk5ed_gameplay$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $level_select_created_park_list$
+	:i $printf$%s(30,"level_select_created_park_list")
+	:i $dialog_box_exit$
+	:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+		:i $dark_menu$ = $dark_menu$
+		:i $delta_pos$ = %vec2(0.000000,0.000000)
+		:i $parent$ = $level_select_anchor_middle$
+	:i else 
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $delta_pos$ = %vec2(-400.000000,0.000000)
+		:i $parent$ = $root_window$
+	:i endif
+	:i if $GotParam$$in_park_editor$
+		:i $make_new_themed_scrolling_menu$$title$ = %s(14,"PRE-MADE PARKS")
+	:i else 
+		:i $make_new_skateshop_menu$:s{
+			:i $parent$ = %GLOBAL%$parent$
+			:i $pos$ =  (%vec2(620.000000,100.000000) + %GLOBAL%$delta_pos$) 
+			:i $dims$ = %vec2(200.000000,191.000000)
+			:i $internal_just$ = :a{$left$$center$:a}
+			:i $menu_id$ = $premade_park_menu$
+			:i $scrolling_menu_id$ = $premade_park_scrolling_menu$
+			:i $vmenu_id$ = $premade_park_vmenu$
+			:i $menu_title$ = %s(8,"PRE-MADE")
+			:i $type$ = $VScrollingMenu$
+			:i $scrolling_menu_title_id$ = %s(0,"")
+			:i $dont_allow_wrap$ = $dont_allow_wrap$
+			:i $padding_scale$ = %f(0.900000)
+		:i :s}
+		:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+			:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(320.000000,640.000000)
+		:i endif
+	:i endif
+	:i $kill_start_key_binding$
+	:i if NOT $GotParam$$in_park_editor$
+		:i $theme_background$$parent$ = $premade_park_menu$$id$ = $premade_park_bg$$width$ = %f(1.500000)$pos$ =  (%vec2(710.000000,106.000000) + %GLOBAL%$delta_pos$) $num_parts$ = %f(7.500000)$z_priority$ = %i(1,00000001)$dark_menu$ = %GLOBAL%$dark_menu$$static$ = $static$
+	:i endif
+	:i if $GotParam$$in_park_editor$
+		:i $create_helper_text$$generic_helper_text$
+	:i endif
+	:i if $GotParam$$from_server_options$
+		:i $pad_back_params$ = :s{$from_server_options$:s}
+	:i else 
+		:i $pad_back_params$ = :s{:s}
+	:i endif
+	:i if NOT $GotParam$$in_park_editor$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $premade_park_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $level_select_created_park_list_exit$%GLOBAL%$pad_back_params$:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $sub_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $level_select_created_park_list_exit$ isNull :s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $GetArraySize$$premade_parks_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $created_park_menu_add_item$:s{$text$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$name$) 
+			:i $pad_choose_script$ = $maybe_load_premade_park$
+			:i $pad_choose_params$ = :s{%GLOBAL%$pad_back_params$$slot$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$slot$) $max$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$max$) :s}
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if $ScreenElementExists$$id$ = $level_menu$
+		:i $fireevent$$type$ = $unfocus$$target$ = $level_menu$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+		:i $SetButtonEventMappings$$block_menu_input$
+		:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.250000)$seconds$
+		:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.300000)
+		:i $wait$%f(0.250000)$seconds$
+		:i $fireevent$$type$ = $unfocus$$target$ = $created_park_vmenu$
+		:i $fireevent$$type$ = $focus$$target$ = $premade_park_vmenu$
+		:i $SetButtonEventMappings$$unblock_menu_input$
+	:i endif
+	:i if $GotParam$$in_park_editor$
+		:i $theme_menu_add_item$$text$ = %s(4,"Done")$id$ = $menu_done$$scale$ = %f(1.000000)$pad_choose_script$ = $create_pause_menu$$no_bg$$highlight_bar_scale$ = %vec2(1.700000,0.800000)
+		:i $finish_themed_scrolling_menu$$bg_width$ = %f(1.500000)$time$ = %f(0.200000)
+	:i endif
+:i endfunction
+:i function $maybe_load_premade_park$
+	:i if $inNetGame$
+		:i $DestroyIfObjectExist$$id$ = $LevelSelectMasterContainer$
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i $in_park_ed$ = %i(1,00000001)
+	:i endif
+	:i $level_select_created_park_list_exit$ isNull 
+:i endfunction
+:i function $level_select_created_park_list_exit$
+	:i if $GotParam$$slot$
+		:i if $GotParam$$in_park_ed$
+			:i $parked_load_from_disk$$slot$ = %GLOBAL%$slot$
+		:i else 
+			:i if $GotParam$$from_server_options$
+				:i $LoadParkFromDisk$$slot$ = %GLOBAL%$slot$$block_rebuild$
+				:i $created_park_launch$$from_server_options$
+			:i else 
+				:i $LoadParkFromDisk$$slot$ = %GLOBAL%$slot$$block_rebuild$
+				:i $created_park_launch$
+			:i endif
+		:i endif
+	:i else 
+		:i if $GotParam$$in_park_editor$
+			:i $create_pause_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $kill_level_select_cams$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $KillSkaterCamAnim$$name$ = $level_select_cam$
+	:i endif
+:i endfunction
+:i function $really_change_level$
+	:i if $OnServer$
+		:i $change_level$ isNull 
+	:i else 
+		:i if $IsHost$
+			:i $FCFSRequestChangeLevel$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $level_select_change_level$
+	:i if $ScreenElementExists$$id$ = $LS_InfoBoxImage$
+		:i $DoScreenElementMorph$$id$ = $LS_InfoBoxImage$$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}$time$ = %f(0.100000)
+		:i $DoScreenElementMorph$$id$ = $LS_InfoBoxImage$$alpha$ = %f(1.000000)$time$ = %f(0.100000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+		:i $AutoServer_Destroy_Timer$
+		:i if  ($AutoServer_PausedTimer$ = %i(1,00000001)) 
+			:i $change$$AutoServer_PausedTimer$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $GoalManager_ShowPoints$
+	:i if NOT $GoalManager_HasActiveGoals$
+		:i $GoalManager_ShowGoalPoints$
+	:i endif
+	:i $DestroyIfObjectExist$$id$ = $LevelSelectMasterContainer$
+	:i $DestroyIfObjectExist$$id$ = $level_select_anchor$
+	:i $DestroyIfObjectExist$$id$ = $current_menu_anchor$
+	:i if $LevelIs$$load_sk5ed$
+		:i $load_parked_textures_to_main_memory$$unload$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $SetColorBufferClear$$clear$ = %i(0,00000000)
+	:i endif
+	:i if $LevelIs$$load_sk5ed_gameplay$
+		:i $RailEditor$.$DestroyEditedRailSectors$$DoNotUpdateSuperSectors$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+	:i endif
+	:i if $inNetGame$
+		:i $show_warning$ = %i(1,00000001)
+	:i endif
+	:i if $IsCustomPark$
+		:i $really_change_level$ isNull 
+	:i else 
+		:i if NOT $LevelIs$%GLOBAL%$level$
+			:i $really_change_level$ isNull 
+		:i else 
+			:i if $GotParam$$chose_same_level_script$
+				:i %GLOBAL%$chose_same_level_script$
+			:i else 
+				:i if $root_window$.$GetSingleTag$$no_exit_pause_menu$
+					:i $THUGPRO_LevelSelect_menu_exit$
+					:i return
+					
+				:i endif
+				:i if $GotParam$$end_run$
+					:i $THUGPRO_LevelSelect_menu_exit$$end_run$
+					:i return
+					
+				:i endif
+				:i if $InSplitScreenGame$
+					:i $THUGPRO_LevelSelect_menu_exit$$end_run$
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $THUGPRO_LevelSelect_menu_exit$$no_new_menu$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $level_select_invalid_choice$
+	:i $printf$%s(7,"locked!")
+:i endfunction
+:i function $level_select_valid_choice$
+	:i if $GotParam$$level$
+		:i $array$ = $level_select_last_level_played$
+		:i $SetArrayElement$$arrayname$ = $array$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$level$
+	:i endif
+	:i $PauseMusic$%i(1,00000001)
+	:i if $GotParam$$filename$
+		:i $GetCustomParkName$
+		:i if NOT  (%GLOBAL%$filename$ = %GLOBAL%$name$) 
+			:i if $LoadFromMemoryCard$$name$ = %GLOBAL%$filename$$type$ = $Park$
+			:i else 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $GetTags$
+	:i if $GotParam$$level_callback_script$
+		:i %GLOBAL%$level_callback_script$ isNull 
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,68 @@
+
+:i $Goal_Gaps_genericParams$ = :s{
+	:i $goal_text$ = %s(17,"generic gaps text")
+	:i $view_goals_text$ = %s(9,"Gaps goal")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_gaps_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_gaps_activate$
+	:i $active$ = $goal_gaps_active$
+	:i $deactivate$ = $goal_gaps_deactivate$
+	:i $expire$ = $goal_gaps_expire$
+	:i $success$ = $goal_gaps_success$
+	:i $fail$ = $goal_gaps_fail$
+	:i $trigger_obj_id$ = $TRG_G_GAP_Pro$
+	:i $restart_node$ = $TRG_G_GAP_RestartNode$
+	:i $start_pad_id$ = $G_GAP_StartPad$
+	:i $record_type$ = $score$
+	:i $gaps$
+:i :s}
+:i function $goal_gaps_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_gaps_activate$
+	:i if $GameModeEquals$$is_creategoals$
+		:i $skater$.$landskatertricks$
+	:i endif
+	:i if $GotParam$$goal_object_params$
+		:i $ForEachIn$%GLOBAL%$goal_object_params$$Do$ = $MaybeCreateProximRootNode$$Params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$goal_text$ = %GLOBAL%$goal_text$:s}
+	:i endif
+	:i if $GotParam$$no_cam_anim$
+		:i $goal_passive_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i else 
+		:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_gaps_deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$goal_object_params$
+		:i $ForEachIn$%GLOBAL%$goal_object_params$$Do$ = $MaybeDeleteProximRootNodes$$Params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$goal_text$ = %GLOBAL%$goal_text$:s}
+	:i endif
+:i endfunction
+:i function $goal_gaps_success$
+	:i if $ScreenElementExists$$id$ = $goal_gaps_got_gap_message$
+		:i $DestroyScreenElement$$id$ = $goal_gaps_got_gap_message$
+	:i endif
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_gaps_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_gaps_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_gaps_got_gap$
+	:i if NOT $GoalManager_AllFlagsSet$$name$ = %GLOBAL%$goal_id$
+		:i if $ScreenElementExists$$id$ = $goal_gaps_got_gap_message$
+			:i $DestroyScreenElement$$id$ = $goal_gaps_got_gap_message$
+		:i endif
+		:i if NOT $GotParam$$collect_type$
+			:i %GLOBAL%$collect_type$ = %s(4,"gaps")
+		:i endif
+		:i $FormatText$$TextName$ = $got_gap_text$%s(11,"%c of %n %s")$c$ = %GLOBAL%$num_flags_set$$n$ = %GLOBAL%$num_flags$$s$ = %GLOBAL%$collect_type$
+		:i $create_panel_message$$id$ = $goal_gaps_got_gap_message$$text$ = %GLOBAL%$got_gap_text$$style$ = $goal_collect_text$
+	:i endif
+:i endfunction
+:i :end

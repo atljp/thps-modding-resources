@@ -1,0 +1,253 @@
+
+:i function $car_add_components$
+	:i if  ( ($LEVEL_ORIGINAL_GAME$)  = $THPS4$) 
+		:i %GLOBAL%$SuspendDistance$ = %i(1000,000003e8)
+		:i %GLOBAL%$lod_dist1$ = %i(800,00000320)
+		:i %GLOBAL%$lod_dist2$ = %i(801,00000321)
+	:i endif
+	:i if $GotParam$$skeletonName$
+		:i $CreateComponentFromStructure$$component$ = $skeleton$$skeleton$ = %GLOBAL%$skeletonName$
+	:i endif
+	:i if $GotParam$$VisibleInDev$
+		:i %GLOBAL%$x$ = %i(0,00000000)
+		:i %GLOBAL%$y$ = %i(0,00000000)
+		:i %GLOBAL%$z$ = %i(0,00000000)
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i if NOT $GotParam$$NoCollision$
+		:i $CreateComponentFromStructure$$component$ = $collision$$collisionMode$ = $geometry$
+	:i endif
+	:i if NOT $GotParam$$NoScript$
+		:i $CreateComponentFromStructure$$component$ = $nodearray$ isNull 
+	:i endif
+	:i if NOT $GotParam$$NoRail$
+		:i $CreateComponentFromStructure$$component$ = $railmanager$ isNull 
+	:i endif
+	:i if NOT $GotParam$$NoSkitch$
+		:i $CreateComponentFromStructure$$component$ = $objecthookmanager$ isNull 
+		:i $CreateComponentFromStructure$$component$ = $skitch$ isNull 
+	:i endif
+	:i if $GotParam$$skeletonName$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$skeletonName$$b$ = $car$
+			:i $CreateComponentFromStructure$$component$ = $CarPhysics$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $gameobj_add_components$
+	:i if $GotParam$$skeletonName$
+		:i $CreateComponentFromStructure$$component$ = $animblender$ isNull 
+		:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeleton$ = %GLOBAL%$skeletonName$
+	:i endif
+	:i %GLOBAL%$is_level_obj$ = %i(0,00000000)
+	:i if $GotParam$$class$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$class$$b$ = $LevelObject$
+			:i %GLOBAL%$is_level_obj$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$Bouncy$
+		:i if NOT $GotParam$$contacts$
+			:i %GLOBAL%$contacts$ = :a{%vec3(0.000000,36.599998,0.000000)%vec3(-27.450001,18.299999,15.848100)%vec3(-27.450001,18.299999,-15.848100)%vec3(0.000000,18.299999,-31.696301)%vec3(27.450001,18.299999,-15.848100)%vec3(27.450001,18.299999,15.848100)%vec3(0.000000,18.299999,31.696301)%vec3(0.000000,-18.299999,31.696301)%vec3(27.450001,-18.299999,15.848100)%vec3(27.450001,-18.299999,-15.848100)%vec3(0.000000,-18.299999,-31.696301)%vec3(-27.450001,-18.299999,-15.848100)%vec3(-27.450001,-18.299999,15.848100)%vec3(0.000000,-36.599998,0.000000):a}
+		:i endif
+		:i if NOT $GotParam$$center_of_mass$
+			:i %GLOBAL%$center_of_mass$ = %vec3(0.000000,0.000000,0.000000)
+		:i endif
+		:i if NOT $GotParam$$coeff_restitution$
+			:i %GLOBAL%$coeff_restitution$ = %f(0.400000)
+			:i %GLOBAL%$coeff_friction$ = %f(0.500000)
+		:i endif
+		:i if NOT $GotParam$$skater_collision_impulse_factor$
+			:i %GLOBAL%$skater_collision_impulse_factor$ = %f(0.700000)
+			:i %GLOBAL%$skater_collision_rotation_factor$ = %f(2.500000)
+			:i %GLOBAL%$skater_collision_assent$ = %i(15,0000000f)
+			:i %GLOBAL%$skater_collision_radius$ = %i(28,0000001c)
+		:i endif
+		:i $CreateComponentFromStructure$$component$ = $rigidbody$ isNull 
+	:i endif
+	:i if $GotParam$$SoundType$
+		:i $CreateComponentFromStructure$$component$ = $Sound$ isNull 
+	:i endif
+	:i if  (%GLOBAL%$is_level_obj$ = %i(1,00000001)) 
+		:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i else 
+		:i if $GotParam$$model$
+			:i if NOT $StringEquals$$a$ = %GLOBAL%$model$$b$ = %s(4,"none")
+				:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$SupportStreams$
+		:i if $ContainsComponent$$name$ = $stream$
+			:i $script_assert$%s(37,"object already has a stream component")
+		:i else 
+			:i $CreateComponentFromStructure$$component$ = $stream$
+		:i endif
+	:i endif
+	:i if $GotParam$$collisionMode$
+		:i if NOT  ($collisionMode$ = $none$) 
+			:i $CreateComponentFromStructure$$component$ = $collision$ isNull 
+		:i endif
+	:i endif
+	:i if $GotParam$$target$
+		:i $CreateComponentFromStructure$$component$ = $projectileproximity$
+	:i endif
+:i endfunction
+:i $THUG_Pro_Debug$ = %i(0,00000000)
+:i function $CreateObjLabel$
+:i endfunction
+:i function $MaintainObjLabel$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i %GLOBAL%$Id$ =  (%GLOBAL%$objID$ + %i(5,00000005)) 
+	:i while
+		
+		:i if $CompositeObjectExists$$name$ = %GLOBAL%$objID$
+			:i %GLOBAL%$objID$.$Obj_GetPosition$
+			:i $FormatText$$TextName$ = $text$%s(2,"%a")$a$ = %GLOBAL%$objID$$nowarning$
+			:i if $ObjectExists$$Id$ = %GLOBAL%$Id$
+				:i $SetScreenElementProps$$Id$ = %GLOBAL%$Id$$text$ = %GLOBAL%$text$$pos3D$ =  (%GLOBAL%$pos$ + %vec3(0.000000,80.000000,0.000000)) $rgba$ = %GLOBAL%$rgba$
+			:i else 
+				:i $create_object_label$$Id$ = %GLOBAL%$Id$$text$ = %GLOBAL%$text$$pos3D$ =  (%GLOBAL%$pos$ + %vec3(0.000000,80.000000,0.000000)) $rgba$ = %GLOBAL%$rgba$
+			:i endif
+		:i else 
+			:i if $ScreenElementExists$$Id$ = %GLOBAL%$Id$
+				:i $DestroyScreenElement$$Id$ = %GLOBAL%$Id$
+			:i endif
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+:i endfunction
+:i function $ped_add_components$
+	:i if  ( ($LEVEL_ORIGINAL_GAME$)  = $THPS4$) 
+		:i %GLOBAL%$SuspendDistance$ = %i(2000,000007d0)
+		:i %GLOBAL%$lod_dist1$ = %i(2000,000007d0)
+		:i %GLOBAL%$lod_dist2$ = %i(2001,000007d1)
+	:i endif
+	:i if NOT $GotParam$$NoPedLogic$
+		:i $CreateComponentFromStructure$$component$ = $avoid$
+		:i $CreateComponentFromStructure$$component$ = $pedlogic$ isNull 
+		:i $CreateComponentFromStructure$$component$ = $fam$ isNull 
+	:i endif
+	:i if $GotParam$$IsSkaterPed$
+		:i $CreateComponentFromStructure$$component$ = $SkaterLoopingSound$ isNull $volume_mult$ = %f(0.200000)
+		:i $CreateComponentFromStructure$$component$ = $SkaterSound$ isNull $volume_mult$ = %f(0.200000)
+	:i endif
+	:i if $GotParam$$skeletonName$
+		:i switch %GLOBAL%$skeletonName$
+			:i case $shark$
+				:i $skeletonName$ = $anl_shark$
+				:i end_switch
+		
+	:i endif
+	:i if  ( ($InNetGame$)  OR  ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$load_sk5ed_gameplay$) ) 
+		:i switch %GLOBAL%$skeletonName$
+			:i case $ped_female$
+				:i $GetAnimEventTableName$$animType$ = $ped_female$
+				:i %GLOBAL%$defaultAnimName$ = $Ped_F_Idle1$
+				:i $CreateComponentFromStructure$:s{
+					:i $component$ = $animblender$
+					:i  isNull 
+					:i $animName$ = $animload_thps6_human$
+					:i $animEventTableName$ = %GLOBAL%$animEventTableName$
+				:i :s}
+				:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeletonName$ = $ped_female$
+				:i endcase
+			case $anl_pigeon$
+				:i $CreateComponentFromStructure$:s{
+					:i $component$ = $animblender$
+					:i  isNull 
+					:i $animName$ = $animload_anl_pigeon$
+				:i :s}
+				:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeletonName$ = $anl_pigeon$
+				:i endcase
+			default 
+				:i $GetAnimEventTableName$$animType$ = $thps6_human$
+				:i $CreateComponentFromStructure$:s{
+					:i $component$ = $animblender$
+					:i  isNull 
+					:i $animName$ = $animload_thps6_human$
+					:i $animEventTableName$ = %GLOBAL%$animEventTableName$
+				:i :s}
+				:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeletonName$ = $thps6_human$
+				:i end_switch
+		
+	:i else 
+		:i if $GotParam$$animName$
+			:i if NOT $GotParam$$animEventTableName$
+				:i $GetAnimEventTableName$$animType$ = %GLOBAL%$Type$
+			:i endif
+			:i if NOT $GotParam$$defaultAnimName$
+				:i if $ChecksumEquals$$a$ = %GLOBAL%$skeletonName$$b$ = $thps6_human$
+					:i %GLOBAL%$defaultAnimName$ = $WStandIdle1$
+				:i endif
+				:i if NOT  ($have_loaded_net$) 
+					:i if $ChecksumEquals$$a$ = %GLOBAL%$skeletonName$$b$ = $ped_female$
+						:i %GLOBAL%$defaultAnimName$ = $Ped_F_Idle1$
+					:i endif
+				:i endif
+			:i endif
+			:i $CreateComponentFromStructure$$component$ = $animblender$$animEventTableName$ = %GLOBAL%$animEventTableName$ isNull 
+		:i endif
+		:i if $GotParam$$skeletonName$
+			:i $PushMemProfile$%s(20,"Pedestrian Skeletons")
+			:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeleton$ = %GLOBAL%$skeletonName$
+			:i $PopMemProfile$
+		:i endif
+	:i endif
+	:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i if $GotParam$$DoLightCollision$
+		:i $CreateComponentFromStructure$$component$ = $modellightupdate$ isNull 
+	:i endif
+	:i if NOT $GotParam$$dont_target$
+		:i $CreateComponentFromStructure$$component$ = $projectileproximity$
+	:i endif
+	:i if NOT $GotParam$$ShadowOff$
+		:i $CreateComponentFromStructure$$component$ = $shadow$ isNull $ShadowType$ = $simple$
+	:i endif
+:i endfunction
+:i function $ped_init_model$
+	:i if  ( ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$load_sk5ed_gameplay$) ) 
+		:i $ChooseRandomCreatedGoalPedModel$
+		:i return
+		
+	:i endif
+	:i if $InNetGame$
+		:i if $GotParam$$skeletonName$
+			:i switch %GLOBAL%$skeletonName$
+				:i case $shark$
+					:i $skeletonName$ = $anl_shark$
+					:i end_switch
+			
+		:i endif
+		:i if  (%GLOBAL%$skeletonName$ = $anl_pigeon$) 
+			:i if NOT $GotParam$$model$
+				:i $script_assert$%s(18,"no model specified")
+			:i endif
+			:i $Obj_InitModel$$model$ = %GLOBAL%$model$$use_asset_manager$ = %i(1,00000001)
+		:i else 
+			:i $Obj_InitModel$$model$ = %s(29,"Peds/Ped_Judge/Ped_Judge.skin")$use_asset_manager$ = %i(1,00000001)
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $GotParam$$profile$
+		:i $Obj_InitModelFromProfile$$struct$ = %GLOBAL%$profile$$use_asset_manager$ = %i(1,00000001)$buildscript$ = $create_ped_model_from_appearance$
+	:i else 
+		:i if NOT $GotParam$$model$
+			:i $script_assert$%s(14,"no model name!")
+		:i endif
+		:i $Obj_InitModel$$model$ = %GLOBAL%$model$ isNull $use_asset_manager$ = %i(1,00000001)
+	:i endif
+	:i $Obj_GetID$
+	:i $RunScriptOnObject$$Id$ = %GLOBAL%$objID$$set_ped_anim_handlers$
+:i endfunction
+:i function $ped_disable_bones$
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_L$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_C$$active$ = %i(0,00000000)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_R$$active$ = %i(0,00000000)
+:i endfunction
+:i function $ped_enable_bones$
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_L$$active$ = %i(1,00000001)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_C$$active$ = %i(1,00000001)
+	:i $Obj_SetBoneActive$$bone$ = $Cloth_Shirt_R$$active$ = %i(1,00000001)
+:i endfunction
+:i :end

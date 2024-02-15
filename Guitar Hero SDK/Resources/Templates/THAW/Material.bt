@@ -1,0 +1,440 @@
+//------------------------------------------------
+// THAW material
+//      (Material version 2)
+//------------------------------------------------
+
+#define CL_MATCHECKSUM              0x00FFCC
+#define CL_MATPASS                  0x00FFFF
+#define CL_MATPASS_UNUSED           0x00DDDD
+#define CL_MATVALUE                 0x00CC99
+#define CL_MATPADDING               0x00BB88
+
+local uint MaterialBlockStart;
+
+enum <ubyte> THAWBlendMode
+{
+    vBLEND_MODE_DIFFUSE = 0,
+    vBLEND_MODE_ADD = 1,
+    vBLEND_MODE_ADD_FIXED = 2,
+    vBLEND_MODE_SUBTRACT = 3,
+    vBLEND_MODE_SUB_FIXED = 4,
+    vBLEND_MODE_BLEND = 5,
+    vBLEND_MODE_BLEND_FIXED = 6,
+    vBLEND_MODE_MODULATE = 7,
+    vBLEND_MODE_MODULATE_FIXED = 8,
+    vBLEND_MODE_BRIGHTEN = 9,
+    vBLEND_MODE_BRIGHTEN_FIXED = 10,
+    vBLEND_MODE_GLOSS_MAP = 11,
+    vBLEND_MODE_BLEND_PREVIOUS_MASK = 12,
+    vBLEND_MODE_BLEND_INVERSE_PREVIOUS_MASK = 13,
+    vBLEND_MODE_MODULATE_COLOR = 15,
+    vBLEND_MODE_ONE_INV_SRC_ALPHA = 17,
+    vBLEND_MODE_OVERLAY = 18,
+    vBLEND_MODE_NORMAL_MAP = 19,
+    vBLEND_MODE_LIGHTMAP = 20,
+    vBLEND_MODE_NORMAL_ROUGH = 21,
+    vBLEND_MODE_MASK = 22
+};
+
+typedef struct
+{
+    ushort a;
+    ushort b;
+} ShortChunk <read=Str("%d, %d", a, b)>;
+
+typedef struct
+{
+    ushort x_clip;
+    ushort y_clip;
+} UVClippingModes <read=Str("%s, %s", x_clip ? "CLAMP" : "REPEAT", y_clip ? "CLAMP" : "REPEAT")>;
+
+typedef struct
+{
+    THAWBlendMode blend_mode;
+    ubyte skip_me[2] <hidden=true>;
+    ubyte blend_fixed;
+} THAWBlendData <read=Str("%s, %d", EnumToString(blend_mode), blend_fixed)>;
+
+typedef struct
+{
+    uint flags;
+} THAWPassFlags <read=ReadTHAWPassFlags>;
+
+string ReadTHAWPassFlags(THAWPassFlags &passflags)
+{
+    local string out;
+    local string separator = "";
+
+    if (passflags.flags & MATFLAG_UV_WIBBLE)
+    {
+        SPrintf(out, "%s%sMATFLAG_UV_WIBBLE", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_VC_WIBBLE)
+    {
+        SPrintf(out, "%s%sMATFLAG_VC_WIBBLE", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_TEXTURED)
+    {
+        SPrintf(out, "%s%sMATFLAG_TEXTURED", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_ENVIRONMENT)
+    {
+        SPrintf(out, "%s%sMATFLAG_ENVIRONMENT", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_DECAL)
+    {
+        SPrintf(out, "%s%sMATFLAG_DECAL", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_SMOOTH)
+    {
+        SPrintf(out, "%s%sMATFLAG_SMOOTH", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_TRANSPARENT)
+    {
+        SPrintf(out, "%s%sMATFLAG_TRANSPARENT", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_PASS_COLOR_LOCKED)
+    {
+        SPrintf(out, "%s%sMATFLAG_PASS_COLOR_LOCKED", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_SPECULAR)
+    {
+        SPrintf(out, "%s%sMATFLAG_SPECULAR", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_BUMP_SIGNED_TEXTURE)
+    {
+        SPrintf(out, "%s%sMATFLAG_BUMP_SIGNED_TEXTURE", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_BUMP_LOAD_MATRIX)
+    {
+        SPrintf(out, "%s%sMATFLAG_BUMP_LOAD_MATRIX", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_PASS_TEXTURE_ANIMATES)
+    {
+        SPrintf(out, "%s%sMATFLAG_PASS_TEXTURE_ANIMATES", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_PASS_IGNORE_VERTEX_ALPHA)
+    {
+        SPrintf(out, "%s%sMATFLAG_PASS_IGNORE_VERTEX_ALPHA", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_EXPLICIT_UV_WIBBLE)
+    {
+        SPrintf(out, "%s%sMATFLAG_EXPLICIT_UV_WIBBLE", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_WATER_EFFECT)
+    {
+        SPrintf(out, "%s%sMATFLAG_WATER_EFFECT", out, separator);
+        separator = " | ";
+    }
+    
+    if (passflags.flags & MATFLAG_NO_MAT_COL_MOD)
+    {
+        SPrintf(out, "%s%sMATFLAG_NO_MAT_COL_MOD", out, separator);
+        separator = " | ";
+    }
+    
+    return out;
+}
+
+typedef struct
+{
+    uint num_keys <bgcolor=CL_MATVALUE>;
+    int unk <bgcolor=CL_MATVALUE>;
+    
+    int unks[num_keys*2] <bgcolor=CL_MATVALUE>;
+} THUG2VCWibble;
+
+typedef struct
+{
+    uint time <bgcolor=CL_MATVALUE>;
+    QBKey image <bgcolor=CL_MATVALUE>;
+} THUG2TexAnimFrame <read=Str("%d: %s", time, ReadQBKey(image))>;
+
+typedef struct
+{
+    int num_keyframes <bgcolor=CL_MATVALUE>;
+    int period <bgcolor=CL_MATVALUE>;
+    int iterations <bgcolor=CL_MATVALUE>;
+    int phase <bgcolor=CL_MATVALUE>;
+    
+    THUG2TexAnimFrame frames[num_keyframes] <optimize=false>;
+} THUG2TexAnimData <read=Str("%d keyframes, Period: %d, Iterations: %d, Phase: %d", num_keyframes, period, iterations, phase)>;
+
+typedef struct
+{
+    int m_time <bgcolor=0xAAAAFF>;
+    ubyte b <bgcolor=0x9999EE>;
+    ubyte g <bgcolor=0x9999EE>;
+    ubyte r <bgcolor=0x9999EE>;
+    ubyte a <bgcolor=0x9999EE>;
+} VCWibbleFrame <read=Str("%d: %d, %d, %d, %d", m_time, r, g, b, a)>;
+
+typedef struct
+{
+    uint m_num_keyframes <bgcolor=0x8888FF>;
+    uint m_phase <bgcolor=0x7777EE>;
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        RelativeOffset mp_keyframes(MaterialBlockStart) <bgcolor=0x7777EE>;
+        
+        local uint old_off = FTell();
+        FSeek(AbsOffset(mp_keyframes));
+
+        VCWibbleFrame frames[m_num_keyframes];
+        FSeek(old_off);
+    }
+    else
+        VCWibbleFrame frames[m_num_keyframes];
+} VCWibbleObject <read=Str("%d frames, Phase: %d", m_num_keyframes, m_phase)>;
+
+typedef struct (uint wibble_objects)
+{
+    VCWibbleObject objects[wibble_objects] <optimize=false>;
+} THAWVCWibbleData;
+
+typedef struct (uint pass_index)
+{
+    QBKey id <bgcolor=CL_MATPASS>;
+    THAWPassFlags flags <bgcolor=CL_MATPASS>;
+    ubyte has_color <bgcolor=CL_MATPASS>;
+    Vec3 color <bgcolor=CL_MATVALUE>;
+    uint blend_mode <bgcolor=CL_MATVALUE>;
+    uint blend_fixed_alpha <bgcolor=CL_MATVALUE>;
+    uint address_u <bgcolor=CL_MATVALUE>;
+    uint address_v <bgcolor=CL_MATVALUE>;
+    Vec2 envmap_multiples <bgcolor=CL_MATVALUE>;
+    uint filtering_mode <bgcolor=CL_MATVALUE>;
+    
+    if (flags.flags & MATFLAG_UV_WIBBLE)
+    {
+        Vec2 uv_velocity <bgcolor=CL_MATVALUE>;
+        Vec2 uv_frequency <bgcolor=CL_MATVALUE>;
+        Vec2 uv_amplitude <bgcolor=CL_MATVALUE>;
+        Vec2 uv_phase <bgcolor=CL_MATVALUE>;
+    }
+    
+    if (pass_index == 0 && (flags.flags & MATFLAG_VC_WIBBLE))
+    {
+        uint num_vc_wibbles <bgcolor=CL_MATVALUE>;
+        THAWVCWibbleData wibbles(num_vc_wibbles);
+    }
+    
+    if (flags.flags & MATFLAG_PASS_TEXTURE_ANIMATES)
+        THUG2TexAnimData animation_data;
+    
+    uint mipmap_mag <bgcolor=CL_MATVALUE>;
+    uint mipmap_min <bgcolor=CL_MATVALUE>;
+    float mipmap_lod_bias <bgcolor=CL_MATVALUE>;
+    float mipmap_l <bgcolor=CL_MATVALUE>;
+} THUG2MaterialPass;
+
+// 48 bytes long, it seems.
+typedef struct
+{
+    Vec2 velocity <bgcolor=0x88FFFF>;
+    Vec2 frequency <bgcolor=0x88FFFF>;
+    Vec2 amplitude <bgcolor=0x88FFFF>;
+    Vec2 phase <bgcolor=0x88FFFF>;
+    float uv_scale <bgcolor=0x88FFFF>;
+    float uv_rotate <bgcolor=0x88FFFF>;
+    Vec2 uv_unk <bgcolor=0x88FFFF, comment="Unused?">;
+} THAWUVWibbleData;
+
+typedef struct
+{
+    uint pass_frame_times[4] <bgcolor=0x44FF44>;
+    QBKey pass_frame_textures[4] <bgcolor=0x33EE33>;
+    uint pass_frame_unks[4] <bgcolor=0x22DD22>;
+    uint unkA <bgcolor=0x11CC11>;
+    uint unkB <bgcolor=0x11CC11>;
+} THAWTexAnimFrame <read=Str("%d: %s, %d: %s, %d: %s, %d: %s", pass_frame_times[0], ReadQBKey(pass_frame_textures[0]), pass_frame_times[1], ReadQBKey(pass_frame_textures[1]), pass_frame_times[2], ReadQBKey(pass_frame_textures[2]), pass_frame_times[3], ReadQBKey(pass_frame_textures[3]))>;
+
+typedef struct
+{
+    uint zero <bgcolor=0x88FF88>;
+    uint pass_frame_counts[4] <bgcolor=0x77FF77>;
+    uint pass_frame_unkA[4] <bgcolor=0x66FF66, comment="Period?">;
+    uint pass_frame_unkB[4] <bgcolor=0x55FF55, comment="Iterations?">;
+    RelativeOffset frame_list(MaterialBlockStart) <bgcolor=0x44FF44>;
+    
+    FSeek(AbsOffset(frame_list));
+    
+    local uint i;
+    
+    for (i=0; i<pass_frame_counts[0]; i++)
+        THAWTexAnimFrame pass_a_frames;
+    for (i=0; i<pass_frame_counts[1]; i++)
+        THAWTexAnimFrame pass_b_frames;
+    for (i=0; i<pass_frame_counts[2]; i++)
+        THAWTexAnimFrame pass_c_frames;
+    for (i=0; i<pass_frame_counts[3]; i++)
+        THAWTexAnimFrame pass_d_frames;
+} THAWTexAnimData;
+
+typedef struct
+{
+    local int l;
+    
+    QBKey checksum <bgcolor=CL_MATCHECKSUM>;
+    QBKey named_checksum <bgcolor=CL_MATCHECKSUM>;
+    uint num_passes <bgcolor=CL_MATVALUE>;
+
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        ubyte m_sorted <bgcolor=CL_MATVALUE, comment="Sorted">;
+        ubyte m_no_bfc <bgcolor=CL_MATVALUE, comment="No Backface Culling">;
+        ubyte m_uv_wibble <bgcolor=CL_MATVALUE, comment="Uses UV wibble">;
+        ubyte m_texture_wibble <bgcolor=CL_MATVALUE, comment="???">;
+    
+        ubyte m_alpha_cutoff <bgcolor=CL_MATVALUE, comment="Alpha cutoff">;
+        ubyte m_zbias <bgcolor=CL_MATVALUE, comment="Z bias, potentially">;
+        ushort unknown <bgcolor=CL_MATVALUE, comment="Sometimes 1">;
+    
+        ubyte skip_me[24] <hidden=true, bgcolor=CL_MATPADDING>;
+    
+        float m_draw_order <bgcolor=CL_MATVALUE, comment="Draw order?">;
+        
+        THAWPassFlags material_pass_flags[4] <bgcolor=CL_MATVALUE, comment="Flags for material passes">;
+        
+        for (l=0; l<4; l++)
+        {
+            if (l < num_passes)
+                QBKey material_pass <bgcolor=CL_MATPASS>;
+            else
+                QBKey material_pass <bgcolor=CL_MATPASS_UNUSED>;
+        }
+    
+        Vec4 material_pass_colors[4] <bgcolor=CL_MATVALUE, comment="Per pass">;
+        THAWBlendData material_pass_blend_modes[4] <bgcolor=CL_MATVALUE, comment="Per pass, blends">;
+        UVClippingModes material_pass_uvclip_modes[4] <bgcolor=CL_MATVALUE, comment="Per pass, UV modes">;
+    
+        Vec2 material_pass_pairs[4] <bgcolor=CL_MATVALUE, comment="Per pass">;
+        uint m_filtering_mode[4] <bgcolor=CL_MATVALUE, comment="Per pass">;
+        
+        for (l=0; l<4; l++)
+            RelativeOffset material_pass_uvwibbles(MaterialBlockStart) <bgcolor=CL_MATVALUE, comment="Per pass">;
+        
+        ubyte skip_me_ha[16] <hidden=true, bgcolor=CL_MATPADDING>;
+        
+        uint m_num_wibble_vc_anims <bgcolor=CL_MATVALUE>;
+        RelativeOffset mp_wibble_vc_params(MaterialBlockStart) <bgcolor=CL_MATVALUE>;
+        RelativeOffset mp_wibble_vc_colors(MaterialBlockStart) <bgcolor=CL_MATVALUE>;
+        
+        RelativeOffset animated_texture_data(MaterialBlockStart) <bgcolor=CL_MATVALUE>;
+        
+        float m_specular_color[4] <bgcolor=CL_MATVALUE, comment="Apparently">;
+        
+        local uint old_off = FTell();
+        
+        if ((material_pass_flags[0].flags & MATFLAG_UV_WIBBLE) && material_pass_uvwibbles[0].offset >= 0)
+        {
+            FSeek(AbsOffset(material_pass_uvwibbles[0]));
+            THAWUVWibbleData wibble_data;
+        }
+        
+        if ((material_pass_flags[0].flags & MATFLAG_VC_WIBBLE) && mp_wibble_vc_params.offset >= 0)
+        {
+            FSeek(AbsOffset(mp_wibble_vc_params));
+            THAWVCWibbleData wibble_data(m_num_wibble_vc_anims);
+            
+            FSeek(AbsOffset(mp_wibble_vc_colors));
+            uint wibble_vc_colors[m_num_wibble_vc_anims] <bgcolor=0x8899EE>;
+        }
+ 
+        if ((material_pass_flags[0].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+            || (material_pass_flags[1].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+            || (material_pass_flags[2].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+            || (material_pass_flags[3].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+            && animated_texture_data.offset >= 0)
+        {
+            FSeek(AbsOffset(animated_texture_data));
+            THAWTexAnimData animation_data;
+        }
+        
+        FSeek(old_off);
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG1 || SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        uint alpha_cutoff <bgcolor=CL_MATVALUE>;
+        ubyte sorted <bgcolor=CL_MATVALUE>;
+        float draw_order <bgcolor=CL_MATVALUE, comment="Draw order?">;
+        ubyte single_sided <bgcolor=CL_MATVALUE>;
+        ubyte no_backface_culling <bgcolor=CL_MATVALUE>;
+        int z_bias <bgcolor=CL_MATVALUE>;
+        ubyte grassify <bgcolor=CL_MATVALUE>;
+        
+        if (grassify)
+        {
+            float grass_height <bgcolor=CL_MATVALUE>;
+            int grass_layers <bgcolor=CL_MATVALUE>;
+        }
+        
+        float specular_power <bgcolor=CL_MATVALUE>;
+        
+        if (specular_power)
+            Vec3 specular_color <bgcolor=CL_MATVALUE>;
+            
+        if (num_passes)
+        {
+            for (l=0; l<num_passes; l++)
+                THUG2MaterialPass material_passes(l) <optimize=false>;
+        }
+    }
+
+} Material <read=ReadTHAWMaterial>;
+
+string ReadTHAWMaterial(Material& mat)
+{
+    local ubyte is_animated = 0;
+    local ubyte has_vcwibble = 0;
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        if ((mat.material_pass_flags[0].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+                || (mat.material_pass_flags[1].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+                || (mat.material_pass_flags[2].flags & MATFLAG_PASS_TEXTURE_ANIMATES) 
+                || (mat.material_pass_flags[3].flags & MATFLAG_PASS_TEXTURE_ANIMATES))
+        {
+                is_animated = 1;
+        }
+        
+        if ((mat.material_pass_flags[0].flags & MATFLAG_VC_WIBBLE) 
+                || (mat.material_pass_flags[1].flags & MATFLAG_VC_WIBBLE) 
+                || (mat.material_pass_flags[2].flags & MATFLAG_VC_WIBBLE) 
+                || (mat.material_pass_flags[3].flags & MATFLAG_VC_WIBBLE))
+        {
+                has_vcwibble = 1;
+        }
+    }
+    
+    return Str("%s (%s), %d passes%s%s", ReadQBKey(mat.checksum), ReadQBKey(mat.named_checksum), mat.num_passes, is_animated ? " - [ANIMATED]" : "", has_vcwibble ? " - [VCWIBBLE]" : "");
+}

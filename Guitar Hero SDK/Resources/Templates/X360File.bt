@@ -1,0 +1,40 @@
+//------------------------------------------------
+// X360 compressed file, has chunks with CHNK
+//------------------------------------------------
+
+#include "Common.bt"
+
+typedef struct
+{
+    local int ChunkStart = FTell();
+    char magic[4] <bgcolor=CL_NAME>;
+
+    RelativeOffset offset(ChunkStart) <bgcolor=CL_POINTER>;
+    uint CompressedSize;
+    RelativeOffset NextChunk(ChunkStart) <bgcolor=CL_POINTER>;
+    uint Dummy;
+    uint UncompressedSize;
+    uint OutOffset;
+} ZLIBChunk;
+
+typedef struct
+{
+    ZLIBChunk chunk;
+
+    if (chunk.NextChunk.offset != 0xFFFFFFFF)
+    {
+        FSeek(AbsOffset(chunk.NextChunk));
+
+        while (true && !FEof())
+        {
+            ZLIBChunk extra_chunk;
+
+            if (extra_chunk.NextChunk.offset != 0xFFFFFFFF)
+                FSeek(AbsOffset(extra_chunk.NextChunk));
+            else
+                break;
+        }
+    }
+} CompressedX360File;
+
+CompressedX360File xbox_file;

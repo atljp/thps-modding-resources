@@ -1,0 +1,50 @@
+//------------------------------------------------
+// DJ Hero: FAR / FSAR archive
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define CL_FILEDATA         0xFF66FF6
+
+typedef struct (uint dataStart)
+{
+    local int PostPos = FTell() + 288;
+    local int InfoPos = FTell() + 0x100;
+
+    string name;
+
+    FSeek(InfoPos);
+
+    uint64 uncompressed_length <bgcolor=CL_SINGLEVALUE>;
+    uint64 compressed_length <bgcolor=CL_SINGLEVALUE>;
+    uint unk_c <bgcolor=CL_PARSED>;
+    RelativeOffset offset(dataStart) <bgcolor=CL_SINGLEVALUE>;
+    uint unkA;
+    uint unkB;
+
+    FSeek(AbsOffset(offset));
+    ubyte bytes[compressed_length] <bgcolor=CL_FILEDATA>;
+
+    FSeek(PostPos);
+} DJFAREntry <read=Str("%s [%d UNCOM, %d COM]", name, uncompressed_length, compressed_length)>;
+
+typedef struct 
+{
+    char magic[4] <bgcolor=CL_CHECKSUM>;
+    uint unk <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset data_start(0) <bgcolor=CL_POINTER>;
+    uint fileCount <bgcolor=CL_SINGLEVALUE>;
+
+    SkipTo(32);
+
+    // Guesstimate where data starts
+    // (Each file is 288 bytes)
+    local int DataStart = FTell() + (288 * fileCount);
+    local int i;
+
+    for (i=0; i<fileCount; i++)
+        DJFAREntry entries(DataStart);
+
+} DJFARFile;
+
+DJFARFile far_file;

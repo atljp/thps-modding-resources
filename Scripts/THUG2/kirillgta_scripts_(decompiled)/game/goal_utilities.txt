@@ -1,0 +1,3098 @@
+
+:i $generic_pro_name$ = %s(51,"peds/PedPros/PedPro_Neversoft/PedPro_Neversoft.skin")
+:i $generic_pro_first_name$ = %s(9,"Neversoft")
+:i $generic_pro_full_name$ = %s(16,"Neversoft Skater")
+:i $goal_want_to_save_volume$ = %i(0,00000000)
+:i $goal_bind_retry_to_select$ = %i(0,00000000)
+:i $max_number_of_special_trickslots$ = %i(11,0000000b)
+:i $goal_utility_allow_end_goal_name$ = $null$
+:i function $goal_init$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$trigger_obj_id$
+		:i $GoalManager_InitGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if $GotParam$$init_geo_prefix$
+		:i $create$$prefix$ = %GLOBAL%$init_geo_prefix$
+	:i else 
+		:i if $GotParam$$init_geo_prefixes$
+			:i $GetArraySize$%GLOBAL%$init_geo_prefixes$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $create$$prefix$ =  (%GLOBAL%$init_geo_prefixes$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i if $GotParam$$init_script$
+		:i %GLOBAL%$init_script$%GLOBAL%$init_script_params$
+	:i endif
+:i endfunction
+:i $cur_tod_cur_action$ = $set_tod_day$
+:i function $goal_passive_start$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GetCurrentLevel$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$level$$b$ = $Load_Sk5Ed$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$testing_goal$:s}
+	:i endif
+	:i if $InNetGame$
+		:i $GoalManager_AnnounceGoalStarted$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if $GotParam$$custom_score_record$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$custom_score_record$ = %i(0,00000000):s}
+	:i endif
+	:i if $GotParam$$edited_goal$
+		:i if $GotParam$$control_type$
+			:i if NOT  ( (%GLOBAL%$control_type$ = $Skate$)  OR  (%GLOBAL%$control_type$ = $Walk$)  OR  (%GLOBAL%$control_type$ = $WalkOnly$)  OR  (%GLOBAL%$control_type$ = $Mini_Kart$) ) 
+				:i $GoalManager_GetLevelPrefix$
+				:i $FormatText$$ChecksumName$ = $ReadyLevelScript$%s(15,"%l_KillVehicles")$l$ = %GLOBAL%$level_prefix$
+				:i if $ScriptExists$%GLOBAL%$ReadyLevelScript$
+					:i %GLOBAL%$ReadyLevelScript$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$use_hud_counter$
+		:i $goal_create_counter$$goal_id$ = %GLOBAL%$goal_id$$hud_counter_caption$ = %GLOBAL%$hud_counter_caption$
+	:i endif
+	:i if $GotParam$$goal_start_script$
+		:i %GLOBAL%$goal_start_script$%GLOBAL%$goal_start_script_params$
+	:i endif
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if $GotParam$$kill_radius$
+			:i %GLOBAL%$trigger_obj_id$.$Obj_SetOuterRadius$%GLOBAL%$kill_radius$
+			:i %GLOBAL%$trigger_obj_id$.$Obj_SetException$$ex$ = $ObjectOutofRadius$$scr$ = $goal_crossed_kill_radius$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_start$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$play_goal_start_sound$
+		:i $ALL_Levels_SFX_Start_Goal$
+	:i endif
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $GetCurrentLevel$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$level$$b$ = $Load_Sk5Ed$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$testing_goal$:s}
+	:i endif
+	:i if NOT $GameModeEquals$$is_classic$
+		:i if $GotParam$$reset_score$
+			:i $ResetScore$
+		:i endif
+		:i if  ( ($GotParam$$start_cam_anim$)  OR  ($GotParam$$start_cam_anims$) ) 
+			:i $Skater$.$Vibrate$$Off$
+			:i $KillAllTextureSplats$
+		:i endif
+		:i $destroy_goal_panel_messages$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $goal_wait_and_show_key_combo_text$
+	:i $KillSpawnedScript$$name$ = $SK3_Killskater_Finish$$use_proper_version$
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if NOT $GotParam$$quick_start$
+			:i $kill_start_key_binding$
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if NOT $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$force_create_trigger$ = %i(1,00000001):s}
+			:i $GoalManager_InitializeGoal$$name$ = %GLOBAL%$goal_id$
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$force_create_trigger$ = %i(0,00000000):s}
+			:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i $GoalManager_AnnounceGoalStarted$$name$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i %GLOBAL%$trigger_obj_id$.$Obj_ClearExceptions$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trigger_obj_id$$script_name$ = $goal_pro_wait_and_reset_avoid_exception$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trigger_obj_id$$script_name$ = $goal_set_trigger_exceptions$
+	:i endif
+	:i if $GotParam$$custom_score_record$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$custom_score_record$ = %i(0,00000000):s}
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_retry_anchor$
+		:i $DestroyScreenElement$$id$ = $goal_retry_anchor$
+	:i endif
+	:i $FormatText$$ChecksumName$ = $arrow_id$%s(12,"%s_ped_arrow")$s$ = %GLOBAL%$goal_name$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$arrow_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$arrow_id$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $goal_init_after_end_of_run$
+	:i if NOT $IsObserving$
+		:i $GetSkaterId$
+		:i $KillSkaterCamAnim$$skaterId$ = %GLOBAL%$ObjId$$all$
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$geo_prefix$
+		:i $goal_create_geo_prefix$$geo_prefix$ = %GLOBAL%$geo_prefix$
+	:i else 
+		:i if $GotParam$$geo_prefixes$
+			:i $GetArraySize$%GLOBAL%$geo_prefixes$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $goal_create_geo_prefix$$geo_prefix$ =  (%GLOBAL%$geo_prefixes$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i if NOT $GameModeEquals$$is_classic$
+		:i if NOT $IsObserving$
+			:i $Skater$.$RunStarted$
+		:i endif
+		:i if  ( ($GotParam$$quick_start$)  OR  ($GameModeEquals$$is_creategoals$) ) 
+			:i $goal_initialize_skater$ isNull 
+			:i $DeBounce$$x$$time$ = %f(0.300000)
+		:i endif
+	:i endif
+	:i if $GotParam$$goal_intro_script$
+		:i %GLOBAL%$goal_intro_script$%GLOBAL%$goal_intro_script_params$
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $InNetGame$
+		:i $goal_create_proset_geom$ isNull 
+	:i endif
+	:i if $GotParam$$edited_goal$
+		:i if $GotParam$$control_type$
+			:i if NOT  ( (%GLOBAL%$control_type$ = $Skate$)  OR  (%GLOBAL%$control_type$ = $Walk$) ) 
+				:i $GoalManager_GetLevelPrefix$
+				:i $FormatText$$ChecksumName$ = $ReadyLevelScript$%s(15,"%l_KillVehicles")$l$ = %GLOBAL%$level_prefix$
+				:i if $ScriptExists$%GLOBAL%$ReadyLevelScript$
+					:i %GLOBAL%$ReadyLevelScript$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if  ($Inside_Light_Rain$ = %i(1,00000001)) 
+		:i if $IsSoundPlaying$$TestLight01$
+			:i $SetSoundParams$$TestLight01$$vol$ = $LightRainVolume$
+		:i endif
+		:i $change$$Paused_Light_Rain$ = %i(0,00000000)
+		:i $change$$Inside_Light_Rain$ = %i(0,00000000)
+	:i endif
+	:i if  ($Inside_Heavy_Rain$ = %i(1,00000001)) 
+		:i if $IsSoundPlaying$$TestLight02$
+			:i $SetSoundParams$$TestLight02$$vol$ = $LightRainVolume$
+		:i endif
+		:i if $IsSoundPlaying$$TestMedium02$
+			:i $SetSoundParams$$TestMedium02$$vol$ = $MediumRainVolume$
+		:i endif
+		:i $change$$Paused_Heavy_Rain$ = %i(0,00000000)
+		:i $change$$Inside_Heavy_Rain$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$trigger_prefix$
+		:i $create$$prefix$ = %GLOBAL%$trigger_prefix$
+	:i endif
+	:i if $GotParam$$quick_start$
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i if $GotParam$$hide_goal_pro$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_Invisible$
+			:i endif
+		:i endif
+		:i if $GotParam$$use_hud_counter$
+			:i $goal_create_counter$$goal_id$ = %GLOBAL%$goal_id$$hud_counter_caption$ = %GLOBAL%$hud_counter_caption$
+		:i endif
+		:i if NOT $GotParam$$dont_show_goal_text$
+			:i $create_panel_block$$id$ = $current_goal$$text$ = %GLOBAL%$goal_text$$style$ = $panel_message_goal$$parent$ = $root_window$
+			:i if $GotParam$$key_combo_text$
+				:i $SpawnScript$$goal_wait_and_show_key_combo_text$$params$ = :s{$text$ = %GLOBAL%$key_combo_text$:s}
+			:i endif
+		:i endif
+		:i if $GotParam$$goal_start_script$
+			:i %GLOBAL%$goal_start_script$%GLOBAL%$goal_start_script_params$
+		:i endif
+		:i if NOT $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+			:i $SpawnScript$$goal_show_tips$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i $goal_pro_stop_anim_scripts$ isNull 
+		:i endif
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i if NOT $GotParam$$trigger_wait_script$
+				:i %GLOBAL%$trigger_wait_script$ = $GenericProWaiting$
+			:i endif
+			:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$trigger_wait_script$$params$ = :s{$type$ = %s(7,"midgoal")$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$:s}
+		:i endif
+		:i $FireEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i else 
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i $goal_pro_stop_anim_scripts$ isNull 
+			:i if $GotParam$$trigger_start_script$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$trigger_start_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$type$ = %s(7,"talking")$pro$ = %GLOBAL%$pro$:s}
+			:i else 
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$GenericProTalking$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$type$ = %s(7,"talking")$pro$ = %GLOBAL%$pro$:s}
+			:i endif
+			:i if NOT $GotParam$$trigger_wait_script$
+				:i %GLOBAL%$trigger_wait_script$ = $GenericProWaiting$
+			:i endif
+			:i if $GotParam$$goal_start_movie_script$
+				:i %GLOBAL%$goal_start_movie_script$%GLOBAL%$goal_start_movie_script_params$
+			:i endif
+			:i if $GotParam$$no_play_hold$
+				:i %GLOBAL%$no_play_hold$ = $no_play_hold$
+			:i endif
+			:i $SpawnScript$$goal_cam_anim_play$$id$ = $new_goal_cam_anim$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$
+				:i $next_trigger_script$ = %GLOBAL%$trigger_wait_script$
+				:i $type$ = %s(7,"midgoal")
+				:i %GLOBAL%$no_play_hold$
+				:i $dont_unpause$ = %GLOBAL%$dont_unpause$
+			:i :s}
+		:i else 
+			:i if $GotParam$$goal_start_script$
+				:i %GLOBAL%$goal_start_script$%GLOBAL%$goal_start_script_params$
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if $GotParam$$kill_radius$
+			:i %GLOBAL%$trigger_obj_id$.$Obj_SetOuterRadius$%GLOBAL%$kill_radius$
+			:i %GLOBAL%$trigger_obj_id$.$Obj_SetException$$ex$ = $ObjectOutofRadius$$scr$ = $goal_crossed_kill_radius$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_create_geo_prefix$
+	:i $create$$prefix$ = %GLOBAL%$geo_prefix$
+	:i $FormatText$$TextName$ = $geo_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$geo_prefix$
+	:i $create$$prefix$ = %GLOBAL%$geo_trigger_prefix$
+	:i $GoalManager_GetProsetNotPrefix$%GLOBAL%$geo_prefix$
+	:i $kill$$prefix$ = %GLOBAL%$proset_not_prefix$
+	:i $FormatText$$TextName$ = $geo_not_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_not_prefix$
+	:i $kill$$prefix$ = %GLOBAL%$geo_not_trigger_prefix$
+:i endfunction
+:i function $goal_kill_geo_prefix$
+	:i $kill$$prefix$ = %GLOBAL%$geo_prefix$
+	:i $FormatText$$TextName$ = $geo_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$geo_prefix$
+	:i $kill$$prefix$ = %GLOBAL%$geo_trigger_prefix$
+	:i $GoalManager_GetProsetNotPrefix$%GLOBAL%$geo_prefix$
+	:i $create$$prefix$ = %GLOBAL%$proset_not_prefix$
+	:i $FormatText$$TextName$ = $geo_not_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_not_prefix$
+	:i $create$$prefix$ = %GLOBAL%$geo_not_trigger_prefix$
+:i endfunction
+:i function $goal_create_proset_geom$
+	:i if $GotParam$$proset_prefix$
+		:i $FormatText$$ChecksumName$ = $proset_flag$%s(13,"FLAG_%pGEO_ON")$p$ = %GLOBAL%$proset_prefix$
+		:i $SetFlag$$flag$ = %GLOBAL%$proset_flag$
+		:i $create$$prefix$ = %GLOBAL%$proset_prefix$
+		:i $FormatText$$TextName$ = $proset_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_prefix$
+		:i $create$$prefix$ = %GLOBAL%$proset_trigger_prefix$
+		:i $GoalManager_GetProsetNotPrefix$%GLOBAL%$proset_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$proset_not_prefix$
+		:i $FormatText$$TextName$ = $proset_not_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_not_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$proset_not_trigger_prefix$
+	:i endif
+:i endfunction
+:i function $goal_kill_proset_geom$
+	:i if $GotParam$$proset_prefix$
+		:i $FormatText$$ChecksumName$ = $proset_flag$%s(13,"FLAG_%pGEO_ON")$p$ = %GLOBAL%$proset_prefix$
+		:i $UnSetFlag$$flag$ = %GLOBAL%$proset_flag$
+		:i $kill$$prefix$ = %GLOBAL%$proset_prefix$
+		:i $FormatText$$TextName$ = $proset_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$proset_trigger_prefix$
+		:i $GoalManager_GetProsetNotPrefix$%GLOBAL%$proset_prefix$
+		:i $create$$prefix$ = %GLOBAL%$proset_not_prefix$
+		:i $FormatText$$TextName$ = $proset_not_trigger_prefix$%s(6,"TRG_%p")$p$ = %GLOBAL%$proset_not_prefix$
+		:i $create$$prefix$ = %GLOBAL%$proset_not_trigger_prefix$
+	:i endif
+:i endfunction
+:i function $goal_crossed_kill_radius$
+	:i $create_panel_message$$id$ = $goal_message$$text$ = %s(23,"You left the goal area!")$style$ = $panel_message_generic_loss$
+	:i $Obj_ClearException$$ObjectOutofRadius$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_expire$
+	:i $destroy_goal_panel_messages$
+	:i $create_panel_message$$id$ = $goal_message$$text$ = %s(12,"Out of time!")$style$ = $panel_message_generic_loss$
+	:i if $GoalManager_EndRunCalled$$name$ = %GLOBAL%$goal_id$
+		:i if $GoalManager_StartedEndOfRun$$name$ = %GLOBAL%$goal_id$
+			:i $SpawnSkaterScript$$goal_init_after_end_of_run$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i else 
+			:i $GoalManager_ClearEndRun$$name$ = %GLOBAL%$goal_id$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_success$$goal_text$ = %s(25,"Default goal success text")
+	:i if NOT $InNetGame$
+		:i $kill_start_key_binding$
+	:i endif
+	:i $goal_destroy_counter$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$testing_goal$
+		:i $GoalEditor$.$FlagGoalAsWon$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if $GotParam$$goal_outro_script$
+		:i %GLOBAL%$goal_outro_script$%GLOBAL%$goal_outro_script_params$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $RunScriptOnScreenElement$$id$ = $goal_message$$kill_panel_message$
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i $goal_pro_stop_anim_scripts$ isNull 
+		:i if $ObjectExists$$id$ = %GLOBAL%$trigger_obj_id$
+			:i if $GotParam$$trigger_success_script$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$trigger_success_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$$type$ = %s(7,"Success"):s}
+			:i else 
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$GenericProSuccess$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$$type$ = %s(7,"Success"):s}
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$trigger_wait_script$
+			:i %GLOBAL%$trigger_wait_script$ = $GenericProWaiting$
+		:i endif
+	:i endif
+	:i %GLOBAL%$already_beat_goal$ = %i(0,00000000)
+	:i if $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+		:i %GLOBAL%$already_beat_goal$ = %i(1,00000001)
+	:i endif
+	:i if NOT  (%GLOBAL%$already_beat_goal$ = %i(1,00000001)) 
+		:i if $GotParam$$reward_trickslot$
+			:i if NOT $GotParam$$already_added_trickslot$
+				:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$just_added_trickslot$ = %i(1,00000001):s}
+				:i $GetSkaterProfileInfoByName$$name$ = $custom$
+				:i if  (%GLOBAL%$max_specials$ < $max_number_of_special_trickslots$) 
+					:i $AwardSpecialTrickslot$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $SpawnScript$$goal_success_messages$$params$ =  isNull 
+	:i if $GameModeEquals$$is_classic$
+		:i $SpawnScript$$classic_mode_check_for_all_complete_message$
+	:i endif
+	:i if NOT $InMultiplayerGame$
+		:i %GLOBAL%$played_success_movie$ = %i(0,00000000)
+		:i if  ( ($GotParam$$success_cam_anim$)  OR  ($GotParam$$success_cam_anims$) ) 
+			:i %GLOBAL%$played_success_movie$ = %i(1,00000001)
+			:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+			:i $SpawnScript$$goal_cam_anim_play$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$
+				:i $just_won_goal$ = %i(1,00000001)
+				:i $gonna_show_message$
+				:i $already_beat_goal$ = %GLOBAL%$already_beat_goal$
+			:i :s}
+		:i endif
+		:i if  (%GLOBAL%$played_success_movie$ = %i(0,00000000)) 
+			:i $SpawnScript$$goal_success_no_anims$$params$ =  isNull 
+		:i endif
+	:i else 
+		:i if NOT $InNetGame$
+			:i $restore_start_key_binding$
+		:i endif
+		:i if $GotParam$$goal_success_script$
+			:i %GLOBAL%$goal_success_script$%GLOBAL%$goal_success_params$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_success_no_anims$
+	:i $goal_cam_anim_post_cleanup$ isNull 
+	:i $goal_cam_anim_post_success$$dont_kill_messages$ isNull 
+:i endfunction
+:i $goal_panel_total_messages_queued$ = %i(0,00000000)
+:i $goal_panel_current_message$ = %i(1,00000001)
+:i $goal_panel_queue_size$ = %i(0,00000000)
+:i function $goal_panel_wait_and_reset_queue$
+	:i $wait$%i(2,00000002)$seconds$
+	:i $change$$goal_panel_current_message$ =  ($goal_panel_current_message$ + %i(1,00000001)) 
+	:i $change$$goal_panel_queue_size$ =  ($goal_panel_queue_size$%i(4294967295,ffffffff)) 
+	:i $wait$%i(5,00000005)$seconds$
+	:i $goal_panel_reset_queue$
+:i endfunction
+:i function $goal_panel_reset_queue$
+	:i $change$$goal_panel_queue_size$ = %i(0,00000000)
+	:i $change$$goal_panel_total_messages_queued$ = %i(0,00000000)
+	:i $change$$goal_panel_current_message$ = %i(1,00000001)
+	:i $KillSpawnedScript$$name$ = $goal_panel_wait_for_my_turn$
+:i endfunction
+:i function $goal_panel_wait_for_my_turn$
+	:i if  ($goal_panel_queue_size$ > %i(9,00000009)) 
+		:i $goto$$nullscript$
+	:i endif
+	:i $change$$goal_panel_total_messages_queued$ =  ($goal_panel_total_messages_queued$ + %i(1,00000001)) 
+	:i $change$$goal_panel_queue_size$ =  ($goal_panel_queue_size$ + %i(1,00000001)) 
+	:i $my_turn$ =  ($goal_panel_total_messages_queued$) 
+	:i while
+		
+		:i if  (%GLOBAL%$my_turn$ = $goal_panel_current_message$) 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframes$
+	:i loop_to 
+	:i $KillSpawnedScript$$name$ = $goal_panel_wait_and_reset_queue$
+	:i $SpawnScript$$goal_panel_wait_and_reset_queue$
+:i endfunction
+:i function $goal_success_messages$
+	:i $goal_panel_wait_for_my_turn$
+	:i $SpawnScript$$Goal_Success_Message_Sound$
+	:i if $GotParam$$view_goals_text$
+		:i $create_panel_block$$id$ = $goal_complete$$text$ = %GLOBAL%$view_goals_text$$style$ = $panel_message_goalcomplete$
+	:i else 
+		:i $create_panel_block$$id$ = $goal_complete$$text$ = %GLOBAL%$goal_text$$style$ = $panel_message_goalcomplete$
+	:i endif
+	:i $create_panel_sprite$$id$ = $goal_complete_sprite$$texture$ = $GO_done$$style$ = $panel_sprite_goalcomplete$
+	:i $create_panel_message$$id$ = $goal_complete_line2$$text$ = %s(9,"Complete!")$style$ = $panel_message_goalcompleteline2$
+	:i if $GotParam$$reward_trickslot$
+		:i if $GotParam$$just_added_trickslot$
+			:i if  (%GLOBAL%$just_added_trickslot$ = %i(1,00000001)) 
+				:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$just_added_trickslot$ = %i(0,00000000):s}
+				:i $goal_got_trickslot$
+			:i endif
+		:i endif
+	:i endif
+	:i if $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i if $GoalManager_GetGoalRewardPoints$$name$ = %GLOBAL%$goal_id$
+			:i $SpawnScript$$points_total$$params$ = :s{$points$ = %GLOBAL%$reward_points$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $points_total$
+	:i $wait$%f(0.750000)$seconds$
+	:i $FormatText$$TextName$ = $message$%s(10,"+%p POINTS")$p$ = %GLOBAL%$points$
+	:i $create_panel_message$:s{
+		:i $id$ = $points_message$
+		:i $text$ = %GLOBAL%$message$
+		:i $style$ = $goal_points_animation$
+	:i :s}
+	:i $SpawnScript$$SK6_SFX_ShowPointsFromGoal$
+	:i $update_goal_points_display$$refresh$
+:i endfunction
+:i function $goal_points_animation$
+	:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(109,0000006d)%i(9,00000009)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,85.000000)$scale$ = %i(5,00000005)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.800000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.060000)$pos$ = %vec2(322.000000,88.000000)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.060000)$pos$ = %vec2(318.000000,82.000000)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$time$ = %f(0.060000)$pos$ = %vec2(322.000000,88.000000)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.050000)$pos$ = %vec2(318.000000,82.000000)$rot_angle$ = %i(4294967293,fffffffd)
+	:i $DoMorph$$time$ = %f(0.050000)$pos$ = %vec2(322.000000,88.000000)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$time$ = %f(0.050000)$pos$ = %vec2(318.000000,82.000000)$rot_angle$ = %i(0,00000000)
+	:i $wait$%f(0.200000)$second$
+	:i $DoMorph$$time$ = %f(0.500000)$pos$ = %vec2(320.000000,30.000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i function $goal_fail_messages$
+	:i $goal_panel_wait_for_my_turn$
+	:i if NOT $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $PlaySound$$GoalFail$$vol$ = %i(200,000000c8)
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$goal_fail_script$
+		:i %GLOBAL%$goal_fail_script$%GLOBAL%$goal_fail_script_params$
+	:i endif
+	:i $create_panel_sprite$$id$ = $goalfail_sprite$$texture$ = $GO_fail$$style$ = $panel_sprite_goalfail$
+	:i if $GotParam$$view_goals_text$
+		:i $create_panel_block$$dims$ = %vec2(640.000000,0.000000)$id$ = $GoalFail$$text$ = %GLOBAL%$view_goals_text$$style$ = $panel_message_goalfail$
+	:i else 
+		:i $create_panel_block$$dims$ = %vec2(640.000000,0.000000)$id$ = $GoalFail$$text$ = %GLOBAL%$goal_text$$style$ = $panel_message_goalfail$
+	:i endif
+	:i $create_panel_message$$id$ = $goalfailedline2$$text$ = %s(7,"Failed!")$style$ = $panel_message_goalfailline2$
+	:i if $isxbox$
+		:i $retry_text$ = %s(23,"Press \b8 to retry goal")
+	:i else 
+		:i $retry_text$ = %s(31,"Press START (\b8) to retry goal")
+	:i endif
+:i endfunction
+:i function $goal_lose_next_frame$
+	:i $printf$%s(20,"goal_lose_next_frame")
+	:i $wait$%i(1,00000001)$frame$
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $printf$%s(11,"losing goal")
+		:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_fail$
+	:i if $GotParam$$no_fail_messages$
+		:i return
+		
+	:i endif
+	:i $SpawnScript$$goal_fail_messages$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $goal_uninit$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $goal_kill_proset_geom$ isNull 
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$testing_goal$
+		:i if NOT $GotParam$$dont_kill_trigger_on_success$
+			:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+				:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+					:i $GoalManager_StopLastStream$$name$ = %GLOBAL%$goal_id$
+					:i $GoalManager_UnloadLastFam$$name$ = %GLOBAL%$goal_id$
+					:i $kill$$name$ = %GLOBAL%$trigger_obj_id$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$init_geo_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$init_geo_prefix$
+	:i else 
+		:i if $GotParam$$init_geo_prefixes$
+			:i $GetArraySize$%GLOBAL%$init_geo_prefixes$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $kill$$prefix$ =  (%GLOBAL%$init_geo_prefixes$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_deactivate$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+				:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_goal_attack$
+		:i $KillSpawnedScript$$name$ = $goal_cam_anim_play$
+		:i $KillSpawnedScript$$name$ = $goal_cam_anim_play_single_element$
+		:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+		:i $KillSkaterCamAnim$$all$
+		:i $restore_skater_camera$
+		:i $speech_box_exit$$anchor_id$ = $goal_description_anchor$$no_pad_start$
+		:i if NOT $IsObserving$
+			:i $Skater$.$NetEnablePlayerInput$
+		:i endif
+		:i $SetButtonEventMappings$$unblock_menu_input$
+		:i $restore_start_key_binding$
+		:i if NOT $IsObserving$
+			:i if NOT $GoalManager_CanStartGoal$
+				:i $MakeSkaterGoto$$OnGroundAI$
+			:i endif
+		:i endif
+		:i $GoalManager_SetCanStartGoal$%i(1,00000001)
+	:i endif
+	:i $KillAllTextureSplats$
+	:i $KillSpawnedScript$$name$ = $goal_show_tips$
+	:i $KillSpawnedScript$$name$ = $goal_wait_and_show_key_combo_text$
+	:i $goal_destroy_counter$
+	:i if $GoalManager_EndRunCalled$$name$ = %GLOBAL%$goal_id$
+		:i if $GoalManager_StartedEndOfRun$$name$ = %GLOBAL%$goal_id$
+			:i $SpawnSkaterScript$$goal_init_after_end_of_run$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i else 
+			:i $GoalManager_ClearEndRun$$name$ = %GLOBAL%$goal_id$
+		:i endif
+	:i endif
+	:i $GoalManager_StopLastStream$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_UnloadLastFam$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$quick_start$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$last_start_was_quick_start$ = %i(1,00000001):s}
+	:i else 
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$last_start_was_quick_start$ = %i(0,00000000):s}
+	:i endif
+	:i if $GotParam$$goal_intro_script$
+		:i $KillSpawnedScript$$name$ = $goal_intro_script$
+	:i endif
+	:i if $GotParam$$goal_deactivate_script$
+		:i %GLOBAL%$goal_deactivate_script$%GLOBAL%$goal_deactivate_script_params$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $goal_description_and_speech$
+	:i $KillSpawnedScript$$name$ = $goal_wait_for_cam_anim$
+	:i if $ScreenElementExists$$id$ = $current_goal$
+		:i $DestroyScreenElement$$id$ = $current_goal$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_goal_key_combo_text$
+		:i $DestroyScreenElement$$id$ = $current_goal_key_combo_text$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_goal_description$
+		:i $DestroyScreenElement$$id$ = $current_goal_description$
+	:i endif
+	:i if NOT $GotParam$$quick_start$
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i if NOT $GotParam$$just_won_goal$
+				:i $goal_pro_stop_anim_scripts$ isNull 
+				:i if $GotParam$$trigger_wait_script$
+					:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$trigger_wait_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$:s}
+				:i else 
+					:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$GenericProWaiting$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$type$ = %s(4,"wait")$pro$ = %GLOBAL%$pro$:s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$control_type$
+		:i if NOT  ( (%GLOBAL%$control_type$ = $Skate$)  OR  (%GLOBAL%$control_type$ = $Walk$) ) 
+			:i if $GotParam$$exit_node$
+				:i $ResetSkaters$$node_name$ = %GLOBAL%$exit_node$
+			:i else 
+				:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+			:i endif
+			:i $MakeSkaterGoto$$HandBrake$
+			:i if $GameIsPaused$
+				:i $Skater$.$Pause$
+			:i endif
+			:i if $GotParam$$edited_goal$
+				:i $GoalManager_GetLevelPrefix$
+				:i $FormatText$$ChecksumName$ = $ReadyLevelScript$%s(17,"%l_CreateVehicles")$l$ = %GLOBAL%$level_prefix$
+				:i if $ScriptExists$%GLOBAL%$ReadyLevelScript$
+					:i %GLOBAL%$ReadyLevelScript$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$geo_prefix$
+		:i $goal_kill_geo_prefix$$geo_prefix$ = %GLOBAL%$geo_prefix$
+	:i else 
+		:i if $GotParam$$geo_prefixes$
+			:i $GetArraySize$%GLOBAL%$geo_prefixes$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $goal_kill_geo_prefix$$geo_prefix$ =  (%GLOBAL%$geo_prefixes$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i if $GotParam$$trigger_prefix$
+		:i $kill$$prefix$ = %GLOBAL%$trigger_prefix$
+	:i endif
+	:i if NOT $GotParam$$quick_start$
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i %GLOBAL%$trigger_obj_id$.$Obj_Visible$
+		:i endif
+		:i $GoalManager_ShowGoalPoints$
+		:i if NOT $IsTrue$$ALWAYSPLAYMUSIC$
+			:i if NOT $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+				:i $PauseMusic$%i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if NOT $GotParam$$just_won_goal$
+			:i if NOT $GotParam$$quick_start$
+				:i if NOT $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+					:i $goal_add_ped_arrow$$goal_id$ = %GLOBAL%$goal_id$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+		:i if NOT $GotParam$$quick_start$
+			:i if $GotParam$$just_won_goal$
+			:i else 
+				:i $GoalManager_UninitializeGoal$$name$ = %GLOBAL%$goal_id$
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$control_type$ = $Mini_Kart$) 
+		:i $anteara_board$
+	:i endif
+	:i if  (%GLOBAL%$control_type$ = $WalkOnly$) 
+		:i $Skater$.$ReturnBoardToSkater$
+	:i endif
+:i endfunction
+:i function $goal_retry_select_handler$
+	:i if  ($goal_bind_retry_to_select$ = %i(1,00000001)) 
+		:i if $GoalManager_CanStartGoal$
+			:i $RetryCurrentGoal$
+		:i endif
+	:i endif
+:i endfunction
+:i function $RetryCurrentGoal$
+	:i if $GoalManager_CanRetryGoal$
+		:i $GoalManager_RestartLastGoal$
+	:i else 
+	:i endif
+:i endfunction
+:i function $end_current_goal_run$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $RunScriptOnScreenElement$$id$ = $goal_message$$kill_panel_message$
+	:i endif
+	:i if $GoalManager_HasActiveGoals$
+		:i $GoalManager_DeactivateAllGoals$
+	:i endif
+:i endfunction
+:i function $ready_skater_for_early_end_current_goal$
+	:i if $InNetGame$
+		:i if $GotParam$$Net$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $InSplitScreenGame$
+		:i return
+		
+	:i endif
+	:i if $IsObserving$
+		:i return
+		
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i return
+		
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $Skater$
+		:i return
+		
+	:i endif
+	:i if $Skater$.$IsInEndOfRun$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+	:i endif
+:i endfunction
+:i $goal_cam_anim_offsets$ = :a{
+	:i :s{$targetOffset$ = %vec3(0.000000,46.799999,0.000000)$positionOffset$ = %vec3(9.600000,10.800000,75.599998):s}
+	:i :s{$targetOffset$ = %vec3(1.200000,62.400002,0.000000)$positionOffset$ = %vec3(-2.400000,0.000000,26.400000):s}
+	:i :s{$targetOffset$ = %vec3(3.600000,57.599998,0.000000)$positionOffset$ = %vec3(-7.200000,-31.200001,70.800003):s}
+	:i :s{$targetOffset$ = %vec3(8.400000,49.200001,1.200000)$positionOffset$ = %vec3(-8.400000,30.000000,63.599998):s}
+	:i :s{$targetOffset$ = %vec3(-24.000000,58.799999,13.200000)$positionOffset$ = %vec3(51.599998,-2.400000,91.199997):s}
+	:i :s{$targetOffset$ = %vec3(30.000000,58.799999,20.400000)$positionOffset$ = %vec3(-56.400002,-2.400000,85.199997):s}
+	:i :s{$targetOffset$ = %vec3(30.000000,58.799999,20.400000)$positionOffset$ = %vec3(-56.400002,-2.400000,85.199997):s}
+	:i :s{$targetOffset$ = %vec3(-20.400000,43.200001,32.400002)$positionOffset$ = %vec3(100.800003,6.000000,63.599998):s}
+	:i :s{$targetOffset$ = %vec3(30.000000,-14.400000,2.400000)$positionOffset$ = %vec3(-36.000000,148.800003,446.399994):s}
+	:i :s{$targetOffset$ = %vec3(12.000000,-25.200001,-9.600000)$positionOffset$ = %vec3(312.000000,159.600006,366.000000):s}
+	:i :s{$targetOffset$ = %vec3(7.200000,4.800000,21.600000)$positionOffset$ = %vec3(-420.000000,128.399994,129.600006):s}
+	:i :a}
+:i function $goal_cam_anim_play$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $goal_cam_anim_pre_cleanup$ isNull 
+	:i if $GotParam$$just_won_goal$
+		:i if $GotParam$$success_cam_anim$
+			:i %GLOBAL%$anim$ = %GLOBAL%$success_cam_anim$
+		:i else 
+			:i if $GotParam$$success_cam_anims$
+				:i %GLOBAL%$anims$ = %GLOBAL%$success_cam_anims$
+			:i else 
+				:i %GLOBAL%$virtual_cam$ = $virtual_cam$
+			:i endif
+		:i endif
+		:i $goal_cam_anim_pre_success$ isNull 
+		:i $just_won_goal$ = $just_won_goal$
+	:i else 
+		:i if $GotParam$$start_cam_anim$
+			:i %GLOBAL%$anim$ = %GLOBAL%$start_cam_anim$
+		:i else 
+			:i if $GotParam$$start_cam_anims$
+				:i %GLOBAL%$anims$ = %GLOBAL%$start_cam_anims$
+			:i else 
+				:i if  ( ($GotParam$$pro$)  AND  ($GotParam$$view_goals_cameras$) ) 
+					:i if $StringEquals$$a$ = %s(14,"Arcade Machine")$b$ = %GLOBAL%$pro$
+						:i $use_view_goals_cameras_for_intro$ = %i(1,00000001)
+					:i endif
+					:i if $StringEquals$$a$ = %s(7,"Boombox")$b$ = %GLOBAL%$pro$
+						:i $use_view_goals_cameras_for_intro$ = %i(1,00000001)
+					:i endif
+				:i endif
+				:i %GLOBAL%$virtual_cam$ = $virtual_cam$
+			:i endif
+		:i endif
+		:i $goal_cam_anim_pre_start$ isNull 
+	:i endif
+	:i $hide_speech_boxes$
+	:i $GetSkaterId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$ObjId$
+	:i if NOT $GotParam$$no_cam_anim$
+		:i if $GotParam$$anims$
+			:i $GetArraySize$%GLOBAL%$anims$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+					:i %GLOBAL%$last_anim$ = %i(1,00000001)
+				:i else 
+					:i %GLOBAL%$last_anim$ = %i(0,00000000)
+				:i endif
+				:i $goal_cam_anim_play_single_element$:s{ (%GLOBAL%$anims$:a{%GLOBAL%$index$:a}) 
+					:i $goal_id$ = %GLOBAL%$goal_id$
+					:i $anim_index$ = %GLOBAL%$index$
+					:i $last_anim$ = %GLOBAL%$last_anim$
+					:i %GLOBAL%$just_won_goal$
+					:i $cam_anim_index$ = %GLOBAL%$index$
+				:i :s}
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i $goal_cam_anim_play_single_element$ isNull $last_anim$ = %i(1,00000001)$cam_anim_index$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $goal_cam_anim_post_cleanup$ isNull 
+	:i if $GotParam$$just_won_goal$
+		:i $goal_cam_anim_post_success$ isNull 
+	:i else 
+		:i $goal_cam_anim_post_start$ isNull 
+	:i endif
+:i endfunction
+:i function $goal_cam_anim_pre_cleanup$
+	:i $GoalManager_PauseAllGoals$
+	:i $GetValueFromVolume$$cdvol$
+	:i if NOT $InNetGame$
+		:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+			:i %GLOBAL%$volume$ = %GLOBAL%$value$
+			:i $SetMusicVolume$%i(20,00000014)
+		:i endif
+	:i endif
+	:i if $GotParam$$TrickBeat$
+		:i $PauseMusic$%i(1,00000001)
+	:i endif
+	:i if $GotParam$$edited_goal$
+		:i $Skater$.$PausePhysics$
+	:i endif
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $Skater$.$StatsManager_DeactivateGoals$
+	:i if $InNetGame$
+		:i $Skater$.$NetDisablePlayerInput$
+	:i else 
+		:i $Skater$.$DisablePlayerInput$
+	:i endif
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if $GotParam$$trigger_obj_id$
+			:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+				:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trigger_obj_id$$script_name$ = $GenericPro_LookAtSkater$$use_proper_version$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_StopRotating$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_LookAtObject$$type$ = $Skater$$AngleThreshold$ = %i(15,0000000f)$speed$ = %i(500,000001f4)$time$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i $pause_trick_text$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $hide$
+		:i :s}
+	:i endif
+	:i if $GotParam$$letterbox$
+		:i $change$$last_screen_mode$ =  ($current_screen_mode$) 
+		:i if NOT  ($current_screen_mode$ = $letterbox_screen_mode$) 
+			:i $screen_setup_letterbox$
+		:i endif
+	:i endif
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $GetSkaterId$
+	:i if $InNetGame$
+		:i %GLOBAL%$ObjId$.$NetDisablePlayerInput$
+	:i else 
+		:i %GLOBAL%$ObjId$.$DisablePlayerInput$
+	:i endif
+	:i $kill_start_key_binding$
+	:i $SpawnScript$$TemporarilyDisableInput$
+	:i return
+	$volume$ = %GLOBAL%$volume$
+:i endfunction
+:i function $goal_cam_anim_post_cleanup$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+	:i $restore_start_key_binding$
+	:i if $GotParam$$edited_goal$
+		:i $Skater$.$UnPausePhysics$
+	:i endif
+	:i if $InNetGame$
+		:i $Skater$.$NetEnablePlayerInput$
+	:i else 
+		:i $Skater$.$EnablePlayerInput$
+	:i endif
+	:i if NOT $GotParam$$dont_unpause$
+		:i $GoalManager_UnPauseAllGoals$
+	:i endif
+	:i $GoalManager_SetCanStartGoal$
+	:i $Skater$.$StatsManager_ActivateGoals$
+	:i if NOT $GotParam$$TrickBeat$
+		:i $PauseMusic$%i(0,00000000)
+	:i endif
+	:i if $GotParam$$volume$
+		:i $SetMusicVolume$ (%GLOBAL%$volume$ * %i(10,0000000a)) 
+	:i endif
+	:i $speech_box_exit$
+	:i if NOT $Skater$.$Driving$
+		:i $UnPauseSkaters$
+	:i endif
+	:i $unpause_trick_text$
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $unhide$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if $GotParam$$trigger_obj_id$
+			:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+				:i if NOT $InNetGame$
+					:i $RunScriptOnObject$:s{
+						:i $id$ = %GLOBAL%$trigger_obj_id$
+						:i $goal_trigger_reset_avoid_radius_exception$
+						:i $params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+					:i :s}
+				:i endif
+				:i $GoalManager_StopLastStream$$name$ = %GLOBAL%$goal_id$
+				:i $GoalManager_UnloadLastFam$$name$ = %GLOBAL%$goal_id$
+			:i endif
+		:i endif
+		:i if $GotParam$$next_trigger_script$
+			:i $goal_pro_stop_anim_scripts$ isNull 
+			:i if $ObjectExists$$id$ = %GLOBAL%$trigger_obj_id$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$next_trigger_script$$params$ = :s{$type$ = %GLOBAL%$type$$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$:s}
+			:i endif
+		:i endif
+	:i endif
+	:i $restore_start_key_binding$
+	:i $FireEvent$$type$ = $goal_cam_anim_done$
+	:i $unhide_speech_boxes$
+	:i if $GotParam$$letterbox$
+		:i if NOT  ($last_screen_mode$ = $current_screen_mode$) 
+			:i switch  ($last_screen_mode$) 
+				:i case $standard_screen_mode$
+					:i $screen_setup_standard$
+					:i endcase
+				case $widescreen_screen_mode$
+					:i $screen_setup_widescreen$
+					:i endcase
+				case $letterbox_screen_mode$
+					:i $screen_setup_letterbox$
+					:i end_switch
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$show_movie$
+		:i if  (%GLOBAL%$show_movie$ = %i(1,00000001)) 
+			:i if $GotParam$$movie_file$
+				:i $ingame_play_movie$%GLOBAL%$movie_file$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_cam_anim_pre_success$
+	:i if NOT $InMultiplayerGame$
+		:i $SetButtonEventMappings$$block_menu_input$
+		:i $GetSkaterId$
+		:i %GLOBAL%$ObjId$.$DisablePlayerInput$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $root_window$
+			:i $event_handlers$ = :a{:s{$pad_start$$nullscript$:s}:a}
+			:i $replace_handlers$
+		:i :s}
+		:i $SpawnScript$$TemporarilyDisableInput$
+		:i $PauseSkaters$
+	:i endif
+	:i $Skater$.$Obj_SetFlag$$FLAG_SKATER_INGOALINIT$
+	:i if $GotParam$$success_node$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$success_node$
+	:i endif
+	:i $PauseSkaters$
+	:i if NOT $GotParam$$dont_hide_skater$
+		:i $Skater$.$RemoveSkaterFromWorld$
+	:i endif
+	:i if $GotParam$$success_movie_wait_frames$
+		:i $wait$%GLOBAL%$success_movie_wait_frames$$gameframe$
+	:i endif
+	:i $root_window$.$SetTags$$giving_rewards$ = %i(1,00000001)
+:i endfunction
+:i function $goal_cam_anim_post_success$
+	:i $Skater$.$Obj_ClearFlag$$FLAG_SKATER_INGOALINIT$
+	:i if NOT $GotParam$$dont_hide_skater$
+		:i $Skater$.$AddSkaterToWorld$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $SetButtonEventMappings$$unblock_menu_input$
+	:i $Skater$.$EnablePlayerInput$
+	:i $root_window$.$SetTags$$giving_rewards$ = %i(0,00000000)
+	:i if NOT $GotParam$$dont_kill_messages$
+		:i $KillSpawnedScript$$name$ = $goal_success_messages$
+		:i if $ScreenElementExists$$id$ = $goal_complete_sprite$
+			:i $DestroyScreenElement$$id$ = $goal_complete_sprite$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_complete$
+			:i $DestroyScreenElement$$id$ = $goal_complete$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_complete_line2$
+			:i $DestroyScreenElement$$id$ = $goal_complete_line2$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_new_record$
+			:i $DestroyScreenElement$$id$ = $goal_new_record$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $goal_current_reward$
+			:i $DestroyScreenElement$$id$ = $goal_current_reward$
+		:i endif
+	:i endif
+	:i if NOT $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $goal_uninit$$goal_id$ = %GLOBAL%$goal_id$ isNull 
+	:i if $GotParam$$goal_success_script$
+		:i %GLOBAL%$goal_success_script$%GLOBAL%$goal_success_params$
+	:i endif
+	:i $GoalManager_GetNumberOfGoalPoints$$total$
+	:i if  (%GLOBAL%$goal_points$ = %i(129,00000081)) 
+		:i if NOT $GetGlobalFlag$$flag$ = $GOT_ALL_GOALS$
+		:i endif
+	:i endif
+	:i if $GotParam$$create_a_trick$
+		:i $goal_cat_create_menu$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_stage_script_done$
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $show_all_goals_done_dlg$
+	:i $wait$%i(2,00000002)$seconds$
+	:i $PauseGame$
+	:i $SetGlobalFlag$$flag$ = $GOT_ALL_GOALS$
+	:i $goal_got_all_goals$
+	:i $WaitForEvent$$type$ = $goal_got_all_goals_done$
+	:i $UnPauseGame$
+	:i $KillSpawnedScript$$name$ = $show_all_goals_done_dlg$
+:i endfunction
+:i function $goal_cam_anim_pre_start$
+	:i $MakeSkaterGoto$$Skater_GoalInit$
+	:i $KillSpawnedScript$$name$ = $goal_description_and_speech$
+	:i $KillSpawnedScript$$name$ = $goal_description_and_speech2$
+:i endfunction
+:i function $goal_cam_anim_post_start$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $FireEvent$$type$ = $goal_cam_anim_post_start_done$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$use_hud_counter$
+		:i $goal_create_counter$$goal_id$ = %GLOBAL%$goal_id$$hud_counter_caption$ = %GLOBAL%$hud_counter_caption$
+	:i endif
+	:i $goal_initialize_skater$ isNull 
+	:i if $GotParam$$goal_start_script$
+		:i %GLOBAL%$goal_start_script$%GLOBAL%$goal_start_script_params$
+	:i endif
+	:i if $GotParam$$hide_goal_pro$
+		:i %GLOBAL%$trigger_obj_id$.$Obj_Invisible$
+	:i endif
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i $FireEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i $BroadcastEvent$$type$ = $goal_cam_anim_post_start_done$
+:i endfunction
+:i function $hide_loading_screen$
+	:i $HideLoadingScreen$
+:i endfunction
+:i function $goal_cam_anim_play_single_element$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(1000,000003e8):s}
+	:i $GetSkaterId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$ObjId$
+	:i if $GotParam$$pre_anim_script$
+		:i %GLOBAL%$pre_anim_script$%GLOBAL%$pre_anim_script_params$
+	:i endif
+	:i if $GotParam$$skater_node$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$skater_node$
+		:i $MakeSkaterGoto$$Skater_GoalInit$
+	:i endif
+	:i if $GotParam$$walk_into_frame$
+		:i if NOT $GotParam$$walk_into_frame_distance$
+			:i %GLOBAL%$walk_into_frame_distance$ = %i(120,00000078)
+		:i endif
+		:i $MakeSkaterGoto$$Skater_GoalInit$$params$ = :s{$Walk$$walk_distance$ = %GLOBAL%$walk_into_frame_distance$:s}
+	:i endif
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+		:i if $GotParam$$ped_node$
+			:i if $GotParam$$trigger_obj_id$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_MoveToNode$$name$ = %GLOBAL%$ped_node$$orient$
+			:i endif
+		:i endif
+		:i if $GotParam$$trigger_obj_id$
+			:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_StopRotating$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_LookAtObject$$type$ = $Skater$$AngleThreshold$ = %i(15,0000000f)$speed$ = %i(50600,0000c5a8)$time$ = %i(0,00000000)
+			:i endif
+		:i endif
+		:i if $GotParam$$ped_script$
+			:i if $GotParam$$trigger_obj_id$
+				:i $goal_pro_stop_anim_scripts$ isNull 
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$ped_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$no_play_hold$
+		:i %GLOBAL%$play_hold$ = $play_hold$
+	:i endif
+	:i if NOT $GotParam$$skippable$
+		:i %GLOBAL%$skippable$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$last_anim$ = %i(1,00000001)) 
+		:i if NOT $GotParam$$just_won_goal$
+			:i %GLOBAL%$skippable$ = %i(0,00000000)
+		:i endif
+		:i %GLOBAL%$play_hold$ = $play_hold$
+	:i endif
+	:i if $GotParam$$virtual_cam$
+		:i %GLOBAL%$anim$ = %GLOBAL%$goal_id$
+		:i %GLOBAL%$virtual_cam$ = $virtual_cam$
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i if NOT $GotParam$$targetId$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_GetID$
+				:i %GLOBAL%$targetId$ = %GLOBAL%$ObjId$
+			:i endif
+		:i endif
+		:i if NOT  ( ($GotParam$$targetOffset$)  AND  ($GotParam$$positionOffset$) ) 
+			:i if $GotParam$$use_view_goals_cameras_for_intro$
+				:i $RemoveParameter$$skaterId$
+				:i $targetId$ = $world$
+				:i $element$ =  (%GLOBAL%$view_goals_cameras$:a{%i(0,00000000):a}) 
+			:i else 
+				:i $GetRandomArrayElement$$goal_cam_anim_offsets$
+			:i endif
+			:i %GLOBAL%$targetOffset$ =  (%GLOBAL%$element$->$targetOffset$) 
+			:i %GLOBAL%$positionOffset$ =  (%GLOBAL%$element$->$positionOffset$) 
+		:i endif
+		:i if NOT $GotParam$$frames$
+			:i %GLOBAL%$frames$ = %i(120,00000078)
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$anim$
+			:i $printstruct$ isNull 
+			:i $script_assert$%s(49,"No anim specified and no virtual_cam flag present")
+		:i endif
+	:i endif
+	:i $DisplayLoadingScreen$$freeze$
+	:i $PlaySkaterCamAnim$:s{$name$ = %GLOBAL%$anim$
+		:i $skaterId$ = %GLOBAL%$skaterId$
+		:i $targetId$ = %GLOBAL%$targetId$
+		:i $targetOffset$ = %GLOBAL%$targetOffset$
+		:i $positionOffset$ = %GLOBAL%$positionOffset$
+		:i $frames$ = %GLOBAL%$frames$
+		:i %GLOBAL%$play_hold$
+		:i $skippable$ = %GLOBAL%$skippable$
+		:i %GLOBAL%$virtual_cam$
+	:i :s}
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i if $GotParam$$null_goal$
+		:i if  (%GLOBAL%$last_anim$ = %i(1,00000001)) 
+			:i %GLOBAL%$cam_anim_index$ = %i(4294967294,fffffffe)
+		:i endif
+		:i %GLOBAL%$last_anim$ = %i(0,00000000)
+		:i %GLOBAL%$skippable$ = %i(1,00000001)
+	:i endif
+	:i if  ( ($GotParam$$edited_goal$)  AND  ($GotParam$$just_won_goal$) ) 
+		:i %GLOBAL%$last_anim$ = %i(0,00000000)
+		:i %GLOBAL%$skippable$ = %i(1,00000001)
+	:i endif
+	:i %GLOBAL%$should_use_cam_anim_text$ = %i(1,00000001)
+	:i if  (%GLOBAL%$last_anim$ = %i(1,00000001)) 
+		:i if NOT $GotParam$$just_won_goal$
+			:i %GLOBAL%$should_use_cam_anim_text$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$should_use_cam_anim_text$ = %i(0,00000000)) 
+		:i $SpawnScript$$goal_description_and_speech$$params$ =  isNull 
+	:i else 
+		:i if $GotParam$$cam_anim_text$
+			:i if  ( ($GotParam$$trigger_obj_id$)  OR  ($GotParam$$speaker_obj_id$) ) 
+				:i if $GotParam$$just_won_goal$
+					:i $GoalManager_PlayGoalWinStream$:s{
+						:i $name$ = %GLOBAL%$goal_id$
+						:i $speaker_obj_id$ = %GLOBAL%$speaker_obj_id$
+						:i $speaker_name$ = %GLOBAL%$speaker_name$
+						:i $cam_anim_index$ =  (%GLOBAL%$cam_anim_index$ + %i(1,00000001)) 
+					:i :s}
+				:i else 
+					:i $GoalManager_PlayGoalStartStream$:s{
+						:i $name$ = %GLOBAL%$goal_id$
+						:i $speaker_obj_id$ = %GLOBAL%$speaker_obj_id$
+						:i $speaker_name$ = %GLOBAL%$speaker_name$
+						:i $cam_anim_index$ =  (%GLOBAL%$cam_anim_index$ + %i(1,00000001)) 
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+		:i if $GotParam$$cam_anim_text$
+			:i %GLOBAL%$display_cam_anim_text$ = %s(0,"")
+			:i if $GotParam$$cam_anim_speaker_name$
+				:i $FormatText$$TextName$ = $display_cam_anim_text$%s(12,"\ca%s :\c0\n")$s$ = %GLOBAL%$cam_anim_speaker_name$
+			:i else 
+				:i if $GotParam$$full_name$
+					:i $FormatText$$TextName$ = $display_cam_anim_text$%s(12,"\ca%s :\c0\n")$s$ = %GLOBAL%$full_name$
+				:i else 
+					:i if $GotParam$$pro$
+						:i $FormatText$$ChecksumName$ = $pro_checksum$%s(2,"%s")$s$ = %GLOBAL%$pro$
+						:i $goal_get_last_name$$pro$ = %GLOBAL%$pro$
+						:i if $GetSkaterLastNameString$%GLOBAL%$pro_checksum$
+							:i $FormatText$$TextName$ = $pro_name_text$%s(15,"\ca%s %l :\c0\n")$s$ = %GLOBAL%$pro$$l$ = %GLOBAL%$last_name$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i if $IsArray$%GLOBAL%$cam_anim_text$
+				:i $GetArraySize$%GLOBAL%$cam_anim_text$
+				:i %GLOBAL%$index$ = %i(0,00000000)
+				:i while
+					
+					:i $FormatText$$TextName$ = $display_cam_anim_text$%s(4,"%s%n")$s$ = %GLOBAL%$display_cam_anim_text$$n$ =  (%GLOBAL%$cam_anim_text$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i else 
+				:i $FormatText$$TextName$ = $display_cam_anim_text$%s(4,"%s%n")$s$ = %GLOBAL%$display_cam_anim_text$$n$ = %GLOBAL%$cam_anim_text$
+			:i endif
+			:i if NOT  (%GLOBAL%$skippable$ = %i(0,00000000)) 
+				:i $SetSkaterCamAnimSkippable$$skaterId$ = %GLOBAL%$skaterId$$name$ = %GLOBAL%$anim$$skippable$ = %i(0,00000000)
+				:i $FormatText$$TextName$ = $display_cam_anim_text$%s(26,"%s\nPress \m0 to continue.")$s$ = %GLOBAL%$display_cam_anim_text$
+				:i %GLOBAL%$pad_choose_script$ = $goal_description_and_speech_continue$
+				:i %GLOBAL%$pad_choose_params$ = :s{$no_pad_start$$anim$ = %GLOBAL%$anim$$skippable$ = %GLOBAL%$skippable$:s}
+			:i endif
+			:i if $ScreenElementExists$$id$ = $speech_box_anchor$
+				:i $DestroyScreenElement$$id$ = $speech_box_anchor$
+			:i endif
+			:i $kill_start_key_binding$
+			:i $create_speech_box$:s{
+				:i $anchor_id$ = $goal_description_anchor$
+				:i $text$ = %GLOBAL%$display_cam_anim_text$
+				:i $pos$ = %GLOBAL%$text_anchor_pos$
+				:i $style$ = $speech_box_style$
+				:i $bg_x_scale$ = %f(1.300000)
+				:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+				:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+			:i :s}
+		:i else 
+			:i %GLOBAL%$pad_choose_script$ = $goal_description_and_speech_continue$
+			:i %GLOBAL%$pad_choose_params$ = :s{$no_pad_start$$anim$ = %GLOBAL%$anim$$skippable$ = %GLOBAL%$skippable$:s}
+			:i $create_speech_box$:s{
+				:i $anchor_id$ = $goal_description_anchor$
+				:i $text$ = %s(22,"Press \m0 to continue.")
+				:i $pos$ = %GLOBAL%$text_anchor_pos$
+				:i $style$ = $speech_box_style$
+				:i $bg_x_scale$ = %f(1.300000)
+				:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+				:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+			:i :s}
+		:i endif
+	:i endif
+	:i while
+		
+		:i if $SkaterCamAnimFinished$$skaterId$ = %GLOBAL%$skaterId$$name$ = %GLOBAL%$anim$
+			:i if $ScreenElementExists$$id$ = $goal_description_anchor$
+				:i $DestroyScreenElement$$id$ = $goal_description_anchor$
+			:i endif
+			:i $GoalManager_StopLastStream$$name$ = %GLOBAL%$goal_id$
+			:i $GoalManager_UnloadLastFam$$name$ = %GLOBAL%$goal_id$
+			:i $DeBounce$$x$$time$ = %f(0.300000)
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i if $GotParam$$post_anim_script$
+		:i %GLOBAL%$post_anim_script$$goal_id$ = %GLOBAL%$goal_id$%GLOBAL%$post_anim_script_params$
+	:i endif
+	:i $DisplayLoadingScreen$$freeze$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $HideLoadingScreen$
+:i endfunction
+:i function $goal_initialize_skater$
+	:i $Skater$.$RunStarted$
+	:i if NOT $GotParam$$control_type$
+		:i $NonVehicleControlType$ = %i(1,00000001)
+	:i else 
+		:i if  ( (%GLOBAL%$control_type$ = $Skate$)  OR  (%GLOBAL%$control_type$ = $Walk$)  OR  (%GLOBAL%$control_type$ = $WalkOnly$)  OR  (%GLOBAL%$control_type$ = $Mini_Kart$)  OR  (%GLOBAL%$control_type$ = $mechbull$)  OR  (%GLOBAL%$control_type$ = $WheelChair$)  OR  (%GLOBAL%$control_type$ = $Tricycle$)  OR  (%GLOBAL%$control_type$ = $Segway$) ) 
+			:i $NonVehicleControlType$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$NonVehicleControlType$
+		:i switch %GLOBAL%$control_type$
+			:i case $WalkOnly$
+				:i $Skater$.$TakeBoardFromSkater$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$$RestartWalking$
+				:i endif
+				:i endcase
+			case $Walk$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$$RestartWalking$
+				:i endif
+				:i endcase
+			case $Skate$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i endcase
+			case $Segway$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i $anteara_scooter$
+				:i endcase
+			case $Tricycle$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i $anteara_tricycle$
+				:i endcase
+			case $WheelChair$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i $anteara_chair$
+				:i endcase
+			case $mechbull$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i $anteara_bull$
+				:i endcase
+			case $Mini_Kart$
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i $anteara_minikart$
+				:i endcase
+			default 
+				:i if $GotParam$$restart_node$
+					:i $ResetSkaters$$node_name$ = %GLOBAL%$restart_node$
+				:i endif
+				:i if $GotParam$$start_skater_standing$
+					:i $MakeSkaterGoto$$HandBrake$
+				:i endif
+				:i end_switch
+		
+	:i else 
+		:i $GetVehicleSetup$$control_type$ = %GLOBAL%$control_type$
+		:i $LoadExtraVehicleSounds$
+		:i if NOT $GotParam$$Exitable$
+			:i if $GotParam$$edited_goal$
+				:i $MakeSkaterGoto$$Switch_OnGroundAI$$params$ = :s{$NewScript$ = $TransAm$$VehicleSetup$ = %GLOBAL%$VehicleSetup$$edited_goal$:s}
+			:i else 
+				:i $Skater$.$Obj_GetOrientation$
+				:i $Skater$.$Obj_GetPosition$
+				:i $MakeSkaterGoto$$Switch_OnGroundAI$$params$ = :s{$NewScript$ = $TransAm$$VehicleSetup$ = %GLOBAL%$VehicleSetup$:s}
+			:i endif
+		:i else 
+			:i if $GotParam$$edited_goal$
+				:i $MakeSkaterGoto$$Switch_OnGroundAI$$params$ = :s{$NewScript$ = $TransAm$$VehicleSetup$ = %GLOBAL%$VehicleSetup$$Exitable$$edited_goal$:s}
+			:i else 
+				:i $Skater$.$GetHeading$
+				:i $Skater$.$Obj_GetPosition$
+				:i $MakeSkaterGoto$$Switch_OnGroundAI$$params$ = :s{$NewScript$ = $TransAm$$VehicleSetup$ = %GLOBAL%$VehicleSetup$:s}
+			:i endif
+		:i endif
+		:i if $GotParam$$restart_node$
+			:i $PlayerVehicle$.$Vehicle_MoveToRestart$%GLOBAL%$restart_node$
+		:i endif
+		:i $PlayerVehicleCamera$.$VehicleCamera_Reset$
+		:i $SetActiveCamera$$id$ = $PlayerVehicleCamera$
+		:i if $GotParam$$edited_goal$
+			:i $PlayerVehicle$.$Vehicle_Wake$
+		:i endif
+		:i if $GotParam$$goal_id$
+			:i $GoalManager_SetEndRunType$$name$ = %GLOBAL%$goal_id$$None$
+		:i endif
+	:i endif
+:i endfunction
+:i function $TemporarilyDisableInput$$time$ = %i(1500,000005dc)
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $wait$%GLOBAL%$time$
+	:i $SetButtonEventMappings$$unblock_menu_input$
+:i endfunction
+:i function $goal_wait_and_show_key_combo_text$
+	:i $WaitForEvent$$type$ = $panel_message_goal_done2$
+	:i $SetScreenElementLock$$id$ = $current_goal$$on$
+	:i $SetScreenElementLock$$id$ = $current_goal$$Off$
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i $GetScreenElementPosition$$id$ = $current_goal$
+	:i %GLOBAL%$ScreenElementPos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(120.000000,0.000000)) 
+	:i $GetScreenElementDims$$id$ = $current_goal$
+	:i if $ScreenElementExists$$id$ = $current_goal_key_combo_text$
+		:i $DestroyScreenElement$$id$ = $current_goal_key_combo_text$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $current_goal_key_combo_text$
+		:i $dims$ = %vec2(300.000000,0.000000)
+		:i $allow_expansion$
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $font$ = $small$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+		:i $text$ = %GLOBAL%$text$
+		:i $pos$ =  (%GLOBAL%$ScreenElementPos$ +  (%vec2(0.000000,1.000000) * %GLOBAL%$height$ / %f(0.780000)) ) 
+		:i $just$ = :a{$center$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $scale$ = %f(0.750000)
+	:i :s}
+:i endfunction
+:i function $hide_key_combo_text$
+	:i if $ObjectExists$$id$ = $current_goal_key_combo_text$
+		:i $DoScreenElementMorph$$id$ = $current_goal_key_combo_text$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_key_combo_text$
+	:i if $ObjectExists$$id$ = $current_goal_key_combo_text$
+		:i $DoScreenElementMorph$$id$ = $current_goal_key_combo_text$$time$ = %i(0,00000000)$scale$ = %f(0.750000)
+	:i endif
+:i endfunction
+:i function $goal_description_and_speech$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $ScreenElementExists$$id$ = $current_goal$
+		:i $DestroyScreenElement$$id$ = $current_goal$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_goal_key_combo_text$
+		:i $DestroyScreenElement$$id$ = $current_goal_key_combo_text$
+	:i endif
+	:i if NOT $GotParam$$null_goal$
+		:i $SpawnScript$$goal_wait_for_cam_anim$$params$ =  isNull 
+	:i endif
+	:i %GLOBAL%$pro_name_text$ = %s(0,"")
+	:i if $GotParam$$cam_anim_speaker_name$
+		:i $FormatText$$TextName$ = $pro_name_text$%s(12,"\ca%s :\c0\n")$s$ = %GLOBAL%$cam_anim_speaker_name$
+	:i else 
+		:i if $GotParam$$full_name$
+			:i $FormatText$$TextName$ = $pro_name_text$%s(12,"\ca%s :\c0\n")$s$ = %GLOBAL%$full_name$
+		:i else 
+			:i if $GotParam$$pro$
+				:i $FormatText$$ChecksumName$ = $pro_checksum$%s(2,"%s")$s$ = %GLOBAL%$pro$
+				:i if $GetSkaterLastNameString$%GLOBAL%$pro_checksum$
+					:i $FormatText$$TextName$ = $pro_name_text$%s(15,"\ca%s %l :\c0\n")$s$ = %GLOBAL%$pro$$l$ = %GLOBAL%$last_name$
+				:i endif
+				:i if $StringEquals$$a$ = %s(14,"Arcade machine")$b$ = %GLOBAL%$pro$
+					:i if $GotParam$$goal_text$
+						:i $goal_description$ = %GLOBAL%$goal_text$
+					:i endif
+				:i endif
+				:i if $StringEquals$$a$ = %s(7,"Boombox")$b$ = %GLOBAL%$pro$
+					:i if $GotParam$$view_goals_tip$
+						:i $goal_description$ = %GLOBAL%$view_goals_tip$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$goal_description$
+		:i if $IsArray$%GLOBAL%$goal_description$
+			:i $GetArraySize$%GLOBAL%$goal_description$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i $FormatText$$TextName$ = $pro_name_text$%s(4,"%s%n")$s$ = %GLOBAL%$pro_name_text$$n$ =  (%GLOBAL%$goal_description$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i $FormatText$$TextName$ = $pro_name_text$%s(4,"%s%n")$s$ = %GLOBAL%$pro_name_text$$n$ = %GLOBAL%$goal_description$
+		:i endif
+		:i $FormatText$$TextName$ = $pro_name_text$%s(26,"%s\nPress \m0 to continue.")$s$ = %GLOBAL%$pro_name_text$
+	:i endif
+	:i if NOT $GotParam$$just_won_goal$
+		:i if $GotParam$$goal_description$
+			:i $GetSkaterId$
+			:i if NOT $SkaterCamAnimFinished$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$anim$
+				:i if $ObjectExists$$id$ = $speech_box_anchor$
+					:i $DestroyScreenElement$$id$ = $speech_box_anchor$
+				:i endif
+				:i $create_speech_box$:s{
+					:i $anchor_id$ = $goal_description_anchor$
+					:i $text$ = %GLOBAL%$pro_name_text$
+					:i $pos$ = %GLOBAL%$text_anchor_pos$
+					:i $style$ = $speech_box_style$
+					:i $bg_x_scale$ = %f(1.300000)
+					:i $pad_choose_script$ = $goal_description_and_speech_continue$
+					:i $pad_choose_params$ = :s{$no_pad_start$$anim$ = %GLOBAL%$anim$$skippable$ = %i(0,00000000):s}
+				:i :s}
+				:i $goal_description_anchor$.$SetTags$$anim$ = %GLOBAL%$anim$
+				:i $AssignAlias$$id$ = $goal_description_anchor$$alias$ = $current_goal_description$
+				:i $wait$%i(60,0000003c)$frame$
+				:i if NOT $SkaterCamAnimFinished$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$anim$
+					:i $GoalManager_PlayGoalStartStream$:s{
+						:i $name$ = %GLOBAL%$goal_id$
+						:i $speaker_obj_id$ = %GLOBAL%$speaker_obj_id$
+						:i $speaker_name$ = %GLOBAL%$speaker_name$
+						:i $last_anim$
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_description_and_speech_continue$
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i %GLOBAL%$should_kill_anim$ = %i(1,00000001)
+	:i if  ( ($GotParam$$anim$)  AND  (%GLOBAL%$should_kill_anim$ = %i(1,00000001)) ) 
+		:i $GetSkaterId$
+		:i $KillSkaterCamAnim$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$anim$
+	:i endif
+	:i if $GotParam$$no_pad_start$
+		:i $speech_box_exit$$anchor_id$ = $goal_description_anchor$$no_pad_start$
+	:i else 
+		:i $speech_box_exit$$anchor_id$ = $goal_description_anchor$
+	:i endif
+	:i $FireEvent$$type$ = $goal_description_and_speech_continue$
+:i endfunction
+:i function $goal_wait_for_cam_anim$
+	:i $GetSkaterId$
+	:i while
+		
+		:i if $SkaterCamAnimFinished$$skaterId$ = %GLOBAL%$ObjId$$name$ = %GLOBAL%$anim$
+			:i $SpawnScript$$goal_show_tips$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+			:i if NOT $GotParam$$dont_show_goal_text$
+				:i $create_panel_block$$id$ = $current_goal$$text$ = %GLOBAL%$goal_text$$style$ = $panel_message_goal$$parent$ = $root_window$$params$ =  isNull 
+				:i if $GotParam$$key_combo_text$
+					:i $SpawnScript$$goal_wait_and_show_key_combo_text$$params$ = :s{$text$ = %GLOBAL%$key_combo_text$:s}
+				:i endif
+			:i endif
+			:i continue
+			
+		:i endif
+		:i $wait$%i(10,0000000a)$one_per_frame$
+	:i loop_to 
+:i endfunction
+:i function $goal_description_and_speech2$$blink_time$ = %f(0.050000)
+	:i $SetProps$$just$ = :a{$center$$top$:a}$internal_just$ = :a{$center$$center$:a}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i $DoMorph$$pos$ = %vec2(320.000000,114.000000)$scale$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,114.000000)$scale$ = %f(1.200000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,114.000000)$scale$ = %f(0.800000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,114.000000)$scale$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,114.000000)$scale$ = %f(0.900000)$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,116.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,113.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,115.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(318.000000,113.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,115.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,113.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,117.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,113.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,120.000000)$scale$ = %f(1.250000)$time$ = %f(0.100000)
+	:i $SetProps$$internal_just$ = :a{$center$$top$:a}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}$just$ = :a{$right$$top$:a}
+	:i $DoMorph$$pos$ = %vec2(625.000000,15.000000)$scale$ = %f(0.780000)$time$ = %f(0.050000)
+	:i $RunScriptOnScreenElement$$id$ = $current_goal$$blink_current_goal$$params$ = :s{$blink_time$ = %GLOBAL%$blink_time$:s}
+:i endfunction
+:i function $blink_current_goal$
+	:i while
+		
+		:i $DoMorph$$alpha$ = %i(0,00000000)
+		:i $wait$%GLOBAL%$blink_time$$seconds$
+		:i $DoMorph$$alpha$ = %i(1,00000001)
+		:i $wait$%GLOBAL%$blink_time$$seconds$
+	:i loop_to %i(6,00000006)
+:i endfunction
+:i function $GoalManager_InitGoalTrigger$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$name$
+	:i if NOT $NodeExists$%GLOBAL%$trigger_obj_id$
+		:i return
+		
+	:i endif
+	:i if NOT $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+		:i $create$$name$ = %GLOBAL%$trigger_obj_id$
+	:i endif
+	:i %GLOBAL%$trigger_obj_id$.$SetTags$$goal_id$ = %GLOBAL%$goal_id$
+	:i if NOT $GotParam$$quick_start$
+		:i $goal_add_ped_arrow$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_pro_stop_anim_scripts$ isNull 
+	:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$goal_set_trigger_exceptions$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i if $GotParam$$trigger_wait_script$
+		:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$%GLOBAL%$trigger_wait_script$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$pro$ = %GLOBAL%$pro$:s}
+	:i else 
+		:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$GenericProWaiting$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$type$ = %s(4,"wait")$pro$ = %GLOBAL%$pro$:s}
+	:i endif
+:i endfunction
+:i function $goal_add_ped_arrow$
+	:i return
+	
+:i endfunction
+:i function $goal_ped_kill_arrow$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $FormatText$$ChecksumName$ = $arrow_id$%s(12,"%s_ped_arrow")$s$ = %GLOBAL%$goal_name$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$arrow_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$arrow_id$
+	:i endif
+:i endfunction
+:i function $goal_trigger_wait_and_set_exceptions$
+	:i $wait$%i(20,00000014)$gameframe$
+	:i $goal_set_trigger_exceptions$ isNull 
+:i endfunction
+:i function $goal_set_trigger_exceptions$$trigger_radius$ = %i(16,00000010)
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i endif
+	:i $Obj_ClearException$$ObjectOutofRadius$
+	:i $Obj_SetInnerRadius$%GLOBAL%$trigger_radius$
+	:i if NOT $GotParam$$dont_bounce_skater$
+		:i $Obj_GetID$
+		:i $SetEventHandlerOnObject$:s{
+			:i $object$ = %GLOBAL%$ObjId$
+			:i $exception$
+			:i $ex$ = $ObjectInRadius$
+			:i $scr$ = $goal_got_trigger$
+			:i $params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i :s}
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $InNetGame$
+		:i if NOT $GotParam$$dont_bounce_skater$
+			:i if NOT $InNetGame$
+				:i $Obj_SpawnScript$$goal_trigger_reset_avoid_radius_exception$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_pro_bounce_skater$$speed$ = %i(88,00000058)
+	:i if NOT $SkaterCamAnimFinished$
+		:i return
+		
+	:i endif
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $printf$%s(22,"goal_pro_bounce_skater")
+	:i if NOT $GotParam$$ped_id$
+		:i $Obj_GetID$
+		:i %GLOBAL%$ped_id$ = %GLOBAL%$ObjId$
+	:i endif
+	:i $GetSkaterId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$ObjId$
+	:i if NOT %GLOBAL%$skaterId$.$IsLocalSkater$
+		:i return
+		
+	:i endif
+	:i if %GLOBAL%$skaterId$.$Driving$
+		:i return
+		
+	:i endif
+	:i if  ($cutscene_is_playing$ = %i(1,00000001)) 
+		:i return
+		
+	:i endif
+	:i if NOT $SkaterCamAnimFinished$
+		:i return
+		
+	:i endif
+	:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$skaterId$.$GetSkaterState$
+	:i if NOT  (%GLOBAL%$state$ = $Skater_OnGround$) 
+		:i return
+		
+	:i endif
+	:i if %GLOBAL%$ped_id$.$IsHidden$
+		:i return
+		
+	:i endif
+	:i $root_window$.$GetTags$
+	:i if $GotParam$$giving_rewards$
+		:i if  (%GLOBAL%$giving_rewards$ = %i(1,00000001)) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if %GLOBAL%$skaterId$.$SpeedGreaterThan$%i(200,000000c8)
+		:i if $GotParam$$goal_id$
+			:i $GoalManager_PlayGoalStream$$name$ = %GLOBAL%$goal_id$$type$ = %s(5,"avoid")$play_random$
+		:i endif
+		:i %GLOBAL%$ped_id$.$Obj_ClearException$$ObjectInAvoidRadius$
+		:i %GLOBAL%$ped_id$.$Obj_SpawnScript$:s{
+			:i %GLOBAL%$reset_script$
+			:i $params$ =  isNull 
+		:i :s}
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$skaterId$.$GetTags$
+	:i if NOT  (%GLOBAL%$racemode$ = $None$) 
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$ped_id$.$Obj_ClearException$$ObjectInAvoidRadius$
+	:i %GLOBAL%$ped_id$.$Obj_SpawnScript$:s{
+		:i %GLOBAL%$reset_script$
+		:i $params$ =  isNull 
+	:i :s}
+	:i %GLOBAL%$should_bounce_skater$ = %i(1,00000001)
+	:i %GLOBAL%$ped_id$.$GetTags$
+	:i %GLOBAL%$skaterId$.$Obj_GetOrientationToObject$%GLOBAL%$id$
+	:i if  (%GLOBAL%$dotProd$ < %f(0.000000)) 
+		:i if  (%GLOBAL%$dotProd$ > %f(-0.100000)) 
+			:i %GLOBAL%$speed$ = %i(500,000001f4)
+			:i %GLOBAL%$heading$ = %i(180,000000b4)
+		:i else 
+			:i %GLOBAL%$heading$ = %f(90.000000)
+		:i endif
+	:i else 
+		:i if  (%GLOBAL%$dotProd$ < %f(0.100000)) 
+			:i %GLOBAL%$speed$ = %i(500,000001f4)
+			:i %GLOBAL%$heading$ = %i(180,000000b4)
+		:i else 
+			:i %GLOBAL%$heading$ = %i(4294967206,ffffffa6)
+		:i endif
+	:i endif
+	:i %GLOBAL%$skaterId$.$SkaterAvoidGoalPed$$heading$ = %GLOBAL%$heading$$speed$ = %GLOBAL%$speed$
+	:i if $GotParam$$collision_exception_return_state$
+		:i $goto$%GLOBAL%$collision_exception_return_state$
+	:i endif
+:i endfunction
+:i function $goal_pro_wait_and_reset_avoid_exception$
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $wait$%i(20,00000014)$gameframe$
+	:i $goal_trigger_reset_avoid_radius_exception$ isNull 
+:i endfunction
+:i function $goal_trigger_reset_avoid_radius_exception$
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$dont_bounce_skater$
+		:i return
+		
+	:i endif
+	:i $Obj_SetInnerAvoidRadius$%i(3,00000003)
+	:i $Obj_GetID$
+	:i $SetEventHandlerOnObject$:s{
+		:i $object$ = %GLOBAL%$ObjId$
+		:i $exception$
+		:i $ex$ = $ObjectInAvoidRadius$
+		:i $scr$ = $goal_pro_bounce_skater$
+		:i $params$ = :s{
+			:i $ped_id$ = %GLOBAL%$ObjId$
+			:i $goal_id$ = %GLOBAL%$goal_id$
+			:i $reset_script$ = $goal_pro_wait_and_reset_avoid_exception$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $goal_got_trigger$
+	:i $GetSkaterId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$ObjId$
+	:i if $goalmanager_haswongoal$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if NOT $GotParam$$dont_kill_trigger_on_success$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $Skater$.$IsSkaterOnVehicle$
+		:i return
+		
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i %GLOBAL%$should_destroy$ = %i(0,00000000)
+		:i if %GLOBAL%$skaterId$.$IsInBail$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if %GLOBAL%$skaterId$.$Driving$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if NOT $GoalManager_CanStartGoal$
+			:i %GLOBAL%$should_destroy$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$should_destroy$ = %i(1,00000001)) 
+			:i $DestroyScreenElement$$id$ = $goal_start_dialog$
+		:i endif
+	:i else 
+		:i if $ObjectExists$$id$ = $root_window$
+			:i $root_window$.$GetTags$
+			:i if $GotParam$$menu_state$
+				:i if  (%GLOBAL%$menu_state$ = $on$) 
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i if $GoalManager_CanStartGoal$$name$ = %GLOBAL%$goal_id$
+			:i %GLOBAL%$skater_ready_for_goal$ = %i(0,00000000)
+			:i if NOT %GLOBAL%$skaterId$.$Driving$
+				:i if %GLOBAL%$skaterId$.$Skating$
+					:i if %GLOBAL%$skaterId$.$OnGround$
+						:i %GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)
+					:i endif
+				:i else 
+					:i if %GLOBAL%$skaterId$.$Walk_Ground$
+						:i %GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$skater_ready_for_goal$ = %i(1,00000001)) 
+				:i if NOT %GLOBAL%$skaterId$.$IsInBail$
+					:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+						:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+						:i %GLOBAL%$trigger_obj_id$.$Obj_SetOuterRadius$%i(20,00000014)
+						:i %GLOBAL%$trigger_obj_id$.$Obj_SetException$$ex$ = $ObjectOutofRadius$$scr$ = $goal_trigger_refuse$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+						:i if  ($InNetGame$) 
+							:i %GLOBAL%$quick_start_text$ = %s(21,"\n\m7 to quick start.")
+							:i %GLOBAL%$pad_square_script$ = $goal_accept_trigger$
+							:i %GLOBAL%$pad_square_params$ = :s{$goal_id$ = %GLOBAL%$goal_id$$quick_start$:s}
+						:i else 
+							:i %GLOBAL%$quick_start_text$ = %s(0,"")
+						:i endif
+						:i if NOT $GotParam$$trigger_action_text$
+							:i $trigger_action_text$ = %s(4,"talk")
+						:i endif
+						:i if $GotParam$$full_name$
+							:i $FormatText$$TextName$ = $accept_text$%s(16,"%f: \m5 to %a.%q")$f$ = %GLOBAL%$full_name$$q$ = %GLOBAL%$quick_start_text$$a$ = %GLOBAL%$trigger_action_text$
+						:i else 
+							:i if $GotParam$$pro$
+								:i if $StringEquals$$a$ = %s(14,"Arcade machine")$b$ = %GLOBAL%$pro$
+									:i $trigger_action_text$ = %s(4,"play")
+								:i else 
+									:i if $StringEquals$$a$ = %s(7,"Boombox")$b$ = %GLOBAL%$pro$
+										:i $trigger_action_text$ = %s(15,"start the music")
+									:i endif
+								:i endif
+								:i $FormatText$$ChecksumName$ = $name_checksum$%s(2,"%s")$s$ = %GLOBAL%$pro$
+								:i $GetSkaterLastNameString$%GLOBAL%$name_checksum$
+								:i if $GotParam$$last_name$
+									:i $FormatText$$TextName$ = $accept_text$%s(19,"%s %l: \m5 to %a.%q")$s$ = %GLOBAL%$pro$$l$ = %GLOBAL%$last_name$$q$ = %GLOBAL%$quick_start_text$$a$ = %GLOBAL%$trigger_action_text$
+								:i else 
+									:i $FormatText$$TextName$ = $accept_text$%s(16,"%s: \m5 to %a.%q")$s$ = %GLOBAL%$pro$$q$ = %GLOBAL%$quick_start_text$$a$ = %GLOBAL%$trigger_action_text$
+								:i endif
+							:i else 
+								:i $FormatText$$TextName$ = $accept_text$%s(12,"\m5 to %a.%q")$q$ = %GLOBAL%$quick_start_text$$a$ = %GLOBAL%$trigger_action_text$
+							:i endif
+						:i endif
+						:i $create_speech_box$:s{
+							:i $anchor_id$ = $goal_start_dialog$
+							:i $text$ = %GLOBAL%$accept_text$
+							:i $no_pad_choose$
+							:i $no_pad_start$
+							:i $pad_circle_script$ = $goal_accept_trigger$
+							:i $pad_circle_params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+							:i $pad_square_script$ = %GLOBAL%$pad_square_script$
+							:i $pad_square_params$ = %GLOBAL%$pad_square_params$
+							:i $bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+							:i $text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+							:i $z_priority$ = %i(5,00000005)
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_trigger_refuse$$anchor_id$ = $goal_start_dialog$
+	:i $Obj_ClearException$$ObjectOutofRadius$
+	:i $speech_box_exit$$anchor_id$ = %GLOBAL%$anchor_id$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_accept_trigger$
+	:i $DeBounce$$x$$time$ = %f(0.500000)
+	:i $speech_box_exit$$anchor_id$ = $goal_start_dialog$
+	:i $goal_check_for_required_tricks$$goal_id$ = %GLOBAL%$goal_id$
+	:i %GLOBAL%$trigger_exists$ = %i(0,00000000)
+	:i if $GotParam$$trigger_obj_id$
+		:i if $NodeExists$%GLOBAL%$trigger_obj_id$
+			:i %GLOBAL%$trigger_exists$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$force_start$
+		:i if NOT $GoalManager_GoalInitialized$$name$ = %GLOBAL%$goal_id$
+			:i $GoalManager_InitializeGoal$$name$ = %GLOBAL%$goal_id$
+		:i endif
+		:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+			:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$$no_new_exceptions$
+			:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$ObjectInRadius$
+			:i endif
+		:i endif
+		:i $GoalManager_DeactivateAllGoals$
+		:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$ isNull 
+		:i return
+		
+	:i endif
+	:i if NOT $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+		:i if $GoalManager_CanStartGoal$$name$ = %GLOBAL%$goal_id$
+			:i $GetSkaterId$
+			:i if %GLOBAL%$ObjId$.$OnGround$
+				:i if $SkaterCurrentScorePotLessThan$%i(1,00000001)
+					:i if %GLOBAL%$ObjId$.$OnGround$
+						:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+						:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+							:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$$no_new_exceptions$
+							:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+								:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$ObjectInRadius$
+							:i endif
+						:i endif
+						:i $GoalManager_DeactivateAllGoals$
+						:i if $GotParam$$quick_start$
+							:i $GoalManager_QuickStartGoal$$name$ = %GLOBAL%$goal_id$
+						:i else 
+							:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$ isNull 
+						:i endif
+					:i else 
+						:i if NOT %GLOBAL%$ObjId$.$RightPressed$
+							:i if NOT %GLOBAL%$ObjId$.$LeftPressed$
+								:i if NOT %GLOBAL%$ObjId$.$UpPressed$
+									:i if NOT %GLOBAL%$ObjId$.$DownPressed$
+										:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+										:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+											:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$$no_new_exceptions$
+											:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+												:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$ObjectInRadius$
+											:i endif
+										:i endif
+										:i $GoalManager_DeactivateAllGoals$
+										:i if $GotParam$$quick_start$
+											:i $GoalManager_QuickStartGoal$$name$ = %GLOBAL%$goal_id$
+										:i else 
+											:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$ isNull 
+										:i endif
+									:i endif
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i else 
+				:i if NOT %GLOBAL%$ObjId$.$RightPressed$
+					:i if NOT %GLOBAL%$ObjId$.$LeftPressed$
+						:i if NOT %GLOBAL%$ObjId$.$UpPressed$
+							:i if NOT %GLOBAL%$ObjId$.$DownPressed$
+								:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+								:i if  (%GLOBAL%$trigger_exists$ = %i(1,00000001)) 
+									:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$$no_new_exceptions$
+									:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+										:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$ObjectInRadius$
+									:i endif
+								:i endif
+								:i $GoalManager_DeactivateAllGoals$
+								:i if $GotParam$$quick_start$
+									:i $GoalManager_QuickStartGoal$$name$ = %GLOBAL%$goal_id$
+								:i else 
+									:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$ isNull 
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $GoalManager_ResetGoalTrigger$
+	:i if $GotParam$$goal_id$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i else 
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$name$
+	:i endif
+	:i if NOT $GotParam$$trigger_obj_id$
+		:i return
+		
+	:i endif
+	:i if NOT $NodeExists$%GLOBAL%$trigger_obj_id$
+		:i return
+		
+	:i endif
+	:i if $IsAlive$$name$ = %GLOBAL%$trigger_obj_id$
+		:i %GLOBAL%$trigger_obj_id$.$Obj_ClearException$$ObjectInRadius$
+		:i if NOT $GotParam$$no_new_exceptions$
+			:i if NOT $GotParam$$just_won_goal$
+				:i %GLOBAL%$trigger_obj_id$.$Obj_SpawnScript$$goal_trigger_wait_and_set_exceptions$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_check_for_required_tricks$
+	:i %GLOBAL%$found_unmapped_trick$ = %i(0,00000000)
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$required_tricks$
+		:i $FormatText$$TextName$ = $warning_string$%s(92,"You do not have all the tricks you will need to complete this goal. You will need to assign:")
+		:i $GetArraySize$%GLOBAL%$required_tricks$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i if NOT $GetKeyComboBoundToTrick$$trick$ =  (%GLOBAL%$required_tricks$:a{%GLOBAL%$index$:a}) 
+				:i if NOT $GetKeyComboBoundToTrick$$trick$ =  (%GLOBAL%$required_tricks$:a{%GLOBAL%$index$:a}) $special$
+					:i %GLOBAL%$trick_name$ =  (%GLOBAL%$required_tricks$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$trick_params$ =  (%GLOBAL%$trick_name$->$params$) 
+					:i %GLOBAL%$trick_string$ =  (%GLOBAL%$trick_params$->$name$) 
+					:i if  (%GLOBAL%$found_unmapped_trick$ = %i(0,00000000)) 
+						:i $FormatText$$TextName$ = $warning_string$%s(6,"%s\n%t")$s$ = %GLOBAL%$warning_string$$t$ = %GLOBAL%$trick_string$
+					:i else 
+						:i $FormatText$$TextName$ = $warning_string$%s(6,"%s, %t")$s$ = %GLOBAL%$warning_string$$t$ = %GLOBAL%$trick_string$
+					:i endif
+					:i %GLOBAL%$found_unmapped_trick$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if  (%GLOBAL%$found_unmapped_trick$ = %i(1,00000001)) 
+		:i $PauseGame$
+		:i $create_error_box$:s{$title$ = %s(8,"WARNING!")
+			:i $text$ = %GLOBAL%$warning_string$
+			:i $text_dims$ = %vec2(400.000000,0.000000)
+			:i $bg_scale$ = %f(1.200000)
+			:i $buttons$ = :a{:s{$text$ = %s(11,"Edit Tricks")$pad_choose_script$ = $goal_unmapped_tricks_box_accept$:s}
+				:i :s{$text$ = %s(19,"Skip this challenge")$pad_choose_script$ = $goal_unmapped_tricks_box_exit$$pad_choose_params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i return
+	$found_unmapped_trick$ = %GLOBAL%$found_unmapped_trick$
+:i endfunction
+:i function $goal_unmapped_tricks_box_accept$
+	:i $dialog_box_exit$
+	:i $create_edit_tricks_menu$
+:i endfunction
+:i function $goal_unmapped_tricks_box_exit$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $dialog_box_exit$
+	:i $UnPauseGame$
+:i endfunction
+:i function $goal_got_trickslot$
+	:i $create_panel_message$:s{
+		:i $id$ = $goal_current_reward$
+		:i $text$ = %s(32,"You got a new special trick slot")
+		:i $style$ = $goal_message_got_trickslot$
+	:i :s}
+:i endfunction
+:i function $goal_got_all_goals$
+	:i $StopStream$
+	:i $PlayStream$$FoundAllGaps$$vol$ = %i(150,00000096)
+	:i $unlock_all_cheat_codes$
+	:i $unlock_all_gameplay_cheat_codes$
+	:i $StopStream$
+	:i $PlayStream$$FoundAllGaps$$vol$ = %i(150,00000096)
+	:i %GLOBAL%$text$ = %s(169,"Way to go back and clean out the story goals. \n\nYou've unlocked \c3new cheats\c0 to help you take it further. Access them from the Pause menu under Options. Good luck!")
+	:i $create_dialog_box$:s{$title$ = %s(9,"All Goals")
+		:i $text$ = %GLOBAL%$text$
+		:i $pos$ = %vec2(310.000000,225.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"OK")$pad_choose_script$ = $goal_got_all_goals_accept$:s}:a}
+		:i $delay_input$
+	:i :s}
+:i endfunction
+:i function $goal_got_all_goals_accept$
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $goal_got_all_goals_done$
+:i endfunction
+:i function $goal_play_stream$
+	:i if $GotParam$$streamId$
+		:i while
+			
+			:i if $PreLoadStreamDone$%GLOBAL%$streamId$
+				:i continue
+				
+			:i endif
+			:i $wait$%i(1,00000001)$frame$
+		:i loop_to 
+	:i endif
+	:i if $GotParam$$play_anim$
+		:i $AddAnimController$:s{
+			:i $type$ = $partialAnim$
+			:i $id$ = $jawRotation$
+			:i $animName$ = %GLOBAL%$stream_checksum$
+			:i $from$ = $start$
+			:i $to$ = $end$
+			:i $speed$ = %f(1.000000)
+		:i :s}
+	:i endif
+	:i if $GotParam$$streamId$
+		:i $StartPreloadedStream$:s{
+			:i $streamId$ = %GLOBAL%$streamId$
+			:i $volume$ = %i(190,000000be)
+		:i :s}
+	:i else 
+		:i $Obj_PlayStream$:s{
+			:i %GLOBAL%$stream_checksum$
+			:i $vol$ = %i(120,00000078)
+			:i $dropoff$ = %i(300,0000012c)
+			:i $use_pos_info$ = %GLOBAL%$use_pos_info$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_init_after_end_of_run$
+	:i if NOT $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$competition$
+		:i return
+		
+	:i endif
+	:i $GetSkaterId$
+	:i while
+		
+		:i if $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+			:i if $GoalManager_FinishedEndOfRun$$name$ = %GLOBAL%$goal_id$
+				:i $GoalManager_ClearEndRun$$name$ = %GLOBAL%$goal_id$
+				:i if NOT $GameModeEquals$$is_classic$
+					:i if %GLOBAL%$ObjId$.$IsSkaterOnVehicle$
+						:i $GetCurrentSkaterProfileIndex$
+						:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+						:i if $GotParam$$vehicle_params$
+							:i $Vehicle_Start$$params$ = %GLOBAL%$vehicle_params$
+						:i endif
+					:i else 
+						:i if %GLOBAL%$ObjId$.$Skating$
+							:i $MakeSkaterGoto$$OnGroundAI$
+						:i endif
+					:i endif
+				:i endif
+				:i if $InNetGame$
+					:i %GLOBAL%$ObjId$.$NetEnablePlayerInput$
+				:i else 
+					:i if NOT $GameModeEquals$$is_classic$
+						:i %GLOBAL%$ObjId$.$EnablePlayerInput$
+					:i endif
+				:i endif
+				:i continue
+				
+			:i endif
+		:i else 
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+:i endfunction
+:i function $goal_new_level_reject$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $tags$ = :s{$menu_state$ = $Off$:s}
+	:i :s}
+	:i $FireEvent$$type$ = $goal_new_level_unlocked_done$
+:i endfunction
+:i function $goal_want_to_save$
+	:i $GetValueFromVolume$$cdvol$
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $hide_console_window$
+	:i $pause_trick_text$
+	:i $destroy_goal_panel_messages$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i $pause_rain$
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i $PauseGame$
+	:i $kill_start_key_binding$
+	:i $FormatText$$TextName$ = $dialog_box_text$%s(24,"Do you want to save now?")
+	:i $create_snazzy_dialog_box$:s{$text$ = %GLOBAL%$dialog_box_text$
+		:i $title$ = %s(0,"")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $goal_save_accept$:s}
+			:i :s{$text$ = %s(2,"No")$pad_choose_script$ = $goal_save_reject$:s}
+			:i :a}
+		:i $pad_back_script$ = $goal_save_reject$
+	:i :s}
+	:i $AssignAlias$$id$ = $dialog_box_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$$generic_helper_text$
+:i endfunction
+:i function $goal_save_accept$
+	:i $dialog_box_exit$
+	:i $kill_start_key_binding$
+	:i $launch_beat_goal_save_game_sequence$$pad_back_script$ = $goal_save_reject$$no_cam_anim$
+:i endfunction
+:i function $goal_save_reject$
+	:i $UnPauseGame$
+	:i $GoalManager_SetCanStartGoal$%i(1,00000001)
+	:i $restore_start_key_binding$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $root_window$
+		:i $tags$ = :s{$menu_state$ = $Off$:s}
+	:i :s}
+	:i $root_window$.$SetTags$$menu_state$ = $Off$
+	:i $unpause_rain$
+	:i $unhide_console_window$
+	:i $unpause_trick_text$
+	:i $FireEvent$$type$ = $goal_wait_for_save$
+:i endfunction
+:i function $goal_create_counter$
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i $goal_destroy_counter$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $goal_counter_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(305.000000,320.000000)
+	:i :s}
+	:i %GLOBAL%$root_pos$ = %vec2(550.000000,90.000000)
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $rgba_off$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba_on$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $goal_counter_anchor$
+		:i $id$ = $goal_counter_number_collected$
+		:i $font$ = $small$
+		:i $text$ = %s(1,"0")
+		:i $pos$ = %GLOBAL%$root_pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = %GLOBAL%$rgba_on$
+	:i :s}
+	:i if $GoalManager_GetNumberOfFlags$$name$ = %GLOBAL%$goal_id$
+		:i %GLOBAL%$total_number$ = %GLOBAL%$number_of_flags$
+	:i else 
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if $GotParam$$number$
+			:i %GLOBAL%$total_number$ = %GLOBAL%$number$
+		:i else 
+			:i if $GotParam$$num_gaps_to_find$
+				:i %GLOBAL%$total_number$ = %GLOBAL%$num_gaps_to_find$
+			:i else 
+				:i $script_assert$%s(70,"Couldn't find number param.  Are the params for the hud counter setup?")
+			:i endif
+		:i endif
+	:i endif
+	:i $FormatText$$TextName$ = $total_number$%s(2,"%i")$i$ = %GLOBAL%$total_number$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $goal_counter_anchor$
+		:i $id$ = $goal_counter_number_total$
+		:i $rgba$ = %GLOBAL%$rgba_off$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$total_number$
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(47.000000,0.000000)) 
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %f(0.900000)
+	:i :s}
+	:i $Theme_GetSpeechBoxColor$$return_value$ = $bg_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $goal_counter_anchor$
+		:i $id$ = $mini_score_hud_box$
+		:i $texture$ = $mini_score_hud$
+		:i $pos$ =  (%GLOBAL%$root_pos$ - %vec2(25.000000,6.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(1.470000,1.000000)
+		:i $rgba$ = %GLOBAL%$bg_rgba$
+	:i :s}
+	:i if $GotParam$$hud_counter_caption$
+		:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(48.000000,-12.000000)
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $goal_counter_anchor$
+			:i $id$ = $goal_counter_caption$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$hud_counter_caption$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(108,0000006c):a}
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$center$$top$:a}
+			:i $scale$ = %f(0.800000)
+			:i $line_spacing$ = %f(0.600000)
+			:i $dims$ = %vec2(117.500000,0.000000)
+			:i $allow_expansion$
+		:i :s}
+	:i endif
+	:i $goal_update_counter$ isNull 
+:i endfunction
+:i function $goal_update_counter$
+	:i $GoalManager_GetNumberCollected$$name$ = %GLOBAL%$goal_id$
+	:i if NOT $ScreenElementExists$$id$ = $goal_counter_number_collected$
+		:i return
+		
+	:i endif
+	:i $FormatText$$TextName$ = $new_number_collected$%s(2,"%i")$i$ = %GLOBAL%$number_collected$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $goal_counter_number_collected$
+		:i $text$ = %GLOBAL%$new_number_collected$
+	:i :s}
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$hud_counter_caption$
+		:i if $ScreenElementExists$$id$ = $goal_counter_caption$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $goal_counter_caption$
+				:i $text$ = %GLOBAL%$hud_counter_caption$
+			:i :s}
+		:i endif
+	:i endif
+	:i $KillSpawnedScript$$name$ = $mini_hud_anim$
+	:i $RunScriptOnScreenElement$$id$ = $goal_counter_number_collected$$mini_hud_anim$
+:i endfunction
+:i function $goal_destroy_counter$
+	:i if $ObjectExists$$id$ = $goal_counter_anchor$
+		:i $DestroyScreenElement$$id$ = $goal_counter_anchor$
+	:i endif
+:i endfunction
+:i function $mini_hud_anim$
+	:i $DoMorph$$time$ = %f(0.080000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.120000)$scale$ = %f(1.300000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.140000)$scale$ = %f(0.700000)
+	:i $DoMorph$$time$ = %f(0.160000)$scale$ = %f(0.900000)
+:i endfunction
+:i function $goal_got_flag_sound$
+	:i $PlaySound$$GoalMidGood$$vol$ = %i(200,000000c8)
+:i endfunction
+:i $goal_panel_message_ids$ = :a{
+	:i $goal_complete$
+	:i $goal_complete_line2$
+	:i $goal_complete_sprite$
+	:i $trick_beat_menu_anchor$
+	:i $goal_description_anchor$
+	:i $points_message$
+	:i $current_goal$
+	:i $goal_message$
+	:i $GoalFail$
+	:i $goalfail_sprite$
+	:i $goalfailedline2$
+	:i $goal_tip$
+	:i $new_goal_message$
+	:i $new_goal_sprite$
+	:i $tetris_menu_anchor$
+	:i $current_horse_spot$
+	:i $goal_counter_anchor$
+	:i $goal_instruction1$
+	:i $skater_hint$
+	:i $death_message$
+	:i $perfect$
+	:i $perfect2$
+	:i $goal_current_reward$
+	:i $Eric_text$
+	:i $race_lap_message$
+	:i $race_checkpoint_message$
+	:i $race_time_message$
+	:i :a}
+:i function $hide_goal_panel_messages$
+	:i $GetArraySize$$goal_panel_message_ids$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT  ( ($goal_panel_message_ids$:a{%GLOBAL%$index$:a})  = $current_goal$) 
+			:i $hide_panel_message$$id$ =  ($goal_panel_message_ids$:a{%GLOBAL%$index$:a}) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $show_goal_panel_messages$
+	:i $GetArraySize$$goal_panel_message_ids$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $show_panel_message$$id$ =  ($goal_panel_message_ids$:a{%GLOBAL%$index$:a}) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $destroy_goal_panel_messages$
+	:i $GetArraySize$$goal_panel_message_ids$
+	:i if $GotParam$$all$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+	:i else 
+		:i %GLOBAL%$index$ = %i(4,00000004)
+		:i %GLOBAL%$array_size$ =  (%GLOBAL%$array_size$ - %i(4,00000004)) 
+	:i endif
+	:i if  (%GLOBAL%$index$ < %GLOBAL%$array_size$) 
+		:i while
+			
+			:i $destroy_panel_message$$id$ =  ($goal_panel_message_ids$:a{%GLOBAL%$index$:a}) 
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+:i endfunction
+:i function $GoalManager_HidePoints$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $the_score_sprite$
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $the_score$
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $player2_panel_container$
+		:i $DoScreenElementMorph$$id$ = $player2_panel_container$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $update_goal_points_display$$hide$
+	:i $update_pager_icon$$hide$
+:i endfunction
+:i function $GoalManager_ShowPoints$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i if $CustomParkMode$$editing$
+		:i else 
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $the_score_sprite$
+				:i $alpha$ = %i(1,00000001)
+			:i :s}
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $the_score$
+				:i $alpha$ = %i(1,00000001)
+			:i :s}
+			:i if $ScreenElementExists$$id$ = $player2_panel_container$
+				:i $DoScreenElementMorph$$id$ = $player2_panel_container$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+			:i endif
+			:i $update_goal_points_display$$show$
+			:i $update_pager_icon$$show$
+		:i endif
+	:i endif
+:i endfunction
+:i function $GoalManager_HideGoalPoints$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $goal_points_text$
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+:i endfunction
+:i function $GoalManager_ShowGoalPoints$
+	:i if $CustomParkMode$$editing$
+		:i return
+		
+	:i endif
+	:i if $InMultiplayerGame$
+		:i return
+		
+	:i endif
+	:i if $GameModeEquals$$is_singlesession$
+		:i return
+		
+	:i endif
+	:i if $GameModeEquals$$is_freeskate$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetNumberOfGoalPoints$$total$
+	:i $FormatText$$TextName$ = $goal_points$%s(2,"%i")$i$ = %GLOBAL%$goal_points$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $goal_points_text$
+		:i $text$ = %GLOBAL%$goal_points$
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $goal_points_text$
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $goal_show_tips$
+	:i $WaitForEvent$$type$ = $panel_message_goal_done$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i %GLOBAL%$tip_pos$ = %vec2(320.000000,140.000000)
+	:i if NOT $GotParam$$goal_tips$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$goal_tip_interval$
+		:i $goal_tip_interval$ = %i(5,00000005)
+	:i endif
+	:i $GoalManager_GetNumberOfTimesGoalStarted$$name$ = %GLOBAL%$goal_id$
+	:i $GetArraySize$%GLOBAL%$goal_tips$
+	:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i $tips_index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) 
+	:i $current_multiple$ =  (%GLOBAL%$goal_tip_interval$ * %GLOBAL%$array_size$) 
+	:i if  (%GLOBAL%$times_started$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if NOT  ( ( (%GLOBAL%$times_started$ / %GLOBAL%$goal_tip_interval$)  * %GLOBAL%$goal_tip_interval$)  = %GLOBAL%$times_started$) 
+		:i return
+		
+	:i endif
+	:i $times_started$ =  (%GLOBAL%$times_started$ -  (%GLOBAL%$times_started$ / %GLOBAL%$current_multiple$)  * %GLOBAL%$current_multiple$) 
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$times_started$ / %GLOBAL%$current_multiple$)  * %GLOBAL%$current_multiple$)  = %GLOBAL%$times_started$) 
+			:i $create_panel_block$$id$ = $goal_tip$$text$ =  (%GLOBAL%$goal_tips$:a{%GLOBAL%$tips_index$:a}) $pos$ = %GLOBAL%$tip_pos$$style$ = $panel_message_tips$$just$ = :a{$center$$top$:a}
+			:i continue
+			
+		:i else 
+			:i $tips_index$ =  (%GLOBAL%$tips_index$ - %i(1,00000001)) 
+			:i $current_multiple$ =  (%GLOBAL%$current_multiple$ - %GLOBAL%$goal_tip_interval$) 
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $goal_no_valid_key_combos$
+	:i $create_panel_message$$text$ = %s(71,"You don't know enough tricks!  Come back when you've learned something.")
+	:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $AddGoal_Combo$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(7,"Combo%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$letter_info$
+			:i $FormatText$$ChecksumName$ = $c_obj_id$%s(18,"TRG_Goal_COMBO_C%v")$v$ = %GLOBAL%$version$
+			:i $FormatText$$ChecksumName$ = $o_obj_id$%s(18,"TRG_Goal_COMBO_O%v")$v$ = %GLOBAL%$version$
+			:i $FormatText$$ChecksumName$ = $m_obj_id$%s(18,"TRG_Goal_COMBO_M%v")$v$ = %GLOBAL%$version$
+			:i $FormatText$$ChecksumName$ = $b_obj_id$%s(18,"TRG_Goal_COMBO_B%v")$v$ = %GLOBAL%$version$
+			:i $FormatText$$ChecksumName$ = $o2_obj_id$%s(19,"TRG_Goal_COMBO_O2%v")$v$ = %GLOBAL%$version$
+			:i $letter_info$ = :a{
+				:i :s{$obj_id$ = %GLOBAL%$c_obj_id$$text$ = %s(1,"C"):s}
+				:i :s{$obj_id$ = %GLOBAL%$o_obj_id$$text$ = %s(1,"O"):s}
+				:i :s{$obj_id$ = %GLOBAL%$m_obj_id$$text$ = %s(1,"M"):s}
+				:i :s{$obj_id$ = %GLOBAL%$b_obj_id$$text$ = %s(1,"B"):s}
+				:i :s{$obj_id$ = %GLOBAL%$o2_obj_id$$text$ = %s(1,"O"):s}
+				:i :a}
+		:i endif
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(17,"TRG_G_COMBO%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(25,"TRG_G_COMBO%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(5,"Combo")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_amateurCOMBOline_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_Skate$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(7,"Skate%v")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(17,"TRG_G_SKATE%v_Pro")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $s_obj_id$%s(19,"TRG_Goal_Letter_S%v")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $k_obj_id$%s(19,"TRG_Goal_Letter_K%v")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $a_obj_id$%s(19,"TRG_Goal_Letter_A%v")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $t_obj_id$%s(19,"TRG_Goal_Letter_T%v")$v$ = %GLOBAL%$version$
+		:i $FormatText$$ChecksumName$ = $e_obj_id$%s(19,"TRG_Goal_Letter_E%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(25,"TRG_G_SKATE%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(5,"Skate")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_SkateLetters_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_HighScore$
+	:i $GoalManager_CreateGoalName$ isNull $goal_type$ = %s(9,"HighScore")
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_HighScore_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_ProScore$
+	:i $GoalManager_CreateGoalName$ isNull $goal_type$ = %s(8,"ProScore")
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_ProScore_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_SickScore$
+	:i $GoalManager_CreateGoalName$ isNull $goal_type$ = %s(9,"SickScore")
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_SickScore_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_Collect$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(9,"Collect%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(27,"TRG_G_Collect%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(19,"TRG_G_Collect%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(7,"Collect")
+	:i endif
+	:i if $GotParam$$career_only$
+		:i if $InNetGame$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_Collect_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_Gaps$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(6,"GAps%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(15,"TRG_G_GAP%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(23,"TRG_G_GAP%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(4,"GAps")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_Gaps_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_HighCombo$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(11,"HIghCombo%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(21,"TRG_G_HIGHCOMBO%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(29,"TRG_G_HIGHCOMBO%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(9,"HIghCombo")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_HighCombo_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_Special$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(9,"SPecial%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(19,"TRG_G_SPECIAL%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(27,"TRG_G_SPECIAL%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(7,"SPecial")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_Special_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_Counter$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(9,"COunter%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(19,"TRG_G_COUNTER%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(27,"TRG_G_COUNTER%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(7,"COunter")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_Counter_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_TrickTheObjects$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(14,"TRICKOBJECTS%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(24,"TRG_G_TRICKOBJECTS%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(32,"TRG_G_TRICKOBJECTS%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(12,"TRICKOBJECTS")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$goal_TrickObjects_GenericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_SkateTheLine$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(14,"SkateTheLine%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(24,"TRG_G_SKATETHELINE%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(32,"TRG_G_SKATETHELINE%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(12,"SkateTheLine")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_SkateTheLine_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_TimedScoreRun$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(15,"TimedScoreRun%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(25,"TRG_G_TIMEDSCORERUN%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(33,"TRG_G_TIMEDSCORERUN%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(13,"TimedScoreRun")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_TimedScoreRun_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_TrickBeat$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(11,"TrickBeat%v")$v$ = %GLOBAL%$version$
+		:i if NOT $GotParam$$trigger_obj_id$
+			:i $FormatText$$ChecksumName$ = $trigger_obj_id$%s(21,"TRG_G_TRICKBEAT%v_Pro")$v$ = %GLOBAL%$version$
+		:i endif
+		:i if NOT $GotParam$$restart_node$
+			:i $FormatText$$ChecksumName$ = $restart_node$%s(29,"TRG_G_TRICKBEAT%v_RestartNode")$v$ = %GLOBAL%$version$
+		:i endif
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(9,"TrickBeat")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_TrickBeat_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $AddGoal_SecretTape$
+	:i if $GotParam$$version$
+		:i $FormatText$$TextName$ = $goal_type$%s(12,"SecretTape%v")$v$ = %GLOBAL%$version$
+	:i else 
+		:i %GLOBAL%$goal_type$ = %s(10,"SecretTape")
+	:i endif
+	:i $GoalManager_CreateGoalName$ isNull 
+	:i $GoalManager_AddGoal$$name$ = %GLOBAL%$goal_id$:s{
+		:i $params$ = :s{$Goal_SecretTape_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $panel_message_goalfail$
+	:i $Theme_GetPauseBarColor$$return_value$ = $goal_fail_color$
+	:i $SetProps$$just$ = :a{$center$$bottom$:a}$rgba$ = %GLOBAL%$goal_fail_color$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %i(4000,00000fa0):s}
+	:i $DoMorph$$pos$ = %vec2(320.000000,149.000000)$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$scale$ = %f(1.300000)$time$ = %f(0.300000)$alpha$ = %i(1,00000001)
+	:i $wait$%f(1.300000)$second$
+	:i $DoMorph$$alpha$ = %f(1.000000)$time$ = %f(0.200000)$scale$ = %f(1.800000)
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %f(0.150000)$scale$ = %i(0,00000000)
+:i endfunction
+:i function $panel_sprite_goalfail$$time$ = %i(4000,00000fa0)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(128,00000080)%i(30,0000001e)%i(12,0000000c)%i(108,0000006c):a}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$pos$ = %vec2(320.000000,175.000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %vec2(3.300000,2.500000)$alpha$ = %f(0.500000)
+	:i $wait$%f(0.400000)$second$
+	:i $DoMorph$$time$ = %i(1,00000001)$scale$ = %vec2(3.300000,7.500000)$pos$ = %vec2(320.000000,300.000000)$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $panel_message_goalfailline2$$time$ = %i(4000,00000fa0)
+	:i $SetProps$$font$ = $testtitle$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(128,00000080)%i(30,0000001e)%i(12,0000000c)%i(108,0000006c):a}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)$scale$ = %i(20,00000014)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$scale$ = %f(2.000000)$time$ = %f(0.300000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(0,00000000)
+	:i $wait$%f(0.900000)$second$
+	:i $DoMorph$$time$ = %f(0.400000)$pos$ = %vec2(320.000000,663.000000)$rot_angle$ = %i(4294967206,ffffffa6)$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $panel_message_goalcomplete$$time$ = %i(1500,000005dc)
+	:i $GetTags$
+	:i $Theme_GetPauseBarColor$$return_value$ = $goal_color$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %GLOBAL%$time$:s}
+	:i $SetProps$$just$ = :a{$center$$bottom$:a}$rgba$ = %GLOBAL%$goal_color$
+	:i $DoMorph$$pos$ = %vec2(320.000000,149.000000)$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,149.000000)$scale$ = %f(1.600000)$time$ = %f(0.300000)$alpha$ = %i(1,00000001)
+	:i $wait$%f(1.200000)$second$
+	:i $DoMorph$$time$ = %f(0.100000)$DoMorph$$alpha$ = %i(0,00000000)$time$ = %f(0.200000)$scale$ = %i(0,00000000)$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+:i endfunction
+:i function $panel_sprite_goalcomplete$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(125,0000007d)%i(120,00000078)%i(26,0000001a)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$pos$ = %vec2(320.000000,125.000000)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(11,0000000b)$pos$ = %vec2(320.000000,125.000000)$alpha$ = %f(0.500000)$time$ = %f(0.650000)$rot_angle$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(14,0000000e)$pos$ = %vec2(320.000000,125.000000)$alpha$ = %i(0,00000000)$time$ = %f(0.250000)$rot_angle$ = %i(180,000000b4)
+	:i $FireEvent$$type$ = $panel_sprite_goalcomplete_done$
+:i endfunction
+:i function $panel_message_goalcompleteline2$$time$ = %i(1600,00000640)
+	:i $SetProps$$font$ = $testtitle$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(7,00000007)%i(122,0000007a)%i(87,00000057)%i(128,00000080):a}
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %f(0.300000)$alpha$ = %i(0,00000000)$scale$ = %i(0,00000000)$rot_angle$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$scale$ = %f(2.500000)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(318.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(322.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967295,ffffffff)
+	:i $DoMorph$$pos$ = %vec2(320.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(1,00000001)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(318.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(322.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(320.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967293,fffffffd)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(318.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(322.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967295,ffffffff)
+	:i $DoMorph$$pos$ = %vec2(320.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(1,00000001)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(320.000000,163.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(318.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(322.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(320.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967293,fffffffd)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$pos$ = %vec2(318.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$pos$ = %vec2(322.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$pos$ = %vec2(320.000000,165.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4294967293,fffffffd)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$pos$ = %vec2(318.000000,161.000000)$time$ = %f(0.050000)$alpha$ = %i(1,00000001)$scale$ = %f(2.600000)$rot_angle$ = %i(4294967294,fffffffe)
+	:i $DoMorph$$alpha$ = %f(1.000000)$time$ = %f(0.200000)$scale$ = %f(2.700000)$rot_angle$ = %i(2,00000002)
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %f(0.350000)$scale$ = %i(0,00000000)$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}$rot_angle$ = %i(4294966936,fffffe98)
+	:i $Die$
+	:i $FireEvent$$type$ = $panel_message_goalcompleteline2_done$
+:i endfunction
+:i function $panel_message_goal$$blink_time$ = %f(0.100000)$final_pos$ = %vec2(620.000000,27.000000)
+	:i if NOT $GotParam$$dont_animate$
+		:i $SetProps$$just$ = :a{$center$$top$:a}$internal_just$ = :a{$center$$center$:a}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $DoMorph$$pos$ = %vec2(320.000000,120.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+		:i $DoMorph$$pos$ = %vec2(320.000000,120.000000)$scale$ = %f(1.100000)$time$ = %f(0.300000)$alpha$ = %f(0.350000)
+		:i $wait$%f(0.200000)$second$
+	:i endif
+	:i $SetProps$$internal_just$ = :a{$center$$top$:a}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}$just$ = :a{$right$$top$:a}
+	:i $DoMorph$$pos$ = %GLOBAL%$final_pos$$scale$ = %f(0.830000)$time$ = %f(0.090000)$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $panel_message_goal_done$
+	:i $FireEvent$$type$ = $panel_message_goal_done2$
+:i endfunction
+:i function $panel_message_found_secret$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(115,00000073)%i(116,00000074)%i(13,0000000d)%i(128,00000080):a}
+	:i $DoMorph$$pos$ = %vec2(320.000000,157.000000)$scale$ = %i(6,00000006)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,157.000000)$scale$ = %f(0.750000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,157.000000)$scale$ = %f(1.600000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,157.000000)$scale$ = %f(1.300000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $SetProps$$blur_effect$
+	:i $do_blur_effect$
+	:i $SetProps$$no_blur_effect$
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.400000)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %f(0.050000)$scale$ = %vec2(10.000000,0.000000)$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i $Die$
+	:i $FireEvent$$type$ = $panel_message_found_secret_done$
+:i endfunction
+:i function $panel_message_generic_loss$
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$panel_message_wait_and_die$$params$ = :s{$time$ = %i(1500,000005dc):s}
+	:i $DoMorph$$pos$ = %vec2(320.000000,185.000000)$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(1.300000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.000000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,184.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,186.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,184.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(322.000000,186.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,184.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,186.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,182.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,186.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,184.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,186.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(318.000000,184.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,187.000000)$time$ = %f(0.100000)
+:i endfunction
+:i function $panel_message_tips$$blink_time$ = %f(0.050000)
+	:i $SetProps$$just$ = :a{$center$$top$:a}$internal_just$ = :a{$center$$center$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(100,00000064):a}
+	:i $DoMorph$$scale$ = %i(0,00000000)
+	:i $DoMorph$$scale$ = %f(1.200000)$time$ = %f(0.100000)
+	:i $DoMorph$$scale$ = %f(0.800000)$time$ = %f(0.100000)
+	:i $DoMorph$$scale$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(1.000000,2.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(-2.000000,-3.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(2.000000,2.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,-2.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,2.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(-2.000000,-2.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(2.000000,4.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(-2.000000,-4.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(1.000000,7.000000)$relative$:s}$scale$ = %f(1.250000)$time$ = %f(0.100000)
+	:i $SetProps$$internal_just$ = :a{$center$$top$:a}$rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(90,0000005a):a}$just$ = :a{$right$$top$:a}
+	:i $DoMorph$$pos$ = :s{%vec2(155.000000,-40.000000)$relative$:s}$scale$ = %f(0.780000)$time$ = %f(0.050000)
+	:i while
+		
+		:i $DoMorph$$alpha$ = %i(0,00000000)
+		:i $wait$%GLOBAL%$blink_time$$seconds$
+		:i $DoMorph$$alpha$ = %i(1,00000001)
+		:i $wait$%GLOBAL%$blink_time$$seconds$
+	:i loop_to %i(6,00000006)
+:i endfunction
+:i function $clock_morph$
+	:i $DoMorph$$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+	:i $DoMorph$$scale$ = %f(1.000000)$alpha$ = %i(1,00000001)$time$ = %f(0.300000)
+:i endfunction
+:i function $goal_message_got_trickslot$
+	:i $SetProps$$rgba$ = :a{%i(43,0000002b)%i(95,0000005f)%i(53,00000035)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,214.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(1,00000001)
+	:i if $GotParam$$sound$
+		:i $PlaySound$%GLOBAL%$sound$$vol$ = %i(150,00000096)
+	:i endif
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,215.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,213.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+	:i $FireEvent$$type$ = $goal_got_reward_done$
+:i endfunction
+:i function $goal_message_stat_up$
+	:i $SetProps$$rgba$ = :a{%i(33,00000021)%i(112,00000070)%i(15,0000000f)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,195.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$alpha$ = %i(1,00000001)
+	:i if $GotParam$$sound$
+		:i $PlaySound$%GLOBAL%$sound$$vol$ = %i(150,00000096)
+	:i endif
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,196.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,194.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i function $new_ammo_message_up$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$alpha$ = %i(1,00000001)
+	:i if $GotParam$$sound$
+		:i $PlaySound$%GLOBAL%$sound$$vol$ = %i(150,00000096)
+	:i endif
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)
+	:i $DoMorph$$time$ = %f(1.200000)$scale$ = %f(1.200000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.800000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i function $goal_message_got_gap$
+	:i $SetProps$$rgba$ = :a{%i(20,00000014)%i(98,00000062)%i(114,00000072)%i(108,0000006c):a}
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.900000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.900000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.200000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.950000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.000000)
+	:i $DoMorph$$alpha$ = %f(0.400000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.600000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.600000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.600000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.600000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %f(0.600000)$time$ = %f(0.070000)
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.070000)$scale$ = %f(1.000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.700000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i function $spawned_safe_goal_win$
+	:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

@@ -1,0 +1,1890 @@
+
+:i $total_num_goals$ = %i(0,00000000)
+:i $dont_lock_goals$ = %i(0,00000000)
+:i $total_cheat_points$ = %i(0,00000000)
+:i $current_teammate_pro_appearance_name$ = $none$
+:i $CHAPTER_STATUS$ = :a{
+	:i $CHAPTER_UNLOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i $CHAPTER_LOCKED$;
+	:i :a}
+:i $CHAPTER_INTROS_VIEWED$ = :a{:a}
+:i $CHAPTER_OUTTROS_VIEWED$ = :a{:a}
+:i $CHAPTER_INFO$ = :a{
+	:i :a}
+:i function $SetCurrentTeammateProAppearanceName$
+:i endfunction
+:i function $GetChapterSelectableProCount$
+	:i if NOT $GameModeEquals$$is_career$
+		:i return
+		$selectable_pro_count$ = %i(0,00000000)
+	:i endif
+	:i $GetCurrentChapterInfo$
+	:i if NOT $LevelIs$%GLOBAL%$level$
+		:i return
+		$selectable_pro_count$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$selectable_pros$
+		:i return
+		$selectable_pro_count$ = %i(0,00000000)
+	:i endif
+	:i $GetArraySize$%GLOBAL%$selectable_pros$
+	:i return
+	$selectable_pro_count$ = %GLOBAL%$array_size$
+:i endfunction
+:i function $IsCurrentChapterCapstone$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$capstone_chapter$
+		:i return
+		$capstone_chapter$
+	:i endif
+:i endfunction
+:i function $GetValueFromDifficultyParam$
+	:i $GoalManager_GetDifficultyLevel$
+	:i if $IsArray$%GLOBAL%$param$
+		:i return
+		$value$ =  (%GLOBAL%$param$:a{%GLOBAL%$difficulty_level$:a}) 
+	:i else 
+		:i return
+		$value$ = %GLOBAL%$param$
+	:i endif
+:i endfunction
+:i function $GetCurrentPointsToAdvance$
+	:i $GetCurrentChapterInfo$
+	:i $GetValueFromDifficultyParam$$param$ = %GLOBAL%$points_to_advance$
+	:i return
+	$points_to_advance$ = %GLOBAL%$value$
+:i endfunction
+:i function $SetHighestChapterWithLevel$
+	:i if $CD$
+		:i if $LevelIs$%GLOBAL%$level$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $force$ = %i(0,00000000)
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i $index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) 
+	:i while
+		
+		:i if  ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}->$level$ = %GLOBAL%$level$) 
+			:i if  ($CHAPTER_STATUS$:a{%GLOBAL%$index$:a} = $CHAPTER_LOCKED$) 
+				:i if  ($all_levels_unlocked$ = %i(1,00000001)) 
+					:i $target_chapter$ = %GLOBAL%$index$
+					:i $force$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i if  ($CHAPTER_STATUS$:a{%GLOBAL%$index$:a} = $CHAPTER_COMPLETE$) 
+					:i $target_chapter$ = %GLOBAL%$index$
+				:i else 
+					:i $force$ = %i(0,00000000)
+					:i $target_chapter$ = %GLOBAL%$index$
+					:i continue
+					
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$%i(4294967295,ffffffff)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if $GotParam$$target_chapter$
+		:i $change$$chapter_post_cutscene_target_chapter$ = %GLOBAL%$target_chapter$
+		:i $change$$chapter_post_cutscene_force_unlock$ = %GLOBAL%$force$
+		:i $EndCurrentChapter$$callback$ = $SetHighestChapterWithLevelPostCutscene$
+	:i else 
+		:i $printf$%s(52,"Warning! No chapter found....is this a secret level?")
+		:i $EndCurrentChapter$$dont_check_outtros$
+	:i endif
+:i endfunction
+:i $chapter_post_cutscene_target_chapter$ = %i(0,00000000)
+:i $chapter_post_cutscene_force_unlock$ = %i(0,00000000)
+:i function $SetHighestChapterWithLevelPostCutscene$
+	:i if  ($chapter_post_cutscene_force_unlock$ = %i(1,00000001)) 
+		:i $SetCurrentChapter$$chapter$ = %i(0,00000000)
+		:i while
+			
+			:i $UnlockNextChapter$
+			:i $AdvanceStage$
+		:i loop_to  ($chapter_post_cutscene_target_chapter$) 
+	:i else 
+		:i $SetCurrentChapter$$chapter$ =  ($chapter_post_cutscene_target_chapter$) 
+	:i endif
+	:i if $GotParam$$from_cutscenes$
+		:i $LoadCurrentChapter$
+	:i endif
+:i endfunction
+:i function $UnlockNextChapter$
+	:i $MarkChapterComplete$
+	:i $GetCurrentChapter$
+	:i $next_chapter$ =  (%GLOBAL%$chapter$ + %i(1,00000001)) 
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i if NOT  (%GLOBAL%$next_chapter$ < %GLOBAL%$array_size$) 
+		:i $printf$%s(26,"No more chapters to unlock")
+	:i else 
+		:i $CheckIfChapterIntrosViewed$$next$
+		:i if  (%GLOBAL%$viewed$ = %i(0,00000000)) 
+			:i if  ($CHAPTER_STATUS$:a{%GLOBAL%$next_chapter$:a} = $CHAPTER_LOCKED$) 
+				:i %GLOBAL%$status_array$ = $CHAPTER_STATUS$
+				:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$next_chapter$$NewValue$ = $CHAPTER_UNLOCKED$
+			:i endif
+			:i $level$ =  ( ($CHAPTER_INFO$:a{%GLOBAL%$next_chapter$:a}) ->$level$) 
+			:i $GetArraySize$$level_select_menu_level_info$
+			:i $index$ = %i(0,00000000)
+			:i while
+				
+				:i if  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}->$level$)  = %GLOBAL%$level$) 
+					:i $SetGlobalFlag$$flag$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}->$flag$) 
+					:i if NOT $GotParam$$dont_set_seen_flags$
+						:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) $seen_flag$
+							:i $SetGlobalFlag$$flag$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}->$seen_flag$) 
+						:i endif
+					:i endif
+					:i continue
+					
+				:i endif
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+:i endfunction
+:i function $CheckIfChapterUnlocked$
+	:i $GetCurrentChapter$
+	:i if $GotParam$$next$
+		:i $chapter$ =  (%GLOBAL%$chapter$ + %i(1,00000001)) 
+	:i endif
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i if NOT  (%GLOBAL%$chapter$ < %GLOBAL%$array_size$) 
+	:i else 
+		:i if NOT  ($CHAPTER_STATUS$:a{%GLOBAL%$chapter$:a} = $CHAPTER_LOCKED$) 
+			:i return
+			$unlocked$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i return
+	$unlocked$ = %i(0,00000000)
+:i endfunction
+:i function $SendPagerMessageWithDelay$$send_delay$ = %i(2,00000002)
+	:i $wait$%GLOBAL%$send_delay$$seconds$
+	:i $Skater$.$SendPagerMessage$%GLOBAL%$text$
+:i endfunction
+:i function $CheckCurrentTextMessageTriggers$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$text_message_point_triggers$
+		:i $GetArraySize$%GLOBAL%$text_message_point_triggers$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetValueFromDifficultyParam$$param$ =  (%GLOBAL%$text_message_point_triggers$:a{%GLOBAL%$index$:a}->$points$) 
+			:i if  (%GLOBAL%$value$ = $points_to_advance$) 
+				:i $GetCurrentPointsToAdvance$
+				:i $value$ = %GLOBAL%$points_to_advance$
+			:i endif
+			:i if  (%GLOBAL%$value$ > %GLOBAL%$before$) 
+				:i if NOT  (%GLOBAL%$value$ > %GLOBAL%$after$) 
+					:i $SpawnScript$$SendPagerMessageWithDelay$$params$ = :s{ (%GLOBAL%$text_message_point_triggers$:a{%GLOBAL%$index$:a}) :s}
+				:i endif
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+:i endfunction
+:i function $WaitUntilScreenClear$$pass$ = %i(0,00000000)
+	:i $wait$%f(0.200000)$seconds$
+	:i while
+		
+		:i $wait$%i(1,00000001)$gameframes$
+		:i if $Skater$.$OnGround$
+			:i $root_window$.$GetSingleTag$$menu_state$
+			:i if  (%GLOBAL%$menu_state$ = $off$) 
+				:i if NOT $ScreenElementExists$$id$ = $speech_box_anchor$
+					:i if NOT $ScreenElementExists$$id$ = $goal_description_anchor$
+						:i if NOT $ScreenElementExists$$id$ = $current_menu_anchor$
+							:i if  (%GLOBAL%$pass$ = %i(2,00000002)) 
+								:i $wait$%i(1,00000001)$gameframes$
+								:i $RemoveParameter$$pass$
+								:i $SafeCallback$ isNull 
+								:i return
+								
+							:i else 
+								:i continue
+								
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $pass$ = %i(0,00000000)
+	:i loop_to 
+	:i $pass$ =  (%GLOBAL%$pass$ + %i(1,00000001)) 
+	:i $GotoPreserveParams$$WaitUntilScreenClear$
+:i endfunction
+:i function $CheckChapterAdvancementStatus$
+	:i if NOT $GameModeEquals$$is_career$
+		:i return
+		
+	:i endif
+	:i $GoalManager_GetActiveRewardPoints$
+	:i $GetCurrentPointsToAdvance$
+	:i if $GotParam$$RewardPoints$
+		:i $CheckCurrentTextMessageTriggers$$before$ =  (%GLOBAL%$active_points$ - %GLOBAL%$RewardPoints$) $after$ = %GLOBAL%$active_points$
+	:i endif
+	:i if $IsTrue$$DEMO_BUILD$
+		:i if $LevelIs$$load_ba$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $ProcessGameRewards$
+	:i $ProcessGoalRewards$
+	:i if NOT  (%GLOBAL%$active_points$ < %GLOBAL%$points_to_advance$) 
+		:i $UnlockNextChapter$
+		:i $GetCurrentChapterInfo$
+		:i if NOT $GotParam$$no_advance_dialog_on_goal_win$
+			:i if $GotParam$$capstone_chapter$
+				:i $change$$waiting_for_complete_message$ = %i(1,00000001)
+				:i $GetArraySize$$CHAPTER_STATUS$
+				:i $GetCurrentChapter$
+				:i if NOT $LevelIs$$load_st$
+					:i $SpawnScript$$WaitUntilScreenClear$$params$ = :s{$callback$ = $GotoNextChapter$:s}
+				:i else 
+					:i $SpawnScript$$GotoNextChapter$
+				:i endif
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $DoCompletionMessages$
+:i endfunction
+:i function $AdvanceStage$
+	:i $GetCurrentChapter$
+	:i $chapter$ =  (%GLOBAL%$chapter$ + %i(1,00000001)) 
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i if  (%GLOBAL%$chapter$ = %GLOBAL%$array_size$) 
+		:i $printf$%s(27,"No more chapters to advance")
+	:i else 
+		:i $SetCurrentChapter$$chapter$ = %GLOBAL%$chapter$
+	:i endif
+:i endfunction
+:i function $GetCurrentChapterInfo$
+	:i $GetCurrentChapter$
+:i endfunction
+:i function $GotoNextChapter$
+	:i $EndCurrentChapter$$callback$ = $GoToNextChapterPostCutscene$
+:i endfunction
+:i function $GoToNextChapterPostCutscene$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$post_outtro_cutscene_setup$
+		:i %GLOBAL%$post_outtro_cutscene_setup$
+	:i endif
+	:i $UnlockNextChapter$
+	:i if $GotParam$$last_chapter$
+		:i $GetCurrentChapter$
+		:i $SetCurrentChapter$$chapter$ = %i(8,00000008)
+	:i else 
+		:i $AdvanceStage$
+	:i endif
+	:i $change$$waiting_for_complete_message$ = %i(0,00000000)
+	:i if $IsTrue$$want_completion_movie$
+		:i $DoCompletionMessages$
+	:i else 
+		:i $LoadCurrentChapter$
+	:i endif
+:i endfunction
+:i function $LoadCurrentChapter$
+	:i $GetCurrentChapterInfo$
+	:i if NOT $LevelIs$%GLOBAL%$level$
+		:i $change_level$$level$ = %GLOBAL%$level$
+	:i else 
+		:i $StartCurrentChapter$
+	:i endif
+:i endfunction
+:i function $GoToPreviousChapter$
+	:i $EndCurrentChapter$
+	:i $GetCurrentChapter$
+	:i $chapter$ =  (%GLOBAL%$chapter$%i(4294967295,ffffffff)) 
+	:i if  (%GLOBAL%$chapter$ > %i(4294967295,ffffffff)) 
+		:i $SetCurrentChapter$$chapter$ = %GLOBAL%$chapter$
+	:i endif
+	:i $LoadCurrentChapter$
+:i endfunction
+:i function $SetUpChapterMenu$
+	:i $change$$dont_restore_start_key_binding$ = %i(1,00000001)
+	:i $Skater$.$PausePhysics$
+	:i $Skater$.$RemoveSkaterFromWorld$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $hide_all_hud_items$$dont_restore_input$
+	:i $kill_start_key_binding$
+	:i $PauseMusic$%i(1,00000001)
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i $SafeCallback$ isNull 
+:i endfunction
+:i function $KillChapterMenu$
+	:i $dialog_box_exit$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GotParam$$need_unpause_streams$
+		:i $PauseStream$%i(0,00000000)
+	:i endif
+	:i if $GotParam$$inside_run$
+		:i $UnPauseGame$
+		:i $UnPauseSkaters$
+		:i $show_all_hud_items$
+	:i else 
+		:i if $GotParam$$mark_first_input$
+			:i $mark_first_input_received$ isNull 
+		:i endif
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $root_window$.$SetTags$$menu_state$ = $off$
+		:i $change$$dont_restore_start_key_binding$ = %i(0,00000000)
+		:i $restore_start_key_binding$
+		:i $PauseMusic$%i(0,00000000)
+		:i $Skater$.$UnpausePhysics$
+		:i $Skater$.$AddSkaterToWorld$
+		:i $show_all_hud_items$
+	:i endif
+	:i $SafeCallback$ isNull 
+:i endfunction
+:i function $PlayChapterCutsceneList$$index$ = %i(0,00000000)
+	:i if NOT $GotParam$$list$
+		:i return
+		
+	:i endif
+	:i $GetArraySize$%GLOBAL%$list$
+	:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+		:i $SafeCallback$ isNull $from_cutscenes$ = $from_cutscenes$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+		:i $unload$ = %i(1,00000001)
+		:i $UnPauseGame$
+		:i $PauseMusic$%i(0,00000000)
+	:i else 
+		:i $unload$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) ) 
+		:i $reload$ = %i(1,00000001)
+	:i else 
+		:i $reload$ = %i(0,00000000)
+	:i endif
+	:i $exit_params$ = :s{$list$ = %GLOBAL%$list$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i $callback$ = %GLOBAL%$callback$
+	:i :s}
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$list$:a{%GLOBAL%$index$:a}) $flag$
+		:i if $GetGlobalFlag$$flag$ =  ( (%GLOBAL%$list$:a{%GLOBAL%$index$:a}) ->$flag$) 
+			:i $PlayChapterCutsceneList$%GLOBAL%$exit_params$
+			:i return
+			
+		:i else 
+			:i $SetGlobalFlag$$flag$ =  ( (%GLOBAL%$list$:a{%GLOBAL%$index$:a}) ->$flag$) 
+		:i endif
+	:i endif
+	:i $play_cutscene_only_if_good$:s{
+		:i $name$ =  ( (%GLOBAL%$list$:a{%GLOBAL%$index$:a}) ->$name$) 
+		:i $unload_anims$ = %GLOBAL%$unload$
+		:i $unload_goals$ = %GLOBAL%$unload$
+		:i $reload_anims$ = %GLOBAL%$reload$
+		:i $reload_goals$ = %GLOBAL%$reload$
+		:i $exitScript$ = $PlayChapterCutsceneList$
+		:i $exitParams$ = %GLOBAL%$exit_params$
+	:i :s}
+:i endfunction
+:i function $get_is_cutscene_bad$
+	:i %GLOBAL%$bad_cutscene$ = %i(0,00000000)
+	:i return
+	$bad_cutscene$ = %GLOBAL%$bad_cutscene$$cutscene_name$ = %GLOBAL%$cutscene_name$
+:i endfunction
+:i function $play_cutscene_only_if_good$
+	:i if $IsNgc$
+		:i $get_is_cutscene_bad$$name$ = %GLOBAL%$name$
+	:i else 
+		:i %GLOBAL%$bad_cutscene$ = %i(0,00000000)
+	:i endif
+	:i if $IsNgc$
+		:i if $StringEquals$$a$ = %GLOBAL%$name$$b$ = %s(18,"cutscenes\no_7.cut")
+			:i $Skater$.$Obj_ClearGeoms$
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$bad_cutscene$ = %i(0,00000000)) 
+		:i $RemoveComponent$$bad_cutscene$
+		:i $RemoveComponent$$cutscene_name$
+		:i $PlayCutscene$ isNull 
+	:i else 
+		:i if  (%GLOBAL%$unload_goals$ = %i(1,00000001)) 
+			:i if $GameModeEquals$$is_classic$
+				:i $GoalManager_PauseAllGoals$
+			:i else 
+				:i $GoalManager_UninitializeAllGoals$
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$cutscene_name$
+			:i $script_assert$%s(17,"no cutscene name!")
+		:i endif
+		:i $FormatText$$ChecksumName$ = $start_script$%s(8,"%i_begin")$i$ = %GLOBAL%$cutscene_name$
+		:i if $ScriptExists$%GLOBAL%$start_script$
+			:i %GLOBAL%$start_script$
+		:i endif
+		:i if  (%GLOBAL%$reload_goals$ = %i(1,00000001)) 
+			:i if $GameModeEquals$$is_classic$
+				:i $GoalManager_UnPauseAllGoals$
+				:i $show_goal_panel_messages$
+			:i else 
+				:i $GoalManager_InitializeAllGoals$
+			:i endif
+		:i else 
+			:i $SkProDisplayLoadingScreen$$Blank$
+		:i endif
+		:i $FormatText$$ChecksumName$ = $end_script$%s(6,"%i_end")$i$ = %GLOBAL%$cutscene_name$
+		:i if $ScriptExists$%GLOBAL%$end_script$
+			:i %GLOBAL%$end_script$
+		:i endif
+		:i %GLOBAL%$exitScript$%GLOBAL%$exitParams$
+	:i endif
+:i endfunction
+:i function $CheckIfChapterIntrosViewed$
+	:i $GetCurrentChapter$
+	:i if $GotParam$$next$
+		:i $chapter$ =  (%GLOBAL%$chapter$ + %i(1,00000001)) 
+		:i $GetArraySize$$CHAPTER_STATUS$
+		:i if  (%GLOBAL%$chapter$ = %GLOBAL%$array_size$) 
+			:i return
+			$viewed$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i return
+	$viewed$ =  ($CHAPTER_INTROS_VIEWED$:a{%GLOBAL%$chapter$:a}) 
+:i endfunction
+:i function $CheckIfChapterOuttrosViewed$
+	:i $GetCurrentChapter$
+	:i return
+	$viewed$ =  ($CHAPTER_OUTTROS_VIEWED$:a{%GLOBAL%$chapter$:a}) 
+:i endfunction
+:i function $MarkChapterIntrosViewed$
+	:i $GetCurrentChapter$
+	:i %GLOBAL%$status_array$ = $CHAPTER_INTROS_VIEWED$
+	:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$chapter$$NewValue$ = %i(1,00000001)
+:i endfunction
+:i function $MarkChapterOuttrosViewed$
+	:i $GetCurrentChapter$
+	:i %GLOBAL%$status_array$ = $CHAPTER_OUTTROS_VIEWED$
+	:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$chapter$$NewValue$ = %i(1,00000001)
+:i endfunction
+:i function $MarkChapterComplete$
+	:i $GetCurrentChapter$
+	:i %GLOBAL%$status_array$ = $CHAPTER_STATUS$
+	:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$chapter$$NewValue$ = $CHAPTER_COMPLETE$
+:i endfunction
+:i $chapter_goals_loaded$ = %i(0,00000000)
+:i function $GetOptionalChapterGoalsScript$
+	:i $change$$chapter_goals_loaded$ = %i(1,00000001)
+	:i $new_level$ = %GLOBAL%$level$
+	:i $GetCurrentChapterInfo$
+	:i if NOT  (%GLOBAL%$level$ = %GLOBAL%$new_level$) 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$goals_script$
+		:i return
+		$goals_script$ = %GLOBAL%$goals_script$
+	:i endif
+:i endfunction
+:i function $StartCurrentChapter$
+	:i $SetCurrentTeammateProAppearanceName$
+	:i $change$$total_cheat_points$ = %i(0,00000000)
+	:i $update_goal_points_display$$refresh$
+	:i $Skater$.$StatsManager_ActivateGoals$
+	:i if $ScreenElementExists$$id$ = $new_ammo_message$
+		:i $DestroyScreenElement$$id$ = $new_ammo_message$
+		:i $DestroyScreenElement$$id$ = $new_ammo_message2$
+	:i endif
+	:i $GetCurrentChapterInfo$
+	:i if NOT $LevelIs$%GLOBAL%$level$
+		:i $create_select_pro_menu$$from_chapter_intro$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$goals_script$
+		:i if  ($chapter_goals_loaded$ = %i(0,00000000)) 
+			:i $PushMemProfile$%s(12,"Goals script")
+			:i %GLOBAL%$goals_script$
+			:i $PopMemProfile$
+			:i $init_goal_manager$
+			:i $change$$chapter_goals_loaded$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $CheckIfChapterIntrosViewed$
+	:i if $GotParam$$setup_script$
+		:i %GLOBAL%$setup_script$
+	:i endif
+	:i if  (%GLOBAL%$viewed$ = %i(1,00000001)) 
+		:i if $GotParam$$capstone_chapter$
+			:i $StartCurrentChapterStartRun$
+		:i else 
+			:i $create_select_pro_menu$$from_chapter_intro$
+		:i endif
+		:i return
+		
+	:i else 
+		:i if $GotParam$$level_total_points$
+			:i $SetLevelTotalPoints$%GLOBAL%$level_total_points$
+			:i $printf$%GLOBAL%$level_total_points$
+		:i endif
+		:i $MarkChapterIntrosViewed$
+	:i endif
+	:i $root_window$.$SetTags$$menu_state$ = $on$
+	:i if $GotParam$$start_cutscenes$
+		:i $printf$%s(19,"Playing cutscene...")
+		:i $PlayChapterCutsceneList$$list$ =  (%GLOBAL%$start_cutscenes$) $callback$ = $StartCurrentChapterStartRun$
+		:i return
+		
+	:i endif
+	:i $StartCurrentChapterStartRun$
+:i endfunction
+:i $fake_nigel_active$ = %i(0,00000000)
+:i function $StartCurrentChapterWelcome$
+	:i $GetCurrentChapterInfo$
+	:i $KillChapterMenu$
+	:i if NOT $LevelIs$%GLOBAL%$level$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$skater_start_node$
+		:i $GetValueFromDifficultyParam$$param$ = %GLOBAL%$skater_start_node$
+		:i $Skater$.$Obj_MoveToNode$$name$ = %GLOBAL%$value$$Orient$
+	:i endif
+	:i if $GotParam$$force_skater_swap$
+		:i $ChapterForceSkaterSwap$%GLOBAL%$force_skater_swap$
+	:i endif
+	:i if $GotParam$$should_do_fake_nigel$
+		:i if  (%GLOBAL%$should_do_fake_nigel$ = %i(1,00000001)) 
+			:i $do_fake_nigel$
+		:i endif
+	:i endif
+	:i if $GotParam$$welcome_dialog$
+		:i %GLOBAL%$welcome_dialog$
+	:i endif
+:i endfunction
+:i function $do_fake_nigel$
+	:i if NOT $GetGlobalFlag$$flag$ = $TRICK_UNLOCKED_BEAVERBLAST$
+		:i $SetGlobalFlag$$flag$ = $TRICK_UNLOCKED_BEAVERBLAST$
+		:i $AwardNewSpecialTrickToProfile$:s{
+			:i $all_profiles$
+			:i $trick$ = $Trick_BeaverBlast$
+			:i $key_combo$ = $SpAir_L_R_Square$
+		:i :s}
+	:i endif
+	:i if $IsTrue$$fake_nigel_active$
+		:i $script_assert$%s(31,"fake_nigel is already active?!?")
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $RememberTemporaryAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$name$ = $fake_nigel_temp_profile$$NoFaceTexture$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$is_male$ = %i(1,00000001)) 
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $sleeves$$desc_id$ = $none$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_torso$$desc_id$ = $none$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_legs$$desc_id$ = $Briefs$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_hands$$desc_id$ = $Hands$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $shoes$$desc_id$ = $BareFeet$:s}
+	:i else 
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $sleeves$$desc_id$ = $none$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_f_torso$$desc_id$ = $none$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_f_legs$$desc_id$ = $none$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_f_hands$$desc_id$ = $Hands$:s}
+		:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $shoes$$desc_id$ = $BareFeet$:s}
+	:i endif
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $socks$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $socks_lower$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $shoe_laces$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $kneepads$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $elbowpads$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $accessory1$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $accessory2$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $accessory3$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $hat$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $skater_m_hair$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $skater_f_hair$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $sleeves$$desc_id$ = $none$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_torso$$desc_id$ = $Shirt_Nigel_Costume$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_jaw$$desc_id$ = $Honest Abe$$h$ = %i(325,00000145)$s$ = %i(65,00000041)$v$ = %i(20,00000014)$use_default_hsv$ = %i(0,00000000):s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $skater_m_hair$$desc_id$ = $Ponytail 1$$h$ = %i(20,00000014)$s$ = %i(41,00000029)$v$ = %i(26,0000001a)$use_default_hsv$ = %i(0,00000000):s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $SetPart$$targetParams$ = :s{$part$ = $glasses$$desc_id$ = $Specs_Nigel_Costume$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $torso_bone_group$:s}
+	:i $EditPlayerAppearance$$profile$ = %GLOBAL%$currentSkaterProfile$$target$ = $ClearPart$$targetParams$ = :s{$part$ = $stomach_bone_group$:s}
+	:i $RememberTemporaryAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$name$ = $fake_nigel_temp_profile_save$$NoFaceTexture$
+	:i $refresh_skater_model$
+	:i $change$$fake_nigel_active$ = %i(1,00000001)
+:i endfunction
+:i function $undo_fake_nigel$
+	:i if $IsTrue$$fake_nigel_active$
+		:i $GetCurrentSkaterProfileIndex$
+		:i $RestoreTemporaryAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$name$ = $fake_nigel_temp_profile$$NoFaceTexture$
+		:i $refresh_skater_model$
+		:i $change$$fake_nigel_active$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $ChapterForceSkaterSwap$
+	:i if NOT $isAlive$$name$ = %GLOBAL%$obj$
+		:i $create$$name$ = %GLOBAL%$obj$
+	:i endif
+	:i $Skater$.$swap_skaters$$objid$ = %GLOBAL%$obj$$profile_name$ = %GLOBAL%$profile_name$$no_ped_setup$
+	:i %GLOBAL%$obj$.$Hide$
+:i endfunction
+:i function $story_intro_advance_cam$
+	:i $intro_camera_event_handler$.$SetTags$$pressed_x$
+:i endfunction
+:i function $PlaySingleIntroVirtualCamera$
+	:i $PlaySkaterCamAnim$:s{
+		:i $name$ = %GLOBAL%$name$
+		:i $skaterId$ = %GLOBAL%$skaterId$
+		:i $targetID$ = %GLOBAL%$targetID$
+		:i $targetOffset$ = %GLOBAL%$targetOffset$
+		:i $positionOffset$ = %GLOBAL%$positionOffset$
+		:i $frames$ = %GLOBAL%$frames$
+		:i $skippable$ = %i(0,00000000)
+		:i $virtual_cam$
+	:i :s}
+:i endfunction
+:i function $PlayIntroSkaterCam$
+	:i if NOT $GotParam$$cam$
+		:i return
+		
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$cam$$name$
+		:i $PlaySkaterCamAnim$$name$ =  (%GLOBAL%$cam$->$name$) $skippable$ = %i(0,00000000)
+	:i else 
+		:i $GetIntroSkaterCamName$ isNull 
+		:i $PlaySingleIntroVirtualCamera$%GLOBAL%$cam$$name$ = %GLOBAL%$name$
+	:i endif
+:i endfunction
+:i function $GetIntroSkaterCamName$
+	:i if $StructureContains$$structure$ = %GLOBAL%$cam$$name$
+		:i return
+		$name$ =  (%GLOBAL%$cam$->$name$) 
+	:i else 
+		:i $FormatText$$ChecksumName$ = $moviename$%s(12,"intro_cam_%i")$i$ = %GLOBAL%$index$
+		:i return
+		$name$ = %GLOBAL%$moviename$
+	:i endif
+:i endfunction
+:i function $IntroCameraDescription$
+	:i if NOT $GotParam$$text$
+		:i if NOT $GotParam$$goal$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i if  (%GLOBAL%$cam_index$ = %i(0,00000000)) 
+		:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(1000,000003e8):s}
+	:i else 
+		:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(300,0000012c):s}
+	:i endif
+	:i if $GotParam$$text$
+		:i $create_panel_block$:s{$id$ = $intro_panel$
+			:i $text$ = %GLOBAL%$text$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $pos$ = %vec2(12.000000,395.000000)
+			:i $time$ = %GLOBAL%$time$
+			:i $dims$ = %vec2(616.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $internal_just$ = :a{$center$$top$:a}
+			:i $parent$ = $root_window$
+		:i :s}
+	:i else 
+		:i $time2$ = %i(1000000,000f4240)
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal$
+		:i $FormatText$$TextName$ = $goal_desc$%s(18,"\c0%a - \c5%b PTS.")$a$ = %GLOBAL%$view_goals_text$$b$ = %GLOBAL%$reward_points$
+		:i $create_intro_panel_block$:s{$id$ = $intro_panel$
+			:i $text$ = %GLOBAL%$goal_desc$
+			:i $rgba$ = :a{%i(8,00000008)%i(97,00000061)%i(121,00000079)%i(128,00000080):a}
+			:i $pos$ = %vec2(12.000000,395.000000)
+			:i $time$ = %GLOBAL%$time2$
+			:i $dims$ = %vec2(616.000000,0.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $internal_just$ = :a{$center$$top$:a}
+			:i $parent$ = $root_window$
+			:i $create_bg$
+		:i :s}
+	:i endif
+	:i if $GotParam$$cam_start_script$
+		:i %GLOBAL%$cam_start_script$
+	:i endif
+	:i while
+		
+		:i if $SkaterCamAnimFinished$$name$ = %GLOBAL%$name$
+			:i continue
+			
+		:i endif
+		:i if $intro_camera_event_handler$.$GetSingleTag$$pressed_x$
+			:i $intro_camera_event_handler$.$RemoveTags$$tags$ = :a{$pressed_x$:a}
+			:i $KillSkaterCamAnim$$name$ = %GLOBAL%$name$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframes$
+	:i loop_to 
+	:i if $GotParam$$cam_end_script$
+		:i %GLOBAL%$cam_end_script$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $intro_panel$
+		:i $DestroyScreenElement$$id$ = $intro_panel$
+	:i endif
+	:i $Debounce$$X$$time$ = %f(0.300000)
+:i endfunction
+:i function $DoChapterIntroCamSetup$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$goal_intro_setup$
+		:i %GLOBAL%$goal_intro_setup$
+	:i endif
+:i endfunction
+:i function $DoChapterIntroCamCleanup$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$goal_intro_cleanup$
+		:i %GLOBAL%$goal_intro_cleanup$
+	:i endif
+:i endfunction
+:i function $PlayIntroCameras$
+	:i if NOT $GotParam$$goal_intro_cameras$
+		:i $SafeCallback$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$from_chapter_intro$
+		:i $DoChapterIntroCamSetup$
+	:i endif
+	:i $GetArraySize$%GLOBAL%$goal_intro_cameras$
+	:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+		:i if $GotParam$$from_cutscenes$
+			:i $fadetoblack$$on$$time$ = %i(0,00000000)$alpha$ = %f(1.000000)
+			:i $wait$%i(1,00000001)$gameframes$
+			:i $fadetoblack$$off$$time$ = %i(0,00000000)
+		:i endif
+		:i $SetUpChapterMenu$
+		:i if $GotParam$$letterbox$
+			:i $fake_letterboxing$
+		:i endif
+		:i if NOT $ScreenElementExists$$id$ = $intro_camera_event_handler$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = $root_window$
+				:i $id$ = $intro_camera_event_handler$
+				:i $event_handlers$ = :a{:s{$pad_choose$$story_intro_advance_cam$:s}:a}
+			:i :s}
+		:i endif
+		:i $FireEvent$$type$ = $focus$$target$ = $intro_camera_event_handler$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $play_me$ = %i(1,00000001)
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) $goal$
+				:i if $GoalManager_HasWonGoal$$name$ =  ( (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) ->$goal$) 
+					:i $play_me$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$play_me$ = %i(1,00000001)) 
+				:i $PlayIntroSkaterCam$$index$ = %GLOBAL%$index$$cam$ =  (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) 
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $play_me$ = %i(1,00000001)
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) $goal$
+				:i if $GoalManager_HasWonGoal$$name$ =  ( (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) ->$goal$) 
+					:i $play_me$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$play_me$ = %i(1,00000001)) 
+				:i $GetIntroSkaterCamName$$index$ = %GLOBAL%$index$$cam$ =  (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) 
+				:i $IntroCameraDescription$ (%GLOBAL%$goal_intro_cameras$:a{%GLOBAL%$index$:a}) $name$ = %GLOBAL%$name$$cam_index$ = %GLOBAL%$index$
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $DestroyScreenElement$$id$ = $intro_camera_event_handler$
+		:i $printf$%s(21,"done with all cameras")
+		:i $fake_letterboxing$$remove$
+		:i if NOT $GotParam$$from_chapter_intro$
+			:i $SkProDisplayLoadingScreen$$freeze$
+			:i $KillChapterMenu$
+			:i $PauseMusicAndStreams$%i(1,00000001)
+			:i $wait$%i(1,00000001)$gameframes$
+			:i $HideLoadingScreen$
+			:i $PauseGame$
+			:i $hide_all_hud_items$
+			:i $Debounce$$X$$time$ = %f(0.300000)
+			:i $ingame_confirm_save$$no_script$ = $ingame_save_return_to_game$
+			:i return
+			
+		:i endif
+		:i $KillChapterMenu$
+		:i if $GotParam$$from_cutscenes$
+			:i $fadetoblack$$on$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+			:i $wait$%i(1,00000001)$gameframes$
+			:i $fadetoblack$$off$$time$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $RemoveParameter$$goal_intro_cameras$
+	:i if $GotParam$$from_chapter_intro$
+		:i $DoChapterIntroCamCleanup$
+	:i endif
+	:i $SafeCallback$ isNull 
+:i endfunction
+:i function $fake_letterboxing$
+	:i if $ScreenElementExists$$id$ = $letterbox_anchor$
+		:i $DestroyScreenElement$$id$ = $letterbox_anchor$
+	:i endif
+	:i if $GotParam$$remove$
+		:i return
+		
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $letterbox_anchor$
+		:i $parent$ = $root_window$
+		:i $z_priority$ = %i(999,000003e7)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,10.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,15.000000)
+		:i $pos$ = %vec2(0.000000,360.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+:i endfunction
+:i function $ingame_confirm_save$$no_script$ = $create_pause_menu$$yes_script$ = $launch_ingame_menu_save_game_sequence$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %s(4,"Save")
+		:i $text$ = %s(41,"Would you like to save your progress now?")
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $no_bg$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = %GLOBAL%$no_script$
+			:i :s}
+			:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = %GLOBAL%$yes_script$
+			:i :s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ingame_save_return_to_game$
+	:i $Debounce$$X$$time$ = %f(0.300000)
+	:i $dialog_box_exit$
+	:i $UnPauseGame$
+	:i $UnpauseMusicAndStreams$
+	:i $show_all_hud_items$
+:i endfunction
+:i function $StartCurrentChapterStartRun$
+	:i if $IsTrue$$DEMO_BUILD$
+		:i if $LevelIs$$load_tr$
+			:i if $GotParam$$from_cutscenes$
+				:i $SkProDisplayLoadingScreen$$Blank$
+				:i $AdvanceStage$
+				:i $LoadCurrentChapter$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $root_window$.$SetTags$$menu_state$ = $off$
+	:i $update_goal_points_display$$refresh$
+	:i $GetCurrentChapterInfo$
+	:i if $GotParam$$post_intro_cutscene_setup$
+		:i %GLOBAL%$post_intro_cutscene_setup$
+	:i endif
+	:i if $GotParam$$capstone_chapter$
+		:i $from_cutscenes$ = $from_cutscenes$
+	:i endif
+	:i if $GotParam$$goal_intro_cameras$
+		:i $kill_start_key_binding$
+	:i endif
+	:i $SpawnScript$$PlayIntroCameras$$params$ = :s{$callback$ = $create_select_pro_menu$
+		:i $from_chapter_intro$
+		:i $goal_intro_cameras$ = %GLOBAL%$goal_intro_cameras$
+		:i $letterbox$
+		:i $from_cutscenes$ = %GLOBAL%$from_cutscenes$
+	:i :s}
+:i endfunction
+:i function $EndCurrentChapter$$callback$ = $nullscript$
+	:i $GetCurrentChapterInfo$
+	:i if NOT $LevelIs$%GLOBAL%$level$
+		:i %GLOBAL%$callback$
+		:i return
+		
+	:i endif
+	:i $kill_speech_boxes$
+	:i $GoalManager_DeactivateAllGoals$
+	:i $Skater$.$ResetSkaterToCustom$
+	:i $Skater$.$ClearPagerMessages$
+	:i $GoalManager_GetActiveRewardPoints$
+	:i $GetCurrentPointsToAdvance$
+	:i $GoalManager_LevelUnload$
+	:i $GoalManager_RemoveAllGoals$
+	:i $change$$chapter_goals_loaded$ = %i(0,00000000)
+	:i if $GotParam$$cleanup_script$
+		:i %GLOBAL%$cleanup_script$
+	:i endif
+	:i if $GotParam$$dont_check_outtros$
+		:i %GLOBAL%$callback$
+		:i return
+		
+	:i endif
+	:i $CheckIfChapterOuttrosViewed$
+	:i if  (%GLOBAL%$viewed$ = %i(1,00000001)) 
+		:i %GLOBAL%$callback$
+		:i return
+		
+	:i endif
+	:i if $IsTrue$$DEMO_BUILD$
+		:i if $LevelIs$$load_ba$
+			:i %GLOBAL%$callback$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if NOT  (%GLOBAL%$active_points$ < %GLOBAL%$points_to_advance$) 
+		:i $MarkChapterOuttrosViewed$
+		:i if $GotParam$$end_cutscenes$
+			:i $goto$$PlayChapterCutsceneList$$params$ = :s{$list$ = %GLOBAL%$end_cutscenes$$callback$ = %GLOBAL%$callback$:s}
+		:i endif
+	:i endif
+	:i %GLOBAL%$callback$
+:i endfunction
+:i function $PrintChapterStatus$
+	:i $index$ = %i(0,00000000)
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i while
+		
+		:i $printf$%s(12,"%a - %b - %c")$a$ =  ($CHAPTER_STATUS$:a{%GLOBAL%$index$:a}) $b$ =  ($CHAPTER_INTROS_VIEWED$:a{%GLOBAL%$index$:a}) $c$ =  ($CHAPTER_OUTTROS_VIEWED$:a{%GLOBAL%$index$:a}) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetCurrentChapter$
+	:i $FormatText$$TextName$ = $chap$%s(26,"Our current chapter is %c.")$c$ = %GLOBAL%$chapter$
+	:i $printf$%GLOBAL%$chap$
+:i endfunction
+:i function $ResetChapterStatus$
+	:i $index$ = %i(0,00000000)
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i $chapter_size$ = %GLOBAL%$array_size$
+	:i $status_array$ = $CHAPTER_STATUS$
+	:i $intro_array$ = $CHAPTER_INTROS_VIEWED$
+	:i $outtro_array$ = $CHAPTER_OUTTROS_VIEWED$
+	:i while
+		
+		:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+			:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$index$$NewValue$ = $CHAPTER_UNLOCKED$
+		:i else 
+			:i $SetArrayElement$$ArrayName$ = $status_array$$index$ = %GLOBAL%$index$$NewValue$ = $CHAPTER_LOCKED$
+		:i endif
+		:i $SetArrayElement$$ArrayName$ = $intro_array$$index$ = %GLOBAL%$index$$NewValue$ = %i(0,00000000)
+		:i $SetArrayElement$$ArrayName$ = $outtro_array$$index$ = %GLOBAL%$index$$NewValue$ = %i(0,00000000)
+		:i if $StructureContains$$structure$ =  ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) $start_cutscenes$
+			:i $GetArraySize$ ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$start_cutscenes$) 
+			:i $index2$ = %i(0,00000000)
+			:i while
+				
+				:i if $StructureContains$$structure$ =  ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$start_cutscenes$:a{%GLOBAL%$index2$:a}) $flag$
+					:i $UnSetGlobalFlag$$flag$ =  ( ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$start_cutscenes$:a{%GLOBAL%$index2$:a}) ->$flag$) 
+				:i endif
+				:i $index2$ =  (%GLOBAL%$index2$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+		:i if $StructureContains$$structure$ =  ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) $end_cutscenes$
+			:i $GetArraySize$ ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$end_cutscenes$) 
+			:i $index2$ = %i(0,00000000)
+			:i while
+				
+				:i if $StructureContains$$structure$ =  ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$end_cutscenes$:a{%GLOBAL%$index2$:a}) $flag$
+					:i $UnSetGlobalFlag$$flag$ =  ( ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}) ->$end_cutscenes$:a{%GLOBAL%$index2$:a}) ->$flag$) 
+				:i endif
+				:i $index2$ =  (%GLOBAL%$index2$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$chapter_size$
+:i endfunction
+:i function $ChapterAdvanceDialog$
+	:i $GetCurrentChapter$
+	:i if NOT $StructureContains$$structure$ =  ($CHAPTER_INFO$:a{%GLOBAL%$chapter$:a}) $advance_ped_info$
+		:i $script_assert$%s(70,"This chapter is missing advance_ped_info....can't find the dialog text")
+	:i endif
+	:i $ped_info$ =  ($CHAPTER_INFO$:a{%GLOBAL%$chapter$:a}->$advance_ped_info$) 
+	:i if $ScreenElementExists$$id$ = $ped_speech_dialog$
+		:i $DestroyScreenElement$$id$ = $ped_speech_dialog$
+	:i endif
+	:i if NOT $GotParam$$before_run$
+		:i $PauseGame$
+		:i $PauseStream$%i(1,00000001)
+		:i $need_unpause_streams$ = $need_unpause_streams$
+		:i $hide_all_hud_items$
+		:i $inside_run$ = $inside_run$
+	:i else 
+		:i $SetUpChapterMenu$
+	:i endif
+	:i $CheckIfChapterIntrosViewed$$next$
+	:i if  (%GLOBAL%$viewed$ = %i(1,00000001)) 
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $KillChapterMenu$
+				:i $pad_choose_params$ = :s{$callback$ = %GLOBAL%$callback$ isNull :s}
+			:i :s}
+			:i :a}
+		:i $title$ =  (%GLOBAL%$ped_info$->$name$) 
+		:i $text$ =  (%GLOBAL%$ped_info$->$already_moved_on_message$) 
+	:i else 
+		:i $CheckIfChapterUnlocked$$next$
+		:i if  (%GLOBAL%$unlocked$ = %i(0,00000000)) 
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $KillChapterMenu$
+					:i $pad_choose_params$ = :s{$callback$ = %GLOBAL%$callback$ isNull :s}
+				:i :s}
+				:i :a}
+			:i $title$ =  (%GLOBAL%$ped_info$->$name$) 
+			:i $text$ =  (%GLOBAL%$ped_info$->$need_more_points_message$) 
+		:i else 
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $KillChapterMenu$
+					:i $pad_choose_params$ = :s{$callback$ = %GLOBAL%$callback$ isNull :s}
+				:i :s}
+				:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = $KillChapterMenu$
+					:i $pad_choose_params$ = :s{$callback$ = $GotoNextChapterAccept$:s}
+				:i :s}
+				:i :a}
+			:i $title$ =  (%GLOBAL%$ped_info$->$name$) 
+			:i $text$ =  (%GLOBAL%$ped_info$->$move_on_now_message$) 
+		:i endif
+	:i endif
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %GLOBAL%$title$
+		:i $text$ = %GLOBAL%$text$
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $no_bg$
+		:i $buttons$ = %GLOBAL%$buttons$
+	:i :s}
+:i endfunction
+:i function $GotoNextChapterAccept$
+	:i $KillChapterMenu$$inside_run$
+	:i if $IsTrue$$DEMO_BUILD$
+		:i if $LevelIs$$load_ba$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $SkProDisplayLoadingScreen$$freeze$
+	:i $GotoNextChapter$
+:i endfunction
+:i function $SetChapterOnLevel$
+	:i if NOT $GotParam$$level$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$level$ = $load_sk5ed$) 
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$level$ = $load_skateshop$) 
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$level$ = $load_mainmenu$) 
+		:i return
+		
+	:i endif
+	:i $SetCurrentChapter$$chapter$ = %i(0,00000000)
+	:i $GetArraySize$$CHAPTER_INFO$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}->$level$)  = %GLOBAL%$level$) 
+			:i return
+			
+		:i endif
+		:i $UnlockNextChapter$$dont_set_seen_flags$
+		:i $AdvanceStage$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $TR_1_MoveOnDialog$
+	:i $ChapterAdvanceDialog$ isNull 
+:i endfunction
+:i function $TR_1_Start$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_Drips_01$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_Drips_02$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_WarehouseHum_01$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_TR_Reverb01$
+	:i $UnlockNextChapter$
+	:i $printf$%s(18,"starting chapter 1")
+:i endfunction
+:i function $TR_sound_setup$
+	:i $printf$%s(74,"********************KILLING/XREATING WAREHOUSE HUM, REVERB, AND DRIP BOXES")
+	:i $kill$$name$ = $TRG_SFX_TrigBox_Drips_01$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_Drips_02$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_WarehouseHum_01$
+	:i $kill$$name$ = $TRG_SFX_TrigBox_TR_Reverb01$
+	:i $create$$name$ = $TRG_SFX_TrigBox_Drips_01$
+	:i $create$$name$ = $TRG_SFX_TrigBox_Drips_02$
+	:i $create$$name$ = $TRG_SFX_TrigBox_WarehouseHum_01$
+	:i $create$$name$ = $TRG_SFX_TrigBox_TR_Reverb01$
+:i endfunction
+:i function $TR_1_End$
+	:i $printf$%s(16,"ending chapter 1")
+:i endfunction
+:i function $BO_1_Start$
+	:i $printf$%s(18,"starting chapter 2")
+	:i if $IsTrue$$DEMO_BUILD$
+		:i $UnSetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_TR$
+	:i endif
+:i endfunction
+:i function $BO_1_End$
+	:i $printf$%s(16,"ending chapter 2")
+:i endfunction
+:i function $BO_1_Sample$
+	:i $printf$%s(8,"Testing!")
+:i endfunction
+:i function $BA_1_Start$
+	:i $printf$%s(18,"starting chapter 3")
+:i endfunction
+:i function $BA_1_End$
+	:i $printf$%s(16,"ending chapter 3")
+:i endfunction
+:i function $BA_1_Message$
+	:i $Skater$.$SendPagerMessage$$from$ = %s(7,"Steve-O")$message$ = %s(147,"Guess what? Steve-O just joined the party! Find me and I'll show you a real ride... nothing like that rolling cocktail dress you call a skateboard!")
+:i endfunction
+:i function $BE_1_Start$
+	:i $printf$%s(18,"starting chapter 4")
+:i endfunction
+:i function $BE_1_End$
+	:i $printf$%s(16,"ending chapter 4")
+:i endfunction
+:i function $AU_1_Start$
+	:i $printf$%s(18,"starting chapter 5")
+:i endfunction
+:i function $AU_1_End$
+	:i $printf$%s(16,"ending chapter 5")
+:i endfunction
+:i function $AU_2_Start$
+	:i $printf$%s(18,"starting chapter 6")
+	:i $AU_Elimination_Start$
+:i endfunction
+:i function $AU_2_End$
+	:i $printf$%s(16,"ending chapter 6")
+:i endfunction
+:i function $NO_1_Start$
+	:i $printf$%s(18,"starting chapter 7")
+:i endfunction
+:i function $NO_1_End$
+	:i $printf$%s(16,"ending chapter 7")
+	:i $printf$%s(47,"!!!!!!!!!!!!!! Chapter 7 end !!!!!!!!!!!!!!!!!!")
+	:i $FlushDeadObjects$
+	:i $kill$$name$ = $TRG_Ped_TeammatePro$
+	:i $kill$$prefix$ = %s(12,"TRG_Ped_club")
+	:i $kill$$prefix$ = %s(12,"TRG_Ped_Hint")
+	:i $kill$$prefix$ = %s(12,"trg_ped_jazz")
+:i endfunction
+:i function $NO_2_Start$
+	:i $printf$%s(18,"starting chapter 8")
+	:i $NO_Equalizer_Start$
+:i endfunction
+:i function $NO_goal_intro_setup$
+	:i $NO_Equalizer_Intro_Setup$
+:i endfunction
+:i function $NO_goal_intro_cleanup$
+	:i $NO_Equalizer_Intro_CleanUp$
+:i endfunction
+:i function $NO_2_End$
+	:i $printf$%s(16,"ending chapter 8")
+:i endfunction
+:i function $ST_1_Start$
+	:i $printf$%s(18,"starting chapter 9")
+:i endfunction
+:i function $ST_1_End$
+	:i $printf$%s(16,"ending chapter 9")
+:i endfunction
+:i function $ST_2_Start$
+	:i $printf$%s(19,"starting chapter 10")
+	:i $TODManager_SetActive$%i(0,00000000)
+	:i $TODManager_SetTODInstant$$afternoon$
+	:i $Skater$.$destroyflexibleparticlesystem$$name$ = $boardsmoke$
+	:i $ST_KillCars$
+	:i if $isAlive$$name$ = $TRG_Ped_Bam$
+		:i $kill$$name$ = $TRG_Ped_Bam$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_bigfoot$
+		:i $kill$$name$ = $TRG_ped_bigfoot$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_bigfoot01$
+		:i $kill$$name$ = $TRG_ped_bigfoot01$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_Guest$
+		:i $kill$$name$ = $TRG_ped_Guest$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_JesseJames$
+		:i $kill$$name$ = $TRG_ped_JesseJames$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_Ped_TeammatePro$
+		:i $kill$$name$ = $TRG_Ped_TeammatePro$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_hint_01$
+		:i $kill$$prefix$ = %s(13,"TRG_ped_hint_")
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_hawkhint_01$
+		:i $kill$$prefix$ = %s(17,"TRG_ped_hawkhint_")
+	:i endif
+	:i if $isAlive$$name$ = $g_object_chainsaw$
+		:i $kill$$name$ = $g_object_chainsaw$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_02$
+		:i $create$$prefix$ = %s(18,"g_endgoal_topbomb_")
+	:i endif
+	:i if NOT $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps25$
+		:i if NOT $isAlive$$name$ = $g_endgoal_top_trig_01$
+			:i $create$$name$ = $g_endgoal_top_trig_01$
+		:i endif
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps25$
+		:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_on_01$
+			:i $create$$name$ = $g_endgoal_topbomb_on_01$
+			:i $createfastparticlesystem$$name$ = $radiowaves01$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+			:i $radiowaves01$.$obj_setposition$$position$ = %vec3(557.000000,7035.000000,636.000000)
+		:i endif
+	:i endif
+	:i if NOT $isAlive$$name$ = $trg_rail_endgoal_bomb5_00$
+		:i $create$$prefix$ = %s(23,"TRG_rail_endgoal_bomb5_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_spin_00$
+		:i $create$$prefix$ = %s(15,"g_endgoal_spin_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_climb_endgoal_01$
+		:i $create$$prefix$ = %s(18,"TRG_climb_endgoal_")
+	:i endif
+	:i if NOT $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps20$
+		:i if NOT $isAlive$$name$ = $g_endgoal_spin_trig_01$
+			:i $create$$prefix$ = %s(20,"g_endgoal_spin_trig_")
+		:i endif
+		:i if NOT $isAlive$$name$ = $g_endgoal_spinlight_red$
+			:i $create$$name$ = $g_endgoal_spinlight_red$
+			:i $create$$name$ = $g_endgoal_spinlight_red_glow$
+		:i endif
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps20$
+		:i if NOT $isAlive$$name$ = $g_endgoal_spinlight_green$
+			:i $create$$name$ = $g_endgoal_spinlight_green$
+			:i $create$$name$ = $g_endgoal_spinlight_green_glow$
+		:i endif
+		:i $createfastparticlesystem$$name$ = $radiowaves05$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves05$.$obj_setposition$$position$ = %vec3(448.000000,6363.000000,2970.000000)
+		:i $create$$name$ = $APM_spinna_ghost01$
+		:i $create$$name$ = $APM_spinna_ghost02$
+		:i $create$$name$ = $APM_spinna_ghost03$
+		:i $create$$name$ = $APM_spinna_ghost04$
+		:i $SpawnScript$$Rocketshake01$
+		:i $SpawnScript$$Rocketshake02$
+		:i $SpawnScript$$Rocketshake03$
+		:i $SpawnScript$$Rocketshake04$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_fountain_00$
+		:i $create$$prefix$ = %s(19,"g_endgoal_fountain_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_rail_endgoal_05$
+		:i $create$$prefix$ = %s(17,"TRG_rail_endgoal_")
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps23$
+		:i $create$$name$ = $g_endgoal_fountain_on$
+		:i $createfastparticlesystem$$name$ = $radiowaves03$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves03$.$obj_setposition$$position$ = %vec3(1919.000000,6229.000000,-1573.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_01$
+		:i $create$$prefix$ = %s(18,"g_endgoal_bombbox_")
+	:i endif
+	:i if NOT $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps24$
+		:i $GoalManager_GetDifficultyLevel$
+		:i if  (%GLOBAL%$difficulty_level$ = %i(0,00000000)) 
+			:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_eztrig_01$
+				:i $create$$prefix$ = %s(25,"g_endgoal_bombbox_eztrig_")
+			:i endif
+		:i else 
+			:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_trig_01$
+				:i $create$$prefix$ = %s(23,"g_endgoal_bombbox_trig_")
+			:i endif
+		:i endif
+		:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_invis_00$
+			:i $create$$prefix$ = %s(24,"g_endgoal_bombbox_invis_")
+		:i endif
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps24$
+		:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_antenna_on01$
+			:i $create$$name$ = $g_endgoal_bombbox_antenna_on01$
+		:i endif
+		:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_on_04$
+			:i $create$$prefix$ = %s(21,"g_endgoal_bombbox_on_")
+		:i endif
+		:i $createfastparticlesystem$$name$ = $radiowaves02$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves02$.$obj_setposition$$position$ = %vec3(844.000000,6258.000000,-2316.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rocket_box_02$
+		:i $create$$prefix$ = %s(21,"g_endgoal_rocket_box_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rail_rocket_box_00$
+		:i $create$$prefix$ = %s(26,"g_endgoal_rail_rocket_box_")
+	:i endif
+	:i if NOT $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps22$
+		:i if NOT $isAlive$$name$ = $g_endgoal_rocket_01$
+			:i $create$$prefix$ = %s(17,"g_endgoal_rocket_")
+		:i endif
+		:i if NOT $isAlive$$name$ = $trg_rail_endgoal_rocket_01$
+			:i $create$$prefix$ = %s(24,"TRG_rail_endgoal_rocket_")
+		:i endif
+		:i if NOT $isAlive$$name$ = $g_endgoal_rocket_camtrig$
+			:i $create$$name$ = $g_endgoal_rocket_camtrig$
+		:i endif
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = $ST_goal_gaps22$
+		:i $create$$name$ = $g_endgoal_rockets_complete$
+		:i $createfastparticlesystem$$name$ = $radiowaves04$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves04$.$obj_setposition$$position$ = %vec3(1190.000000,5753.000000,1894.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_tnt_00$
+		:i $create$$prefix$ = %s(14,"g_endgoal_tnt_")
+	:i endif
+	:i $printf$%s(24,"GoalManager_GoalIsLocked")
+	:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps20$
+		:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps20$
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps22$
+		:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps22$
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps23$
+		:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps23$
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps24$
+		:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps24$
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps25$
+		:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps25$
+	:i endif
+:i endfunction
+:i function $ST_2_End$
+	:i $printf$%s(17,"ending chapter 10")
+	:i if NOT $isAlive$$name$ = $g_endgoal_spinlight_green$
+		:i $create$$name$ = $g_endgoal_spinlight_green$
+		:i $create$$name$ = $g_endgoal_spinlight_green_glow$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_on_01$
+		:i $create$$name$ = $g_endgoal_topbomb_on_01$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_fountain_on$
+		:i $create$$name$ = $g_endgoal_fountain_on$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_antenna_on01$
+		:i $create$$name$ = $g_endgoal_bombbox_antenna_on01$
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rockets_complete$
+		:i $create$$name$ = $g_endgoal_rockets_complete$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_top_trig_01$
+		:i $kill$$name$ = $g_endgoal_top_trig_01$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_spin_trig_01$
+		:i $kill$$prefix$ = %s(20,"g_endgoal_spin_trig_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_bombbox_trig_01$
+		:i $kill$$prefix$ = %s(23,"g_endgoal_bombbox_trig_")
+	:i endif
+	:i if $isAlive$$name$ = $trg_rail_endgoal_rocket_01$
+		:i $kill$$prefix$ = %s(24,"TRG_rail_endgoal_rocket_")
+	:i endif
+:i endfunction
+:i function $ST_3_Start$
+	:i $ST_KillPeds$
+	:i $ST_KillCars$
+	:i if $isAlive$$name$ = $TRG_Ped_Bam$
+		:i $kill$$name$ = $TRG_Ped_Bam$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_bigfoot$
+		:i $kill$$name$ = $TRG_ped_bigfoot$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_bigfoot01$
+		:i $kill$$name$ = $TRG_ped_bigfoot01$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_Guest$
+		:i $kill$$name$ = $TRG_ped_Guest$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_Ped_TeammatePro$
+		:i $kill$$name$ = $TRG_Ped_TeammatePro$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_Ped_PinkCat$
+		:i $kill$$name$ = $TRG_Ped_PinkCat$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_hint_01$
+		:i $kill$$prefix$ = %s(13,"TRG_ped_hint_")
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_hawkhint_01$
+		:i $kill$$prefix$ = %s(17,"TRG_ped_hawkhint_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_ped_endgoal_skatopiaguy$
+		:i $create$$name$ = $TRG_ped_endgoal_skatopiaguy$
+		:i $create$$prefix$ = %s(27,"TRG_ped_endgoal_randomized_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_02$
+		:i $create$$prefix$ = %s(18,"g_endgoal_topbomb_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_on_01$
+		:i $create$$name$ = $g_endgoal_topbomb_on_01$
+		:i $createfastparticlesystem$$name$ = $radiowaves01$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves01$.$obj_setposition$$position$ = %vec3(557.000000,7035.000000,636.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $trg_rail_endgoal_bomb5_00$
+		:i $create$$prefix$ = %s(23,"TRG_rail_endgoal_bomb5_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_spin_00$
+		:i $create$$prefix$ = %s(15,"g_endgoal_spin_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_climb_endgoal_01$
+		:i $create$$prefix$ = %s(18,"TRG_climb_endgoal_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_spinlight_green$
+		:i $create$$name$ = $g_endgoal_spinlight_green$
+		:i $create$$name$ = $g_endgoal_spinlight_green_glow$
+	:i endif
+	:i $createfastparticlesystem$$name$ = $radiowaves05$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+	:i $radiowaves05$.$obj_setposition$$position$ = %vec3(448.000000,6363.000000,2970.000000)
+	:i if NOT $isAlive$$name$ = $APM_spinna_ghost01$
+		:i $create$$name$ = $APM_spinna_ghost01$
+		:i $create$$name$ = $APM_spinna_ghost02$
+		:i $create$$name$ = $APM_spinna_ghost03$
+		:i $create$$name$ = $APM_spinna_ghost04$
+	:i endif
+	:i $SpawnScript$$Rocketshake01$
+	:i $SpawnScript$$Rocketshake02$
+	:i $SpawnScript$$Rocketshake03$
+	:i $SpawnScript$$Rocketshake04$
+	:i if NOT $isAlive$$name$ = $g_endgoal_fountain_00$
+		:i $create$$prefix$ = %s(19,"g_endgoal_fountain_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_rail_endgoal_05$
+		:i $create$$prefix$ = %s(17,"TRG_rail_endgoal_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_fountain_on$
+		:i $create$$name$ = $g_endgoal_fountain_on$
+		:i $createfastparticlesystem$$name$ = $radiowaves03$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves03$.$obj_setposition$$position$ = %vec3(1919.000000,6229.000000,-1573.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_01$
+		:i $create$$prefix$ = %s(18,"g_endgoal_bombbox_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_bombbox_antenna_on01$
+		:i $create$$name$ = $g_endgoal_bombbox_antenna_on01$
+		:i $createfastparticlesystem$$name$ = $radiowaves02$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves02$.$obj_setposition$$position$ = %vec3(844.000000,6258.000000,-2316.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rocket_box_02$
+		:i $create$$prefix$ = %s(21,"g_endgoal_rocket_box_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rail_rocket_box_00$
+		:i $create$$prefix$ = %s(26,"g_endgoal_rail_rocket_box_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rockets_complete$
+		:i $create$$name$ = $g_endgoal_rockets_complete$
+		:i $createfastparticlesystem$$name$ = $radiowaves04$$params_script$ = $apm_st_radioWaves_fast_particle_params$
+		:i $radiowaves04$.$obj_setposition$$position$ = %vec3(1190.000000,5753.000000,1894.000000)
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_tnt_00$
+		:i $create$$prefix$ = %s(14,"g_endgoal_tnt_")
+	:i endif
+	:i $create$$prefix$ = %s(18,"g_endgoal_dog_trig")
+	:i $create$$prefix$ = %s(15,"trg_endgoal_dog")
+	:i if NOT $isAlive$$name$ = $TRG_ped_escape_pinkcat$
+		:i $create$$name$ = $TRG_ped_escape_pinkcat$
+	:i endif
+	:i if $GoalManager_GoalExists$$name$ = $ST_goal_gaps21$
+		:i if $GoalManager_GoalIsLocked$$name$ = $ST_goal_gaps21$
+			:i $GoalManager_UnlockGoal$$name$ = $ST_goal_gaps21$
+		:i else 
+		:i endif
+	:i endif
+	:i $TODManager_SetActive$%i(0,00000000)
+	:i $TODManager_SetTODInstant$$evening$
+	:i $EnableFog$
+:i endfunction
+:i function $ST_3_End$
+	:i $printf$%s(17,"ending chapter 10")
+	:i $destroy_digital_timer$
+	:i $kill$$prefix$ = %s(23,"TRG_ped_endgoal_escape_")
+	:i if $isAlive$$name$ = $TRG_ped_escape_pinkcat$
+		:i $kill$$name$ = $TRG_ped_escape_pinkcat$
+	:i endif
+:i endfunction
+:i function $ST_4_Start$
+	:i $ST_KillCars$
+	:i $kill$$prefix$ = %s(18,"TRG_SFX_Trigbox_EG")
+	:i $kill$$prefix$ = %s(21,"TRG_SFX_TrigBox_Night")
+	:i $create$$prefix$ = %s(18,"TRG_SFX_Trigbox_EG")
+	:i if NOT $isAlive$$name$ = $g_endgoal_lowrv$
+		:i $create$$name$ = $g_endgoal_lowrv$
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_Ped_Escape_Bam$
+		:i $create$$name$ = $TRG_Ped_Escape_Bam$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_ped_skatopiaguy$
+		:i $kill$$name$ = $TRG_ped_skatopiaguy$
+	:i endif
+	:i $destroy_digital_timer$
+	:i $printf$%s(11,"   escape  ")
+	:i $ST_KillPeds$
+	:i $printf$%s(11,"   escape  ")
+	:i if NOT $isAlive$$name$ = $g_endgoal_topbomb_02$
+		:i $create$$prefix$ = %s(18,"g_endgoal_topbomb_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_fountain_00$
+		:i $create$$prefix$ = %s(19,"g_endgoal_fountain_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $TRG_rail_endgoal_05$
+		:i $create$$prefix$ = %s(17,"TRG_rail_endgoal_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rocket_box_02$
+		:i $create$$prefix$ = %s(21,"g_endgoal_rocket_box_")
+	:i endif
+	:i if NOT $isAlive$$name$ = $g_endgoal_rail_rocket_box_00$
+		:i $create$$prefix$ = %s(26,"g_endgoal_rail_rocket_box_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_rockets_complete$
+		:i $kill$$name$ = $g_endgoal_rockets_complete$
+	:i endif
+	:i $kill$$prefix$ = %s(17,"g_endgoal_rocket_")
+	:i $create$$prefix$ = %s(23,"trg_endgoal_rocket_fly_")
+	:i $kill$$prefix$ = %s(19,"g_endgoal_tnt_trig_")
+	:i $create$$prefix$ = %s(19,"g_endgoal_tnt_trig_")
+	:i $kill$$prefix$ = %s(14,"g_endgoal_tnt_")
+	:i $create$$prefix$ = %s(14,"g_endgoal_tnt_")
+	:i $printf$%s(11,"   escape  ")
+	:i $kill$$name$ = $nighton_08_g_todd_hang_lightglo04$
+	:i $TODManager_markpermanentlydead$$name$ = $nighton_08_g_todd_hang_lightglo04$
+	:i $kill$$name$ = $nighton_08_g_todd_hang_lightglo03$
+	:i $TODManager_markpermanentlydead$$name$ = $nighton_08_g_todd_hang_lightglo03$
+	:i $kill$$name$ = $nighton_08_g_todd_hang_lightglo02$
+	:i $TODManager_markpermanentlydead$$name$ = $nighton_08_g_todd_hang_lightglo02$
+	:i $kill$$name$ = $nighton_08_g_house_90$
+	:i $TODManager_markpermanentlydead$$name$ = $nighton_08_g_house_90$
+	:i $kill$$name$ = $nighton_08_g_todd_pool_gr_lightglo02$
+	:i $TODManager_markpermanentlydead$$name$ = $nighton_08_g_todd_pool_gr_lightglo02$
+	:i $kill$$name$ = $g_house_70$
+	:i $kill$$name$ = $g_house_71$
+	:i $create$$name$ = $g_house_sign_cinder_on01$
+	:i $KillSpawnedScript$$name$ = $Rocketshake01$
+	:i $KillSpawnedScript$$name$ = $Rocketshake02$
+	:i $KillSpawnedScript$$name$ = $Rocketshake03$
+	:i $KillSpawnedScript$$name$ = $Rocketshake04$
+	:i $printf$%s(11,"   escape  ")
+	:i if $isAlive$$name$ = $trg_rail_endgoal_bomb5_00$
+		:i $kill$$prefix$ = %s(23,"TRG_rail_endgoal_bomb5_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_spin_00$
+		:i $kill$$prefix$ = %s(15,"g_endgoal_spin_")
+	:i endif
+	:i if $isAlive$$name$ = $TRG_climb_endgoal_01$
+		:i $kill$$prefix$ = %s(18,"TRG_climb_endgoal_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_spinlight_green$
+		:i $kill$$name$ = $g_endgoal_spinlight_green$
+		:i $kill$$name$ = $g_endgoal_spinlight_green_glow$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_spinlight_red$
+		:i $kill$$name$ = $g_endgoal_spinlight_red$
+		:i $kill$$name$ = $g_endgoal_spinlight_red_glow$
+	:i endif
+	:i $printf$%s(11,"   escape  ")
+	:i $destroyfastparticlesystem$$name$ = $radiowaves01$
+	:i $destroyfastparticlesystem$$name$ = $radiowaves02$
+	:i $destroyfastparticlesystem$$name$ = $radiowaves03$
+	:i $destroyfastparticlesystem$$name$ = $radiowaves04$
+	:i $destroyfastparticlesystem$$name$ = $radiowaves05$
+	:i $printf$%s(11,"   escape  ")
+	:i if NOT $isAlive$$name$ = $g_endgoal_obj_spinbomb01$
+		:i $create$$name$ = $g_endgoal_obj_spinbomb01$
+		:i $create$$name$ = $g_endgoal_obj_spinbomb_base$
+	:i endif
+	:i $create$$name$ = $APM_spinna_ghost05$
+	:i $APM_spinna_ghost05$.$obj_locktoobject$$objectname$ = $g_endgoal_obj_spinbomb01$%vec3(-215.000000,-25.000000,67.000000)
+	:i $APM_spinna_ghost05$.$createflexibleparticlesystem$$name$ = $apm_spinner01$$params_script$ = $apm_ST_spinnerF03_particle_params$
+	:i $create$$name$ = $APM_spinna_ghost06$
+	:i $APM_spinna_ghost06$.$obj_locktoobject$$objectname$ = $g_endgoal_obj_spinbomb01$%vec3(-67.000000,-25.000000,-215.000000)
+	:i $APM_spinna_ghost06$.$createflexibleparticlesystem$$name$ = $apm_spinner02$$params_script$ = $apm_ST_spinnerF04_particle_params$
+	:i $create$$name$ = $APM_spinna_ghost07$
+	:i $APM_spinna_ghost07$.$obj_locktoobject$$objectname$ = $g_endgoal_obj_spinbomb01$%vec3(215.000000,-25.000000,-67.000000)
+	:i $APM_spinna_ghost07$.$createflexibleparticlesystem$$name$ = $apm_spinner03$$params_script$ = $apm_ST_spinnerF01_particle_params$
+	:i $create$$name$ = $APM_spinna_ghost08$
+	:i $APM_spinna_ghost08$.$obj_locktoobject$$objectname$ = $g_endgoal_obj_spinbomb01$%vec3(67.000000,-25.000000,215.000000)
+	:i $APM_spinna_ghost08$.$createflexibleparticlesystem$$name$ = $apm_spinner04$$params_script$ = $apm_ST_spinnerF02_particle_params$
+	:i $printf$%s(11,"   escape  ")
+	:i $printf$%s(18,"starting Last Goal")
+	:i $TODManager_SetActive$%i(0,00000000)
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(1,00000001)
+		:i $transition_length$ = %i(90000,00015f90)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_light_group$ = $indoor$:s}
+			:i :a}
+		:i $morning$ = $tod_manager_default_morning$
+		:i $afternoon$ = $tod_manager_default_afternoon$
+		:i $evening$ = $tod_manager_default_evening$
+		:i $night$ = :s{ ($tod_manager_default_night$) 
+			:i $fog_red$ = %i(33,00000021)
+			:i $fog_green$ = %i(5,00000005)
+			:i $fog_blue$ = %i(14,0000000e)
+			:i $fog_alpha$ = %i(55,00000037)
+			:i $fog_dist$ = %i(100,00000064)
+			:i $bloom_on$ = %i(1,00000001)
+			:i $bloom_color$ = :a{%i(150,00000096)%i(150,00000096)%i(150,00000096):a}
+			:i $bloom1$ = %i(10,0000000a)
+			:i $bloom2$ = %i(100,00000064)
+			:i $bloom_strength$ = :a{%i(22,00000016)%i(100,00000064)%i(200,000000c8):a}
+		:i :s}
+	:i :s}
+	:i $TODManager_SetTODInstant$$night$
+	:i $create$$name$ = $g_endgoal_firewall_killerz_01$
+	:i $create$$name$ = $g_endgoal_fireWall01$
+	:i $create$$name$ = $g_endgoal_fireWall02$
+	:i $create$$name$ = $g_firewall_01$
+	:i $create$$name$ = $g_firewall_ground01$
+	:i $create$$name$ = $g_firewall_sky01$
+	:i $create$$prefix$ = %s(17,"g_firewall_smoke_")
+	:i $create$$name$ = $g_trig_endgoal_combo$
+	:i $create$$name$ = $g_trig_endgoal_ez_combo$
+	:i $create$$name$ = $g_trig_endgoal_success$
+	:i $printf$%s(11,"   escape  ")
+	:i $createfastparticlesystem$$name$ = $signfire01$$params_script$ = $apm_ST_fire_Sign_fast_particle_params$
+	:i $signfire01$.$obj_setposition$$position$ = %vec3(877.000000,5755.000000,4349.000000)
+	:i $createfastparticlesystem$$name$ = $signfire02$$params_script$ = $apm_ST_fire_Sign_fast_particle_params$
+	:i $signfire02$.$obj_setposition$$position$ = %vec3(982.000000,5766.000000,4288.000000)
+	:i $createfastparticlesystem$$name$ = $signfire03$$params_script$ = $apm_ST_fire_Sign_fast_particle_params$
+	:i $signfire03$.$obj_setposition$$position$ = %vec3(1062.000000,5760.000000,4247.000000)
+	:i $createfastparticlesystem$$name$ = $signfire04$$params_script$ = $apm_ST_fire_Sign_fast_particle_params$
+	:i $signfire04$.$obj_setposition$$position$ = %vec3(1127.000000,5750.000000,4233.000000)
+	:i $printf$%s(11,"   escape  ")
+	:i $create$$name$ = $apm_firesign01$
+	:i $createfastparticlesystem$$name$ = $sparkfountain01$$params_script$ = $apm_ST_SparkFountain01_fast_particle_params$
+	:i $sparkfountain01$.$obj_setposition$$position$ = %vec3(1926.000000,6603.000000,-654.000000)
+	:i $createfastparticlesystem$$name$ = $treefire01$$params_script$ = $apm_ST_fire_TREE01_fast_particle_params$
+	:i $treefire01$.$obj_setposition$$position$ = %vec3(100.000000,5707.000000,4250.000000)
+	:i $createfastparticlesystem$$name$ = $treesmoke01$$params_script$ = $apm_ST_TREE_smoke01_fast_particle_params$
+	:i $treesmoke01$.$obj_setposition$$position$ = %vec3(100.000000,5707.000000,4250.000000)
+	:i $createfastparticlesystem$$name$ = $treefire02$$params_script$ = $apm_ST_fire_TREE01_fast_particle_params$
+	:i $treefire02$.$obj_setposition$$position$ = %vec3(1746.000000,6050.000000,2007.000000)
+	:i $createfastparticlesystem$$name$ = $treesmoke02$$params_script$ = $apm_ST_TREE_smoke01_fast_particle_params$
+	:i $treesmoke02$.$obj_setposition$$position$ = %vec3(1746.000000,6050.000000,2007.000000)
+	:i $createfastparticlesystem$$name$ = $treefire03$$params_script$ = $apm_ST_fire_TREE01_fast_particle_params$
+	:i $treefire03$.$obj_setposition$$position$ = %vec3(1506.000000,6450.000000,-930.000000)
+	:i $createfastparticlesystem$$name$ = $treesmoke03$$params_script$ = $apm_ST_TREE_smoke01_fast_particle_params$
+	:i $treesmoke03$.$obj_setposition$$position$ = %vec3(1506.000000,6450.000000,-930.000000)
+	:i $printf$%s(11,"   escape  ")
+	:i $createfastparticlesystem$$name$ = $firebase01$$params_script$ = $apm_ST_fireBASE01_fast_particle_params$
+	:i $firebase01$.$obj_setposition$$position$ = %vec3(120.000000,6260.000000,-3974.000000)
+	:i $createfastparticlesystem$$name$ = $firebase02$$params_script$ = $apm_ST_fireBASE02_fast_particle_params$
+	:i $firebase02$.$obj_setposition$$position$ = %vec3(-428.000000,6260.000000,-3323.000000)
+:i endfunction
+:i function $ST_4_End$
+	:i $printf$%s(8,"ST_4_End")
+	:i $printf$%s(8,"ST_4_End")
+	:i $printf$%s(8,"ST_4_End")
+	:i $printf$%s(8,"ST_4_End")
+	:i if $isAlive$$name$ = $g_endgoal_lowrv$
+		:i $kill$$name$ = $g_endgoal_lowrv$
+	:i endif
+	:i if $isAlive$$name$ = $TRG_Ped_Escape_Bam$
+		:i $kill$$name$ = $TRG_Ped_Escape_Bam$
+	:i endif
+	:i $TODManager_SetParams$:s{
+		:i $system$ = %i(1,00000001)
+		:i $transition_length$ = %i(90000,00015f90)
+		:i $groups$ = :a{
+			:i :s{$parts$ = %i(6,00000006)$wait_frames$ = %i(3,00000003)$light_group$ = $outdoor$:s}
+			:i :s{$parts$ = %i(2,00000002)$wait_frames$ = %i(3,00000003)$light_group$ = $nolevellights$$reset_light_group$ = $indoor$:s}
+			:i :a}
+		:i $morning$ = $tod_manager_default_morning$
+		:i $afternoon$ = $tod_manager_default_afternoon$
+		:i $evening$ = $tod_manager_default_evening$
+		:i $night$ = $tod_manager_default_night$
+	:i :s}
+	:i $TODManager_SetActive$%i(1,00000001)
+	:i $TODManager_SetTODInstant$$night$
+	:i $destroyfastparticlesystem$$name$ = $signfire01$
+	:i $destroyfastparticlesystem$$name$ = $signfire02$
+	:i $destroyfastparticlesystem$$name$ = $signfire03$
+	:i $destroyfastparticlesystem$$name$ = $signfire04$
+	:i $destroyfastparticlesystem$$name$ = $sparkfountain01$
+	:i $destroyfastparticlesystem$$name$ = $treefire01$
+	:i $destroyfastparticlesystem$$name$ = $treesmoke01$
+	:i $destroyfastparticlesystem$$name$ = $treefire02$
+	:i $destroyfastparticlesystem$$name$ = $treesmoke02$
+	:i $destroyfastparticlesystem$$name$ = $treefire03$
+	:i $destroyfastparticlesystem$$name$ = $treesmoke03$
+	:i $destroyfastparticlesystem$$name$ = $firebase01$
+	:i $destroyfastparticlesystem$$name$ = $firebase02$
+	:i if $isAlive$$name$ = $g_endgoal_firewall_killerz_01$
+		:i $kill$$name$ = $g_endgoal_firewall_killerz_01$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_fireWall01$
+		:i $kill$$name$ = $g_endgoal_fireWall01$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_fireWall02$
+		:i $kill$$name$ = $g_endgoal_fireWall02$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_01$
+		:i $kill$$name$ = $g_firewall_01$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_ground01$
+		:i $kill$$name$ = $g_firewall_ground01$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_sky01$
+		:i $kill$$name$ = $g_firewall_sky01$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_smoke_perf01$
+		:i $kill$$name$ = $g_firewall_smoke_perf01$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_smoke_perf_rear01$
+		:i $kill$$name$ = $g_firewall_smoke_perf_perf_rear01$
+	:i endif
+	:i if $isAlive$$name$ = $g_firewall_smoke_perf_rear02$
+		:i $kill$$name$ = $g_firewall_smoke_perf_rear02$
+	:i endif
+	:i if $isAlive$$name$ = $g_trig_endgoal_combo$
+		:i $kill$$name$ = $g_trig_endgoal_combo$
+	:i endif
+	:i if $isAlive$$name$ = $g_trig_endgoal_ez_combo$
+		:i $kill$$name$ = $g_trig_endgoal_ez_combo$
+	:i endif
+	:i if $isAlive$$name$ = $g_trig_endgoal_success$
+		:i $kill$$name$ = $g_trig_endgoal_success$
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_spin_00$
+		:i $kill$$prefix$ = %s(15,"g_endgoal_spin_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_obj_spinbomb01$
+		:i $kill$$name$ = $g_endgoal_obj_spinbomb01$
+	:i endif
+	:i if $isAlive$$name$ = $APM_spinna_ghost05$
+		:i $kill$$name$ = $APM_spinna_ghost05$
+	:i endif
+	:i if $isAlive$$name$ = $APM_spinna_ghost06$
+		:i $kill$$name$ = $APM_spinna_ghost06$
+	:i endif
+	:i if $isAlive$$name$ = $APM_spinna_ghost07$
+		:i $kill$$name$ = $APM_spinna_ghost07$
+	:i endif
+	:i if $isAlive$$name$ = $APM_spinna_ghost08$
+		:i $kill$$name$ = $APM_spinna_ghost08$
+	:i endif
+	:i if NOT $isAlive$$name$ = $nighton_08_g_todd_hang_lightglo04$
+		:i $create$$name$ = $nighton_08_g_todd_hang_lightglo04$
+		:i $create$$name$ = $nighton_08_g_todd_hang_lightglo03$
+		:i $create$$name$ = $nighton_08_g_todd_hang_lightglo02$
+		:i $create$$name$ = $nighton_08_g_todd_pool_gr_lightglo02$
+		:i $create$$name$ = $nighton_08_g_house_90$
+		:i $create$$name$ = $g_house_70$
+		:i $create$$name$ = $g_house_71$
+		:i $kill$$name$ = $g_house_sign_cinder_on01$
+	:i endif
+	:i if $isAlive$$name$ = $trg_endgoal_rocket_fly_03$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Launch_01$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Respawn_01$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Launch_02$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Respawn_02$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Launch_03$
+		:i $KillSpawnedScript$$name$ = $ST_Rockets_Respawn_03$
+		:i $kill$$prefix$ = %s(23,"trg_endgoal_rocket_fly_")
+	:i endif
+	:i if $isAlive$$name$ = $g_endgoal_tnt_trig_00$
+		:i $kill$$prefix$ = %s(19,"g_endgoal_tnt_trig_")
+	:i endif
+	:i $KillSpawnedScript$$name$ = $ST_Escape_Reactivate$
+	:i $ST_CreatePeds$
+:i endfunction
+:i function $give_cheat_points$$points$ = %i(50,00000032)
+	:i $change$$total_cheat_points$ =  ( ($total_cheat_points$)  + %GLOBAL%$points$) 
+	:i $update_goal_points_display$$refresh$
+	:i $CheckChapterAdvancementStatus$$RewardPoints$ = %GLOBAL%$points$
+:i endfunction
+:i function $reset_cheat_points$
+	:i $change$$total_cheat_points$ = %i(0,00000000)
+	:i $update_goal_points_display$$refresh$
+	:i $Skater$.$ClearPagerMessages$
+:i endfunction
+:i function $unlock_all_chapters$
+	:i $prev_level$ = $NULL$
+	:i $chapter_status2$ = $CHAPTER_STATUS$
+	:i $GetArraySize$$CHAPTER_STATUS$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT $ChecksumEquals$$a$ =  ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}->$level$) $b$ = %GLOBAL%$prev_level$
+			:i $prev_level$ =  ($CHAPTER_INFO$:a{%GLOBAL%$index$:a}->$level$) 
+			:i $SetArrayElement$$ArrayName$ = $chapter_status2$$index$ = %GLOBAL%$index$$NewValue$ = $CHAPTER_UNLOCKED$
+		:i else 
+			:i $SetArrayElement$$ArrayName$ = $chapter_status2$$index$ = %GLOBAL%$index$$NewValue$ = $CHAPTER_LOCKED$
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $career_post_load$
+	:i if NOT $IsXbox$
+		:i if NOT $LevelIs$$load_mainmenu$
+			:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_STANDARD$
+				:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+					:i $screen_setup_letterbox$
+				:i else 
+					:i $screen_setup_standard$
+				:i endif
+			:i else 
+				:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+					:i $screen_setup_widescreen$
+				:i endif
+			:i endif
+		:i else 
+			:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_STANDARD$
+				:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+					:i $change$$ingame_screen_mode$ = $letterbox_screen_mode$
+				:i else 
+					:i $change$$ingame_screen_mode$ = $standard_screen_mode$
+				:i endif
+			:i else 
+				:i if $GetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+					:i $change$$ingame_screen_mode$ = $widescreen_screen_mode$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $set_default_temporary_profiles$
+:i endfunction
+:i :end

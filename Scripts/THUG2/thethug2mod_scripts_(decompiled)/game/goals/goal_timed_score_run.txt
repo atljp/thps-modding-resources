@@ -1,0 +1,89 @@
+
+:i $Goal_TimedScoreRun_GenericParams$ = :s{
+	:i $goal_text$ = %s(15,"Timed Score Run")
+	:i $view_goals_text$ = %s(28,"Generic timed score run text")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_timed_score_run_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_timed_score_run_activate$
+	:i $deactivate$ = $goal_timed_score_run_deactivate$
+	:i $expire$ = $goal_timed_score_run_expire$
+	:i $fail$ = $goal_timed_score_run_fail$
+	:i $success$ = $goal_timed_score_run_success$
+	:i $restart_node$ = $TRG_G_TIMEDSCORERUN_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_TIMEDSCORERUN_Pro$
+	:i $record_type$ = $score$
+	:i $reset_score$
+	:i $dont_bounce_skater$
+	:i $TimedScoreRun$
+:i :s}
+:i function $goal_timed_score_run_init$
+	:i $goal_init$ isNull 
+:i endfunction
+:i function $goal_timed_score_run_activate$
+	:i if $GameModeEquals$$is_classic$
+		:i $GoalManager_SetEndRunType$$name$ = %GLOBAL%$goal_id$$EndOfRun$
+		:i $Skater$.$RunStarted$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $arcade_machine_setup_goal$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $GoalManager_SetShouldDeactivateOnExpire$$name$ = %GLOBAL%$goal_id$%i(0,00000000)
+	:i $SetScoreAccumulation$%i(1,00000001)
+	:i $SetScoreDegradation$%i(1,00000001)
+	:i if $GotParam$$no_cam_anim$
+		:i $goal_passive_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i else 
+		:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_timed_score_run_deactivate$
+	:i $SetScoreAccumulation$%i(0,00000000)
+	:i $SetScoreDegradation$%i(0,00000000)
+	:i if $GameModeEquals$$is_career$
+		:i $arcade_machine_cleanup_goal$ isNull 
+	:i endif
+	:i $GoalManager_ResetGoalTrigger$ isNull 
+	:i $goal_deactivate$ isNull 
+:i endfunction
+:i function $goal_timed_score_run_expire$
+	:i $GetGameMode$
+	:i switch %GLOBAL%$GameMode$
+		:i case $classic$
+			:i $classic_mode_end_run$
+			:i endcase
+		case $career$
+			:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+			:i $FormatText$$TextName$ = $text$%s(9,"Score: %i")$i$ = %GLOBAL%$arcade_current_score_total$
+			:i $create_panel_message$:s{
+				:i $id$ = $goal_current_reward$
+				:i $text$ = %GLOBAL%$text$
+				:i $style$ = $goal_message_got_trickslot$
+			:i :s}
+			:i $arcade_machine_check_for_scores$$goal_id$ = %GLOBAL%$goal_id$$totalscore$ = %GLOBAL%$arcade_current_score_total$
+			:i endcase
+		case $singlesession$
+			:i $UpdateRecords$
+			:i end_switch
+	
+	:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_timed_score_run_fail$
+	:i $goal_fail$ isNull 
+:i endfunction
+:i function $goal_timed_score_run_success$
+	:i $goal_success$ isNull 
+:i endfunction
+:i function $goal_timed_score_run_trigger$
+	:i $setup_ped_speech$:s{
+		:i $ped_id$ = %GLOBAL%$trigger_obj_id$
+		:i $display_name$ = %s(20,"Play High Score Game")
+		:i $activation_script$ = $goal_timed_score_run_accept$
+		:i $activation_script_params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i :s}
+:i endfunction
+:i function $goal_timed_score_run_accept$
+	:i $GoalManager_DeactivateAllGoals$
+	:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i :end

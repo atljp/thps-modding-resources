@@ -1,0 +1,125 @@
+//------------------------------------------------
+// A generic GCB object
+// All objects share this structure
+//------------------------------------------------
+
+#include "Matrix.bt"
+#include "Character.bt"
+#include "CharacterUnknown.bt"
+#include "CharacterUnknownChild.bt"
+#include "Bone.bt"
+#include "RootController.bt"
+#include "UAnimation.bt"
+#include "AnimationObject.bt"
+#include "TextureReference.bt"
+
+#define TYPE_CHARACTER                  0xE5B66C3D
+#define TYPE_CHARACTERUNKNOWN           0xB361CE36
+#define TYPE_CHARACTERUNKNOWNCHILD      0xC27B34DA
+#define TYPE_MATRIX                     0xF18FB695
+#define TYPE_BONE                       0xCB2D29EA
+#define TYPE_ROOTCONTROLLER             0xC3B634C0
+#define TYPE_ANIMOBJECT                 0x987A053E
+#define TYPE_UANIMATION                 0xEB3C8208
+#define TYPE_TEXTUREREFERENCE           0xD960513B
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_MAGIC>;
+
+    switch (magic.checksum)
+    {
+        // Character object
+        case TYPE_CHARACTER:
+            Character data;
+            break;
+
+        // Character object child
+        case TYPE_CHARACTERUNKNOWNCHILD:
+            CharacterUnknownChild data;
+            break;
+
+        // Unknown
+        case TYPE_CHARACTERUNKNOWN:
+            CharacterUnknown data;
+            break;
+
+        // Root controller
+        case TYPE_ROOTCONTROLLER:
+            RootController data;
+            break;
+
+        // Texture
+        case TYPE_TEXTUREREFERENCE:
+            TextureReference data;
+            break;
+
+        // UAnimation
+        case TYPE_UANIMATION:
+            UAnimation data;
+            break;
+
+        // Bone
+        case TYPE_BONE:
+            Bone data;
+            break;
+
+        // Matrix
+        case TYPE_MATRIX:
+            OTMatrix data;
+            break;
+
+        // Animation object
+        case TYPE_ANIMOBJECT:
+            AnimationObject data;
+            break;
+    }
+} GCBObject <read=ReadGCBObject>;
+
+string ReadGCBObject(GCBObject &obj)
+{
+    switch (obj.magic.checksum)
+    {
+        case TYPE_CHARACTER:
+            return "Character";
+            break;
+
+        case TYPE_CHARACTERUNKNOWN:
+            return "Character Unknown";
+            break;
+
+        case TYPE_CHARACTERUNKNOWNCHILD:
+            return "Character Unknown Child";
+            break;
+
+        case TYPE_MATRIX:
+            return "Matrix";
+            break;
+
+        case TYPE_BONE:
+            return "Bone";
+            break;
+
+        case TYPE_TEXTUREREFERENCE:
+            return "Texture Reference";
+            break;
+
+        case TYPE_ANIMOBJECT:
+            return "Anim Object";
+            break;
+
+        case TYPE_UANIMATION:
+            return "UAnimation";
+            break;
+
+        case TYPE_ROOTCONTROLLER:
+            return "Root Controller";
+            break;
+
+        default:
+            return "Unknown Type";
+            break;
+    }
+
+    return "";
+}

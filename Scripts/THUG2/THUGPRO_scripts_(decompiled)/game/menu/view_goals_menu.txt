@@ -1,0 +1,1789 @@
+
+:i $view_goals_test_slide$ = %i(1,00000001)
+:i $skater_goal_list_names$ = :a{
+	:i :s{
+		:i $Name$ = %s(3,"YOU")
+		:i $Value$ = $custom$
+	:i :s}
+	:i :s{
+		:i $Name$ = %s(3,"PRO")
+		:i $Value$ = $pro$
+	:i :s}
+	:i :s{
+		:i $Name$ = %s(5,"GUEST")
+		:i $Value$ = $guest$
+	:i :s}
+	:i :s{
+		:i $Name$ = %s(6,"SECRET")
+		:i $Value$ = $flavor$
+	:i :s}
+	:i :a}
+:i function $array_next_wraparound$$index$ = %i(0,00000000)
+	:i if NOT $GotParam$$array$
+		:i return
+		%i(0,00000000)
+	:i endif
+	:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i $GetArraySize$%GLOBAL%$array$
+	:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+		:i %GLOBAL%$index$ = %i(0,00000000)
+	:i endif
+	:i return
+	$index$ = %GLOBAL%$index$
+:i endfunction
+:i function $array_previous_wraparound$$index$ = %i(0,00000000)
+	:i if NOT $GotParam$$array$
+		:i return
+		%i(0,00000000)
+	:i endif
+	:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+	:i if  (%GLOBAL%$index$ = %i(4294967295,ffffffff)) 
+		:i $GetArraySize$%GLOBAL%$array$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) 
+	:i endif
+	:i return
+	$index$ = %GLOBAL%$index$
+:i endfunction
+:i function $KillEventHandlers$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu_anchor$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$nullscript$:s}
+			:i :s{$pad_down$$nullscript$:s}
+			:i :s{$pad_left$$nullscript$:s}
+			:i :s{$pad_right$$nullscript$:s}
+			:i :s{$pad_back$$nullscript$:s}
+			:i :s{$pad_choose$$nullscript$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+:i endfunction
+:i function $view_goals_wait_and_setup_input$
+	:i $GetTags$
+	:i if $GotParam$$goal$
+		:i $action$ = $view_goals_menu_choose_goal$
+		:i $params$ = :s{$goal_list_index$ = %GLOBAL%$goal_list_index$:s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_up$$nullscript$:s}
+				:i :s{$pad_down$$nullscript$:s}
+				:i :s{$pad_left$$nullscript$:s}
+				:i :s{$pad_right$$nullscript$:s}
+				:i :s{$pad_back$%GLOBAL%$action$$params$ = %GLOBAL%$params$:s}
+				:i :s{$pad_choose$%GLOBAL%$action$$params$ = %GLOBAL%$params$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_left$$view_goals_menu_pad_left$$params$ = :s{$goal_list_index$ = %GLOBAL%$goal_list_index$:s}:s}
+				:i :s{$pad_right$$view_goals_menu_pad_right$$params$ = :s{$goal_list_index$ = %GLOBAL%$goal_list_index$:s}:s}
+				:i :s{$pad_back$$view_goals_menu_exit$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $root_window$.$GetSingleTag$$view_goals_shortcut_on$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_select$$view_goals_menu_exit$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $wait$%f(0.150000)$seconds$
+	:i if $ScreenElementExists$$id$ = $view_goals_root$
+		:i $view_goals_root$.$RemoveTags$$tags$ = :a{$animating_scroll$$animating_select$:a}
+	:i endif
+:i endfunction
+:i function $GetCurrentGoalListIndex$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i switch %GLOBAL%$skater_family$
+		:i case $family_pro$
+			:i $goal_list_index$ = %i(1,00000001)
+			:i endcase
+		case $family_guest$
+			:i $goal_list_index$ = %i(2,00000002)
+			:i endcase
+		case $family_flavor$
+			:i $goal_list_index$ = %i(3,00000003)
+			:i endcase
+		default 
+			:i $goal_list_index$ = %i(0,00000000)
+			:i end_switch
+	
+	:i return
+	$goal_list_index$ = %GLOBAL%$goal_list_index$
+:i endfunction
+:i function $view_goals_menu_pad_right$
+	:i if NOT $ScreenElementExists$$id$ = $right_arrow$
+		:i return
+		
+	:i endif
+	:i if $view_goals_root$.$GetSingleTag$$animating_select$
+		:i return
+		
+	:i endif
+	:i $view_goals_root$.$SetTags$$animating_scroll$
+	:i $generic_menu_scroll_sideways_sound$
+	:i $array_next_wraparound$$index$ = %GLOBAL%$goal_list_index$$array$ = $skater_goal_list_names$
+	:i $level_select_arrow_blink_right$
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(1300.000000,0.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.150000)$seconds$
+	:i endif
+	:i $view_goals_menu_create$$goal_list_index$ = %GLOBAL%$index$$highlight_tab$$change_list$
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(-1300.000000,0.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.150000)$seconds$
+	:i endif
+:i endfunction
+:i function $view_goals_menu_pad_left$
+	:i if NOT $ScreenElementExists$$id$ = $left_arrow$
+		:i return
+		
+	:i endif
+	:i if $view_goals_root$.$GetSingleTag$$animating_select$
+		:i return
+		
+	:i endif
+	:i $view_goals_root$.$SetTags$$animating_scroll$
+	:i $generic_menu_scroll_sideways_sound$
+	:i $array_previous_wraparound$$index$ = %GLOBAL%$goal_list_index$$array$ = $skater_goal_list_names$
+	:i $level_select_arrow_blink_left$
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(-1000.000000,0.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.150000)$seconds$
+	:i endif
+	:i $view_goals_menu_create$$goal_list_index$ = %GLOBAL%$index$$highlight_tab$$change_list$
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(1000.000000,0.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.150000)$seconds$
+	:i endif
+:i endfunction
+:i function $view_goals_tab_highlight$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %f(0.700000)$time$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %f(1.500000)$relative_scale$$time$ = %f(0.500000)
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(0,00000000)$time$ = %f(0.500000)
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i $wait$%f(0.500000)$seconds$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $FadeAfterDelay$
+	:i $wait$%GLOBAL%$delay$$seconds$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id1$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id1$$alpha$ = %GLOBAL%$alpha$$time$ = %GLOBAL%$delay$
+	:i endif
+	:i if $GotParam$$id2$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id2$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$id2$$alpha$ = %GLOBAL%$alpha$$time$ = %GLOBAL%$delay$
+		:i endif
+	:i endif
+:i endfunction
+:i function $view_goals_menu_fade_tabs$
+	:i $GetArraySize$$skater_goal_list_names$
+	:i $counter$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $tabname$%s(16,"view_goals_tab%i")$i$ = %GLOBAL%$counter$
+		:i $FormatText$$ChecksumName$ = $textname$%s(17,"view_goals_text%i")$i$ = %GLOBAL%$counter$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$tabname$
+			:i if $GotParam$$goal$
+				:i if  (%GLOBAL%$counter$ = %GLOBAL%$goal_list_index$) 
+					:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = %GLOBAL%$tabname$$id2$ = %GLOBAL%$textname$$delay$ = %f(0.100000)$alpha$ = %i(0,00000000):s}
+				:i else 
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$tabname$$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$textname$$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$counter$ = %GLOBAL%$goal_list_index$) 
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$tabname$$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$textname$$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+				:i else 
+					:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = %GLOBAL%$tabname$$id2$ = %GLOBAL%$textname$$delay$ = %f(0.100000)$alpha$ = %i(1,00000001):s}
+				:i endif
+			:i endif
+		:i endif
+		:i %GLOBAL%$counter$ =  (%GLOBAL%$counter$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if $GotParam$$goal$
+	:i else 
+	:i endif
+:i endfunction
+:i function $view_goals_menu_build_tabs$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $tab_container$
+		:i $not_focusable$
+	:i :s}
+	:i $Theme_GetMenuTitleColor$$return_value$ = $title_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $tab_container$
+		:i $id$ = $view_goals_title$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(10,"VIEW GOALS")
+		:i $pos$ = %vec2(515.000000,13.000000)
+		:i $scale$ = %f(1.500000)
+		:i $rgba$ = %GLOBAL%$title_color$
+		:i $just$ = :a{$center$$top$:a}
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i %GLOBAL%$tab_pos$ = %vec2(28.000000,20.000000)
+	:i $GetArraySize$$skater_goal_list_names$
+	:i $counter$ = %i(0,00000000)
+	:i if $view_goals_root$.$GetSingleTag$$simple_list$
+		:i $counter$ = %GLOBAL%$goal_list_index$
+		:i $array_size$ = %i(1,00000001)
+	:i endif
+	:i while
+		
+		:i $next_offset$ = %vec2(141.000000,0.000000)
+		:i $FormatText$$ChecksumName$ = $tabname$%s(16,"view_goals_tab%i")$i$ = %GLOBAL%$counter$
+		:i $FormatText$$ChecksumName$ = $textname$%s(17,"view_goals_text%i")$i$ = %GLOBAL%$counter$
+		:i if  (%GLOBAL%$counter$ = %GLOBAL%$goal_list_index$) 
+			:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+			:i $Theme_GetPauseBarColor$$return_value$ = $font_color$
+			:i $tab_scale$ = %vec2(1.250000,1.190000)
+			:i $font_scale$ = %vec2(1.100000,1.400000)
+			:i $tab_offset$ = %vec2(0.000000,25.000000)
+			:i $text_tab_relative_offset$ = %vec2(80.000000,21.000000)
+			:i $z_priority$ =  (%GLOBAL%$array_size$ + %i(1,00000001)) 
+		:i else 
+			:i $tab_color$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}
+			:i $font_color$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(255,000000ff):a}
+			:i $tab_scale$ = %vec2(1.250000,0.900000)
+			:i $font_scale$ = %vec2(1.100000,1.000000)
+			:i $text_tab_relative_offset$ = %vec2(80.000000,16.000000)
+			:i $tab_offset$ = %vec2(0.000000,34.000000)
+			:i $z_priority$ =  (%GLOBAL%$array_size$ - %GLOBAL%$counter$) 
+		:i endif
+		:i if  ( (%GLOBAL%$counter$ = %i(0,00000000))  OR  (%GLOBAL%$counter$ = %GLOBAL%$goal_list_index$) ) 
+			:i $texture$ = $goal_tab$
+		:i else 
+			:i $texture$ = $goal_tab_2$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $tab_container$
+			:i $id$ = %GLOBAL%$tabname$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $rgba$ = %GLOBAL%$tab_color$
+			:i $scale$ = %GLOBAL%$tab_scale$
+			:i $pos$ =  (%GLOBAL%$tab_pos$ + %GLOBAL%$tab_offset$) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $z_priority$ = %GLOBAL%$z_priority$
+		:i :s}
+		:i if  (%GLOBAL%$counter$ = %GLOBAL%$goal_list_index$) 
+			:i if $GotParam$$highlight_tab$
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = $tab_container$
+					:i $id$ = $tab_highlight$
+					:i $font$ = $small$
+					:i $rgba$ = %GLOBAL%$font_color$
+					:i $text$ =  ( ($skater_goal_list_names$:a{%GLOBAL%$counter$:a}) ->$Name$) 
+					:i $scale$ = %GLOBAL%$font_scale$
+					:i $pos$ =  (%GLOBAL%$tab_pos$ + %GLOBAL%$text_tab_relative_offset$ + %GLOBAL%$tab_offset$) 
+					:i $just$ = :a{$center$$center$:a}
+					:i $z_priority$ =  (%GLOBAL%$array_size$ + %i(2,00000002)) 
+				:i :s}
+				:i $RunScriptOnScreenElement$$id$ = $tab_highlight$$view_goals_tab_highlight$
+			:i endif
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $tab_container$
+			:i $id$ = %GLOBAL%$textname$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$font_color$
+			:i $text$ =  ( ($skater_goal_list_names$:a{%GLOBAL%$counter$:a}) ->$Name$) 
+			:i $scale$ = %GLOBAL%$font_scale$
+			:i $pos$ =  (%GLOBAL%$tab_pos$ + %GLOBAL%$text_tab_relative_offset$ + %GLOBAL%$tab_offset$) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $z_priority$ =  (%GLOBAL%$array_size$ + %i(2,00000002)) 
+		:i :s}
+		:i $array_next_wraparound$$index$ = %GLOBAL%$goal_list_index$$array$ = $skater_goal_list_names$
+		:i %GLOBAL%$tab_pos$ =  (%GLOBAL%$tab_pos$ + %GLOBAL%$next_offset$) 
+		:i %GLOBAL%$counter$ =  (%GLOBAL%$counter$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_container$
+		:i $id$ = $grad_bar$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = %GLOBAL%$grad_color$
+		:i $scale$ = %vec2(19.000000,1.000000)
+		:i $pos$ = %vec2(30.000000,83.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(35,00000023)
+	:i :s}
+:i endfunction
+:i function $ProcessGoalList$
+	:i if NOT $GotParam$$actionScript$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$goal_list_index$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $view_goals_root$
+		:i if $view_goals_root$.$GetSingleTag$$simple_list$
+			:i $goal_list_index$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $Name$ =  ( ($skater_goal_list_names$:a{%GLOBAL%$goal_list_index$:a}) ->$Value$) 
+	:i $hide_goal_details$ = %i(0,00000000)
+	:i $GoalManager_GetLevelPrefix$
+	:i $FormatText$$ChecksumName$ = $level_info$%s(8,"Level_%i")$i$ = %GLOBAL%$level_prefix$
+	:i if $StructureContains$$structure$ = %GLOBAL%$level_info$$special_ped_info$
+		:i $GetArraySize$ (%GLOBAL%$level_info$->$special_ped_info$) 
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $ped$ =  ( (%GLOBAL%$level_info$->$special_ped_info$) :a{%GLOBAL%$index$:a}) 
+			:i if  ( (%GLOBAL%$ped$->$type$)  = %GLOBAL%$Name$) 
+				:i if $StructureContains$$structure$ = %GLOBAL%$ped$$Name$
+					:i %GLOBAL%$Name$ =  (%GLOBAL%$ped$->$Name$) 
+					:i $GetSkaterProfileInfoByName$$Name$ = %GLOBAL%$Name$
+				:i endif
+				:i if $StructureContains$$structure$ = %GLOBAL%$ped$$flag$
+					:i $found_flag$ =  (%GLOBAL%$ped$->$flag$) 
+				:i endif
+				:i if $GotParam$$found_flag$
+					:i if NOT $GetGlobalFlag$$flag$ = %GLOBAL%$found_flag$
+						:i $hide_goal_details$ = %i(1,00000001)
+					:i endif
+				:i endif
+				:i continue
+				
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if  (%GLOBAL%$hide_goal_details$ = %i(0,00000000)) 
+		:i $GoalManager_GetViewGoalsInfo$$skater$ = %GLOBAL%$Name$
+		:i if $IsArray$%GLOBAL%$view_goals_info$
+			:i $GetArraySize$%GLOBAL%$view_goals_info$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i %GLOBAL%$actionScript$$goal$ =  (%GLOBAL%$view_goals_info$:a{%GLOBAL%$index$:a}) $goal_list_index$ = %GLOBAL%$goal_list_index$$reminder_pos$ = %GLOBAL%$pos$
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i else 
+			:i %GLOBAL%$actionScript$$goal$ = :s{$view_goals_text$ = %s(28,"This character has no goals.")$goal_id$ = $blank$:s}$goal_list_index$ = %GLOBAL%$goal_list_index$$not_focusable$$reminder_pos$ = %GLOBAL%$pos$
+		:i endif
+	:i else 
+		:i if $GotParam$$lockedScript$
+			:i %GLOBAL%$lockedScript$ isNull 
+			:i return
+			$locked$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$pos$
+		:i return
+		$pos$ = %GLOBAL%$pos$
+	:i endif
+:i endfunction
+:i function $AddGoalSelectable$
+	:i if $GotParam$$not_focusable$
+		:i $focusable$ = :s{$not_focusable$:s}
+	:i else 
+		:i $focusable$ = :s{:s}
+	:i endif
+	:i if NOT $view_goals_root$.$GetSingleTag$$allow_description$
+		:i $pad_choose_script$ = $view_goals_menu_exit$
+	:i else 
+		:i $pad_choose_script$ = $view_goals_menu_choose_goal$
+	:i endif
+	:i $add_roundbar_menu_item$:s{$text$ =  (%GLOBAL%$goal$->$view_goals_text$) 
+		:i $id$ =  (%GLOBAL%$goal$->$goal_id$) 
+		:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+		:i $pad_choose_sound$ = $nullscript$
+		:i $goal$ = %GLOBAL%$goal$
+		:i $goal_list_index$ = %GLOBAL%$goal_list_index$
+		:i $single_camera$
+		:i %GLOBAL%$focusable$
+	:i :s}
+:i endfunction
+:i function $view_goals_menu_build_list$$goal_list_index$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $goal_list_container$
+		:i $not_focusable$
+	:i :s}
+	:i $make_new_vg_menu$:s{
+		:i $parent$ = $goal_list_container$
+		:i $padding_scale$ = %i(1,00000001)
+		:i $menu_id$ = $view_goals_menu$
+		:i $vmenu_id$ = $view_goals_vmenu$
+		:i $pos$ = %vec2(50.000000,98.000000)
+	:i :s}
+	:i $ProcessGoalList$$goal_list_index$ = %GLOBAL%$goal_list_index$$actionScript$ = $AddGoalSelectable$$lockedScript$ = $view_goals_locked_message$
+	:i if NOT $GotParam$$locked$
+		:i if NOT $view_goals_root$.$GetSingleTag$$simple_list$
+			:i $view_goals_list_message$
+		:i endif
+	:i endif
+:i endfunction
+:i function $view_goals_menu_build_details$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $goal_list_container$
+		:i $not_focusable$
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $goal_list_container$
+		:i $not_focusable$
+		:i $rot_angle$ = %i(90,0000005a)
+		:i $texture$ = $goal_grad$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(600.000000,86.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(14,0000000e)%i(10,0000000a)%i(128,00000080):a}
+		:i $alpha$ = %f(0.300000)
+		:i $scale$ = %vec2(8.000000,143.000000)
+		:i $zpriority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $goal_list_container$
+		:i $not_focusable$
+		:i $rot_angle$ = %i(90,0000005a)
+		:i $texture$ = $goal_grad$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(600.000000,86.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.300000)
+		:i $scale$ = %vec2(8.000000,143.000000)
+		:i $zpriority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $make_new_vg_menu$:s{
+		:i $parent$ = $goal_list_container$
+		:i $padding_scale$ = %i(1,00000001)
+		:i $menu_id$ = $view_goals_menu$
+		:i $vmenu_id$ = $view_goals_vmenu$
+		:i $pos$ = %vec2(130.000000,98.000000)
+	:i :s}
+	:i $Theme_GetPauseBarColor$$return_value$ = $title_text_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $goal_title_container$
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $goal_title_container$
+		:i $id$ = $goal_details_title$
+		:i $font$ = $small$
+		:i $text$ =  (%GLOBAL%$goal$->$view_goals_text$) 
+		:i $pos$ = %vec2(32.000000,92.000000)
+		:i $just$ = :a{$left$$bottom$:a}
+		:i $scale$ = %vec2(1.400000,1.900000)
+		:i $rgba$ = %GLOBAL%$title_text_color$
+		:i $shadow$
+		:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $shadow_offs$ = %vec2(2.000000,2.000000)
+		:i $z_priority$ = %i(49,00000031)
+	:i :s}
+	:i $FormatText$$textname$ = $points$%s(7,"%p PTS.")$p$ =  (%GLOBAL%$goal$->$reward_points$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $goal_title_container$
+		:i $id$ = $goal_details_points$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$points$
+		:i $pos$ = %vec2(600.000000,90.000000)
+		:i $just$ = :a{$right$$bottom$:a}
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = %GLOBAL%$title_text_color$
+		:i $shadow$
+		:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $shadow_offs$ = %vec2(2.000000,2.000000)
+	:i :s}
+	:i if  ( (%GLOBAL%$goal$->$beaten$)  = %i(1,00000001)) 
+		:i $GetScreenElementDims$$id$ = $goal_details_title$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $goal_details_title$
+			:i $texture$ = $goal_complete_line$
+			:i $pos$ = %vec2(0.000000,10.000000)
+			:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(90,0000005a):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ =  (%GLOBAL%$width$ * %vec2(0.005500,0.000000) + %vec2(0.000000,0.800000)) 
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+		:i $GetScreenElementDims$$id$ = $goal_details_points$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $goal_details_points$
+			:i $texture$ = $goal_complete_line$
+			:i $pos$ = %vec2(0.000000,-2.000000)
+			:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(90,0000005a):a}
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ =  (%GLOBAL%$width$ * %vec2(0.005500,0.000000) + %vec2(0.000000,0.800000)) 
+			:i $z_priority$ = %i(100,00000064)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $view_goals_menu_build_bottom$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(21,"\b6/\b5 = Switch List"):s}
+		:i :s{$text$ = %s(18,"\bm = Goal Details"):s}
+		:i :a}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $bottom_pieces_container$
+		:i $not_focusable$
+	:i :s}
+	:i if $view_goals_root$.$GetSingleTag$$simple_list$
+		:i if NOT $view_goals_root$.$GetSingleTag$$allow_description$
+			:i $RemoveParameter$$add_points$
+			:i $helper_text_elements$ = :a{:s{$text$ = %s(14,"\bn/\bm = Done"):s}:a}
+		:i else 
+			:i if NOT $GotParam$$goal$
+				:i $helper_text_elements$ = :a{
+					:i :s{$text$ = %s(10,"\bn = Done"):s}
+					:i :s{$text$ = %s(18,"\bm = Goal Details"):s}
+					:i :a}
+			:i endif
+		:i endif
+	:i endif
+	:i $create_helper_text$:s{
+		:i $parent$ = $bottom_pieces_container$
+		:i $helper_pos$ = %vec2(330.000000,426.000000)
+		:i $helper_text_elements$ = %GLOBAL%$helper_text_elements$
+	:i :s}
+	:i if $GotParam$$add_points$
+		:i $GoalManager_GetActiveRewardPoints$
+		:i $GetCurrentLevelName$
+		:i $GetCurrentPointsToAdvance$
+		:i $to_advance$ =  (%GLOBAL%$points_to_advance$ - %GLOBAL%$active_points$) 
+		:i if  (%GLOBAL%$to_advance$ < %i(0,00000000)) 
+			:i $to_advance$ = %i(0,00000000)
+		:i endif
+		:i $FormatText$$textname$ = $points1$%s(16,"%c: %a / %b PTS.")$a$ = %GLOBAL%$active_points$$b$ = %GLOBAL%$total_points$$c$ = %GLOBAL%$level_name$
+		:i $Theme_GetAltColor$$return_value$ = $points1_color$
+		:i $FormatText$$textname$ = $points2$%s(38,"YOU NEED %a MORE POINTS TO CONTINUE...")$a$ = %GLOBAL%$to_advance$
+		:i $Theme_GetPauseBarColor$$return_value$ = $points2_color$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $bottom_pieces_container$
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$points1$
+			:i $rgba$ = %GLOBAL%$points1_color$
+			:i $scale$ = %f(1.200000)
+			:i $pos$ = %vec2(620.000000,350.000000)
+			:i $just$ = :a{$right$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $bottom_pieces_container$
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$points2$
+			:i $rgba$ = %GLOBAL%$points2_color$
+			:i $scale$ = %i(1,00000001)
+			:i $pos$ = %vec2(620.000000,375.000000)
+			:i $just$ = :a{$right$$top$:a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $view_goals_menu_build_arrows$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $id$ = $arrows_container$
+		:i $not_focusable$
+	:i :s}
+	:i if $view_goals_root$.$GetSingleTag$$simple_list$
+		:i return
+		
+	:i endif
+	:i $build_big_level_select_arrows$$parent$ = $arrows_container$$pos$ = %vec2(320.000000,67.000000)$scale$ = %f(0.800000)$z_priority$ = %i(20,00000014)
+:i endfunction
+:i function $create_view_goals_shortcut$
+	:i if NOT $CD$
+		:i return
+		
+	:i endif
+	:i if NOT $GameModeEquals$$is_career$
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$load_mainmenu$
+		:i return
+		
+	:i endif
+	:i $root_window$.$GetTags$
+	:i if  (%GLOBAL%$menu_state$ = $on$) 
+		:i return
+		
+	:i endif
+	:i if NOT $SkaterCamAnimFinished$
+		:i return
+		
+	:i endif
+	:i if NOT $InNetGame$
+		:i $PauseGame$
+		:i $PauseMusicAndStreams$%i(1,00000001)
+	:i endif
+	:i $GoalManager_PauseAllGoals$
+	:i $hide_all_hud_items$
+	:i $kill_start_key_binding$
+	:i $root_window$.$SetTags$$view_goals_shortcut_on$
+	:i $view_goals_menu_create$
+:i endfunction
+:i function $view_goals_menu_create$
+	:i $change$$block_proxim_node_updates$ = %i(1,00000001)
+	:i $GoalManager_ReplaceTrickText$$all$
+	:i $hide_current_goal$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $spawnscript$$menu3d_animate_out$$params$ = :s{$die$:s}
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $view_goals_root$
+		:i if NOT $GotParam$$hold_tabs$
+			:i $DestroyScreenElement$$id$ = $tab_container$
+		:i endif
+		:i $DestroyScreenElement$$id$ = $goal_list_container$
+		:i $DestroyScreenElement$$id$ = $bottom_pieces_container$
+		:i if $ScreenElementExists$$id$ = $goal_title_container$
+			:i $DestroyScreenElement$$id$ = $goal_title_container$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $menu_gradient$
+			:i $DestroyScreenElement$$id$ = $menu_gradient$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $menu3d_char$
+			:i $DestroyScreenElement$$id$ = $menu3d_char$
+		:i endif
+	:i else 
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $view_goals_root$
+			:i $dims$ = %vec2(1.000000,1.000000)
+			:i $not_focusable$
+		:i :s}
+		:i if $LevelIs$$load_TR$
+			:i $view_goals_root$.$SetTags$$simple_list$
+		:i else 
+			:i $IsCurrentChapterCapstone$
+			:i if $GotParam$$capstone_chapter$
+				:i $view_goals_root$.$SetTags$$simple_list$
+			:i endif
+			:i $view_goals_root$.$SetTags$$allow_description$
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$goal_list_index$
+		:i $intro$ = %i(1,00000001)
+		:i $GetCurrentGoalListIndex$
+	:i else 
+		:i $intro$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$goal$
+		:i $pause_menu_gradient$$off$
+	:i else 
+		:i $pause_menu_gradient$
+	:i endif
+	:i if NOT $GotParam$$hold_tabs$
+		:i $view_goals_menu_build_tabs$ isNull 
+	:i endif
+	:i if $GotParam$$goal$
+		:i $view_goals_menu_build_bottom$$helper_text_elements$ = :a{:s{$text$ = %s(14,"\bn/\bm = Back"):s}:a}$goal$
+		:i $view_goals_menu_build_details$$goal$ = %GLOBAL%$goal$$goal_list_index$ = %GLOBAL%$goal_list_index$
+	:i else 
+		:i $view_goals_menu_build_bottom$$add_points$
+		:i $view_goals_menu_build_list$$goal_list_index$ = %GLOBAL%$goal_list_index$
+	:i endif
+	:i if  (%GLOBAL%$intro$ = %i(1,00000001)) 
+		:i $view_goals_menu_build_arrows$
+		:i $DoScreenElementMorph$$id$ = $arrows_container$$pos$ = %vec2(0.000000,-120.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $arrows_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.300000)
+		:i $DoScreenElementMorph$$id$ = $tab_container$$pos$ = %vec2(0.000000,-100.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $tab_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.300000)
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(700.000000,0.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.300000)
+		:i $DoScreenElementMorph$$id$ = $bottom_pieces_container$$pos$ = %vec2(0.000000,150.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $bottom_pieces_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.300000)
+		:i $wait$%f(0.300000)$seconds$
+	:i endif
+	:i $RemoveParameter$$id$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $FireEvent$$type$ = $focus$$target$ = $current_menu_anchor$
+		:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$view_goals_wait_and_setup_input$$params$ = :s{ isNull :s}
+	:i endif
+:i endfunction
+:i function $view_goals_goal_description_with_highlight$$line$ = %i(4294967295,ffffffff)$num_cameras$ = %i(0,00000000)
+	:i $Theme_GetUnhighlightedTextColorNew$$return_value$ = $text_color$
+	:i if $ScreenElementExists$$id$ = $goal_description_container$
+		:i $DestroyScreenElement$$id$ = $goal_description_container$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $goal_list_container$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $goal_list_container$
+		:i $id$ = $goal_description_container$
+		:i $not_focusable$
+	:i :s}
+	:i $GetScreenElementPosition$$id$ = $current_menu$
+	:i $ScreenElementPos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(-50.000000,0.000000)) 
+	:i $height$ = %i(0,00000000)
+	:i $index$ = %i(0,00000000)
+	:i if $IsArray$ (%GLOBAL%$goal$->$goal_description$) 
+		:i $GetArraySize$ (%GLOBAL%$goal$->$goal_description$) 
+		:i while
+			
+			:i $rgba$ = %GLOBAL%$text_color$
+			:i $alpha$ = %i(1,00000001)
+			:i if  (%GLOBAL%$num_cameras$ = %GLOBAL%$array_size$) 
+				:i if  (%GLOBAL%$index$ = %GLOBAL%$line$) 
+				:i else 
+					:i $rgba$ = %GLOBAL%$text_color$
+					:i $alpha$ = %f(0.600000)
+				:i endif
+			:i endif
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextBlockElement$
+				:i $parent$ = $goal_description_container$
+				:i $font$ = $small$
+				:i $internal_scale$ = %f(1.200000)
+				:i $text$ =  ( (%GLOBAL%$goal$->$goal_description$) :a{%GLOBAL%$index$:a}) 
+				:i $pos$ =  (%GLOBAL%$height$ * %vec2(0.000000,1.000000) + %GLOBAL%$ScreenElementPos$) 
+				:i $just$ = :a{$left$$top$:a}
+				:i $internal_just$ = :a{$left$$top$:a}
+				:i $dims$ = %vec2(500.000000,0.000000)
+				:i $allow_expansion$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $alpha$ = %GLOBAL%$alpha$
+				:i $shadow$
+				:i $shadow_rgba$ = $UI_text_shadow_color$
+				:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i :s}
+			:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+			:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $goal_description_container$
+			:i $font$ = $small$
+			:i $internal_scale$ = %f(1.200000)
+			:i $text$ =  (%GLOBAL%$goal$->$goal_description$) 
+			:i $pos$ =  (%GLOBAL%$height$ * %vec2(0.000000,1.000000) + %GLOBAL%$ScreenElementPos$) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $dims$ = %vec2(500.000000,0.000000)
+			:i $allow_expansion$
+			:i $rgba$ = %GLOBAL%$text_color$
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i :s}
+		:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$goal$$view_goals_tip$
+		:i $view_goals_tip$ =  (%GLOBAL%$goal$->$view_goals_tip$) 
+	:i endif
+	:i $GoalManager_GetGoalParams$$Name$ =  (%GLOBAL%$goal$->$goal_id$) 
+	:i if $GotParam$$view_goals_notify_trick$
+		:i $bound_text$ = $view_goals_notify_message_trick_bound$
+		:i if $GlobalExists$$Name$ = %GLOBAL%$view_goals_notify_trick$$type$ = $structure$
+			:i if $StructureContains$$structure$ = %GLOBAL%$view_goals_notify_trick$$params$
+				:i if $StructureContains$$structure$ =  (%GLOBAL%$view_goals_notify_trick$->$params$) $IsSpecial$
+					:i $bound_text$ = $view_goals_notivy_message_special_trick_bound$
+				:i endif
+			:i endif
+		:i endif
+		:i $GetTrickDisplayText$$trick$ = %GLOBAL%$view_goals_notify_trick$
+		:i if $GetKeyComboBoundToTrick$$special$$trick$ = %GLOBAL%$view_goals_notify_trick$
+			:i $FormatText$:s{
+				:i $textname$ = $view_goals_tip$
+				:i %GLOBAL%$bound_text$
+				:i $t$ = %GLOBAL%$trick_display_text$
+				:i $k$ =  ($goal_tetris_trick_text$->%GLOBAL%$current_key_combo$) 
+			:i :s}
+		:i else 
+			:i $FormatText$:s{
+				:i $textname$ = $view_goals_tip$
+				:i $view_goals_notify_message_trick_needed$
+				:i $t$ = %GLOBAL%$trick_display_text$
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$view_goals_tip$
+		:i $Theme_GetMenuTitleColor$$return_value$ = $tip_color$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $goal_description_container$
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i $font$ = $small$
+			:i $text$ = %s(4,"TIP:")
+			:i $rgba$ = %GLOBAL%$tip_color$
+			:i $alpha$ = %f(0.900000)
+			:i $scale$ = %vec2(1.500000,1.600000)
+			:i $pos$ =  (%GLOBAL%$height$ * %vec2(0.000000,1.500000) + %GLOBAL%$ScreenElementPos$) 
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $goal_description_container$
+			:i $font$ = $small$
+			:i $internal_scale$ = %i(1,00000001)
+			:i $text$ = %GLOBAL%$view_goals_tip$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %GLOBAL%$width$ * %vec2(1.000000,0.000000) + %vec2(2.000000,9.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $dims$ = %vec2(370.000000,0.000000)
+			:i $allow_expansion$
+			:i $rgba$ = %GLOBAL%$text_color$
+			:i $alpha$ = %f(0.800000)
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i :s}
+		:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+		:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i else 
+		:i $ScreenElementPos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(55.000000,0.000000)) 
+	:i endif
+	:i $Theme_GetAltColor$$return_value$ = $alt_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $goal_description_container$
+		:i $font$ = $small$
+		:i $internal_scale$ = %f(1.100000)
+		:i $text$ = %s(3,"\bn")
+		:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %GLOBAL%$height$ * %vec2(0.000000,1.000000) + %vec2(0.000000,25.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(390.000000,0.000000)
+		:i $allow_expansion$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $goal_description_container$
+		:i $font$ = $small$
+		:i $internal_scale$ = %f(1.100000)
+		:i $text$ = %s(12,"Back to list")
+		:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %GLOBAL%$height$ * %vec2(0.000000,1.000000) + %vec2(32.000000,25.000000)) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(390.000000,0.000000)
+		:i $allow_expansion$
+		:i $rgba$ = %GLOBAL%$alt_color$
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+	:i :s}
+:i endfunction
+:i function $play_single_view_goals_cam$
+	:i $kill_single_view_goals_cam$
+	:i if $StructureContains$$structure$ = %GLOBAL%$goal$$view_goals_cameras$
+		:i $PlaySkaterCamAnim$:s{$virtual_cam$
+			:i $targetid$ = $world$
+			:i $targetOffset$ =  ( (%GLOBAL%$goal$->$view_goals_cameras$:a{%GLOBAL%$index$:a}) ->$targetOffset$) 
+			:i $positionOffset$ =  ( (%GLOBAL%$goal$->$view_goals_cameras$:a{%GLOBAL%$index$:a}) ->$positionOffset$) 
+			:i $frames$ = %i(1,00000001)
+		:i :s}
+		:i $root_window$.$SetTags$$view_goals_camera_playing$
+	:i endif
+	:i $GoalManager_GetGoalParams$$Name$ =  (%GLOBAL%$goal$->$goal_id$) 
+	:i if $GotParam$$trick_object_prefix$
+		:i $params$ = :s{
+			:i $trick_object_light_group$ = %GLOBAL%$trick_object_light_group$
+			:i $trick_object_prefix$ = %GLOBAL%$trick_object_prefix$
+			:i $goal_name$ = %GLOBAL%$goal_name$
+			:i $goal_id$ = %GLOBAL%$goal_id$
+		:i :s}
+		:i $goal_trick_the_objects_colors_start$%GLOBAL%$params$
+		:i $root_window$.$SetTags$$view_goals_object_flashing$ = %GLOBAL%$params$
+	:i else 
+		:i if $GotParam$$goal_objects$
+			:i $GetArraySize$%GLOBAL%$goal_objects$
+			:i $index$ = %i(0,00000000)
+			:i while
+				
+				:i $goal_object$ =  (%GLOBAL%$goal_objects$:a{%GLOBAL%$index$:a}) 
+				:i if $StructureContains$$structure$ = %GLOBAL%$goal_object$$trick_objects$
+					:i $goal_skate_the_line_next_cluster$:s{
+						:i $trick_objects$ =  ( (%GLOBAL%$goal_objects$:a{%GLOBAL%$index$:a}) ->$trick_objects$) 
+						:i $goal_name$ = %GLOBAL%$goal_name$
+						:i $keep_last$
+						:i $goal_objects_index$ = %GLOBAL%$index$
+					:i :s}
+				:i else 
+					:i $goal_skate_the_line_next_cluster$%GLOBAL%$goal_object$$keep_last$
+				:i endif
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+			:i $root_window$.$SetTags$:s{
+				:i $view_goals_object_flashing$ = :s{
+					:i $goal_objects$ = %GLOBAL%$goal_objects$
+					:i $goal_name$ = %GLOBAL%$goal_name$
+					:i $goal_id$ = %GLOBAL%$goal_id$
+				:i :s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $kill_single_view_goals_cam$
+	:i if $root_window$.$GetSingleTag$$view_goals_camera_playing$
+		:i $root_window$.$RemoveTags$$tags$ = :a{$view_goals_camera_playing$:a}
+		:i $KillSkaterCamAnim$$current$
+	:i endif
+	:i if $root_window$.$GetSingleTag$$view_goals_object_flashing$
+		:i if $StructureContains$$structure$ = %GLOBAL%$view_goals_object_flashing$$trick_object_prefix$
+			:i $goal_trick_the_objects_colors_stop$%GLOBAL%$view_goals_object_flashing$
+		:i else 
+			:i $goal_skate_the_line_colors_stop$%GLOBAL%$view_goals_object_flashing$$stop_all$
+		:i endif
+		:i $root_window$.$RemoveTags$$tags$ = :a{$view_goals_object_flashing$:a}
+	:i endif
+:i endfunction
+:i function $view_goals_goal_cam$
+	:i if NOT $GotParam$$goal$
+		:i return
+		
+	:i endif
+	:i $view_goals_goal_description_with_highlight$ isNull 
+	:i if $StructureContains$$structure$ = %GLOBAL%$goal$$view_goals_cameras$
+		:i $GetArraySize$ (%GLOBAL%$goal$->$view_goals_cameras$) 
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $play_single_view_goals_cam$$goal$ = %GLOBAL%$goal$$index$ = %GLOBAL%$index$
+			:i if  (%GLOBAL%$array_size$ = %i(1,00000001)) 
+				:i continue
+				
+			:i endif
+			:i $view_goals_goal_description_with_highlight$$line$ = %GLOBAL%$index$$num_cameras$ = %GLOBAL%$array_size$ isNull 
+			:i $wait$ ( (%GLOBAL%$goal$->$view_goals_cameras$:a{%GLOBAL%$index$:a}) ->$time$) $seconds$
+			:i $kill_single_view_goals_cam$
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+				:i %GLOBAL%$index$ = %i(0,00000000)
+			:i endif
+		:i loop_to 
+	:i endif
+:i endfunction
+:i function $view_goals_menu_choose_goal$
+	:i if $view_goals_root$.$GetSingleTag$$animating_scroll$
+		:i return
+		
+	:i endif
+	:i $view_goals_root$.$SetTags$$animating_select$
+	:i if $GotParam$$goal$
+		:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = $arrows_container$$delay$ = %f(0.150000)$alpha$ = %i(0,00000000):s}
+		:i $view_goals_menu_fade_tabs$ isNull 
+		:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = $view_goals_title$$delay$ = %f(0.150000)$alpha$ = %i(0,00000000):s}
+		:i $theme_menu_pad_choose_sound$
+	:i else 
+		:i $generic_menu_pad_back_sound$
+	:i endif
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,550.000000)$time$ = %f(0.150000)
+		:i $DoScreenElementMorph$$id$ = $bottom_pieces_container$$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+		:i $wait$%f(0.150000)$seconds$
+	:i endif
+	:i $KillSpawnedScript$$Name$ = $view_goals_goal_cam$
+	:i $view_goals_menu_create$ isNull $hold_tabs$
+	:i $spawnscript$$view_goals_goal_cam$$params$ = :s{ isNull :s}
+	:i if NOT $GotParam$$goal$
+		:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = $arrows_container$$delay$ = %f(0.150000)$alpha$ = %i(1,00000001):s}
+		:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = $view_goals_title$$delay$ = %f(0.100000)$alpha$ = %i(1,00000001):s}
+		:i $view_goals_menu_fade_tabs$ isNull 
+	:i endif
+	:i if  ($view_goals_test_slide$ = %i(1,00000001)) 
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,500.000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $goal_list_container$$pos$ = %vec2(0.000000,0.000000)$time$ = %f(0.150000)
+		:i $DoScreenElementMorph$$id$ = $bottom_pieces_container$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $spawnscript$$FadeAfterDelay$$params$ = :s{$id1$ = $bottom_pieces_container$$delay$ = %f(0.100000)$alpha$ = %i(1,00000001):s}
+		:i $wait$%f(0.300000)$seconds$
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu_anchor$
+:i endfunction
+:i function $view_goals_menu_exit$
+	:i if $ScreenElementExists$$id$ = $view_goals_root$
+		:i $change$$block_proxim_node_updates$ = %i(0,00000000)
+		:i $root_window$.$SetTags$$need_music_zone_refresh$
+		:i $kill_single_view_goals_cam$
+		:i $KillSpawnedScript$$Name$ = $view_goals_menu_pad_left$
+		:i $KillSpawnedScript$$Name$ = $view_goals_menu_pad_right$
+		:i $KillSpawnedScript$$Name$ = $view_goals_menu_choose_goal$
+		:i $DestroyScreenElement$$id$ = $view_goals_root$
+	:i endif
+	:i if $root_window$.$GetSingleTag$$view_goals_shortcut_on$
+		:i $root_window$.$RemoveTags$$tags$ = :a{$view_goals_shortcut_on$:a}
+		:i $exit_pause_menu$
+	:i else 
+		:i $generic_menu_pad_back$$callback$ = $create_pause_menu$ isNull 
+	:i endif
+:i endfunction
+:i function $make_new_vg_menu$$menu_id$ = $main_menu_anchor$$vmenu_id$ = $main_menu$$pos$ = %vec2(320.000000,240.000000)$parent$ = $root_window$$spacing$ = %i(7,00000007)$dims$ = %vec2(538.000000,100.000000)
+	:i if NOT $view_goals_root$.$GetSingleTag$$allow_description$
+		:i $scrolling$ = $scrolling$
+		:i $dims$ = %vec2(538.000000,300.000000)
+		:i $Theme_GetHighlightedTextColor$$return_value$ = $arrow_rgba$
+	:i endif
+	:i $make_new_roundbar_menu$:s{ isNull 
+		:i $additional_create_script$ = $viewgoals_create_scratches$
+		:i $additional_focus_script$ = $viewgoals_focus_scratches$
+		:i $additional_unfocus_script$ = $viewgoals_unfocus_scratches$
+		:i $no_pad_handlers$
+		:i $no_helper_text$
+		:i $pad_back_sound$ = $nullscript$
+	:i :s}
+	:i if NOT $view_goals_root$.$GetSingleTag$$allow_description$
+		:i $SetScreenElementProps$$id$ = $current_scrolling_menu$$event_handlers$ = :a{:s{$pad_back$$view_goals_menu_exit$:s}:a}
+		:i $FireEvent$$type$ = $focus$$target$ = $current_scrolling_menu$
+	:i endif
+:i endfunction
+:i function $viewgoals_create_scratches$
+	:i $pad_choose_params$ = :s{$goal$ = %GLOBAL%$goal$$goal_list_index$ = %GLOBAL%$goal_list_index$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$container_id$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$focus$%GLOBAL%$focus_script$$params$ = :s{$id$ = %GLOBAL%$container_id$$goal$ = %GLOBAL%$goal$$index$ = %i(0,00000000)$scale_highlight_text$ = %GLOBAL%$scale_highlight_text$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $GotParam$$single_camera$
+		:i %GLOBAL%$container_id$.$SetTags$$single_camera$ = %i(1,00000001)
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$goal$$beaten$
+		:i if  ( (%GLOBAL%$goal$->$reward_points$)  > %i(0,00000000)) 
+			:i $FormatText$$textname$ = $points$%s(7,"%p PTS.")$p$ =  (%GLOBAL%$goal$->$reward_points$) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$container_id$
+				:i $pos$ =  (%GLOBAL%$right_edge$ + %vec2(0.000000,9.000000)) 
+				:i $font$ = $small$
+				:i $scale$ = %i(1,00000001)
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+				:i $text$ = %GLOBAL%$points$
+				:i $just$ = :a{$right$$center$:a}
+				:i $z_priority$ = %i(9,00000009)
+			:i :s}
+			:i %GLOBAL%$id$.$SetTags$$tag_local_id$ = $score$
+		:i endif
+		:i if  ( (%GLOBAL%$goal$->$beaten$)  = %i(1,00000001)) 
+			:i $GetScreenElementDims$$id$ = :s{%GLOBAL%$container_id$$child$ = $text$:s}
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$container_id$
+				:i $texture$ = $goal_complete_line$
+				:i $pos$ = %vec2(0.000000,9.000000)
+				:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(90,0000005a):a}
+				:i $just$ = :a{$left$$center$:a}
+				:i $scale$ =  (%GLOBAL%$width$ * %vec2(0.008000,0.000000) + %vec2(0.000000,0.800000)) 
+				:i $z_priority$ = %i(50,00000032)
+			:i :s}
+			:i %GLOBAL%$id$.$SetTags$$tag_local_id$ = $scratch1$
+			:i if  ( (%GLOBAL%$goal$->$reward_points$)  > %i(0,00000000)) 
+				:i $GetScreenElementDims$$id$ = :s{%GLOBAL%$container_id$$child$ = $score$:s}
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = %GLOBAL%$container_id$
+					:i $texture$ = $goal_complete_line$
+					:i $pos$ =  (%GLOBAL%$right_edge$ + %vec2(0.000000,-5.000000)) 
+					:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(90,0000005a):a}
+					:i $just$ = :a{$right$$top$:a}
+					:i $scale$ =  (%GLOBAL%$width$ * %vec2(0.008500,0.000000) + %vec2(0.000000,0.800000)) 
+					:i $z_priority$ = %i(100,00000064)
+				:i :s}
+				:i %GLOBAL%$id$.$SetTags$$tag_local_id$ = $scratch2$
+			:i endif
+			:i %GLOBAL%$container_id$.$SetTags$$beaten$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $viewgoals_focus_scratches$
+	:i if %GLOBAL%$id$.$GetSingleTag$$single_camera$
+		:i $play_single_view_goals_cam$$goal$ = %GLOBAL%$goal$$index$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $score$:s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $score$:s}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i :s}
+	:i endif
+	:i if %GLOBAL%$id$.$GetSingleTag$$beaten$
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $scratch1$:s}$time$ = %f(0.050000)$scale$ = %vec2(1.150000,1.250000)$relative_scale$
+	:i endif
+:i endfunction
+:i function $viewgoals_unfocus_scratches$
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $score$:s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $score$:s}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+		:i :s}
+	:i endif
+	:i if %GLOBAL%$id$.$GetSingleTag$$beaten$
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $scratch1$:s}$time$ = %f(0.050000)$scale$ = %f(1.000000)$relative_scale$
+	:i endif
+:i endfunction
+:i function $view_goals_list_message$
+	:i $view_goals_generic_message$$message$ = %s(33,"\cbPRESS \c0\bm\cb TO GET DETAILS")$pos$ = %vec2(320.000000,305.000000)$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+:i endfunction
+:i function $view_goals_locked_message$
+	:i $kill_single_view_goals_cam$
+	:i $FormatText$$textname$ = $message$%s(45,"\cbSWITCH TO %a CHARACTER TO UNLOCK NEW GOALS")$a$ =  ( ($skater_goal_list_names$:a{%GLOBAL%$goal_list_index$:a}) ->$Name$) 
+	:i $view_goals_generic_message$$message$ = %GLOBAL%$message$$pos$ = %vec2(320.000000,95.000000)$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+:i endfunction
+:i function $view_goals_generic_message$$rgba$ = :a{%i(128,00000080)%i(50,00000032)%i(128,00000080)%i(128,00000080):a}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $bottom_pieces_container$
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$message$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $override_encoded_alpha$
+		:i $scale$ = %vec2(1.150000,1.300000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$view_goals_message_highlight$
+:i endfunction
+:i function $view_goals_message_highlight$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $wait$%f(0.300000)$seconds$
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.400000)$alpha$ = %f(0.900000)
+		:i $wait$%f(0.500000)$seconds$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.400000)$alpha$ = %f(0.600000)
+		:i $wait$%f(0.700000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $view_goals_reminder_create$
+	:i if $ScreenElementExists$$id$ = $view_goals_reminders$
+		:i $GoalReminderAnimateOff$$id$ = $view_goals_reminders$
+		:i if $ScreenElementExists$$id$ = $view_goals_reminders$
+			:i $DestroyScreenElement$$id$ = $view_goals_reminders$
+		:i endif
+	:i endif
+	:i $reminder_pos$ = %vec2(25.000000,115.000000)
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $view_goals_reminders$
+		:i $scale$ = %f(0.950000)
+		:i $pos$ = %GLOBAL%$reminder_pos$
+		:i $not_focusable$
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $view_goals_reminders$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $GetCurrentGoalListIndex$
+	:i $Theme_GetPauseBarColor$$return_value$ = $font_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $view_goals_reminders$
+		:i $font$ = $small$
+		:i $rgba$ = %GLOBAL%$font_color$
+		:i $text$ =  ( ($skater_goal_list_names$:a{%GLOBAL%$goal_list_index$:a}) ->$Name$) 
+		:i $scale$ = %vec2(1.100000,1.250000)
+		:i $pos$ = %vec2(65.000000,18.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $view_goals_reminders$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = %GLOBAL%$grad_color$
+		:i $scale$ = %vec2(10.000000,0.800000)
+		:i $pos$ = %vec2(-30.000000,32.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967294,fffffffe)
+	:i :s}
+	:i $ProcessGoalList$$goal_list_index$ = %GLOBAL%$goal_list_index$$actionScript$ = $AddGoalReminder$$pos$ = %vec2(3.000000,38.000000)
+	:i $height$ =  ( ( (%GLOBAL%$pos$ - %vec2(0.000000,38.000000)) ->%vec2(0.000000,1.000000))  / %i(20,00000014)) 
+	:i if  (%GLOBAL%$height$ = %i(0,00000000)) 
+		:i $DestroyScreenElement$$id$ = $view_goals_reminders$
+		:i return
+		
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $view_goals_reminders$
+		:i $texture$ = $white3$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}
+		:i $rot_angle$ = %f(179.899994)
+		:i $scale$ =  (%vec2(12.000000,0.000000) + %GLOBAL%$height$ * %vec2(0.000000,0.158000) + %vec2(0.000000,0.080000)) 
+		:i $pos$ = %vec2(-30.000000,32.000000)
+		:i $just$ = :a{$right$$bottom$:a}
+		:i $z_priority$ = %i(4294967294,fffffffe)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $view_goals_reminders$$GoalReminderAnimate$$params$ = :s{$reminder_pos$ = %GLOBAL%$reminder_pos$:s}
+:i endfunction
+:i function $AddGoalReminder$
+	:i $color$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i if NOT $GotParam$$not_focusable$
+		:i if  (%GLOBAL%$goal$->$beaten$) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $view_goals_reminders$
+		:i $font$ = $small$
+		:i $text$ =  (%GLOBAL%$goal$->$view_goals_text$) 
+		:i $rgba$ = %GLOBAL%$color$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$reminder_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i return
+	$pos$ =  (%GLOBAL%$reminder_pos$ + %vec2(0.000000,20.000000)) 
+:i endfunction
+:i function $GoalReminderAnimate$
+	:i $GetTags$
+	:i $GoalReminderAnimateOn$$id$ = %GLOBAL%$id$
+	:i $wait$%i(5,00000005)$seconds$
+	:i $GoalReminderAnimateOff$$id$ = %GLOBAL%$id$
+	:i $die$
+:i endfunction
+:i function $GoalReminderAnimateOn$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $off_pos$ =  (%GLOBAL%$ScreenElementPos$ - %vec2(400.000000,0.000000)) 
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$pos$ = %GLOBAL%$off_pos$$time$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$pos$ = %GLOBAL%$ScreenElementPos$$time$ = %f(0.200000)
+	:i $wait$%f(0.300000)$seconds$
+:i endfunction
+:i function $GoalReminderAnimateOff$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $off_pos$ =  (%GLOBAL%$ScreenElementPos$ - %vec2(400.000000,0.000000)) 
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$pos$ = %GLOBAL%$off_pos$$time$ = %f(0.200000)
+	:i $wait$%f(0.300000)$seconds$
+:i endfunction
+:i function $GoalListReminderHide$
+	:i if $ScreenElementExists$$id$ = $view_goals_reminders$
+		:i $DoScreenElementMorph$$id$ = $view_goals_reminders$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $GoalListReminderShow$
+	:i if $ScreenElementExists$$id$ = $view_goals_reminders$
+		:i $DoScreenElementMorph$$id$ = $view_goals_reminders$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $view_created_goals_menu_create$
+	:i $hide_current_goal$
+	:i $menu3d_hide$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $view_goals_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $view_goals_menu$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(32,"\bm = Jump to Goal (if unlocked)"):s}
+		:i :a}
+	:i $build_theme_sub_title$$title$ = %s(5,"GOALS")
+	:i $theme_background$$width$ = %f(6.350000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)
+	:i %GLOBAL%$root_pos$ = %vec2(80.000000,25.000000)
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $untext_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(57.000000,87.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,5.000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $pos$ = %vec2(320.000000,88.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_goals_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %vec2(320.000000,372.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(57.000000,370.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,5.000000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,264.000000)
+		:i $pos$ = %vec2(80.000000,110.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $view_goals_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_down$$menu_vert_blink_arrow$$params$ = :s{$id$ = $view_goals_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$menu_vert_blink_arrow$$params$ = :s{$id$ = $view_goals_menu_up_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :s{$pad_back$$view_created_goals_menu_exit$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $view_goals_vmenu$$alias$ = $current_menu$
+	:i $GoalManager_AddViewGoalsList$
+	:i $FireEvent$$type$ = $focus$$target$ = $view_goals_vmenu$
+:i endfunction
+:i function $view_goals_menu_add_item$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $id$ = %GLOBAL%$goal_id$
+		:i $dims$ = %vec2(500.000000,24.000000)
+	:i :s}
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlighted_text_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$goal_id$
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $text$ = %GLOBAL%$text$
+		:i $font$ = $dialog$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i if $GotParam$$bogus$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$goal_id$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$view_goals_menu_focus_beaten$:s}
+				:i :s{$unfocus$$view_goals_menu_unfocus_beaten$:s}
+				:i :a}
+		:i :s}
+		:i return
+		
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$goal_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(240.000000,10.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+		:i $scale$ = %vec2(4.100000,0.700000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$goal_id$
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $text$ = %s(1," ")
+		:i $font$ = $dialog$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i if $GoalManager_HasWonGoal$$Name$ = %GLOBAL%$goal_id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$goal_id$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$view_goals_menu_focus_beaten$:s}
+				:i :s{$unfocus$$view_goals_menu_unfocus_beaten$:s}
+				:i :s{$pad_choose$$theme_menu_pad_choose_sound$:s}
+				:i :s{$pad_choose$$view_goals_menu_start_beaten_goal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+				:i :s{$pad_start$$theme_menu_pad_choose_sound$:s}
+				:i :s{$pad_start$$view_goals_menu_start_beaten_goal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+				:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+				:i :a}
+		:i :s}
+		:i $GetScreenElementDims$$id$ = :s{%GLOBAL%$goal_id$$child$ = %i(0,00000000):s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = :s{%GLOBAL%$goal_id$$child$ = %i(1,00000001):s}
+			:i $texture$ = $white2$
+			:i $pos$ = %vec2(2.000000,16.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+			:i $alpha$ = %i(1,00000001)
+			:i $z_priority$ = %i(10,0000000a)
+			:i $scale$ = %vec2(15.500000,0.150000)
+		:i :s}
+	:i else 
+		:i if $GoalManager_GoalIsLocked$$Name$ = %GLOBAL%$goal_id$
+			:i if $IsTrue$$bootstrap_build$
+				:i %GLOBAL%$locked_text$ = %s(11,"NOT IN DEMO")
+			:i else 
+				:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$goal_id$
+				:i if $GotParam$$pro_goal$
+					:i %GLOBAL%$locked_text$ = %s(32,"Complete Pro Challenge to unlock")
+				:i else 
+					:i %GLOBAL%$locked_text$ = %s(6,"Locked")
+				:i endif
+			:i endif
+			:i $view_goals_menu_set_color$:s{
+				:i $id$ = %GLOBAL%$goal_id$
+				:i $rgba$ = %GLOBAL%$text_rgba$
+				:i $text$ = %GLOBAL%$locked_text$
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$goal_id$
+				:i $event_handlers$ = :a{
+					:i :s{$focus$$view_goals_menu_focus_locked$:s}
+					:i :s{$unfocus$$view_goals_menu_unfocus_locked$:s}
+					:i :s{$pad_choose$$view_goals_menu_pad_choose_locked$:s}
+					:i :s{$pad_start$$view_goals_menu_pad_choose_locked$:s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i else 
+			:i if $GoalManager_HasSeenGoal$$Name$ = %GLOBAL%$goal_id$
+				:i $view_goals_menu_set_color$:s{
+					:i $id$ = %GLOBAL%$goal_id$
+					:i $rgba$ = %GLOBAL%$text_rgba$
+				:i :s}
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$goal_id$
+					:i $event_handlers$ = :a{
+						:i :s{$pad_start$$theme_menu_pad_choose_sound$:s}
+						:i :s{$pad_choose$$theme_menu_pad_choose_sound$:s}
+						:i :s{$focus$$view_goals_menu_focus_unlocked$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :s{$unfocus$$view_goals_menu_unfocus_unlocked$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :s{$pad_choose$$view_goals_menu_start_goal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :s{$pad_start$$view_goals_menu_start_goal$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :a}
+					:i $replace_handlers$
+				:i :s}
+			:i else 
+				:i $view_goals_menu_set_color$:s{
+					:i $id$ = %GLOBAL%$goal_id$
+					:i $rgba$ = :a{%i(42,0000002a)%i(42,0000002a)%i(38,00000026)%i(128,00000080):a}
+					:i $text$ = %s(10,"??????????")
+				:i :s}
+				:i $SetScreenElementProps$:s{
+					:i $id$ = %GLOBAL%$goal_id$
+					:i $event_handlers$ = :a{
+						:i :s{$focus$$view_goals_menu_focus_locked$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :s{$unfocus$$view_goals_menu_unfocus_locked$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}:s}
+						:i :s{$pad_choose$$view_goals_menu_pad_choose_locked$:s}
+						:i :s{$pad_start$$view_goals_menu_pad_choose_locked$:s}
+						:i :a}
+					:i $replace_handlers$
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $view_goals_menu_set_color$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $text$ = %GLOBAL%$text$
+	:i :s}
+	:i %GLOBAL%$id$.$GetTags$
+	:i if $GotParam$$win_record$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $scale$ = %GLOBAL%$scale$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $view_goals_menu_focus_locked$
+	:i $generic_menu_update_arrows$:s{
+		:i $menu_id$ = $view_goals_vmenu$
+		:i $up_arrow_id$ = $view_goals_menu_up_arrow$
+		:i $down_arrow_id$ = $view_goals_menu_down_arrow$
+	:i :s}
+	:i $GetTags$
+	:i $main_theme_focus$
+	:i if $GotParam$$goal_id$
+		:i $view_goals_menu_play_preview_cam$ isNull 
+	:i endif
+:i endfunction
+:i function $view_goals_menu_unfocus_locked$
+	:i $GetTags$
+	:i $generic_menu_pad_up_down_sound$
+	:i $main_theme_unfocus$
+	:i if $GotParam$$goal_id$
+		:i $view_goals_menu_kill_preview_cam$ isNull 
+	:i endif
+:i endfunction
+:i function $view_goals_menu_focus_unlocked$
+	:i $generic_menu_update_arrows$:s{
+		:i $menu_id$ = $view_goals_vmenu$
+		:i $up_arrow_id$ = $view_goals_menu_up_arrow$
+		:i $down_arrow_id$ = $view_goals_menu_down_arrow$
+	:i :s}
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlighted_text_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+		:i $scale$ = %f(1.100000)
+		:i $relative_scale$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+			:i $scale$ = %f(1.100000)
+			:i $relative_scale$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $scrolling_menu_up_arrow$
+		:i if $GotParam$$first_item$
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_up_arrow$$alpha$ = %i(0,00000000)
+		:i else 
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_up_arrow$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $scrolling_menu_down_arrow$
+		:i if $GotParam$$last_item$
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_down_arrow$$alpha$ = %i(0,00000000)
+		:i else 
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_down_arrow$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$text_twitch_effect$
+	:i $view_goals_menu_play_preview_cam$ isNull 
+:i endfunction
+:i function $view_goals_menu_unfocus_unlocked$
+	:i $GetTags$
+	:i $generic_menu_pad_up_down_sound$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $KillSpawnedScript$$Name$ = $text_twitch_effect$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $alpha$ = %GLOBAL%$text_alpha$
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+			:i $alpha$ = %GLOBAL%$text_alpha$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i :s}
+	:i $view_goals_menu_kill_preview_cam$ isNull 
+:i endfunction
+:i function $view_goals_menu_focus_beaten$
+	:i $generic_menu_update_arrows$:s{
+		:i $menu_id$ = $view_goals_vmenu$
+		:i $up_arrow_id$ = $view_goals_menu_up_arrow$
+		:i $down_arrow_id$ = $view_goals_menu_down_arrow$
+	:i :s}
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlighted_text_rgba$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+		:i $scale$ = %f(1.100000)
+		:i $relative_scale$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$highlighted_text_rgba$
+			:i $scale$ = %f(1.100000)
+			:i $relative_scale$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $scrolling_menu_up_arrow$
+		:i if $GotParam$$first_item$
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_up_arrow$$alpha$ = %i(0,00000000)
+		:i else 
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_up_arrow$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $scrolling_menu_down_arrow$
+		:i if $GotParam$$last_item$
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_down_arrow$$alpha$ = %i(0,00000000)
+		:i else 
+			:i $DoScreenElementMorph$$id$ = $scrolling_menu_down_arrow$$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$text_twitch_effect$
+:i endfunction
+:i function $view_goals_menu_unfocus_beaten$
+	:i $GetTags$
+	:i $generic_menu_pad_up_down_sound$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $KillSpawnedScript$$Name$ = $text_twitch_effect$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $alpha$ = %GLOBAL%$text_alpha$
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+			:i $alpha$ = %GLOBAL%$text_alpha$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i :s}
+:i endfunction
+:i function $view_goals_menu_pad_choose_locked$
+:i endfunction
+:i function $view_goals_menu_start_goal$
+	:i $view_created_goals_menu_exit$$callback$ = $exit_pause_menu$
+	:i $GoalManager_DeactivateAllGoals$
+	:i $skater$.$RunTimerController_Reset$
+	:i $goal_accept_trigger$$goal_id$ = %GLOBAL%$goal_id$$force_start$
+:i endfunction
+:i function $view_goals_menu_start_beaten_goal$
+	:i $view_created_goals_menu_exit$$callback$ = $exit_pause_menu$
+	:i $GoalManager_DeactivateAllGoals$
+	:i $skater$.$RunTimerController_Reset$
+	:i $goal_accept_trigger$$goal_id$ = %GLOBAL%$goal_id$$force_start$
+:i endfunction
+:i function $view_goals_menu_play_preview_cam$
+	:i $GoalManager_GetGoalParams$$Name$ = %GLOBAL%$goal_id$
+	:i if $IsAlive$$Name$ = %GLOBAL%$trigger_obj_id$
+		:i if NOT $ObjectExists$$id$ = $Menu_Cam$
+			:i $create_menu_camera$
+		:i else 
+			:i $Menu_Cam$.$unpause$
+		:i endif
+		:i %GLOBAL%$trigger_obj_id$.$Obj_GetPosition$
+		:i $Menu_Cam$.$Obj_SetPosition$$Position$ =  (%GLOBAL%$pos$ + %vec3(0.000000,40.000000,110.000000)) 
+		:i $Menu_Cam$.$Obj_SetOrientation$$Y$ = %i(0,00000000)
+		:i %GLOBAL%$trigger_obj_id$.$Obj_GetOrientation$
+		:i %GLOBAL%$trigger_obj_id$.$Obj_SetOrientation$$Y$ = %i(0,00000000)
+		:i $SetActiveCamera$$id$ = $Menu_Cam$
+		:i $SetSkaterCamAnimShouldPause$$Name$ = %GLOBAL%$goal_id$$should_pause$ = %i(0,00000000)
+		:i %GLOBAL%$trigger_obj_id$.$unpause$
+		:i $wait$%i(5,00000005)$frames$
+		:i %GLOBAL%$trigger_obj_id$.$pause$
+	:i endif
+	:i $view_goals_vmenu$.$SetTags$$current_cam_anim$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $view_goals_menu_kill_preview_cam$
+	:i $GetSkaterId$
+	:i $KillSkaterCamAnim$$skater$ = %GLOBAL%$objId$$Name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $view_created_goals_menu_exit$
+	:i if $ScreenElementExists$$id$ = $view_goals_vmenu$
+		:i $view_goals_vmenu$.$GetTags$
+		:i if $GotParam$$current_cam_anim$
+			:i $GetSkaterId$
+			:i $KillSkaterCamAnim$$skater$ = %GLOBAL%$objId$$Name$ = %GLOBAL%$current_cam_anim$
+		:i endif
+	:i endif
+	:i $restore_skater_camera$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i $GoalManager_ShowPoints$
+	:i if NOT $GoalManager_HasActiveGoals$
+		:i $GoalManager_ShowGoalPoints$
+	:i endif
+	:i %GLOBAL%$callback$
+:i endfunction
+:i :end

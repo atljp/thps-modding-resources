@@ -1,0 +1,565 @@
+
+:i function $check_command_exist$
+	:i $printf$%s(27,"script: check_command_exist")
+	:i if NOT $GotParam$$string$
+		:i return
+		$not_a_command$
+	:i endif
+	:i if NOT $GotParam$$isLocal$
+		:i $isLocal$ = %i(0,00000000)
+	:i endif
+	:i $GetUpperCaseString$%GLOBAL%$string$
+	:i $StringToCharArray$$string$ = %GLOBAL%$UpperCaseString$
+	:i if  ( ( (%GLOBAL%$char_array$:a{%i(0,00000000):a})  = %s(1,"/"))  OR  ( (%GLOBAL%$char_array$:a{%i(0,00000000):a})  = %s(1,"%"))  OR  ( (%GLOBAL%$char_array$:a{%i(0,00000000):a})  = %s(1,"7")) ) 
+		:i $GetArraySize$%GLOBAL%$char_array$
+		:i $index$ = %i(0,00000000)
+		:i $t_cmd$ = %s(0,"")
+		:i $t_params$ = %s(0,"")
+		:i $has_command$ = %i(0,00000000)
+		:i $has_params$ = %i(0,00000000)
+		:i while
+			
+			:i if NOT  ( (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a})  = %s(1,",")) 
+				:i if  (%GLOBAL%$has_command$ = %i(0,00000000)) 
+					:i $FormatText$$textname$ = $str$%s(4,"%t%s")$t$ = %GLOBAL%$t_cmd$$s$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$t_cmd$ =  (%GLOBAL%$str$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$has_command$ = %i(0,00000000)) 
+					:i %GLOBAL%$has_command$ = %i(1,00000001)
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i continue
+					
+				:i endif
+			:i endif
+		:i loop_to %GLOBAL%$array_size$
+		:i if  (%GLOBAL%$has_command$ = %i(1,00000001)) 
+			:i $new_end$ =  (%GLOBAL%$array_size$ - %GLOBAL%$index$) 
+			:i while
+				
+				:i if  (%GLOBAL%$index$ < %GLOBAL%$array_size$) 
+					:i $FormatText$$textname$ = $str$%s(4,"%t%s")$t$ = %GLOBAL%$t_params$$s$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$t_params$ =  (%GLOBAL%$str$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to %GLOBAL%$new_end$
+			:i if  (%GLOBAL%$t_params$ = %s(0,"")) 
+				:i %GLOBAL%$has_params$ = %i(0,00000000)
+			:i else 
+				:i %GLOBAL%$has_params$ = %i(1,00000001)
+			:i endif
+		:i else 
+			:i %GLOBAL%$has_params$ = %i(0,00000000)
+		:i endif
+		:i if  (%GLOBAL%$t_cmd$ = %s(0,"")) 
+			:i $printf$%s(21,"return: not_a_command")
+			:i return
+			$not_a_command$
+		:i else 
+			:i $get_command_index$$string$ = %GLOBAL%$t_cmd$$isLocal$ = %GLOBAL%$isLocal$
+			:i if NOT $GotParam$$not_a_command$
+				:i if  (%GLOBAL%$has_params$ = %i(1,00000001)) 
+					:i $run_global_command$$index$ = %GLOBAL%$command_index$$remains$ = %GLOBAL%$t_params$
+				:i else 
+					:i $run_global_command$$index$ = %GLOBAL%$command_index$$no_params$
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$not_a_command$
+			:i $printf$%s(20,"return: is_a_command")
+			:i return
+			$is_a_command$
+		:i else 
+			:i $printf$%s(21,"return: not_a_command")
+			:i return
+			$not_a_command$
+		:i endif
+	:i else 
+		:i $printf$%s(21,"return: not_a_command")
+		:i return
+		$not_a_command$
+	:i endif
+:i endfunction
+:i function $get_command_index$
+	:i $printf$%s(25,"script: get_command_index")
+	:i if NOT $GotParam$$string$
+		:i return
+		$not_a_command$
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i $index2$ = %i(4294967295,ffffffff)
+	:i $GetArraySize$ ($global_cmd_array$) 
+	:i while
+		
+		:i $temp_array$ =  ( ($global_cmd_array$:a{%GLOBAL%$index$:a}) ->$cmd_strings$) 
+		:i if $ArrayContains$$array$ = %GLOBAL%$temp_array$$contains$ = %GLOBAL%$string$
+			:i %GLOBAL%$index2$ = %GLOBAL%$index$
+			:i continue
+			
+		:i else 
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$index2$ > %i(4294967295,ffffffff)) 
+		:i if  (%GLOBAL%$isLocal$ = %i(1,00000001)) 
+			:i if $StructureContains$$structure$ =  ($global_cmd_array$:a{%GLOBAL%$index2$:a}) $isLocal$
+				:i $FormatText$$textname$ = $text$%s(26,"return: command_index = %a")$a$ = %GLOBAL%$index2$
+				:i $printf$%GLOBAL%$text$
+				:i return
+				$command_index$ = %GLOBAL%$index2$
+			:i else 
+				:i return
+				$not_a_command$
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$isLocal$ = %i(0,00000000)) 
+				:i if $StructureContains$$structure$ =  (%GLOBAL%$global_cmd_array$:a{%GLOBAL%$index2$:a}) $isLocal$
+					:i return
+					$not_a_command$
+				:i else 
+					:i $FormatText$$textname$ = $text$%s(26,"return: command_index = %a")$a$ = %GLOBAL%$index2$
+					:i $printf$%GLOBAL%$text$
+					:i return
+					$command_index$ = %GLOBAL%$index2$
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i return
+		$not_a_command$
+	:i endif
+:i endfunction
+:i function $get_command_param_count$
+	:i $printf$%s(31,"script: get_command_param_count")
+	:i if NOT $GotParam$$string$
+		:i return
+		$param_count$ = %i(0,00000000)
+	:i endif
+	:i $StringToCharArray$$string$ = %GLOBAL%$string$
+	:i $GetArraySize$%GLOBAL%$char_array$
+	:i $num_params$ = %i(0,00000000)
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a})  = %s(1,",")) 
+			:i %GLOBAL%$num_params$ =  (%GLOBAL%$num_params$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$num_params$ = %i(0,00000000)) 
+		:i if  (%GLOBAL%$array_size$ > %i(1,00000001)) 
+			:i $printf$%s(24,"override: num_params = 1")
+			:i %GLOBAL%$num_params$ =  (%GLOBAL%$num_params$ + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i $FormatText$$textname$ = $text$%s(24,"return: param_count = %i")$i$ = %GLOBAL%$num_params$
+	:i $printf$%GLOBAL%$text$
+	:i return
+	$param_count$ = %GLOBAL%$num_params$
+:i endfunction
+:i function $run_global_command$
+	:i $printf$%s(26,"script: run_global_command")
+	:i if NOT $GotParam$$index$
+		:i return
+		$not_a_command$
+	:i endif
+	:i if NOT $GotParam$$no_params$
+		:i $FormatText$$textname$ = $text$%s(56,"execute: script = %a, cmd_param_str = %b, cmd_index = %c")$a$ =  ($global_cmd_array$:a{%GLOBAL%$index$:a}->$cmd_script$) $b$ = %GLOBAL%$remains$$c$ = %GLOBAL%$index$
+		:i $printf$%GLOBAL%$text$
+		:i  ($global_cmd_array$:a{%GLOBAL%$index$:a}->$cmd_script$) $cmd_params_str$ = %GLOBAL%$remains$$cmd_index$ = %GLOBAL%$index$
+	:i else 
+		:i $FormatText$$textname$ = $text$%s(47,"execute: script = %a, no_params, cmd_index = %c")$a$ =  ($global_cmd_array$:a{%GLOBAL%$index$:a}->$cmd_script$) $c$ = %GLOBAL%$index$
+		:i $printf$%GLOBAL%$text$
+		:i  ($global_cmd_array$:a{%GLOBAL%$index$:a}->$cmd_script$) $cmd_params_str$ = %s(0,"")$cmd_index$ = %GLOBAL%$index$
+	:i endif
+:i endfunction
+:i function $get_and_execute_next_command_param$
+	:i if NOT $GotParam$$string$
+		:i return
+		$not_a_command$
+	:i endif
+	:i if NOT $GotParam$$cmd_index$
+		:i return
+		$not_a_command$
+	:i endif
+	:i $printf$%s(34,"get_and_execute_next_command_param")
+	:i $StringToCharArray$$string$ = %GLOBAL%$string$
+	:i $GetArraySize$%GLOBAL%$char_array$
+	:i $index$ = %i(0,00000000)
+	:i $name$ = %s(0,"")
+	:i $value$ = %s(0,"")
+	:i $param$ = %s(0,"")
+	:i $HasEquals$ = %i(0,00000000)
+	:i $FormatText$$textname$ = $text$%s(74,"0:size = %a, index = %i, name = %n, value = %v, param = %p, HasEquals = %h")$a$ =  (%GLOBAL%$array_size$) $i$ =  (%GLOBAL%$index$) $n$ =  (%GLOBAL%$name$) $v$ =  (%GLOBAL%$value$) $p$ =  (%GLOBAL%$param$) $h$ =  (%GLOBAL%$HasEquals$) 
+	:i $printf$%GLOBAL%$text$
+	:i while
+		
+		:i if NOT  ( (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a})  = %s(1,",")) 
+			:i if  ( (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a})  = %s(1,"=")) 
+				:i %GLOBAL%$HasEquals$ = %i(1,00000001)
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i continue
+				
+			:i else 
+				:i if  (%GLOBAL%$HasEquals$ = %i(0,00000000)) 
+					:i $FormatText$$textname$ = $str$%s(4,"%t%s")$t$ =  (%GLOBAL%$name$) $s$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$name$ =  (%GLOBAL%$str$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i endif
+			:i endif
+		:i else 
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$HasEquals$ = %i(1,00000001)) 
+		:i $FormatText$$textname$ = $text$%s(74,"1:size = %a, index = %i, name = %n, value = %v, param = %p, HasEquals = %h")$a$ =  (%GLOBAL%$array_size$) $i$ =  (%GLOBAL%$index$) $n$ =  (%GLOBAL%$name$) $v$ =  (%GLOBAL%$value$) $p$ =  (%GLOBAL%$param$) $h$ =  (%GLOBAL%$HasEquals$) 
+		:i $printf$%GLOBAL%$text$
+		:i while
+			
+			:i if  (%GLOBAL%$index$ < %GLOBAL%$array_size$) 
+				:i if NOT  ( (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a})  = %s(1,",")) 
+					:i $FormatText$$textname$ = $str$%s(4,"%t%s")$t$ =  (%GLOBAL%$value$) $s$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+					:i %GLOBAL%$value$ =  (%GLOBAL%$str$) 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i else 
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i continue
+					
+				:i endif
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i %GLOBAL%$value$ = %s(0,"")
+	:i endif
+	:i $FormatText$$textname$ = $text$%s(74,"2:size = %a, index = %i, name = %n, value = %v, param = %p, HasEquals = %h")$a$ =  (%GLOBAL%$array_size$) $i$ =  (%GLOBAL%$index$) $n$ =  (%GLOBAL%$name$) $v$ =  (%GLOBAL%$value$) $p$ =  (%GLOBAL%$param$) $h$ =  (%GLOBAL%$HasEquals$) 
+	:i $printf$%GLOBAL%$text$
+	:i $newsize$ =  (%GLOBAL%$array_size$ - %GLOBAL%$index$) 
+	:i if  (%GLOBAL%$newsize$ > %i(0,00000000)) 
+		:i while
+			
+			:i if  (%GLOBAL%$index$ < %GLOBAL%$array_size$) 
+				:i $FormatText$$textname$ = $str$%s(4,"%t%s")$t$ =  (%GLOBAL%$param$) $s$ =  (%GLOBAL%$char_array$:a{%GLOBAL%$index$:a}) 
+				:i %GLOBAL%$param$ =  (%GLOBAL%$str$) 
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i else 
+				:i continue
+				
+			:i endif
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $FormatText$$checksumname$ = $name_id$%s(2,"%s")$s$ = %GLOBAL%$name$
+	:i $FormatText$$textname$ = $text$%s(63,"name_id = %n, name = %i, value = %v, param = %p, HasEquals = %h")$n$ =  (%GLOBAL%$name_id$) $i$ =  (%GLOBAL%$name$) $v$ =  (%GLOBAL%$value$) $p$ =  (%GLOBAL%$param$) $h$ =  (%GLOBAL%$HasEquals$) 
+	:i $printf$%GLOBAL%$text$
+	:i $index2$ = %i(0,00000000)
+	:i %GLOBAL%$run_script$ = $null$
+	:i %GLOBAL%$run_value$ = %s(0,"")
+	:i $struct_params$ =  ( ($global_cmd_array$:a{%GLOBAL%$cmd_index$:a}) ->$cmd_params$) 
+	:i $GetArraySize$%GLOBAL%$struct_params$
+	:i while
+		
+		:i if  (%GLOBAL%$name_id$ =  ( (%GLOBAL%$struct_params$:a{%GLOBAL%$index2$:a}) ->$type$) ) 
+			:i $FormatText$$textname$ = $text$%s(43,"match, name_id = %i, type = %t, index2 = %p")$i$ =  (%GLOBAL%$name_id$) $t$ =  ( ( (%GLOBAL%$struct_params$:a{%GLOBAL%$index2$:a}) ->$type$) ) $p$ =  (%GLOBAL%$index2$) 
+			:i $printf$%GLOBAL%$text$
+			:i if  (%GLOBAL%$HasEquals$ = %i(1,00000001)) 
+				:i $printf$%s(13,"HasEquals = 1")
+				:i $FormatText$$textname$ = $text$%s(31,"run_script = %a, run_value = %b")$a$ =  (%GLOBAL%$run_script$) $b$ =  (%GLOBAL%$run_value$) 
+				:i $printf$%GLOBAL%$text$
+				:i %GLOBAL%$run_script$ =  ( (%GLOBAL%$struct_params$:a{%GLOBAL%$index2$:a}) ->$scr$) 
+				:i %GLOBAL%$run_value$ =  (%GLOBAL%$value$) 
+				:i continue
+				
+			:i else 
+				:i if  (%GLOBAL%$HasEquals$ = %i(0,00000000)) 
+					:i $printf$%s(13,"HasEquals = 0")
+					:i $FormatText$$textname$ = $text$%s(31,"run_script = %a, run_value = %b")$a$ =  (%GLOBAL%$run_script$) $b$ =  (%GLOBAL%$run_value$) 
+					:i $printf$%GLOBAL%$text$
+					:i %GLOBAL%$run_script$ =  ( (%GLOBAL%$struct_params$:a{%GLOBAL%$index2$:a}) ->$scr$) 
+					:i continue
+					
+				:i endif
+			:i endif
+		:i else 
+			:i $FormatText$$textname$ = $text$%s(49,"not a match, name_id = %i, type = %t, index2 = %p")$i$ =  (%GLOBAL%$name_id$) $t$ =  ( ( (%GLOBAL%$struct_params$:a{%GLOBAL%$index2$:a}) ->$type$) ) $p$ =  (%GLOBAL%$index2$) 
+			:i $printf$%GLOBAL%$text$
+			:i %GLOBAL%$index2$ =  (%GLOBAL%$index2$ + %i(1,00000001)) 
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+	:i if NOT  (%GLOBAL%$run_script$ = $null$) 
+		:i $FormatText$$textname$ = $text$%s(31,"run_script = %a, run_value = %b")$a$ =  (%GLOBAL%$run_script$) $b$ =  (%GLOBAL%$run_value$) 
+		:i $printf$%GLOBAL%$text$
+		:i  (%GLOBAL%$run_script$) $value_str$ = %GLOBAL%$run_value$$value_checksum$ = %GLOBAL%$name_id$
+	:i endif
+	:i return
+	$remains$ = %GLOBAL%$param$
+:i endfunction
+:i function $global_cmd_game$
+	:i $printf$%s(23,"script: global_cmd_game")
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GameModeEquals$$is_lobby$
+				:i if NOT $NetworkGamePending$
+					:i if NOT $ChangeLevelPending$
+						:i $network_game_options_selected$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_game_time$
+	:i $printf$%s(28,"script: global_cmd_game_time")
+	:i if $IsHost$
+	:i endif
+:i endfunction
+:i function $global_cmd_game_soz$
+	:i $printf$%s(27,"script: global_cmd_game_soz")
+	:i if $IsHost$
+	:i endif
+:i endfunction
+:i function $global_cmd_startgame$
+	:i $printf$%s(28,"script: global_cmd_startgame")
+	:i if $IsHost$
+		:i if $GameModeEquals$$is_lobby$
+			:i if  (%GLOBAL%$cmd_params_str$ = %s(0,"")) 
+				:i $chosen_host_game$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_endgame$
+	:i $printf$%s(26,"script: global_cmd_endgame")
+	:i if $IsHost$
+		:i if NOT  (%GLOBAL%$cmd_params_str$ = %s(0,"")) 
+			:i if NOT $GameModeEquals$$is_lobby$
+				:i $network_end_game_selected$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_autoserver_toggle$
+	:i $printf$%s(36,"script: global_cmd_autoserver_toggle")
+	:i if  (%GLOBAL%$value_checksum$ = $on$) 
+		:i $printf$%s(19,"value_checksum = On")
+		:i if NOT  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$) 
+			:i $AutoServerMenu_Toggle_Auto_Server$
+			:i $exit_pause_menu$
+		:i endif
+	:i else 
+		:i if  (%GLOBAL%$value_checksum$ = $off$) 
+			:i $printf$%s(20,"value_checksum = Off")
+			:i if  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$) 
+				:i $AutoServerMenu_Toggle_Auto_Server$
+				:i $exit_pause_menu$
+			:i endif
+		:i else 
+			:i $printf$%s(17,"none of the above")
+			:i $AutoServerMenu_Toggle_Auto_Server$
+			:i $exit_pause_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_autoserver$
+	:i $printf$%s(29,"script: global_cmd_autoserver")
+	:i $struct_params$ =  ( ($global_cmd_array$:a{%GLOBAL%$cmd_index$:a}) ->$cmd_params$) 
+	:i if  ( (%GLOBAL%$cmd_params_str$ = %s(0,""))  OR  (%GLOBAL%$cmd_params_str$ = %s(1,","))  OR  (%GLOBAL%$cmd_params_str$ = %s(2," ,")) ) 
+		:i $printf$%s(9,"no params")
+		:i $global_cmd_autoserver_toggle$
+	:i else 
+		:i $index$ = %i(0,00000000)
+		:i $get_command_param_count$$string$ = %GLOBAL%$cmd_params_str$
+		:i if  (%GLOBAL%$param_count$ = %i(0,00000000)) 
+			:i $printf$%s(26,"with params, param count 0")
+			:i $global_cmd_autoserver_toggle$
+		:i else 
+			:i $printf$%s(11,"with params")
+			:i $GetArraySize$%GLOBAL%$struct_params$
+			:i while
+				
+				:i $get_and_execute_next_command_param$$string$ =  (%GLOBAL%$cmd_params_str$) $cmd_index$ =  (%GLOBAL%$cmd_index$) 
+				:i if $GotParam$$not_a_command$
+					:i return
+					$not_a_command$
+				:i endif
+				:i if NOT  (%GLOBAL%$remains$ = %s(0,"")) 
+					:i %GLOBAL%$cmd_params_str$ = %GLOBAL%$remains$
+				:i endif
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$param_count$
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_set_as_time$
+	:i $printf$%s(30,"script: global_cmd_set_as_time")
+	:i if $IsHost$
+		:i $index$ = %i(0,00000000)
+		:i $new_value$ = %i(4294967295,ffffffff)
+		:i while
+			
+			:i $FormatText$$textname$ = $txt$%s(2,"%s")$s$ = %GLOBAL%$index$
+			:i if  (%GLOBAL%$txt$ = %GLOBAL%$value_str$) 
+				:i %GLOBAL%$new_value$ = %GLOBAL%$index$
+				:i continue
+				
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %i(600,00000258)
+		:i if  (%GLOBAL%$new_value$ = %i(4294967295,ffffffff)) 
+			:i $printf$%s(19,"Error: out of range")
+			:i return
+			
+		:i else 
+			:i $change$$AutoServer_BreakTime$ = %GLOBAL%$new_value$
+			:i $FormatText$$textname$ = $text$%s(46,"value_str = %v, new_value = %n, breaktime = %b")$v$ = %GLOBAL%$value_str$$n$ = %GLOBAL%$new_value$$b$ =  ($AutoServer_BreakTime$) 
+			:i $printf$%GLOBAL%$text$
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_autolevel$
+	:i if  (%GLOBAL%$cmd_params_str$ = %s(0,"")) 
+		:i $AutoServerMenu_Toggle_Auto_Level$
+		:i $exit_pause_menu$
+	:i else 
+		:i $get_and_execute_next_command_param$$string$ = %GLOBAL%$cmd_params_str$$cmd_index$ = %GLOBAL%$cmd_index$
+	:i endif
+:i endfunction
+:i function $global_cmd_obs$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i if $IsTrue$$THUGPRO_ObserveOn$
+				:i $THUGPRO_ObserveMode$$off$
+			:i else 
+				:i $THUGPRO_ObserveMode$$on$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_set$
+	:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+		:i if NOT $GameModeEquals$$is_career$
+			:i if NOT $IsObserving$
+				:i if NOT $IsSurveying$
+					:i if NOT $skater$.$OnLip$
+						:i if  ( ($GameModeEquals$$is_lobby$)  OR  ($GameModeEquals$$is_singlesession$) ) 
+							:i $set_custom_restart$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_goto$
+	:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+		:i if NOT $GameModeEquals$$is_career$
+			:i if NOT $IsObserving$
+				:i if NOT $IsSurveying$
+					:i if $skater$.$SetCustomRestart$
+						:i if NOT $skater$.$OnLip$
+							:i if  ( ($GameModeEquals$$is_lobby$)  OR  ($GameModeEquals$$is_singlesession$) ) 
+								:i $skip_to_custom_restart$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $global_cmd_warp$
+	:i if $GameModeEquals$$is_lobby$
+		:i if NOT $IsTrue$$JoinedAsObserver$
+			:i if NOT $IsTrue$$InDropIn$
+				:i if  (%GLOBAL%$cmd_params_str$ = %s(0,"")) 
+					:i if $IsTrue$$THUGPRO_ObserveOn$
+						:i $thugpro_observe_hud_set_visible$
+						:i $skater$.$PlaceBeforeCamera$
+						:i if $IsTrue$$view_mode$
+							:i $THUGPROResetViewer$$force_reset$
+						:i endif
+						:i $THUGPRO_ObserveMode$$off$
+					:i endif
+				:i else 
+					:i $edmsg2$%s(26,"\c4todo: warp to skater %a")$a$ = %GLOBAL%$cmd_params_str$
+				:i endif
+				:i $wait$%i(12,0000000c)$frames$
+				:i if $THUGPRO_UberFriggedThisFrame$
+					:i $ResetSkaters$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i $global_cmd_array$ = :a{
+	:i :s{
+		:i $cmd_strings$ = :a{%s(5,"/MUTE"):a}
+		:i $cmd_script$ = $toggle_display_chatwindow$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(4,"/OBS"):a}
+		:i $cmd_script$ = $global_cmd_obs$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(6,"/CLEAR"):a}
+		:i $cmd_script$ = $console_clear$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(4,"/SET")%s(4,"7SET"):a}
+		:i $cmd_script$ = $global_cmd_set$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(5,"/GOTO")%s(5,"7GOTO"):a}
+		:i $cmd_script$ = $global_cmd_goto$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(5,"/WARP"):a}
+		:i $cmd_script$ = $global_cmd_warp$
+		:i $cmd_params$ = :a{:a}
+		:i $isLocal$
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(10,"/AUTOLEVEL")%s(7,"/ALEVEL")%s(3,"/AL"):a}
+		:i $cmd_script$ = $global_cmd_autolevel$
+		:i $cmd_params$ = :a{:a}
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(11,"/AUTOSERVER")%s(8,"/ASERVER")%s(3,"/AS"):a}
+		:i $cmd_script$ = $global_cmd_autoserver$
+		:i $cmd_params$ = :a{:s{$type$ = $TIME$$scr$ = $global_cmd_set_as_time$:s}:s{$type$ = $on$$scr$ = $global_cmd_autoserver_toggle$:s}:s{$type$ = $off$$scr$ = $global_cmd_autoserver_toggle$:s}:a}
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(4,"/END")%s(8,"/ENDGAME"):a}
+		:i $cmd_script$ = $global_cmd_endgame$
+		:i $cmd_params$ = :a{:a}
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(5,"/GAME")%s(5,"7GAME")%s(5,"/GAEM")%s(5,"/GEAM")%s(10,"/gamegame!")%s(9,"/gaem pls"):a}
+		:i $cmd_script$ = $global_cmd_game$
+		:i $cmd_params$ = :a{
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $cmd_strings$ = :a{%s(6,"/START")%s(13,"/START A GAME")%s(21,"/START A FUCKING GAME"):a}
+		:i $cmd_script$ = $global_cmd_startgame$
+		:i $cmd_params$ = :a{:a}
+	:i :s}
+	:i :a}
+:i :end

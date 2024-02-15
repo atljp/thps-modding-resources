@@ -1,0 +1,513 @@
+
+:i $SkaterPed_StateTable$ = :s{
+	:i $STATE_skating$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_idle$
+	:i :s}
+	:i $STATE_stop$ = :s{
+		:i $script_ped_state$ = $ped_skater_stop$
+	:i :s}
+	:i $STATE_bail$ = :s{
+		:i $ped_update_type$ = $bail_move_update$
+		:i $script_ped_state$ = $ped_skater_generic_bail$
+	:i :s}
+	:i $STATE_bailgrind$ = :s{
+		:i $ped_update_type$ = $bail_move_update$
+		:i $script_ped_state$ = $ped_skater_grind_bail$
+	:i :s}
+	:i $STATE_tricklip$ = :s{
+		:i $ped_update_type$ = $lip_trick_update$
+		:i $script_ped_state$ = $ped_skater_lip_trick$
+	:i :s}
+	:i $STATE_trickgrab$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_grab_trick$
+	:i :s}
+	:i $STATE_trickflip$ = :s{
+		:i $script_ped_state$ = $ped_skater_flip_trick$
+	:i :s}
+	:i $STATE_grind$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_grind$
+	:i :s}
+	:i $STATE_grindoff$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_grind_off$
+	:i :s}
+	:i $STATE_land$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_land$
+	:i :s}
+	:i $STATE_manual$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_manual$
+	:i :s}
+	:i $STATE_manualdown$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_manual_down$
+	:i :s}
+	:i $STATE_jump$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_jump$
+	:i :s}
+	:i $STATE_jumpvert$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_vert_jump$
+	:i :s}
+	:i $STATE_jumpcrouch$ = :s{
+		:i $ped_update_type$ = $skater_move_update$
+		:i $script_ped_state$ = $ped_skater_crouch_for_jump$
+	:i :s}
+	:i $STATE_rolloff$ = :s{
+		:i $script_ped_state$ = $ped_skater_roll_off$
+	:i :s}
+:i :s}
+:i function $ped_skater_grind$
+	:i $Obj_ShadowOff$
+	:i $Ped_ApplySpeedBoost$$percent$ = %i(135,00000087)
+	:i $GetRandomArrayElement$$ped_skater_grind_tricks$
+	:i $goto$ (%GLOBAL%$element$->$TrickScript$) 
+:i endfunction
+:i function $Ped_Skater_BeginGrind$
+	:i %GLOBAL%$init_anim$ = %GLOBAL%$initanim$
+	:i %GLOBAL%$range_anim$ = %GLOBAL%$anim$
+	:i %GLOBAL%$out_anim$ = %GLOBAL%$outanim$
+	:i %GLOBAL%$bail_script$ = %GLOBAL%$grindbail$
+	:i $SetTags$:s{
+		:i $grind_init_anim$ = %GLOBAL%$init_anim$
+		:i $grind_range_anim$ = %GLOBAL%$range_anim$
+		:i $grind_out_anim$ = %GLOBAL%$out_anim$
+		:i $bail_script$ = %GLOBAL%$bail_script$
+	:i :s}
+	:i $Obj_PlayAnim$$anim$ = %GLOBAL%$init_anim$
+	:i $Obj_WaitAnimFinished$
+	:i %GLOBAL%$wobble_to$ = select(2f,2, 01 00 01 00) :OFFSET(0):OFFSET(1)
+		 :POS(0) $Start$
+	:BREAKTO(2)
+		 :POS(1) $End$ :POS(2) 
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$range_anim$$PingPong$$From$ = $Current$$To$ = %GLOBAL%$wobble_to$$Speed$ = %f(0.900000)$BlendPeriod$ = %f(0.400000)
+	:i endfunction
+	:i function $ped_skater_grind_off$
+		:i if $GetSingleTag$$grind_out_anim$
+			:i $Obj_PlayAnim$$anim$ = %GLOBAL%$grind_out_anim$
+		:i else 
+			:i $GetSingleTag$$grind_init_anim$
+			:i $Obj_PlayAnim$$anim$ = %GLOBAL%$grind_init_anim$$backwards$
+		:i endif
+		:i $Ped_SetLogicState$$STATE_rolloff$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_grind_bail$
+		:i $SpawnSound$$Ped_Skater_Grind_Bail_Sound$
+		:i if $GetSingleTag$$bail_script$
+			:i $SetTags$$BailType$ = $grind$
+			:i $goto$%GLOBAL%$bail_script$
+		:i endif
+	:i endfunction
+	:i function $Ped_Skater_BeginBail$
+		:i %GLOBAL%$CrntBailAnim$ = %GLOBAL%$Anim1$
+		:i %GLOBAL%$CrntGetUpAnim$ = %GLOBAL%$Endpose$
+		:i $Ped_SetIsBailing$%i(1,00000001)
+		:i if $GetSingleTag$$BailType$
+			:i if  (%GLOBAL%$BailType$ = $grind$) 
+				:i $Ped_SetIsBailing$$grind$%i(1,00000001)
+			:i endif
+		:i endif
+		:i $Ped_HideBoard$%i(1,00000001)
+		:i $Ped_StoreMaxVelocity$
+		:i $Obj_SetPathDeceleration$$ped_skater_bail_deceleration$
+		:i $Obj_SetPathVelocity$%i(0,00000000)
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$CrntBailAnim$$NoRestart$$BlendPeriod$ = %f(0.300000)
+		:i $Obj_WaitAnimFinished$
+		:i $Obj_PlayAnim$$anim$ = $Ped_M_LayIdleE$$cycle$
+		:i while
+			
+			:i if NOT $Obj_ObjectInRadius$$type$ = $skater$$radius$ = %i(3,00000003)
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(1,00000001)$second$
+		:i loop_to 
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$CrntGetUpAnim$$BlendPeriod$ = %f(0.400000)
+		:i $Obj_WaitAnimFinished$
+		:i $Ped_GetOriginalMaxVelocity$
+		:i $Obj_SetPathVelocity$%GLOBAL%$original_max_velocity$$ips$
+		:i $Ped_SetIsBailing$%i(0,00000000)
+		:i if $GotParam$$BailType$
+			:i if  (%GLOBAL%$BailType$ = $grind$) 
+				:i $Ped_SetIsBailing$$grind$%i(0,00000000)
+				:i $Ped_SetIsGrinding$%i(1,00000001)
+			:i endif
+		:i endif
+		:i $Ped_HideBoard$%i(0,00000000)
+		:i $Obj_SetPathDeceleration$%i(0,00000000)
+		:i $Ped_SetLogicState$$STATE_skating$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_crouch_for_jump$
+		:i $Obj_PlayAnim$$anim$ = $Crouch$
+		:i $Obj_WaitAnimFinished$
+		:i $Obj_PlayAnim$$anim$ = $CrouchIdle$$cycle$
+	:i endfunction
+	:i function $ped_skater_jump$
+		:i $Obj_ShadowOff$
+		:i if NOT $GotParam$$jumpSpeed$
+			:i %GLOBAL%$jumpSpeed$ = $ped_skater_jump_speed$
+		:i endif
+		:i $Ped_PlayJumpSound$
+		:i if $GotParam$$land_height$
+			:i $Obj_Jump$:s{$Speed$ = %GLOBAL%$jumpSpeed$
+				:i $gravity$ = $ped_skater_jump_gravity$
+				:i $heading$ = %GLOBAL%$heading$
+				:i $land_height$ = %GLOBAL%$land_height$
+			:i :s}
+		:i else 
+			:i $Obj_Jump$:s{
+				:i $Speed$ = %GLOBAL%$jumpSpeed$
+				:i $gravity$ = $ped_skater_jump_gravity$
+			:i :s}
+		:i endif
+		:i $Ped_ActivateAuxScript$$name$ = $ped_skater_play_midair_anim$$params$ = :s{$anim$ = $Ollie$:s}
+		:i $Obj_WaitJumpFinished$
+		:i $Ped_DeactivateAuxScript$
+		:i $Ped_PlayLandSound$
+		:i $Ped_RemoveSpeedBoost$
+		:i if $GotParam$$land_height$
+			:i if $GotParam$$should_land$
+				:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$
+			:i endif
+			:i $Ped_StartMoving$
+			:i $Ped_HitWaypoint$
+		:i else 
+			:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$
+		:i endif
+	:i endfunction
+	:i function $ped_skater_vert_jump$
+		:i $Obj_ShadowOff$
+		:i $Ped_StopMoving$
+		:i if NOT $GotParam$$jumpSpeed$
+			:i %GLOBAL%$jumpSpeed$ = $ped_skater_jump_speed$
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = $Ollie$
+		:i $Ped_PlayJumpSound$
+		:i $Obj_Jump$$heading$ = %GLOBAL%$heading$$Speed$ =  (%GLOBAL%$jumpSpeed$ * $ped_skater_vert_jump_speed_slop$) $gravity$ = $ped_skater_jump_gravity$
+		:i $Obj_WaitAnimFinished$
+		:i $Obj_PlayAnim$$anim$ = $AirIdle$$cycle$
+		:i $Obj_WaitJumpFinished$
+		:i $Ped_PlayLandSound$
+		:i if $GotParam$$should_flip$
+			:i $Obj_Flip$
+		:i endif
+		:i $Ped_StartMoving$
+		:i $Ped_Utils_GetAnimName$$type$ = $CrouchedLandAnims$
+		:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$$StateParams$ = :s{$anim$ = %GLOBAL%$AnimName$:s}
+	:i endfunction
+	:i function $ped_skater_roll_off$
+		:i $Obj_ShadowOff$
+		:i $Ped_StopMoving$
+		:i $Ped_GetCurrentVelocity$
+		:i $Obj_Jump$$use_current_heading$$Speed$ = %GLOBAL%$velocity$$gravity$ = $ped_skater_jump_gravity$
+		:i $Obj_WaitJumpFinished$
+		:i $Ped_PlayLandSound$
+		:i $Ped_StartMoving$
+		:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_grab_trick$
+		:i $Obj_ShadowOff$
+		:i if NOT $GotParam$$jumpSpeed$
+			:i %GLOBAL%$jumpSpeed$ = $ped_skater_jump_speed$
+		:i endif
+		:i if $GotParam$$is_vert$
+			:i $Ped_StopMoving$
+		:i endif
+		:i if NOT $GotParam$$anim$
+			:i $GetConfigurableTricksFromType$$type$ = $GrabTrick$
+			:i $GetRandomArrayElement$%GLOBAL%$ConfigurableTricks$
+			:i %GLOBAL%$trick_params$ =  (%GLOBAL%$element$->$params$) 
+			:i %GLOBAL%$anim$ =  (%GLOBAL%$trick_params$->$anim$) 
+			:i %GLOBAL%$idle_anim$ =  (%GLOBAL%$trick_params$->$Idle$) 
+			:i if $StructureContains$$structure$ = %GLOBAL%$trick_params$$outanim$
+				:i %GLOBAL%$out_anim$ =  (%GLOBAL%$trick_params$->$outanim$) 
+			:i endif
+		:i endif
+		:i $Ped_PlayJumpSound$
+		:i if $GotParam$$is_vert$
+			:i $Obj_Jump$$heading$ = %GLOBAL%$heading$$Speed$ = %GLOBAL%$jumpSpeed$$gravity$ = $ped_skater_jump_gravity$
+		:i else 
+			:i if  (%GLOBAL%$is_jumping$ = %i(0,00000000)) 
+				:i $Obj_Jump$$Speed$ = %GLOBAL%$jumpSpeed$$gravity$ = $ped_skater_jump_gravity$
+			:i endif
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$
+		:i $Ped_ActivateAuxScript$$name$ = $ped_skater_wait_and_stop_grab_anim$$params$ =  isNull 
+		:i $Obj_WaitJumpFinished$
+		:i $Ped_PlayLandSound$
+		:i $Ped_DeactivateAuxScript$
+		:i if $GotParam$$is_vert$
+			:i if $GotParam$$should_flip$
+				:i $Obj_Flip$
+			:i endif
+			:i $Ped_StartMoving$
+			:i $Ped_Utils_GetAnimName$$type$ = $CrouchedLandAnims$
+		:i else 
+			:i $Ped_Utils_GetAnimName$$type$ = $LandAnims$
+		:i endif
+		:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$$StateParams$ = :s{$anim$ = %GLOBAL%$AnimName$:s}
+	:i endfunction
+	:i function $ped_skater_stop$
+		:i $Ped_StoreMaxVelocity$
+		:i if NOT $GotParam$$deceleration$
+			:i %GLOBAL%$deceleration$ = $ped_skater_stop_deceleration$
+		:i endif
+		:i $Obj_SetPathDeceleration$%GLOBAL%$deceleration$
+		:i $Obj_SetPathVelocity$%i(0,00000000)
+		:i while
+			
+			:i $Ped_GetCurrentVelocity$
+			:i if  (%GLOBAL%$velocity$ = %i(0,00000000)) 
+				:i $Ped_StopMoving$
+				:i continue
+				
+			:i endif
+			:i $Wait$%i(1,00000001)$frame$
+		:i loop_to 
+		:i $Obj_PlayAnim$$anim$ = $NewBrake$
+		:i $Obj_WaitAnimFinished$
+		:i if $GotParam$$RandomStopTime$
+			:i %GLOBAL%$StopTime$ = random%vec2(1.000000,30.000000)
+		:i endif
+		:i if $GotParam$$StopTime$
+			:i if  (%GLOBAL%$StopTime$ > %i(0,00000000)) 
+				:i $Ped_ActivateAuxScript$$name$ = $ped_skater_wait_and_start_moving$$params$ = :s{$StopTime$ = %GLOBAL%$StopTime$:s}
+			:i endif
+		:i endif
+		:i $GetSingleTag$$brake_idle_anims$
+		:i if NOT $GotParam$$brake_idle_anims$
+			:i %GLOBAL%$brake_idle_anims$ = $ped_skater_brake_idle_anims$
+		:i endif
+		:i while
+			
+			:i $GetRandomArrayElement$%GLOBAL%$brake_idle_anims$
+			:i $Obj_PlayAnim$$anim$ = %GLOBAL%$element$
+			:i $Obj_WaitAnimFinished$
+		:i loop_to 
+	:i endfunction
+	:i function $ped_skater_manual$
+		:i $Obj_ShadowOn$
+		:i switch %GLOBAL%$ManualType$
+			:i case $Manual$
+				:i $SetTags$$manual_out_anim$ = $PutDownManual$
+				:i $init_anim$ = $Manual$
+				:i $range_anim$ = $Manual_range$
+				:i endcase
+			case $Handstand$
+				:i $SetTags$$manual_out_anim$ = $RustySlide_Out$
+				:i $init_anim$ = $RustySlide_Init$
+				:i $range_anim$ = $Primo_Range$
+				:i endcase
+			default 
+				:i $SetTags$$manual_out_anim$ = $PutDownManual$
+				:i $init_anim$ = $Manual$
+				:i $range_anim$ = $Manual_range$
+				:i end_switch
+		
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$init_anim$
+		:i $Obj_WaitAnimFinished$
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$range_anim$$PingPong$$From$ = $Start$$To$ = $End$$Speed$ = %f(1.100000)$BlendPeriod$ = %f(0.400000)
+	:i endfunction
+	:i function $ped_skater_manual_down$
+		:i $Obj_ShadowOn$
+		:i if NOT $GetSingleTag$$manual_out_anim$
+			:i %GLOBAL%$manual_out_anim$ = $PutDownManual$
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$manual_out_anim$
+		:i $Obj_WaitAnimFinished$
+		:i $Ped_SetLogicState$$STATE_skating$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_lip_trick$
+		:i $Obj_ShadowOff$
+		:i $Ped_StopMoving$
+		:i if NOT $GotParam$$anim$
+			:i $GetConfigurableTricksFromType$$type$ = $LipMacro2$
+			:i $GetRandomArrayElement$%GLOBAL%$ConfigurableTricks$
+			:i %GLOBAL%$trick_params$ =  (%GLOBAL%$element$->$params$) 
+			:i %GLOBAL%$init_anim$ =  (%GLOBAL%$trick_params$->$initanim$) 
+			:i %GLOBAL%$anim$ =  (%GLOBAL%$trick_params$->$anim$) 
+			:i %GLOBAL%$out_anim$ =  (%GLOBAL%$trick_params$->$outanim$) 
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$init_anim$$BlendPeriod$ = %f(0.400000)
+		:i $Obj_WaitAnimFinished$
+		:i if NOT $GotParam$$HoldLipTime$
+			:i %GLOBAL%$HoldLipTime$ = random%vec2(1.000000,3.000000)
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$$PingPong$$From$ = $Current$$To$ = $Start$$Speed$ = %f(0.900000)$BlendPeriod$ = %f(0.400000)
+		:i $Wait$%GLOBAL%$HoldLipTime$$seconds$
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$out_anim$$BlendPeriod$ = %f(0.400000)
+		:i if NOT $StructureContains$$structure$ = %GLOBAL%$trick_params$$FlipAfter$
+			:i $Obj_Flip$
+		:i endif
+		:i $Obj_WaitAnimFinished$
+		:i $Ped_StartMoving$
+		:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_flip_trick$
+		:i $Obj_ShadowOff$
+		:i if $GotParam$$is_vert$
+			:i $Ped_StopMoving$
+		:i endif
+		:i if  (%GLOBAL%$is_jumping$ = %i(0,00000000)) 
+			:i $Obj_PlayAnim$$anim$ = $Ollie$
+			:i if $GotParam$$is_vert$
+				:i %GLOBAL%$jumpSpeed$ =  (%GLOBAL%$jumpSpeed$ * $ped_skater_vert_jump_speed_slop$) 
+			:i endif
+			:i $Ped_PlayJumpSound$
+			:i if $GotParam$$land_height$
+				:i $Obj_Jump$:s{$Speed$ = %GLOBAL%$jumpSpeed$
+					:i $gravity$ = $ped_skater_jump_gravity$
+					:i $heading$ = %GLOBAL%$heading$
+					:i $land_height$ = %GLOBAL%$land_height$
+				:i :s}
+			:i else 
+				:i $Obj_Jump$:s{
+					:i $Speed$ = %GLOBAL%$jumpSpeed$
+					:i $heading$ = %GLOBAL%$heading$
+					:i $gravity$ = $ped_skater_jump_gravity$
+				:i :s}
+			:i endif
+			:i $Wait$%i(8,00000008)$frame$
+		:i endif
+		:i if NOT $GotParam$$anim$
+			:i $GetConfigurableTricksFromType$$type$ = $FlipTrick$
+			:i $GetRandomArrayElement$%GLOBAL%$ConfigurableTricks$
+			:i %GLOBAL%$trick_params$ =  (%GLOBAL%$element$->$params$) 
+			:i %GLOBAL%$anim$ =  (%GLOBAL%$trick_params$->$anim$) 
+		:i endif
+		:i $Ped_ActivateAuxScript$$name$ = $ped_skater_play_midair_anim$$params$ = :s{$anim$ = %GLOBAL%$anim$:s}
+		:i $Obj_WaitJumpFinished$
+		:i $Ped_DeactivateAuxScript$
+		:i $Ped_PlayLandSound$
+		:i if $GotParam$$is_vert$
+			:i $Ped_StartMoving$
+			:i $Ped_Utils_GetAnimName$$type$ = $CrouchedLandAnims$
+		:i else 
+			:i $Ped_Utils_GetAnimName$$type$ = $LandAnims$
+		:i endif
+		:i if $GotParam$$land_height$
+			:i $Ped_HitWaypoint$
+		:i endif
+		:i $Ped_SetLogicState$$STATE_land$$Table$ = $SkaterPed_StateTable$$StateParams$ = :s{$anim$ = %GLOBAL%$AnimName$:s}
+	:i endfunction
+	:i function $ped_skater_land$
+		:i $Obj_ShadowOn$
+		:i if NOT $GotParam$$anim$
+			:i %GLOBAL%$anim$ = $Land$
+		:i endif
+		:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$
+		:i $Obj_WaitAnimFinished$
+		:i $Ped_SetLogicState$$STATE_skating$$Table$ = $SkaterPed_StateTable$
+	:i endfunction
+	:i function $ped_skater_idle$
+		:i $Obj_EnableAnimBlending$$enabled$ = %i(1,00000001)
+		:i $GetSingleTag$$skater_override_anim$
+		:i if $GotParam$$skater_override_anim$
+			:i $Obj_PlayAnim$$anim$ = %GLOBAL%$skater_override_anim$$cycle$$DontInterrupt$
+		:i endif
+		:i while
+			
+			:i if $Ped_NearVertNode$
+				:i %GLOBAL%$anim_struct$ = select(2f,2, 0a 00 01 00) :OFFSET(3):OFFSET(4)
+					 :POS(3) :s{$anim$ = $Idle$:s}
+				:BREAKTO(5)
+					 :POS(4) :s{$init_anim$ = $Crouch$$anim$ = $CrouchIdle$$out_anim$ = $CrouchIdleToIdle$$cycle$ = %i(10,0000000a):s} :POS(5) 
+				:i else 
+					:i %GLOBAL%$anim_struct$ = select(2f,3, 05 00 0a 00 01 00) :OFFSET(6):OFFSET(7):OFFSET(8)
+						 :POS(6) :s{$anim$ = $Idle$:s}
+					:BREAKTO(9)
+						 :POS(7) :s{$anim$ = $PushIdle$:s}
+					:BREAKTO(9)
+						 :POS(8) :s{$init_anim$ = $Crouch$$anim$ = $CrouchIdle$$out_anim$ = $CrouchIdleToIdle$$cycle$ = %i(10,0000000a):s} :POS(9) 
+					:i endif
+					:i $RemoveParameter$$init_anim$
+					:i $RemoveParameter$$anim$
+					:i $RemoveParameter$$cycle$
+					:i $RemoveParameter$$out_anim$
+					:i if $StructureContains$$structure$ = %GLOBAL%$anim_struct$$init_anim$
+						:i %GLOBAL%$init_anim$ =  (%GLOBAL%$anim_struct$->$init_anim$) 
+					:i endif
+					:i %GLOBAL%$anim$ =  (%GLOBAL%$anim_struct$->$anim$) 
+					:i if $StructureContains$$structure$ = %GLOBAL%$anim_struct$$cycle$
+						:i %GLOBAL%$cycle$ =  (%GLOBAL%$anim_struct$->$cycle$) 
+					:i else 
+						:i %GLOBAL%$cycle$ = %i(1,00000001)
+					:i endif
+					:i if $StructureContains$$structure$ = %GLOBAL%$anim_struct$$out_anim$
+						:i %GLOBAL%$out_anim$ =  (%GLOBAL%$anim_struct$->$out_anim$) 
+					:i endif
+					:i if  ($GotParam$$init_anim$) 
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$init_anim$
+						:i $Obj_WaitAnimFinished$
+					:i endif
+					:i while
+						
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$
+						:i $Obj_WaitAnimFinished$
+					:i loop_to %GLOBAL%$cycle$
+					:i if $GotParam$$out_anim$
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$out_anim$
+						:i $Obj_WaitAnimFinished$
+					:i endif
+				:i loop_to 
+			:i endfunction
+			:i function $ped_skater_generic_bail$
+				:i $GetSingleTag$$grind_bail_anim$
+				:i if NOT $GotParam$$grind_bail_anim$
+					:i %GLOBAL%$grind_bail_anim$ = $FaceFall$
+					:i %GLOBAL%$grind_get_up_anim$ = $GetUpFaceSmash$
+				:i else 
+					:i $GetSingleTag$$grind_get_up_anim$
+				:i endif
+				:i $Ped_SetIsBailing$%i(1,00000001)
+				:i $Ped_StoreMaxVelocity$
+				:i $Obj_SetPathDeceleration$$ped_skater_bail_deceleration$
+				:i $Obj_SetPathVelocity$%i(0,00000000)
+				:i $Obj_PlayAnim$$anim$ = %GLOBAL%$grind_bail_anim$$NoRestart$$BlendPeriod$ = %f(0.300000)
+				:i $Obj_WaitAnimFinished$
+				:i $Obj_PlayAnim$$anim$ = %GLOBAL%$grind_get_up_anim$$BlendPeriod$ = %f(0.100000)
+				:i $Obj_WaitAnimFinished$
+				:i $Ped_GetOriginalMaxVelocity$
+				:i $Obj_SetPathVelocity$%GLOBAL%$original_max_velocity$$ips$
+				:i $Ped_SetIsBailing$%i(0,00000000)
+				:i $Ped_SetLogicState$$STATE_skating$$Table$ = $SkaterPed_StateTable$
+			:i endfunction
+			:i function $ped_skater_start_moving$
+				:i $GetSingleTag$$ped_skater_acceleration$
+				:i if $GotParam$$ped_skater_acceleration$
+					:i $Obj_SetPathAcceleration$%GLOBAL%$ped_skater_acceleration$
+				:i endif
+				:i $Ped_GetOriginalMaxVelocity$
+				:i $Obj_SetPathVelocity$%GLOBAL%$original_max_velocity$$ips$
+				:i $Obj_PlayAnim$$anim$ = $NewBrakeIdleToIdle$
+				:i $Obj_WaitAnimFinished$
+			:i endfunction
+			:i function $ped_skater_play_midair_anim$
+				:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$
+				:i $Obj_WaitAnimFinished$
+				:i $Obj_PlayAnim$$anim$ = $AirIdle$$cycle$
+			:i endfunction
+			:i function $ped_skater_wait_and_stop_grab_anim$
+				:i if $GotParam$$jumpTime$
+					:i $Wait$ (%GLOBAL%$jumpTime$ * %f(0.500000)) $seconds$
+					:i if $GotParam$$out_anim$
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$out_anim$
+						:i $Obj_WaitAnimFinished$
+					:i else 
+						:i $Obj_PlayAnim$$anim$ = %GLOBAL%$anim$$backwards$
+						:i $Obj_WaitAnimFinished$
+					:i endif
+					:i $Obj_PlayAnim$$anim$ = $AirIdle$$cycle$
+				:i endif
+			:i endfunction
+			:i function $ped_skater_wait_and_start_moving$
+				:i $Wait$%GLOBAL%$StopTime$$seconds$
+				:i $Ped_SetLogicState$$STATE_skating$$Table$ = $SkaterPed_StateTable$
+			:i endfunction
+			:i :end
+			

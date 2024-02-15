@@ -1,0 +1,78 @@
+
+:i $goal_graffiti_genericParams$ = :s{
+	:i $goal_text$ = %s(33,"You must tag more objects to win!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $init$ = $goal_graffiti_init$
+	:i $activate$ = $goal_graffiti_activate$
+	:i $deactivate$ = $goal_graffiti_deactivate$
+	:i $expire$ = $goal_graffiti_expire$
+	:i $goal_description$ = %s(9,"Graffiti!")
+:i :s}
+:i function $goal_graffiti_init$
+:i endfunction
+:i function $goal_graffiti_activate$
+	:i if $InTeamGame$
+		:i $FormatText$$TextName$ = $msg_text$%s(48,"%aGraffiti\n\c0The team with the most tags wins.")$a$ =  ($gamemode_color$) 
+	:i else 
+		:i $FormatText$$TextName$ = $msg_text$%s(50,"%aGraffiti\n\c0The player with the most tags wins.")$a$ =  ($gamemode_color$) 
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(0,00000000)
+		:i $MakeSkaterGosub$$add_skater_to_world$$skater$ = %i(1,00000001)
+		:i $ScriptGetScreenMode$
+		:i switch %GLOBAL%$screen_mode$
+			:i case $split_vertical$
+				:i $msg_pos$ = %vec2(350.000000,42.000000)
+				:i endcase
+			case $split_horizontal$
+				:i $msg_pos$ = %vec2(620.000000,27.000000)
+				:i end_switch
+		
+	:i else 
+		:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i endif
+	:i if $InNetGame$
+		:i $create_panel_block$$id$ = $mp_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i $ResetScore$
+:i endfunction
+:i function $goal_graffiti_deactivate$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+:i endfunction
+:i function $graffiti_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_graffiti_expire$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $DestroyScreenElement$$id$ = $goal_message$
+	:i endif
+	:i $printf$%s(20,"goal_graffiti_expire")
+	:i if $OnServer$
+		:i $SpawnScript$$wait_then_create_rankings$$params$ = :s{$score_title_text$ = %s(4,"TAGS"):s}
+	:i else 
+		:i $create_rankings$$score_title_text$ = %s(4,"TAGS")
+	:i endif
+:i endfunction
+:i function $AddGoal_Graffiti$
+	:i $GoalManager_AddGoal$$name$ = $graffiti$:s{
+		:i $params$ = :s{$goal_graffiti_genericParams$
+			:i  isNull 
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_Graffiti$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $graffiti$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $graffiti$
+:i endfunction
+:i :end

@@ -1,0 +1,51 @@
+//------------------------------------------------
+// DJ HERO .img FILE
+//------------------------------------------------
+
+#include "../Common.bt"
+
+typedef struct
+{
+    uint fmt <bgcolor=CL_SINGLEVALUE>;
+} DJDDSFormat <read=ReadDDSFormat>;
+
+string ReadDDSFormat(DJDDSFormat &fmt)
+{
+    switch (fmt.fmt)
+    {
+        case 0x00050000:
+            return "BC1";
+            break;
+
+        case 0x00070001:
+            return "BC2";
+            break;
+
+        case 0x000900FF:
+            return "BC3";
+            break;
+
+        case 0x00030000:
+            return "R8G8B8A8";
+            break;
+
+        default:
+            return "???";
+            break;
+    }
+}
+
+typedef struct
+{
+    ushort width <bgcolor=CL_SINGLEVALUE>;
+    ushort height <bgcolor=CL_SINGLEVALUE>;
+    ushort always_one <bgcolor=CL_SINGLEVALUE>;
+    ushort width_b <bgcolor=CL_SINGLEVALUE>;
+    ushort always_zero <bgcolor=CL_SINGLEVALUE>;
+    DJDDSFormat dds_format;
+    ushort unk <bgcolor=CL_SINGLEVALUE>;
+    ushort mipmap_maybe <bgcolor=CL_SINGLEVALUE, comment="Additional Mipmaps???">;
+    ushort unk_b <bgcolor=CL_SINGLEVALUE>;
+} DJIMGFile;
+
+DJIMGFile img_file;

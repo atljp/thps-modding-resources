@@ -1,0 +1,26 @@
+typedef struct
+{
+    hkUint32 m_min[3] <optimize=false>;
+    hkUint8 m_expansionMin[3] <optimize=false>;
+    hkUint8 m_expansionShift;
+    hkUint32 m_max[3] <optimize=false>;
+    hkUint8 m_expansionMax[3] <optimize=false>;
+    hkUint8 m_padding;
+    hkUint16 m_numChildShapeAabbs;
+    OptionalLinkMarker m_childShapeAabbs;
+
+    if (HAVOK_VERSION > 5)
+        OptionalLinkMarker m_childShapeKeys;
+
+} BoundingVolumeData;
+
+typedef struct
+{
+    hkpCdBody super;
+    hkInt8 m_ownerOffset;
+    hkUint8 m_forceCollideOntoPpu;
+    hkUint16 m_shapeSizeOnSpu;
+    hkpTypedBroadPhaseHandle m_broadPhaseHandle;
+    BoundingVolumeData m_boundingVolumeData;
+    hkReal m_allowedPenetrationDepth;
+} hkpCollidable;

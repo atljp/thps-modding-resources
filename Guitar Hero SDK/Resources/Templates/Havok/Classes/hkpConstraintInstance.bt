@@ -1,0 +1,28 @@
+enum <ubyte> OnDestructionRemapInfo
+{
+	ON_DESTRUCTION_REMAP = 0,			///
+	ON_DESTRUCTION_REMOVE = 1,			///
+	ON_DESTRUCTION_RESET_REMOVE = 2,	///
+};
+
+typedef struct
+{
+    hkReferencedObject super;
+    HavokGlobalFixup m_owner;
+    HavokGlobalFixup m_data;
+    HavokGlobalFixup m_constraintModifiers;
+    HavokGlobalFixup m_entities[2] <optimize=false>;
+    hkUint8 m_priority;
+    hkBool m_wantRuntime;
+
+    if (HAVOK_VERSION > 5)
+    {
+        OnDestructionRemapInfo m_destructionRemapInfo;
+        hkSmallArray m_listeners;
+    }
+
+    HavokNamePointer m_name;
+
+    hkUlong m_userData <comment="QBKey of name">;
+    PointerMarker m_internal;
+} hkpConstraintInstance <read=Str("%s", ReadHavokNamePointer(m_name))>;

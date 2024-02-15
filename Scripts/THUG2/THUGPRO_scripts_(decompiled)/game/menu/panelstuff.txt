@@ -1,0 +1,1055 @@
+
+:i $panel_message_perfect_line1_pos$ = %vec2(20.000000,340.000000)
+:i $panel_message_perfect_line2_pos$ = %vec2(20.000000,360.000000)
+:i $panel_message_buttslap_pos$ = %vec2(610.000000,340.000000)
+:i $panel_message_buttslap2_pos$ = %vec2(670.000000,340.000000)
+:i $panel_message_boostplantcounter_pos$ = %vec2(610.000000,340.000000)
+:i $panel_message_boostplantcounter2_pos$ = %vec2(680.000000,340.000000)
+:i $new_gap_message_pos$ = %vec2(-40.000000,90.000000)
+:i $panel_block_goal_desc_pos$ = %vec2(690.000000,17.000000)
+:i $net_panel_message_pos$ = %vec2(660.000000,127.000000)
+:i $combo_letter_panel_message_pos1$ = %vec2(765.000000,150.000000)
+:i $combo_letter_panel_message_pos2$ = %vec2(680.000000,150.000000)
+:i $skate_panel_message_pos1$ = %vec2(795.000000,150.000000)
+:i $skate_panel_message_pos2$ = %vec2(695.000000,150.000000)
+:i $net_score_menu_pos$ = %vec2(-40.000000,80.000000)
+:i $the_score_pot_scale$ = %f(0.800000)
+:i $balance_meter_info$ = :s{
+	:i $bar_positions$ = :a{
+		:i %vec2(320.000000,165.000000)
+		:i %vec2(250.000000,224.000000)
+		:i :a}
+	:i $bar_positions_mp_h$ = :a{
+		:i %vec2(320.000000,70.000000)
+		:i %vec2(250.000000,130.000000)
+		:i :a}
+	:i $bar_positions_mp_v$ = :a{
+		:i %vec2(140.000000,130.000000)
+		:i %vec2(80.000000,224.000000)
+		:i :a}
+	:i $arrow_positions$ = :a{
+		:i %vec2(0.000000,-17.000000)
+		:i %vec2(10.000000,-17.000000)
+		:i %vec2(20.000000,-15.000000)
+		:i %vec2(30.000000,-11.000000)
+		:i %vec2(40.000000,-6.000000)
+		:i %vec2(50.000000,1.000000)
+		:i %vec2(60.000000,12.000000)
+		:i :a}
+:i :s}
+:i $special_bar_colors$ = $default_bar_colors$
+:i $default_bar_colors$ = :a{
+	:i :a{%i(128,00000080)%i(0,00000000)%i(9,00000009)%i(128,00000080):a}
+	:i :a{%i(81,00000051)%i(107,0000006b)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(0,00000000)%i(9,00000009)%i(128,00000080):a}
+	:i :a}
+:i $special_bar_interpolator_rate$ = %f(0.100000)
+:i function $hide_panel_stuff$
+	:i $printf$%s(56,"*************** HIDING PANEL STUFF *********************")
+	:i if $ObjectExists$$id$ = $player1_panel_container$
+		:i $printf$%s(58,"*************** HIDING PANEL STUFF 2 *********************")
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $player1_panel_container$
+			:i $alpha$ = %i(0,00000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $show_panel_stuff$
+	:i $printf$%s(57,"*************** SHOWING PANEL STUFF *********************")
+	:i if $ObjectExists$$id$ = $player1_panel_container$
+		:i $printf$%s(59,"*************** SHOWING PANEL STUFF 2 *********************")
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $player1_panel_container$
+			:i $alpha$ = %i(1,00000001)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $destroy_panel_stuff$
+	:i if $ScreenElementExists$$id$ = $player1_panel_container$
+		:i $DestroyScreenElement$$id$ = $player1_panel_container$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $player2_panel_container$
+		:i $DestroyScreenElement$$id$ = $player2_panel_container$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $DestroyScreenElement$$id$ = $the_time$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_goal$
+		:i $DestroyScreenElement$$id$ = $current_goal$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_goal_key_combo_text$
+		:i $DestroyScreenElement$$id$ = $current_goal_key_combo_text$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $goal_points_text$
+		:i $DestroyScreenElement$$id$ = $goal_points_text$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $net_score_menu$
+		:i $DestroyScreenElement$$id$ = $net_score_menu$
+	:i endif
+	:i $update_goal_points_display$$kill$
+	:i $update_pager_icon$$kill$
+	:i $TantrumMessageKill$
+:i endfunction
+:i function $create_panel_stuff$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $trick_text_dims$ = %vec2(575.000000,40.000000)
+	:i $trick_text_pos$ = %vec2(287.000000,2.000000)
+	:i $timer_pos$ = %vec2(315.000000,20.000000)
+	:i $timer_scale$ = %f(1.000000)
+	:i $CreateScreenElement$:s{
+		:i $id$ = $player1_panel_container$
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $scale$ = %f(1.000000)
+		:i $dims$ = %vec2(640.000000,448.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$top$$left$:a}
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $goal_retry_pad_select$
+		:i $DestroyScreenElement$$id$ = $goal_retry_pad_select$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $goal_retry_pad_select$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $dims$ = %vec2(0.000000,0.000000)
+		:i $event_handlers$ = :a{
+			:i :s{$pad_select$$goal_retry_select_handler$:s}
+			:i :a}
+	:i :s}
+	:i $FireEvent$$type$ = $focus$$target$ = $goal_retry_pad_select$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_time$
+		:i $type$ = $textelement$
+		:i $parent$ = $root_window$
+		:i $font$ = $newtimerfont$
+		:i $text$ = %s(0,"")
+		:i $scale$ = %GLOBAL%$timer_scale$
+		:i $pos$ = %GLOBAL%$timer_pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(68,00000044):a}
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $current_goal$
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $root_window$
+		:i $font$ = $small$
+		:i $internal_scale$ = %f(0.800000)
+		:i $text$ = %s(1," ")
+		:i $pos$ = %vec2(620.000000,10.000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $dims$ = %vec2(250.000000,100.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+		:i $shadow$
+		:i $shadow_offs$ = %vec2(0.500000,0.500000)
+		:i $shadow_rgba$ = :a{%i(30,0000001e)%i(30,0000001e)%i(30,0000001e)%i(100,00000064):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textelement$
+		:i $parent$ = $root_window$
+		:i $id$ = $goal_points_text$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(585.000000,40.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %i(0,00000000)
+		:i $rgba$ = :a{%i(105,00000069)%i(105,00000069)%i(105,00000069)%i(128,00000080):a}
+		:i $text$ = %s(1," ")
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $special_meter_root_element$
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $player1_panel_container$
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_METER_ROOT_POS$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $tags$ = :a{:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_score$
+		:i $type$ = $textelement$
+		:i $parent$ = $special_meter_root_element$
+		:i $font$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SCORE_FONT$) 
+		:i $text$ = %s(1,"0")
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SCORE_SCALE$) 
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SCORE_POS$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SCORE_RGBA$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_score_sprite$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $special_meter_root_element$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_SCORE_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_SCORE_SPRITE_SCALE$) 
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_SCORE_SPRITE_POS$) 
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_SCORE_COLOR$) 
+	:i :s}
+	:i if  ( ($THUGPRO_GlobalThemeInfo$) ->$USE_SCORE_STRING$ = %i(1,00000001)) 
+		:i $CreateScreenElement$:s{
+			:i $id$ = $the_score_string_text$
+			:i $type$ = $textelement$
+			:i $parent$ = $special_meter_root_element$
+			:i $scale$ = %f(1.000000)
+			:i $just$ = :a{$top$$left$:a}
+			:i $pos$ = %vec2(6.000000,6.000000)
+			:i $font$ = $testtitle$
+			:i $text$ = %s(6,"SCORE:")
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+		:i :s}
+	:i endif
+	:i if $IsTrue$$display_SPECIAL_text$
+		:i $special_sprite_alpha$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_TEXT_ALPHA$) 
+	:i else 
+		:i $special_sprite_alpha$ = %f(0.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_special_bar_special$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_score_sprite$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_TEXT_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_TEXT_SCALE$) 
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_TEXT_POS$) 
+		:i $alpha$ =  (%GLOBAL%$special_sprite_alpha$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_TEXT_COLOR$) 
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_special_bar_sprite$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_score_sprite$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_BAR_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_BAR_SPRITE_SCALE$) 
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPECIAL_BAR_SPRITE_POS$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_boardstance_sprite$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_score_sprite$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BOARDSTANCE_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BOARDSTANCE_SPRITE_SCALE$) 
+		:i $just$ = :a{$right$$top$:a}
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BOARDSTANCE_SPRITE_POS$) 
+		:i $rot_angle$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BOARDSTANCE_SPRITE_ROT$) 
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %f(0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $generic_sponsor_logo$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_score_sprite$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPONSOR_TEXTURE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPONSOR_TEXTURE_SCALE$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SPONSOR_TEXTURE_POS$) 
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $trick_text_container$
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $player1_panel_container$
+		:i $scale$ = %f(0.800000)
+		:i $dims$ = %GLOBAL%$trick_text_dims$
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_trick_text$
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $trick_text_container$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = :s{%vec2(0.500000,0.000000)$proportional$:s}
+		:i $dims$ = %GLOBAL%$trick_text_dims$
+		:i $just$ = :a{$center$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $font$ = $newtrickfont_high$
+		:i $text$ = %s(1," ")
+		:i $internal_scale$ = %f(0.172500)
+		:i $alpha$ = %f(1.000000)
+		:i $tags$ = :s{$tag_state$ = $inactive$:s}
+		:i $shadow$
+		:i $shadow_offs$ = %vec2(1.000000,1.000000)
+		:i $shadow_rgba$ = :a{%i(10,0000000a)%i(10,0000000a)%i(10,0000000a)%i(90,0000005a):a}
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_score_pot_text$
+		:i $type$ = $textelement$
+		:i $parent$ = $trick_text_container$
+		:i $scale$ =  (%f(1.000000)) 
+		:i $pos$ = :s{%vec2(0.500000,0.000000)$proportional$:s}
+		:i $just$ = :a{$center$$bottom$:a}
+		:i $font$ = $testtitle$
+		:i $text$ = %s(1," ")
+		:i $alpha$ = %f(1.000000)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $reset_trick_text_appearance$$the_score_pot_text_id$ = $the_score_pot_text$$the_trick_text_id$ = $the_trick_text$$trick_text_container_id$ = $trick_text_container$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_balance_meter$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SCALE$) 
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $tags$ = :s{$tag_turned_on$ = %i(0,00000000)$tag_mode$ = $balance$:s}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_balance_arrow$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_ARROW_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_ARROW_SCALE$) 
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $z_priority$ = %i(11,0000000b)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $id$ = $balance_indicator_top$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_INDICATOR_B_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SCALE$) 
+		:i $rot_angle$ = %i(4294967206,ffffffa6)
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(250.000000,224.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(7,00000007)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $id$ = $balance_indicator_bot$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_INDICATOR_A_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SCALE$) 
+		:i $rot_angle$ = %i(4294967206,ffffffa6)
+		:i $just$ = :a{$right$$center$:a}
+		:i $pos$ = %vec2(250.000000,224.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(7,00000007)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $id$ = $balance_indicator_left$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_INDICATOR_A_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SCALE$) 
+		:i $just$ = :a{$right$$center$:a}
+		:i $pos$ = %vec2(320.000000,165.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(7,00000007)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $id$ = $balance_indicator_right$
+		:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_INDICATOR_B_SPRITE$) 
+		:i $scale$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_SCALE$) 
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(320.000000,165.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(7,00000007)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_run_timer$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $player1_panel_container$
+		:i $texture$ = $watch$
+		:i $scale$ = %f(1.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(400.000000,240.000000)
+		:i $alpha$ = %i(0,00000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(90,0000005a):a}
+		:i $tags$ = :s{$tag_turned_on$ = %i(0,00000000)$tag_mode$ = $balance$:s}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $the_run_timer_hand$
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $hand$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(24.000000,24.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_1$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(7.000000,8.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_2$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_3$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_4$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_5$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_6$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_7$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteelement$
+		:i $parent$ = $the_run_timer$
+		:i $texture$ = $time_8$
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $GoalManager_HidePoints$
+		:i $GoalManager_HideGoalPoints$
+	:i else 
+		:i $update_goal_points_display$$create$
+	:i endif
+	:i if $InNetGame$
+		:i if $IsObserving$
+			:i $hide_panel_stuff$
+		:i endif
+		:i $create_score_menu$
+	:i endif
+:i endfunction
+:i $newtrickfont_colors$ = :a{
+	:i :a{%i(0,00000000)%i(128,00000080)%i(230,000000e6)%i(120,00000078):a}
+	:i :a{%i(200,000000c8)%i(90,0000005a)%i(11,0000000b)%i(120,00000078):a}
+	:i :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(120,00000078):a}
+	:i :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(120,00000078):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :a}
+:i function $UpdateScorepot$
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $DoScreenElementMorph$$id$ = $the_score_pot_text$$alpha$ = %f(0.000000)$remember_alpha$
+	:i endif
+:i endfunction
+:i function $UpdateTrickText$
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $DoScreenElementMorph$$id$ = $the_trick_text$$alpha$ = %f(0.000000)$remember_alpha$
+		:i $SetScreenElementProps$$id$ = $the_trick_text$$override_encoded_rgba$$remember_override_rgba_state$
+	:i endif
+:i endfunction
+:i function $pause_trick_text$
+	:i $SetScreenElementProps$$id$ = $the_trick_text$$hide$
+	:i $SetScreenElementProps$$id$ = $the_score_pot_text$$hide$
+:i endfunction
+:i function $unpause_trick_text$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $SetScreenElementProps$$id$ = $the_trick_text$$unhide$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $SetScreenElementProps$$id$ = $the_score_pot_text$$unhide$
+	:i endif
+:i endfunction
+:i function $trick_text_pulse$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trick_text_container_id$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_trick_text_id$$do_trick_text_pulse$$params$ = :s{ isNull :s}
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $do_score_pot_text_landed$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_trick_text_id$$do_trick_text_pulse$$params$ = :s{ isNull :s}
+	:i endif
+:i endfunction
+:i $spazz_out_text$ = %s(16,"\cgFREAK OUT!\c0")
+:i function $do_trick_text_pulse$
+	:i $reset_trick_text_appearance$ isNull 
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $GetTextElementString$$id$ = %GLOBAL%$the_trick_text_id$
+		:i if $StringEquals$$a$ = %GLOBAL%$string$$b$ =  ( ($spazz_out_text$)  + %s(1," ")) 
+			:i $do_trick_text_spazz$ isNull 
+		:i else 
+			:i $DoMorph$$scale$ = %f(1.000000)$time$ = %f(0.200000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $do_trick_text_spazz$
+	:i while
+		
+		:i $rot_angle$ = %i(0,00000000)
+		:i $DoMorph$$scale$ = %f(2.300000)$time$ = %f(0.100000)$alpha$ = %f(0.700000)
+		:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.100000)$alpha$ = %i(1,00000001)
+		:i $DoMorph$$scale$ = %f(1.300000)$time$ = %f(0.100000)$alpha$ = %f(0.600000)
+		:i $DoMorph$$scale$ = %f(1.100000)$time$ = %f(0.100000)$alpha$ = %f(0.900000)
+	:i loop_to 
+:i endfunction
+:i function $trick_text_landed$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trick_text_container_id$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_score_pot_text_id$$do_score_pot_text_landed$$params$ = :s{ isNull :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_trick_text_id$$do_trick_text_landed$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $do_trick_text_landed$
+	:i $reset_trick_text_appearance$ isNull 
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $DoMorph$$scale$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $DoMorph$$scale$ = %f(1.400000)$time$ = %f(0.200000)
+		:i $DoMorph$$scale$ = %f(0.800000)$time$ = %f(0.080000)
+		:i $DoMorph$$scale$ = %f(1.200000)$time$ = %f(0.050000)
+		:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.040000)
+		:i $DoMorph$$scale$ = %f(1.000000)$time$ = %f(0.040000)
+	:i endif
+:i endfunction
+:i function $do_score_pot_text_landed$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_score_pot_text_id$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_score_pot_text_id$$override_encoded_rgba$
+		:i $DoMorph$$scale$ = %i(0,00000000)$time$ = %f(0.050000)
+		:i $DoMorph$$scale$ = %f(1.800000)$time$ = %f(0.120000)
+		:i $DoMorph$$scale$ = %f(0.800000)$time$ = %f(0.100000)
+		:i $DoMorph$$scale$ = %f(1.500000)$time$ = %f(0.070000)
+		:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.070000)
+		:i $DoMorph$$scale$ = %f(1.300000)$time$ = %f(0.050000)
+		:i $DoMorph$$scale$ = %f(1.000000)$time$ = %f(0.050000)
+		:i $DoMorph$$scale$ = %f(1.250000)$time$ = %f(0.040000)
+		:i $DoMorph$$scale$ = %f(1.100000)$time$ = %f(0.030000)
+		:i $DoMorph$$scale$ = %f(1.200000)$time$ = %f(0.020000)
+	:i endif
+:i endfunction
+:i function $trick_text_countdown$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trick_text_container_id$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_trick_text_id$$do_trick_text_countdown$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $do_trick_text_countdown$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $DoMorph$$scale$ = %f(0.000000)$time$ = %f(0.500000)
+		:i $DoMorph$$alpha$ = %f(0.000000)
+	:i endif
+:i endfunction
+:i function $trick_text_bail$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$trick_text_container_id$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$trick_text_container_id$$do_trick_text_bail$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $do_trick_text_bail$
+	:i $reset_trick_text_appearance$ isNull 
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_score_pot_text_id$$rgba$ = :a{%i(128,00000080)%i(32,00000020)%i(32,00000020)%i(80,00000050):a}
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $GetTextElementString$$id$ = %GLOBAL%$the_trick_text_id$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_trick_text_id$$rgba$ = :a{%i(128,00000080)%i(32,00000020)%i(32,00000020)%i(80,00000050):a}$text$ = %GLOBAL%$string$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_trick_text_id$$override_encoded_rgba$
+	:i endif
+	:i $wait$%f(0.050000)$seconds$
+	:i $DoMorph$$alpha$ = %i(0,00000000)$scale$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,25.000000)$relative$:s}$scale$ = %vec2(0.700000,1.800000)$alpha$ = %i(1,00000001)$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-25.000000)$relative$:s}$scale$ = %f(0.900000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,20.000000)$relative$:s}$scale$ = %f(1.150000)$time$ = %f(0.060000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-20.000000)$relative$:s}$scale$ = %f(1.120000)$time$ = %f(0.060000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,10.000000)$relative$:s}$scale$ = %f(1.100000)$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-10.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,5.000000)$relative$:s}$time$ = %f(0.040000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-5.000000)$relative$:s}$time$ = %f(0.040000)
+	:i $wait$%f(1.300000)$seconds$
+	:i $DoMorph$$pos$ = :s{%vec2(-2.000000,4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,6.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(5.000000,1.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,-4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(2.000000,-5.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(4.000000,-1.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,2.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(4.000000,-5.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-1.000000,2.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,-4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(2.000000,-4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,-6.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-5.000000,-1.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-2.000000,5.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-4.000000,1.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,-2.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-4.000000,5.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(1.000000,-2.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,4.000000)$relative$:s}$time$ = %f(0.050000)
+	:i select(2f,10, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8):OFFSET(9)
+		 :POS(0) $runtwoscripts$$script_text$ = $bail1$$script_score$ = $bail1$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(1) $runtwoscripts$$script_text$ = $bail1$$script_score$ = $bail1$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(2) $runtwoscripts$$script_text$ = $bail2$$script_score$ = $bail3$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(3) $runtwoscripts$$script_text$ = $bail4$$script_score$ = $bail5$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(4) $runtwoscripts$$script_text$ = $bail5$$script_score$ = $bail4$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(5) $runtwoscripts$$script_text$ = $bail1$$script_score$ = $bail6$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(6) $runtwoscripts$$script_text$ = $bail6$$script_score$ = $bail6$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(7) $runtwoscripts$$script_text$ = $bail4$$script_score$ = $bail4$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(8) $runtwoscripts$$script_text$ = $bail5$$script_score$ = $bail5$ isNull 
+		:i 
+	:BREAKTO(10)
+		 :POS(9) $runtwoscripts$$script_text$ = $bail2$$script_score$ = $bail1$ isNull 
+		:i  :POS(10) 
+:i endfunction
+:i function $runtwoscripts$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_trick_text_id$%GLOBAL%$script_text$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$the_score_pot_text_id$%GLOBAL%$script_score$
+	:i endif
+:i endfunction
+:i function $bail1$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,0.000000)$relative$:s}$time$ = %f(0.100000)$scale$ = %f(1.900000)$fast_in$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,0.000000)$relative$:s}$time$ = %f(0.300000)$scale$ = %f(3.000000)$alpha$ = %i(0,00000000)$fast_in$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,0.000000)$relative$:s}$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $bail2$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-5.000000)$relative$:s}$time$ = %f(0.400000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,448.000000)$relative$:s}$time$ = %f(0.700000)$fast_in$
+	:i $DoMorph$$alpha$ = %f(0.000000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-443.000000)$relative$:s}$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $bail3$
+	:i $wait$%f(0.100000)$second$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-5.000000)$relative$:s}$time$ = %f(0.200000)
+	:i $DoMorph$$pos$ = :s{%vec2(3.000000,0.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-3.000000,0.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(4.000000,0.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(-4.000000,0.000000)$relative$:s}$time$ = %f(0.050000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,448.000000)$relative$:s}$time$ = %f(0.500000)$fast_in$
+	:i $DoMorph$$alpha$ = %f(0.000000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-443.000000)$relative$:s}$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $bail4$
+	:i $DoMorph$$pos$ = :s{%vec2(-15.000000,0.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,4.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-4.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,2.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-2.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(150.000000,0.000000)$relative$:s}$time$ = %f(0.060000)$alpha$ = %f(0.700000)
+	:i $DoMorph$$pos$ = :s{%vec2(200.000000,0.000000)$relative$:s}$scale$ = %vec2(2.000000,0.100000)$time$ = %f(0.060000)$alpha$ = %i(0,00000000)$fast_in$
+	:i $DoMorph$$pos$ = :s{%vec2(200.000000,0.000000)$relative$:s}$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = :s{%vec2(-535.000000,0.000000)$relative$:s}$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $bail5$
+	:i $DoMorph$$pos$ = :s{%vec2(15.000000,0.000000)$relative$:s}$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,4.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-4.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,2.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-2.000000)$relative$:s}$time$ = %f(0.020000)
+	:i $DoMorph$$pos$ = :s{%vec2(-150.000000,0.000000)$relative$:s}$time$ = %f(0.060000)$alpha$ = %f(0.700000)
+	:i $DoMorph$$pos$ = :s{%vec2(-200.000000,0.000000)$relative$:s}$scale$ = %vec2(2.000000,0.100000)$time$ = %f(0.060000)$alpha$ = %i(0,00000000)$fast_in$
+	:i $DoMorph$$pos$ = :s{%vec2(-200.000000,0.000000)$relative$:s}$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = :s{%vec2(535.000000,0.000000)$relative$:s}$scale$ = %f(1.000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $bail6$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,0.000000)$relative$:s}$time$ = %f(0.200000)$scale$ = %f(1.300000)$alpha$ = %f(0.600000)$fast_in$
+	:i $wait$%f(0.200000)$second$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,0.000000)$relative$:s}$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$fast_in$
+:i endfunction
+:i function $reset_just_trick_text_appearance$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$trick_text_container_id$
+			:i $alpha$ = %f(1.000000)
+			:i $pos$ = %vec2(320.000000,410.000000)
+			:i $scale$ = %f(1.000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$the_trick_text_id$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = :s{%vec2(0.500000,0.000000)$proportional$:s}
+			:i $just$ = :a{$center$$top$:a}
+			:i $internal_just$ = :a{$center$$top$:a}
+			:i $internal_scale$ = %f(0.700000)
+			:i $alpha$ = %f(1.000000)
+		:i :s}
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_trick_text_id$$dont_override_encoded_rgba$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_trick_text_id$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+	:i else 
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$trick_text_container_id$
+			:i $alpha$ = %f(1.000000)
+			:i $pos$ = %vec2(320.000000,410.000000)
+			:i $scale$ = %f(1.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $reset_trick_text_appearance$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail1$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail2$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail3$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail4$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail5$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $bail6$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_trick_text_id$$script_name$ = $do_trick_text_spazz$
+	:i $reset_just_trick_text_appearance$ isNull 
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail1$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail2$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail3$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail4$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail5$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$the_score_pot_text_id$$script_name$ = $bail6$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_score_pot_text_id$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$the_score_pot_text_id$$dont_override_encoded_rgba$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$the_score_pot_text_id$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(287.000000,2.000000)
+			:i $just$ = :a{$center$$bottom$:a}
+			:i $alpha$ = %f(1.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $HideClock$
+	:i $KillSpawnedScript$$name$ = $clock_morph$
+	:i $DoScreenElementMorph$:s{$id$ = $the_time$$alpha$ = %i(0,00000000):s}
+:i endfunction
+:i function $ShowClock$
+	:i $DoScreenElementMorph$:s{$id$ = $the_time$$alpha$ = %i(1,00000001):s}
+:i endfunction
+:i function $hide_balance_meter$
+	:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$tags$ = :s{$tag_turned_on$ = %i(0,00000000):s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_hide_balance_meter$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $pause_balance_meter$
+	:i $RunScriptOnScreenElement$$id$ = $the_balance_meter$$do_hide_balance_meter$$params$ = :s{$id$ = $the_balance_meter$:s}
+:i endfunction
+:i function $do_hide_balance_meter$
+	:i $SetScreenElementProps$$id$ = $the_balance_meter$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i $SetScreenElementProps$$id$ = $the_balance_arrow$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i $SetScreenElementProps$$id$ = $balance_indicator_top$$alpha$ = %i(0,00000000)
+	:i $SetScreenElementProps$$id$ = $balance_indicator_left$$alpha$ = %i(0,00000000)
+	:i $SetScreenElementProps$$id$ = $balance_indicator_right$$alpha$ = %i(0,00000000)
+	:i $SetScreenElementProps$$id$ = $balance_indicator_bot$$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $show_balance_meter$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i if NOT  ( ($InNetGame$)  AND  ($GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$) ) 
+			:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$tags$ = :s{$tag_turned_on$ = %i(1,00000001):s}
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_show_balance_meter$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $unpause_balance_meter$
+	:i $RunScriptOnScreenElement$$id$ = $the_balance_meter$$do_show_balance_meter$$params$ = :s{$id$ = $the_balance_meter$:s}
+:i endfunction
+:i function $do_show_balance_meter$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i if NOT  ( ($InNetGame$)  AND  ($GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$) ) 
+			:i $GetTags$
+			:i if $IntegerEquals$$a$ = %GLOBAL%$tag_turned_on$$b$ = %i(1,00000001)
+				:i $SetScreenElementProps$$id$ = $the_balance_meter$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_METER_COLOR$) 
+				:i $SetScreenElementProps$$id$ = $the_balance_arrow$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BALANCE_ARROW_COLOR$) 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $update_balance_meter_indicator$
+	:i if $ScreenElementExists$$id$ = $balance_indicator_bot$
+		:i $DoScreenElementMorph$$id$ = $balance_indicator_bot$$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $balance_indicator_top$
+		:i $DoScreenElementMorph$$id$ = $balance_indicator_top$$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $balance_indicator_left$
+		:i $DoScreenElementMorph$$id$ = $balance_indicator_left$$scale$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $balance_indicator_right$
+		:i $DoScreenElementMorph$$id$ = $balance_indicator_right$$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $hide_run_timer$
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$tags$ = :s{$tag_turned_on$ = %i(0,00000000):s}
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_hide_run_timer$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+	:i endif
+:i endfunction
+:i function $pause_run_timer$
+	:i $RunScriptOnScreenElement$$id$ = $the_run_timer$$do_hide_run_timer$$params$ = :s{$id$ = $the_run_timer$:s}
+	:i if $ScreenElementExists$$id$ =  ($the_run_timer$ + %i(1,00000001)) 
+		:i $RunScriptOnScreenElement$$id$ =  ($the_run_timer$ + %i(1,00000001)) $do_hide_run_timer$$params$ = :s{$id$ =  ($the_run_timer$ + %i(1,00000001)) :s}
+	:i endif
+:i endfunction
+:i function $do_hide_run_timer$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $show_run_timer$
+	:i $GetScreenElementPosition$$id$ = %GLOBAL%$id$
+	:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$tags$ = :s{$tag_turned_on$ = %i(1,00000001):s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_show_run_timer$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(7,00000007):s}$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(8,00000008):s}$alpha$ = %i(0,00000000)
+	:i if  (%GLOBAL%$rot_angle$ > %i(320,00000140)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(280,00000118)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(240,000000f0)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(200,000000c8)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(160,000000a0)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(120,00000078)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(80,00000050)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(7,00000007):s}$alpha$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$rot_angle$ > %i(40,00000028)) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(8,00000008):s}$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $soft_hide_run_timer$
+	:i $SetScreenElementProps$$id$ = %GLOBAL%$id$$tags$ = :s{$tag_turned_on$ = %i(0,00000000):s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_soft_hide_run_timer$$params$ = :s{$id$ = %GLOBAL%$id$:s}
+:i endfunction
+:i function $do_soft_hide_run_timer$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(0,00000000)$time$ = %f(0.300000)
+:i endfunction
+:i function $unpause_run_timer$
+	:i $RunScriptOnScreenElement$$id$ = $the_run_timer$$do_show_run_timer$$params$ = :s{$id$ = $the_run_timer$:s}
+:i endfunction
+:i function $do_show_run_timer$
+	:i $GetTags$
+	:i if $IntegerEquals$$a$ = %GLOBAL%$tag_turned_on$$b$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $hide_run_timer_piece$
+	:i if  (%i(320,00000140) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(280,00000118) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(240,000000f0) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(200,000000c8) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(160,000000a0) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(120,00000078) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(80,00000050) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(7,00000007):s}$alpha$ = %i(0,00000000)
+	:i endif
+	:i if  (%i(40,00000028) > %GLOBAL%$rot_angle$) 
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(8,00000008):s}$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $blink_run_timer$
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %f(0.300000)$time$ = %f(0.050000)
+		:i $wait$%i(5,00000005)$gameframes$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(1,00000001)$time$ = %f(0.050000)
+		:i $wait$%i(5,00000005)$gameframes$
+	:i loop_to 
+:i endfunction
+:i function $update_goal_points_display$
+	:i if NOT $GameModeEquals$$is_career$
+		:i return
+		
+	:i endif
+	:i $pos$ = %vec2(0.000000,80.000000)
+	:i $GoalManager_GetActiveRewardPoints$
+	:i if $GotParam$$create$
+		:i if $ScreenElementExists$$id$ = $goal_points_display$
+			:i return
+			
+		:i endif
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $goal_points_display$
+			:i $pos$ = %GLOBAL%$pos$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = $goal_points_display$
+			:i $local_id$ = $bar$
+			:i $texture$ = $roundbar_middle$
+			:i $pos$ = %vec2(0.000000,-1.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %vec2(5.500000,0.600000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(110,0000006e):a}
+			:i $z_priority$ = %i(1,00000001)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteelement$
+			:i $parent$ = $goal_points_display$
+			:i $local_id$ = $edge$
+			:i $texture$ = $roundbar_tip_right$
+			:i $pos$ = %vec2(170.000000,-1.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.600000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(110,0000006e):a}
+			:i $z_priority$ = %i(1,00000001)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $textelement$
+			:i $parent$ = $goal_points_display$
+			:i $local_id$ = $points$
+			:i $text$ = %s(1," ")
+			:i $font$ = $small$
+			:i $pos$ = %vec2(185.000000,0.000000)
+			:i $just$ = :a{$right$$center$:a}
+			:i $scale$ = %vec2(0.800000,0.850000)
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+		:i $need_text$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$kill$
+		:i $DestroyScreenElement$$id$ = $goal_points_display$
+	:i endif
+	:i if NOT $ScreenElementExists$$id$ = $goal_points_display$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$show$
+		:i $DoScreenElementMorph$$id$ = $goal_points_display$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$hide$
+		:i $DoScreenElementMorph$$id$ = $goal_points_display$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$need_text$
+		:i $FormatText$$TextName$ = $points$%s(17,"%a / %b GOAL PTS.")$a$ = %GLOBAL%$active_points$$b$ = %GLOBAL%$total_points$
+		:i $SetScreenElementProps$$id$ = :s{$goal_points_display$$child$ = $points$:s}$text$ = %GLOBAL%$points$
+	:i endif
+	:i if $GotParam$$refresh$
+		:i if $goal_points_display$.$GetSingleTag$$animating_off$
+			:i return
+			
+		:i endif
+		:i $spawnscript$$update_goal_points_display_slide_wait$$params$ =  isNull 
+	:i endif
+:i endfunction
+:i function $update_goal_points_display_slide_wait$
+	:i $goal_points_display$.$SetTags$$animating_off$
+	:i $DoScreenElementMorph$$id$ = $goal_points_display$$pos$ =  (%GLOBAL%$pos$ + %vec2(-300.000000,0.000000)) $time$ = %f(0.200000)
+	:i $wait$%f(0.300000)$seconds$
+	:i $update_goal_points_display$$need_text$
+	:i $goal_points_display$.$RemoveTags$$tags$ = :a{$animating_off$:a}
+	:i if  (%GLOBAL%$total_points$ > %i(0,00000000)) 
+		:i $DoScreenElementMorph$$id$ = $goal_points_display$$pos$ = %GLOBAL%$pos$$time$ = %f(0.200000)
+	:i endif
+:i endfunction
+:i :end

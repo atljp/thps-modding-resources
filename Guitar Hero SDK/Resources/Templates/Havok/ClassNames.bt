@@ -1,0 +1,25 @@
+//------------------------------------------------
+// Actual Class Names section
+//------------------------------------------------
+
+typedef struct
+{
+    QBKey Identifier <bgcolor=CL_CHECKSUM>;
+    ubyte always_nine <bgcolor=CL_PADDING>;
+    string Name <bgcolor=CL_NAME>;
+} HavokClass <read=Str("%s", Name)>;
+
+typedef struct
+{
+    num_classnames = 0;
+
+    local ubyte test_byte = ReadUByte();
+
+    while (test_byte != 0xFF)
+    {
+        HavokClass class_name;
+        test_byte = ReadUByte();
+        num_classnames ++;
+    }
+
+} HavokClassNames;

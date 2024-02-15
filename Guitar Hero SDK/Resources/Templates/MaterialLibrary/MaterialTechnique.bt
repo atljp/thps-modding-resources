@@ -1,0 +1,130 @@
+// Usually in section C, whatever these are
+// This seems to be a Technique?
+
+#include "MaterialProperties.bt"
+#include "MaterialTechniquePass.bt"
+
+//-----------------------------------------------------
+
+#define CL_TECHNIQUE_POINTER                0xAAFFAA
+#define CL_TECHNIQUE_CHECKSUM               0x88DD88
+#define CL_TECHNIQUE_NUMBER                 0x77CC77
+#define CL_TECHNIQUE_PADDING                0x449944
+
+typedef struct
+{
+    if (MaterialLibraryVersion >= 4)
+    {
+        ubyte skip_me[88] <bgcolor=CL_TECHNIQUE_PADDING>;
+        return;
+    }
+
+    uint vCTABLength <bgcolor=CL_TECHNIQUE_NUMBER, comment="Length of vertex shader Constant Table">;
+    uint vCTABConstant <comment="Always 0?">;
+    RelativeOffset vCTABOffset(ShaderListStart) <bgcolor=CL_TECHNIQUE_POINTER, comment="Position of vertex shader Constant Table">;
+
+    // IDirect3DVertexShader9 *pVertexShader;
+    uint pt_pVertexShader <comment="Offset to D3D9 vertex shader in memory">;
+
+    // ----
+
+    uint pCTABLength <bgcolor=CL_TECHNIQUE_NUMBER, comment="Length of pixel shader Constant Table">;
+    uint pCTABConstant <comment="Always 0?">;
+    RelativeOffset pCTABOffset(ShaderListStart) <bgcolor=CL_TECHNIQUE_POINTER, comment="Position of pixel shader Constant Table">;
+
+    // IDirect3DVertexShader9 *pPixelShader;
+    uint pt_pPixelShader <comment="Offset to D3D9 pixel shader in memory">;
+
+    // ----
+
+    uint numA;
+    RelativeOffset pt_A(TemplateListStart);
+    uint numB;
+    RelativeOffset pt_B(TemplateListStart);
+    uint numC;
+    RelativeOffset pt_C(TemplateListStart);
+
+    int numSamplerStates;
+    // ShaderSamplerState *pt_samplerStates;
+    uint pt_samplerStates;
+
+    uint numD;
+    RelativeOffset pt_D(TemplateListStart);
+
+    local uint old_off = FTell();
+
+    if (vCTABLength > 0 && vCTABOffset.offset > 0)
+    {
+        FSeek(AbsOffset(vCTABOffset));
+        ubyte vCTABData[vCTABLength] <bgcolor=0xAA8888>;
+    }
+
+    if (pCTABLength > 0 && pCTABOffset.offset > 0)
+    {
+        FSeek(AbsOffset(pCTABOffset));
+        ubyte pCTABData[pCTABLength] <bgcolor=0x88AA88>;
+    }
+
+    FSeek(old_off);
+} TechniqueSubObject;
+
+typedef struct
+{
+    TechniqueSubObject objects[5] <optimize=false>;
+
+    if (MaterialLibraryVersion >= 4)
+        int unk[2] <hidden=true>;
+} TechniqueSubstruct;
+
+typedef struct (uint MAT_START)
+{
+    RelativeOffset pt_techniqueType(MAT_START) <bgcolor=CL_TECHNIQUE_POINTER, comment="Offset to type of the thing?">;
+    QBKey techniqueID <bgcolor=CL_TECHNIQUE_CHECKSUM, comment="QBKey for the technique">;
+
+    int constant_possibly <bgcolor=CL_TECHNIQUE_NUMBER, comment="Seems to be constant?">;
+
+    int numPasses <bgcolor=CL_TECHNIQUE_NUMBER, comment="Number of passes(?)">;
+    RelativeOffset pt_Passes(MAT_START) <bgcolor=CL_TECHNIQUE_POINTER>;
+
+    // If this is 1, number after it seems to be offset
+    uint numUIFlags <bgcolor=CL_TECHNIQUE_NUMBER>;
+    RelativeOffset pt_UIFlags(MAT_START) <bgcolor=CL_TECHNIQUE_POINTER>;
+
+    uint constant_b <bgcolor=CL_TECHNIQUE_NUMBER>;
+
+    uint skipA[12];
+
+    TechniqueSubstruct substruct;
+
+    // -- Read chunker --
+    local uint32 old_off = FTell();
+    local int i;
+
+    FSeek(AbsOffset(pt_techniqueType));
+    string techniqueType <bgcolor=0xFF6666>;
+
+    if (numPasses > 0)
+    {
+        FSeek(AbsOffset(pt_Passes));
+
+        for (i=0; i<numPasses; i++)
+            TechniquePass pass(MAT_START);
+    }
+
+    if (pt_UIFlags.offset >= 0 && numUIFlags)
+    {
+        FSeek(AbsOffset(pt_UIFlags));
+
+        for (i=0; i<numUIFlags; i++)
+            UIProperty uiFlags(MAT_START);
+    }
+
+    FSeek(old_off);
+} Nx_CMaterialTechnique <read=ReadTechnique>;
+
+string ReadTechnique(Nx_CMaterialTechnique &unk)
+{
+    local string s;
+
+    return SPrintf(s, "%s: %s", ReadQBKey(unk.techniqueID), unk.techniqueType);
+}

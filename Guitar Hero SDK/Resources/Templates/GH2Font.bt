@@ -1,0 +1,109 @@
+// GH2 PS2 font
+
+#include "Common.bt"
+#define CL_CHUNKERNUM           0x66ffff
+#define CL_CHUNKERFLOAT         0x44dddd
+
+LittleEndian();
+
+// - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    ubyte unk_a <bgcolor=CL_CHUNKERNUM, comment="Kerning first?">;
+    ubyte unk_b <bgcolor=CL_CHUNKERNUM, comment="Kerning second?">;
+
+    short unk_c <bgcolor=CL_CHUNKERNUM>;
+    float unk_float <bgcolor=CL_CHUNKERFLOAT>;
+} FontChunker <read=ReadChunker>;
+
+string ReadChunker(FontChunker &chunk)
+{
+    local string s;
+    return SPrintf(s, "%d, %d, %d, %f", chunk.unk_a, chunk.unk_b, chunk.unk_c, chunk.unk_float);
+}
+
+typedef struct
+{
+    uint chunker_count <bgcolor=CL_SINGLEVALUE>;
+    FontChunker chunkers[chunker_count] <optimize=false>;
+} FontChunkerBlock;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct (uint index, uint iw, uint ih, uint fw, uint fh)
+{
+    float x <bgcolor=CL_FLOATS>;
+    float y <bgcolor=CL_FLOATS>;
+    float width <bgcolor=CL_FLOATS>;
+    float height <bgcolor=CL_FLOATS>;
+
+    local uint glyph_index = index;
+    local uint real_x = iw * x;
+    local uint real_y = ih * y;
+    local uint real_width = fw * width;
+    local uint real_height = fh;
+
+} FontGlyph <read=ReadFontGlyph>;
+
+string ReadFontGlyph(FontGlyph &glyph)
+{
+    local string s, stmp;
+
+    if (glyph.glyph_index >= 32)
+       s += SPrintf(stmp, "[ %c ] ", glyph.glyph_index);
+
+    // Pos
+    s += SPrintf(stmp, "(%d, %d) [%dx%d]", glyph.real_x, glyph.real_y, glyph.real_width, glyph.real_height);
+
+    return s;
+}
+
+typedef struct (uint iw, uint ih, uint fw, uint fh)
+{
+    local int i;
+
+    for (i=0; i<256; i++)
+        FontGlyph glyphs(i, iw, ih, fw, fh) <optimize=false>;
+
+} FontGlyphBlock;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - 
+
+typedef struct
+{
+    uint version <bgcolor=CL_SINGLEVALUE>;
+
+    // Metadata, see Pikmin's templates
+    uint meta_num <hidden=true, bgcolor=CL_PADDING>;
+    ubyte pad [meta_num > 0 ? 5 : 9] <hidden=true, bgcolor=CL_PADDING>;
+
+    NumString material_name;
+    float font_width <bgcolor=CL_SINGLEVALUE, comment="Scaled width">;
+    float font_height <bgcolor=CL_SINGLEVALUE, comment="Scaled height">;
+    float unknown_a <bgcolor=CL_SINGLEVALUE, comment="Line height?">;
+    float unknown_b <bgcolor=CL_SINGLEVALUE>;
+
+    // Glyph entries
+    uint glyph_count <bgcolor=CL_SINGLEVALUE, comment="Num of usable glyphs in font">;
+    ubyte glyph_chars[glyph_count] <bgcolor=CL_FLOATS, comment="ASCII char this glyph uses">;
+    ubyte terminator <hidden=true, bgcolor=CL_PADDING>;
+
+    // Chunkers, possibly kerning of some sort?
+    FontChunkerBlock chunker_block <comment="What the heck are these?">;
+
+    NumString font_name;
+    ubyte always_0 <bgcolor=CL_PADDING>;
+    ubyte sometimes_1 <bgcolor=CL_SINGLEVALUE>;
+    uint image_width <bgcolor=CL_SINGLEVALUE>;
+    uint image_height <bgcolor=CL_SINGLEVALUE>;
+
+    // REAL width and REAL height
+    float pct_a <bgcolor=CL_SINGLEVALUE, comment="font_width / image_width">;
+    float pct_b <bgcolor=CL_SINGLEVALUE, comment="font_height / image_height">;
+
+    // Glyph data
+    FontGlyphBlock glyph_block(image_width, image_height, font_width, font_height);
+} GH2Font;
+
+GH2Font font;

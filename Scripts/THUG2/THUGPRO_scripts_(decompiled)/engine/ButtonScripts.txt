@@ -1,0 +1,806 @@
+
+:i $exit_pause_menu_ready$ = %i(0,00000000)
+:i $select_shift$ = %i(0,00000000)
+:i $memcard_screenshots$ = %i(0,00000000)
+:i $skater_cam_0_mode$ = %i(2,00000002)
+:i $skater_cam_1_mode$ = %i(2,00000002)
+:i $thugpro_userselect_action$ = $thugpro_userselect_case_camera_toggle$
+:i $disable_user_button_scripts$ = %i(0,00000000)
+:i function $UserSelectSelect$
+	:i $MORTEN_DUMP_OBSERVE_MODE_DATA$
+	:i if $IsTrue$$__ANIM_IS_PLAYING$
+		:i return
+		
+	:i endif
+	:i if NOT $IsTrue$$exit_pause_menu_ready$
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$Load_Sk5Ed$
+		:i if $CustomParkMode$$editing$
+			:i if  ( ($thugpro_userselect_action$)  = $thugpro_userselect_case_viewer$) 
+				:i $UserSelectX$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if $LevelIs$$load_mainmenu$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $root_window$
+		:i if $root_window$.$GetSingleTag$$menu_state$
+			:i if  (%GLOBAL%$menu_state$ = $on$) 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $SpawnScript$$test_select_trigger$
+:i endfunction
+:i function $test_select_trigger$
+	:i %GLOBAL%$SHOW_QUICK_MENU$ = %i(0,00000000)
+	:i %GLOBAL%$BUTTON_HELD_FRAMES$ = %i(0,00000000)
+	:i while
+		
+		:i if $IsObserving$
+			:i continue
+			
+		:i endif
+		:i if  (%GLOBAL%$BUTTON_HELD_FRAMES$ > %i(12,0000000c)) 
+			:i %GLOBAL%$SHOW_QUICK_MENU$ = %i(1,00000001)
+			:i continue
+			
+		:i endif
+		:i $Wait$%i(1,00000001)$frames$
+		:i if $THUGPRO_GetButtonPressed$$SELECT$
+			:i %GLOBAL%$BUTTON_HELD_FRAMES$ =  (%i(1,00000001) + %GLOBAL%$BUTTON_HELD_FRAMES$) 
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to %i(60,0000003c)
+	:i if NOT $IsTrue$$exit_pause_menu_ready$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$SHOW_QUICK_MENU$ = %i(1,00000001)) 
+		:i $thugpro_show_quick_menu$
+	:i else 
+		:i if  ( ($thugpro_userselect_action$)  = $thugpro_userselect_case_viewer$) 
+			:i $UserSelectX$
+		:i else 
+			:i $thugpro_camera_toggle$
+		:i endif
+	:i endif
+:i endfunction
+:i function $thugpro_show_quick_menu$
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if NOT $IsObserving$
+		:i $GetSkaterId$
+		:i %GLOBAL%$objId$.$NetDisablePlayerInput$
+	:i endif
+	:i $GoalManager_HidePoints$
+	:i $CreateScreenElement$:s{
+		:i $id$ = $quick_menu_container$
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $scale$ = %f(1.000000)
+		:i $dims$ = %vec2(640.000000,448.000000)
+		:i $pos$ = %vec2(-80.000000,0.000000)
+		:i $alpha$ = %f(0.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $make_new_menu$:s{
+		:i $parent$ = $quick_menu_container$
+		:i $menu_id$ = $quick_menu$
+		:i $vmenu_id$ = $quick_vmenu$
+		:i $pos$ = %vec2(24.000000,2.000000)
+		:i $no_menu_title$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $id$ = $quick_menu_background$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $quick_menu_container$
+		:i $texture$ = $white$
+		:i $alpha$ = %f(0.600000)
+		:i $scale$ =  (%vec2(140.000000,185.000000) / %i(4,00000004)) 
+		:i $pos$ = %vec2(24.000000,20.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $id$ = $quick_menu_title_text$
+		:i $parent$ = $quick_menu_container$
+		:i $font$ = $newtrickfont$
+		:i $scale$ = %f(0.600000)
+		:i $pos$ = %vec2(28.000000,2.000000)
+		:i $text$ = %s(10,"Quick Menu")
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1006,000003ee)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$MENU_TITLE_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $quick_menu_title_bg$
+		:i $parent$ = $quick_menu_container$
+		:i $scale$ = %vec2(0.185000,0.340000)
+		:i $pos$ = %vec2(24.000000,0.000000)
+		:i $texture$ = $tp_menu_title$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = random%vec2(-1.100000,1.200000)
+		:i $z_priority$ = %i(1004,000003ec)
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $quick_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$thugpro_hide_quick_menu$$params$ = :s{:s}:s}
+			:i :s{$pad_back$$thugpro_hide_quick_menu$$params$ = :s{:s}:s}
+			:i :s{$pad_select$$thugpro_hide_quick_menu$$params$ = :s{:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $kill_start_key_binding$
+	:i if NOT  ( ($GameModeEquals$$is_lobby$)  OR  ($GameModeEquals$$is_singlesession$) ) 
+		:i $not_focusable_in_game$ = $not_focusable$
+	:i endif
+	:i $GetValueFromVolume$$cdvol$
+	:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+		:i $quick_menu_add_item$:s{
+			:i $text$ = %s(10,"skip track")
+			:i $id$ = $quick_menu_skip_track$
+			:i $pad_choose_script$ = $skip_track$
+			:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+		:i :s}
+	:i endif
+	:i $quick_menu_add_item$:s{
+		:i $text$ = %s(11,"set restart")
+		:i $id$ = $quick_menu_set_restart$
+		:i $pad_choose_script$ = $quick_menu_restart$
+		:i $pad_choose_params$ = :s{$Set$:s}
+		:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+		:i $not_focusable$ = %GLOBAL%$not_focusable_in_game$
+	:i :s}
+	:i if NOT $IsObserving$
+		:i if $skater$.$SetCustomRestart$
+			:i $quick_menu_add_item$:s{
+				:i $text$ = %s(12,"goto restart")
+				:i $id$ = $quick_menu_goto_restart$
+				:i $pad_choose_script$ = $quick_menu_restart$
+				:i $pad_choose_params$ = :s{$GoTo$:s}
+				:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+				:i $not_focusable$ = %GLOBAL%$not_focusable_in_game$
+			:i :s}
+		:i endif
+	:i endif
+	:i $quick_menu_add_item$:s{
+		:i $text$ = %s(14,"level restarts")
+		:i $id$ = $quick_menu_level_restarts$
+		:i $pad_choose_script$ = $launch_quick_menu_restart_menu$
+		:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+		:i $not_focusable$ = %GLOBAL%$not_focusable_in_game$
+	:i :s}
+	:i $quick_menu_add_item$:s{
+		:i $text$ = %s(8,"hide hud")
+		:i $id$ = $quick_menu_hide_hud$
+		:i $pad_choose_script$ = $launch_quick_menu_hide_hud$
+		:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+		:i $not_focusable$ = %GLOBAL%$not_focusable_in_game$
+	:i :s}
+	:i if $InNetGame$
+		:i $quick_menu_add_item$:s{
+			:i $text$ = %s(18,"on-screen keyboard")
+			:i $id$ = $quick_menu_keyboard$
+			:i $pad_choose_script$ = $launch_quick_menu_keyboard$
+			:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+		:i :s}
+	:i endif
+	:i if NOT $InNetGame$
+		:i if  ( ($last_loaded_custom_level_script$)  = $nullscript$) 
+			:i $not_focusable_reload_level$ = $not_focusable$
+		:i endif
+		:i $quick_menu_add_item$:s{
+			:i $text$ = %s(12,"reload level")
+			:i $id$ = $quick_menu_keyboard$
+			:i $pad_choose_script$ = $launch_quick_menu_reload_level$
+			:i $bar_scale$ =  (%vec2(175.000000,18.799999) / %i(4,00000004)) 
+			:i $not_focusable$ = %GLOBAL%$not_focusable_reload_level$
+		:i :s}
+	:i endif
+	:i $AssignAlias$$id$ = $quick_menu_container$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $quick_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $quick_menu_container$
+		:i $alpha$ = %f(1.000000)
+		:i $time$ = %f(0.200000)
+	:i :s}
+:i endfunction
+:i function $quick_menu_add_item$
+	:i $make_thugpro_menu_item$:s{
+		:i $pad_right_sound$ = $nullscript$
+		:i $pad_left_sound$ = $nullscript$
+		:i  isNull 
+	:i :s}
+:i endfunction
+:i function $quick_menu_restart$
+	:i if $GotParam$$Set$
+		:i $global_cmd_set$
+	:i else 
+		:i if $GotParam$$GoTo$
+			:i $global_cmd_goto$
+		:i endif
+	:i endif
+	:i $thugpro_hide_quick_menu$
+:i endfunction
+:i function $thugpro_hide_quick_menu$
+	:i $restore_start_key_binding$
+	:i if NOT $IsObserving$
+		:i $GetSkaterId$
+		:i %GLOBAL%$objId$.$NetEnablePlayerInput$
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $quick_menu_container$
+		:i $alpha$ = %f(0.000000)
+		:i $time$ = %f(0.100000)
+	:i :s}
+	:i $Wait$%f(0.100000)$seconds$
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if NOT $GotParam$$SubMenu$
+		:i $GoalManager_ShowPoints$
+	:i endif
+:i endfunction
+:i function $launch_quick_menu_restart_menu$
+	:i $create_quick_menu_restart_menu$
+:i endfunction
+:i function $launch_quick_menu_hide_hud$
+	:i $exit_quick_menu_restart_menu$
+	:i $hide_all_hud_items$
+:i endfunction
+:i $should_reload_custom_last_level$ = %i(0,00000000)
+:i function $launch_quick_menu_reload_level$
+	:i $exit_quick_menu_restart_menu$
+	:i $Change$$should_reload_custom_last_level$ = %i(1,00000001)
+	:i $level_select_change_level$$level$ = $load_SkProDefault$
+:i endfunction
+:i function $create_quick_menu_restart_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_themed_scrolling_menu$$title$ = %s(7,"RESTART")$dims$ = %vec2(600.000000,237.000000)$pos$ = %vec2(229.000000,80.000000)$right_bracket_z$ = %i(1,00000001)
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_quick_menu_restart_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $kill_start_key_binding$
+	:i $AddRestartsToMenu$$initial_scale$ = %f(1.000000)
+	:i $finish_themed_scrolling_menu$
+:i endfunction
+:i function $exit_quick_menu_restart_menu$
+	:i $exit_pause_menu$
+	:i if NOT $IsObserving$
+		:i $GetSkaterId$
+		:i %GLOBAL%$objId$.$NetEnablePlayerInput$
+	:i endif
+:i endfunction
+:i $music_control_sub_menu_items$ = %i(2,00000002)
+:i function $music_control_focus_item$
+	:i $music_control_container$.$SetTags$$music_control_item_index$ = %GLOBAL%$index$
+	:i %GLOBAL%$i$ = %i(0,00000000)
+	:i while
+		
+		:i $FireEvent$$type$ = $music_item_unfocus$$target$ = :s{$music_control_container$$child$ = %GLOBAL%$i$:s}
+		:i %GLOBAL%$i$ =  (%i(1,00000001) + %GLOBAL%$i$) 
+	:i loop_to  ($music_control_sub_menu_items$) 
+	:i $FireEvent$$type$ = $music_item_focus$$target$ = :s{$music_control_container$$child$ = %GLOBAL%$index$:s}
+:i endfunction
+:i function $music_control_item_focus$
+	:i $music_control_container$.$GetSingleTag$$music_control_item_index$
+	:i $music_control_focus_item$$index$ = %GLOBAL%$music_control_item_index$
+:i endfunction
+:i function $music_control_item_pad_choose$
+	:i $music_control_container$.$GetSingleTag$$music_control_item_index$
+	:i $FireEvent$$type$ = $music_item_choose$$target$ = :s{$music_control_container$$child$ = %GLOBAL%$music_control_item_index$:s}
+:i endfunction
+:i function $music_control_item_pad_left$
+	:i $music_control_container$.$GetSingleTag$$music_control_item_index$
+	:i $index_previous_wraparound$$index$ = %GLOBAL%$music_control_item_index$$max$ =  ($music_control_sub_menu_items$) 
+	:i $music_control_focus_item$$index$ = %GLOBAL%$index$
+:i endfunction
+:i function $music_control_item_pad_right$
+	:i $music_control_container$.$GetSingleTag$$music_control_item_index$
+	:i $index_next_wraparound$$index$ = %GLOBAL%$music_control_item_index$$max$ =  ($music_control_sub_menu_items$) 
+	:i $music_control_focus_item$$index$ = %GLOBAL%$index$
+:i endfunction
+:i function $music_control_button_item_focus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $item_background$:s}
+		:i $alpha$ = %f(0.500000)
+		:i $time$ = %f(0.000000)
+	:i :s}
+:i endfunction
+:i function $music_control_button_item_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $item_background$:s}
+		:i $alpha$ = %f(0.000000)
+		:i $time$ = %f(0.000000)
+	:i :s}
+:i endfunction
+:i function $music_control_toggle_pause$
+	:i if $MusicIsPaused$
+		:i $PauseMusic$%i(0,00000000)
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $play_button$:s}
+			:i $alpha$ = %f(0.000000)
+			:i $time$ = %f(0.000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $pause_button$:s}
+			:i $alpha$ = %f(1.000000)
+			:i $time$ = %f(0.000000)
+		:i :s}
+	:i else 
+		:i $PauseMusic$%i(1,00000001)
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $play_button$:s}
+			:i $alpha$ = %f(1.000000)
+			:i $time$ = %f(0.000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $pause_button$:s}
+			:i $alpha$ = %f(0.000000)
+			:i $time$ = %f(0.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $music_control_action_pause$
+	:i $GetTags$
+	:i $music_control_toggle_pause$$id$ = %GLOBAL%$id$
+:i endfunction
+:i function $music_control_action_skip$
+	:i if $MusicIsPaused$
+		:i $music_control_toggle_pause$$id$ = $play_pause_button_container$
+	:i endif
+	:i $SkipMusicTrack$
+:i endfunction
+:i function $music_control_action_trackinfo$
+	:i $edmsg2$%s(30,"music_control_action_trackinfo")
+:i endfunction
+:i function $add_quick_menu_music_control_item$
+	:i $GetValueFromVolume$$cdvol$
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i %GLOBAL%$not_focusable$ = $not_focusable$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $music_control_container$
+		:i $parent$ = $current_menu$
+		:i $dims$ = %vec2(100.000000,22.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $music_control_container$
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$music_control_item_focus$$params$ = :s{:s}:s}
+			:i :s{$pad_choose$$music_control_item_pad_choose$$params$ = :s{:s}:s}
+			:i :s{$pad_left$$music_control_item_pad_left$$params$ = :s{:s}:s}
+			:i :s{$pad_right$$music_control_item_pad_right$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i $music_control_container$.$SetTags$$music_control_item_index$ = %i(0,00000000)
+	:i %GLOBAL%$item_offset$ = %vec2(6.000000,-0.500000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $music_control_container$
+		:i $id$ = $play_pause_button_container$
+		:i $dims$ = %vec2(10.000000,10.000000)
+		:i $pos$ =  (%vec2(0.000000,0.000000) + %GLOBAL%$item_offset$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$music_item_choose$$music_control_action_pause$$params$ = :s{:s}:s}
+			:i :s{$music_item_focus$$music_control_button_item_focus$$params$ = :s{:s}:s}
+			:i :s{$music_item_unfocus$$music_control_button_item_unfocus$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i if $MusicIsPaused$
+		:i %GLOBAL%$pause_button_alpha$ = %f(0.000000)
+		:i %GLOBAL%$play_button_alpha$ = %f(1.000000)
+	:i else 
+		:i %GLOBAL%$pause_button_alpha$ = %f(1.000000)
+		:i %GLOBAL%$play_button_alpha$ = %f(0.000000)
+	:i endif
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i %GLOBAL%$pause_button_alpha$ = %f(0.000000)
+		:i %GLOBAL%$play_button_alpha$ = %f(1.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $play_pause_button_container$
+		:i $local_id$ = $pause_button$
+		:i $dims$ = %vec2(0.000000,0.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $alpha$ = %GLOBAL%$pause_button_alpha$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = :s{$play_pause_button_container$$child$ = $pause_button$:s}
+		:i $id$ = $buttonsprite1$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(0.500000,2.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = :s{$play_pause_button_container$$child$ = $pause_button$:s}
+		:i $id$ = $buttonsprite2$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(0.500000,2.000000)
+		:i $pos$ = %vec2(4.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $play_pause_button_container$
+		:i $local_id$ = $play_button$
+		:i $dims$ = %vec2(0.000000,0.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $alpha$ = %GLOBAL%$play_button_alpha$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = :s{$play_pause_button_container$$child$ = $play_button$:s}
+		:i $id$ = $buttonsprite3$
+		:i $texture$ = $right_arrow$
+		:i $scale$ = %vec2(0.400000,0.400000)
+		:i $pos$ = %vec2(2.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $play_pause_button_container$
+		:i $local_id$ = $item_background$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(4.000000,4.000000)
+		:i $pos$ = %vec2(2.000000,0.000000)
+		:i $alpha$ = %f(0.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $music_control_container$
+		:i $id$ = $next_button_container$
+		:i $dims$ = %vec2(10.000000,10.000000)
+		:i $pos$ =  (%vec2(18.500000,0.000000) + %GLOBAL%$item_offset$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$music_item_choose$$music_control_action_skip$$params$ = :s{:s}:s}
+			:i :s{$music_item_focus$$music_control_button_item_focus$$params$ = :s{:s}:s}
+			:i :s{$music_item_unfocus$$music_control_button_item_unfocus$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $next_button_container$
+		:i $id$ = $buttonsprite6$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(0.400000,2.000000)
+		:i $pos$ = %vec2(3.500000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $next_button_container$
+		:i $id$ = $buttonsprite7$
+		:i $texture$ = $right_arrow$
+		:i $scale$ = %vec2(0.400000,0.400000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $next_button_container$
+		:i $local_id$ = $item_background$
+		:i $texture$ = $white$
+		:i $scale$ = %vec2(4.000000,4.000000)
+		:i $pos$ = %vec2(1.000000,0.000000)
+		:i $alpha$ = %f(0.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i :s}
+:i endfunction
+:i function $launch_quick_menu_keyboard$
+	:i if NOT $IsObserving$
+		:i $hide_all_hud_items$
+	:i endif
+	:i $thugpro_hide_quick_menu$$SubMenu$
+	:i $create_onscreen_keyboard$:s{
+		:i $allow_cancel$$icon$ = %GLOBAL%$icon$
+		:i $keyboard_cancel_script$ = $quick_menu_cancel_chat$
+		:i $keyboard_done_script$ = $quick_menu_entered_chat_message$
+		:i $keyboard_title$ = %s(13,"ENTER MESSAGE")
+		:i $min_length$ = %i(0,00000000)
+		:i $max_length$ = %i(76,0000004c)
+		:i $text$ = %s(0,"")
+	:i :s}
+:i endfunction
+:i function $quick_menu_cancel_chat$
+	:i $quick_menu_destroy_kb_elements$
+	:i $destroy_menu_background_title$
+	:i $cancel_chat_menu$
+:i endfunction
+:i function $quick_menu_entered_chat_message$
+	:i $DeBounce$$x$$time$ = %f(0.300000)
+	:i $quick_menu_destroy_kb_elements$
+	:i $entered_chat_message$
+:i endfunction
+:i function $quick_menu_destroy_kb_elements$
+	:i $pause_menu_gradient$$off$
+	:i if NOT $IsObserving$
+		:i $show_all_hud_items$
+	:i endif
+:i endfunction
+:i function $thugpro_camera_toggle$
+	:i if $ObjectExists$$id$ = $skatercam0$
+		:i switch $skater_cam_0_mode$
+			:i case %i(1,00000001)
+				:i $Change$$skater_cam_0_mode$ = %i(2,00000002)
+				:i endcase
+			case %i(2,00000002)
+				:i $Change$$skater_cam_0_mode$ = %i(3,00000003)
+				:i endcase
+			case %i(3,00000003)
+				:i $Change$$skater_cam_0_mode$ = %i(4,00000004)
+				:i endcase
+			case %i(4,00000004)
+				:i $Change$$skater_cam_0_mode$ = %i(1,00000001)
+				:i end_switch
+		
+		:i $skatercam0$.$sc_setmode$$mode$ = $skater_cam_0_mode$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"camera_angle")$value$ =  ($skater_cam_0_mode$) 
+	:i endif
+:i endfunction
+:i $view_mode$ = %i(0,00000000)
+:i $render_mode$ = %i(0,00000000)
+:i $wireframe_mode$ = %i(0,00000000)
+:i $drop_in_car$ = %i(0,00000000)
+:i $drop_in_car_setup$ = $MiniBajaCarSetup$
+:i function $UserSelectTriangle$
+:i endfunction
+:i function $UserSelectSquare$
+:i endfunction
+:i function $UserSelectCircle$
+	:i if  ( ($IsTrue$$disable_user_button_scripts$)  OR  ($InNetGame$) ) 
+		:i return
+		
+	:i endif
+:i endfunction
+:i function $UserSelectStart$
+:i endfunction
+:i function $THUGPROResetViewer$
+	:i if $IsTrue$$view_mode$
+		:i if $GotParam$$unfreeze$
+			:i if NOT $InNetGame$
+				:i $ToggleViewMode$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $Change$$view_mode$ = %i(0,00000000)
+		:i $SetViewMode$%i(0,00000000)
+	:i endif
+	:i if $GotParam$$force_reset$
+		:i $Change$$view_mode$ = %i(0,00000000)
+		:i $SetViewMode$%i(0,00000000)
+	:i endif
+:i endfunction
+:i function $THUGPROResetViewer_Dev$
+:i endfunction
+:i $PARKED_NO_VIEWERCAM$ = %i(0,00000000)
+:i function $ToggleViewMode$
+	:i %GLOBAL%$can_use_viewer$ = %i(1,00000001)
+	:i if $InNetGame$
+		:i if $IsObserving$
+			:i %GLOBAL%$can_use_viewer$ = %i(1,00000001)
+		:i else 
+			:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+				:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+				:i if $IsSurveying$
+					:i %GLOBAL%$can_use_viewer$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i if $skater$.$Skating$
+				:i if NOT $skater$.$OnGround$
+					:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+				:i endif
+			:i else 
+				:i if $skater$.$Walking$
+					:i if $skater$.$Walk_Air$
+						:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $cat_menu_anchor$
+		:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $dialog_box_anchor$
+		:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+	:i endif
+	:i if $LevelIs$$Load_Sk5Ed$
+		:i %GLOBAL%$can_use_viewer$ = %i(1,00000001)
+		:i if $IsTrue$$PARKED_NO_VIEWERCAM$
+			:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if $LevelIs$$load_mainmenu$
+		:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+	:i endif
+	:i if $IsTrue$$view_mode$
+		:i $Change$$view_mode$ = %i(0,00000000)
+		:i $SetViewMode$%i(0,00000000)
+		:i if $CustomParkMode$$editing$
+			:i if $IsTrue$$RAILTOOL_IS_ACTIVE$
+				:i $RailEditor$.$UnSuspend$
+				:i $SetActiveCamera$$id$ = $RailEditor$
+			:i else 
+				:i $SetActiveCamera$$id$ = $parked_cam$
+			:i endif
+			:i $SetParkEditorPauseMode$$UnPause$
+		:i else 
+			:i if NOT $IsObserving$
+				:i $GoalManager_ShowPoints$
+				:i $unpause_trick_text$
+			:i endif
+			:i if $InNetGame$
+			:i else 
+				:i $UnPauseSkaters$
+				:i $MakeSkaterGoto$$THUGPRO_EnablePlayerInput$
+				:i if $skater$.$Walking$
+					:i $ResetPhysics$$Walk$
+				:i else 
+					:i $ResetPhysics$
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i if $IsTrue$$observe_overview_cam_state$
+			:i %GLOBAL%$can_use_viewer$ = %i(0,00000000)
+		:i endif
+		:i if  (%GLOBAL%$can_use_viewer$ = %i(1,00000001)) 
+			:i $Change$$view_mode$ = %i(1,00000001)
+			:i $SetViewMode$%i(1,00000001)
+			:i if $CustomParkMode$$editing$
+				:i $RailEditor$.$Suspend$
+				:i $SetParkEditorPauseMode$$Pause$
+			:i else 
+				:i if NOT $IsObserving$
+					:i $GoalManager_HidePoints$
+					:i $pause_trick_text$
+				:i endif
+				:i if NOT $InNetGame$
+					:i $PauseSkaters$
+					:i $MakeSkaterGoto$$THUGPRO_DisablePlayerInput$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $UserSelectX$
+	:i if $IsTrue$$disable_user_button_scripts$
+		:i return
+		
+	:i endif
+	:i $Change$$viewer_rotation_angle$ = %i(0,00000000)
+	:i if $InNetGame$
+		:i if $IsTrue$$THUGPRO_ObserveOn$
+			:i if $SkaterSpeedGreaterThan$%i(1,00000001)
+				:i return
+				
+			:i endif
+			:i $ToggleViewMode$
+		:i else 
+			:i if $IsObserving$
+				:i $ToggleViewMode$
+			:i else 
+				:i if $IsSurveying$
+					:i if $SkaterSpeedGreaterThan$%i(1,00000001)
+						:i return
+						
+					:i endif
+					:i $ToggleViewMode$
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i $ToggleViewMode$
+	:i endif
+:i endfunction
+:i $viewer_rotation_angle$ = %i(0,00000000)
+:i function $UserViewerX$
+	:i if $IsTrue$$disable_user_button_scripts$
+		:i return
+		
+	:i endif
+	:i if NOT $InNetGame$
+		:i $skater$.$PlaceBeforeCamera$
+		:i $THUGPROResetViewer$$unfreeze$
+	:i endif
+:i endfunction
+:i function $UserViewerSquare$
+	:i if $IsTrue$$disable_user_button_scripts$
+		:i return
+		
+	:i endif
+:i endfunction
+:i $Viewer_move_mode$ = %i(0,00000000)
+:i function $UserViewerCircle$
+	:i if $IsTrue$$disable_user_button_scripts$
+		:i return
+		
+	:i endif
+	:i $Change$$viewer_rotation_angle$ = %i(0,00000000)
+	:i switch $Viewer_move_mode$
+		:i case %i(0,00000000)
+			:i $Change$$Viewer_move_mode$ = %i(1,00000001)
+			:i $SetMovementVelocity$%i(400,00000190)
+			:i $SetRotateVelocity$%i(120,00000078)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(15,"Camera Speed: 2")$style$ = $goal_collect_text$
+			:i endcase
+		case %i(1,00000001)
+			:i $Change$$Viewer_move_mode$ = %i(2,00000002)
+			:i $SetMovementVelocity$%i(2000,000007d0)
+			:i $SetRotateVelocity$%i(300,0000012c)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(15,"Camera Speed: 3")$style$ = $goal_collect_text$
+			:i endcase
+		case %i(2,00000002)
+			:i $Change$$Viewer_move_mode$ = %i(3,00000003)
+			:i $SetMovementVelocity$%i(6000,00001770)
+			:i $SetRotateVelocity$%i(300,0000012c)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(15,"Camera Speed: 4")$style$ = $goal_collect_text$
+			:i endcase
+		case %i(3,00000003)
+			:i $Change$$Viewer_move_mode$ = %i(0,00000000)
+			:i $SetMovementVelocity$%i(100,00000064)
+			:i $SetRotateVelocity$%i(50,00000032)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(15,"Camera Speed: 1")$style$ = $goal_collect_text$
+			:i end_switch
+	
+:i endfunction
+:i function $UserViewerTriangle$
+	:i if $IsTrue$$disable_user_button_scripts$
+		:i return
+		
+	:i endif
+:i endfunction
+:i function $show_wireframe_mode$
+:i endfunction
+:i function $wireframe_message$
+:i endfunction
+:i function $wireframe_style$
+:i endfunction
+:i :end

@@ -1,0 +1,27 @@
+//------------------------------------------------
+// PS2 mesh thing
+// Not all too sure what this is
+//------------------------------------------------
+
+#include "GH5PS2Mesh.bt"
+
+typedef struct
+{
+    QBKey sum_a <bgcolor=CL_CHECKSUM>;
+    QBKey sum_b <bgcolor=CL_CHECKSUM>;
+    QBKey material_reference <bgcolor=CL_CHECKSUM>;
+    RelativeOffset off(0) <bgcolor=CL_POINTER>;
+    Vec4 bound_a <bgcolor=CL_FLOATS>;
+    Vec4 bound_b <bgcolor=CL_FLOATS>;
+    Vec4 bound_c <bgcolor=CL_FLOATS>;
+    ubyte null[8] <bgcolor=CL_PADDING>;
+    QBKey material_reference_b <bgcolor=CL_CHECKSUM>;
+    ubyte null_b[4] <bgcolor=CL_PADDING>;
+
+    local uint old_off = FTell();
+    FSeek(AbsOffset(off));
+
+    GH5PS2Mesh mesh;
+
+    FSeek(old_off);
+} GH5PS2MeshThing;

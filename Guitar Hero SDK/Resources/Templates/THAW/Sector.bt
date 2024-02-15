@@ -1,0 +1,105 @@
+//------------------------------------------------
+// THAW sector
+//------------------------------------------------
+
+#define CL_SECTCHECKSUM         0x88ff88
+#define CL_SECTCONST            0x66ff66
+#define CL_SECTPADDING          0x44dd55
+#define CL_SECTBEGIN            0x22cc33
+
+local uint CurrentSectorFlags = 0;
+local uint CurrentSectorIndex = 0;
+
+typedef struct
+{
+    uint flags;
+    
+    CurrentSectorFlags = flags;
+} THAWSectorFlags <read=ReadTHAWSectorFlags>;
+
+string ReadTHAWSectorFlags(THAWSectorFlags &secflags)
+{
+    local string out;
+    local string separator = "";
+    local uint numFlags = 0;
+    
+    if (secflags.flags & SECFLAGS_HAS_TEXCOORDS)
+    {
+        SPrintf(out, "%s%sSECFLAGS_HAS_TEXCOORDS", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_HAS_VERTEX_COLORS)
+    {
+        SPrintf(out, "%s%sSECFLAGS_HAS_VERTEX_COLORS", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_HAS_VERTEX_COLOR_WIBBLES)
+    {
+        SPrintf(out, "%s%sSECFLAGS_HAS_VERTEX_COLOR_WIBBLES", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_HAS_VERTEX_NORMALS)
+    {
+        SPrintf(out, "%s%sSECFLAGS_HAS_VERTEX_NORMALS", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_HAS_VERTEX_WEIGHTS)
+    {
+        SPrintf(out, "%s%sSECFLAGS_HAS_VERTEX_WEIGHTS", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_BILLBOARD_PRESENT)
+    {
+        SPrintf(out, "%s%sSECFLAGS_BILLBOARD_PRESENT", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    if (secflags.flags & SECFLAGS_UNK)
+    {
+        SPrintf(out, "%s%sSECFLAGS_UNK", out, separator);
+        numFlags ++;
+        separator = numFlags ? " | " : "";
+    }
+    
+    return out;
+}
+
+typedef struct
+{
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        uint null <hidden=true, bgcolor=CL_SECTBEGIN>;
+        QBKey checksum <bgcolor=CL_SECTCHECKSUM>;
+        THAWSectorFlags flags <bgcolor=CL_SECTCONST>;
+        ubyte skip_me[36] <hidden=true, bgcolor=CL_SECTPADDING>;
+        
+        // Read our CGeom info.
+        local uint old_off = FTell();
+        
+        FSeek(Off_CGeoms + (SIZEOF_CGEOM * CurrentSectorIndex));
+        
+        SectorInfo CGeom;
+        
+        FSeek(old_off);
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG1 || SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        QBKey checksum <bgcolor=CL_SECTCHECKSUM>;
+        int bone_index <bgcolor=CL_SECTCONST>;
+        THAWSectorFlags flags <bgcolor=CL_SECTCONST>;
+        
+        SectorInfo CGeom;
+    }
+    
+} Sector <read=Str("[%s] %s", ReadQBKey(checksum), ReadTHAWSectorFlags(flags))>;

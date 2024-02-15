@@ -1,0 +1,82 @@
+// FSB file (for songs)
+
+#include "Common.bt"
+
+LittleEndian();
+
+//----------------------------------------------------------------
+
+typedef struct (ubyte isExtended)
+{
+    local uint entry_start = FTell();
+    
+    ushort file_entry_length <bgcolor=CL_SINGLEVALUE>;
+    char filename[30] <bgcolor=CL_NAME>;
+    uint samples_length <bgcolor=CL_SINGLEVALUE>;
+    uint compressed_length <bgcolor=CL_SINGLEVALUE>;
+    uint loop_start <bgcolor=CL_SINGLEVALUE>;
+    uint loop_end <bgcolor=CL_SINGLEVALUE>;
+    uint mode <bgcolor=CL_SINGLEVALUE>;
+    uint sample_rate <bgcolor=CL_SINGLEVALUE>;
+    ushort volume <bgcolor=CL_SINGLEVALUE>;
+    ushort pan <bgcolor=CL_SINGLEVALUE>;
+    ushort priority <bgcolor=CL_SINGLEVALUE>;
+    ushort channels <bgcolor=CL_SINGLEVALUE>;
+    float min_distance <bgcolor=CL_FLOATS>;
+    float max_distance <bgcolor=CL_FLOATS>;
+    uint variable_frequency <bgcolor=CL_SINGLEVALUE>;
+    ushort variable_volume <bgcolor=CL_SINGLEVALUE>;
+    ushort variable_pan <bgcolor=CL_SINGLEVALUE>;
+
+    if (isExtended)
+    {
+        uint unkA;
+        uint unkB;
+        uint unkC;
+        uint unkD;
+    }
+    
+    FSeek(entry_start + file_entry_length);
+} FSBFile <read=ReadFSBFile>;
+
+string ReadFSBFile(FSBFile &fsb)
+{
+    return fsb.filename;
+}
+
+//----------------------------------------------------------------
+
+typedef struct
+{
+    char magic[4] <bgcolor=CL_PADDING>;
+
+    if (magic != "FSB3" && magic != "FSB4")
+    {
+        Printf("Not an FSB3 or FSB4 file.\n");
+        return;
+    }
+
+    uint file_count <bgcolor=CL_SINGLEVALUE>;
+    uint directory_length <bgcolor=CL_SINGLEVALUE>;
+    uint data_length <bgcolor=CL_SINGLEVALUE>;
+
+    ushort unk <bgcolor=CL_SINGLEVALUE>;
+    ushort fsb_version <bgcolor=CL_SINGLEVALUE>;
+
+    uint flags <bgcolor=CL_SINGLEVALUE>;
+
+    if (magic == "FSB4")
+    {
+        uint FSB4_nullA <bgcolor=CL_SINGLEVALUE>;
+        uint FSB4_nullB <bgcolor=CL_SINGLEVALUE>;
+
+        ubyte FSB4_hash[16] <bgcolor=CL_SINGLEVALUE>;
+    }
+
+    local int i;
+
+    for (i=0; i<file_count; i++)
+        FSBFile files(flags & 0x20) <optimize=false>;
+} FSB;
+
+FSB fsbfile;

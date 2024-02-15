@@ -1,0 +1,951 @@
+
+:i $server_projectile_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $velocity$:s}
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $collideanddie$:s}
+	:i :s{$component$ = $projectiletracker$:s}
+	:i :s{$component$ = $rigidbody$:s}
+	:i :s{$component$ = $sound$:s}
+	:i :a}
+:i $net_server_projectile_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $velocity$:s}
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $collideanddie$:s}
+	:i :s{$component$ = $projectiletracker$:s}
+	:i :s{$component$ = $rigidbody$:s}
+	:i :s{$component$ = $sound$:s}
+	:i :a}
+:i $client_projectile_composite_structure$ = 
+:i :a{
+	:i :s{$component$ = $motion$:s}
+	:i :s{$component$ = $velocity$:s}
+	:i :s{$component$ = $suspend$:s}
+	:i :s{$component$ = $collideanddie$:s}
+	:i :s{$component$ = $projectiletracker$:s}
+	:i :s{$component$ = $rigidbody$:s}
+	:i :s{$component$ = $sound$:s}
+	:i :a}
+:i function $ClientLaunchProjectile$
+	:i $Obj_GetId$
+	:i %GLOBAL%$skaterId$ = %GLOBAL%$ObjID$
+	:i switch %GLOBAL%$ammo_type$
+		:i case $tomato$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(41,"gameobjects\projectiles\tomato\tomato.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $tomato$:s}:a}
+			:i %GLOBAL%$SoundType$ = $Default$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $apple$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(39,"gameobjects\projectiles\apple\apple.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $apple$:s}:a}
+			:i %GLOBAL%$SoundType$ = $Default$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $beads$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(39,"gameobjects\projectiles\beads\beads.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $beads$:s}:a}
+			:i %GLOBAL%$SoundType$ = $Default$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $shrimp$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(41,"gameobjects\projectiles\shrimp\shrimp.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $shrimp$:s}:a}
+			:i %GLOBAL%$SoundType$ = $Default$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $smokebomb$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(47,"gameobjects\projectiles\smokebomb\smokebomb.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $smokebomb$:s}:a}
+			:i %GLOBAL%$SoundType$ = $Default$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $paintcan$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(45,"gameobjects\projectiles\paintcan\paintcan.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $paintcan$:s}:a}
+			:i %GLOBAL%$SoundType$ = $AluminumCan$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $beerbottle$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(49,"gameobjects\projectiles\beerbottle\beerbottle.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $beerbottle$:s}:a}
+			:i %GLOBAL%$SoundType$ = $BA_GlassBottleNoBreak$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		case $duck$
+			:i %GLOBAL%$model$ = :a{:s{$component$ = $model$$model$ = %s(37,"leveleditor\props\nj_duck\nj_duck.mdl"):s}:a}
+			:i %GLOBAL%$projectilecollision$ = :a{:s{$component$ = $projectilecollision$$projectile_type$ = $duck$:s}:a}
+			:i %GLOBAL%$SoundType$ = $NJ_RubberDuck$
+			:i $ClientLaunchProjectileReal$ isNull 
+			:i endcase
+		default 
+			:i $ClientHandleCustomBroadcastMessages$ isNull 
+			:i end_switch
+	
+:i endfunction
+:i function $ClientLaunchProjectileReal$
+	:i if $InNetGame$
+		:i return
+		
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$checksumname$ = $name$%s(13,"projectile_%i")$i$ = %GLOBAL%$index$
+		:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+			:i continue
+			
+		:i endif
+		:i if  (%GLOBAL%$index$ = %i(4,00000004)) 
+			:i return
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+	:i $pos$ = %GLOBAL%$skater_pos$
+	:i if NOT $GotParam$$SoundType$
+		:i %GLOBAL%$SoundType$ = $Default$
+	:i endif
+	:i $TheParams$ = :s{
+		:i $owner_id$ = %GLOBAL%$owner_id$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $vel$ = %GLOBAL%$vel$
+		:i $orient_to_vel$
+		:i $scale$ = %f(1.000000)
+		:i $radius$ = %i(24,00000018)
+		:i $name$ = %GLOBAL%$name$
+		:i $SystemLifetime$ = %i(1,00000001)
+		:i $NeverSuspend$
+		:i $death_script$ = $projectile_die$
+		:i $DieUponSettling$
+		:i $SoundType$ = %GLOBAL%$SoundType$
+	:i :s}
+	:i $printf$%s(17,"create projectile")
+	:i if $OnServer$
+		:i if $InNetGame$
+			:i $CreateCompositeObject$:s{
+				:i $Components$ =  ($net_server_projectile_composite_structure$ + %GLOBAL%$model$ + %GLOBAL%$projectilecollision$) 
+				:i $Params$ = %GLOBAL%$TheParams$
+			:i :s}
+		:i else 
+			:i $CreateCompositeObject$:s{
+				:i $Components$ =  ($server_projectile_composite_structure$ + %GLOBAL%$model$) 
+				:i $Params$ = %GLOBAL%$TheParams$
+			:i :s}
+		:i endif
+	:i else 
+		:i $CreateCompositeObject$:s{
+			:i $Components$ =  ($client_projectile_composite_structure$ + %GLOBAL%$model$) 
+			:i $Params$ = %GLOBAL%$TheParams$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$name$.$RigidBody_IgnoreSkater$%i(15,0000000f)$frames$
+	:i %GLOBAL%$name$.$RigidBody_Wake$
+:i endfunction
+:i function $LaunchProjectile$
+	:i $GetCurrentSkaterID$
+	:i if NOT $GotParam$$pos$
+		:i %GLOBAL%$ObjID$.$Obj_GetPosition$
+	:i endif
+	:i if NOT $GotParam$$vel$
+		:i %GLOBAL%$ObjID$.$Obj_GetVelocity$
+	:i endif
+	:i $skater_pos$ = %GLOBAL%$pos$
+	:i $skater_vel$ = %GLOBAL%$vel$
+	:i $RemoveParameter$$pos$
+	:i $RemoveParameter$$vel$
+	:i $scale$ = %f(1.000000)
+	:i $radius$ = %i(24,00000018)
+	:i if $GotParam$$ped_dist$
+		:i $delta_pos$ =  (%GLOBAL%$ped_pos$ - %GLOBAL%$skater_pos$) 
+		:i $vel$ =  (%GLOBAL%$delta_pos$ * %i(4,00000004) + %GLOBAL%$ped_dist$ * %vec3(0.000000,0.150000,0.000000)) 
+	:i else 
+		:i $GetHeading$
+		:i $z$ =  (%i(600,00000258) * %GLOBAL%$sine$) 
+		:i $y$ = %i(20,00000014)
+		:i $x$ =  (%i(600,00000258) * %GLOBAL%$cosine$) 
+		:i $vel$ =  (%GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000) + %GLOBAL%$skater_vel$) 
+	:i endif
+	:i $GetAmmoType$
+	:i if $InNetGame$
+		:i $BroadcastProjectile$$ObjID$ = %GLOBAL%$ObjID$$type$ = %GLOBAL%$type$$scale$ = %GLOBAL%$scale$$radius$ = %GLOBAL%$radius$$pos$ = %GLOBAL%$skater_pos$$vel$ = %GLOBAL%$vel$$ammo_type$ = $ammo_type$
+	:i endif
+	:i $ClientLaunchProjectile$$owner_id$ = %GLOBAL%$ObjID$ isNull 
+:i endfunction
+:i function $projectile_hit_ped$
+	:i if NOT $Skating$
+		:i if NOT $CurrentScorePotGreaterThan$%i(0,00000000)
+			:i $RunTimer_ComboStarted$
+			:i $Obj_SpawnScript$$wait_and_unpause_run_timer$
+		:i endif
+	:i endif
+	:i if NOT $CurrentScorePotGreaterThan$%i(0,00000000)
+		:i $no_combo$ = %i(1,00000001)
+	:i endif
+	:i $SetTrickScore$%i(500,000001f4)
+	:i $SetTrickName$%s(7,"Gotcha!")
+	:i $Display$
+	:i if $GotParam$$no_combo$
+		:i if NOT $DoingTrick$
+			:i $ClearPanel_Landed$
+		:i endif
+	:i endif
+	:i $change$$projectile_last_ped_id$ = %GLOBAL%$ped_id$
+	:i $BroadcastEvent$$type$ = $PedHitByProjectile$
+	:i %GLOBAL%$projectile_id$.$Die$
+:i endfunction
+:i function $projectile_die$
+:i endfunction
+:i function $hit_ped_script$
+	:i $projectile_hit_ped_sounds$
+	:i $Obj_SpawnScript$$projectile_splat_particles$$Params$ = :s{ isNull :s}
+:i endfunction
+:i function $projectile_splat_particles$
+	:i if $LevelIs$$load_tr$
+		:i return
+		
+	:i endif
+	:i $bone$ =  ($target_bone$) 
+	:i switch %GLOBAL%$ammo_type$
+		:i case $apple$
+			:i $params_script$ = :s{$apm_BO_applesplatta01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i $params_script2$ = :s{$apm_BO_applesplatta02_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i endcase
+		case $duck$
+			:i $params_script$ = :s{$apm_spraycan01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i $color1$ = :a{%i(128,00000080)%i(32,00000020)%i(128,00000080)%i(128,00000080):a}
+			:i $params_script2$ = :s{$apm_spraycan02_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i $params_script3$ = :s{$apm_spraycan03_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i endcase
+		case $beerbottle$
+			:i $Obj_PlaySound$$NJ_BottleBreak01$
+			:i endcase
+		case $beads$
+			:i return
+			
+			:i endcase
+		case $shrimp$
+			:i $params_script$ = :s{$JOW_AU_ShrimpSplat01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i endcase
+		case $smokebomb$
+			:i $params_script$ = :s{$JOW_SmokeBomb01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+			:i $color1$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2)
+				 :POS(0) :a{%i(112,00000070)%i(64,00000040)%i(24,00000018)%i(72,00000048):a}
+			:BREAKTO(3)
+				 :POS(1) :a{%i(24,00000018)%i(112,00000070)%i(64,00000040)%i(72,00000048):a}
+			:BREAKTO(3)
+				 :POS(2) :a{%i(64,00000040)%i(24,00000018)%i(112,00000070)%i(72,00000048):a} :POS(3) 
+				:i $color1_endAlpha$ = %i(0,00000000)
+				:i $params_script2$ = :s{$JOW_SmokeBomb02_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+				:i endcase
+			case $tomato$
+				:i $params_script$ = :s{$apm_BA_Tomatosplatta01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+				:i $params_script2$ = :s{$apm_BA_Tomatosplatta02_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+				:i endcase
+			case $paintcan$
+				:i $params_script$ = :s{$apm_spraycan01_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+				:i $color1$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(4):OFFSET(5):OFFSET(6)
+					 :POS(4) :a{%i(128,00000080)%i(32,00000020)%i(32,00000020)%i(128,00000080):a}
+				:BREAKTO(7)
+					 :POS(5) :a{%i(32,00000020)%i(128,00000080)%i(32,00000020)%i(128,00000080):a}
+				:BREAKTO(7)
+					 :POS(6) :a{%i(32,00000020)%i(32,00000020)%i(128,00000080)%i(128,00000080):a} :POS(7) 
+					:i $params_script2$ = :s{$apm_spraycan02_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+					:i $params_script3$ = :s{$apm_spraycan03_fast_particle_params$$bone$ = %GLOBAL%$bone$:s}
+					:i endcase
+				default 
+					:i return
+					
+					:i end_switch
+			
+			:i $time$ =  (%GLOBAL%$params_script$->$lifetime$) 
+			:i $Obj_GetId$
+			:i if NOT  (%GLOBAL%$ObjID$ = %i(0,00000000)) 
+				:i $GetUniqueMangledId$$id$ = $proj_part_id1$$ObjID$ = %GLOBAL%$ObjID$
+				:i $proj_part1$ = %GLOBAL%$uniqueID$
+				:i $CreateFastParticleSystem$:s{
+					:i $name$ = %GLOBAL%$proj_part1$
+					:i $params_script$ = %GLOBAL%$params_script$
+					:i $attachObjId$ = %GLOBAL%$ObjID$
+				:i :s}
+				:i if $GotParam$$params_script2$
+					:i $GetUniqueMangledId$$id$ = $proj_part_id2$$ObjID$ = %GLOBAL%$ObjID$
+					:i $proj_part2$ = %GLOBAL%$uniqueID$
+					:i $CreateFastParticleSystem$:s{
+						:i $name$ = %GLOBAL%$proj_part2$
+						:i $params_script$ = %GLOBAL%$params_script2$
+						:i $attachObjId$ = %GLOBAL%$ObjID$
+					:i :s}
+				:i endif
+				:i if $GotParam$$params_script3$
+					:i $GetUniqueMangledId$$id$ = $proj_part_id3$$ObjID$ = %GLOBAL%$ObjID$
+					:i $proj_part3$ = %GLOBAL%$uniqueID$
+					:i $CreateFastParticleSystem$:s{
+						:i $name$ = %GLOBAL%$proj_part3$
+						:i $params_script$ = %GLOBAL%$params_script3$
+						:i $attachObjId$ = %GLOBAL%$ObjID$
+					:i :s}
+				:i endif
+				:i if $GotParam$$color1$
+					:i $MangleChecksums$$a$ = %GLOBAL%$proj_part1$$b$ = %GLOBAL%$ObjID$
+					:i if $CompositeObjectExists$$name$ = %GLOBAL%$mangled_id$
+						:i %GLOBAL%$mangled_id$.$SetStartColor$%GLOBAL%$color1$
+						:i if $GotParam$$color1_endAlpha$
+							:i $setArrayElement$$arrayName$ = $color1$$index$ = %i(3,00000003)$newValue$ = %GLOBAL%$color1_endAlpha$
+							:i %GLOBAL%$mangled_id$.$SetEndColor$%GLOBAL%$color1$
+						:i endif
+					:i endif
+				:i endif
+				:i $wait$%GLOBAL%$time$$seconds$
+				:i $MangleChecksums$$a$ = %GLOBAL%$proj_part1$$b$ = %GLOBAL%$ObjID$
+				:i if $CompositeObjectExists$$name$ = %GLOBAL%$mangled_id$
+					:i %GLOBAL%$mangled_id$.$Die$
+				:i endif
+				:i if $GotParam$$params_script2$
+					:i $MangleChecksums$$a$ = %GLOBAL%$proj_part2$$b$ = %GLOBAL%$ObjID$
+					:i if $CompositeObjectExists$$name$ = %GLOBAL%$mangled_id$
+						:i %GLOBAL%$mangled_id$.$Die$
+					:i endif
+				:i endif
+				:i if $GotParam$$params_script3$
+					:i $MangleChecksums$$a$ = %GLOBAL%$proj_part3$$b$ = %GLOBAL%$ObjID$
+					:i if $CompositeObjectExists$$name$ = %GLOBAL%$mangled_id$
+						:i %GLOBAL%$mangled_id$.$Die$
+					:i endif
+				:i endif
+			:i endif
+		:i endfunction
+		:i function $GetUniqueMangledId$
+			:i while
+				
+				:i $MangleChecksums$$a$ = %GLOBAL%$id$$b$ = %GLOBAL%$ObjID$
+				:i if NOT $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+					:i continue
+					
+				:i endif
+				:i $id$ =  (%GLOBAL%$id$ + %i(1,00000001)) 
+			:i loop_to 
+			:i return
+			$uniqueID$ = %GLOBAL%$id$
+		:i endfunction
+		:i function $wait_and_unpause_run_timer$
+			:i $wait$%i(1,00000001)$gameframes$
+			:i $RunTimer_unpause$
+		:i endfunction
+		:i $projectile_last_ped_id$ = %i(0,00000000)
+		:i function $give_skater_ammo$$num$ = %i(5,00000005)$type$ = $none$
+			:i $printf$%s(16,"give_skater_ammo")
+			:i $Obj_SpawnScript$$SK6_SFX_Get_Throwing_Item$
+			:i $GetAmmo$
+			:i $GetAmmoType$
+			:i if $IsSkaterOnVehicle$
+				:i $get_ammo_text$$type$ = %GLOBAL%$type$
+				:i $FormatText$$textname$ = $text$%s(33,"You can't carry %a on that thing!")$a$ = %GLOBAL%$ammo_text$
+				:i $create_console_message$$text$ = %GLOBAL%$text$$rgba$ = :a{%i(8,00000008)%i(73,00000049)%i(123,0000007b)%i(90,0000005a):a}$wait_and_die$ = %i(1,00000001)$time$ = %i(3,00000003)
+				:i return
+				
+			:i endif
+			:i $need_new_meter$ = %i(0,00000000)
+			:i if NOT $ChecksumEquals$$a$ = %GLOBAL%$type$$b$ = %GLOBAL%$ammo_type$
+				:i $need_new_meter$ = %i(1,00000001)
+				:i $root_window$.$GetSingleTag$$menu_state$
+				:i if  (%GLOBAL%$menu_state$ = $off$) 
+					:i $get_ammo_text$$type$ = %GLOBAL%$type$
+					:i $FormatText$$textname$ = $text$%s(17,"\c4You got %i %a!")$i$ = %GLOBAL%$num$$a$ = %GLOBAL%$ammo_text$
+					:i $create_panel_message$:s{
+						:i $id$ = $new_ammo_message$
+						:i $text$ = %GLOBAL%$text$
+						:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+						:i $pos$ = %vec2(320.000000,180.000000)
+						:i $style$ = $new_ammo_message_up$
+					:i :s}
+					:i $create_panel_message$:s{
+						:i $id$ = $new_ammo_message2$
+						:i $text$ = %s(27,"\c4Press \c0\m3\c4 to throw")
+						:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+						:i $style$ = $new_ammo_message_up$
+						:i $pos$ = %vec2(320.000000,215.000000)
+					:i :s}
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$ammo$ = %i(0,00000000)) 
+				:i $need_new_meter$ = %i(1,00000001)
+			:i endif
+			:i if  (%GLOBAL%$need_new_meter$ = %i(1,00000001)) 
+				:i $create_ammo_meter$$type$ = %GLOBAL%$type$
+			:i endif
+			:i if  (%GLOBAL%$num$ > %GLOBAL%$ammo$) 
+				:i $SetAmmoType$%GLOBAL%$type$
+				:i $get_ammo_text$$type$ = %GLOBAL%$type$
+				:i if  (%GLOBAL%$ammo$ = %i(0,00000000)) 
+					:i $FormatText$$textname$ = $text$%s(14,"You got %i %a!")$i$ = %GLOBAL%$num$$a$ = %GLOBAL%$ammo_text$
+				:i else 
+					:i $FormatText$$textname$ = $text$%s(19,"You got %i more %a!")$i$ =  (%GLOBAL%$num$ - %GLOBAL%$ammo$) $a$ = %GLOBAL%$ammo_text$
+				:i endif
+				:i $SetAmmo$%GLOBAL%$num$
+				:i $BroadcastEvent$$type$ = $SkaterGotAmmo$
+				:i $create_console_message$$text$ = %GLOBAL%$text$$rgba$ = :a{%i(0,00000000)%i(70,00000046)%i(0,00000000)%i(100,00000064):a}$wait_and_die$ = %i(1,00000001)$time$ = %i(3,00000003)
+			:i else 
+				:i $GetAmmoType$
+				:i $get_ammo_text$$type$ = %GLOBAL%$ammo_type$
+				:i $FormatText$$textname$ = $text$%s(23,"You already have %i %a!")$i$ = %GLOBAL%$ammo$$a$ = %GLOBAL%$ammo_text$
+				:i $create_console_message$$text$ = %GLOBAL%$text$$rgba$ = :a{%i(8,00000008)%i(73,00000049)%i(123,0000007b)%i(90,0000005a):a}$wait_and_die$ = %i(1,00000001)$time$ = %i(3,00000003)
+			:i endif
+		:i endfunction
+		:i function $get_ammo_text$
+			:i switch %GLOBAL%$type$
+				:i case $apple$
+					:i $ammo_text$ = %s(6,"apples")
+					:i endcase
+				case $beads$
+					:i $ammo_text$ = %s(5,"beads")
+					:i endcase
+				case $shrimp$
+					:i $ammo_text$ = %s(6,"shrimp")
+					:i endcase
+				case $smokebomb$
+					:i $ammo_text$ = %s(9,"smokebomb")
+					:i endcase
+				case $tomato$
+					:i $ammo_text$ = %s(7,"tomatos")
+					:i endcase
+				case $paintcan$
+					:i $ammo_text$ = %s(10,"paint cans")
+					:i endcase
+				default 
+					:i $ammo_text$ = %s(4,"ammo")
+					:i end_switch
+			
+			:i return
+			$ammo_text$ = %GLOBAL%$ammo_text$
+		:i endfunction
+		:i $target_bone$ = $Bone_Chest$
+		:i function $choose_projectile_target_bone$
+			:i $change$$target_bone$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(8):OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12)
+					 :POS(8) $Bone_Chest$
+				:BREAKTO(13)
+					 :POS(9) $Bone_Pelvis$
+				:BREAKTO(13)
+					 :POS(10) $Bone_Head$
+				:BREAKTO(13)
+					 :POS(11) $Bone_Bicep_L$
+				:BREAKTO(13)
+					 :POS(12) $Bone_Bicep_R$ :POS(13) 
+			:i endfunction
+			:i function $skate_maybe_throw_projectile$
+				:i if $IsSkaterOnVehicle$
+					:i return
+					
+				:i endif
+				:i if $AnimEquals$$NoProjectileAnims$
+					:i return
+					
+				:i endif
+				:i if $IsInBail$
+					:i return
+					
+				:i endif
+				:i if $IsInRevert$
+					:i $printf$%s(9,"IN REVERT")
+					:i return
+					
+				:i endif
+				:i $Obj_SpawnScript$$throw_while_skating$
+				:i $GetAmmo$
+				:i $ammo$ =  (%GLOBAL%$ammo$ - %i(1,00000001)) 
+				:i $SetAmmo$%GLOBAL%$ammo$
+				:i $Obj_KillSpawnedScript$$name$ = $ammo_meter_change$
+				:i $Obj_SpawnScript$$ammo_meter_change$$Params$ = :s{$count$ = %i(4294967295,ffffffff):s}
+				:i if  (%GLOBAL%$ammo$ = %i(0,00000000)) 
+					:i $text$ = %s(19,"You're out of ammo!")
+					:i $SpawnSound$$SK6_SFX_OutOfAmmoBuzzer$
+					:i $BroadcastEvent$$type$ = $SkaterOutOfAmmo$
+					:i $create_console_message$$text$ = %GLOBAL%$text$$rgba$ = :a{%i(70,00000046)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}$wait_and_die$ = %i(1,00000001)$time$ = %i(3,00000003)
+				:i endif
+			:i endfunction
+			:i $NoProjectileAnims$ = :a{
+				:i $_1990Invert_init$
+				:i $_1990Invert_range$
+				:i $_1990Invert_out$
+				:i $HeelflipFSInvert_init$
+				:i $HeelflipFSInvert_range$
+				:i $HeelflipFSInvert_out$
+				:i $AndrectInvert_init$
+				:i $AndrectInvert_range$
+				:i $AndrectInvert_out$
+				:i $OneFootInvert_init$
+				:i $OneFootInvert_range$
+				:i $OneFootInvert_out$
+				:i $Invert_init$
+				:i $Invert_range$
+				:i $Invert_out$
+				:i $GymnastPlant_init$
+				:i $GymnastPlant_range$
+				:i $GymnastPlant_out$
+				:i $MuteInvert_init$
+				:i $MuteInvert_range$
+				:i $MuteInvert_out$
+				:i $HandstandHandFlip_Init$
+				:i $HandstandHandFlip_range$
+				:i $HandstandHandFlip_out$
+				:i $HandstandCasper_Init$
+				:i $HandstandCasper_range$
+				:i $HandstandCasper_out$
+				:i $HStandFliptoHStand$
+				:i $HandstandHandFlip_range$
+				:i $HandstandHandFlip_out$
+				:i :a}
+			:i function $throw_while_skating$$anim$ = $Throw_Sidearm_Partial$
+				:i if NOT $Skating$
+					:i $goto$$throw_while_walking$
+				:i endif
+				:i $SetThrowingProjectile$
+				:i if $IsSkaterOnVehicle$
+					:i $anim$ = $walking_throw_partial$
+				:i endif
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Cloth$
+					:i $Obj_RemoveAnimSubset$$SubsetId$ = $Cloth$
+				:i endif
+				:i $OnExitRun$$throw_while_skating_exit$
+				:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+					:i $Obj_AddAnimSubset$$SubsetId$ = $Throw$$EnableBlending$$Stage$ = %i(2,00000002)
+				:i endif
+				:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Throw$$BlendWeight$ = %i(1,00000001)$BlendDuration$ = %f(0.100000)
+				:i if $Obj_AnimationFlipped$
+					:i $Obj_Flip$$SubsetId$ = $Throw$
+				:i endif
+				:i $PlayAnim$$SubsetId$ = $Throw$$anim$ = %GLOBAL%$anim$$speed$ = %i(1,00000001)
+				:i $Obj_SpawnScript$$throw_projectile$$Params$ = :s{$frames$ = %i(15,0000000f):s}
+				:i $wait$%f(0.700000)$Second$
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+					:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Throw$$BlendWeight$ = %i(0,00000000)$BlendDuration$ = %f(0.600000)
+					:i $Obj_WaitAnimFinished$$SubsetId$ = $Throw$
+				:i endif
+			:i endfunction
+			:i $projectile_control$ = $square$
+			:i function $throw_while_skating_exit$
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+					:i $Obj_RemoveAnimSubset$$SubsetId$ = $Throw$
+				:i endif
+				:i $UnsetThrowingProjectile$
+			:i endfunction
+			:i function $walk_maybe_throw_projectile$
+				:i $Obj_SpawnScript$$walk_maybe_throw_projectile2$
+			:i endfunction
+			:i function $walk_maybe_throw_projectile2$
+				:i if $AnimFinished$
+					:i return
+					
+				:i endif
+				:i if NOT $Walking$
+					:i $goto$$throw_while_skating$
+				:i endif
+				:i $MakeSkaterGoto$$throw_while_walking$
+				:i $GetAmmo$
+				:i $ammo$ =  (%GLOBAL%$ammo$ - %i(1,00000001)) 
+				:i $SetAmmo$%GLOBAL%$ammo$
+				:i $Obj_KillSpawnedScript$$name$ = $ammo_meter_change$
+				:i $Obj_SpawnScript$$ammo_meter_change$$Params$ = :s{$count$ = %i(4294967295,ffffffff):s}
+				:i if  (%GLOBAL%$ammo$ = %i(0,00000000)) 
+					:i $text$ = %s(19,"You're out of ammo!")
+					:i $SpawnSound$$SK6_SFX_OutOfAmmoBuzzer$
+					:i $BroadcastEvent$$type$ = $SkaterOutOfAmmo$
+					:i $create_console_message$$text$ = %GLOBAL%$text$$rgba$ = :a{%i(70,00000046)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}$wait_and_die$ = %i(1,00000001)$time$ = %i(3,00000003)
+				:i endif
+			:i endfunction
+			:i function $throw_projectile$$frames$ = %i(0,00000000)
+				:i $wait$%GLOBAL%$frames$$frames$
+				:i $Obj_SpawnScript$$ALL_Levels_SFX_PlayThrowingSound$
+				:i $LaunchDirtyProjectile$
+			:i endfunction
+			:i function $throw_while_walking$
+				:i $GetSpeed$
+				:i $SetThrowingProjectile$
+				:i $OnExitRun$$throw_while_walking_cleanup$
+				:i if NOT $Walk_Air$
+					:i if  (%i(1,00000001) > %GLOBAL%$speed$) 
+						:i $standing$ = %i(1,00000001)
+					:i endif
+				:i endif
+				:i if $GotParam$$standing$
+					:i $PlayAnim$$anim$ = $standing_throw$$BlendPeriod$ = %f(0.100000)$speed$ = %f(1.100000)
+					:i $Obj_WaitAnimFinished$
+				:i else 
+					:i if $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+						:i $Obj_RemoveAnimSubset$$SubsetId$ = $Throw$
+					:i endif
+					:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+						:i $Obj_AddAnimSubset$$SubsetId$ = $Throw$$EnableBlending$$Stage$ = %i(2,00000002)
+						:i if $Obj_AnimationFlipped$
+							:i $Obj_Flip$$SubsetId$ = $Throw$
+						:i endif
+					:i endif
+					:i $partial_anim$ = $walking_throw_partial$
+					:i $GetAnimLength$$anim$ = %GLOBAL%$partial_anim$
+					:i $PlayAnim$$SubsetId$ = $Throw$$anim$ = %GLOBAL%$partial_anim$$speed$ = %i(1,00000001)$BlendPeriod$ = %i(0,00000000)
+					:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Throw$$BlendWeight$ = %i(1,00000001)$BlendDuration$ = %f(0.100000)
+					:i $Obj_SpawnScript$$throw_projectile$$Params$ = :s{$frames$ = %i(17,00000011):s}
+					:i $Obj_SpawnScript$$throw_while_walking_exit$$Params$ = :s{$length$ = %GLOBAL%$length$:s}
+					:i $OnExitRun$
+				:i endif
+				:i $MakeSkaterGoto$$GroundOrAirWaitState$
+			:i endfunction
+			:i function $throw_while_walking_exit$
+				:i $OnExitRun$$throw_while_walking_cleanup$
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+					:i $Obj_WaitAnimFinished$$SubsetId$ = $Throw$
+				:i endif
+			:i endfunction
+			:i function $throw_while_walking_cleanup$
+				:i if $Obj_AnimSubsetExists$$SubsetId$ = $Throw$
+					:i $Obj_RemoveAnimSubset$$SubsetId$ = $Throw$
+				:i endif
+				:i $UnsetThrowingProjectile$
+			:i endfunction
+			:i $server_fireball_composite_structure$ = 
+			:i :a{
+				:i :s{$component$ = $model$:s}
+				:i :s{$component$ = $velocity$:s}
+				:i :s{$component$ = $suspend$:s}
+				:i :s{$component$ = $projectilecollision$$projectile_type$ = $fireball$:s}
+				:i :s{$component$ = $collideanddie$:s}
+				:i :s{$component$ = $particle$:s}
+				:i :a}
+			:i function $fireball_death$
+				:i %GLOBAL%$EmitRate$ = %f(30.000000)
+				:i %GLOBAL%$StartRadius$ = %f(20.000000)
+				:i %GLOBAL%$MidRadius$ = %f(100.000000)
+				:i %GLOBAL%$EndRadius$ = %f(6.000000)
+				:i switch  ($firefight_projectile_type$) 
+					:i case $fireball$
+						:i $explosion_texture$ = $dt_nj_flame02$
+						:i $start_color$ = :a{%i(255,000000ff);%i(111,0000006f);%i(54,00000036);%i(255,000000ff):a}
+						:i $end_color$ = :a{%i(135,00000087);%i(35,00000023);%i(0,00000000);%i(255,000000ff):a}
+						:i endcase
+					case $rocket$
+						:i $explosion_texture$ = $apm_debis_01$
+						:i select(2f,3, 01 00 01 00 01 00) :OFFSET(14):OFFSET(15):OFFSET(16)
+							 :POS(14) 
+							:i $start_color$ = :a{%i(111,0000006f);%i(255,000000ff);%i(54,00000036);%i(255,000000ff):a}
+							:i $end_color$ = :a{%i(11,0000000b);%i(35,00000023);%i(255,000000ff);%i(255,000000ff):a}
+						:BREAKTO(17)
+							 :POS(15) 
+							:i $start_color$ = :a{%i(255,000000ff);%i(111,0000006f);%i(54,00000036);%i(255,000000ff):a}
+							:i $end_color$ = :a{%i(11,0000000b);%i(255,000000ff);%i(35,00000023);%i(255,000000ff):a}
+						:BREAKTO(17)
+							 :POS(16) 
+							:i $start_color$ = :a{%i(111,0000006f);%i(54,00000036);%i(255,000000ff);%i(255,000000ff):a}
+							:i $end_color$ = :a{%i(255,000000ff);%i(35,00000023);%i(11,0000000b);%i(255,000000ff):a} :POS(17) 
+							:i endcase
+						case $snowball$
+							:i $explosion_texture$ = $JOW_CA_Snowflake01$
+							:i $start_color$ = :a{%i(200,000000c8);%i(200,000000c8);%i(210,000000d2);%i(255,000000ff):a}
+							:i $end_color$ = :a{%i(245,000000f5);%i(245,000000f5);%i(255,000000ff);%i(255,000000ff):a}
+							:i %GLOBAL%$EmitRate$ = %f(10.000000)
+							:i %GLOBAL%$StartRadius$ = %f(20.000000)
+							:i %GLOBAL%$MidRadius$ = %f(50.000000)
+							:i %GLOBAL%$EndRadius$ = %f(6.000000)
+							:i endcase
+						default 
+							:i $explosion_texture$ = $dt_nj_flame02$
+							:i $start_color$ = :a{%i(255,000000ff);%i(111,0000006f);%i(54,00000036);%i(255,000000ff):a}
+							:i $end_color$ = :a{%i(135,00000087);%i(35,00000023);%i(0,00000000);%i(255,000000ff):a}
+							:i end_switch
+					
+					:i if $IsTrue$$g_NoParticles$
+						:i $rotated_vel$ =  ( (%GLOBAL%$vel$->%vec3(0.000000,0.000000,1.000000))  * %vec3(1.000000,0.000000,0.000000) +  (%GLOBAL%$vel$->%vec3(0.000000,1.000000,0.000000))  * %vec3(0.000000,1.000000,0.000000) +  (%GLOBAL%$vel$->%vec3(1.000000,0.000000,0.000000))  * %vec3(0.000000,0.000000,-1.000000)) 
+						:i $NormalizeVector$%GLOBAL%$rotated_vel$
+						:i $align_norm$ = %GLOBAL%$norm$
+						:i $NormalizeVector$%GLOBAL%$vel$
+						:i $vel_norm$ = %GLOBAL%$norm$
+						:i $SpawnPoly$:s{
+							:i $pos$ =  (%GLOBAL%$pos$ -  (%GLOBAL%$vel_norm$ * %i(100,00000064)) ) 
+							:i $align_vector$ = %GLOBAL%$align_norm$
+							:i $start_dims$ = %vec2(20.000000,20.000000)
+							:i $end_dims$ = %vec2(227.000000,227.000000)
+							:i $lifetime$ = %f(0.300000)
+							:i $start_color$ = %GLOBAL%$start_color$
+							:i $end_color$ = %GLOBAL%$end_color$
+							:i $BlendMode$ = $Add$
+							:i $Texture$ = %GLOBAL%$explosion_texture$
+						:i :s}
+					:i else 
+						:i $index$ = %i(0,00000000)
+						:i while
+							
+							:i $FormatText$$checksumname$ = $name$%s(12,"explosion_%i")$i$ = %GLOBAL%$index$
+							:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+								:i continue
+								
+							:i endif
+							:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to 
+						:i $CreateCompositeObject$:s{
+							:i $Components$ = $explosion_composite_structure$
+							:i $Params$ = :s{
+								:i $name$ = %GLOBAL%$name$
+								:i $pos$ = %GLOBAL%$pos$
+								:i $vel$ = %GLOBAL%$vel$
+								:i $orient_to_vel$
+								:i $scale$ = %GLOBAL%$scale$
+								:i $LocalSpace$
+								:i $UseStartPosition$
+								:i $NoName$
+								:i $SystemLifetime$ = %i(400,00000190)
+								:i $NeverSuspend$
+								:i $StartPosition$ = %vec3(0.000000,0.000000,-50.000000)
+								:i $BoxDimsStart$ = %vec3(20.220463,20.220463,20.220463)
+								:i $MidPosition$ = %vec3(0.654093,-0.767708,0.417743)
+								:i $BoxDimsMid$ = %vec3(74.374344,74.374344,74.374344)
+								:i $EndPosition$ = %vec3(-0.947293,-0.834141,-0.782787)
+								:i $BoxDimsEnd$ = %vec3(227.087860,227.087860,227.087860)
+								:i $Texture$ = %GLOBAL%$explosion_texture$
+								:i $CreatedAtStart$
+								:i $AbsentInNetGames$
+								:i $UseMidPoint$
+								:i $UseColorMidTime$
+								:i $type$ = $NEWFLAT$
+								:i $BlendMode$ = $Add$
+								:i $FixedAlpha$ = %i(128,00000080)
+								:i $AlphaCutoff$ = %i(0,00000000)
+								:i $MaxStreams$ = %i(2,00000002)
+								:i $SuspendDistance$ = %i(0,00000000)
+								:i $lod_dist1$ = %i(400,00000190)
+								:i $lod_dist2$ = %i(401,00000191)
+								:i $EmitRate$ = %GLOBAL%$EmitRate$
+								:i $lifetime$ = %f(0.300000)
+								:i $MidPointPCT$ = %i(50,00000032)
+								:i $StartRadius$ = %GLOBAL%$StartRadius$
+								:i $MidRadius$ = %GLOBAL%$MidRadius$
+								:i $EndRadius$ = %GLOBAL%$EndRadius$
+								:i $StartRadiusSpread$ = %f(0.000000)
+								:i $MidRadiusSpread$ = %f(0.000000)
+								:i $EndRadiusSpread$ = %f(10.000000)
+								:i $StartRGB$ = %GLOBAL%$start_color$
+								:i $StartAlpha$ = %i(129,00000081)
+								:i $ColorMidTime$ = %i(50,00000032)
+								:i $MidRGB$ = %GLOBAL%$end_color$
+								:i $MidAlpha$ = %i(133,00000085)
+								:i $EndRGB$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+								:i $EndAlpha$ = %i(51,00000033)
+							:i :s}
+						:i :s}
+					:i endif
+				:i endfunction
+				:i function $fireball_explode_model$
+					:i $scale$ = %f(1.000000)
+					:i $exp$ = %i(1,00000001)
+					:i while
+						
+						:i if  (%GLOBAL%$exp$ < %i(15,0000000f)) 
+							:i %GLOBAL%$scale$ =  (%GLOBAL%$scale$ +  (%f(0.100000) * %GLOBAL%$exp$) ) 
+						:i else 
+							:i %GLOBAL%$scale$ =  (%GLOBAL%$scale$ -  (%f(0.100000) * %GLOBAL%$exp$) ) 
+						:i endif
+						:i %GLOBAL%$exp$ =  (%GLOBAL%$exp$ + %i(1,00000001)) 
+						:i if  (%GLOBAL%$scale$ < %f(0.000000)) 
+							:i $scale$ = %f(0.000000)
+						:i endif
+						:i $Obj_ApplyScaling$$x$ = %GLOBAL%$scale$$y$ = %GLOBAL%$scale$$z$ = %GLOBAL%$scale$
+						:i $wait$%i(1,00000001)$frames$
+					:i loop_to %i(20,00000014)
+				:i endfunction
+				:i function $LaunchFireball$$vel_scale$ = %f(1.000000)
+					:i if NOT $GameModeEquals$$is_firefight$
+						:i return
+						
+					:i endif
+					:i $GetFireballLevel$
+					:i $point_scale$ = %i(3,00000003)
+					:i switch %GLOBAL%$level$
+						:i case %i(1,00000001)
+							:i $point_scale$ = %i(1,00000001)
+							:i endcase
+						case %i(2,00000002)
+							:i $point_scale$ = %i(5,00000005)
+							:i endcase
+						case %i(3,00000003)
+							:i $point_scale$ = %i(25,00000019)
+							:i endcase
+						case %i(4,00000004)
+							:i $point_scale$ = %i(100,00000064)
+							:i endcase
+						case %i(5,00000005)
+							:i $point_scale$ = %i(250,000000fa)
+							:i end_switch
+					
+					:i $GetSkaterPosition$
+					:i $scaled_vel$ =  (%GLOBAL%$vel_scale$ * %f(5000.000000)) 
+					:i $GetSkaterVelocity$$scale$ = %GLOBAL%$scaled_vel$ isNull 
+					:i if $CurrentScorePotGreaterThan$ (%i(20000,00004e20) * %GLOBAL%$point_scale$) 
+						:i $radius$ = %i(400,00000190)
+						:i $scale$ = %f(10.000000)
+					:i else 
+						:i if $CurrentScorePotGreaterThan$ (%i(10000,00002710) * %GLOBAL%$point_scale$) 
+							:i $radius$ = %i(200,000000c8)
+							:i $scale$ = %f(5.000000)
+						:i else 
+							:i if $CurrentScorePotGreaterThan$ (%i(5000,00001388) * %GLOBAL%$point_scale$) 
+								:i $radius$ = %i(100,00000064)
+								:i $scale$ = %f(3.500000)
+							:i else 
+								:i if $CurrentScorePotGreaterThan$ (%i(2500,000009c4) * %GLOBAL%$point_scale$) 
+									:i $radius$ = %i(75,0000004b)
+									:i $scale$ = %f(2.500000)
+								:i else 
+									:i if $CurrentScorePotGreaterThan$ (%i(750,000002ee) * %GLOBAL%$point_scale$) 
+										:i $radius$ = %i(60,0000003c)
+										:i $scale$ = %f(2.000000)
+									:i else 
+										:i if $CurrentScorePotGreaterThan$ (%i(250,000000fa) * %GLOBAL%$point_scale$) 
+											:i $radius$ = %i(45,0000002d)
+											:i $scale$ = %f(1.500000)
+										:i else 
+											:i $radius$ = %i(24,00000018)
+											:i $scale$ = %f(1.000000)
+										:i endif
+									:i endif
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+					:i $new_y$ =  (%GLOBAL%$y$) 
+					:i %GLOBAL%$y$ = %GLOBAL%$new_y$
+					:i $GetCurrentSkaterID$
+					:i if $InNetGame$
+						:i $BroadcastProjectile$$ObjID$ = %GLOBAL%$ObjID$$type$ = $fireball$$scale$ = %GLOBAL%$scale$$radius$ = %GLOBAL%$radius$$pos$ =  (%GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$new_y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) $vel$ =  (%GLOBAL%$scaled_x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$scaled_y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$scaled_z$ * %vec3(0.000000,0.000000,1.000000)) 
+					:i endif
+					:i $ClientLaunchFireball$$owner_id$ = %GLOBAL%$ObjID$ isNull 
+				:i endfunction
+				:i function $ClientLaunchFireball$
+					:i if NOT $GameModeEquals$$is_firefight$
+						:i return
+						
+					:i endif
+					:i switch  ($firefight_projectile_type$) 
+						:i case $fireball$
+							:i %GLOBAL%$fireball_sound$ = $FlamingFireBall01$
+							:i if $IsTrue$$g_NoParticles$
+								:i %GLOBAL%$fireball_model$ = %s(33,"GameObjects\Net\Sprite\Sprite.mdl")
+							:i else 
+								:i %GLOBAL%$fireball_model$ = %s(21,"fireball\fireball.mdl")
+							:i endif
+							:i %GLOBAL%$fireball_texture$ = $dt_nj_flame02$
+							:i endcase
+						case $rocket$
+							:i %GLOBAL%$fireball_sound$ = $Sk6_JumpFar_01$
+							:i %GLOBAL%$fireball_model$ = %s(33,"GameObjects\Net\Rocket\Rocket.mdl")
+							:i %GLOBAL%$fireball_texture$ = $white$
+							:i if  (%GLOBAL%$scale$ > %f(3.000000)) 
+								:i %GLOBAL%$scale$ = %f(3.000000)
+							:i endif
+							:i endcase
+						case $snowball$
+							:i %GLOBAL%$fireball_sound$ = $foleymove01$
+							:i %GLOBAL%$fireball_model$ = %s(37,"GameObjects\Net\Snowball\Snowball.mdl")
+							:i %GLOBAL%$fireball_texture$ = $white$
+							:i if  (%GLOBAL%$scale$ > %f(3.000000)) 
+								:i %GLOBAL%$scale$ = %f(3.000000)
+							:i endif
+							:i endcase
+						default 
+							:i %GLOBAL%$fireball_sound$ = $FlamingFireBall01$
+							:i if $IsTrue$$g_NoParticles$
+								:i %GLOBAL%$fireball_model$ = %s(33,"GameObjects\Net\Sprite\Sprite.mdl")
+							:i else 
+								:i %GLOBAL%$fireball_model$ = %s(21,"fireball\fireball.mdl")
+							:i endif
+							:i %GLOBAL%$fireball_texture$ = $dt_nj_flame02$
+							:i end_switch
+					
+					:i $index$ = %i(0,00000000)
+					:i while
+						
+						:i $FormatText$$checksumname$ = $name$%s(11,"fireball_%i")$i$ = %GLOBAL%$index$
+						:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+							:i continue
+							
+						:i endif
+						:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i loop_to 
+					:i $spawn_position$ =  (%GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+					:i $spawn_vel$ =  (%GLOBAL%$scaled_x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$scaled_y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$scaled_z$ * %vec3(0.000000,0.000000,1.000000)) 
+					:i $TheParams$ = :s{$owner_id$ = %GLOBAL%$owner_id$
+						:i $name$ = %GLOBAL%$name$
+						:i $pos$ = %GLOBAL%$spawn_position$
+						:i $vel$ = %GLOBAL%$spawn_vel$
+						:i $orient_to_vel$
+						:i $scale$ = %GLOBAL%$scale$
+						:i $x$ = %GLOBAL%$scale$
+						:i $y$ = %GLOBAL%$scale$
+						:i $z$ = %GLOBAL%$scale$
+						:i $radius$ = %GLOBAL%$radius$
+						:i $model$ = %GLOBAL%$fireball_model$
+						:i $LocalSpace$
+						:i $UseStartPosition$
+						:i $NoName$
+						:i $SystemLifetime$ = %i(10000,00002710)
+						:i $NeverSuspend$
+						:i $death_script$ = $fireball_death$
+						:i $StartPosition$ = %vec3(0.000000,0.000000,0.000000)
+						:i $BoxDimsStart$ = %vec3(3.339594,3.339594,3.339594)
+						:i $MidPosition$ = %vec3(-0.101934,2.326138,-75.072464)
+						:i $BoxDimsMid$ = %vec3(10.168470,10.168470,10.168470)
+						:i $EndPosition$ = %vec3(-1.168471,1.351739,-301.166504)
+						:i $BoxDimsEnd$ = %vec3(2.507714,2.507714,2.507714)
+						:i $Texture$ = %GLOBAL%$fireball_texture$
+						:i $CreatedAtStart$
+						:i $AbsentInNetGames$
+						:i $UseMidPoint$
+						:i $UseColorMidTime$
+						:i $type$ = $NEWFLAT$
+						:i $BlendMode$ = $Add$
+						:i $FixedAlpha$ = %i(128,00000080)
+						:i $AlphaCutoff$ = %i(0,00000000)
+						:i $MaxStreams$ = %i(2,00000002)
+						:i $SuspendDistance$ = %i(0,00000000)
+						:i $lod_dist1$ = %i(400,00000190)
+						:i $lod_dist2$ = %i(401,00000191)
+						:i $EmitRate$ = %f(30.000000)
+						:i $lifetime$ = %f(0.750000)
+						:i $MidPointPCT$ = %i(50,00000032)
+						:i $StartRadius$ = %f(20.000000)
+						:i $MidRadius$ = %f(20.000000)
+						:i $EndRadius$ = %f(5.000000)
+						:i $StartRadiusSpread$ = %f(0.000000)
+						:i $MidRadiusSpread$ = %f(0.000000)
+						:i $EndRadiusSpread$ = %f(10.000000)
+						:i $StartRGB$ = :a{%i(54,00000036);%i(97,00000061);%i(255,000000ff):a}
+						:i $StartAlpha$ = %i(129,00000081)
+						:i $ColorMidTime$ = %i(50,00000032)
+						:i $MidRGB$ = :a{%i(135,00000087);%i(35,00000023);%i(0,00000000):a}
+						:i $MidAlpha$ = %i(27,0000001b)
+						:i $EndRGB$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+						:i $EndAlpha$ = %i(0,00000000)
+					:i :s}
+					:i if $OnServer$
+						:i $CreateCompositeObject$:s{
+							:i $Components$ = $server_fireball_composite_structure$
+							:i $Params$ = %GLOBAL%$TheParams$
+						:i :s}
+					:i else 
+						:i $CreateCompositeObject$:s{
+							:i $Components$ = $fireball_composite_structure$
+							:i $Params$ = %GLOBAL%$TheParams$
+						:i :s}
+					:i endif
+					:i if  ( ($firefight_projectile_type$)  = $fireball$) 
+						:i if $IsTrue$$g_NoParticles$
+							:i %GLOBAL%$name$.$Obj_ReplaceTexture$$src$ = %s(18,"outside_glow_2.png")$dest$ = %s(30,"images/particles/dt_nj_flame02")
+						:i endif
+					:i endif
+					:i %GLOBAL%$name$.$Obj_GetVelocity$
+					:i $NormalizeVector$%GLOBAL%$vel$
+					:i %GLOBAL%$name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$norm$
+					:i $Obj_PlaySound$%GLOBAL%$fireball_sound$$vol$ =  (%i(130,00000082) + %GLOBAL%$scale$ * %i(15,0000000f)) $pitch$ =  (%i(190,000000be) - %GLOBAL%$scale$ * %i(7,00000007)) $dropoff$ = %i(140,0000008c)
+				:i endfunction
+				:i :end
+				

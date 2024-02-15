@@ -1,0 +1,29 @@
+//------------------------------------------------
+// .gap file - Contains gaps.
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define CL_GAP_SCORE                0xFFCCAA
+#define CL_GAP_NAMELENGTH           0xEEBB99
+#define CL_GAP_NAME                 0xDDAA88
+
+typedef struct
+{
+    uint score <bgcolor=CL_GAP_SCORE>;
+    ubyte name_length <bgcolor=CL_GAP_NAMELENGTH>;
+    char name[name_length] <bgcolor=CL_GAP_NAME>;
+} Gap <read=Str("%s: %d points", name, score)>;
+
+typedef struct
+{
+    uint version <bgcolor=CL_SINGLEVALUE>;
+    QBKey zone_id <bgcolor=CL_CHECKSUM>;
+    ushort gap_count <bgcolor=CL_SINGLEVALUE>;
+    
+    if (gap_count)
+        Gap gaps[gap_count] <optimize=false>;
+} GapFile;
+
+LittleEndian();
+GapFile file;

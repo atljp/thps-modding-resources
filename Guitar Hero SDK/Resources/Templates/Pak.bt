@@ -1,0 +1,51 @@
+#include "Common.bt"
+
+#define EXT_LAST 0x2CB3EF3B
+#define EXT_LAST_B 0xB524565F
+#define HEADER_LENGTH 32
+
+#define FLAG_HASFILENAME                0x20
+
+// Pak file header
+typedef struct
+{
+    local int header_start = FTell();
+
+    QBKey magic <bgcolor=CL_CHECKSUM, name="Extension">;
+    RelativeOffset start(header_start) <bgcolor=CL_POINTER, name="Start Offset">;
+    uint size <bgcolor=CL_SINGLEVALUE, name="Filesize">;
+    QBKey assetContext <bgcolor=CL_CHECKSUM, name="Asset Context Checksum">;
+    QBKey fullName <bgcolor=CL_CHECKSUM, name="Full Name Checksum">;
+    QBKey nameOnly <bgcolor=CL_CHECKSUM, name="Name (No Extension)">; 
+    QBKey parent <bgcolor=CL_PARSED, name="Parent object">;
+    uint flags <bgcolor=CL_FLOATS, name="Flags">;
+
+    if (flags & FLAG_HASFILENAME)
+    {
+        char filename[160];
+    }
+
+    local int oldOff = FTell();
+    FSeek(AbsOffset(start));
+    // byte data[size] <bgcolor=CL_PADDING, name="Data">;
+    FSeek(oldOff);
+} PakHeader <read=ReadPakHeader>;
+
+string ReadPakHeader(PakHeader &header)
+{
+    local string s;
+    return SPrintf(s, "[0x%02x] [%s] Start: %d (0x%x)", header.flags, ReadQBKey(header.magic), AbsOffset(header.start), AbsOffset(header.start));
+}
+
+local int magic = ReadUInt();
+local int fileCount = 0;
+
+while (magic != EXT_LAST && magic != EXT_LAST_B && !FEof())
+{
+    PakHeader file <optimize=false>;
+    fileCount ++;
+    magic = ReadUInt();
+}
+
+PakHeader file;
+fileCount ++;

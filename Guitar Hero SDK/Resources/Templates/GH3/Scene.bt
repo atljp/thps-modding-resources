@@ -1,0 +1,99 @@
+//------------------------------------------------
+// GH3 scene
+//------------------------------------------------
+
+#include "../Sector.bt"
+#include "../SectorUnknown.bt"
+#include "Mesh.bt"
+
+#define CL_SCENE_VECTOR 0xeeccaa
+#define CL_SCENE_VALUE 0xffeecc
+#define CL_SCENE_POINTER 0xffbb77
+#define CL_SCENE_PADDING 0x998866
+#define CL_SCENE_PADDING_SPECIAL 0xaa9977
+
+typedef struct(int starter_offset)
+{
+    local int scene_start = FTell();
+
+    Vec4 bounds_min <bgcolor=CL_SCENE_VECTOR, comment="Min bounding box">;
+    Vec4 bounds_max <bgcolor=CL_SCENE_VECTOR, comment="Max bounding box">;
+    Vec3 center <bgcolor=CL_SCENE_VECTOR, comment="Scene center">;
+    float radius <bgcolor=CL_SCENE_VECTOR, comment="Scene radius">;
+
+    short unk_a <bgcolor=CL_SCENE_VALUE>;
+    short unk_b <bgcolor=CL_SCENE_VALUE>;
+
+    uint flags <bgcolor=CL_SINGLEVALUE>;
+    uint unk_after_flags;
+    
+    RelativeOffset pt_footer(starter_offset) <bgcolor=CL_SCENE_VALUE, comment="Footer start">;
+    uint unk_footer_val;
+    RelativeOffset pt_unkThing(0) <bgcolor=CL_SCENE_POINTER>;
+
+    RelativeOffset pt_meshIndices(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Mesh Indices">;
+    int sMesh_count <bgcolor=CL_SCENE_VALUE>;
+
+    RelativeOffset pt_ffPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="0xFF Padding">;
+
+    byte padding_c[16] <hidden=true, bgcolor=CL_SCENE_PADDING>;
+    int ff_b <hidden=true, bgcolor=CL_SCENE_PADDING_SPECIAL>;
+    byte padding_d[4] <hidden=true, bgcolor=CL_SCENE_PADDING>;
+
+    int sector_count <bgcolor=CL_SCENE_VALUE>;
+
+    RelativeOffset pt_CSector(scene_start) <bgcolor=CL_SCENE_POINTER, comment="First object">;
+    RelativeOffset pt_CGeom(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Sector unknown">;
+
+    byte padding_e[4] <hidden=true, bgcolor=CL_SCENE_PADDING>;
+
+    RelativeOffset pt_bigPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Big padding">;
+    RelativeOffset pt_sMesh(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Mesh Data">;
+
+    uint premesh_marker<bgcolor=CL_SCENE_PADDING, comment="Code sets this to premesh offset">;
+    uint idk <bgcolor=CL_SCENE_PADDING>;
+
+    local int big_padding_size = pt_sMesh.offset - pt_bigPadding.offset;
+ 
+    RelativeOffset pt_eaPadding(scene_start) <bgcolor=CL_SCENE_POINTER, comment="Must not be 161, apparently a count">;
+
+    // -----------------------------------------------------------
+
+    // Same sector format as GHWT
+    if (sector_count > 0)
+        Sector sectors[sector_count];
+
+    local int unknowns_start = FTell();
+    local int u;
+
+    // Actually CGeoms (Same format as GHWT)
+    if (sector_count > 0)
+    {
+        for (u=0; u<sector_count; u++)
+            SectorUnknown cGeoms(unknowns_start, AbsOffset(pt_eaPadding)) <optimize=false>;
+    }
+
+    if (big_padding_size > 0)
+        byte big_padding[big_padding_size] <bgcolor=CL_PADDING>;
+
+    if (sMesh_count > 0)
+    {
+        for (u=0; u<sMesh_count; u++)
+            GH3Mesh mesh(scene_start);
+    
+
+        // 4 bytes EA for each object
+        int ea_padding[sMesh_count] <hidden=true>;
+
+        // Mesh indices for each object, I think
+        // Which mesh does it want to use?
+        int mesh_indices[sMesh_count] <bgcolor=CL_SCENE_VALUE>;
+    
+        // 4 bytes FF for each object
+        int ff_padding[sMesh_count] <hidden=true, bgcolor=CL_SCENE_PADDING>;
+    }
+
+    // Pad to nearest 32 bytes... I think
+    SkipTo(32);
+
+} GH3Scene;

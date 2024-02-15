@@ -1,0 +1,149 @@
+
+:i function $create_ammo_meter$
+	:i if NOT $IsObjectScript$
+		:i $script_assert$%s(28,"Needs to be an object script")
+	:i endif
+	:i $Obj_GetId$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$objId$$b$ = %i(0,00000000)
+		:i $id$ = %i(0,00000000)
+	:i else 
+		:i $id$ = %i(1,00000001)
+	:i endif
+	:i $pos$ = %vec2(-16.000000,350.000000)
+	:i $scale$ = %vec2(3.320000,4.720000)
+	:i $parent$ =  ($the_score_sprite$ + %GLOBAL%$id$) 
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$parent$
+		:i return
+		
+	:i endif
+	:i $get_ammo_meter_name$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$ammo_meter_name$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$ammo_meter_name$
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $get_ammo_texture$$type$ = %GLOBAL%$type$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$ammo_meter_name$
+		:i $texture$ = %GLOBAL%$ammo_texture$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$ammo_meter_name$
+		:i $local_id$ = $counter$
+		:i $text$ = %s(1,"0")
+		:i $font$ = $testtitle$
+		:i $pos$ =  (%GLOBAL%$width$ * %vec2(0.155000,0.000000) + %GLOBAL%$height$ * %vec2(0.000000,0.125000)) 
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$ammo_meter_name$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+:i endfunction
+:i function $get_ammo_meter_name$
+	:i if NOT $IsObjectScript$
+		:i $script_assert$%s(28,"Needs to be an object script")
+	:i endif
+	:i $Obj_GetId$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$objId$$b$ = %i(0,00000000)
+		:i $id$ = $player1_ammo_display$
+	:i else 
+		:i $id$ = $player2_ammo_display$
+	:i endif
+	:i return
+	$ammo_meter_name$ = %GLOBAL%$id$
+:i endfunction
+:i function $get_ammo_texture$
+	:i switch %GLOBAL%$type$
+		:i case $apple$
+			:i $ammo_texture$ = $pickup_apple$
+			:i endcase
+		case $tomato$
+			:i $ammo_texture$ = $pickup_tomato$
+			:i endcase
+		case $paintcan$
+			:i $ammo_texture$ = $pickup_spraycan$
+			:i endcase
+		case $shrimp$
+			:i $ammo_texture$ = $pickup_shrimp$
+			:i endcase
+		case $beads$
+			:i $ammo_texture$ = $pickup_beads$
+			:i endcase
+		case $cocktail$
+			:i endcase
+		case $smokebomb$
+			:i $ammo_texture$ = $pickup_cocktail$
+			:i endcase
+		default 
+			:i $ammo_texture$ = $white2$
+			:i end_switch
+	
+	:i return
+	$ammo_texture$ = %GLOBAL%$ammo_texture$
+:i endfunction
+:i function $ammo_meter_change$
+	:i if NOT $GotParam$$count$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$count$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$count$ < %i(0,00000000)) 
+		:i $abscount$ =  (%GLOBAL%$count$ * %i(4294967295,ffffffff)) 
+		:i $dir$ = %i(4294967295,ffffffff)
+	:i else 
+		:i $abscount$ = %GLOBAL%$count$
+		:i $dir$ = %i(1,00000001)
+	:i endif
+	:i $GetAmmo$
+	:i $index$ =  (%GLOBAL%$ammo$ - %GLOBAL%$count$) 
+	:i $timer$ =  (%f(1.200000) / %GLOBAL%$abscount$) 
+	:i $get_ammo_meter_name$
+	:i while
+		
+		:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$ammo_meter_name$
+			:i return
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %GLOBAL%$dir$) 
+		:i if  (%GLOBAL%$index$ < %i(0,00000000)) 
+			:i return
+			
+		:i endif
+		:i $FormatText$$textname$ = $ammo$%s(2,"%a")$a$ = %GLOBAL%$index$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$ammo_meter_name$$script_name$ = $ammo_meter_increase$
+		:i $TerminateObjectsScripts$$id$ = %GLOBAL%$ammo_meter_name$$script_name$ = $ammo_meter_decrease$
+		:i if  (%GLOBAL%$count$ < %i(0,00000000)) 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$ammo_meter_name$$ammo_meter_decrease$$params$ = :s{$text$ = %GLOBAL%$ammo$$index$ = %GLOBAL%$index$:s}
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$ammo_meter_name$$ammo_meter_increase$$params$ = :s{$text$ = %GLOBAL%$ammo$:s}
+		:i endif
+		:i $wait$%GLOBAL%$timer$$seconds$
+	:i loop_to %GLOBAL%$abscount$
+:i endfunction
+:i function $ammo_meter_increase$
+	:i $GetTags$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $counter$:s}$text$ = %GLOBAL%$text$
+	:i $DoMorph$$scale$ = %i(0,00000000)$alpha$ = %i(1,00000001)$relative_scale$
+	:i $DoMorph$$scale$ = %f(1.500000)$relative_scale$$time$ = %f(0.200000)
+	:i $DoMorph$$scale$ = %i(1,00000001)$relative_scale$$time$ = %f(0.150000)
+:i endfunction
+:i function $ammo_meter_decrease$
+	:i $GetTags$
+	:i $DoMorph$$scale$ = %i(1,00000001)$alpha$ = %i(1,00000001)$relative_scale$
+	:i $DoMorph$$scale$ = %i(0,00000000)$relative_scale$$time$ = %f(0.150000)
+	:i if NOT  (%GLOBAL%$index$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $counter$:s}$text$ = %GLOBAL%$text$
+		:i $DoMorph$$scale$ = %i(1,00000001)$relative_scale$$time$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i :end

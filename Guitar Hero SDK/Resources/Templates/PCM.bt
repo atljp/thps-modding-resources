@@ -1,0 +1,26 @@
+//------------------------------------------------
+// PCM.dat file, contains sounds
+// Mostly used by THUG2, could be used by other games?
+//------------------------------------------------
+
+#include "Common.bt"
+
+#define CL_PCMCHECKSUM              0xDDFFDD
+#define CL_PCMSTART                 0xCCEECC
+#define CL_PCMSIZE                  0xBBDDBB
+
+typedef struct
+{
+    QBKey checksum <bgcolor=CL_PCMCHECKSUM>;
+    uint file_start <bgcolor=CL_PCMSTART>;
+    uint file_size <bgcolor=CL_PCMSIZE>;
+} PCMHeader <read=Str("%s @%d, %d bytes", ReadQBKey(checksum), file_start, file_size)>;
+
+typedef struct
+{
+    uint num_streams <bgcolor=CL_SINGLEVALUE>;
+    PCMHeader header[num_streams];
+} PCMFile;
+
+LittleEndian();
+PCMFile pcm;

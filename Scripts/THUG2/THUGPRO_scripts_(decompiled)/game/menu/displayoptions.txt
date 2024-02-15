@@ -1,0 +1,663 @@
+
+:i $display_multiplied_score$ = %i(0,00000000)
+:i $display_SPECIAL_text$ = %i(1,00000001)
+:i $skpro_bullettime_allowed$ = %i(1,00000001)
+:i $userselect_index$ = %i(0,00000000)
+:i $userselect_options$ = :a{
+	:i :s{$action$ = $thugpro_userselect_case_camera_toggle$$text$ = %s(13,"Camera Toggle"):s}
+	:i :s{$action$ = $thugpro_userselect_case_chat$$text$ = %s(7,"KB Chat"):s}
+	:i :s{$action$ = $thugpro_userselect_case_viewer$$text$ = %s(6,"Viewer"):s}
+	:i :a}
+:i function $launch_display_options_menu$
+	:i if $GotParam$$from_options$
+		:i $create_display_options_menu$$from_options$
+	:i else 
+		:i $create_display_options_menu$
+	:i endif
+:i endfunction
+:i function $create_general_options_menu$
+	:i $generic_menu_cleanup$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $menu_id$ = $general_menu$
+		:i $vmenu_id$ = $general_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $general_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$display_options_exit$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(15,"general options")$bg_just$ = $left$$no_grain$
+	:i $get_skater_number$
+	:i $num$ = %GLOBAL%$skater_number$
+	:i if $GetGlobalFlag$$flag$ = $BLOOD_OFF$
+		:i $blood_text$ = %s(3,"off")
+	:i else 
+		:i $blood_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(6,"blood ")
+		:i $extra_text$ = %GLOBAL%$blood_text$
+		:i $id$ = $menu_blood$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_blood$
+	:i :s}
+	:i if $IsTrue$$GLOBAL_EnableBoardScuffs$
+		:i $enableboardscuffs_text$ = %s(2,"on")
+	:i else 
+		:i $enableboardscuffs_text$ = %s(3,"off")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"board scuffs ")
+		:i $extra_text$ = %GLOBAL%$enableboardscuffs_text$
+		:i $id$ = $menu_enableboardscuffs$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_EnableBoardScuffs$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"select button ")
+		:i $id$ = $menu_select_function$
+		:i $extra_text$ = %s(0,"")
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $change_select_button_function$
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $menu_select_function$$change_select_button_function$
+	:i if NOT $InNetGame$
+		:i if $IsTrue$$skpro_bullettime_allowed$
+			:i $bullettime_text$ = %s(2,"on")
+		:i else 
+			:i $bullettime_text$ = %s(3,"off")
+		:i endif
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(11,"focus mode ")
+			:i $extra_text$ = %GLOBAL%$bullettime_text$
+			:i $id$ = $menu_bullettime$
+			:i $option_arrows$
+			:i $pad_choose$
+			:i $option_arrows_callback$ = $skpro_toggle_bullettime$
+		:i :s}
+	:i endif
+	:i if $VibrationIsOn$%GLOBAL%$num$
+		:i $vibration_value$ = %s(2,"on")
+	:i else 
+		:i $vibration_value$ = %s(3,"off")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"vibration ")
+		:i $id$ = $menu_vibration$
+		:i $extra_text$ = %GLOBAL%$vibration_value$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $change_basic_control_options$
+		:i $option_arrows_callback_params$ = :s{$vibration$$return$:s}
+	:i :s}
+	:i if $InNetGame$
+		:i if $IsTrue$$GameRunRespawns$
+			:i $gamerunrespawns_value$ = %s(2,"on")
+		:i else 
+			:i $gamerunrespawns_value$ = %s(3,"off")
+		:i endif
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(22,"respawn at game start ")
+			:i $id$ = $menu_gamerunrespawns$
+			:i $extra_text$ = %GLOBAL%$gamerunrespawns_value$
+			:i $option_arrows$
+			:i $pad_choose$
+			:i $option_arrows_callback$ = $toggle_gamerunrespawns$
+			:i $bar_length$ = %f(17.000000)
+		:i :s}
+		:i if NOT $isObserving$
+			:i if NOT $isHost$
+				:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+					:i $make_thpg_menu_item$:s{
+						:i $text$ = %s(7,"sit out")
+						:i $id$ = $chose_observe_id$
+						:i $pad_choose_script$ = $chose_observe$
+						:i $not_focusable$
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $general_vmenu$
+:i endfunction
+:i function $create_predisplay_options_menu$
+	:i $destroy_edit_theme_preveiw_specialmeter$
+	:i $destroy_edit_theme_preveiw_balancemeter$
+	:i $generic_menu_cleanup$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $pre_display_menu$
+		:i $vmenu_id$ = $pre_display_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $pre_display_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$display_options_exit$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(15,"display options")
+		:i $bg_just$ = $left$
+		:i $no_grain$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"adjust gamma")
+		:i $child_texture$ = $icon_screen$
+		:i $id$ = $ProCrastination_menu_adjust_gamma$
+		:i $pad_choose_script$ = $GammaOptions_Create_menu$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(11,"hud options")
+		:i $child_texture$ = $icon_hud$
+		:i $id$ = $display_options_menu$
+		:i $pad_choose_script$ = $create_display_options_menu$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"theme options")
+		:i $child_texture$ = $icon_theme$
+		:i $id$ = $menu_interface_themes$
+		:i $pad_choose_script$ = $swap_themes_menu$
+	:i :s}
+	:i if $InNetGame$
+		:i %GLOBAL%$console_text$ = %s(12,"chat options")
+	:i else 
+		:i %GLOBAL%$console_text$ = %s(15,"console options")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %GLOBAL%$console_text$
+		:i $child_texture$ = $icon_chat$
+		:i $id$ = $ProCrastination_menu_console_options$
+		:i $pad_choose_script$ = $ConsoleOptions_Create_Menu$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"camera options")
+		:i $id$ = $menu_camera_options$
+		:i $pad_choose_script$ = $create_camera_options_menu$
+		:i $child_texture$ = $icon_camera$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $pre_display_vmenu$
+:i endfunction
+:i function $create_display_options_menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $display_options_menu$
+		:i $vmenu_id$ = $display_options_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $display_options_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$create_predisplay_options_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(11,"HUD options")
+		:i $bg_just$ = $left$
+		:i $no_grain$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $balancemeter_text$ = %s(3,"off")
+	:i else 
+		:i $balancemeter_text$ = %s(2,"on")
+	:i endif
+	:i if $InNetGame$
+		:i if $GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$
+			:i $balancemeter_focusable$ = $not_focusable$
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"balance meter ")
+		:i $extra_text$ = %GLOBAL%$balancemeter_text$
+		:i $id$ = $menu_display_balance$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_balance$
+		:i %GLOBAL%$balancemeter_focusable$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $specialmeter_text$ = %s(3,"off")
+	:i else 
+		:i $specialmeter_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"special meter ")
+		:i $extra_text$ = %GLOBAL%$specialmeter_text$
+		:i $id$ = $menu_display_hud$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_hud$
+	:i :s}
+	:i if  ($display_SPECIAL_text$ = %i(0,00000000)) 
+		:i $specialtext_text$ = %s(3,"off")
+	:i else 
+		:i $specialtext_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"SPECIAL text ")
+		:i $extra_text$ = %GLOBAL%$specialtext_text$
+		:i $id$ = $menu_display_SPECIAL_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_SPECIAL_text$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $trickstring_text$ = %s(3,"off")
+	:i else 
+		:i $trickstring_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"trick string ")
+		:i $extra_text$ = %GLOBAL%$trickstring_text$
+		:i $id$ = $menu_display_trickstring$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_trickstring$
+	:i :s}
+	:i if  ($display_multiplied_score$ = %i(1,00000001)) 
+		:i $basescore_text$ = %s(10,"multiplied")
+	:i else 
+		:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+			:i $basescore_text$ = %s(3,"off")
+		:i else 
+			:i $basescore_text$ = %s(6,"normal")
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(11,"base score ")
+		:i $extra_text$ = %GLOBAL%$basescore_text$
+		:i $id$ = $menu_display_basescore$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_basescore_type$
+	:i :s}
+	:i if $InTeamGame$
+		:i $GetPreferenceString$$pref_type$ = $network$$score_display$
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(19,"score display mode ")
+			:i $extra_text$ = %GLOBAL%$ui_string$
+			:i $id$ = $menu_score_display$
+			:i $pad_choose_script$ = $create_options_score_display_menu$
+		:i :s}
+	:i endif
+	:i if $InNetGame$
+		:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+			:i $netscores_text$ = %s(3,"off")
+		:i else 
+			:i $netscores_text$ = %s(2,"on")
+		:i endif
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(17,"names and scores ")
+			:i $extra_text$ = %GLOBAL%$netscores_text$
+			:i $id$ = $menu_display_net_scores$
+			:i $option_arrows$
+			:i $pad_choose$
+			:i $option_arrows_callback$ = $toggle_display_net_scores$
+		:i :s}
+		:i if $IsTrue$$GLOBAL_HideObjectLabels$
+			:i $label_text$ = %s(3,"off")
+		:i else 
+			:i $label_text$ = %s(2,"on")
+		:i endif
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(12,"skater id's ")
+			:i $extra_text$ = %GLOBAL%$label_text$
+			:i $id$ = $menu_label_text$
+			:i $option_arrows$
+			:i $pad_choose$
+			:i $option_arrows_callback$ = $toggle_display_object_labels$
+		:i :s}
+	:i endif
+	:i if  ( ($ENABLE_BSCOUNTER$)  = %i(0,00000000)) 
+		:i $buttslap_text$ = %s(3,"off")
+	:i else 
+		:i $buttslap_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(17,"buttslap counter ")
+		:i $extra_text$ = %GLOBAL%$buttslap_text$
+		:i $id$ = $menu_display_buttslap_counter$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_buttslap_counter$
+	:i :s}
+	:i if  ( ($ENABLE_PANEL_MESSAGES$)  = %i(0,00000000)) 
+		:i $panel_message_text$ = %s(3,"off")
+	:i else 
+		:i $panel_message_text$ = %s(2,"on")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(15,"panel messages ")
+		:i $extra_text$ = %GLOBAL%$panel_message_text$
+		:i $id$ = $menu_display_panel_messages$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_panel_messages$
+	:i :s}
+	:i if  ( ($Toggle_Special_item$)  = %i(0,00000000)) 
+		:i $special_item_text$ = %s(2,"on")
+	:i else 
+		:i $special_item_text$ = %s(3,"off")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"special items ")
+		:i $extra_text$ = %GLOBAL%$special_item_text$
+		:i $id$ = $menu_display_special_item$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_special_item$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text_toggle$
+	:i $FireEvent$$type$ = $focus$$target$ = $display_options_vmenu$
+:i endfunction
+:i function $toggle_display_tantrum$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $TANTRUM_OFF$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $SetGlobalFlag$$flag$ = $TANTRUM_OFF$
+		:i $thugpro_save_key_value$$Key$ = %s(10,"NoFreakout")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $UnSetGlobalFlag$$flag$ = $TANTRUM_OFF$
+		:i $thugpro_save_key_value$$Key$ = %s(10,"NoFreakout")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_buttslap_counter$
+	:i $GetTags$
+	:i if  ( ($ENABLE_BSCOUNTER$)  = %i(1,00000001)) 
+		:i $Change$$ENABLE_BSCOUNTER$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(17,"ButtslapCounterOn")$value$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_buttslap_counter$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+	:i else 
+		:i $Change$$ENABLE_BSCOUNTER$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(17,"ButtslapCounterOn")$value$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_buttslap_counter$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+	:i endif
+:i endfunction
+:i function $toggle_display_panel_messages$
+	:i $GetTags$
+	:i if  ( ($ENABLE_PANEL_MESSAGES$)  = %i(1,00000001)) 
+		:i $Change$$ENABLE_PANEL_MESSAGES$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"PanelMessagesOn")$value$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_panel_messages$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+	:i else 
+		:i $Change$$ENABLE_PANEL_MESSAGES$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"PanelMessagesOn")$value$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_panel_messages$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+	:i endif
+:i endfunction
+:i function $toggle_display_special_item$
+	:i $GetTags$
+	:i if  ( ($Toggle_Special_item$)  = %i(1,00000001)) 
+		:i $Change$$Toggle_Special_item$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(12,"SpecialItems")$value$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_special_item$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+	:i else 
+		:i $Change$$Toggle_Special_item$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(12,"SpecialItems")$value$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_special_item$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+	:i endif
+:i endfunction
+:i function $toggle_display_hud$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"NoDisplayHud")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_HUD$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"NoDisplayHud")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_trickstring$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $thugpro_save_key_value$$Key$ = %s(20,"NoDisplayTrickString")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_TRICKSTRING$
+		:i $thugpro_save_key_value$$Key$ = %s(20,"NoDisplayTrickString")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_basescore_type$
+	:i $GetTags$
+	:i if $GotParam$$right$
+		:i if  ($display_multiplied_score$ = %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+			:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+			:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(1,00000001)
+			:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(0,00000000)
+			:i $Change$$display_multiplied_score$ = %i(0,00000000)
+			:i $ShowMultipliedScore$$off$
+		:i else 
+			:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+				:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(6,"normal"):s}
+				:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+				:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(0,00000000)
+				:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(0,00000000)
+				:i $Change$$display_multiplied_score$ = %i(0,00000000)
+				:i $ShowMultipliedScore$$off$
+			:i else 
+				:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(10,"multiplied"):s}
+				:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+				:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(0,00000000)
+				:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(1,00000001)
+				:i $Change$$display_multiplied_score$ = %i(1,00000001)
+				:i $ShowMultipliedScore$$on$
+			:i endif
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i if  ($display_multiplied_score$ = %i(1,00000001)) 
+				:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(6,"normal"):s}
+				:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+				:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(0,00000000)
+				:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(0,00000000)
+				:i $Change$$display_multiplied_score$ = %i(0,00000000)
+				:i $ShowMultipliedScore$$off$
+			:i else 
+				:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+					:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(10,"multiplied"):s}
+					:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+					:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(0,00000000)
+					:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(1,00000001)
+					:i $Change$$display_multiplied_score$ = %i(1,00000001)
+					:i $ShowMultipliedScore$$on$
+				:i else 
+					:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+					:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_BASESCORE$
+					:i $thugpro_save_key_value$$Key$ = %s(18,"NoDisplayBasescore")$value$ = %i(1,00000001)
+					:i $thugpro_save_key_value$$Key$ = %s(19,"ShowMultipliedScore")$value$ = %i(0,00000000)
+					:i $Change$$display_multiplied_score$ = %i(0,00000000)
+					:i $ShowMultipliedScore$$off$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $toggle_display_SPECIAL_text$
+	:i $GetTags$
+	:i if $IsTrue$$display_SPECIAL_text$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(15,"ShowSpecialText")$value$ = %i(0,00000000)
+		:i $Change$$display_SPECIAL_text$ = %i(0,00000000)
+		:i $destroy_panel_stuff$
+		:i $create_panel_stuff$
+		:i $hide_all_hud_items$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(15,"ShowSpecialText")$value$ = %i(1,00000001)
+		:i $Change$$display_SPECIAL_text$ = %i(1,00000001)
+		:i $destroy_panel_stuff$
+		:i $create_panel_stuff$
+		:i $hide_all_hud_items$
+	:i endif
+:i endfunction
+:i function $toggle_display_chatwindow$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_chatwindow$$child$ = $extra_text$:s}$text$ = %s(3,"Off"):s}
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $thugpro_save_key_value$$Key$ = %s(21,"NO_DISPLAY_CHATWINDOW")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_chatwindow$$child$ = $extra_text$:s}$text$ = %s(2,"On"):s}
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_CHATWINDOW$
+		:i $thugpro_save_key_value$$Key$ = %s(21,"NO_DISPLAY_CHATWINDOW")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_balance$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"NoBalanceMeters")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_BALANCE$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"NoBalanceMeters")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_net_names$
+	:i $GetPreferenceString$$pref_type$ = $network$$show_names$
+	:i if  (%GLOBAL%$ui_string$ = %s(3,"off")) 
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_net_names$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"show_names")$checksum$ = $boolean_true$$string$ = %s(2,"on")
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_net_names$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"show_names")$checksum$ = $boolean_false$$string$ = %s(3,"off")
+	:i endif
+:i endfunction
+:i function $toggle_display_net_scores$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"NoNetNamesScores")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_NET_SCORES$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"NoNetNamesScores")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_display_object_labels$
+	:i $GetTags$
+	:i if NOT $IsTrue$$GLOBAL_HideObjectLabels$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(16,"HideObjectLabels")$value$ = %i(1,00000001)
+		:i $Change$$GLOBAL_HideObjectLabels$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(16,"HideObjectLabels")$value$ = %i(0,00000000)
+		:i $Change$$GLOBAL_HideObjectLabels$ = %i(0,00000000)
+	:i endif
+	:i $wait$%i(2,00000002)$frames$
+	:i $update_all_player_names$
+:i endfunction
+:i function $display_options_exit$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i $create_options_menu$
+	:i else 
+		:i $create_setup_options_menu$
+	:i endif
+:i endfunction
+:i function $toggle_cutscene_subtitles$
+	:i if $GetGlobalFlag$$flag$ = $NO_DISPLAY_CUTSCENE_SUBTITLES$
+		:i $UnSetGlobalFlag$$flag$ = $NO_DISPLAY_CUTSCENE_SUBTITLES$
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_cutscene_subtitles$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+	:i else 
+		:i $SetGlobalFlag$$flag$ = $NO_DISPLAY_CUTSCENE_SUBTITLES$
+		:i $SetScreenElementProps$:s{$id$ = :s{$menu_display_cutscene_subtitles$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+	:i endif
+:i endfunction
+:i function $change_select_button_function$
+	:i $GetTags$
+	:i %GLOBAL%$userselect_options$ = $userselect_options$
+	:i if $GotParam$$left$
+		:i $array_previous_wraparound$$index$ =  ($userselect_index$) $array$ = %GLOBAL%$userselect_options$
+		:i $Change$$userselect_index$ = %GLOBAL%$index$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"UserSelectAction")$value$ = %GLOBAL%$index$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $_left_arrow$:s}$menu_blink_arrow$
+	:i else 
+		:i if $GotParam$$right$
+			:i $array_next_wraparound$$index$ =  ($userselect_index$) $array$ = %GLOBAL%$userselect_options$
+			:i $Change$$userselect_index$ = %GLOBAL%$index$
+			:i $thugpro_save_key_value$$Key$ = %s(16,"UserSelectAction")$value$ = %GLOBAL%$index$
+			:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$menu_blink_arrow$
+		:i endif
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+		:i $text$ =  ( ( (%GLOBAL%$userselect_options$) :a{ ($userselect_index$) :a}) ->$text$) 
+	:i :s}
+	:i $Change$$thugpro_userselect_action$ =  ( ( (%GLOBAL%$userselect_options$) :a{ ($userselect_index$) :a}) ->$action$) 
+	:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+:i endfunction
+:i function $toggle_display_blood$
+	:i $GetTags$
+	:i if NOT $GetGlobalFlag$$flag$ = $BLOOD_OFF$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $SetGlobalFlag$$flag$ = $BLOOD_OFF$
+		:i $thugpro_save_key_value$$Key$ = %s(7,"NoBlood")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $UnSetGlobalFlag$$flag$ = $BLOOD_OFF$
+		:i $thugpro_save_key_value$$Key$ = %s(7,"NoBlood")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_EnableBoardScuffs$
+	:i $GetTags$
+	:i if NOT $IsTrue$$GLOBAL_EnableBoardScuffs$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(17,"EnableBoardScuffs")$value$ = %i(1,00000001)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(17,"EnableBoardScuffs")$value$ = %i(0,00000000)$apply_changes$
+		:i $GetSkaterId$
+		:i %GLOBAL%$objid$.$SetTags$$boardscuff$ = %i(0,00000000)
+		:i %GLOBAL%$objid$.$Obj_ReplaceTexture$$src$ = %s(23,"CS_NN_board_trans01.png")$dest$ = %s(35,"textures/scuffs/CS_NN_board_trans01")
+	:i endif
+:i endfunction
+:i function $skpro_toggle_bullettime$
+	:i $GetTags$
+	:i if $IsTrue$$skpro_bullettime_allowed$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(14,"AllowFocusMode")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(14,"AllowFocusMode")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_gamerunrespawns$
+	:i $GetTags$
+	:i if $IsTrue$$GameRunRespawns$
+		:i $Change$$GameRunRespawns$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i if NOT $GotParam$$no_menu$
+			:i $thugpro_save_key_value$$Key$ = %s(15,"GameRunRespawns")$value$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $Change$$GameRunRespawns$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i if NOT $GotParam$$no_menu$
+			:i $thugpro_save_key_value$$Key$ = %s(15,"GameRunRespawns")$value$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i :end

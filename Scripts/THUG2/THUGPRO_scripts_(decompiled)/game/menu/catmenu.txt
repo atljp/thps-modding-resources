@@ -1,0 +1,4148 @@
+$timeline_info_anchor_offscreen_pos$ = %vec2(-450.000000,240.000000)
+:i $rot_on_un$ = :a{%i(22,00000016)%i(72,00000048)%i(111,0000006f)%i(70,00000046):a}
+:i $rot_off_un$ = :a{%i(30,0000001e)%i(57,00000039)%i(78,0000004e)%i(35,00000023):a}
+:i $rot_on_high$ = :a{%i(22,00000016)%i(72,00000048)%i(111,0000006f)%i(128,00000080):a}
+:i $rot_off_high$ = :a{%i(30,0000001e)%i(57,00000039)%i(78,0000004e)%i(58,0000003a):a}
+:i $grab_on_un$ = :a{%i(7,00000007)%i(123,0000007b)%i(65,00000041)%i(70,00000046):a}
+:i $grab_off_un$ = :a{%i(29,0000001d)%i(58,0000003a)%i(42,0000002a)%i(35,00000023):a}
+:i $grab_on_high$ = :a{%i(7,00000007)%i(123,0000007b)%i(65,00000041)%i(128,00000080):a}
+:i $grab_off_high$ = :a{%i(29,0000001d)%i(58,0000003a)%i(42,0000002a)%i(58,0000003a):a}
+:i $flip_on_un$ = :a{%i(127,0000007f)%i(123,0000007b)%i(45,0000002d)%i(70,00000046):a}
+:i $flip_off_un$ = :a{%i(59,0000003b)%i(58,0000003a)%i(32,00000020)%i(35,00000023):a}
+:i $flip_on_high$ = :a{%i(127,0000007f)%i(123,0000007b)%i(45,0000002d)%i(128,00000080):a}
+:i $flip_off_high$ = :a{%i(59,0000003b)%i(58,0000003a)%i(32,00000020)%i(58,0000003a):a}
+:i $spec_on_un$ = :a{%i(127,0000007f)%i(3,00000003)%i(5,00000005)%i(70,00000046):a}
+:i $spec_off_un$ = :a{%i(69,00000045)%i(28,0000001c)%i(22,00000016)%i(35,00000023):a}
+:i $spec_on_high$ = :a{%i(127,0000007f)%i(3,00000003)%i(5,00000005)%i(128,00000080):a}
+:i $spec_off_high$ = :a{%i(69,00000045)%i(28,0000001c)%i(22,00000016)%i(58,0000003a):a}
+:i $misc_on_un$ = :a{%i(127,0000007f)%i(3,00000003)%i(125,0000007d)%i(70,00000046):a}
+:i $misc_off_un$ = :a{%i(69,00000045)%i(28,0000001c)%i(62,0000003e)%i(35,00000023):a}
+:i $misc_on_high$ = :a{%i(127,0000007f)%i(3,00000003)%i(125,0000007d)%i(128,00000080):a}
+:i $misc_off_high$ = :a{%i(69,00000045)%i(28,0000001c)%i(62,0000003e)%i(58,0000003a):a}
+:i $gen_on_un$ = :a{%i(127,0000007f)%i(63,0000003f)%i(5,00000005)%i(70,00000046):a}
+:i $gen_off_un$ = :a{%i(69,00000045)%i(38,00000026)%i(2,00000002)%i(35,00000023):a}
+:i $gen_on_high$ = :a{%i(127,0000007f)%i(63,0000003f)%i(5,00000005)%i(128,00000080):a}
+:i $gen_off_high$ = :a{%i(69,00000045)%i(38,00000026)%i(2,00000002)%i(58,0000003a):a}
+:i $new_item_un$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(80,00000050):a}
+:i $new_item_high$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+:i $idle_on_un$ = :a{%i(10,0000000a)%i(10,0000000a)%i(10,0000000a)%i(80,00000050):a}
+:i $idle_off_un$ = :a{%i(10,0000000a)%i(10,0000000a)%i(10,0000000a)%i(20,00000014):a}
+:i $timeline_arrow_high$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+:i $MIN_CAT_TIME$ = %f(0.350000)
+:i $in_cat_test_mode$ = %i(0,00000000)
+:i $cat_heap$ = $frontend$
+:i function $create_pre_cat_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $quit_dialog_anchor$
+		:i $DestroyScreenElement$$id$ = $quit_dialog_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $create_menu_background_title$$title$ = %s(14,"create-a-trick")$bg_just$ = $right_scroll$$no_grain$
+	:i $pause_menu_gradient$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,200.000000)
+		:i $menu_id$ = $cat_menu$
+		:i $vmenu_id$ = $cat_vmenu$
+		:i $scrolling_menu_id$ = $cat_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $cat_vmenu$$alias$ = $current_menu$
+	:i $make_thpg_menu_item$$text$ = %s(16,"Create New Trick")$id$ = $menu_new$$pad_choose_script$ = $create_CAT_menu$$pad_choose_params$ = :s{$new$ = %i(1,00000001):s}
+	:i $make_thpg_menu_item$$text$ = %s(18,"Edit Created Trick")$id$ = $menu_edit$$pad_choose_script$ = $cat_edit_slot_menu$$pad_choose_params$ = :s{$load$ = %i(0,00000000):s}
+	:i $make_thpg_menu_item$$text$ = %s(18,"Load Created Trick")$id$ = $menu_load$$pad_choose_script$ = $launch_load_cat_sequence$$pad_choose_params$ = :s{:s}
+	:i $make_thpg_menu_item$$text$ = %s(15,"Pre-Made Tricks")$id$ = $menu_premade$$pad_choose_script$ = $cat_premade_menu$$pad_choose_params$ = :s{:s}
+	:i if  ($launch_to_createatrick$ = %i(0,00000000)) 
+		:i $make_thpg_menu_item$$text$ = %s(4,"Done")$id$ = $menu_exit$$pad_choose_script$ = $cat_exit_cleanup$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $current_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $cat_exit_cleanup$:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $make_thpg_menu_item$$text$ = %s(4,"Done")$id$ = $menu_exit$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $launch_quit_cat_dialog$:s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $current_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $launch_quit_cat_dialog$:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i $change$$cat_heap$ = $frontend$
+:i endfunction
+:i function $cat_exit_cleanup$
+	:i $change$$in_cat_preview_mode$ = %i(0,00000000)
+	:i if $GotParam$$to_main_menu$
+		:i $quit_network_game$
+	:i else 
+		:i $create_pause_menu$
+	:i endif
+:i endfunction
+:i function $launch_quit_cat_dialog$
+	:i $dialog_box_exit$
+	:i $generic_menu_cleanup$
+	:i if $ObjectExists$$id$ = $quit_dialog_anchor$
+		:i $DestroyScreenElement$$id$ = $quit_dialog_anchor$
+	:i endif
+	:i $create_quit_cat_dialog$
+:i endfunction
+:i function $launch_pre_cat_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_pre_cat_menu$
+:i endfunction
+:i function $create_quit_cat_dialog$
+	:i $create_error_box$:s{$title$ = %s(19,"Exit Create-a-Trick")
+		:i $text$ = %s(13,"Are you sure?")
+		:i $anchor_id$ = $quit_dialog_anchor$
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $cat_exit_cleanup$$pad_choose_params$ = :s{$to_main_menu$:s}:s}:s{$text$ = %s(2,"No")$pad_choose_script$ = $launch_pre_cat_menu$:s}:a}
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $cat_launch_bo$
+	:i $change_gamemode_singlesession$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $last_level$ =  ($level_select_last_level_played$:a{%i(0,00000000):a}) 
+	:i $change_level$$level$ = %GLOBAL%$last_level$
+:i endfunction
+:i function $create_CAT_pause_menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $cat_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $cat_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $CAT_Skater$
+		:i $CAT_Skater$.$TurnOffSpecialItem$
+		:i $CAT_Skater$.$Die$
+		:i $cat_rehide_skater_board$
+	:i endif
+	:i if $GotParam$$from_timeline$
+		:i $generic_menu_pad_back_sound$
+		:i $spawnscript$$cat_back_to_skater_cam$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $cat_perform_trick_loop$
+	:i if  ($running_cat_demo$ = %i(1,00000001)) 
+		:i $change$$running_cat_demo$ = %i(0,00000000)
+	:i endif
+	:i $dialog_box_exit$
+	:i if  ($in_cat_preview_mode$ = %i(1,00000001)) 
+		:i $spawnscript$$remap_cat_preview_trick$
+	:i endif
+	:i $kill_start_key_binding$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $pad_back_script$ = $preview_cat$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $pause_menu$
+		:i $vmenu_id$ = $pause_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $pause_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$%GLOBAL%$pad_back_script$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_helper_text$%GLOBAL%$helper$
+	:i $create_menu_background_title$$title$ = %s(18,"trick editor pause")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+	:i $create_cat_pause_trick_info$$name$ = %GLOBAL%$name$$parent$ = $pause_menu$
+	:i $calculate_cat_score$$get_values$
+	:i $make_thpg_menu_item$$text$ = %s(14,"back to editor")$id$ = $menu_back$$pad_choose_script$ = $create_CAT_menu$$pad_choose_params$ = :s{$from_cat_pause$:s}
+	:i $make_thpg_menu_item$$text$ = %s(13,"preview trick")$id$ = $menu_preview$$pad_choose_script$ = $preview_cat$$pad_choose_params$ = :s{:s}
+	:i $make_thpg_menu_item$$text$ = %s(10,"name trick")$id$ = $menu_name$$pad_choose_script$ = $launch_keyboard_from_cat_pause$$pad_choose_params$ = :s{:s}
+	:i $make_thpg_menu_item$$text$ = %s(10,"save trick")$id$ = $menu_save$$pad_choose_script$ = $maybe_launch_save_cat_sequence$$pad_choose_params$ = :s{:s}
+	:i $make_thpg_menu_item$$text$ = %s(4,"done")$id$ = $menu_exit$$pad_choose_script$ = $cat_exit_dialog$$pad_choose_params$ = :s{:s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $pause_vmenu$
+:i endfunction
+:i $in_cat_preview_mode$ = %i(0,00000000)
+:i function $preview_cat$
+	:i $destroy_menu_background_title$
+	:i $calculate_cat_score$$get_time$
+	:i if  ($MIN_CAT_TIME$ > %GLOBAL%$time$) 
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $create_dialog_box$:s{$title$ = %s(10,"Too Short!")
+			:i $text$ = %s(54,"Your Create-A-trick must be at least 0.4 seconds long.")
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $pad_back_script$ = %GLOBAL%$back_script$
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $create_CAT_pause_menu$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $cat_landable$
+		:i if  (%GLOBAL%$upsidedown$ = %i(1,00000001)) 
+			:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+			:i $create_dialog_box$:s{$title$ = %s(8,"Wrecked!")
+				:i $text$ = %s(26,"You can't land that trick!")
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $pad_back_script$ = %GLOBAL%$back_script$
+				:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $create_CAT_pause_menu$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $change$$in_cat_preview_mode$ = %i(1,00000001)
+			:i $GoalManager_GetTrickFromKeyCombo$$Key_Combo$ = $Air_SquareL$
+			:i if $GotParam$$trick_checksum$
+				:i $Skater$.$SetTags$$old_trick$ = %GLOBAL%$trick_checksum$
+			:i else 
+				:i if $GotParam$$cat_num$
+					:i $Skater$.$SetTags$$old_trick$ = %GLOBAL%$cat_num$
+				:i endif
+			:i endif
+			:i $BindTrickToKeyCombo$:s{
+				:i $Key_Combo$ = $Air_SquareL$
+				:i $trick$ = %i(0,00000000)
+				:i $update_mappings$ = %i(1,00000001)
+			:i :s}
+			:i $GetCurrentSkaterProfileIndex$
+			:i $UpdateTrickMappings$$Skater$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $exit_pause_menu$
+			:i $GoalManager_HideGoalPoints$
+			:i $create_panel_block$:s{
+				:i $id$ = $cat_preview_trick_mapping_text$
+				:i $text$ = %s(32,"Preview Created Trick\n\b6 + \b1")
+				:i $style$ = $panel_message_goal$
+				:i $params$ = :s{$final_pos$ = %vec2(700.000000,20.000000):s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $remap_cat_preview_trick$
+	:i if $ScreenElementExists$$id$ = $cat_preview_trick_mapping_text$
+		:i $DestroyScreenElement$$id$ = $cat_preview_trick_mapping_text$
+	:i endif
+	:i $Skater$.$GetTags$
+	:i $BindTrickToKeyCombo$:s{
+		:i $Key_Combo$ = $Air_SquareL$
+		:i $trick$ = %GLOBAL%$old_trick$
+		:i $update_mappings$ = %i(1,00000001)
+	:i :s}
+	:i $GetCurrentSkaterProfileIndex$
+	:i $UpdateTrickMappings$$Skater$ = %GLOBAL%$currentSkaterProfileIndex$
+:i endfunction
+:i function $maybe_launch_save_cat_sequence$
+	:i $calculate_cat_score$$get_time$
+	:i if  ($MIN_CAT_TIME$ > %GLOBAL%$time$) 
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $create_dialog_box$:s{$title$ = %s(10,"Too Short!")
+			:i $text$ = %s(54,"Your Create-A-trick must be at least 0.4 seconds long.")
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $pad_back_script$ = %GLOBAL%$back_script$
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $create_CAT_pause_menu$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $cat_landable$
+		:i if  (%GLOBAL%$upsidedown$ = %i(1,00000001)) 
+			:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+			:i $create_dialog_box$:s{$title$ = %s(8,"Wrecked!")
+				:i $text$ = %s(26,"You can't land that trick!")
+				:i $pos$ = %vec2(320.000000,240.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $pad_back_script$ = %GLOBAL%$back_script$
+				:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $create_CAT_pause_menu$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+			:i if  (%GLOBAL%$name$ = %s(0,"")) 
+				:i $set_new_CAT_param_values$$trick_index$ = %i(0,00000000)$name$ = %s(13,"Created Trick")
+			:i endif
+			:i $launch_save_cat_sequence$
+		:i endif
+	:i endif
+:i endfunction
+:i $editing_cat$ = %i(0,00000000)
+:i function $cat_edit_slot_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_themed_sub_menu$$title$ = %s(10,"EDIT TRICK")
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$create_pre_cat_menu$:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $pause_menu_gradient$
+	:i $index$ = %i(1,00000001)
+	:i $count$ = %i(0,00000000)
+	:i while
+		
+		:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$index$
+		:i if $GotParam$$full$
+			:i if  (%GLOBAL%$full$ = %i(1,00000001)) 
+				:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to  ($MAX_CREATED_TRICKS$ - %i(1,00000001)) 
+	:i if  (%GLOBAL%$count$ > %i(0,00000000)) 
+		:i $index$ = %i(1,00000001)
+		:i $added$ = %i(0,00000000)
+		:i while
+			
+			:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$index$
+			:i if $GotParam$$full$
+				:i if  (%GLOBAL%$full$ = %i(1,00000001)) 
+					:i if  (%GLOBAL%$added$ =  (%GLOBAL%$count$%i(4294967295,ffffffff)) ) 
+						:i $last$ = :s{$last_menu_item$ = %i(1,00000001):s}
+					:i else 
+						:i $last$ = :s{:s}
+					:i endif
+					:i $theme_menu_add_item$$centered$ = %i(1,00000001)$text$ = %GLOBAL%$name$$pad_choose_script$ = $edit_cat_in_slot$$pad_choose_params$ = :s{$slot$ = %GLOBAL%$index$:s}%GLOBAL%$last$$no_highlight_bar$
+					:i $added$ =  (%GLOBAL%$added$ + %i(1,00000001)) 
+				:i endif
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to  ($MAX_CREATED_TRICKS$ - %i(1,00000001)) 
+		:i $finish_themed_sub_menu$
+	:i else 
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $create_dialog_box$:s{$title$ = %s(9,"No Tricks")
+			:i $text$ = %s(27,"You have no tricks to edit.")
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $create_pre_cat_menu$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $edit_cat_in_slot$
+	:i if NOT $GotParam$$slot$
+		:i $printf$%s(23,"CAT: missing slot param")
+		:i return
+		
+	:i endif
+	:i $change$$editing_cat$ = %GLOBAL%$slot$
+	:i $get_CAT_param_values$$trick_index$ = %GLOBAL%$slot$
+	:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+		:i $trick_index$ = %i(0,00000000)
+		:i $other_params$ = :s{$name$ = %GLOBAL%$name$
+			:i $rotateafter$ = %GLOBAL%$rotateafter$
+			:i $can_spin$ = %GLOBAL%$can_spin$
+			:i $full$ = %i(1,00000001)
+		:i :s}
+		:i $rotation_info$ = %GLOBAL%$rotation_info$
+		:i $animation_info$ = %GLOBAL%$animation_info$
+	:i :s}
+	:i $create_CAT_menu$
+:i endfunction
+:i function $cat_assign_slot_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $sub_menu$
+		:i $DestroyScreenElement$$id$ = $sub_menu$
+	:i endif
+	:i $make_new_themed_sub_menu$$title$ = %s(15,"OVERWRITE TRICK")
+	:i if  ($loading_cat_from_edit_tricks$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $sub_menu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$create_CAT_pause_menu$:s}
+				:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $sub_menu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$create_edit_tricks_menu$:s}
+				:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i $index$ = %i(1,00000001)
+	:i while
+		
+		:i if  (%GLOBAL%$index$ =  ($MAX_CREATED_TRICKS$ - %i(1,00000001)) ) 
+			:i $last$ = :s{$last_menu_item$ = %i(1,00000001):s}
+		:i else 
+			:i $last$ = :s{:s}
+		:i endif
+		:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$index$
+		:i $theme_menu_add_item$$centered$ = %i(1,00000001)$text$ = %GLOBAL%$name$%GLOBAL%$last$$no_highlight_bar$$pad_choose_script$ = $assign_cat_to_slot$$pad_choose_params$ = :s{$save_slot$ = %GLOBAL%$index$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to  ($MAX_CREATED_TRICKS$ - %i(1,00000001)) 
+	:i $finish_themed_sub_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu_anchor$
+:i endfunction
+:i function $assign_cat_to_slot$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $sub_menu$
+		:i $DestroyScreenElement$$id$ = $sub_menu$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if NOT $GotParam$$save_slot$
+		:i $printf$%s(28,"CAT: missing save_slot param")
+		:i return
+		
+	:i endif
+	:i $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+	:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+		:i $trick_index$ = %GLOBAL%$save_slot$
+		:i $other_params$ = :s{$name$ = %GLOBAL%$name$
+			:i $rotateafter$ = %GLOBAL%$rotateafter$
+			:i $can_spin$ = %GLOBAL%$can_spin$
+			:i $full$ = %i(1,00000001)
+		:i :s}
+		:i $rotation_info$ = %GLOBAL%$rotation_info$
+		:i $animation_info$ = %GLOBAL%$animation_info$
+	:i :s}
+	:i if  ($loading_cat_from_edit_tricks$ = %i(1,00000001)) 
+		:i $create_edit_tricks_menu$
+	:i else 
+		:i $back_to_options_menu_from_cat$
+	:i endif
+:i endfunction
+:i function $cat_exit_dialog$$back_script$ = $return_to_cat_pause$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $calculate_cat_score$$get_time$
+	:i if  ($MIN_CAT_TIME$ > %GLOBAL%$time$) 
+		:i $create_dialog_box$:s{$title$ = %s(10,"Too Short!")
+			:i $text$ = %s(111,"Your Create-A-trick must be at least 0.4 seconds long. Do you want to go back to fix it or quit without saving?")
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $pad_back_script$ = %GLOBAL%$back_script$
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(7,"Go Back")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+				:i :s{$font$ = $small$$text$ = %s(4,"Quit")$pad_choose_script$ = $back_to_options_menu_from_cat$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $cat_landable$
+		:i if  (%GLOBAL%$upsidedown$ = %i(1,00000001)) 
+			:i $create_dialog_box$:s{$title$ = %s(8,"Wrecked!")
+				:i $text$ = %s(26,"You can't land that trick!")
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $pad_back_script$ = %GLOBAL%$back_script$
+				:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(7,"Go Back")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+					:i :s{$font$ = $small$$text$ = %s(4,"Quit")$pad_choose_script$ = $back_to_options_menu_from_cat$:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %s(8,"Keep it?")
+				:i $text$ = %s(120,"Keep this Create-A-Trick? Once kept, a Created Trick can be permanently mapped to your skater from the Edit Tricks menu.")
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $pad_back_script$ = %GLOBAL%$back_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $launch_keyboard_from_exit_cat$:s}
+					:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $back_to_options_menu_from_cat$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $auto_assign_cat_to_slot$
+	:i if  ($editing_cat$ = %i(0,00000000)) 
+		:i $index$ = %i(1,00000001)
+		:i while
+			
+			:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$index$
+			:i if  (%GLOBAL%$full$ = %i(0,00000000)) 
+				:i $save_slot$ = %GLOBAL%$index$
+				:i continue
+				
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to  ($MAX_CREATED_TRICKS$%i(4294967295,ffffffff)) 
+	:i else 
+		:i $save_slot$ =  ($editing_cat$ + %i(0,00000000)) 
+		:i $change$$editing_cat$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$save_slot$
+		:i $assign_cat_to_slot$$save_slot$ = %GLOBAL%$save_slot$
+	:i else 
+		:i if  ($loading_cat_from_edit_tricks$ = %i(0,00000000)) 
+			:i if $isXbox$
+				:i $create_dialog_box$:s{$title$ = %s(4,"Full")
+					:i $text$ = %s(63,"All your Create-A-trick slots are full. What do you want to do?")
+					:i $just$ = :a{$center$$center$:a}
+					:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+					:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(19,"Overwrite old trick")$pad_choose_script$ = $cat_assign_slot_menu$:s}
+						:i :s{$font$ = $small$$text$ = %s(24,"Save trick to Hard Drive")$pad_choose_script$ = $launch_save_cat_sequence$:s}
+						:i :s{$font$ = $small$$text$ = %s(25,"Exit without saving trick")$pad_choose_script$ = $back_to_options_menu_from_cat$:s}
+						:i :a}
+				:i :s}
+			:i else 
+				:i $create_dialog_box$:s{$title$ = %s(4,"Full")
+					:i $text$ = %s(63,"All your Create-A-trick slots are full. What do you want to do?")
+					:i $just$ = :a{$center$$center$:a}
+					:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+					:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(19,"Overwrite old trick")$pad_choose_script$ = $cat_assign_slot_menu$:s}
+						:i :s{$font$ = $small$$text$ = %s(10,"Save trick")$pad_choose_script$ = $launch_save_cat_sequence$:s}
+						:i :s{$font$ = $small$$text$ = %s(25,"Exit without saving trick")$pad_choose_script$ = $back_to_options_menu_from_cat$:s}
+						:i :a}
+				:i :s}
+			:i endif
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %s(4,"Full")
+				:i $text$ = %s(63,"All your Create-A-trick slots are full. What do you want to do?")
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(19,"Overwrite old trick")$pad_choose_script$ = $cat_assign_slot_menu$:s}
+					:i :s{$font$ = $small$$text$ = %s(26,"Exit without loading trick")$pad_choose_script$ = $create_edit_tricks_menu$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $back_to_options_menu_from_cat$
+	:i $pulse_blur$$speed$ = %i(2,00000002)$start$ = %i(225,000000e1)
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $CAT_Cam$
+		:i $CAT_Cam$.$Die$
+	:i endif
+	:i if $ObjectExists$$id$ = $CAT_Skater$
+		:i $CAT_Skater$.$TurnOffSpecialItem$
+		:i $CAT_Skater$.$Die$
+		:i $cat_rehide_skater_board$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $GoalManager_InitializeAllGoals$
+	:i endif
+	:i $create_pre_cat_menu$
+:i endfunction
+:i function $return_to_cat_pause$
+	:i $dialog_box_exit$
+	:i $pulse_blur$$speed$ = %i(2,00000002)$start$ = %i(225,000000e1)
+	:i $create_CAT_pause_menu$
+:i endfunction
+:i function $launch_keyboard_from_cat_pause$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $get_CAT_param_values$
+	:i if  (%GLOBAL%$name$ = %s(0,"")) 
+		:i $temp_name$ = %s(13,"Created Trick")
+	:i else 
+		:i $temp_name$ = %GLOBAL%$name$
+	:i endif
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $keyboard_cancel_script$ = $cat_cancel_keyboard$
+		:i $keyboard_done_script$ = $set_cat_trick_name$
+		:i $keyboard_title$ = %s(10,"TRICK NAME")
+		:i $text$ = %GLOBAL%$temp_name$
+		:i $allowed_characters$ = $cat_allowed_characters$
+		:i $min_length$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i $cat_allowed_characters$ = :a{%s(1,"1")%s(1,"2")%s(1,"3")%s(1,"4")%s(1,"5")%s(1,"6")%s(1,"7")%s(1,"8")%s(1,"9")%s(1,"0")
+	:i %s(1,"a")%s(1,"b")%s(1,"c")%s(1,"d")%s(1,"e")%s(1,"f")%s(1,"g")%s(1,"h")%s(1,"i")%s(1,"j")
+	:i %s(1,"k")%s(1,"l")%s(1,"m")%s(1,"n")%s(1,"o")%s(1,"p")%s(1,"q")%s(1,"r")%s(1,"s")%s(1,"t")
+	:i %s(1,"u")%s(1,"v")%s(1,"w")%s(1,"x")%s(1,"y")%s(1,"z")
+	:i %s(1,"A")%s(1,"B")%s(1,"C")%s(1,"D")%s(1,"E")%s(1,"F")%s(1,"G")%s(1,"H")%s(1,"I")%s(1,"J")
+	:i %s(1,"K")%s(1,"L")%s(1,"M")%s(1,"N")%s(1,"O")%s(1,"P")%s(1,"Q")%s(1,"R")%s(1,"S")%s(1,"T")
+	:i %s(1,"U")%s(1,"V")%s(1,"W")%s(1,"X")%s(1,"Y")%s(1,"Z")
+	:i %s(1,".")%s(1,"-")%s(1,"@")%s(1,"&")%s(1,"$")%s(1,"?")%s(1," "):a}
+:i function $launch_keyboard_from_exit_cat$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $dialog_box_exit$
+	:i $get_CAT_param_values$
+	:i if  (%GLOBAL%$name$ = %s(0,"")) 
+		:i $temp_name$ = %s(13,"Created Trick")
+	:i else 
+		:i $temp_name$ = %GLOBAL%$name$
+	:i endif
+	:i if  ( (%GLOBAL%$name$ = %s(13,"Created Trick"))  OR  (%GLOBAL%$name$ = %s(0,"")) ) 
+		:i $create_onscreen_keyboard$:s{$keyboard_done_script$ = $set_cat_trick_name_and_exit$
+			:i $keyboard_title$ = %s(10,"TRICK NAME")
+			:i $text$ = %GLOBAL%$temp_name$
+			:i $allowed_characters$ = $cat_allowed_characters$
+			:i $keyboard_cancel_script$ = $cat_cancel_keyboard$
+			:i $min_length$ = %i(1,00000001)
+		:i :s}
+	:i else 
+		:i $auto_assign_cat_to_slot$
+	:i endif
+:i endfunction
+:i function $cat_cancel_keyboard$
+	:i $destroy_onscreen_keyboard$
+	:i $create_CAT_pause_menu$
+:i endfunction
+:i function $set_cat_trick_name$
+	:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $set_new_CAT_param_values$$trick_index$ = %i(0,00000000)$name$ = %GLOBAL%$string$$can_spin$ = %GLOBAL%$can_spin$
+	:i $destroy_onscreen_keyboard$
+	:i $create_CAT_pause_menu$
+:i endfunction
+:i function $set_cat_trick_name_and_exit$
+	:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $set_new_CAT_param_values$$trick_index$ = %i(0,00000000)$name$ = %GLOBAL%$string$$can_spin$ = %GLOBAL%$can_spin$
+	:i $destroy_onscreen_keyboard$
+	:i $auto_assign_cat_to_slot$
+:i endfunction
+:i function $cat_premade_menu$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $create_menu_background_title$$title$ = %s(15,"Pre-Made Tricks")$bg_just$ = $right_scroll$$scrolling_arrows$$no_grain$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,180.000000)
+		:i $menu_id$ = $cat_premade_menu$
+		:i $vmenu_id$ = $cat_premade_vmenu$
+		:i $scrolling_menu_id$ = $cat_premade_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $cat_premade_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$create_pre_cat_menu$:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $pause_menu_gradient$
+	:i $GetArraySize$$Premade_CATS$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $name$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$name$) 
+		:i $make_thpg_menu_item$$text$ = %GLOBAL%$name$$pad_choose_script$ = $load_premade_cat$$pad_choose_params$ = :s{$index$ = %GLOBAL%$index$:s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $cat_premade_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $load_premade_cat$
+	:i if NOT $GotParam$$index$
+		:i $printf$%s(24,"CAT: missing index param")
+		:i return
+		
+	:i endif
+	:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+		:i $trick_index$ = %i(0,00000000)
+		:i $other_params$ = :s{$name$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$name$) 
+			:i $can_spin$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$can_spin$) 
+			:i $full$ = %i(1,00000001)
+		:i :s}
+		:i $rotation_info$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$rotation_info$) 
+		:i $animation_info$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$animation_info$) 
+	:i :s}
+	:i if $GotParam$$trickSlot$
+		:i $BindTrickToKeyCombo$:s{
+			:i $Key_Combo$ = %GLOBAL%$trickSlot$
+			:i $trick$ = %i(0,00000000)
+			:i $update_mappings$ = %i(1,00000001)
+			:i $special$
+			:i $index$ = %GLOBAL%$special_trick_index$
+			:i $cat$
+		:i :s}
+	:i else 
+		:i $create_CAT_menu$$dont_focus_timeline$ = %GLOBAL%$dont_focus_timeline$
+	:i endif
+:i endfunction
+:i function $load_default_premade_cat$
+	:i $printf$%s(24,"load_default_premade_cat")
+	:i if NOT $GotParam$$index$
+		:i $printf$%s(24,"CAT: missing index param")
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$save_slot$
+		:i $printf$%s(28,"CAT: missing save_slot param")
+		:i return
+		
+	:i endif
+	:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+		:i $trick_index$ = %GLOBAL%$save_slot$
+		:i $other_params$ = :s{$name$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$name$) 
+			:i $can_spin$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$can_spin$) 
+			:i $full$ = %i(1,00000001)
+		:i :s}
+		:i $rotation_info$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$rotation_info$) 
+		:i $animation_info$ =  ( ($Premade_CATS$:a{%GLOBAL%$index$:a}) ->$animation_info$) 
+	:i :s}
+:i endfunction
+:i function $spawn_add_premade_cats_to_skater$
+	:i $spawnscript$$add_premade_cats_to_skater$$params$ = :s{:s}
+:i endfunction
+:i function $kill_load_premade_cats$
+	:i $KillSpawnedScript$$name$ = $add_premade_cats_to_skater$
+:i endfunction
+:i function $add_premade_cats_to_skater$
+	:i $load_default_premade_cat$$index$ = %i(0,00000000)$save_slot$ = %i(1,00000001)
+	:i $load_default_premade_cat$$index$ = %i(1,00000001)$save_slot$ = %i(2,00000002)
+	:i $load_default_premade_cat$$index$ = %i(7,00000007)$save_slot$ = %i(3,00000003)
+	:i $load_default_premade_cat$$index$ = %i(6,00000006)$save_slot$ = %i(4,00000004)
+	:i $load_default_premade_cat$$index$ = %i(8,00000008)$save_slot$ = %i(5,00000005)
+:i endfunction
+:i function $create_CAT_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if  ($cat_done$ = %i(0,00000000)) 
+		:i $Skater$.$created_trick_cleanup$
+		:i $MakeSkaterGoto$$AirBorne$
+	:i endif
+	:i $Skater$.$KillSpecial$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $end_current_goal_run$
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $pause_menu_gradient$$off$
+	:i if $GameModeEquals$$is_career$
+		:i $GoalManager_UninitializeAllGoals$
+	:i endif
+	:i $spawnscript$$show_CAT_skater$$params$ = :s{$dont_focus_timeline$ = %GLOBAL%$dont_focus_timeline$:s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $id$ = $cat_menu_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $parent$ = $root_window$
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $add_timeline_helper_text$
+	:i $kill_start_key_binding$
+	:i $create_cat_timeline$ isNull 
+	:i if $ScreenElementExists$$id$ = $timeline_vmenu$
+		:i if NOT $GotParam$$dont_focus_timeline$
+			:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $CAT_menu_exit$
+	:i if $ScreenElementExists$$id$ = $cat_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $cat_menu_anchor$
+	:i endif
+	:i $create_pre_cat_menu$
+:i endfunction
+:i function $add_timeline_helper_text$
+	:i $SetScreenElementLock$$id$ = $cat_menu_anchor$$off$
+	:i $create_helper_text$:s{$parent$ = $cat_menu_anchor$
+		:i $spacing_between$ = %i(4294967290,fffffffa)
+		:i $helper_text_elements_PC$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\bn=Exit"):s}
+			:i :s{$text$ = %s(8,"\bm=Edit"):s}
+			:i :s{$text$ = %s(8,"\bp=Hide"):s}
+			:i :s{$text$ = %s(10,"\bo=Delete"):s}
+			:i :s{$text$ = %s(13,"\bs/\bt=Order"):s}:a}
+		:i $helper_text_elements_Console$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\m1=Exit"):s}
+			:i :s{$text$ = %s(8,"\m0=Edit"):s}
+			:i :s{$text$ = %s(8,"\b0=Hide"):s}
+			:i :s{$text$ = %s(10,"\b1=Delete"):s}
+			:i :s{$text$ = %s(13,"\be/\bf=Order"):s}:a}
+	:i :s}
+:i endfunction
+:i function $add_edit_cat_helper_text$
+	:i $SetScreenElementLock$$id$ = $cat_menu_anchor$$off$
+	:i $create_helper_text$:s{$parent$ = $cat_menu_anchor$
+		:i $helper_text_elements_PC$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\bn=Back"):s}
+			:i :s{$text$ = %s(10,"\bm=Choose"):s}
+			:i :a}
+		:i $helper_text_elements_Console$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\m1=Back"):s}
+			:i :s{$text$ = %s(10,"\m0=Choose"):s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $add_cat_generic_helper_text$
+	:i $SetScreenElementLock$$id$ = $cat_menu_anchor$$off$
+	:i $create_helper_text$:s{$parent$ = $cat_menu_anchor$
+		:i $generic_helper_text$
+	:i :s}
+:i endfunction
+:i function $toggle_rot_on_off$
+	:i $printf$%s(24,"script toggle_rot_on_off")
+	:i $get_CAT_rot_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$rot_index$ = %GLOBAL%$rot_index$
+	:i if $GotParam$$Delete$
+		:i $on$ = %i(2,00000002)$Axis$ = $y$$Deg$ = %i(360,00000168)$Dur$ = %f(1.000000)$start$ = %f(0.000000)$deg_dir$ = %i(1,00000001)
+	:i else 
+		:i if  (%GLOBAL%$on$ = %i(0,00000000)) 
+			:i $on$ = %i(1,00000001)
+			:i $GetTags$
+			:i $focus_id$ = %GLOBAL%$id$
+			:i $PlaySound$$copinghit3_11$$pitch$ = %i(60,0000003c)
+		:i else 
+			:i if  (%GLOBAL%$on$ = %i(2,00000002)) 
+				:i $on$ = %i(1,00000001)
+				:i $new_rot$ = %i(1,00000001)
+			:i else 
+				:i $on$ = %i(0,00000000)
+				:i $GetTags$
+				:i $focus_id$ = %GLOBAL%$id$
+				:i $PlaySound$$copinghit3_11$$pitch$ = %i(60,0000003c)
+			:i endif
+		:i endif
+	:i endif
+	:i $set_new_rot_values$:s{$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $create_cat_timeline$$get_id$ = $get_id$$rot_index$ = %GLOBAL%$rot_index$
+	:i $kill_start_key_binding$
+	:i if $GotParam$$Delete$
+		:i $focus_cat_timeline$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$new_rot$
+		:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$$data$ = :s{$child_id$ = %GLOBAL%$focus_id$:s}
+		:i $SetScreenElementProps$$id$ = $timeline_scrolling_menu$$reset_window_top$
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+		:i if  (%GLOBAL%$value$ > %i(1,00000001)) 
+			:i while
+				
+				:i $FireEvent$$type$ = $pad_down$$target$ = $timeline_vmenu$
+			:i loop_to  (%GLOBAL%$value$%i(4294967295,ffffffff)) 
+		:i endif
+		:i $FireEvent$$type$ = $pad_zac$$target$ = :s{$timeline_vmenu$$child$ =  (%GLOBAL%$value$%i(4294967295,ffffffff)) :s}
+		:i $SetScreenElementProps$$id$ = $timeline_scrolling_menu$$reset_window_top$
+	:i endif
+:i endfunction
+:i function $toggle_can_spin$
+	:i $PlaySound$$GUI_buzzer01$$pitch$ = %i(140,0000008c)
+	:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+	:i if  (%GLOBAL%$can_spin$ = %i(0,00000000)) 
+		:i $printf$%s(13,"turn spins on")
+		:i $can_spin$ = %i(1,00000001)
+	:i else 
+		:i $printf$%s(14,"turn spins off")
+		:i $can_spin$ = %i(0,00000000)
+	:i endif
+	:i $set_new_CAT_param_values$$trick_index$ = %i(0,00000000)$name$ = %GLOBAL%$name$$can_spin$ = %GLOBAL%$can_spin$
+	:i $calculate_cat_score$$get_values$
+:i endfunction
+:i function $CAT_edit_rotation_menu$$parent$ = $cat_menu_anchor$$trick_index$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $get_CAT_rot_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$rot_index$ = %GLOBAL%$rot_index$
+	:i $make_new_menu$:s{
+		:i $parent$ = %GLOBAL%$parent$
+		:i $menu_id$ = $edit_rot_menu$
+		:i $vmenu_id$ = $edit_rot_vmenu$
+		:i $type$ = $VMenu$
+		:i $pos$ = %vec2(63.000000,50.000000)
+	:i :s}
+	:i $get_rot_name$$Axis$ = %GLOBAL%$Axis$$deg_dir$ = %GLOBAL%$deg_dir$
+	:i $pos$ = %vec2(0.000000,0.000000)
+	:i if  (%GLOBAL%$pos$->%vec2(1.000000,0.000000) > %i(280,00000118)) 
+		:i $pos$ =  ( (%GLOBAL%$pos$->%vec2(1.000000,0.000000) + %i(4294966766,fffffdee))  * %vec2(1.000000,0.000000) + %vec2(0.000000,62.000000)) 
+	:i else 
+		:i $pos$ = %vec2(-250.000000,62.000000)
+	:i endif
+	:i $create_timeline_fader_box$$parent$ = $cat_menu_anchor$
+	:i $SetScreenElementLock$$id$ = $cat_menu_anchor$$off$
+	:i $create_helper_text$:s{
+		:i $parent$ = $cat_menu_anchor$
+		:i $helper_text_elements_PC$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\bn=Back"):s}
+			:i :a}
+		:i $helper_text_elements_Console$ = :a{
+			:i :s{$text$ = %s(14,"\b7/\b4=Select"):s}
+			:i :s{$text$ = %s(14,"\b6/\b5=Adjust"):s}
+			:i :s{$text$ = %s(8,"\b2=Back"):s}
+			:i :a}
+	:i :s}
+	:i $rot_values$ = :s{$id$ = %GLOBAL%$id$$timeline_id$ = %GLOBAL%$timeline_id$$trick_index$ = %GLOBAL%$trick_index$$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_rot_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$edit_rot_done_script$$params$ = %GLOBAL%$rot_values$:s}
+			:i :a}
+	:i :s}
+	:i switch %GLOBAL%$Axis$
+		:i case $x$
+			:i $axis_text$ = %s(4,"Flip")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(5,"Front")
+			:i else 
+				:i $dir_text$ = %s(4,"Back")
+			:i endif
+			:i endcase
+		case $y$
+			:i $axis_text$ = %s(4,"Spin")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(8,"Backside")
+			:i else 
+				:i $dir_text$ = %s(9,"Frontside")
+			:i endif
+			:i endcase
+		case $z$
+			:i $axis_text$ = %s(4,"Roll")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(9,"Heel Side")
+			:i else 
+				:i $dir_text$ = %s(8,"Toe Side")
+			:i endif
+			:i end_switch
+	
+	:i $cat_menu_add_number_item$$text$ = %GLOBAL%$dir_text$$value$ = %GLOBAL%$axis_text$$id$ = $menu_axis$$pad_choose_script$ = $null_script$$pad_right_script$ = $increment_axis_value$$params$ = %GLOBAL%$rot_values$$far_left$
+	:i $cat_menu_add_number_item$$text$ = %s(7,"degrees")$value$ = %GLOBAL%$Deg$$id$ = $menu_deg$$pad_right_script$ = $increment_cat_rotation_angle_value$$params$ = %GLOBAL%$rot_values$
+	:i $cat_menu_add_number_item$$text$ = %s(8,"duration")$value$ = %GLOBAL%$Dur$$decimalplaces$ = %i(1,00000001)$trailingtext$ = %s(5," secs")$id$ = $menu_dur$$pad_right_script$ = $increment_cat_rot_time_value$$params$ = :s{%GLOBAL%$rot_values$$change_dur$:s}
+	:i $theme_menu_add_item$$no_highlight_bar$$text$ = %s(4,"done")$id$ = $menu_done$$pad_choose_script$ = $edit_rot_done_script$$pad_choose_params$ = %GLOBAL%$rot_values$$last_menu_item$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $timeline_vmenu$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_rot_menu$
+	:i $text_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+	:i $sprite_rgba$ = $rot_on_high$
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(0,00000000):s}
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$sprite_rgba$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$rgba$ = %GLOBAL%$text_rgba$
+	:i endif
+	:i $DoScreenElementMorph$$id$ = $edit_rot_menu$$pos$ = %vec2(0.000000,240.000000)
+	:i $DoScreenElementMorph$$id$ = $edit_rot_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.100000)
+	:i $DoScreenElementMorph$$id$ = $timeline_info_anchor$$pos$ =  ($timeline_info_anchor_offscreen_pos$) $time$ = %f(0.200000)
+:i endfunction
+:i function $increment_axis_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i if NOT $GotParam$$reverse$
+		:i switch %GLOBAL%$Axis$
+			:i case $x$
+				:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+					:i $Axis$ = $x$
+					:i $deg_dir$ = %i(1,00000001)
+				:i else 
+					:i $Axis$ = $y$
+					:i $deg_dir$ = %i(0,00000000)
+				:i endif
+				:i endcase
+			case $y$
+				:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+					:i $Axis$ = $y$
+					:i $deg_dir$ = %i(1,00000001)
+				:i else 
+					:i $Axis$ = $z$
+					:i $deg_dir$ = %i(0,00000000)
+				:i endif
+				:i endcase
+			case $z$
+				:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+					:i $Axis$ = $z$
+					:i $deg_dir$ = %i(1,00000001)
+				:i else 
+					:i $Axis$ = $x$
+					:i $deg_dir$ = %i(0,00000000)
+				:i endif
+				:i endcase
+			default 
+				:i $printf$%s(14,"no match found")
+				:i end_switch
+		
+	:i else 
+		:i switch %GLOBAL%$Axis$
+			:i case $x$
+				:i if  (%GLOBAL%$deg_dir$ = %i(1,00000001)) 
+					:i $Axis$ = $x$
+					:i $deg_dir$ = %i(0,00000000)
+				:i else 
+					:i $Axis$ = $z$
+					:i $deg_dir$ = %i(1,00000001)
+				:i endif
+				:i endcase
+			case $y$
+				:i if  (%GLOBAL%$deg_dir$ = %i(1,00000001)) 
+					:i $Axis$ = $y$
+					:i $deg_dir$ = %i(0,00000000)
+				:i else 
+					:i $Axis$ = $x$
+					:i $deg_dir$ = %i(1,00000001)
+				:i endif
+				:i endcase
+			case $z$
+				:i if  (%GLOBAL%$deg_dir$ = %i(1,00000001)) 
+					:i $Axis$ = $z$
+					:i $deg_dir$ = %i(0,00000000)
+				:i else 
+					:i $Axis$ = $y$
+					:i $deg_dir$ = %i(1,00000001)
+				:i endif
+				:i endcase
+			default 
+				:i $printf$%s(14,"no match found")
+				:i end_switch
+		
+	:i endif
+	:i switch %GLOBAL%$Axis$
+		:i case $x$
+			:i $axis_text$ = %s(4,"flip")
+			:i endcase
+		case $y$
+			:i $axis_text$ = %s(4,"spin")
+			:i endcase
+		case $z$
+			:i $axis_text$ = %s(4,"roll")
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{$menu_axis$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$axis_text$
+	:i $get_rot_name$$Axis$ = %GLOBAL%$Axis$$deg_dir$ = %GLOBAL%$deg_dir$
+	:i $pos$ = %vec2(0.000000,0.000000)
+	:i if  (%GLOBAL%$pos$->%vec2(1.000000,0.000000) > %i(280,00000118)) 
+		:i $pos$ =  ( (%GLOBAL%$pos$->%vec2(1.000000,0.000000) + %i(4294966766,fffffdee))  * %vec2(1.000000,0.000000) + %vec2(0.000000,62.000000)) 
+	:i else 
+		:i $pos$ = %vec2(-250.000000,62.000000)
+	:i endif
+	:i $set_new_rot_values$:s{$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $update_rot_direction_value$ isNull 
+	:i $update_rot_increment_params$ isNull 
+	:i $get_rot_name$$Axis$ = %GLOBAL%$Axis$$deg_dir$ = %GLOBAL%$deg_dir$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$text$ = %GLOBAL%$rot_name$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$timeline_id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}$text$ = %GLOBAL%$rot_name$
+	:i $max_width$ =  ( (%GLOBAL%$Dur$ - %f(0.100000))  * %i(160,000000a0)) 
+	:i $truncate_string$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$max_width$ = %GLOBAL%$max_width$
+	:i $cat_update_right_arrow$
+	:i $cat_update_left_arrow$
+:i endfunction
+:i function $increment_cat_rotation_angle_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i if $GotParam$$reverse$
+		:i $Deg$ =  (%GLOBAL%$Deg$ - %i(180,000000b4)) 
+		:i if  (%i(180,000000b4) > %GLOBAL%$Deg$) 
+			:i $Deg$ = %i(180,000000b4)
+		:i endif
+	:i else 
+		:i $Deg$ =  (%GLOBAL%$Deg$ + %i(180,000000b4)) 
+		:i if  (%GLOBAL%$Deg$ > %i(1440,000005a0)) 
+			:i $Deg$ = %i(1440,000005a0)
+		:i endif
+	:i endif
+	:i $FormatText$$TextName$ = $value_text$%s(2,"%i")$i$ = %GLOBAL%$Deg$
+	:i $SetScreenElementProps$$id$ = :s{$menu_deg$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+	:i $set_new_rot_values$:s{$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $cat_update_right_arrow$
+	:i $update_rot_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_rot_time_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i if $GotParam$$change_dur$
+		:i $time_value$ = %GLOBAL%$Dur$
+	:i else 
+		:i if $GotParam$$change_start$
+			:i $time_value$ = %GLOBAL%$start$
+		:i else 
+			:i $printf$%s(21,"Missing change_ param")
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$reverse$
+		:i $time_value$ =  (%GLOBAL%$time_value$ - %f(0.100000)) 
+	:i else 
+		:i $time_value$ =  (%GLOBAL%$time_value$ + %f(0.100000)) 
+	:i endif
+	:i if  (%i(0,00000000) > %GLOBAL%$time_value$) 
+		:i $time_value$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$change_dur$
+		:i if  (%f(0.100000) > %GLOBAL%$time_value$) 
+			:i $time_value$ = %f(0.100000)
+		:i endif
+		:i if  ( (%GLOBAL%$time_value$ + %GLOBAL%$start$)  > %f(3.000000)) 
+			:i $time_value$ =  (%f(3.000000) - %GLOBAL%$start$) 
+		:i endif
+		:i $Dur$ = %GLOBAL%$time_value$
+		:i $FormatText$$TextName$ = $value_text$%s(7,"%i secs")$i$ = %GLOBAL%$time_value$$decimalplaces$ = %i(1,00000001)
+		:i $SetScreenElementProps$$id$ = :s{$menu_dur$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+		:i $update_scale_to_new_duration$$id$ = %GLOBAL%$timeline_id$$duration$ = %GLOBAL%$time_value$
+		:i $calculate_cat_score$$get_values$
+		:i $cat_update_right_arrow$
+	:i else 
+		:i $start$ = %GLOBAL%$time_value$
+		:i $FormatText$$TextName$ = $value_text$%s(7,"%i secs")$i$ = %GLOBAL%$time_value$
+		:i $SetScreenElementProps$$id$ = :s{$menu_start$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+	:i endif
+	:i $RemoveParameter$$change_dur$
+	:i $RemoveParameter$$change_start$
+	:i $set_new_rot_values$:s{$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $update_rot_increment_params$ isNull 
+:i endfunction
+:i function $update_rot_direction_value$
+	:i switch %GLOBAL%$Axis$
+		:i case $x$
+			:i $axis_text$ = %s(4,"Flip")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(5,"Front")
+			:i else 
+				:i $dir_text$ = %s(4,"Back")
+			:i endif
+			:i endcase
+		case $y$
+			:i $axis_text$ = %s(4,"Spin")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(8,"Backside")
+			:i else 
+				:i $dir_text$ = %s(9,"Frontside")
+			:i endif
+			:i endcase
+		case $z$
+			:i $axis_text$ = %s(4,"Roll")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(9,"Heel Side")
+			:i else 
+				:i $dir_text$ = %s(8,"Toe Side")
+			:i endif
+			:i end_switch
+	
+	:i $SetScreenElementProps$$id$ = :s{$menu_axis$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$dir_text$
+:i endfunction
+:i function $update_rot_increment_params$
+	:i $RemoveParameter$$reverse$
+	:i $rot_values$ = :s{$id$ = %GLOBAL%$id$$timeline_id$ = %GLOBAL%$timeline_id$$trick_index$ = %GLOBAL%$trick_index$$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_rot_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$edit_rot_done_script$$params$ = %GLOBAL%$rot_values$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $menu_axis$
+		:i $event_handlers$ = :a{:s{$pad_right$$increment_axis_value$$params$ = %GLOBAL%$rot_values$:s}
+			:i :s{$pad_left$$increment_axis_value$$params$ = :s{%GLOBAL%$rot_values$$reverse$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $menu_deg$
+		:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_rotation_angle_value$$params$ = %GLOBAL%$rot_values$$cat_edit_item$:s}
+			:i :s{$pad_left$$increment_cat_rotation_angle_value$$params$ = :s{%GLOBAL%$rot_values$$cat_edit_item$$reverse$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $menu_dur$
+		:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_rot_time_value$$params$ = :s{%GLOBAL%$rot_values$$change_dur$:s}:s}
+			:i :s{$pad_left$$increment_cat_rot_time_value$$params$ = :s{%GLOBAL%$rot_values$$change_dur$$reverse$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $menu_done$
+		:i $event_handlers$ = :a{:s{$pad_choose$$edit_rot_done_script$$params$ = %GLOBAL%$rot_values$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+:i endfunction
+:i function $edit_rot_done_script$
+	:i $generic_menu_pad_back_sound$
+	:i $DoScreenElementMorph$$id$ = $edit_rot_menu$$pos$ = %vec2(0.000000,240.000000)$time$ = %f(0.100000)
+	:i $DoScreenElementMorph$$id$ = $timeline_info_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $wait$%f(0.100000)$seconds$
+	:i if $ScreenElementExists$$id$ = $timeline_fader$
+		:i $DestroyScreenElement$$id$ = $timeline_fader$
+	:i endif
+	:i $back_to_timeline$
+:i endfunction
+:i function $get_rot_name$
+	:i switch %GLOBAL%$Axis$
+		:i case $x$
+			:i $axis_text$ = %s(4,"Flip")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(5,"Front")
+			:i else 
+				:i $dir_text$ = %s(4,"Back")
+			:i endif
+			:i endcase
+		case $y$
+			:i $axis_text$ = %s(4,"Spin")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(8,"Backside")
+			:i else 
+				:i $dir_text$ = %s(9,"Frontside")
+			:i endif
+			:i endcase
+		case $z$
+			:i $axis_text$ = %s(4,"Roll")
+			:i if  (%GLOBAL%$deg_dir$ = %i(0,00000000)) 
+				:i $dir_text$ = %s(9,"Heel Side")
+			:i else 
+				:i $dir_text$ = %s(8,"Toe Side")
+			:i endif
+			:i end_switch
+	
+	:i $FormatText$$TextName$ = $rot_name$%s(5,"%d %a")$d$ = %GLOBAL%$dir_text$$a$ = %GLOBAL%$axis_text$
+	:i return
+	$rot_name$ = %GLOBAL%$rot_name$
+:i endfunction
+:i function $CAT_edit_animation_menu$$parent$ = $cat_menu_anchor$$trick_index$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if NOT $GotParam$$no_new_values$
+		:i $get_CAT_param_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i endif
+	:i $get_CAT_anim_values$:s{$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$anim_index$ = %GLOBAL%$anim_index$:s}
+	:i $make_new_menu$:s{
+		:i $parent$ = %GLOBAL%$parent$
+		:i $menu_id$ = $edit_anim_menu$
+		:i $vmenu_id$ = $edit_anim_vmenu$
+		:i $type$ = $VMenu$
+		:i $pos$ = %vec2(72.000000,50.000000)
+	:i :s}
+	:i if NOT $IsArray$%GLOBAL%$trick$
+		:i $params$ =  (%GLOBAL%$trick$->$params$) 
+	:i else 
+		:i $params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) 
+	:i endif
+	:i $anim_name$ =  (%GLOBAL%$params$->$name$) 
+	:i $pos$ = %vec2(0.000000,0.000000)
+	:i if  (%GLOBAL%$pos$->%vec2(1.000000,0.000000) > %i(280,00000118)) 
+		:i $pos$ =  ( (%GLOBAL%$pos$->%vec2(1.000000,0.000000) + %i(4294966766,fffffdee))  * %vec2(1.000000,0.000000) + %vec2(0.000000,57.000000)) 
+	:i else 
+		:i $pos$ = %vec2(-250.000000,57.000000)
+	:i endif
+	:i $create_timeline_fader_box$$parent$ = $cat_menu_anchor$
+	:i $RemoveParameter$$parent$
+	:i $add_edit_cat_helper_text$
+	:i $anim_values$ = :s{$id$ = %GLOBAL%$id$$timeline_id$ = %GLOBAL%$timeline_id$$trick_index$ = %GLOBAL%$trick_index$$anim_index$ = %GLOBAL%$anim_index$$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$anim$ = %GLOBAL%$anim$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_anim_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$edit_anim_done_script$$params$ = :s{%GLOBAL%$anim_values$:s}:s}
+			:i :a}
+	:i :s}
+	:i switch %GLOBAL%$trickType$
+		:i case %i(0,00000000)
+			:i $type_checksum$ = $fliptrick$
+			:i $type_text$ = %s(9,"fliptrick")
+			:i endcase
+		case %i(1,00000001)
+			:i $type_checksum$ = $grab$
+			:i $type_text$ = %s(4,"grab")
+			:i endcase
+		case %i(2,00000002)
+			:i $type_checksum$ = $special$
+			:i $type_text$ = %s(7,"special")
+			:i endcase
+		case %i(3,00000003)
+			:i $type_checksum$ = $misc$
+			:i $type_text$ = %s(5,"other")
+			:i endcase
+		case %i(4,00000004)
+			:i $type_checksum$ = $generic$
+			:i $type_text$ = %s(5,"sound")
+			:i endcase
+		default 
+			:i $printf$%s(18,"CAT: bad trickType")
+			:i return
+			
+			:i end_switch
+	
+	:i $theme_menu_add_item$$no_highlight_bar$$text$ = %s(6,"choose")$extra_text$ = %GLOBAL%$type_text$$id$ = $menu_trick$$pad_choose_script$ = $CAT_trick_list_menu$$pad_choose_params$ = :s{%GLOBAL%$anim_values$$type$ = %GLOBAL%$type_checksum$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $menu_trick$
+		:i $event_handlers$ = :a{:s{$pad_zac$$CAT_trick_list_menu$$params$ = :s{%GLOBAL%$anim_values$$type$ = %GLOBAL%$type_checksum$:s}:s}
+			:i :a}
+	:i :s}
+	:i if  (%GLOBAL%$trickType$ = %i(4,00000004)) 
+	:i else 
+		:i $cat_menu_add_number_item$$no_highlight_bar$$text$ = %s(8,"duration")$value$ = %GLOBAL%$Dur$$decimalplaces$ = %i(1,00000001)$trailingtext$ = %s(5," secs")$id$ = $menu_dur$$pad_right_script$ = $increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_dur$:s}
+		:i $cat_menu_add_meter_item$$no_highlight_bar$$text$ = %s(5,"start")$value$ = %GLOBAL%$from$$id$ = $menu_from$$pad_choose_script$ = $null_script$$pad_right_script$ = $increment_cat_animation_from_value$$params$ = %GLOBAL%$anim_values$
+		:i $cat_menu_add_meter_item$$no_highlight_bar$$text$ = %s(4,"stop")$value$ = %GLOBAL%$percent$$id$ = $menu_percent$$pad_choose_script$ = $null_script$$pad_right_script$ = $increment_cat_animation_percent_value$$params$ = %GLOBAL%$anim_values$
+		:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+		:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+			:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+				:i $hold_text$ = %s(3,"yes")
+			:i else 
+				:i $hold_text$ = %s(2,"no")
+			:i endif
+			:i $cat_menu_add_number_item$$no_highlight_bar$$text$ = %s(9,"hold time")$value$ = %GLOBAL%$idletime$$decimalplaces$ = %i(1,00000001)$trailingtext$ = %s(5," secs")$id$ = $menu_idletime$$pad_right_script$ = $increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_idle$:s}
+			:i $cat_menu_add_number_item$$no_highlight_bar$$text$ = %s(8,"holdable")$value$ = %GLOBAL%$hold_text$$id$ = $menu_hold$$pad_choose_script$ = $null_script$$pad_right_script$ = $increment_cat_animation_hold_value$$params$ = %GLOBAL%$anim_values$
+		:i else 
+			:i if  (%GLOBAL%$backwards$ = %i(1,00000001)) 
+				:i $backwards_text$ = %s(2,"on")
+			:i else 
+				:i $backwards_text$ = %s(3,"off")
+			:i endif
+			:i $cat_menu_add_number_item$$no_highlight_bar$$text$ = %s(9,"backwards")$value$ = %GLOBAL%$backwards_text$$id$ = $menu_backwards$$pad_choose_script$ = $null_script$$pad_right_script$ = $increment_cat_animation_backwards_value$$params$ = %GLOBAL%$anim_values$
+		:i endif
+	:i endif
+	:i $theme_menu_add_item$$no_highlight_bar$$text$ = %s(4,"done")$id$ = $menu_done$$pad_choose_script$ = $edit_anim_done_script$$pad_choose_params$ = %GLOBAL%$anim_values$$last_menu_item$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $timeline_vmenu$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_anim_menu$
+	:i $text_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+	:i switch %GLOBAL%$trickType$
+		:i case %i(0,00000000)
+			:i $sprite_rgba$ = $flip_on_high$
+			:i endcase
+		case %i(1,00000001)
+			:i $sprite_rgba$ = $grab_on_high$
+			:i endcase
+		case %i(2,00000002)
+			:i $sprite_rgba$ = $spec_on_high$
+			:i endcase
+		case %i(3,00000003)
+			:i $sprite_rgba$ = $misc_on_high$
+			:i endcase
+		case %i(4,00000004)
+			:i $sprite_rgba$ = $gen_on_high$
+			:i end_switch
+	
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(0,00000000):s}
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$sprite_rgba$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$rgba$ = %GLOBAL%$text_rgba$
+	:i endif
+	:i if NOT $GotParam$$no_animate$
+		:i $DoScreenElementMorph$$id$ = $edit_anim_menu$$pos$ = %vec2(0.000000,240.000000)
+		:i if  ($show_cat_trick_list$ = %i(0,00000000)) 
+			:i $DoScreenElementMorph$$id$ = $edit_anim_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.100000)
+		:i endif
+		:i $DoScreenElementMorph$$id$ = $timeline_info_anchor$$time$ = %f(0.200000)$pos$ =  ($timeline_info_anchor_offscreen_pos$) 
+	:i endif
+	:i if $GotParam$$back_from_submenu$
+		:i $back_to_edit_anim$
+	:i endif
+	:i if  ($show_cat_trick_list$ = %i(1,00000001)) 
+		:i $FireEvent$$type$ = $pad_zac$$target$ = :s{$edit_anim_vmenu$$child$ = %i(1,00000001):s}
+	:i endif
+:i endfunction
+:i function $grab_all_anim_values$
+	:i return
+	:s{
+		:i $on$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$on$) 
+		:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$trick$) 
+		:i $anim$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$anim$) 
+		:i $Dur$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$Dur$) 
+		:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$percent$) 
+		:i $blend$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$blend$) 
+		:i $from$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$from$) 
+		:i $trickType$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$trickType$) 
+		:i $idletime$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$idletime$) 
+		:i $start$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$start$) 
+		:i $order$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$order$) 
+		:i $hold$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$hold$) 
+		:i $backwards$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$anim_index$:a}) ->$backwards$) 
+	:i :s}
+:i endfunction
+:i function $CAT_trick_list_menu$$parent$ = $edit_anim_menu$$type$ = $grab$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_anim_menu$
+	:i $make_new_menu$:s{
+		:i $parent$ = %GLOBAL%$parent$
+		:i $menu_id$ = $trick_menu$
+		:i $vmenu_id$ = $trick_vmenu$
+		:i $scrolling_menu_id$ = $trick_scrolling_menu$
+		:i $menu_title$ = %GLOBAL%$menu_title$
+		:i $type$ = $VScrollingMenu$
+		:i $dims$ = %vec2(200.000000,135.000000)
+		:i $pos$ = %vec2(580.000000,110.000000)
+		:i $no_alias$
+	:i :s}
+	:i if  ($show_cat_trick_list$ = %i(0,00000000)) 
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = $trick_menu$$pos$ = %vec2(540.000000,220.000000)
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $trick_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$back_to_edit_anim$:s}
+				:i :a}
+		:i :s}
+		:i $add_cat_generic_helper_text$
+	:i else 
+		:i $SetScreenElementLock$$id$ = $cat_menu_anchor$$off$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $trick_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$abort_back_to_timeline$:s}
+				:i :a}
+		:i :s}
+		:i $create_helper_text$:s{
+			:i $parent$ = $cat_menu_anchor$
+			:i $generic_helper_text$
+		:i :s}
+	:i endif
+	:i switch %GLOBAL%$type$
+		:i case $grab$
+			:i $add_trick_list_items$$array$ = $cat_grab_tricks$$anim_index$ = %GLOBAL%$anim_index$$timeline_id$ = %GLOBAL%$timeline_id$
+			:i endcase
+		case $fliptrick$
+			:i $add_trick_list_items$$array$ = $cat_flip_tricks$$anim_index$ = %GLOBAL%$anim_index$$timeline_id$ = %GLOBAL%$timeline_id$
+			:i endcase
+		case $special$
+			:i $add_trick_list_items$$array$ = $cat_special_tricks$$anim_index$ = %GLOBAL%$anim_index$$timeline_id$ = %GLOBAL%$timeline_id$
+			:i endcase
+		case $misc$
+			:i $add_trick_list_items$$array$ = $cat_misc_tricks$$anim_index$ = %GLOBAL%$anim_index$$timeline_id$ = %GLOBAL%$timeline_id$
+			:i endcase
+		case $generic$
+			:i $PauseStream$%i(0,00000000)
+			:i $add_trick_list_items$$array$ = $cat_generic_tricks$$anim_index$ = %GLOBAL%$anim_index$$timeline_id$ = %GLOBAL%$timeline_id$$sounds$ = $sounds$
+			:i end_switch
+	
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_anim_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $trick_menu$
+	:i if  ($show_cat_trick_list$ = %i(0,00000000)) 
+		:i $DoScreenElementMorph$$time$ = %f(0.100000)$id$ = $trick_menu$$pos$ = %vec2(261.000000,220.000000)
+		:i $wait$%f(0.050000)$seconds$
+		:i $DoScreenElementMorph$$time$ = %f(0.100000)$id$ = $edit_anim_menu$$pos$ = %vec2(30.000000,240.000000)
+		:i $wait$%f(0.050000)$seconds$
+		:i $DoScreenElementMorph$$time$ = %f(0.050000)$id$ = $edit_anim_menu$$pos$ = %vec2(-120.000000,240.000000)
+		:i $DoScreenElementMorph$$time$ = %f(0.050000)$id$ = $trick_menu$$pos$ = %vec2(261.000000,220.000000)
+	:i else 
+		:i $DoScreenElementMorph$$id$ = $edit_anim_menu$$pos$ = %vec2(-120.000000,240.000000)
+		:i $DoScreenElementMorph$$id$ = $trick_menu$$pos$ = %vec2(-50.000000,220.000000)
+		:i $DoScreenElementMorph$$time$ = %f(0.150000)$id$ = $trick_menu$$pos$ = %vec2(261.000000,220.000000)
+		:i $change$$show_cat_trick_list$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $back_to_edit_anim$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $trick_menu$
+	:i $PauseStream$%i(1,00000001)
+	:i if NOT $GotParam$$no_focus$
+		:i $generic_menu_pad_back_sound$
+	:i endif
+	:i $DoScreenElementMorph$$time$ = %f(0.150000)$id$ = $edit_anim_menu$$pos$ = %vec2(320.000000,240.000000)
+	:i $wait$%f(0.150000)$seconds$
+	:i if $ScreenElementExists$$id$ = $trick_menu$
+		:i $DoScreenElementMorph$$time$ = %f(0.150000)$id$ = $trick_menu$$pos$ = %vec2(580.000000,220.000000)
+		:i $wait$%f(0.250000)$seconds$
+		:i $DestroyScreenElement$$id$ = $trick_menu$
+	:i endif
+	:i if NOT $GotParam$$no_focus$
+		:i $FireEvent$$type$ = $focus$$target$ = $edit_anim_menu$
+	:i endif
+:i endfunction
+:i function $abort_back_to_timeline$
+	:i $PauseStream$%i(1,00000001)
+	:i if NOT $GotParam$$no_focus$
+		:i $generic_menu_pad_back_sound$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $trick_menu$
+		:i $DoScreenElementMorph$$time$ = %f(0.150000)$id$ = $trick_menu$$pos$ = %vec2(880.000000,220.000000)
+		:i $DoScreenElementMorph$$id$ = $timeline_info_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+		:i $wait$%f(0.250000)$seconds$
+		:i $DestroyScreenElement$$id$ = $trick_menu$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $timeline_fader$
+		:i $DestroyScreenElement$$id$ = $timeline_fader$
+	:i endif
+	:i $back_to_timeline$
+:i endfunction
+:i function $CAT_set_trick_struct$
+	:i $get_CAT_anim_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$anim_index$ = %GLOBAL%$anim_index$
+	:i $trick$ = %GLOBAL%$new_trick$
+	:i $calculate_anim_default_dur$$trick$ = %GLOBAL%$trick$$anim_index$ = %GLOBAL%$anim_index$
+	:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+	:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+		:i $idletime$ = %i(0,00000000)
+		:i $duration$ =  (%GLOBAL%$Dur$ + %GLOBAL%$idletime$) 
+		:i $idle_start$ =  (%GLOBAL%$Dur$ / %i(2,00000002)) 
+	:i else 
+		:i $duration$ = %GLOBAL%$Dur$
+	:i endif
+	:i $update_scale_to_new_duration$$id$ = %GLOBAL%$timeline_id$$duration$ = %GLOBAL%$duration$$idletime$ = %GLOBAL%$idletime$$idle_start$ = %GLOBAL%$idle_start$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_all_anim_positions$
+	:i $calculate_cat_score$$get_values$
+	:i $back_to_edit_anim$$no_focus$
+	:i $RemoveParameter$$parent$
+	:i $CAT_edit_animation_menu$ isNull $no_new_values$$no_animate$
+	:i if NOT $IsArray$%GLOBAL%$trick$
+		:i $params$ =  (%GLOBAL%$trick$->$params$) 
+	:i else 
+		:i $params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) 
+	:i endif
+	:i $anim_name$ =  (%GLOBAL%$params$->$name$) 
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$text$ = %GLOBAL%$anim_name$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$timeline_id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}$text$ = %GLOBAL%$anim_name$
+	:i $max_width$ =  ( (%GLOBAL%$Dur$ - %f(0.100000))  * %i(160,000000a0)) 
+	:i $truncate_string$$id$ = :s{%GLOBAL%$timeline_id$$child$ = %i(1,00000001):s}$max_width$ = %GLOBAL%$max_width$
+:i endfunction
+:i function $toggle_anim_on_off$
+	:i $get_CAT_anim_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$anim_index$ = %GLOBAL%$anim_index$
+	:i if $GotParam$$Delete$
+		:i $on$ = %i(2,00000002)
+	:i else 
+		:i if  (%GLOBAL%$on$ = %i(0,00000000)) 
+			:i $calculate_cat_score$$get_time$$anims_only$$no_hidden$
+			:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+			:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+				:i $time$ =  (%GLOBAL%$time$ + %GLOBAL%$start$ + %GLOBAL%$Dur$ + %GLOBAL%$idletime$) 
+			:i else 
+				:i $time$ =  (%GLOBAL%$time$ + %GLOBAL%$start$ + %GLOBAL%$Dur$) 
+			:i endif
+			:i if  ( (%f(3.000000) > %GLOBAL%$time$)  OR  (%GLOBAL%$time$ = %f(3.000000)) ) 
+				:i $on$ = %i(1,00000001)
+				:i $GetTags$
+				:i $focus_id$ = %GLOBAL%$id$
+				:i $PlaySound$$copinghit3_11$$pitch$ = %i(60,0000003c)
+			:i else 
+				:i $generic_menu_buzzer_sound$
+				:i return
+				
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$on$ = %i(2,00000002)) 
+				:i $on$ = %i(1,00000001)
+				:i $new_anim$ = %i(1,00000001)
+				:i $change$$show_cat_trick_list$ = %i(1,00000001)
+				:i switch %GLOBAL%$type$
+					:i case $fliptrick$
+						:i $trickType$ = %i(0,00000000)
+						:i $trick$ = $trick_kickflip$
+						:i endcase
+					case $grab$
+						:i $trickType$ = %i(1,00000001)
+						:i $trick$ = $trick_indy$
+						:i endcase
+					case $special$
+						:i $trickType$ = %i(2,00000002)
+						:i $trick$ = $trick_the900$
+						:i endcase
+					case $misc$
+						:i $trickType$ = %i(3,00000003)
+						:i $trick$ = $CATTrick_Handstand$
+						:i endcase
+					case $generic$
+						:i $trickType$ = %i(4,00000004)
+						:i $trick$ = $CATSFX_StripClub$
+						:i endcase
+					default 
+						:i %s(34,"what the hell kinda trick is that?")
+						:i end_switch
+				
+			:i else 
+				:i $on$ = %i(0,00000000)
+				:i $GetTags$
+				:i $focus_id$ = %GLOBAL%$id$
+				:i $PlaySound$$copinghit3_11$$pitch$ = %i(60,0000003c)
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$new_anim$
+		:i $idletime$ = %i(0,00000000)
+		:i $percent$ = %i(1,00000001)
+		:i $blend$ = $CAT_BLEND$
+		:i $from$ = %i(0,00000000)
+		:i $start$ = %i(0,00000000)
+		:i $calculate_anim_default_dur$$trick$ = %GLOBAL%$trick$$anim_index$ = %GLOBAL%$anim_index$
+	:i endif
+	:i $quick_set_anim_values$ isNull 
+	:i if  (%GLOBAL%$trickType$ = %i(4,00000004)) 
+		:i $last_order$ = %i(6,00000006)
+	:i endif
+	:i $create_cat_timeline$:s{$get_id$ = $get_id$$anim_index$ = %GLOBAL%$anim_index$:s}
+	:i $kill_start_key_binding$
+	:i if $GotParam$$Delete$
+		:i $focus_cat_timeline$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$new_anim$
+		:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$$data$ = :s{$child_id$ = %GLOBAL%$focus_id$:s}
+		:i $SetScreenElementProps$$id$ = $timeline_scrolling_menu$$reset_window_top$
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+		:i if  (%GLOBAL%$value$ > %i(1,00000001)) 
+			:i while
+				
+				:i $FireEvent$$type$ = $pad_down$$target$ = $timeline_vmenu$
+			:i loop_to  (%GLOBAL%$value$%i(4294967295,ffffffff)) 
+		:i endif
+		:i $FireEvent$$type$ = $pad_zac$$target$ = :s{$timeline_vmenu$$child$ =  (%GLOBAL%$value$%i(4294967295,ffffffff)) :s}
+		:i $SetScreenElementProps$$id$ = $timeline_scrolling_menu$$reset_window_top$
+	:i endif
+:i endfunction
+:i $show_cat_trick_list$ = %i(0,00000000)
+:i function $increment_cat_anim_time_value$
+	:i $printf$%s(36,"script increment_cat_anim_time_value")
+	:i $generic_menu_scroll_sideways_sound$
+	:i if $GotParam$$change_dur$
+		:i $printf$%s(10,"change_dur")
+		:i $time_value$ = %GLOBAL%$Dur$
+	:i else 
+		:i if $GotParam$$change_idle$
+			:i $printf$%s(11,"change_idle")
+			:i $time_value$ = %GLOBAL%$idletime$
+		:i else 
+			:i if $GotParam$$change_start$
+				:i $printf$%s(12,"change_start")
+				:i $time_value$ = %GLOBAL%$start$
+			:i else 
+				:i $printf$%s(21,"Missing change_ param")
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$reverse$
+		:i $time_value$ =  (%GLOBAL%$time_value$ - %f(0.100000)) 
+	:i else 
+		:i $calculate_cat_score$$get_time$$anims_only$
+		:i if  (%GLOBAL%$time$ > %f(2.900000)) 
+			:i $PlaySound$$GUI_buzzer01$$pitch$ = %i(60,0000003c)
+			:i return
+			
+		:i endif
+		:i $time_value$ =  (%GLOBAL%$time_value$ + %f(0.100000)) 
+	:i endif
+	:i if  (%i(0,00000000) > %GLOBAL%$time_value$) 
+		:i $time_value$ = %f(0.000000)
+	:i endif
+	:i if  (%GLOBAL%$time_value$ > %f(3.000000)) 
+		:i $time_value$ = %f(3.000000)
+	:i endif
+	:i if $GotParam$$change_dur$
+		:i if  (%f(0.100000) > %GLOBAL%$time_value$) 
+			:i $time_value$ = %f(0.100000)
+		:i endif
+		:i $Dur$ = %GLOBAL%$time_value$
+		:i $FormatText$$TextName$ = $value_text$%s(7,"%i secs")$i$ = %GLOBAL%$time_value$$decimalplaces$ = %i(1,00000001)
+		:i $SetScreenElementProps$$id$ = :s{$menu_dur$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+		:i $cat_update_right_arrow$
+		:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+		:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+			:i $duration$ =  (%GLOBAL%$time_value$ + %GLOBAL%$idletime$) 
+			:i $idle_start$ =  (%GLOBAL%$time_value$ / %i(2,00000002)) 
+		:i else 
+			:i $duration$ = %GLOBAL%$time_value$
+		:i endif
+		:i $update_scale_to_new_duration$$id$ = %GLOBAL%$timeline_id$$duration$ = %GLOBAL%$duration$$idletime$ = %GLOBAL%$idletime$$idle_start$ = %GLOBAL%$idle_start$
+	:i else 
+		:i if $GotParam$$change_start$
+			:i $start$ = %GLOBAL%$time_value$
+			:i $FormatText$$TextName$ = $value_text$%s(7,"%i secs")$i$ = %GLOBAL%$time_value$
+			:i $SetScreenElementProps$$id$ = :s{$menu_start$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+		:i else 
+			:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+				:i if  (%GLOBAL%$time_value$ = %i(0,00000000)) 
+					:i $hold$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $idletime$ = %GLOBAL%$time_value$
+			:i $FormatText$$TextName$ = $value_text$%s(7,"%i secs")$i$ = %GLOBAL%$time_value$$decimalplaces$ = %i(1,00000001)
+			:i $SetScreenElementProps$$id$ = :s{$menu_idletime$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+			:i $cat_update_right_arrow$
+			:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+				:i $hold_text$ = %s(3,"yes")
+			:i else 
+				:i $hold_text$ = %s(2,"no")
+			:i endif
+			:i $SetScreenElementProps$$id$ = :s{$menu_hold$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$hold_text$
+			:i $GetStackedScreenElementPos$$x$$id$ = :s{$menu_hold$$child$ = %i(3,00000003):s}$offset$ = %vec2(3.000000,2.000000)
+			:i $DoScreenElementMorph$$id$ = :s{$menu_hold$$child$ = %i(5,00000005):s}$pos$ = %GLOBAL%$pos$
+			:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+			:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+				:i $duration$ =  (%GLOBAL%$time_value$ + %GLOBAL%$Dur$) 
+				:i $idle_start$ =  (%GLOBAL%$Dur$ / %i(2,00000002)) 
+			:i else 
+				:i $printf$%s(34,"CAT: THIS SHOULD NEVER EVER HAPPEN")
+				:i $duration$ = %GLOBAL%$Dur$
+			:i endif
+			:i $update_scale_to_new_duration$$id$ = %GLOBAL%$timeline_id$$duration$ = %GLOBAL%$duration$$idletime$ = %GLOBAL%$time_value$$idle_start$ = %GLOBAL%$idle_start$
+		:i endif
+	:i endif
+	:i $RemoveParameter$$change_dur$
+	:i $RemoveParameter$$change_idle$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_all_anim_positions$
+	:i $calculate_cat_score$$get_values$
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_animation_blend_value$
+	:i $printf$%s(42,"script increment_cat_animation_blend_value")
+	:i $generic_menu_scroll_sideways_sound$
+	:i if $GotParam$$reverse$
+		:i $blend$ =  (%GLOBAL%$blend$ - %f(0.010000)) 
+	:i else 
+		:i $blend$ =  (%GLOBAL%$blend$ + %f(0.010000)) 
+	:i endif
+	:i if  (%GLOBAL%$blend$ > %f(0.500000)) 
+		:i $blend$ = %f(0.500000)
+	:i endif
+	:i if  (%i(0,00000000) > %GLOBAL%$blend$) 
+		:i $blend$ = %f(0.000000)
+	:i endif
+	:i $blend_int$ =  (%GLOBAL%$blend$ * %i(100,00000064)) 
+	:i $CastToInteger$$blend_int$
+	:i $FormatText$$TextName$ = $value_text$%s(5,"%i \%")$i$ = %GLOBAL%$blend_int$
+	:i $SetScreenElementProps$$id$ = :s{$menu_blend$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+	:i $meter_scale$ =  (%GLOBAL%$blend$ * %vec2(5.000000,0.000000) + %vec2(0.000000,1.000000)) 
+	:i $DoScreenElementMorph$$id$ = :s{$menu_blend$$child$ = %i(6,00000006):s}$scale$ = %GLOBAL%$meter_scale$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_animation_from_value$
+	:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+	:i $generic_menu_scroll_sideways_sound$
+	:i if $GotParam$$reverse$
+		:i $from$ =  (%GLOBAL%$from$ - %f(0.010000)) 
+	:i else 
+		:i $from$ =  (%GLOBAL%$from$ + %f(0.010000)) 
+	:i endif
+	:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+		:i if  (%GLOBAL%$from$ > %f(0.500000)) 
+			:i $from$ = %f(0.500000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$from$ >  (%GLOBAL%$percent$ - %f(0.200000)) ) 
+		:i $from$ =  (%GLOBAL%$percent$ - %f(0.200000)) 
+	:i endif
+	:i if  (%i(0,00000000) > %GLOBAL%$from$) 
+		:i $from$ = %i(0,00000000)
+	:i endif
+	:i $from_int$ =  (%GLOBAL%$from$ * %i(100,00000064)) 
+	:i $CastToInteger$$from_int$
+	:i $FormatText$$TextName$ = $value_text$%s(5,"%i \%")$i$ = %GLOBAL%$from_int$
+	:i $SetScreenElementProps$$id$ = :s{$menu_from$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+	:i $meter_scale$ =  (%GLOBAL%$from$ * %vec2(5.000000,0.000000) + %vec2(0.000000,1.000000)) 
+	:i $DoScreenElementMorph$$id$ = :s{$menu_from$$child$ = %i(6,00000006):s}$scale$ = %GLOBAL%$meter_scale$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_animation_percent_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+	:i if $GotParam$$reverse$
+		:i $percent$ =  (%GLOBAL%$percent$ - %f(0.010000)) 
+	:i else 
+		:i $percent$ =  (%GLOBAL%$percent$ + %f(0.010000)) 
+	:i endif
+	:i if  (%GLOBAL%$percent$ > %i(1,00000001)) 
+		:i $percent$ = %i(1,00000001)
+	:i endif
+	:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+		:i if  (%f(0.500000) > %GLOBAL%$percent$) 
+			:i $percent$ = %f(0.500000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$from$ >  (%GLOBAL%$percent$ - %f(0.200000)) ) 
+		:i $percent$ =  (%GLOBAL%$from$ + %f(0.200000)) 
+	:i endif
+	:i $percent_int$ =  (%GLOBAL%$percent$ * %i(100,00000064)) 
+	:i $CastToInteger$$percent_int$
+	:i $FormatText$$TextName$ = $value_text$%s(5,"%i \%")$i$ = %GLOBAL%$percent_int$
+	:i $SetScreenElementProps$$id$ = :s{$menu_percent$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$value_text$
+	:i $meter_scale$ =  (%GLOBAL%$percent$ * %vec2(5.000000,0.000000) + %vec2(0.000000,1.000000)) 
+	:i $DoScreenElementMorph$$id$ = :s{$menu_percent$$child$ = %i(6,00000006):s}$scale$ = %GLOBAL%$meter_scale$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_animation_order_value$
+	:i if NOT $GotParam$$quick_sound_insert$
+		:i $StopSound$$ThisMenuSelectSound$
+		:i $PlaySound$$SK6_Menu_Select$$vol$ = %i(100,00000064)$id$ = $ThisMenuSelectSound$
+	:i endif
+	:i $GetCreateATrickAnimations$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i $grab_all_anim_values$:s{$animation_info$ = %GLOBAL%$animation_info$$anim_index$ = %GLOBAL%$anim_index$:s}
+	:i $printf$%s(18,"initial order = %i")$i$ = %GLOBAL%$order$
+	:i if $GotParam$$reverse$
+		:i if NOT  (%GLOBAL%$order$ = %i(1,00000001)) 
+			:i $new_order$ =  (%GLOBAL%$order$ - %i(1,00000001)) 
+			:i $GetArraySize$%GLOBAL%$animation_info$
+			:i $index$ = %i(0,00000000)
+			:i $get_out$ = %i(0,00000000)
+			:i while
+				
+				:i while
+					
+					:i $criteria_met$ = %i(0,00000000)
+					:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$order$)  = %GLOBAL%$new_order$) 
+						:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+							:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$)  = %i(4,00000004)) 
+								:i $criteria_met$ = %i(1,00000001)
+							:i endif
+						:i endif
+						:i if  (%GLOBAL%$criteria_met$ = %i(1,00000001)) 
+							:i $SetArrayElement$:s{$ArrayName$ = $animation_info$
+								:i $index$ = %GLOBAL%$index$
+								:i $newvalue$ = :s{$order$ = %GLOBAL%$order$
+									:i $on$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$) 
+									:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+									:i $anim$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$anim$) 
+									:i $Dur$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+									:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$percent$) 
+									:i $blend$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$blend$) 
+									:i $from$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$from$) 
+									:i $trickType$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$) 
+									:i $idletime$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$) 
+									:i $start$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+									:i $hold$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$hold$) 
+									:i $backwards$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$backwards$) 
+								:i :s}
+							:i :s}
+							:i $get_out$ = %i(1,00000001)
+							:i continue
+							
+						:i else 
+							:i if  (%GLOBAL%$new_order$ > %i(1,00000001)) 
+								:i $new_order$ =  (%GLOBAL%$new_order$ - %i(1,00000001)) 
+								:i continue
+								
+							:i else 
+								:i return
+								
+							:i endif
+						:i endif
+					:i endif
+					:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+						:i $printf$%s(28,"what the hell happened here?")
+						:i return
+						
+					:i endif
+				:i loop_to %GLOBAL%$array_size$
+				:i if  (%GLOBAL%$get_out$ = %i(1,00000001)) 
+					:i continue
+					
+				:i else 
+					:i $index$ = %i(0,00000000)
+				:i endif
+			:i loop_to %GLOBAL%$array_size$
+			:i $order$ = %GLOBAL%$new_order$
+		:i else 
+			:i return
+			
+		:i endif
+	:i else 
+		:i if NOT  (%GLOBAL%$order$ = %i(6,00000006)) 
+			:i $new_order$ =  (%GLOBAL%$order$ + %i(1,00000001)) 
+			:i $GetArraySize$%GLOBAL%$animation_info$
+			:i $index$ = %i(0,00000000)
+			:i $get_out$ = %i(0,00000000)
+			:i while
+				
+				:i while
+					
+					:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$order$)  = %GLOBAL%$new_order$) 
+						:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+							:i $SetArrayElement$:s{$ArrayName$ = $animation_info$
+								:i $index$ = %GLOBAL%$index$
+								:i $newvalue$ = :s{$order$ = %GLOBAL%$order$
+									:i $on$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$) 
+									:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+									:i $anim$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$anim$) 
+									:i $Dur$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+									:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$percent$) 
+									:i $blend$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$blend$) 
+									:i $from$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$from$) 
+									:i $trickType$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$) 
+									:i $idletime$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$) 
+									:i $start$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+									:i $hold$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$hold$) 
+									:i $backwards$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$backwards$) 
+								:i :s}
+							:i :s}
+							:i $get_out$ = %i(1,00000001)
+							:i continue
+							
+						:i else 
+							:i if  (%i(6,00000006) > %GLOBAL%$new_order$) 
+								:i $new_order$ =  (%GLOBAL%$new_order$ + %i(1,00000001)) 
+								:i continue
+								
+							:i else 
+								:i return
+								
+							:i endif
+						:i endif
+					:i endif
+					:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+						:i $printf$%s(28,"what the hell happened here?")
+						:i return
+						
+					:i endif
+				:i loop_to %GLOBAL%$array_size$
+				:i if  (%GLOBAL%$get_out$ = %i(1,00000001)) 
+					:i continue
+					
+				:i else 
+					:i $index$ = %i(0,00000000)
+				:i endif
+			:i loop_to %GLOBAL%$array_size$
+			:i $order$ = %GLOBAL%$new_order$
+		:i else 
+			:i return
+			
+		:i endif
+	:i endif
+	:i $printf$%s(16,"final order = %i")$i$ = %GLOBAL%$order$
+	:i $update_animation_info_array$ isNull 
+	:i $SetCreateATrickAnimations$:s{$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$animation_info$ = %GLOBAL%$animation_info$:s}
+	:i if $GotParam$$quick_sound_insert$
+		:i return
+		$order$ = %GLOBAL%$order$
+	:i endif
+	:i $update_all_anim_positions$$animation_info$ = %GLOBAL%$animation_info$
+:i endfunction
+:i function $increment_cat_animation_hold_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i $GetCreateATrickAnimations$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+		:i $hold$ = %i(0,00000000)
+	:i else 
+		:i $hold$ = %i(1,00000001)
+		:i $GetArraySize$%GLOBAL%$animation_info$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $SetArrayElement$$ArrayName$ = $animation_info$$index$ = %GLOBAL%$index$$newvalue$ = :s{$hold$ = %i(0,00000000)
+				:i $on$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$) 
+				:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+				:i $anim$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$anim$) 
+				:i $Dur$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+				:i $percent$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$percent$) 
+				:i $blend$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$blend$) 
+				:i $from$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$from$) 
+				:i $trickType$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$) 
+				:i $idletime$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$) 
+				:i $start$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+				:i $order$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$order$) 
+				:i $backwards$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$backwards$) 
+			:i :s}
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+		:i if  (%GLOBAL%$idletime$ = %i(0,00000000)) 
+			:i $idletime$ = %f(0.100000)
+			:i $update_scale_to_new_duration$:s{$id$ = %GLOBAL%$timeline_id$
+				:i $duration$ =  (%GLOBAL%$Dur$ + %GLOBAL%$idletime$) 
+				:i $idletime$ = %GLOBAL%$idletime$
+				:i $idle_start$ =  (%GLOBAL%$Dur$ / %i(2,00000002)) 
+			:i :s}
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$hold$ = %i(1,00000001)) 
+		:i $hold_text$ = %s(3,"yes")
+	:i else 
+		:i $hold_text$ = %s(2,"no")
+	:i endif
+	:i $FormatText$$TextName$ = $idle_text$%s(7,"%i secs")$i$ = %GLOBAL%$idletime$$decimalplaces$ = %i(1,00000001)
+	:i $SetScreenElementProps$$id$ = :s{$menu_hold$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$hold_text$
+	:i $GetStackedScreenElementPos$$x$$id$ = :s{$menu_hold$$child$ = %i(3,00000003):s}$offset$ = %vec2(3.000000,2.000000)
+	:i $DoScreenElementMorph$$id$ = :s{$menu_hold$$child$ = %i(5,00000005):s}$pos$ = %GLOBAL%$pos$
+	:i $SetScreenElementProps$$id$ = :s{$menu_idletime$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$idle_text$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $increment_cat_animation_backwards_value$
+	:i $generic_menu_scroll_sideways_sound$
+	:i $GetCreateATrickAnimations$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i if  (%GLOBAL%$backwards$ = %i(1,00000001)) 
+		:i $backwards_text$ = %s(3,"off")
+		:i %GLOBAL%$backwards$ = %i(0,00000000)
+	:i else 
+		:i $backwards_text$ = %s(2,"on")
+		:i %GLOBAL%$backwards$ = %i(1,00000001)
+	:i endif
+	:i $SetScreenElementProps$$id$ = :s{$menu_backwards$$child$ = %i(3,00000003):s}$text$ = %GLOBAL%$backwards_text$
+	:i $quick_set_anim_values$ isNull 
+	:i $update_anim_increment_params$ isNull 
+:i endfunction
+:i function $calculate_anim_default_dur$
+	:i if NOT $IsArray$%GLOBAL%$trick$
+		:i $params$ =  (%GLOBAL%$trick$->$params$) 
+	:i else 
+		:i $params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) 
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$params$$anim$
+		:i $anim$ =  (%GLOBAL%$params$->$anim$) 
+	:i else 
+		:i $anim$ =  (%GLOBAL%$params$->$initanim$) 
+	:i endif
+	:i $speed$ =  (%GLOBAL%$params$->$speed$) 
+	:i $BackwardsAnim$ =  (%GLOBAL%$params$->$BackwardsAnim$) 
+	:i if NOT $GotParam$$speed$
+		:i $speed$ = %f(1.000000)
+	:i endif
+	:i $Skater$.$GetAnimLength$$anim$ = %GLOBAL%$anim$
+	:i if $GotParam$$BackwardsAnim$
+		:i $length1$ = %GLOBAL%$length$
+		:i $Skater$.$GetAnimLength$$anim$ = %GLOBAL%$BackwardsAnim$
+	:i endif
+	:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+	:i if  (%GLOBAL%$got_idle$ = %i(0,00000000)) 
+		:i $Dur$ =  (%GLOBAL%$length$ / %GLOBAL%$speed$) 
+	:i else 
+		:i if $GotParam$$BackwardsAnim$
+			:i $Dur$ =  ( (%GLOBAL%$length1$ / %GLOBAL%$speed$)  +  (%GLOBAL%$length$ / %GLOBAL%$speed$) ) 
+		:i else 
+			:i $Dur$ =  ( (%GLOBAL%$length$ / %GLOBAL%$speed$)  * %i(2,00000002)) 
+		:i endif
+	:i endif
+	:i if $StructureContains$$structure$ = %GLOBAL%$params$$sound$
+		:i $Dur$ = %f(0.500000)
+	:i endif
+	:i $printf$%s(15,"dur before = %i")$i$ = %GLOBAL%$Dur$
+	:i $Dur$ =  (%GLOBAL%$Dur$ * %f(10.000000)) 
+	:i $Dur$ =  (%GLOBAL%$Dur$ + %f(0.500000)) 
+	:i $CastToInteger$$Dur$
+	:i $Dur$ =  (%GLOBAL%$Dur$ / %f(10.000000)) 
+	:i $printf$%s(14,"dur after = %i")$i$ = %GLOBAL%$Dur$
+	:i if  ( (%GLOBAL%$Dur$ = %i(0,00000000))  OR  (%i(0,00000000) > %GLOBAL%$Dur$) ) 
+		:i $Dur$ = %f(0.100000)
+	:i endif
+	:i if  (%GLOBAL%$Dur$ > %i(3,00000003)) 
+		:i $Dur$ = %f(3.000000)
+	:i endif
+	:i $calculate_cat_score$$get_time$$minus$ = %GLOBAL%$anim_index$$anims_only$
+	:i if  (%GLOBAL%$Dur$ >  (%f(3.000000) - %GLOBAL%$time$) ) 
+		:i $Dur$ =  (%f(3.000000) - %GLOBAL%$time$) 
+	:i endif
+	:i $printf$%s(18,"dur after cut = %i")$i$ = %GLOBAL%$Dur$
+	:i return
+	$Dur$ = %GLOBAL%$Dur$
+:i endfunction
+:i function $update_anim_increment_params$
+	:i $RemoveParameter$$reverse$
+	:i $anim_values$ = :s{$id$ = %GLOBAL%$id$$timeline_id$ = %GLOBAL%$timeline_id$$trick_index$ = %GLOBAL%$trick_index$$anim_index$ = %GLOBAL%$anim_index$$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$anim$ = %GLOBAL%$anim$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_anim_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$edit_anim_done_script$$params$ = %GLOBAL%$anim_values$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $menu_percent$
+		:i $SetScreenElementProps$:s{$id$ = $menu_percent$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_animation_percent_value$$params$ = %GLOBAL%$anim_values$:s}
+				:i :s{$pad_left$$increment_cat_animation_percent_value$$params$ = :s{%GLOBAL%$anim_values$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $menu_blend$
+		:i $SetScreenElementProps$:s{$id$ = $menu_blend$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_animation_blend_value$$params$ = %GLOBAL%$anim_values$:s}
+				:i :s{$pad_left$$increment_cat_animation_blend_value$$params$ = :s{%GLOBAL%$anim_values$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $menu_from$
+		:i $SetScreenElementProps$:s{$id$ = $menu_from$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_animation_from_value$$params$ = %GLOBAL%$anim_values$:s}
+				:i :s{$pad_left$$increment_cat_animation_from_value$$params$ = :s{%GLOBAL%$anim_values$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{$id$ = $menu_dur$
+		:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_dur$:s}:s}
+			:i :s{$pad_left$$increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_dur$$reverse$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $menu_idletime$
+		:i $SetScreenElementProps$:s{$id$ = $menu_idletime$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_idle$:s}:s}
+				:i :s{$pad_left$$increment_cat_anim_time_value$$params$ = :s{%GLOBAL%$anim_values$$change_idle$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $menu_hold$
+		:i $SetScreenElementProps$:s{$id$ = $menu_hold$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_animation_hold_value$$params$ = %GLOBAL%$anim_values$:s}
+				:i :s{$pad_left$$increment_cat_animation_hold_value$$params$ = :s{%GLOBAL%$anim_values$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $menu_backwards$
+		:i $SetScreenElementProps$:s{$id$ = $menu_backwards$
+			:i $event_handlers$ = :a{:s{$pad_right$$increment_cat_animation_backwards_value$$params$ = %GLOBAL%$anim_values$:s}
+				:i :s{$pad_left$$increment_cat_animation_backwards_value$$params$ = :s{%GLOBAL%$anim_values$$reverse$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $menu_done$
+		:i $SetScreenElementProps$:s{$id$ = $menu_done$
+			:i $event_handlers$ = :a{:s{$pad_choose$$edit_anim_done_script$$params$ = %GLOBAL%$anim_values$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $edit_anim_done_script$
+	:i $generic_menu_pad_back_sound$
+	:i $quick_set_anim_values$ isNull 
+	:i $DoScreenElementMorph$$id$ = $edit_anim_menu$$pos$ = %vec2(0.000000,240.000000)$time$ = %f(0.100000)
+	:i $DoScreenElementMorph$$id$ = $timeline_info_anchor$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,240.000000)
+	:i $wait$%f(0.100000)$seconds$
+	:i if $ScreenElementExists$$id$ = $top_bar_anchor$
+		:i $DestroyScreenElement$$id$ = $top_bar_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $submenu_title_anchor$
+		:i $DestroyScreenElement$$id$ = $submenu_title_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $timeline_fader$
+		:i $DestroyScreenElement$$id$ = $timeline_fader$
+	:i endif
+	:i $back_to_timeline$
+:i endfunction
+:i function $update_animation_info_array$
+	:i $SetArrayElement$$ArrayName$ = $animation_info$$index$ = %GLOBAL%$anim_index$$newvalue$ = :s{$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$anim$ = %GLOBAL%$anim$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+	:i return
+	:s{$animation_info$ = %GLOBAL%$animation_info$:s}
+:i endfunction
+:i function $create_cat_timeline$$pos$ = %vec2(23.000000,260.000000)$parent$ = $cat_menu_anchor$$internal_just$ = :a{$left$$top$:a}$just$ = :a{$center$$center$:a}$trick$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $timeline_anchor$
+		:i $DestroyScreenElement$$id$ = $timeline_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $timeline_anchor$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $dims$ = %vec2(640.000000,300.000000)
+		:i $focusable_child$ = $timeline_vmenu$
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $timeline_anchor$
+		:i $id$ = $timeline_scrolling_menu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,137.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $timeline_scrolling_menu$
+		:i $id$ = $timeline_vmenu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $padding_scale$ = %f(1.150000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $timeline_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_CAT_pause_menu$$params$ = :s{$from_timeline$:s}:s}
+			:i :s{$pad_start$$create_CAT_pause_menu$$params$ = :s{$from_timeline$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_alt$$toggle_can_spin$$params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i if $GotParam$$load$
+		:i $get_CAT_param_values$$trick_index$ = %GLOBAL%$load$
+		:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+			:i $trick_index$ = %i(0,00000000)
+			:i $other_params$ = :s{$name$ = %GLOBAL%$name$
+				:i $rotateafter$ = %GLOBAL%$rotateafter$
+				:i $full$ = %i(1,00000001)
+				:i $can_spin$ = %GLOBAL%$can_spin$
+			:i :s}
+			:i $rotation_info$ = %GLOBAL%$rotation_info$
+			:i $animation_info$ = %GLOBAL%$animation_info$
+		:i :s}
+	:i else 
+		:i if $GotParam$$new$
+			:i $get_new_cat_values$
+			:i $SetCreateATrickParams$:s{$Skater$ = %i(0,00000000)
+				:i $trick_index$ = %i(0,00000000)
+				:i $other_params$ = :s{$name$ = %GLOBAL%$name$
+					:i $rotateafter$ = %GLOBAL%$rotateafter$
+					:i $full$ = %i(1,00000001)
+					:i $can_spin$ = %i(1,00000001)
+				:i :s}
+				:i $rotation_info$ = %GLOBAL%$rotation_info$
+				:i $animation_info$ = %GLOBAL%$animation_info$
+			:i :s}
+		:i endif
+	:i endif
+	:i $RemoveParameter$$rotation_info$
+	:i $RemoveParameter$$animation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $row_id$%s(14,"timeline_row%i")$i$ = %GLOBAL%$index$
+		:i $create_CAT_timeline_row$$row_id$ = %GLOBAL%$row_id$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(13,0000000d)
+	:i if NOT  ( ($GotParam$$name$)  OR  ($GotParam$$can_spin$) ) 
+		:i $get_CAT_other_param_values$$trick_index$ = %i(0,00000000)
+	:i endif
+	:i $create_timeline_trick_info$:s{
+		:i $name$ = %GLOBAL%$name$
+		:i $can_spin$ = %GLOBAL%$can_spin$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $id$ = $timeline_scrubber$
+		:i $texture$ = $white2$
+		:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(100,00000064):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(0.000000,-16.000000)
+		:i $scale$ = %vec2(0.500000,19.000000)
+		:i $z_priority$ = %i(101,00000065)
+		:i $alpha$ = %i(0,00000000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_anchor$
+		:i $text$ = %s(1,"0")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(0.000000,-12.000000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(0.000000,-16.000000)
+		:i $scale$ = %vec2(1.000000,38.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(30,0000001e):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(100.000000,0.000000)
+		:i $scale$ = %vec2(1.000000,34.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_anchor$
+		:i $text$ = %s(1,"1")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(200.000000,-12.000000)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(200.000000,-16.000000)
+		:i $scale$ = %vec2(1.000000,38.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(30,0000001e):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(300.000000,0.000000)
+		:i $scale$ = %vec2(1.000000,34.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_anchor$
+		:i $text$ = %s(1,"2")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(400.000000,-12.000000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(400.000000,-16.000000)
+		:i $scale$ = %vec2(1.000000,38.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(30,0000001e):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(500.000000,0.000000)
+		:i $scale$ = %vec2(1.000000,34.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_anchor$
+		:i $text$ = %s(1,"3")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(600.000000,-12.000000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(600.000000,-16.000000)
+		:i $scale$ = %vec2(1.000000,38.000000)
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $calculate_cat_score$$get_values$
+	:i $fill_timeline$:s{
+		:i $get_id$ = %GLOBAL%$get_id$
+		:i $anim_index$ = %GLOBAL%$anim_index$
+		:i $rot_index$ = %GLOBAL%$rot_index$
+		:i $dont_focus_timeline$ = %GLOBAL%$dont_focus_timeline$
+	:i :s}
+	:i if $GotParam$$return_val$
+		:i return
+		$value$ = %GLOBAL%$return_val$
+	:i endif
+:i endfunction
+:i function $create_timeline_trick_info$$item_dims$ = %vec2(150.000000,20.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $id$ = $timeline_info_anchor$
+		:i $parent$ = $timeline_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $anchor_id$ = $timeline_info_anchor$
+	:i if  (%GLOBAL%$name$ = %s(0,"")) 
+		:i $name$ = %s(13,"CREATED TRICK")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_info_anchor$
+		:i $id$ = $cat_timeline_name_bar$
+		:i $texture$ = $cat_bar$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(68,00000044):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(75.000000,1.100000)
+		:i $pos$ = %vec2(0.000000,-238.000000)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_info_anchor$
+		:i $id$ = $cat_timeline_name$
+		:i $text$ = %GLOBAL%$name$
+		:i $font$ = $testtitle$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(18.000000,-241.000000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $scale$ = %f(1.200000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $timeline_info_anchor$
+		:i $texture$ = $cat_bar$
+		:i $rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(100,00000064):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(75.000000,1.100000)
+		:i $pos$ = %vec2(0.000000,-218.000000)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %s(6,"Points")
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(20.000000,-219.000000)
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(5.000000,-1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_timeline_score$
+		:i $text$ = %s(0,"")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %s(4,"Spin")
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(180.000000,-219.000000)
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(0.000000,0.000000)
+	:i if  ( ($GLOBAL_CtrlLayout$)  = %i(0,00000000)) 
+		:i $spin_toggle_text$ = %s(5,"(\bq)")
+	:i else 
+		:i $spin_toggle_text$ = %s(5,"(\bg)")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %GLOBAL%$spin_toggle_text$
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $scale$ = %f(0.800000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i if  (%GLOBAL%$can_spin$ = %i(1,00000001)) 
+		:i $spin_text$ = %s(2,"on")
+	:i else 
+		:i $spin_text$ = %s(3,"off")
+	:i endif
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(5.000000,-1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_timeline_spin$
+		:i $text$ = %GLOBAL%$spin_text$
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %s(9,"Rotations")
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(310.000000,-219.000000)
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(5.000000,-1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_rots_used$
+		:i $text$ = %s(0,"")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = $cat_rots_used$$x$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_slash_rots$
+		:i $text$ = %s(2,"/6")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %s(6,"Tricks")
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(470.000000,-219.000000)
+		:i $alpha$ = %f(0.800000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(5.000000,-1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_anims_used$
+		:i $text$ = %s(0,"")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = $cat_anims_used$$x$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_slash_anims$
+		:i $text$ = %s(2,"/6")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(50,00000032):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $create_cat_pause_trick_info$$item_dims$ = %vec2(150.000000,20.000000)$parent$ = $current_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $id$ = $timeline_info_anchor$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $heap$ =  ($cat_heap$) 
+		:i $z_priority$ = %i(2000,000007d0)
+	:i :s}
+	:i $anchor_id$ = $timeline_info_anchor$
+	:i if  (%GLOBAL%$name$ = %s(0,"")) 
+		:i $name$ = %s(13,"CREATED TRICK")
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $timeline_info_anchor$
+		:i $id$ = $cat_timeline_name$
+		:i $text$ = %GLOBAL%$name$
+		:i $font$ = $testtitle$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(40.000000,10.000000)
+		:i $scale$ = %f(1.200000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $text$ = %s(6,"Points")
+		:i $font$ = $small$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(40.000000,35.000000)
+		:i $alpha$ = %f(0.800000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$x$$offset$ = %vec2(5.000000,-1.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $id$ = $cat_timeline_score$
+		:i $text$ = %s(0,"")
+		:i $font$ = $dialog$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $focus_cat_timeline$
+	:i if $ScreenElementExists$$id$ = $createatrick_menu$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $createatrick_menu$
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+	:i $add_timeline_helper_text$
+:i endfunction
+:i function $create_CAT_timeline_row$:s{$focus_script$ = $dont_focus_timeline_item$
+		:i $unfocus_script$ = $null_script$
+		:i $pad_choose_script$ = $nullscript$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $timeline_vmenu$
+		:i $id$ = %GLOBAL%$row_id$
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,20.000000)
+		:i $event_handlers$ = :a{
+			:i :s{$focus$%GLOBAL%$focus_script$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$%GLOBAL%$unfocus_script$$params$ = %GLOBAL%$unfocus_params$:s}
+			:i :a}
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$row_id$
+		:i $texture$ = $cat_bar$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(88,00000058):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(75.000000,1.100000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $dont_focus_timeline_item$
+	:i $GetTags$
+	:i $FireEvent$$target$ = $timeline_vmenu$$type$ = $pad_up$
+:i endfunction
+:i function $fill_timeline$
+	:i $change$$timeline_has_no_items$ = %i(1,00000001)
+	:i $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$rotation_info$
+	:i $total$ = %i(0,00000000)
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $get_rot_name$$Axis$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$Axis$) $deg_dir$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$deg_dir$) 
+		:i if  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(1,00000001)) 
+			:i $make_cat_timeline_item$:s{$type$ = $rot$
+				:i $rot_index$ = %GLOBAL%$index$
+				:i $text$ = %GLOBAL%$rot_name$
+				:i $time$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$start$) 
+				:i $duration$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$Dur$) 
+				:i $pad_choose_script$ = $CAT_edit_rotation_menu$
+				:i $pad_choose_params$ = :s{$rot_index$ = %GLOBAL%$index$$trick_index$ = %i(0,00000000):s}
+			:i :s}
+			:i $total$ =  (%GLOBAL%$total$ + %i(1,00000001)) 
+		:i endif
+		:i if  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(0,00000000)) 
+			:i $make_cat_timeline_item$:s{$type$ = $rot$
+				:i $rot_index$ = %GLOBAL%$index$
+				:i $off$
+				:i $text$ = %GLOBAL%$rot_name$
+				:i $time$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$start$) 
+				:i $duration$ =  (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}->$Dur$) 
+				:i $pad_choose_script$ = $CAT_edit_rotation_menu$
+				:i $pad_choose_params$ = :s{$rot_index$ = %GLOBAL%$index$$trick_index$ = %i(0,00000000):s}
+			:i :s}
+			:i $total$ =  (%GLOBAL%$total$ + %i(1,00000001)) 
+		:i endif
+		:i if $GotParam$$get_id$
+			:i if $GotParam$$rot_index$
+				:i if  (%GLOBAL%$index$ = %GLOBAL%$rot_index$) 
+					:i $return_val$ = %GLOBAL%$total$
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $GetArraySize$%GLOBAL%$animation_info$
+	:i $get_anim_order$$animation_info$ = %GLOBAL%$animation_info$$array_size$ = %GLOBAL%$array_size$
+	:i $index$ = %i(0,00000000)
+	:i $count$ = %i(0,00000000)
+	:i $time_passed$ = %i(0,00000000)
+	:i while
+		
+		:i $index$ =  (%GLOBAL%$anim_order$:a{%GLOBAL%$count$:a}) 
+		:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+		:i if NOT $IsArray$%GLOBAL%$trick$
+			:i $params$ =  (%GLOBAL%$trick$->$params$) 
+		:i else 
+			:i $params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) 
+		:i endif
+		:i $anim_name$ =  (%GLOBAL%$params$->$name$) 
+		:i $FormatText$$ChecksumName$ = $anim_id$%s(6,"anim%i")$i$ = %GLOBAL%$index$
+		:i $trick_got_idle$$trick$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$trick$) 
+		:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+			:i $duration$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$ + %GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$idletime$) 
+			:i $idletime$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$idletime$) 
+			:i $idle_start$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$ / %i(2,00000002)) 
+		:i else 
+			:i $duration$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$) 
+		:i endif
+		:i if  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(1,00000001)) 
+			:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$start$) ) 
+			:i $make_cat_timeline_item$:s{$type$ = $anim$
+				:i $id$ = %GLOBAL%$anim_id$
+				:i $anim_index$ = %GLOBAL%$index$
+				:i $text$ = %GLOBAL%$anim_name$
+				:i $time$ = %GLOBAL%$time_passed$
+				:i $duration$ = %GLOBAL%$duration$
+				:i $idletime$ = %GLOBAL%$idletime$
+				:i $idle_start$ = %GLOBAL%$idle_start$
+				:i $got_idle$ = %GLOBAL%$got_idle$
+				:i $pad_choose_script$ = $CAT_edit_animation_menu$
+				:i $pad_choose_params$ = :s{$anim_index$ = %GLOBAL%$index$$trick_index$ = %i(0,00000000):s}
+				:i $trickType$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$trickType$) 
+			:i :s}
+			:i if NOT  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$trickType$ = %i(4,00000004)) 
+				:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+					:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$)  +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$idletime$) ) 
+				:i else 
+					:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$) ) 
+				:i endif
+			:i else 
+				:i $time_passed$ =  (%GLOBAL%$time_passed$ -  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$start$) ) 
+			:i endif
+			:i $total$ =  (%GLOBAL%$total$ + %i(1,00000001)) 
+		:i endif
+		:i if  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(0,00000000)) 
+			:i $make_cat_timeline_item$:s{$type$ = $anim$
+				:i $id$ = %GLOBAL%$anim_id$
+				:i $anim_index$ = %GLOBAL%$index$
+				:i $off$
+				:i $text$ = %GLOBAL%$anim_name$
+				:i $time$ = %GLOBAL%$time_passed$
+				:i $duration$ = %GLOBAL%$duration$
+				:i $idletime$ = %GLOBAL%$idletime$
+				:i $idle_start$ = %GLOBAL%$idle_start$
+				:i $got_idle$ = %GLOBAL%$got_idle$
+				:i $pad_choose_script$ = $CAT_edit_animation_menu$
+				:i $pad_choose_params$ = :s{$anim_index$ = %GLOBAL%$index$$trick_index$ = %i(0,00000000):s}
+				:i $trickType$ =  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$trickType$) 
+			:i :s}
+			:i $total$ =  (%GLOBAL%$total$ + %i(1,00000001)) 
+		:i endif
+		:i if $GotParam$$get_id$
+			:i if $GotParam$$anim_index$
+				:i if  (%GLOBAL%$index$ = %GLOBAL%$anim_index$) 
+					:i $return_val$ = %GLOBAL%$total$
+				:i endif
+			:i endif
+		:i endif
+		:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $make_cat_timeline_item$:s{$type$ = $new_item$
+		:i $id$ = $new_item_box$
+		:i $text$ = %s(21,"New Rotation or Trick")
+		:i $time$ = %i(1,00000001)
+		:i $duration$ = %f(1.000000)
+		:i $pad_choose_script$ = $timeline_empty_item_focus$
+		:i $pad_choose_params$ = :s{$trick_index$ = %i(0,00000000):s}
+		:i $dont_focus_timeline$ = %GLOBAL%$dont_focus_timeline$
+	:i :s}
+	:i $wait$%i(2,00000002)$gameframes$
+	:i if $ScreenElementExists$$id$ = $timeline_scrolling_menu$
+		:i $SetScreenElementProps$$id$ = $timeline_scrolling_menu$$reset_window_bottom$
+	:i endif
+	:i if $GotParam$$get_id$
+		:i return
+		$return_val$ = %GLOBAL%$return_val$
+	:i endif
+:i endfunction
+:i function $get_anim_order$
+	:i $count$ = %i(1,00000001)
+	:i $anim_order$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i while
+		
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$order$)  = %GLOBAL%$count$) 
+				:i $SetArrayElement$$ArrayName$ = $anim_order$$index$ =  (%GLOBAL%$count$%i(4294967295,ffffffff)) $newvalue$ = %GLOBAL%$index$
+				:i continue
+				
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$anim_order$ = %GLOBAL%$anim_order$
+:i endfunction
+:i $timeline_has_no_items$ = %i(1,00000001)
+:i function $make_cat_timeline_item$$text$ = %s(4,"text")$time$ = %i(0,00000000)$duration$ = %i(1,00000001)
+	:i $row_num$ = %i(0,00000000)
+	:i $change$$timeline_has_no_items$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $row_id$%s(14,"timeline_row%r")$r$ = %GLOBAL%$row_num$
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$row_id$$child$ = %i(1,00000001):s}
+			:i $row_num$ =  (%GLOBAL%$row_num$ + %i(1,00000001)) 
+			:i if  (%GLOBAL%$row_num$ > %i(12,0000000c)) 
+				:i return
+				
+			:i endif
+		:i else 
+			:i $parent$ = %GLOBAL%$row_id$
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i switch %GLOBAL%$type$
+		:i case $rot$
+			:i $pad_right_script$ = $slide_cat_rot_start_value$
+			:i $pad_r1_script$ = $null_script$
+			:i $toggle_script$ = $toggle_rot_on_off$
+			:i if NOT $GotParam$$off$
+				:i $sprite_rgba$ = $rot_on_un$
+				:i $idle_rgba$ = $idle_on_un$
+			:i else 
+				:i $sprite_rgba$ = $rot_off_un$
+				:i $idle_rgba$ = $idle_off_un$
+			:i endif
+			:i endcase
+		case $anim$
+			:i $pad_right_script$ = $slide_cat_anim_start_value$
+			:i if  (%GLOBAL%$trickType$ = %i(4,00000004)) 
+				:i $pad_r1_script$ = $null_script$
+			:i else 
+				:i $pad_r1_script$ = $increment_cat_animation_order_value$
+			:i endif
+			:i $toggle_script$ = $toggle_anim_on_off$
+			:i if NOT $GotParam$$off$
+				:i switch %GLOBAL%$trickType$
+					:i case %i(0,00000000)
+						:i $sprite_rgba$ = $flip_on_un$
+						:i endcase
+					case %i(1,00000001)
+						:i $sprite_rgba$ = $grab_on_un$
+						:i endcase
+					case %i(2,00000002)
+						:i $sprite_rgba$ = $spec_on_un$
+						:i endcase
+					case %i(3,00000003)
+						:i $sprite_rgba$ = $misc_on_un$
+						:i endcase
+					case %i(4,00000004)
+						:i $sprite_rgba$ = $gen_on_un$
+						:i end_switch
+				
+				:i $idle_rgba$ = $idle_on_un$
+			:i else 
+				:i switch %GLOBAL%$trickType$
+					:i case %i(0,00000000)
+						:i $sprite_rgba$ = $flip_off_un$
+						:i endcase
+					case %i(1,00000001)
+						:i $sprite_rgba$ = $grab_off_un$
+						:i endcase
+					case %i(2,00000002)
+						:i $sprite_rgba$ = $spec_off_un$
+						:i endcase
+					case %i(3,00000003)
+						:i $sprite_rgba$ = $misc_off_un$
+						:i endcase
+					case %i(4,00000004)
+						:i $sprite_rgba$ = $gen_off_un$
+						:i end_switch
+				
+				:i $idle_rgba$ = $idle_off_un$
+			:i endif
+			:i endcase
+		case $new_item$
+			:i if NOT $GotParam$$dont_focus_timeline$
+				:i $spawnscript$$spawn_cat_demo_loop$
+			:i endif
+			:i $pad_right_script$ = $null_script$
+			:i $pad_r1_script$ = $null_script$
+			:i $toggle_script$ = $null_script$
+			:i $sprite_rgba$ = $new_item_un$
+			:i end_switch
+	
+	:i $pos$ =  ( (%GLOBAL%$time$ * %vec2(200.000000,0.000000))  + %vec2(0.000000,2.000000)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = %GLOBAL%$id$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(100.000000,20.000000)
+		:i $pos$ = %GLOBAL%$pos$
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i if NOT $GotParam$$off$
+		:i $SetScreenElementProps$:s{$id$ = %GLOBAL%$parent$
+			:i $event_handlers$ = :a{:s{$pad_choose$$cat_play_choose_sound$$params$ = :s{$pad_choose_script$ = %GLOBAL%$pad_choose_script$%GLOBAL%$pad_choose_params$$timeline_id$ = %GLOBAL%$anchor_id$:s}:s}
+				:i :s{$pad_zac$%GLOBAL%$pad_choose_script$$params$ = :s{%GLOBAL%$pad_choose_params$$timeline_id$ = %GLOBAL%$anchor_id$:s}:s}
+				:i :s{$pad_space$$cat_play_hide_sound$$params$ = :s{$callback$ = %GLOBAL%$toggle_script$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_backspace$$cat_play_delete_sound$$params$ = :s{$callback$ = %GLOBAL%$toggle_script$$Delete$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_right$%GLOBAL%$pad_right_script$$params$ = :s{$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_left$%GLOBAL%$pad_right_script$$params$ = :s{$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$$reverse$:s}:s}
+				:i :s{$pad_r2$%GLOBAL%$pad_r1_script$$params$ = :s{$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_l2$%GLOBAL%$pad_r1_script$$params$ = :s{$anim_index$ = %GLOBAL%$anim_index$$reverse$:s}:s}
+				:i :s{$focus$$timeline_item_focus$$params$ = :s{$type$ = %GLOBAL%$type$$trickType$ = %GLOBAL%$trickType$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$unfocus$$timeline_item_unfocus$$params$ = :s{$type$ = %GLOBAL%$type$$trickType$ = %GLOBAL%$trickType$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $text_rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(100,00000064):a}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = %GLOBAL%$parent$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_choose$$null_script$:s}
+				:i :s{$pad_space$$cat_play_hide_sound$$params$ = :s{$callback$ = %GLOBAL%$toggle_script$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_backspace$$cat_play_delete_sound$$params$ = :s{$callback$ = %GLOBAL%$toggle_script$$Delete$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$pad_right$$null_script$$params$ = :s{:s}:s}
+				:i :s{$pad_left$$null_script$$params$ = :s{$reverse$:s}:s}
+				:i :s{$focus$$timeline_item_focus$$params$ = :s{$type$ = %GLOBAL%$type$$off$$trickType$ = %GLOBAL%$trickType$$rot_index$ = %GLOBAL%$rot_index$$anim_index$ = %GLOBAL%$anim_index$:s}:s}
+				:i :s{$unfocus$$timeline_item_unfocus$$params$ = :s{$type$ = %GLOBAL%$type$$off$$trickType$ = %GLOBAL%$trickType$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $text_rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(100,00000064):a}
+	:i endif
+	:i $scale$ =  ( (%GLOBAL%$duration$ * %vec2(12.500000,0.000000))  + %vec2(0.000000,1.000000)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $cat_box$
+		:i $rgba$ = %GLOBAL%$sprite_rgba$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $z_priority$ = %i(1,00000001)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $bar_id$ = %GLOBAL%$id$
+	:i if  (%GLOBAL%$type$ = $new_item$) 
+		:i $text_pos$ = %vec2(5.000000,-2.000000)
+	:i else 
+		:i $text_pos$ = %vec2(14.000000,-2.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $pos$ = %GLOBAL%$text_pos$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.800000)
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $z_priority$ = %i(3,00000003)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $text_id$ = %GLOBAL%$id$
+	:i if NOT  (%GLOBAL%$type$ = $new_item$) 
+		:i $max_width$ =  ( (%GLOBAL%$duration$ - %f(0.100000))  * %i(160,000000a0)) 
+		:i $truncate_string$$id$ = %GLOBAL%$text_id$$max_width$ = %GLOBAL%$max_width$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $left_arrow$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(0.750000,0.500000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $z_priority$ = %i(3,00000003)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$x$$id$ = %GLOBAL%$bar_id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $right_arrow$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(0.750000,0.500000)
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(-12.000000,0.000000)) 
+		:i $z_priority$ = %i(3,00000003)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i if  (%GLOBAL%$type$ = $anim$) 
+		:i $scale2$ = %vec2(0.000000,0.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+			:i if $GotParam$$idle_start$
+				:i $scale2$ =  ( (%GLOBAL%$idletime$ * %vec2(12.500000,0.000000))  + %vec2(0.000000,1.000000)) 
+				:i $pos$ =  (%GLOBAL%$idle_start$ * %vec2(200.000000,0.000000) + %vec2(0.000000,0.000000)) 
+			:i endif
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ = $cat_box$
+			:i $rgba$ = %GLOBAL%$idle_rgba$
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %GLOBAL%$scale2$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $z_priority$ = %i(2,00000002)
+			:i $heap$ =  ($cat_heap$) 
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$text_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$text$
+		:i $alpha$ = %i(0,00000000)
+		:i $scale$ = %i(0,00000000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $cat_play_choose_sound$
+	:i $generic_menu_pad_choose_sound$
+	:i if $GotParam$$pad_choose_script$
+		:i if NOT  (%GLOBAL%$pad_choose_script$ = $null_script$) 
+			:i %GLOBAL%$pad_choose_script$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $cat_play_hide_sound$
+	:i if $GotParam$$callback$
+		:i if NOT  (%GLOBAL%$callback$ = $null_script$) 
+			:i %GLOBAL%$callback$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $cat_play_delete_sound$
+	:i $PlaySound$$GUI_buzzer01$$pitch$ = %i(60,0000003c)
+	:i if $GotParam$$callback$
+		:i if NOT  (%GLOBAL%$callback$ = $null_script$) 
+			:i %GLOBAL%$callback$ isNull 
+		:i endif
+	:i endif
+:i endfunction
+:i function $timeline_item_focus$
+	:i $GetTags$
+	:i if $GotParam$$type$
+		:i switch %GLOBAL%$type$
+			:i case $rot$
+				:i if NOT $GotParam$$off$
+					:i $sprite_rgba$ = $rot_on_high$
+					:i $arrow_rgba$ = $timeline_arrow_high$
+				:i else 
+					:i $sprite_rgba$ = $rot_off_high$
+					:i $arrow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+				:i endif
+				:i endcase
+			case $anim$
+				:i if NOT $GotParam$$off$
+					:i switch %GLOBAL%$trickType$
+						:i case %i(0,00000000)
+							:i $sprite_rgba$ = $flip_on_high$
+							:i endcase
+						case %i(1,00000001)
+							:i $sprite_rgba$ = $grab_on_high$
+							:i endcase
+						case %i(2,00000002)
+							:i $sprite_rgba$ = $spec_on_high$
+							:i endcase
+						case %i(3,00000003)
+							:i $sprite_rgba$ = $misc_on_high$
+							:i endcase
+						case %i(4,00000004)
+							:i $sprite_rgba$ = $gen_on_high$
+							:i end_switch
+					
+					:i $arrow_rgba$ = $timeline_arrow_high$
+				:i else 
+					:i switch %GLOBAL%$trickType$
+						:i case %i(0,00000000)
+							:i $sprite_rgba$ = $flip_off_high$
+							:i endcase
+						case %i(1,00000001)
+							:i $sprite_rgba$ = $grab_off_high$
+							:i endcase
+						case %i(2,00000002)
+							:i $sprite_rgba$ = $spec_off_high$
+							:i endcase
+						case %i(3,00000003)
+							:i $sprite_rgba$ = $misc_off_high$
+							:i endcase
+						case %i(4,00000004)
+							:i $sprite_rgba$ = $gen_off_high$
+							:i end_switch
+					
+					:i $arrow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+				:i endif
+				:i endcase
+			case $new_item$
+				:i $sprite_rgba$ = $new_item_high$
+				:i $arrow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+				:i end_switch
+		
+		:i $text_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+	:i endif
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}$rgba$ = %GLOBAL%$sprite_rgba$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}$timeline_bar_focus_effect$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(1,00000001):s}:s}$rgba$ = %GLOBAL%$text_rgba$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(1,00000001):s}:s}$text_twitch_effect2$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(2,00000002):s}:s}$rgba$ = %GLOBAL%$arrow_rgba$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(3,00000003):s}:s}$rgba$ = %GLOBAL%$arrow_rgba$
+	:i endif
+:i endfunction
+:i function $timeline_bar_focus_effect$$scale$ = %vec2(1.000000,0.250000)$scale2$ = %vec2(1.000000,1.000000)
+	:i $GetTags$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.300000)$alpha$ = %f(0.500000)
+		:i $wait$%f(0.500000)$seconds$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.300000)$alpha$ = %i(1,00000001)
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $timeline_item_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $KillSpawnedScript$$name$ = $timeline_bar_focus_effect$
+	:i if $GotParam$$type$
+		:i switch %GLOBAL%$type$
+			:i case $rot$
+				:i $pad_right_script$ = $slide_cat_rot_start_value$
+				:i if NOT $GotParam$$off$
+					:i $sprite_rgba$ = $rot_on_un$
+				:i else 
+					:i $sprite_rgba$ = $rot_off_un$
+				:i endif
+				:i endcase
+			case $anim$
+				:i $pad_right_script$ = $slide_cat_anim_start_value$
+				:i if NOT $GotParam$$off$
+					:i switch %GLOBAL%$trickType$
+						:i case %i(0,00000000)
+							:i $sprite_rgba$ = $flip_on_un$
+							:i endcase
+						case %i(1,00000001)
+							:i $sprite_rgba$ = $grab_on_un$
+							:i endcase
+						case %i(2,00000002)
+							:i $sprite_rgba$ = $spec_on_un$
+							:i endcase
+						case %i(3,00000003)
+							:i $sprite_rgba$ = $misc_on_un$
+							:i endcase
+						case %i(4,00000004)
+							:i $sprite_rgba$ = $gen_on_un$
+							:i end_switch
+					
+				:i else 
+					:i switch %GLOBAL%$trickType$
+						:i case %i(0,00000000)
+							:i $sprite_rgba$ = $flip_off_un$
+							:i endcase
+						case %i(1,00000001)
+							:i $sprite_rgba$ = $grab_off_un$
+							:i endcase
+						case %i(2,00000002)
+							:i $sprite_rgba$ = $spec_off_un$
+							:i endcase
+						case %i(3,00000003)
+							:i $sprite_rgba$ = $misc_off_un$
+							:i endcase
+						case %i(4,00000004)
+							:i $sprite_rgba$ = $gen_off_un$
+							:i end_switch
+					
+				:i endif
+				:i endcase
+			case $new_item$
+				:i $sprite_rgba$ = $new_item_un$
+				:i end_switch
+		
+		:i $text_rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(100,00000064):a}
+	:i endif
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}$rgba$ = %GLOBAL%$sprite_rgba$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(1,00000001):s}:s}$rgba$ = %GLOBAL%$text_rgba$
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(2,00000002):s}:s}$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(3,00000003):s}:s}$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i endif
+:i endfunction
+:i function $timeline_empty_item_focus$$back_script$ = $cancel_new_anim_or_rot$
+	:i $GetTags$
+	:i if  ($timeline_has_no_items$ = %i(0,00000000)) 
+	:i else 
+		:i $back_script$ = $cancel_first_anim_or_rot$
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $timeline_vmenu$
+	:i $create_dialog_box$:s{$title$ = %s(3,"New")
+		:i $text$ = %s(28,"Add a new rotation or trick?")
+		:i $forced_pos$ = %vec2(320.000000,75.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $pad_back_script$ = %GLOBAL%$back_script$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(7,"Go Back")$pad_choose_script$ = %GLOBAL%$back_script$:s}
+			:i :s{$font$ = $small$$text$ = %s(8,"Rotation")$pad_choose_script$ = $cat_add_another_rot$:s}
+			:i :s{$font$ = $small$$text$ = %s(4,"Grab")$pad_choose_script$ = $cat_add_another_anim$$pad_choose_params$ = :s{$type$ = $grab$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(9,"Fliptrick")$pad_choose_script$ = $cat_add_another_anim$$pad_choose_params$ = :s{$type$ = $fliptrick$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(7,"Special")$pad_choose_script$ = $cat_add_another_anim$$pad_choose_params$ = :s{$type$ = $special$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(5,"Other")$pad_choose_script$ = $cat_add_another_anim$$pad_choose_params$ = :s{$type$ = $misc$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(5,"Sound")$pad_choose_script$ = $cat_add_another_anim$$pad_choose_params$ = :s{$type$ = $generic$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $cancel_new_anim_or_rot$
+	:i $dialog_box_exit$
+	:i $add_timeline_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $cancel_first_anim_or_rot$
+	:i $dialog_box_exit$
+	:i $CAT_menu_exit$
+:i endfunction
+:i function $cat_add_another_anim$
+	:i $dialog_box_exit$
+	:i $calculate_cat_score$$get_time$$anims_only$
+	:i if NOT  (%f(2.500000) > %GLOBAL%$time$) 
+		:i $create_dialog_box$:s{$title$ = %s(5,"Oops!")
+			:i $text$ = %s(46,"You don't have any room for another animation!")
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $cancel_new_anim_or_rot$:s}
+				:i :a}
+		:i :s}
+		:i return
+		
+	:i endif
+	:i $find_unused_anim$
+	:i if  ( (%GLOBAL%$type$ = $generic$)  AND  (%GLOBAL%$num_sounds$ > %i(2,00000002)) ) 
+		:i $create_dialog_box$:s{$title$ = %s(5,"Oops!")
+			:i $text$ = %s(27,"You can only have 3 sounds.")
+			:i $pos$ = %vec2(310.000000,183.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $cancel_new_anim_or_rot$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i if $GotParam$$anim_index$
+			:i $toggle_anim_on_off$$anim_index$ = %GLOBAL%$anim_index$$type$ = %GLOBAL%$type$
+		:i else 
+			:i $create_dialog_box$:s{$title$ = %s(5,"Oops!")
+				:i $text$ = %s(41,"You don't have any empty animation slots!")
+				:i $pos$ = %vec2(320.000000,240.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+				:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $cancel_new_anim_or_rot$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $cat_add_another_rot$
+	:i $printf$%s(26,"script cat_add_another_rot")
+	:i $dialog_box_exit$
+	:i $find_unused_rot$
+	:i if $GotParam$$rot_index$
+		:i $toggle_rot_on_off$$rot_index$ = %GLOBAL%$rot_index$
+	:i else 
+		:i $create_dialog_box$:s{$title$ = %s(5,"Oops!")
+			:i $text$ = %s(40,"You don't have any empty rotation slots!")
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(2,"Ok")$pad_choose_script$ = $cancel_new_anim_or_rot$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $slide_cat_rot_start_value$
+	:i $StopSound$$ThisMenuSelectSound$
+	:i $PlaySound$$SK6_Menu_Select$$vol$ = %i(100,00000064)$id$ = $ThisMenuSelectSound$
+	:i $GetTags$
+	:i $get_CAT_rot_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$rot_index$ = %GLOBAL%$rot_index$
+	:i if $GotParam$$reverse$
+		:i if NOT  (%i(0,00000000) >  (%GLOBAL%$start$ - %f(0.100000)) ) 
+			:i $start$ =  (%GLOBAL%$start$ - %f(0.100000)) 
+		:i else 
+			:i $start$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i if NOT  ( (%GLOBAL%$start$ + %GLOBAL%$Dur$ + %f(0.100000))  > %f(3.000000)) 
+			:i $start$ =  (%GLOBAL%$start$ + %f(0.100000)) 
+		:i endif
+	:i endif
+	:i $pos$ =  ( (%GLOBAL%$start$ * %vec2(200.000000,0.000000))  + %vec2(0.000000,2.000000)) 
+	:i $DoScreenElementMorph$$time$ = %f(0.100000)$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$pos$ = %GLOBAL%$pos$
+	:i $set_new_rot_values$:s{$rot_index$ = %GLOBAL%$rot_index$$on$ = %GLOBAL%$on$$Deg$ = %GLOBAL%$Deg$$Axis$ = %GLOBAL%$Axis$$Dur$ = %GLOBAL%$Dur$$start$ = %GLOBAL%$start$$deg_dir$ = %GLOBAL%$deg_dir$:s}
+	:i $calculate_cat_score$$get_values$
+:i endfunction
+:i function $slide_cat_anim_start_value$
+	:i if $GotParam$$reverse$
+		:i $PlaySound$$menu03$$vol$ = %i(90,0000005a)$pitch$ = %i(90,0000005a)
+	:i else 
+		:i $PlaySound$$menu03$$vol$ = %i(80,00000050)$pitch$ = %i(120,00000078)
+	:i endif
+	:i $GetTags$
+	:i $get_CAT_anim_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$anim_index$ = %GLOBAL%$anim_index$
+	:i if $GotParam$$reverse$
+		:i if NOT  (%i(0,00000000) >  (%GLOBAL%$start$ - %f(0.100000)) ) 
+			:i $start$ =  (%GLOBAL%$start$ - %f(0.100000)) 
+		:i else 
+			:i $start$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $calculate_cat_score$$get_time$
+		:i if  (%f(2.900000) > %GLOBAL%$time$) 
+			:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+			:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+				:i if NOT  ( (%GLOBAL%$start$ + %GLOBAL%$Dur$ + %GLOBAL%$idletime$ + %f(0.100000))  > %f(3.000000)) 
+					:i $start$ =  (%GLOBAL%$start$ + %f(0.100000)) 
+				:i endif
+			:i else 
+				:i if NOT  ( (%GLOBAL%$start$ + %GLOBAL%$Dur$ + %f(0.100000))  > %f(3.000000)) 
+					:i $start$ =  (%GLOBAL%$start$ + %f(0.100000)) 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $quick_set_anim_values$ isNull 
+	:i $update_all_anim_positions$
+	:i $calculate_cat_score$$get_values$
+:i endfunction
+:i function $update_all_anim_positions$
+	:i $printf$%s(25,"update_all_anim_positions")
+	:i $GetCreateATrickAnimations$:s{$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000):s}
+	:i $GetArraySize$%GLOBAL%$animation_info$
+	:i $get_anim_order$$animation_info$ = %GLOBAL%$animation_info$$array_size$ = %GLOBAL%$array_size$
+	:i $index$ = %i(0,00000000)
+	:i $count$ = %i(0,00000000)
+	:i $time_passed$ = %i(0,00000000)
+	:i while
+		
+		:i $printf$%s(10,"count = %c")$c$ = %GLOBAL%$count$
+		:i $index$ =  (%GLOBAL%$anim_order$:a{%GLOBAL%$count$:a}) 
+		:i $trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+		:i if NOT $IsArray$%GLOBAL%$trick$
+			:i $params$ =  (%GLOBAL%$trick$->$params$) 
+		:i else 
+			:i $params$ =  ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) 
+		:i endif
+		:i $anim_name$ =  (%GLOBAL%$params$->$name$) 
+		:i $FormatText$$ChecksumName$ = $anim_id$%s(6,"anim%i")$i$ = %GLOBAL%$index$
+		:i if  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(1,00000001)) 
+			:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$start$) ) 
+			:i $pos$ =  ( (%GLOBAL%$time_passed$ * %vec2(200.000000,0.000000))  + %vec2(0.000000,2.000000)) 
+			:i if $ScreenElementExists$$id$ = %GLOBAL%$anim_id$
+				:i $DoScreenElementMorph$$time$ = %i(0,00000000)$id$ = %GLOBAL%$anim_id$$pos$ = %GLOBAL%$pos$
+			:i else 
+				:i $printf$%s(37,"can't move %i cause it doesn't exist!")$i$ = %GLOBAL%$anim_id$
+			:i endif
+			:i $trick_got_idle$$trick$ = %GLOBAL%$trick$
+			:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$)  = %i(4,00000004)) 
+				:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+					:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$)  +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$idletime$) ) 
+				:i else 
+					:i $time_passed$ =  (%GLOBAL%$time_passed$ +  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$Dur$) ) 
+				:i endif
+			:i else 
+				:i $time_passed$ =  (%GLOBAL%$time_passed$ -  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$start$) ) 
+			:i endif
+			:i if  (%GLOBAL%$time_passed$ > %f(3.000000)) 
+				:i $diff$ =  (%GLOBAL%$time_passed$ - %f(3.000000)) 
+				:i $get_CAT_anim_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)$anim_index$ = %GLOBAL%$index$
+				:i if  (%GLOBAL%$diff$ > %i(0,00000000)) 
+					:i if  (%GLOBAL%$start$ > %i(0,00000000)) 
+						:i if  (%GLOBAL%$start$ > %GLOBAL%$diff$) 
+							:i $time_passed$ =  (%GLOBAL%$time_passed$ - %GLOBAL%$diff$) 
+							:i $start$ =  (%GLOBAL%$start$ - %GLOBAL%$diff$) 
+							:i $diff$ = %i(0,00000000)
+						:i else 
+							:i $time_passed$ =  (%GLOBAL%$time_passed$ - %GLOBAL%$start$) 
+							:i $diff$ =  (%GLOBAL%$diff$ - %GLOBAL%$start$) 
+							:i $start$ = %i(0,00000000)
+						:i endif
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+					:i if  (%GLOBAL%$diff$ > %i(0,00000000)) 
+						:i if  (%GLOBAL%$idle$ > %i(0,00000000)) 
+							:i if  (%GLOBAL%$idle$ > %GLOBAL%$diff$) 
+								:i $time_passed$ =  (%GLOBAL%$time_passed$ - %GLOBAL%$diff$) 
+								:i $idle$ =  (%GLOBAL%$idle$ - %GLOBAL%$diff$) 
+								:i $diff$ = %i(0,00000000)
+							:i else 
+								:i $time_passed$ =  (%GLOBAL%$time_passed$ - %GLOBAL%$idle$) 
+								:i $diff$ =  (%GLOBAL%$diff$ - %GLOBAL%$idle$) 
+								:i $idle$ = %i(0,00000000)
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$diff$ > %i(0,00000000)) 
+					:i if  (%GLOBAL%$Dur$ > %f(0.100000)) 
+						:i if  ( (%GLOBAL%$Dur$ - %f(0.100000))  > %GLOBAL%$diff$) 
+							:i $time_passed$ =  (%GLOBAL%$time_passed$ - %GLOBAL%$diff$) 
+							:i $Dur$ =  (%GLOBAL%$Dur$ - %GLOBAL%$diff$) 
+							:i $diff$ = %i(0,00000000)
+						:i else 
+						:i endif
+					:i endif
+				:i endif
+				:i $set_new_anim_values$:s{$anim_index$ = %GLOBAL%$index$$on$ = %GLOBAL%$on$$trick$ = %GLOBAL%$trick$$anim$ = %GLOBAL%$anim$$Dur$ = %GLOBAL%$Dur$$percent$ = %GLOBAL%$percent$$blend$ = %GLOBAL%$blend$$from$ = %GLOBAL%$from$$trickType$ = %GLOBAL%$trickType$$idletime$ = %GLOBAL%$idletime$$start$ = %GLOBAL%$start$$order$ = %GLOBAL%$order$$hold$ = %GLOBAL%$hold$$backwards$ = %GLOBAL%$backwards$:s}
+			:i endif
+		:i endif
+		:i if  (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}->$on$ = %i(0,00000000)) 
+			:i if  (%GLOBAL%$time_passed$ > %i(3,00000003)) 
+				:i $printf$%s(94,"CAT: Does this ever happen????????????????????????????????????????????????????????????????????")
+				:i $ScriptAssert$%s(123,"Go tell Zac you got this message in CAT and tell him exactly what you were doing and what items were in your created trick.")
+				:i return
+				
+			:i endif
+		:i endif
+		:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if $GotParam$$rebuild_it$
+		:i $create_cat_timeline$
+	:i endif
+:i endfunction
+:i function $update_scale_to_new_duration$
+	:i $printf$%s(35,"script update_scale_to_new_duration")
+	:i $scale$ =  ( (%GLOBAL%$duration$ * %vec2(12.500000,0.000000))  + %vec2(0.000000,1.000000)) 
+	:i if $GotParam$$idle_start$
+		:i $scale2$ =  ( (%GLOBAL%$idletime$ * %vec2(12.500000,0.000000))  + %vec2(0.000000,1.000000)) 
+		:i $ipos$ =  (%GLOBAL%$idle_start$ * %vec2(200.000000,0.000000) + %vec2(0.000000,1.000000)) 
+	:i else 
+		:i $scale2$ = %vec2(0.000000,0.000000)
+		:i $ipos$ = %vec2(0.000000,0.000000)
+	:i endif
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ = %GLOBAL%$scale$
+	:i $GetStackedScreenElementPos$$x$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$pos$ =  (%GLOBAL%$pos$ + %vec2(-12.000000,0.000000)) 
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$pos$ = %GLOBAL%$ipos$$scale$ = %GLOBAL%$scale2$
+	:i endif
+	:i $GetTextElementString$$id$ = :s{%GLOBAL%$id$$child$ = :s{%i(1,00000001)$child$ = %i(0,00000000):s}:s}
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$text$ = %GLOBAL%$string$
+	:i $max_width$ =  ( (%GLOBAL%$duration$ - %f(0.100000))  * %i(160,000000a0)) 
+	:i $truncate_string$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$max_width$ = %GLOBAL%$max_width$
+:i endfunction
+:i function $find_unused_anim$
+	:i $get_CAT_param_values$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i $got_it$ = %i(0,00000000)
+	:i $num_sounds$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$animation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$got_it$ = %i(0,00000000)) 
+			:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(2,00000002)) 
+				:i $anim_index$ = %GLOBAL%$index$
+				:i $got_it$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$)  = %i(4,00000004)) 
+			:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(2,00000002)) 
+				:i $num_sounds$ =  (%GLOBAL%$num_sounds$ + %i(1,00000001)) 
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	:s{$anim_index$ = %GLOBAL%$anim_index$$num_sounds$ = %GLOBAL%$num_sounds$:s}
+:i endfunction
+:i function $find_unused_rot$
+	:i $GetCreateATrickRotations$$Skater$ = %i(0,00000000)$trick_index$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$rotation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(2,00000002)) 
+			:i return
+			$rot_index$ = %GLOBAL%$index$
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $back_to_timeline$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $focus_cat_timeline$
+:i endfunction
+:i function $calculate_cat_score$$minus$ = %i(99,00000063)
+	:i if  ( ($GotParam$$get_values$)  OR  ($GotParam$$get_time$) ) 
+		:i $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+	:i endif
+	:i $bailtime$ = %i(0,00000000)
+	:i $animtime$ = %i(0,00000000)
+	:i $num_rots$ = %i(0,00000000)
+	:i $num_anims$ = %i(0,00000000)
+	:i if NOT $GotParam$$anims_only$
+		:i $GetArraySize$%GLOBAL%$rotation_info$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+				:i $Dur$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Dur$) 
+				:i $start$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$start$) 
+				:i if  ( (%GLOBAL%$Dur$ + %GLOBAL%$start$)  > %GLOBAL%$bailtime$) 
+					:i $bailtime$ =  (%GLOBAL%$Dur$ + %GLOBAL%$start$) 
+				:i endif
+			:i endif
+			:i if NOT  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(2,00000002)) 
+				:i $num_rots$ =  (%GLOBAL%$num_rots$ + %i(1,00000001)) 
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i if NOT $GotParam$$no_hidden$
+			:i $include_hidden$ = $include_hidden$
+		:i endif
+	:i endif
+	:i $GetArraySize$%GLOBAL%$animation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT  (%GLOBAL%$index$ = %GLOBAL%$minus$) 
+			:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trickType$)  = %i(4,00000004)) 
+				:i $trick_got_idle$$trick$ =  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$trick$) 
+				:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+					:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+						:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+					:i else 
+						:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+					:i endif
+				:i endif
+				:i if $GotParam$$include_hidden$
+					:i if  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(0,00000000)) 
+						:i if  (%GLOBAL%$got_idle$ = %i(1,00000001)) 
+							:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$idletime$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+						:i else 
+							:i $animtime$ =  (%GLOBAL%$animtime$ +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$Dur$)  +  ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$start$) ) 
+						:i endif
+					:i endif
+				:i endif
+				:i if NOT  ( ( (%GLOBAL%$animation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(2,00000002)) 
+					:i $num_anims$ =  (%GLOBAL%$num_anims$ + %i(1,00000001)) 
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$animtime$ > %GLOBAL%$bailtime$) 
+		:i $bailtime$ = %GLOBAL%$animtime$
+	:i endif
+	:i if NOT $GotParam$$get_time$
+		:i $cat_get_score_from_bailtime$$bailtime$ = %GLOBAL%$bailtime$$can_spin$ = %GLOBAL%$can_spin$
+		:i $FormatText$$TextName$ = $score_text$%s(2,"%i")$i$ = %GLOBAL%$score$
+		:i if $ScreenElementExists$$id$ = $cat_timeline_score$
+			:i $SetScreenElementProps$$id$ = $cat_timeline_score$$text$ = %GLOBAL%$score_text$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $cat_rots_used$
+			:i $FormatText$$TextName$ = $rot_text$%s(2,"%i")$i$ = %GLOBAL%$num_rots$
+			:i $SetScreenElementProps$$id$ = $cat_rots_used$$text$ = %GLOBAL%$rot_text$
+			:i $GetStackedScreenElementPos$$id$ = $cat_rots_used$$x$
+			:i $SetScreenElementProps$$id$ = $cat_slash_rots$$pos$ = %GLOBAL%$pos$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $cat_anims_used$
+			:i $FormatText$$TextName$ = $anim_text$%s(2,"%i")$i$ = %GLOBAL%$num_anims$
+			:i $SetScreenElementProps$$id$ = $cat_anims_used$$text$ = %GLOBAL%$anim_text$
+			:i $GetStackedScreenElementPos$$id$ = $cat_anims_used$$x$
+			:i $SetScreenElementProps$$id$ = $cat_slash_anims$$pos$ = %GLOBAL%$pos$
+		:i endif
+		:i if  (%GLOBAL%$can_spin$ = %i(1,00000001)) 
+			:i $spin_text$ = %s(2,"on")
+		:i else 
+			:i $spin_text$ = %s(3,"off")
+		:i endif
+		:i if $ScreenElementExists$$id$ = $cat_timeline_spin$
+			:i $SetScreenElementProps$$id$ = $cat_timeline_spin$$text$ = %GLOBAL%$spin_text$
+		:i endif
+		:i if $GotParam$$return_it$
+			:i return
+			:s{$score$ = %GLOBAL%$score$$score_text$ = %GLOBAL%$score_text$:s}
+		:i endif
+	:i else 
+		:i return
+		$time$ = %GLOBAL%$bailtime$
+	:i endif
+:i endfunction
+:i function $cat_get_score_from_bailtime$
+	:i if  (%GLOBAL%$bailtime$ > %f(1.500000)) 
+		:i $score$ =  ( (%i(1333,00000535) *  (%GLOBAL%$bailtime$%f(-1.500000)) )  + %i(6000,00001770)) 
+	:i else 
+		:i if  (%GLOBAL%$bailtime$ > %f(0.400000)) 
+			:i $score$ =  ( (%i(5880,000016f8) *  (%GLOBAL%$bailtime$%f(-0.500000))  *  (%GLOBAL%$bailtime$%f(-0.500000)) )  + %i(120,00000078)) 
+		:i else 
+			:i if  (%GLOBAL%$bailtime$ > %f(0.300000)) 
+				:i $score$ = %i(100,00000064)
+			:i else 
+				:i $score$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i if  ( (%i(0,00000000) > %GLOBAL%$score$)  OR  (%GLOBAL%$score$ = %i(0,00000000)) ) 
+		:i $score$ = %i(0,00000000)
+	:i else 
+		:i if  (%GLOBAL%$can_spin$ = %i(1,00000001)) 
+			:i if  (%GLOBAL%$bailtime$ > %f(1.500000)) 
+				:i $score$ =  (%GLOBAL%$score$ / %i(4,00000004)) 
+			:i else 
+				:i if  (%GLOBAL%$bailtime$ > %f(0.400000)) 
+					:i $score$ =  (%GLOBAL%$score$ /  (%f(2.500000) *  (%GLOBAL%$bailtime$%f(-0.500000))  + %f(1.500000)) ) 
+				:i else 
+					:i $score$ = %i(70,00000046)
+				:i endif
+			:i endif
+		:i endif
+		:i $CastToInteger$$score$
+		:i $mod$ =  (%GLOBAL%$score$ -  (%GLOBAL%$score$ / %i(10,0000000a))  * %i(10,0000000a)) 
+		:i if NOT  (%GLOBAL%$mod$ = %i(0,00000000)) 
+			:i $score$ =  (%GLOBAL%$score$ +  (%i(10,0000000a) - %GLOBAL%$mod$) ) 
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$score$ > %i(8000,00001f40)) 
+		:i $score$ = %i(8000,00001f40)
+	:i endif
+	:i return
+	$score$ = %GLOBAL%$score$
+:i endfunction
+:i function $cat_landable$
+	:i $get_CAT_param_values$$trick_index$ = %i(0,00000000)
+	:i $upsidedown$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$rotation_info$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$on$)  = %i(1,00000001)) 
+			:i if NOT  ( ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Axis$)  = $y$) 
+				:i $degrees$ =  ( (%GLOBAL%$rotation_info$:a{%GLOBAL%$index$:a}) ->$Deg$) 
+				:i while
+					
+					:i if  (%GLOBAL%$degrees$ > %i(360,00000168)) 
+						:i $degrees$ =  (%GLOBAL%$degrees$ - %i(360,00000168)) 
+					:i else 
+						:i continue
+						
+					:i endif
+				:i loop_to 
+				:i if  (%GLOBAL%$degrees$ = %i(180,000000b4)) 
+					:i if  (%GLOBAL%$upsidedown$ = %i(1,00000001)) 
+						:i $upsidedown$ = %i(0,00000000)
+					:i else 
+						:i $upsidedown$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$upsidedown$ = %GLOBAL%$upsidedown$
+:i endfunction
+:i $skater_board_was_hidden$ = %i(0,00000000)
+:i function $show_CAT_skater$
+	:i $printf$%s(22,"script show_CAT_skater")
+	:i if NOT $ObjectExists$$id$ = $CAT_Skater$
+		:i $Skater$.$AtomicIsHidden$$board$
+		:i if  (%GLOBAL%$hidden$ = %i(1,00000001)) 
+			:i $printf$%s(24,"skaters board was hidden")
+			:i $Skater$.$SwitchOnAtomic$$board$
+			:i $change$$skater_board_was_hidden$ = %i(1,00000001)
+		:i endif
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $motion$:s}
+				:i :s{$component$ = $Suspend$$NeverSuspend$:s}
+				:i :s{$component$ = $skeleton$
+					:i $SkeletonName$ = $THPS6_human$
+					:i $max_bone_skip_lod$ = %i(0,00000000)
+				:i :s}
+				:i :s{$component$ = $model$
+					:i $refObjectName$ = $Skater$
+				:i :s}
+				:i :s{$component$ = $AnimBlender$
+					:i $AnimName$ = $animload_THPS6_human$
+					:i $SkeletonName$ = $THPS6_human$
+				:i :s}
+				:i :s{$component$ = $SpecialItem$:s}
+				:i :s{$component$ = $SkaterFlipAndRotate$:s}
+				:i :a}
+			:i $params$ = :s{$name$ = $CAT_Skater$:s}
+		:i :s}
+		:i $CAT_Skater$.$Move$$y$ = %i(4294966546,fffffd12)
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $CAT_Cam$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = 
+			:i :a{
+				:i :s{$component$ = $camera$:s}
+				:i :a}
+			:i $params$ = :s{$name$ = $CAT_Cam$:s}
+		:i :s}
+	:i endif
+	:i $CAT_Skater$.$Obj_GetPosition$
+	:i $CAT_Cam$.$Obj_SetPosition$$Position$ =  (%GLOBAL%$pos$ + %vec3(150.000000,5.000000,50.000000)) 
+	:i $CAT_Cam$.$Obj_SetOrientation$$y$ = %i(90,0000005a)
+	:i $wait$%i(1,00000001)$gameframes$
+	:i $SetActiveCamera$$id$ = $CAT_Cam$
+	:i $CAT_Skater$.$Obj_PlayAnim$$anim$ = $AirIdle$$playhold$$speed$ = %i(0,00000000)
+	:i $Skater$.$TurnOffSpecialItem$
+	:i $make_mainmenu_3d_plane$$model$ = %s(17,"cat_bg\cat_bg.mdl")$z_priority$ = %i(4294967096,ffffff38)$scale$ = %vec2(1.700000,2.100000)$pos$ = %vec2(320.000000,225.000000)$parent$ = $cat_menu_anchor$
+	:i if $ScreenElementExists$$id$ = $timeline_vmenu$
+		:i if NOT $GotParam$$dont_focus_timeline$
+			:i $FireEvent$$type$ = $focus$$target$ = $timeline_vmenu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $cat_back_to_skater_cam$
+	:i $Restore_skater_camera$
+:i endfunction
+:i function $cat_rehide_skater_board$
+	:i if  ($skater_board_was_hidden$ = %i(1,00000001)) 
+		:i $Skater$.$SwitchOffAtomic$$board$
+		:i $change$$skater_board_was_hidden$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i $running_cat_demo$ = %i(0,00000000)
+:i function $spawn_cat_demo_loop$
+	:i if  ($running_cat_demo$ = %i(0,00000000)) 
+		:i $change$$running_cat_demo$ = %i(1,00000001)
+		:i while
+			
+			:i if $ObjectExists$$id$ = $CAT_Skater$
+				:i continue
+				
+			:i endif
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+		:i $RunScriptOnObject$$id$ = $CAT_Skater$$cancel_rotate_display$
+		:i $wait$%i(1,00000001)$second$
+		:i $KillSpawnedScript$$name$ = $cat_perform_trick_loop$
+		:i $RunScriptOnObject$$id$ = $CAT_Skater$$cat_perform_trick_loop$$params$ = :s{$ObjId$ = $CAT_Skater$:s}
+	:i endif
+:i endfunction
+:i function $cancel_rotate_display$
+	:i $CancelRotateDisplay$
+:i endfunction
+:i function $cat_perform_trick_loop$
+	:i $printf$%s(22,"cat_perform_trick_loop")
+	:i while
+		
+		:i $calculate_cat_score$$get_time$
+		:i if $ScreenElementExists$$id$ = $timeline_scrubber$
+			:i $RunScriptOnScreenElement$$move_cat_scrubber$$id$ = $timeline_scrubber$$params$ = :s{$time$ = %GLOBAL%$time$$id$ = $timeline_scrubber$:s}
+		:i endif
+		:i $CreateATrick$$trick_index$ = %i(0,00000000)$demo_loop$ = $demo_loop$
+		:i while
+			
+			:i if  ($cat_done$ = %i(1,00000001)) 
+				:i continue
+				
+			:i endif
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+		:i $Obj_PlayAnim$$anim$ = $AirIdle$$cycle$$blend$ = %f(0.300000)
+		:i $wait$%f(0.500000)$seconds$
+		:i $CancelRotateDisplay$
+		:i $wait$%f(0.300000)$seconds$
+		:i if  ($running_cat_demo$ = %i(0,00000000)) 
+			:i $printf$%s(30,"exiting cat_perform_trick_loop")
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i function $move_cat_scrubber$
+	:i if  (%GLOBAL%$time$ > %i(0,00000000)) 
+		:i $end_pos$ =  (%GLOBAL%$time$ * %i(200,000000c8)) 
+		:i $DoMorph$$alpha$ = %f(1.000000)
+		:i $DoMorph$$pos$ =  (%GLOBAL%$end_pos$ * %vec2(1.000000,0.000000) + %vec2(0.000000,-16.000000)) $time$ = %GLOBAL%$time$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DoMorph$$pos$ = %vec2(0.000000,-16.000000)$alpha$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $cat_menu_add_meter_item$
+	:i $value_int$ =  (%GLOBAL%$value$ * %i(100,00000064)) 
+	:i $CastToInteger$$value_int$
+	:i $cat_menu_add_number_item$ isNull $right_arrow_pos$ = %vec2(190.000000,-15.000000)$value$ = %GLOBAL%$value_int$$percent$
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $value_scale$ =  (%GLOBAL%$value$ * %vec2(5.000000,0.000000) + %vec2(0.000000,1.000000)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $cat_box$
+		:i $scale$ = %GLOBAL%$value_scale$
+		:i $pos$ = %vec2(108.000000,-6.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(3,00000003)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $cat_box$
+		:i $scale$ = %vec2(5.000000,1.000000)
+		:i $pos$ = %vec2(108.000000,-6.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %f(2.800000)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $cat_menu_add_number_item$
+	:i if NOT $GotParam$$pad_choose_script$
+		:i $pad_choose_script$ = $null_script$
+	:i endif
+	:i $theme_menu_add_number_item$:s{
+		:i  isNull 
+		:i $cat_edit_item$ = $cat_edit_item$
+		:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+	:i :s}
+:i endfunction
+:i function $cat_update_right_arrow$
+	:i $GetTags$
+	:i $GetStackedScreenElementPos$$x$$id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}$offset$ = %vec2(3.000000,2.000000)
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$pos$ = %GLOBAL%$pos$:s}
+:i endfunction
+:i function $cat_update_left_arrow$
+	:i $GetTags$
+	:i $GetScreenElementPosition$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(0.000000,2.000000)) :s}
+:i endfunction
+:i function $create_timeline_fader_box$$parent$ = $current_menu_anchor$
+	:i if $ScreenElementExists$$id$ = $timeline_fader$
+		:i return
+		
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $timeline_fader$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(75.000000,17.000000)
+		:i $pos$ = %vec2(21.000000,260.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $z_priority$ = %i(100,00000064)
+		:i $heap$ =  ($cat_heap$) 
+	:i :s}
+:i endfunction
+:i function $add_trick_list_items$$array$ = $cat_flip_tricks$
+	:i $theme_background$$parent$ = $trick_menu$$id$ = $bg_box_vmenu$$width$ = %f(2.500000)$pos$ = %vec2(670.000000,85.000000)$num_parts$ = %i(5,00000005)
+	:i $GetArraySize$%GLOBAL%$array$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $RemoveParameter$$first_item$
+		:i $RemoveParameter$$last_item$
+		:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+			:i $first_item$ = $first_item$
+		:i else 
+			:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$%i(4294967295,ffffffff)) ) 
+				:i $last_item$ = $last_item$
+			:i endif
+		:i endif
+		:i $trick$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) 
+		:i if $IsArray$%GLOBAL%$trick$
+			:i $text$ =  ( ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) ->$name$) 
+		:i else 
+			:i $text$ =  ( (%GLOBAL%$trick$->$params$) ->$name$) 
+		:i endif
+		:i if NOT $GotParam$$sounds$
+			:i $focus_script$ = $main_theme_focus$
+			:i $unfocus_script$ = $main_theme_unfocus$
+		:i else 
+			:i $focus_script$ = $cat_trick_list_sound_focus$
+			:i $unfocus_script$ = $cat_trick_list_sound_unfocus$
+			:i if $IsArray$%GLOBAL%$trick$
+				:i $stream$ =  ( ( (%GLOBAL%$trick$:a{%i(0,00000000):a}) ->$params$) ->$stream$) 
+			:i else 
+				:i $stream$ =  ( (%GLOBAL%$trick$->$params$) ->$stream$) 
+			:i endif
+			:i $focus_params$ = :s{$stream$ = %GLOBAL%$stream$:s}
+		:i endif
+		:i $theme_menu_add_item$:s{$parent$ = $trick_vmenu$
+			:i $centered$ = %i(1,00000001)
+			:i $no_bg$ = $no_bg$
+			:i $no_highlight_bar$
+			:i $menu$ = %i(2,00000002)
+			:i $middle_scale$ = %vec2(2.500000,1.000000)
+			:i $text$ = %GLOBAL%$text$
+			:i $pad_choose_script$ = $CAT_set_trick_struct$
+			:i $pad_choose_params$ = :s{$anim_index$ = %GLOBAL%$anim_index$
+				:i $timeline_id$ = %GLOBAL%$timeline_id$
+				:i $new_trick$ = %GLOBAL%$trick$:s}
+			:i $focus_script$ = %GLOBAL%$focus_script$
+			:i $unfocus_script$ = %GLOBAL%$unfocus_script$
+			:i $focus_params$ = %GLOBAL%$focus_params$
+			:i $first_item$ = %GLOBAL%$first_item$
+			:i $last_item$ = %GLOBAL%$last_item$
+		:i :s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i $SetScreenElementProps$$id$ = $trick_scrolling_menu$$reset_window_bottom$
+:i endfunction
+:i function $cat_trick_list_sound_focus$
+	:i $StopStream$
+	:i $RunScriptOnScreenElement$$id$ = $trick_vmenu$$cat_trick_list_spawned_sound$$params$ = :s{$stream$ = %GLOBAL%$stream$:s}
+	:i $main_theme_focus$ isNull 
+:i endfunction
+:i function $cat_trick_list_spawned_sound$
+	:i $wait$%i(10,0000000a)$gameframes$
+	:i $PlayStream$%GLOBAL%$stream$$vol$ = %i(100,00000064)
+:i endfunction
+:i function $cat_trick_list_sound_unfocus$
+	:i $KillSpawnedScript$$name$ = $cat_trick_list_spawned_sound$
+	:i $StopStream$
+	:i $main_theme_unfocus$ isNull 
+:i endfunction
+:i $cat_grab_tricks$ = :a{
+	:i $trick_indy$
+	:i $Trick_Melon$
+	:i $Trick_Tailgrab$
+	:i $Trick_Nosegrab$
+	:i $Trick_Mute$
+	:i $Trick_Airwalk$
+	:i $Trick_IndyNoseBone$
+	:i $Trick_Crossbone$
+	:i $Trick_Benihana$
+	:i $Trick_Stalefish$
+	:i $Trick_Cannonball$
+	:i $Trick_Japan$
+	:i $Trick_Crail$
+	:i $Trick_SaranWrap$
+	:i $Trick_FSShifty$
+	:i $Extra_BSShifty$
+	:i $Trick_Madonna$
+	:i $Trick_Judo$
+	:i $Trick_OneFootJapan$
+	:i $Trick_ChristAir$
+	:i $Trick_Stiffy$
+	:i $Trick_Rocket$
+	:i $Trick_Method$
+	:i $Trick_SackTap$
+	:i $Extra_TuckKnee$
+	:i $Trick_BetweenTheLegs$
+	:i $Extra_CannonballFingerflip$
+	:i $Trick_Stalefish_Layback$
+	:i $Trick_CrookedCop$
+	:i $Trick_DelMarIndy$
+	:i $Trick_OneFootTailgrab$
+	:i $Trick_Seatbelt$
+	:i :a}
+:i $cat_flip_tricks$ = :a{
+	:i $trick_kickflip$
+	:i $Trick_Heelflip$
+	:i $Trick_Impossible$
+	:i $Trick_FFImpossible$
+	:i $Trick_PopShoveIt$
+	:i $Trick_FSShoveIt$
+	:i $Trick_Hardflip$
+	:i $Trick_OllieNorth$
+	:i $Trick_FingerFlip$
+	:i $Trick_VarialKickflip$
+	:i $Extra_VarialKickflip$
+	:i $Trick_VarialHeelflip$
+	:i $Extra_VarialHeelflip$
+	:i $Trick_OldSkoolKickflip$
+	:i $Trick_BigSpinFlip$
+	:i $Trick_FSFlip$
+	:i $Trick_BSFlip$
+	:i $Trick_FSBigSpin$
+	:i $Trick_BSBigSpin$
+	:i $Trick_BackfootKickflip$
+	:i $Extra_DBackfootHeelflip$
+	:i $Trick_SalFlip$
+	:i $Trick_180Varial$
+	:i $Trick_360Varial$
+	:i $DoubleKickflip$
+	:i $TripleKickflip$
+	:i $DoubleHeelflip$
+	:i $TripleHeelflip$
+	:i $Trick_OllieAirwalk$
+	:i $Trick_HFVarialLien$
+	:i $Extra_DoubleFingerFlip$
+	:i $Extra_360Hardflip$
+	:i $Trick_InwardHeelflip$
+	:i $Extra_360InwardHeelflip$
+	:i $DoubleImpossible$
+	:i $TripleImpossible$
+	:i $Extra360ShoveIt$
+	:i $Extra540ShoveIt$
+	:i $ExtraFS360ShoveIt$
+	:i $ExtraFS540ShoveIt$
+	:i $Trick_BackfootShoveIt$
+	:i $Extra_DBackfootKickflip$
+	:i $Trick_BackfootHeelflip$
+	:i :a}
+:i $cat_special_tricks$ = :a{
+	:i $Trick_BarrelRoll$
+	:i $trick_fs540$
+	:i $trick_the900$
+	:i $Trick_BamBendAir$
+	:i $Trick_BreakIn$
+	:i $Trick_Shifty360ShovitBSShifty$
+	:i $Trick_540varielheelfliplien$
+	:i $Trick_FSFlipOneFootTailGrab$
+	:i $Trick_Flamingo$
+	:i $Trick_360VarialMcTwist$
+	:i $Trick_Indy900$
+	:i $Trick_SitDownAir$
+	:i $Trick_GhettoBird$
+	:i $Trick_BigSpinShifty$
+	:i $Trick_McTwist$
+	:i $Trick_2KickMadonnaFlip$
+	:i $Trick_AirCasperFlip$
+	:i $Trick_540TailWhip$
+	:i $Trick_Gazelle$
+	:i $trick_SemiFlip$
+	:i $trick_FingerFlipAirWalk$
+	:i $trick_1234$
+	:i $trick_DoubleKFIndy$
+	:i $trick_540flip$
+	:i $trick_HardFlipBackFootFlip$
+	:i $trick_KickFlipUnderFlip$
+	:i $trick_QuadrupleHeelFlip$
+	:i :a}
+:i $cat_misc_tricks$ = :a{
+	:i $CATTrick_Handstand$
+	:i $CATTrick_Casper$
+	:i $CATTrick_AntiCasper$
+	:i $CATTrick_Truckstand$
+	:i $CATTrick_Pogo$
+	:i $CATTrick_SwitchFootPogo$
+	:i $CATTrick_other03$
+	:i $CATTrick_other04$
+	:i $CATTrick_other05$
+	:i $CATTrick_other06$
+	:i $CATTrick_other07$
+	:i $CATTrick_other08$
+	:i $CATTrick_other09$
+	:i $CATTrick_other10$
+	:i $CATTrick_other11$
+	:i $CATTrick_other12$
+	:i $CATTrick_other13$
+	:i $CATTrick_other14$
+	:i $CATTrick_other15$
+	:i $CATTrick_other16$
+	:i $CATTrick_other17$
+	:i $CATTrick_other18$
+	:i $CATTrick_PrimoSpin$
+	:i $CATTrick_Butt_Manual$
+	:i $CATTrick_JesterJuggle$
+	:i $CATTrick_HotRod$
+	:i $CATTrick_TonySurfer$
+	:i $CATTrick_RunningMan$
+	:i $CATTrick_Boomerang$
+	:i $CATTrick_GuitarSlide$
+	:i $CATTrick_AmericanHero$
+	:i :a}
+:i $cat_generic_tricks$ = :a{
+	:i $CATSFX_StripClub$
+	:i $CATSFX_Gator$
+	:i $CATSFX_Crack$
+	:i $CATSFX_Fire$
+	:i $CATSFX_Cops$
+	:i $CATSFX_Geek$
+	:i $CATSFX_Dog$
+	:i $CATSFX_Seal$
+	:i $CATSFX_Funk$
+	:i $CATSFX_Drum$
+	:i $CATSFX_Fart$
+	:i $CATSFX_Burp$
+	:i $CATSFX_Flush$
+	:i :a}
+:i $CATTrick_Handstand$ = :s{$x$$params$ = :s{$name$ = %sc(9,"HandStand")$anim$ = $HandstandHandFlip_Init$$idle$ = $HandstandHandFlip_Range$$OutAnim$ = $HandstandHandFlip_out$:s}:s}
+:i $CATTrick_Casper$ = :s{$x$$params$ = :s{$name$ = %sc(6,"Casper")$anim$ = $Casper_Init$$idle$ = $Casper_Range$$OutAnim$ = $Casper_out$$BoardRotate$:s}:s}
+:i $CATTrick_AntiCasper$ = :s{$x$$params$ = :s{$name$ = %sc(11,"Anti Casper")$anim$ = $AntiCasper_Init$$idle$ = $AntiCasper_Range$$OutAnim$ = $AntiCasper_out$$BoardRotate$:s}:s}
+:i $CATTrick_Truckstand$ = :s{$x$$params$ = :s{$name$ = %sc(10,"Truckstand")$anim$ = $Truckstand_Init$$idle$ = $Truckstand_Range$$OutAnim$ = $Truckstand_Out$:s}:s}
+:i $CATTrick_Pogo$ = :s{$x$$params$ = :s{$name$ = %sc(4,"Pogo")$anim$ = $Pogo_Init$$idle$ = $Pogo_Bounce$$OutAnim$ = $Pogo_Out$$BoardRotate$:s}:s}
+:i $CATTrick_SwitchFootPogo$ = :s{$x$$params$ = :s{$name$ = %sc(16,"Switch Foot Pogo")$anim$ = $Truckrun_Init$$idle$ = $TruckRun$$OutAnim$ = $Truckrun_Out$:s}:s}
+:i $CATTrick_PrimoSpin$ = :s{$x$$params$ = :s{$name$ = %sc(10,"Primo Spin")$anim$ = $Special_Rodney_PrimoSpin_Init$$idle$ = $Special_Rodney_PrimoSpin_Idle$$OutAnim$ = $Special_Rodney_PrimoSpin_Out$:s}:s}
+:i $CATTrick_Butt_Manual$ = :s{$x$$params$ = :s{$name$ = %sc(18,"Paulie Butt Manual")$anim$ = $Special_Paulie_ButtMan_Init$$idle$ = $Special_Paulie_ButtMan_Range$$OutAnim$ = $Special_Paulie_ButtMan_Out$:s}:s}
+:i $CATTrick_JesterJuggle$ = :s{$x$$params$ = :s{$name$ = %sc(18,"Manual Entertainer")$anim$ = $Special_Jester_Juggle_Init$$idle$ = $Special_Jester_Juggle_idle$$OutAnim$ = $Special_Jester_Juggle_Out$:s}:s}
+:i $CATTrick_HotRod$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Hot Rod")$anim$ = $Special_Jesse_HotRod_Init$$idle$ = $Special_Jesse_HotRod_Range$$OutAnim$ = $Special_Jesse_HotRod_Out$$specialitem_details$ = $DragTires_details$:s}:s}
+:i $CATTrick_TonySurfer$ = :s{$x$$params$ = :s{$name$ = %sc(6,"Surfer")$anim$ = $Special_Tony_Surfer_Init$$idle$ = $Special_Tony_Surfer_Idle$$ExtraTricks$ = $FlatlandBranches$:s}:s}
+:i $CATTrick_RunningMan$ = :s{$x$$params$ = :s{$name$ = %sc(14,"Running Manual")$anim$ = $Special_Eric_RnngMan_Init$$idle$ = $Special_Eric_RnngMan_Idle$$ExtraTricks$ = $FlatlandBranches$:s}:s}
+:i $CATTrick_Boomerang$ = :s{$x$$params$ = :s{$name$ = %sc(9,"Boomerang")$anim$ = $Special_MikeV_Boomerang$$ExtraTricks$ = $FlatlandBranches$:s}:s}
+:i $CATTrick_GuitarSlide$ = :s{$x$$params$ = :s{$name$ = %sc(11,"The Faction")$anim$ = $Guitar_Idle$$specialitem_details$ = $Guitar_Details$$stream$ = $GuitarSlide$:s}:s}
+:i $CATTrick_AmericanHero$ = :s{$x$$params$ = :s{$name$ = %sc(16,"American Tribute")$anim$ = $AmericanHeroGrind_Idle$$specialitem_details$ = $AmericanTributeSI_Details$:s}:s}
+:i $CATSFX_StripClub$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(10,"Party Girl")$anim$ = $AirIdleCAT$$stream$ = $NO_Female1_Flash05$:s}:s}
+:i $CATSFX_Burp$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(9,"Chow Down")$anim$ = $AirIdleCAT$$stream$ = $Burp01$:s}:s}
+:i $CATSFX_Fart$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(14,"Bronco Burrito")$anim$ = $AirIdleCAT$$stream$ = $Fart01$:s}:s}
+:i $CATSFX_Flush$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(11,"Give it Gas")$anim$ = $AirIdleCAT$$stream$ = $AU_SFX_ToiletFlush$:s}:s}
+:i $CATSFX_Gator$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(13,"Gators Attack")$anim$ = $AirIdleCAT$$stream$ = $FL_AlligatorEatSkater$:s}:s}
+:i $CATSFX_Fire$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(15,"Fire Fire Fire!")$anim$ = $AirIdleCAT$$stream$ = $Spec_Muska01$:s}:s}
+:i $CATSFX_Cops$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(10,"Officer D.")$anim$ = $AirIdleCAT$$stream$ = $PoliceChirp01$:s}:s}
+:i $CATSFX_Geek$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(7,"Geek It")$anim$ = $AirIdleCAT$$stream$ = $SK6_SE_Robot_Beep03$:s}:s}
+:i $CATSFX_Dog$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(8,"Sup Dawg")$anim$ = $AirIdleCAT$$stream$ = $ST_DogBarks02$:s}:s}
+:i $CATSFX_Seal$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(9,"Big Block")$anim$ = $AirIdleCAT$$stream$ = $Spec_JesseJ01$:s}:s}
+:i $CATSFX_Crack$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(8,"Spook Me")$anim$ = $AirIdleCAT$$stream$ = $CAT_Spooky$:s}:s}
+:i $CATSFX_Funk$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(7,"Da Funk")$anim$ = $AirIdleCAT$$stream$ = $Spec_Muska02$:s}:s}
+:i $CATSFX_Drum$ = :s{$x$$params$ = :s{$sound$$name$ = %sc(9,"Drum Line")$anim$ = $AirIdleCAT$$stream$ = $CAT_Drum$:s}:s}
+:i $CATTrick_other03$ = :s{$x$$params$ = :s{$name$ = %sc(8,"Boneless")$anim$ = $Boneless$:s}:s}
+:i $CATTrick_other04$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Cheer 1")$anim$ = $Cheer1$:s}:s}
+:i $CATTrick_other05$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Cheer 2")$anim$ = $Cheer2$:s}:s}
+:i $CATTrick_other06$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Sketchy")$anim$ = $SketchyLand$:s}:s}
+:i $CATTrick_other07$ = :s{$x$$params$ = :s{$name$ = %sc(4,"Slap")$anim$ = $SlapAir$:s}:s}
+:i $CATTrick_other08$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Taunt 1")$anim$ = $Taunt1$:s}:s}
+:i $CATTrick_other09$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Taunt 2")$anim$ = $Taunt2$:s}:s}
+:i $CATTrick_other10$ = :s{$x$$params$ = :s{$name$ = %sc(7,"Taunt 3")$anim$ = $Taunt3$:s}:s}
+:i $CATTrick_other11$ = :s{$x$$params$ = :s{$name$ = %sc(9,"Rail Flip")$anim$ = $RailFlip$:s}:s}
+:i $CATTrick_other12$ = :s{$x$$params$ = :s{$name$ = %sc(11,"Casper Flip")$anim$ = $CasperFlip$:s}:s}
+:i $CATTrick_other13$ = :s{$x$$params$ = :s{$name$ = %sc(19,"Half Cab Impossible")$anim$ = $HalfCabImpossible$:s}:s}
+:i $CATTrick_other14$ = :s{$x$$params$ = :s{$name$ = %sc(14,"360 Fingerflip")$anim$ = $_360FlipNoseManual$:s}:s}
+:i $CATTrick_other15$ = :s{$x$$params$ = :s{$name$ = %sc(9,"SpaceWalk")$anim$ = $Spacewalk$:s}:s}
+:i $CATTrick_other16$ = :s{$x$$params$ = :s{$name$ = %sc(5,"Props")$anim$ = $Prop$:s}:s}
+:i $CATTrick_other17$ = :s{$x$$params$ = :s{$name$ = %sc(6,"Nollie")$anim$ = $Nollie$:s}:s}
+:i $CATTrick_other18$ = :s{$x$$params$ = :s{$name$ = %sc(5,"Ollie")$anim$ = $Ollie$:s}:s}
+:i :end

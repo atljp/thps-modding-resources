@@ -1,0 +1,52 @@
+enum <ushort> AtomType
+{
+	TYPE_INVALID = 0,
+
+	TYPE_BRIDGE,
+
+	TYPE_SET_LOCAL_TRANSFORMS,
+	TYPE_SET_LOCAL_TRANSLATIONS,
+	TYPE_SET_LOCAL_ROTATIONS,
+
+	TYPE_BALL_SOCKET,
+	TYPE_STIFF_SPRING,
+
+	TYPE_LIN,
+	TYPE_LIN_SOFT,
+	TYPE_LIN_LIMIT,
+	TYPE_LIN_FRICTION,
+	TYPE_LIN_MOTOR,
+
+	TYPE_2D_ANG,
+
+	TYPE_ANG,
+	TYPE_ANG_LIMIT,
+	TYPE_TWIST_LIMIT,
+	TYPE_CONE_LIMIT,
+	TYPE_ANG_FRICTION,
+	TYPE_ANG_MOTOR,
+
+	TYPE_RAGDOLL_MOTOR,
+
+	TYPE_PULLEY,
+	TYPE_OVERWRITE_PIVOT,
+
+	TYPE_CONTACT,
+
+		//
+		// modifiers, must be the end of the list
+		//
+	TYPE_MODIFIER_SOFT_CONTACT,		// not supported by the spu
+	TYPE_MODIFIER_MASS_CHANGER,		// spu supported
+	TYPE_MODIFIER_VISCOUS_SURFACE,	// not supported by the spu
+	TYPE_MODIFIER_MOVING_SURFACE,	// spu supported
+	TYPE_MODIFIER_IGNORE_CONSTRAINT,  // spu supported
+
+	TYPE_MAX
+};
+
+typedef struct
+{
+    SkipTo(2);
+    AtomType m_type;
+} hkpConstraintAtom <read=Str("%s", EnumToString(m_type))>;

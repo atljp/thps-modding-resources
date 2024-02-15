@@ -1,0 +1,305 @@
+
+:i $select_shift$ = %i(1,00000001)
+:i $memcard_screenshots$ = %i(0,00000000)
+:i $skater_cam_0_mode$ = %i(2,00000002)
+:i $skater_cam_1_mode$ = %i(2,00000002)
+:i function $UserSelectSelect$
+	:i if $LevelIs$$load_mainmenu$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $root_window$
+		:i if $root_window$.$GetSingleTag$$menu_state$
+			:i if  (%GLOBAL%$menu_state$ = $on$) 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $isngc$
+		:i if $ObjectExists$$id$ = $skatercam0$
+			:i switch $skater_cam_0_mode$
+				:i case %i(1,00000001)
+					:i $change$$skater_cam_0_mode$ = %i(2,00000002)
+					:i endcase
+				case %i(2,00000002)
+					:i $change$$skater_cam_0_mode$ = %i(3,00000003)
+					:i endcase
+				case %i(3,00000003)
+					:i $change$$skater_cam_0_mode$ = %i(4,00000004)
+					:i endcase
+				case %i(4,00000004)
+					:i $change$$skater_cam_0_mode$ = %i(1,00000001)
+					:i end_switch
+			
+			:i $skatercam0$.$sc_setmode$$mode$ = $skater_cam_0_mode$
+		:i endif
+	:i endif
+:i endfunction
+:i function $UserSelectSelect2$
+	:i if $LevelIs$$load_mainmenu$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i return
+		
+	:i endif
+	:i if $ScreenElementExists$$id$ = $root_window$
+		:i if $root_window$.$GetSingleTag$$menu_state$
+			:i if  (%GLOBAL%$menu_state$ = $on$) 
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $isngc$
+		:i if $ObjectExists$$id$ = $skatercam1$
+			:i switch $skater_cam_1_mode$
+				:i case %i(1,00000001)
+					:i $change$$skater_cam_1_mode$ = %i(2,00000002)
+					:i endcase
+				case %i(2,00000002)
+					:i $change$$skater_cam_1_mode$ = %i(3,00000003)
+					:i endcase
+				case %i(3,00000003)
+					:i $change$$skater_cam_1_mode$ = %i(4,00000004)
+					:i endcase
+				case %i(4,00000004)
+					:i $change$$skater_cam_1_mode$ = %i(1,00000001)
+					:i end_switch
+			
+			:i $skatercam1$.$sc_setmode$$mode$ = $skater_cam_1_mode$
+		:i endif
+	:i endif
+:i endfunction
+:i $view_mode$ = %i(0,00000000)
+:i $render_mode$ = %i(0,00000000)
+:i $wireframe_mode$ = %i(0,00000000)
+:i $drop_in_car$ = %i(0,00000000)
+:i $drop_in_car_setup$ = $MiniBajaCarSetup$
+:i function $UserSelectTriangle$
+	:i if $NotCD$
+		:i switch $render_mode$
+			:i case %i(0,00000000)
+				:i $change$$render_mode$ = %i(1,00000001)
+				:i $show_wireframe_mode$
+				:i endcase
+			case %i(1,00000001)
+				:i $change$$render_mode$ = %i(2,00000002)
+				:i $show_wireframe_mode$
+				:i endcase
+			case %i(2,00000002)
+				:i $change$$render_mode$ = %i(3,00000003)
+				:i $toggle_wireframe_skins$
+				:i endcase
+			case %i(3,00000003)
+				:i $change$$render_mode$ = %i(0,00000000)
+				:i $toggle_wireframe_skins$
+				:i end_switch
+		
+		:i if  ($render_mode$ = %i(3,00000003)) 
+			:i $setRenderMode$$mode$ = %i(0,00000000)
+		:i else 
+			:i $setRenderMode$$mode$ = $render_mode$
+		:i endif
+	:i endif
+:i endfunction
+:i function $UserSelectSquare$
+	:i if $NotCD$
+		:i $ScreenShot$
+	:i endif
+:i endfunction
+:i function $UserSelectCircle$
+	:i if  ($render_mode$) 
+		:i if $NotCD$
+			:i switch $wireframe_mode$
+				:i case %i(0,00000000)
+					:i $change$$wireframe_mode$ = %i(1,00000001)
+					:i endcase
+				case %i(1,00000001)
+					:i $change$$wireframe_mode$ = %i(2,00000002)
+					:i endcase
+				case %i(2,00000002)
+					:i $change$$wireframe_mode$ = %i(3,00000003)
+					:i endcase
+				case %i(3,00000003)
+					:i $change$$wireframe_mode$ = %i(4,00000004)
+					:i endcase
+				case %i(4,00000004)
+					:i $change$$wireframe_mode$ = %i(5,00000005)
+					:i endcase
+				case %i(5,00000005)
+					:i $change$$wireframe_mode$ = %i(6,00000006)
+					:i endcase
+				case %i(6,00000006)
+					:i $change$$wireframe_mode$ = %i(0,00000000)
+					:i end_switch
+			
+			:i $setwireframemode$$mode$ = $wireframe_mode$
+			:i $show_wireframe_mode$
+		:i endif
+	:i else 
+		:i if $Skater$.$Driving$
+			:i $ToggleUserControlledVehicleMode$
+		:i endif
+		:i $UnpauseSkaters$%i(0,00000000)
+		:i if  ($drop_in_car$ = %i(0,00000000)) 
+			:i $Skater$.$PlaceBeforeCamera$
+			:i $Restore_skater_camera$
+			:i $change$$view_mode$ = %i(0,00000000)
+			:i $ToggleViewMode$
+			:i $ToggleViewMode$
+			:i $ToggleViewMode$
+		:i else 
+			:i $MakeSkaterGoto$$Switch_OnGroundAI$$Params$ = :s{$NewScript$ = $TransAm$$VehicleSetup$ = $drop_in_car_setup$$edited_goal$:s}
+			:i $SetActiveCamera$$id$ = $viewer_cam$
+			:i $PlayerVehicle$.$Vehicle_PlaceBeforeCamera$
+			:i $change$$view_mode$ = %i(0,00000000)
+			:i $ToggleViewMode$
+			:i $ToggleViewMode$
+			:i $ToggleViewMode$
+			:i $SetActiveCamera$$id$ = $PlayerVehicleCamera$
+			:i $Skater$.$PausePhysics$
+		:i endif
+	:i endif
+:i endfunction
+:i function $UserSelectStart$
+	:i if $NotCD$
+		:i $change$$render_mode$ = %i(0,00000000)
+		:i $setRenderMode$$mode$ = $render_mode$
+		:i $TogglePass$$pass$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $ToggleViewMode$
+	:i switch $view_mode$
+		:i case %i(0,00000000)
+			:i $change$$view_mode$ = %i(1,00000001)
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$view_mode$ = %i(2,00000002)
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$view_mode$ = %i(0,00000000)
+			:i end_switch
+	
+	:i $SetViewMode$$view_mode$
+:i endfunction
+:i function $UserSelectX$
+	:i $change$$viewer_rotation_angle$ = %i(0,00000000)
+	:i $ToggleViewMode$
+:i endfunction
+:i $viewer_rotation_angle$ = %i(0,00000000)
+:i function $UserViewerX$
+	:i if  ($viewer_rotation_angle$ = %i(0,00000000)) 
+		:i $change$$viewer_rotation_angle$ = %i(1,00000001)
+		:i $CenterCamera$$scale$ = %f(0.500000)$y$ = %i(4294967251,ffffffd3)
+	:i else 
+		:i if  ($viewer_rotation_angle$ = %i(1,00000001)) 
+			:i $CenterCamera$$scale$ = %f(0.500000)$y$ = %i(4294967161,ffffff79)
+			:i $change$$viewer_rotation_angle$ = %i(2,00000002)
+		:i else 
+			:i if  ($viewer_rotation_angle$ = %i(2,00000002)) 
+				:i $change$$viewer_rotation_angle$ = %i(3,00000003)
+				:i $CenterCamera$$scale$ = %f(0.500000)$y$ = %i(4294967071,ffffff1f)
+			:i else 
+				:i if  ($viewer_rotation_angle$ = %i(3,00000003)) 
+					:i $change$$viewer_rotation_angle$ = %i(0,00000000)
+					:i $CenterCamera$$scale$ = %f(0.500000)$y$ = %i(4294966981,fffffec5)
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $UserViewerSquare$
+	:i if  ($viewer_rotation_angle$ = %i(0,00000000)) 
+		:i $change$$viewer_rotation_angle$ = %i(1,00000001)
+		:i $CenterCamera$$x$ = %i(4294967286,fffffff6)$y$ = %i(4294967206,ffffffa6)$scale$ = %f(0.700000)
+	:i else 
+		:i if  ($viewer_rotation_angle$ = %i(1,00000001)) 
+			:i $CenterCamera$$x$ = %i(4294967286,fffffff6)$y$ = %i(4294967116,ffffff4c)$scale$ = %f(0.700000)
+			:i $change$$viewer_rotation_angle$ = %i(2,00000002)
+		:i else 
+			:i if  ($viewer_rotation_angle$ = %i(2,00000002)) 
+				:i $change$$viewer_rotation_angle$ = %i(3,00000003)
+				:i $CenterCamera$$x$ = %i(4294967286,fffffff6)$y$ = %i(4294967026,fffffef2)$scale$ = %f(0.700000)
+			:i else 
+				:i if  ($viewer_rotation_angle$ = %i(3,00000003)) 
+					:i $change$$viewer_rotation_angle$ = %i(0,00000000)
+					:i $CenterCamera$$x$ = %i(4294967286,fffffff6)$y$ = %i(0,00000000)$scale$ = %f(0.700000)
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i $Viewer_move_mode$ = %i(0,00000000)
+:i function $UserViewerCircle$
+	:i $change$$viewer_rotation_angle$ = %i(0,00000000)
+	:i switch $Viewer_move_mode$
+		:i case %i(0,00000000)
+			:i $change$$Viewer_move_mode$ = %i(1,00000001)
+			:i $SetMovementVelocity$%i(400,00000190)
+			:i $SetRotateVelocity$%i(120,00000078)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(7,"Med cam")$pos$ = %vec2(320.000000,50.000000)
+			:i endcase
+		case %i(1,00000001)
+			:i $change$$Viewer_move_mode$ = %i(2,00000002)
+			:i $SetMovementVelocity$%i(6000,00001770)
+			:i $SetRotateVelocity$%i(300,0000012c)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(8,"Fast cam")$pos$ = %vec2(320.000000,50.000000)
+			:i endcase
+		case %i(2,00000002)
+			:i $change$$Viewer_move_mode$ = %i(0,00000000)
+			:i $SetMovementVelocity$%i(100,00000064)
+			:i $SetRotateVelocity$%i(50,00000032)
+			:i $create_panel_message$$id$ = $viewermovemode$$text$ = %s(14,"Super Slow cam")$pos$ = %vec2(320.000000,50.000000)
+			:i end_switch
+	
+:i endfunction
+:i $USER_VIEWER_TRIANGLE_TOD$ = %i(1,00000001)
+:i function $UserViewerTriangle$
+	:i if  ($USER_VIEWER_TRIANGLE_TOD$) 
+		:i if  ($view_mode$ = %i(1,00000001)) 
+			:i $TODManager_AdvanceTODState$
+		:i endif
+	:i endif
+:i endfunction
+:i function $show_wireframe_mode$
+	:i switch $wireframe_mode$
+		:i case %i(0,00000000)
+			:i $wireframe_message$$text$ = %s(22,"Wireframe : Face Flags")
+			:i endcase
+		case %i(1,00000001)
+			:i $wireframe_message$$text$ = %s(24,"Wireframe : Poly Density")
+			:i endcase
+		case %i(2,00000002)
+			:i $wireframe_message$$text$ = %s(30,"Wireframe : Low Poly Highlight")
+			:i endcase
+		case %i(3,00000003)
+			:i $wireframe_message$$text$ = %s(32,"Wireframe : Unique object colors")
+			:i endcase
+		case %i(4,00000004)
+			:i $wireframe_message$$text$ = %s(41,"Wireframe : Renderable Unique MESH colors")
+			:i endcase
+		case %i(5,00000005)
+			:i $wireframe_message$$text$ = %s(42,"Wireframe : Renderable MESH vertex density")
+			:i endcase
+		case %i(6,00000006)
+			:i $wireframe_message$$text$ = %s(25,"Wireframe : Occlusion Map")
+			:i end_switch
+	
+:i endfunction
+:i function $wireframe_message$$text$ = %s(9,"wireframe")
+	:i $create_panel_message$$text$ = %GLOBAL%$text$$id$ = $wireframe_mess$$rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}$pos$ = %vec2(20.000000,340.000000)$just$ = :a{$left$$center$:a}$scale$ = %i(5,00000005)$style$ = $wireframe_style$
+:i endfunction
+:i function $wireframe_style$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(1.000000,1.000000)
+	:i $DoMorph$$time$ = %i(3,00000003)$scale$ = %vec2(1.000000,1.000000)
+	:i $DoMorph$$time$ = %i(1,00000001)$alpha$ = %i(0,00000000)
+	:i $die$
+:i endfunction
+:i :end

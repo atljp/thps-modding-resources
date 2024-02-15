@@ -1,0 +1,1820 @@
+Unknown [GHWT_HEADER] 
+SectionArray setlist_sorts{	ArrayStruct	[		StructHeader		{			StructQBKey Name = title_alphabetical			StructQBStringQs title = 0x73063505		}		StructHeader		{			StructQBKey Name = artist_alphabetical			StructQBStringQs title = 0x68455dfd		}		StructHeader		{			StructQBKey Name = career_order			StructQBStringQs title = 0xda629fb0		}		]}SectionInteger setlist_sort_index 0SectionInteger sort_restore_selections 0SectionInteger refresh_from_sort 0SectionArray temp_quickplay_song_list{	ArrayQBKey	[		null		null		null		null		null		null	]}SectionArray temp_jamsession_song_list{	ArrayInteger	[		4294967295		4294967295		4294967295		4294967295		4294967295		4294967295	]}Script reset_temp_quickplay_song_list 0xb1683ffa [	:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+	:i $i$ = %i(0)
+	:i while 
+	:i $SetArrayElement$$ArrayName$ = $temp_quickplay_song_list$$globalarray$$index$ = %GLOBAL%$i$$newvalue$ = $null$
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i endfunction]Script reset_temp_jamsession_song_list 0x963b7cbb [	:i $GetArraySize$${StructQBString temp_jamsession_song_list}$
+	:i $i$ = %i(0)
+	:i while 
+	:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = %GLOBAL%$i$$newvalue$ = %i(4294967295)
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i endfunction]Script song_is_in_temp_quickplay_song_list 0x5b0a66d9 [	:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+	:i %GLOBAL%$i$ = %i(0)
+	:i while 
+	:i if (%GLOBAL%$Song$ = (~$temp_quickplay_song_list$:a{%GLOBAL%$i$:a}))
+		:i return${StructQBKey true}$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return${StructQBKey false}$
+	:i endfunction]Script get_song_index_from_temp_quickplay_song_list 0x95d67b10 [	:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+	:i %GLOBAL%$i$ = %i(0)
+	:i while 
+	:i if (%GLOBAL%$Song$ = (~$temp_quickplay_song_list$:a{%GLOBAL%$i$:a}))
+		:i return$quickplay_index$ = %GLOBAL%$i$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return${StructInt quickplay_index = -1}$
+	:i endfunction]Script get_song_index_from_temp_jamsession_song_list 0x2afe5232 [	:i $GetArraySize$${StructQBString temp_jamsession_song_list}$
+	:i %GLOBAL%$i$ = %i(0)
+	:i while 
+	:i if (%GLOBAL%$jam_song$ = (~$temp_jamsession_song_list$:a{%GLOBAL%$i$:a}))
+		:i return$jamsession_index$ = %GLOBAL%$i$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return${StructInt jamsession_index = -1}$
+	:i endfunction]Script song_is_in_temp_jamsession_song_list 0x3fc8ba57 [	:i $GetArraySize$${StructQBString temp_jamsession_song_list}$
+	:i %GLOBAL%$i$ = %i(0)
+	:i while 
+	:i if (%GLOBAL%$jam_song$ = (~$temp_jamsession_song_list$:a{%GLOBAL%$i$:a}))
+		:i return${StructQBKey true}$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return${StructQBKey false}$
+	:i endfunction]Script ui_create_setlist 0x47238ce0 [	:i $KillSpawnedScript$${StructQBKey Name = Loading_Screen_Crowd_Swell}$
+	:i $KillSpawnedScript$${StructQBKey Name = Crowd_Loading_Whistle}$
+	:i $KillSpawnedScript$${StructQBKey Name = OneShotsBetweenSongs}$
+	:i $KillSpawnedScript$${StructQBKey Name = SurgeBetweenSongs}$
+	:i if NOT (~$game_mode$ = $practice$ OR ~$game_mode$ = $training$)
+		:i $SpawnScriptNow$${StructQBKey Skate8_SFX_Backgrounds_New_AreaStructStruct params{	StructHeader	{		StructQBKey BG_SFX_Area = FrontEnd_Menu_Music	}}}$
+	:i endif
+	:i if (~$is_network_game$ = %i(1))
+		:i $spawn_player_drop_listeners$${StructQBKey drop_player_script = setlist_drop_playerStructQBKey end_game_script = setlist_end_game}$
+	:i endif
+	:i if ((~$game_mode$ = $p2_battle$) OR (~$game_mode$ = $p2_faceoff$) OR (~$game_mode$ = $p2_pro_faceoff$) OR (~$game_mode$ = $p2_quickplay$) OR (~$game_mode$ = $p3_quickplay$) OR (~$game_mode$ = $p4_quickplay$))
+		:i if NOT $GotParam$${StructQBKey from_leaderboard}$
+			:i $SpawnScriptNow$${StructQBKey task_menu_default_anim_inStructStruct params{	StructHeader	{		StructString base_name = "character_hub"	}}}$
+		:i endif
+	:i endif
+	:i $SpawnScriptNow$$ui_create_setlist_spawned$$params$ = isNull 
+	:i endfunction]Script ui_create_setlist_spawned 0x057610e4 [	${StructInt for_custom_setlist = 1}$
+	:i if NOT $GotParam$${StructQBKey from_leaderboard}$
+		:i $change$${StructQBKey rich_presence_context = presence_gigboard_and_setlist}$
+	:i endif
+	:i $StopRendering$
+	:i if (~$is_network_game$ = %i(1))
+		:i %GLOBAL%$for_custom_setlist$ = %i(0)
+	:i endif
+	:i if (~$game_mode$ = $training$ OR ~$game_mode$ = $tutorial$)
+		:i %GLOBAL%$for_custom_setlist$ = %i(0)
+	:i endif
+	:i if ((~$game_mode$ = $p2_faceoff$) OR (~$game_mode$ = $p2_pro_faceoff$) OR (~$game_mode$ = $p2_battle$))
+		:i %GLOBAL%$for_custom_setlist$ = %i(0)
+	:i endif
+	:i $allow_jammode$ = %i(1)
+	:i while 
+	:i if (~$setlist_songpreview_changing$ = %i(0))
+		:i continue
+	:i endif
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i loop_to 
+	:i $show_quit_warning$ = %i(1)
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i if (~$sort_restore_selections$ = %i(0))
+			:i $reset_temp_quickplay_song_list$
+			:i $reset_temp_jamsession_song_list$
+		:i endif
+	:i else 
+		:i $show_quit_warning$ = %i(0)
+	:i endif
+	:i if NOT $GotParam$${StructQBKey keep_current_level}$
+		:i if NOT (~$game_mode$ = $training$)
+			:i $StartRendering$
+			:i $frontend_load_soundcheck$${StructQBKey loadingscreen}$
+			:i $StopRendering$
+		:i endif
+	:i endif
+	:i $for_createagig$ = %i(0)
+	:i if $GotParam$${StructQBKey createagig}$
+		:i %GLOBAL%$for_createagig$ = %i(1)
+	:i endif
+	:i if $GotParam$${StructQBKey no_jamsession}$
+		:i $allow_jammode$ = %i(0)
+	:i endif
+	:i if $GotParam$${StructQBKey from_top_rocker}$
+		:i %GLOBAL%$for_custom_setlist$ = %i(0)
+		:i %GLOBAL%$allow_jammode$ = %i(0)
+		:i $for_createagig$ = %i(0)
+	:i endif
+	:i if $GotParam$${StructQBKey from_leaderboard}$
+		:i %GLOBAL%$for_custom_setlist$ = %i(0)
+		:i %GLOBAL%$allow_jammode$ = %i(0)
+		:i $for_createagig$ = %i(0)
+	:i endif
+	:i $Menu_Music_Off$
+	:i $gig_posters_song_focus$
+	:i if $GotParam$${StructQBKey use_all_controllers}$
+		:i $get_all_exclusive_devices$
+	:i else 
+		:i %GLOBAL%$exclusive_device$ = (~$primary_controller$)
+		:i if (~$is_network_game$ = %i(1))
+			:i if $local_player_is_choosing_song$
+				:i $player_idx$ = %i(1)
+				:i $GameMode_GetNumPlayers$
+				:i while 
+				:i $getplayerinfo$%GLOBAL%$player_idx$$is_local_client$
+				:i if (%GLOBAL%$is_local_client$ = %i(1))
+					:i $getplayerinfo$%GLOBAL%$player_idx$$net_obj_id$
+					:i if (~$online_song_choice_id$ = %GLOBAL%$net_obj_id$)
+						:i $getplayerinfo$%GLOBAL%$player_idx$$controller$
+						:i %GLOBAL%$exclusive_device$ = %GLOBAL%$controller$
+						:i continue
+					:i endif
+				:i endif
+				:i %GLOBAL%$player_idx$ = (%GLOBAL%$player_idx$ + %i(1))
+				:i loop_to %GLOBAL%$num_players$
+			:i endif
+		:i endif
+	:i endif
+	:i $update_ingame_controllers$$controller$ = %GLOBAL%$exclusive_device$
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $root_window$
+		:i $id$ = $SetlistInterface$
+		:i $Type$ = $descinterface$
+		:i $desc$ = %s("setlist_b")
+		:i $exclusive_device$ = %GLOBAL%$exclusive_device$
+	:i :s}
+	:i if $SetlistInterface$.$desc_resolvealias$${StructQBKey Name = alias_setlist_menu}$
+		:i $AssignAlias$$id$ = %GLOBAL%$resolved_id$$alias$ = $setlist_menu$
+		:i $setlist_menu$.$se_setprops$:s{
+			:i $event_handlers$ = :a{
+				:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+				:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+				:i :s{$pad_back$$ui_setlist_back$$params$ = :s{$show_quit_warning$ = %GLOBAL%$show_quit_warning$:s}:s}
+				:i :s{$pad_option2$$setlist_switch_sort$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+			:i :a}
+			:i $tags$ = :s{
+				:i $from_top_rocker$ = %GLOBAL%$from_top_rocker$
+				:i $from_leaderboard$ = %GLOBAL%$from_leaderboard$
+				:i $for_custom_setlist$ = %i(0)
+				:i $current_section$ = %i(1)
+				:i $last_focused_song$ = $none$
+				:i $custom_setlist_num_id_1$ = $null$
+				:i $custom_setlist_num_id_2$ = $null$
+				:i $custom_setlist_num_id_3$ = $null$
+				:i $custom_setlist_num_id_4$ = $null$
+				:i $custom_setlist_num_id_5$ = $null$
+				:i $custom_setlist_num_id_6$ = $null$
+				:i $section_breaker_index_1$ = %i(99999)
+				:i $section_breaker_index_2$ = %i(99999)
+				:i $section_breaker_index_3$ = %i(99999)
+			:i :s}
+		:i :s}
+	:i endif
+	:i if $GotParam$${StructQBKey next_state}$
+		:i $setlist_menu$.$settags$$next_state$ = %GLOBAL%$next_state$
+	:i endif
+	:i if $GotParam$${StructQBKey for_custom_setlist}$
+		:i $setlist_menu$.$settags$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$
+		:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+			:i $setlist_menu$.$se_setprops$:s{
+				:i $event_handlers$ = :a{
+					:i :s{$pad_start$$ui_setlist_compact_and_continue$:s}
+					:i :s{$pad_l1$$ui_setlist_custom_remove_all$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+					:i :s{$pad_r1$$ui_setlist_custom_remove_all$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+				:i :a}
+			:i :s}
+		:i endif
+	:i endif
+	:i $setlist_menu$.$se_setprops$:s{
+		:i $event_handlers$ = :a{
+			:i :s{$pad_option$$setlist_jump_down_section$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+		:i :a}
+	:i :s}
+	:i $CreateScreenElement$${StructQBKey parent = setlist_menuStructQBKey Type = descinterfaceStructString desc = "setlist_b_head_desc"StructQBKey auto_dims = falseStructFloatX2 dims{	Floats [0.00000, 300.000]}StructArray just{	ArrayQBKey	[		center		center	]}StructQBStringQs setlist_b_head_text_text = 0xa01b0e62StructQBKey not_focusable}$
+	:i if (~$band_mode_mode$ = $quickplay$)
+		:i $part$ = $band$
+	:i else 
+		:i $getplayerinfo$${StructInt 1StructQBKey part}$
+	:i endif
+	:i $final_array$ = :a{$gh_songlist$$GH4_download_songlist$$jammode_songs$:a}
+	:i $final_array_text$ = :a{^[114c77e5]^^[4d1f88f5]^^[aeeb9be3]^:a}
+	:i $final_array_index$ = %i(0)
+	:i $GetArraySize$%GLOBAL%$final_array$
+	:i $final_array_size$ = %GLOBAL%$array_size$
+	:i if (%GLOBAL%$allow_jammode$ = %i(0))
+		:i %GLOBAL%$final_array_size$ = (%GLOBAL%$final_array_size$ - %i(1))
+	:i endif
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i $CreateScreenElement$${StructQBKey Type = containerelementStructQBKey parent = root_windowStructQBKey id = custom_setlist_helper_containerStructFloatX2 Pos{	Floats [640.000, 600.000]}StructInt z_priority = 100000}$
+		:i $CreateScreenElement$${StructQBKey Type = SpriteElementStructQBKey parent = custom_setlist_helper_containerStructQBKey texture = pill_128_fillStructFloatX2 dims{	Floats [192.000, 38.0000]}StructArray just{	ArrayQBKey	[		center		top	]}StructArray rgba{	ArrayInteger	[		20		20		20		255	]}}$
+		:i $sprite_params$ = :s{
+			:i $Type$ = $SpriteElement$
+			:i $texture$ = $setlist_custom_circle_sm_empty$
+			:i $parent$ = $custom_setlist_helper_container$
+			:i $dims$ = %vec2(32.0,32.0)
+			:i $just$ = :a{$center$$top$:a}
+			:i $rgba$ = :a{%i(255)%i(255)%i(255)%i(255):a}
+			:i $z_priority$ = %i(200000)
+		:i :s}
+		:i $text_params$ = :s{
+			:i $Type$ = $textelement$
+			:i $font$ = $fontgrid_text_a8$
+			:i $scale$ = %vec2(0.6500000357627869,0.6500000357627869)
+			:i $just$ = :a{$center$$top$:a}
+			:i $rgba$ = :a{%i(0)%i(0)%i(0)%i(255):a}
+			:i $z_priority$ = %i(300000)
+		:i :s}
+		:i $circle_num$ = %i(1)
+		:i $circle_pos$ = %vec2(-69.0,3.0)
+		:i while 
+		:i $CreateScreenElement$%GLOBAL%$sprite_params$$Pos$ = %GLOBAL%$circle_pos$
+		:i $FormatText$$ChecksumName$ = $circle_full_id$%s("cs_dot_helper_circle_%d")$d$ = %GLOBAL%$circle_num$
+		:i $CreateScreenElement$%GLOBAL%$sprite_params$$Pos$ = %GLOBAL%$circle_pos$$texture$ = $setlist_custom_circle_sm$$id$ = %GLOBAL%$circle_full_id$
+		:i $FormatText$$TextName$ = $num_text$^[76b3fda7]^$d$ = %GLOBAL%$circle_num$
+		:i $text_pos$ = %vec2(16.0,0.0)
+		:i if (%GLOBAL%$circle_num$ = %i(1))
+			:i $text_pos$ = (%GLOBAL%$text_pos$ + %vec2(-2.0,0.0))
+		:i endif
+		:i $CreateScreenElement$%GLOBAL%$text_params$$Pos$ = %GLOBAL%$text_pos$$text$ = %GLOBAL%$num_text$$parent$ = %GLOBAL%$id$
+		:i %GLOBAL%$circle_pos$ = (%GLOBAL%$circle_pos$ + %vec2(28.0,0.0))
+		:i %GLOBAL%$circle_num$ = (%GLOBAL%$circle_num$ + %i(1))
+		:i loop_to %i(6)
+		:i $setup_custom_setlist_helpers$
+	:i else 
+	:i endif
+	:i $gamemode_gettype$
+	:i %GLOBAL%$game_mode_type$ = %GLOBAL%$Type$
+	:i if (~$current_progression_flag$ = $Career_Band$ AND ~$is_network_game$ = %i(0))
+		:i $GetSavegameFromController$$controller$ = (~$band_mode_current_leader$)
+	:i else 
+		:i $GetSavegameFromController$$controller$ = (~$primary_controller$)
+	:i endif
+	:i $final_num_songs$ = %i(0)
+	:i while 
+	:i $CreateScreenElement$:s{
+		:i $parent$ = $setlist_menu$
+		:i $Type$ = $descinterface$
+		:i $desc$ = %s("setlist_b_divider_desc")
+		:i $auto_dims$ = $false$
+		:i $dims$ = %vec2(0.0,50.0)
+		:i $setlist_divider_title_text$ = (%GLOBAL%$final_array_text$:a{%GLOBAL%$final_array_index$:a})
+		:i $not_focusable$
+	:i :s}
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i if %GLOBAL%$id$.$desc_resolvealias$$Name$ = $alias_setlist_divider$
+		:i $AssignAlias$$id$ = %GLOBAL%$resolved_id$$alias$ = $setlist_divider_menu$
+		:i $GetScreenElementDims$${StructQBKey id = setlist_divider_menu}$
+		:i %GLOBAL%$id$.$se_getprops$
+		:i if $GotParam$${StructQBKey setlist_divider_title_dims}$
+			:i $container_width$ = %i(980)
+			:i $divider_width$ = ((%GLOBAL%$container_width$ - (%GLOBAL%$setlist_divider_title_dims$->%vec2(1.0,0.0))) / %i(2))
+			:i $divider_bar_dims$ = (%GLOBAL%$divider_width$ * %vec2(1.0,0.0) + (%GLOBAL%$setlist_list_divider_L_dims$->%vec2(0.0,1.0) * %vec2(0.0,1.0)))
+			:i %GLOBAL%$id$.$se_setprops$$setlist_list_divider_L_dims$ = %GLOBAL%$divider_bar_dims$$setlist_list_divider_R_dims$ = %GLOBAL%$divider_bar_dims$
+		:i endif
+	:i endif
+	:i $song_array$ = (%GLOBAL%$final_array$:a{%GLOBAL%$final_array_index$:a})
+	:i if (%GLOBAL%$song_array$ = $jammode_songs$)
+		:i %GLOBAL%$cur_songs$ = %GLOBAL%$final_num_songs$
+		:i $setlist_create_jammode_songs$ isNull 
+		:i %GLOBAL%$jam_song$ = %i(1)
+		:i if NOT (%GLOBAL%$cur_songs$ = %GLOBAL%$final_num_songs$)
+			:i $setlist_menu$.$settags$:s{$section_breaker_index_3$ = (%GLOBAL%$cur_songs$ + %i(3)):s}
+		:i endif
+	:i else 
+		:i if (%GLOBAL%$for_createagig$ = %i(1) AND %GLOBAL%$song_array$ !== $GH4_download_songlist$)
+			:i $get_songs_available_for_create_a_setlist$
+			:i $GetArraySize$%GLOBAL%$unlocked_songs_array$
+		:i else 
+			:i $GetArraySize$~%GLOBAL%$song_array$
+		:i endif
+		:i $total_songs$ = %GLOBAL%$array_size$
+		:i if (%GLOBAL%$total_songs$ > %i(0))
+			:i if (%GLOBAL%$final_array_index$ = %i(0))
+				:i $setlist_menu$.$settags$:s{$section_breaker_index_1$ = (%GLOBAL%$final_num_songs$ + %i(1)):s}
+			:i elseif (%GLOBAL%$final_array_index$ = %i(1))
+				:i $setlist_menu$.$settags$:s{$section_breaker_index_2$ = (%GLOBAL%$final_num_songs$ + %i(2)):s}
+			:i endif
+			:i $sortable_songlist$ = :a{:a}
+			:i $i$ = %i(0)
+			:i while 
+			:i if (%GLOBAL%$for_createagig$ = %i(1) AND %GLOBAL%$song_array$ !== $GH4_download_songlist$)
+				:i $Song$ = (%GLOBAL%$unlocked_songs_array$:a{%GLOBAL%$i$:a})
+			:i else 
+				:i $Song$ = (~%GLOBAL%$song_array$:a{%GLOBAL%$i$:a})
+			:i endif
+			:i $get_song_title$$Song$ = %GLOBAL%$Song$
+			:i $GetUpperCaseString$%GLOBAL%$song_title$
+			:i %GLOBAL%$song_title$ = %GLOBAL%$UpperCaseString$
+			:i $get_song_artist$$Song$ = %GLOBAL%$Song$
+			:i $GetUpperCaseString$%GLOBAL%$song_artist$
+			:i %GLOBAL%$song_artist$ = %GLOBAL%$UpperCaseString$
+			:i if (%GLOBAL%$for_createagig$ = %i(1) AND %GLOBAL%$song_array$ !== $GH4_download_songlist$)
+				:i $element_to_add$ = :s{$song_checksum$ = %GLOBAL%$Song$$song_title$ = %GLOBAL%$song_title$$song_artist$ = %GLOBAL%$song_artist$:s}
+				:i $AddArrayElement$$array$ = %GLOBAL%$sortable_songlist$$element$ = %GLOBAL%$element_to_add$
+				:i $sortable_songlist$ = %GLOBAL%$array$
+			:i elseif (($GotParam$$from_top_rocker$) OR ($GotParam$$from_leaderboard$))
+				:i if NOT $StructureContains$$structure$ = (~$gh_songlist_props$->%GLOBAL%$Song$)$never_show_in_setlist$
+					:i $get_song_saved_in_globaltags$$Song$ = %GLOBAL%$Song$
+					:i $get_song_allowed_in_quickplay$$Song$ = %GLOBAL%$Song$
+					:i $no_vocals$ = %i(0)
+					:i if $StructureContains$$structure$ = (~$gh_songlist_props$->%GLOBAL%$Song$)$doesnt_support_vocals$
+						:i if $GotParam$${StructQBKey from_leaderboard}$
+							:i if ((~$current_leaderboard_instrument$) = $mic$)
+								:i $no_vocals$ = %i(1)
+							:i endif
+						:i elseif $GotParam$${StructQBKey from_top_rocker}$
+							:i $getplayerinfo$${StructInt 1StructQBKey part}$
+							:i if (%GLOBAL%$part$ = $Vocals$)
+								:i $no_vocals$ = %i(1)
+							:i endif
+						:i endif
+					:i endif
+					:i if ((%GLOBAL%$saved_in_globaltags$ = %i(1)) AND (%GLOBAL%$allowed_in_quickplay$ = %i(1)) AND (%GLOBAL%$no_vocals$ = %i(0)))
+						:i $element_to_add$ = :s{$song_checksum$ = %GLOBAL%$Song$$song_title$ = %GLOBAL%$song_title$$song_artist$ = %GLOBAL%$song_artist$:s}
+						:i $AddArrayElement$$array$ = %GLOBAL%$sortable_songlist$$element$ = %GLOBAL%$element_to_add$
+						:i $sortable_songlist$ = %GLOBAL%$array$
+					:i endif
+				:i endif
+			:i else 
+				:i if $issongavailable$$Song$ = %GLOBAL%$Song$
+					:i $element_to_add$ = :s{$song_checksum$ = %GLOBAL%$Song$$song_title$ = %GLOBAL%$song_title$$song_artist$ = %GLOBAL%$song_artist$:s}
+					:i $AddArrayElement$$array$ = %GLOBAL%$sortable_songlist$$element$ = %GLOBAL%$element_to_add$
+					:i $sortable_songlist$ = %GLOBAL%$array$
+				:i endif
+			:i endif
+			:i $i$ = (%GLOBAL%$i$ + %i(1))
+			:i loop_to %GLOBAL%$total_songs$
+			:i if ((%GLOBAL%$song_array$ = $GH4_download_songlist$) AND (~$setlist_sorts$:a{~$setlist_sort_index$:a}->$Name$ = $career_order$))
+				:i $SortAndBuildSonglist$$songlist$ = %GLOBAL%$sortable_songlist$$sortby$ = $artist_alphabetical$
+			:i else 
+				:i $SortAndBuildSonglist$$songlist$ = %GLOBAL%$sortable_songlist$$sortby$ = (~$setlist_sorts$:a{~$setlist_sort_index$:a}->$Name$)
+			:i endif
+			:i $GetArraySize$%GLOBAL%$sorted_songlist$
+			:i $total_songs$ = %GLOBAL%$array_size$
+			:i if (%GLOBAL%$total_songs$ > %i(0))
+				:i $i$ = %i(0)
+				:i while 
+				:i $Song$ = (%GLOBAL%$sorted_songlist$:a{%GLOBAL%$i$:a})
+				:i $get_song_prefix$$Song$ = %GLOBAL%$Song$
+				:i $beginner_skull_alpha$ = %i(1)
+				:i $easy_skull_alpha$ = %i(1)
+				:i $medium_skull_alpha$ = %i(1)
+				:i $hard_skull_alpha$ = %i(1)
+				:i $expert_skull_alpha$ = %i(1)
+				:i $ghost_skull_alpha$ = %f(0.25)
+				:i $beginner_text_alpha$ = %i(1)
+				:i $easy_text_alpha$ = %i(1)
+				:i $medium_text_alpha$ = %i(1)
+				:i $hard_text_alpha$ = %i(1)
+				:i $expert_text_alpha$ = %i(1)
+				:i $ghost_text_alpha$ = %i(0)
+				:i $highest_difficulty_texture$ = $icon_difficulty_beginner$
+				:i $highest_difficulty_alpha$ = %i(0)
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("easy_rhythm")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $score$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_score$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("easy_rhythm")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $FormatText$$TextName$ = $score_easy_rhythm_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+				:i if (%GLOBAL%$score$ = %i(0) OR ~$game_mode$ = $training$)
+					:i %GLOBAL%$beginner_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+					:i %GLOBAL%$beginner_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+				:i else 
+					:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_beginner$
+					:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+				:i endif
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("easy")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $score$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_score$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("easy")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $FormatText$$TextName$ = $score_easy_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+				:i if (%GLOBAL%$score$ = %i(0) OR ~$game_mode$ = $training$)
+					:i %GLOBAL%$easy_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+					:i %GLOBAL%$easy_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+				:i else 
+					:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_easy$
+					:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+				:i endif
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("medium")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $score$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_score$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("medium")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $FormatText$$TextName$ = $score_medium_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+				:i if (%GLOBAL%$score$ = %i(0) OR ~$game_mode$ = $training$)
+					:i %GLOBAL%$medium_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+					:i %GLOBAL%$medium_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+				:i else 
+					:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_medium$
+					:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+				:i endif
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("hard")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $score$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_score$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("hard")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $FormatText$$TextName$ = $score_hard_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+				:i if (%GLOBAL%$score$ = %i(0) OR ~$game_mode$ = $training$)
+					:i %GLOBAL%$hard_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+					:i %GLOBAL%$hard_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+				:i else 
+					:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_hard$
+					:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+				:i endif
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("expert")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $score$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_score$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("expert")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $FormatText$$TextName$ = $score_expert_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+				:i if (%GLOBAL%$score$ = %i(0) OR ~$game_mode$ = $training$)
+					:i %GLOBAL%$expert_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+					:i %GLOBAL%$expert_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+				:i else 
+					:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_expert$
+					:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+				:i endif
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("easy_rhythm")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $stars$$savegame$ = %GLOBAL%$savegame$
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $percent100$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_stars$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("easy_rhythm")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $beginner_stars$ = %GLOBAL%$stars$
+				:i $beginner_percent100$ = %GLOBAL%$percent100$
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("easy")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $stars$$savegame$ = %GLOBAL%$savegame$
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $percent100$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_stars$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("easy")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $easy_stars$ = %GLOBAL%$stars$
+				:i $easy_percent100$ = %GLOBAL%$percent100$
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("medium")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $stars$$savegame$ = %GLOBAL%$savegame$
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $percent100$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_stars$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("medium")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $medium_stars$ = %GLOBAL%$stars$
+				:i $medium_percent100$ = %GLOBAL%$percent100$
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("hard")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $stars$$savegame$ = %GLOBAL%$savegame$
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $percent100$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_stars$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("hard")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $hard_stars$ = %GLOBAL%$stars$
+				:i $hard_percent100$ = %GLOBAL%$percent100$
+				:i if (%GLOBAL%$game_mode_type$ = $career$)
+					:i $format_globaltag_song_checksum$$part_text$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)$Song$ = %GLOBAL%$Song$$difficulty_text_nl$ = %s("expert")
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $stars$$savegame$ = %GLOBAL%$savegame$
+					:i $GetGlobalTags$%GLOBAL%$song_checksum$$param$ = $percent100$$savegame$ = %GLOBAL%$savegame$
+				:i else 
+					:i $get_quickplay_song_stars$$Song$ = %GLOBAL%$song_prefix$$difficulty_text_nl$ = %s("expert")$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+				:i endif
+				:i $expert_stars$ = %GLOBAL%$stars$
+				:i $expert_percent100$ = %GLOBAL%$percent100$
+				:i $score_text$ = :s{
+					:i $score_beginner_text$ = %GLOBAL%$score_easy_rhythm_text$
+					:i $score_easy_text$ = %GLOBAL%$score_easy_text$
+					:i $score_medium_text$ = %GLOBAL%$score_medium_text$
+					:i $score_hard_text$ = %GLOBAL%$score_hard_text$
+					:i $score_expert_text$ = %GLOBAL%$score_expert_text$
+					:i $icon_difficulty_beginner_alpha$ = %GLOBAL%$beginner_skull_alpha$
+					:i $icon_difficulty_easy_alpha$ = %GLOBAL%$easy_skull_alpha$
+					:i $icon_difficulty_medium_alpha$ = %GLOBAL%$medium_skull_alpha$
+					:i $icon_difficulty_hard_alpha$ = %GLOBAL%$hard_skull_alpha$
+					:i $icon_difficulty_expert_alpha$ = %GLOBAL%$expert_skull_alpha$
+					:i $score_beginner_alpha$ = %GLOBAL%$beginner_text_alpha$
+					:i $score_easy_alpha$ = %GLOBAL%$easy_text_alpha$
+					:i $score_medium_alpha$ = %GLOBAL%$medium_text_alpha$
+					:i $score_hard_alpha$ = %GLOBAL%$hard_text_alpha$
+					:i $score_expert_alpha$ = %GLOBAL%$expert_text_alpha$
+				:i :s}
+				:i $skull_tags$ = :s{
+					:i $icon_difficulty_texture$ = %GLOBAL%$highest_difficulty_texture$
+					:i $icon_difficulty_alpha$ = %GLOBAL%$highest_difficulty_alpha$
+				:i :s}
+				:i $get_song_title$$Song$ = %GLOBAL%$Song$
+				:i $GetUpperCaseString$%GLOBAL%$song_title$
+				:i %GLOBAL%$song_title$ = %GLOBAL%$UpperCaseString$
+				:i $get_song_artist$$Song$ = %GLOBAL%$Song$
+				:i $GetUpperCaseString$%GLOBAL%$song_artist$
+				:i %GLOBAL%$song_artist$ = %GLOBAL%$UpperCaseString$
+				:i $FormatText$$TextName$ = $song_text$^[e3f1881c]^$a$ = %GLOBAL%$song_artist$$t$ = %GLOBAL%$song_title$
+				:i $CreateScreenElement$:s{
+					:i $parent$ = $setlist_menu$
+					:i $Type$ = $descinterface$
+					:i $desc$ = %s("setlist_b_listing_desc")
+					:i $auto_dims$ = $false$
+					:i $dims$ = %vec2(0.0,50.0)
+					:i $event_handlers$ = :a{
+						:i :s{$focus$$ui_setlist_focus_song$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+						:i :s{$unfocus$$ui_setlist_unfocus_song$:s}
+					:i :a}
+					:i $tags$ = :s{
+						:i $custom_setlist_num$ = %i(0)
+						:i $song_title$ = %GLOBAL%$song_title$
+						:i $song_artist$ = %GLOBAL%$song_artist$
+						:i $score_text$ = %GLOBAL%$score_text$
+						:i $skull_tags$ = %GLOBAL%$skull_tags$
+						:i $Song$ = %GLOBAL%$Song$
+						:i $index$ = %GLOBAL%$final_num_songs$
+						:i $beginner_stars$ = %GLOBAL%$beginner_stars$
+						:i $easy_stars$ = %GLOBAL%$easy_stars$
+						:i $medium_stars$ = %GLOBAL%$medium_stars$
+						:i $hard_stars$ = %GLOBAL%$hard_stars$
+						:i $expert_stars$ = %GLOBAL%$expert_stars$
+						:i $beginner_percent100$ = %GLOBAL%$beginner_percent100$
+						:i $easy_percent100$ = %GLOBAL%$easy_percent100$
+						:i $medium_percent100$ = %GLOBAL%$medium_percent100$
+						:i $hard_percent100$ = %GLOBAL%$hard_percent100$
+						:i $expert_percent100$ = %GLOBAL%$expert_percent100$
+					:i :s}
+					:i $just$ = :a{$center$$center$:a}
+					:i $listing_text$ = %GLOBAL%$song_text$
+					:i %GLOBAL%$skull_tags$
+				:i :s}
+				:i if (~$is_network_game$ = %i(1))
+					:i if $local_player_is_choosing_song$
+						:i %GLOBAL%$id$.$se_setprops$$event_handlers$ = :a{:s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}:a}
+					:i endif
+				:i else 
+					:i %GLOBAL%$id$.$se_setprops$$event_handlers$ = :a{:s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}:a}
+				:i endif
+				:i $final_num_songs$ = (%GLOBAL%$final_num_songs$ + %i(1))
+				:i if (~$sort_restore_selections$ = %i(1))
+					:i $get_song_index_from_temp_quickplay_song_list$$Song$ = %GLOBAL%$Song$
+					:i if (%GLOBAL%$quickplay_index$ !== %i(4294967295))
+						:i %GLOBAL%$id$.$ui_setlist_choose_song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$$Song$ = %GLOBAL%$Song$$custom_index$ = %GLOBAL%$quickplay_index$$no_sound$
+					:i endif
+				:i endif
+				:i $i$ = (%GLOBAL%$i$ + %i(1))
+				:i loop_to %GLOBAL%$total_songs$
+			:i endif
+			:i %GLOBAL%$jam_song$ = %i(0)
+		:i endif
+	:i endif
+	:i %GLOBAL%$final_array_index$ = (%GLOBAL%$final_array_index$ + %i(1))
+	:i loop_to %GLOBAL%$final_array_size$
+	:i $CreateScreenElement$${StructQBKey parent = setlist_menuStructQBKey Type = containerelementStructQBKey id = setlist_b_footerStructQBKey not_focusable}$
+	:i $CreateScreenElement$${StructQBKey parent = setlist_b_footerStructQBKey Type = SpriteElementStructQBKey texture = setlist_B_footStructArray rgba{	ArrayInteger	[		220		220		220		255	]}StructArray just{	ArrayQBKey	[		right		center	]}StructFloatX2 Pos{	Floats [0.00000, 50.0000]}StructQBKey not_focusable}$
+	:i $CreateScreenElement$${StructQBKey parent = setlist_b_footerStructQBKey Type = SpriteElementStructQBKey texture = setlist_B_footStructArray rgba{	ArrayInteger	[		220		220		220		255	]}StructArray just{	ArrayQBKey	[		left		center	]}StructQBKey flip_vStructFloatX2 Pos{	Floats [0.00000, 50.0000]}StructQBKey not_focusable}$
+	:i $setlist_menu$.$settags$$total_songs$ = %GLOBAL%$final_num_songs$$prev_index$ = %i(0)
+	:i if (~$is_network_game$ = %i(1))
+		:i if $local_player_is_choosing_song$
+			:i $menu_finish$
+		:i else 
+			:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100}$
+		:i endif
+	:i else 
+		:i $add_user_control_helper$${StructQBStringQs text = 0x4d9ad28fStructQBKey button = greenStructInt z = 100}$
+		:i $setlist_show_jump_helper_text$
+		:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100}$
+	:i endif
+	:i $KillSpawnedScript$${StructQBKey Name = destroy_setlist_songpreview_monitor}$
+	:i if (~$is_network_game$ = %i(0))
+		:i $SpawnScriptLater$${StructQBKey setlist_songpreview_monitor}$
+	:i endif
+	:i if $ResolveScreenElementId$$id$ = :s{$setlist_menu$$child$ = %GLOBAL%$selected_index$:s}
+		:i if (~$is_network_game$ = %i(0))
+			:i %GLOBAL%$resolved_id$.$Obj_SpawnScript$$ui_setlist_focus_song$$params$ = :s{$time$ = %f(0.0)$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}
+		:i endif
+	:i endif
+	:i if (~$is_network_game$ = %i(0))
+		:i $setlist_menu$.$Obj_SpawnScript$$wait_and_unblock_setlist_menu$$params$ = :s{$selected_index$ = %GLOBAL%$selected_index$:s}
+	:i else 
+		:i $LaunchEvent$$Type$ = $focus$$target$ = $setlist_menu$$data$ = :s{$child_index$ = %GLOBAL%$selected_index$:s}
+		:i $StartRendering$
+	:i endif
+	:i if (~$is_network_game$ = %i(1))
+		:i if (~$g_disable_song_chooser_spinner$ = %i(1))
+			:i $create_setlist_popup$${StructQBKey parent_element = SetlistInterface}$
+			:i $LaunchEvent$$Type$ = $focus$$target$ = $setlist_menu$$data$ = :s{$child_index$ = %GLOBAL%$selected_index$:s}
+		:i else 
+			:i if (~$refresh_from_sort$ = %i(0))
+				:i $create_song_chooser_spinner$$selected_index$ = %GLOBAL%$selected_index$
+			:i else 
+				:i $SpawnScriptLater$${StructQBKey setlist_songpreview_monitor}$
+				:i $create_setlist_popup$${StructQBKey parent_element = SetlistInterface}$
+			:i endif
+		:i endif
+	:i endif
+	:i $change$${StructInt sort_restore_selections = 0}$
+	:i $change$${StructInt refresh_from_sort = 0}$
+	:i $destroy_loading_screen$
+	:i endfunction]Script wait_and_unblock_setlist_menu 0xf4e376be [	:i $LaunchEvent$$Type$ = $focus$$target$ = $setlist_menu$$data$ = :s{$child_index$ = %GLOBAL%$selected_index$:s}
+	:i $setlist_menu$.$se_setprops$${StructQBKey block_events}$
+	:i $wait$${StructInt 1StructQBKey gameframes}$
+	:i $setlist_menu$.$se_setprops$${StructQBKey unblock_events}$
+	:i $StartRendering$
+	:i endfunction]Script ui_destroy_setlist 0x50768d40 [	:i $KillSpawnedScript$${StructQBKey Name = ui_create_setlist_spawned}$
+	:i if NOT ((~$top_rockers_enabled$) OR ($GotParam$$from_leaderboard$))
+		:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+		:i if NOT (~$game_mode$ = $practice$ OR ~$game_mode$ = $training$)
+			:i $menu_music_on$
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$${StructQBKey id = SetlistInterface}$
+		:i $SetlistInterface$.$Die$
+	:i endif
+	:i $change$${StructArray user_control_pill_color{	ArrayInteger	[		20		20		20		155	]}}$
+	:i $change$${StructArray user_control_pill_text_color{	ArrayInteger	[		220		220		220		255	]}}$
+	:i $generic_ui_destroy$
+	:i $destroy_menu$${StructQBKey menu_id = custom_setlist_helper_container}$
+	:i endfunction]Script ui_deinit_setlist 0xc520c122 [	:i $KillSpawnedScript$${StructQBKey Name = ui_create_setlist_spawned}$
+	:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+	:i $menu_music_on$
+	:i endfunction]Script setup_custom_setlist_helpers 0x2fb0c166 [	:i $clean_up_user_control_helpers$
+	:i $set_user_control_color$${StructArray text_rgba{	ArrayInteger	[		0		0		0		255	]}StructArray bg_rgba{	ArrayInteger	[		200		200		200		200	]}}$
+	:i $set_num_songs_in_quickplay_list$
+	:i $setlist_menu$.$GetSingleTag$${StructQBKey from_top_rocker}$
+	:i if $GotParam$${StructQBKey from_top_rocker}$
+		:i $menu_finish$
+		:i return
+	:i endif
+	:i $setlist_menu$.$GetSingleTag$${StructQBKey from_leaderboard}$
+	:i if $GotParam$${StructQBKey from_leaderboard}$
+		:i $menu_finish$
+		:i return
+	:i endif
+	:i %GLOBAL%$controller$ = (~$primary_controller$)
+	:i if NOT ((~$menu_over_ride_exclusive_device$) = %i(4294967295))
+		:i %GLOBAL%$controller$ = (~$menu_over_ride_exclusive_device$)
+	:i endif
+	:i if (($IsGuitarController$$controller$ = %GLOBAL%$controller$) OR ($IsDrumController$$controller$ = %GLOBAL%$controller$))
+		:i %GLOBAL%$clear_button$ = $orange$
+	:i else 
+		:i %GLOBAL%$clear_button$ = $lb$
+	:i endif
+	:i %GLOBAL%$selected_song_highlighted$ = $false$
+	:i if $GotParam$${StructQBKey Song}$
+		:i if $song_is_in_temp_quickplay_song_list$$Song$ = %GLOBAL%$Song$
+			:i %GLOBAL%$selected_song_highlighted$ = $true$
+			:i if $GotParam$${StructQBKey jam_song}$
+				:i if NOT $song_is_in_temp_jamsession_song_list$$jam_song$ = %GLOBAL%$jam_song$
+					:i %GLOBAL%$selected_song_highlighted$ = $false$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i %GLOBAL%$pick_song_text$ = ^[562b9e24]^
+	:i if ((~$game_mode$ = $p2_battle$) OR (~$game_mode$ = $p2_faceoff$) OR (~$game_mode$ = $p2_pro_faceoff$))
+		:i %GLOBAL%$pick_song_text$ = ^[4d9ad28f]^
+	:i endif
+	:i if (%GLOBAL%$num_songs$ = %i(0))
+		:i $add_user_control_helper$$text$ = %GLOBAL%$pick_song_text$$button$ = $green$$z$ = %i(100000)
+	:i elseif (%GLOBAL%$num_songs$ = %i(6))
+		:i if (%GLOBAL%$selected_song_highlighted$ = $true$)
+			:i $add_user_control_helper$${StructQBStringQs text = 0x0307b55cStructQBKey button = greenStructInt z = 100000}$
+		:i endif
+	:i else 
+		:i if (%GLOBAL%$selected_song_highlighted$ = $true$)
+			:i $add_user_control_helper$${StructQBStringQs text = 0x0307b55cStructQBKey button = greenStructInt z = 100000}$
+		:i else 
+			:i $add_user_control_helper$$text$ = %GLOBAL%$pick_song_text$$button$ = $green$$z$ = %i(100000)
+		:i endif
+	:i endif
+	:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100000}$
+	:i $setlist_show_sort_helper_text$
+	:i $setlist_show_jump_helper_text$
+	:i if (%GLOBAL%$num_songs$ !== %i(0))
+		:i $add_user_control_helper$$text$ = ^[22f2d0e7]^$button$ = %GLOBAL%$clear_button$$z$ = %i(100000)
+		:i $user_control_helper_get_buttonchar$${StructQBKey button = start}$
+		:i $CreateScreenElement$:s{
+			:i $parent$ = $custom_setlist_helper_container$
+			:i $Type$ = $descinterface$
+			:i $id$ = $custom_setlist_continue_helper$
+			:i $desc$ = %s("helper_pill")
+			:i $auto_dims$ = $false$
+			:i $dims$ = %vec2(0.0,36.0)
+			:i $Pos$ = %vec2(0.0,-45.0)
+			:i $just$ = :a{$center$$top$:a}
+			:i $helper_button_text$ = %GLOBAL%$buttonchar$
+			:i $helper_description_text$ = ^[182f0173]^
+			:i $helper_pill_rgba$ = ~$user_control_pill_color$
+			:i $helper_description_rgba$ = ~$user_control_pill_text_color$
+		:i :s}
+		:i %GLOBAL%$id$.$se_getprops$
+		:i %GLOBAL%$id$.$se_setprops$:s{
+			:i $helper_pill_body_dims$ = ((%vec2(0.6000000238418579,0.0) * %GLOBAL%$helper_pill_menu_dims$:a{%i(0):a}) + %vec2(0.0,32.0))
+			:i $dims$ = ((%vec2(0.6000000238418579,0.0) * %GLOBAL%$helper_pill_menu_dims$:a{%i(0):a}) + %vec2(64.0,32.0))
+		:i :s}
+		:i $SpawnScriptLater$${StructQBKey pulsate_helper_pillStructStruct params{	StructHeader	{		StructQBKey id = custom_setlist_continue_helper	}}}$
+	:i endif
+	:i endfunction]Script setlist_show_sort_helper_text 0xb517f27c [	:i %GLOBAL%$next_sort_index$ = (~$setlist_sort_index$ + %i(1))
+	:i $GetArraySize$${StructQBString setlist_sorts}$
+	:i if (%GLOBAL%$next_sort_index$ >= %GLOBAL%$array_size$)
+		:i %GLOBAL%$next_sort_index$ = %i(0)
+	:i endif
+	:i %GLOBAL%$sort_text$ = ((~$setlist_sorts$:a{%GLOBAL%$next_sort_index$:a})->$title$)
+	:i $add_user_control_helper$$text$ = %GLOBAL%$sort_text$$button$ = $yellow$$z$ = %i(100000)
+	:i endfunction]Script setlist_show_jump_helper_text 0xf535a3c2 [	:i if $setlist_get_next_section$
+		:i switch %GLOBAL%$next_section$
+			:i case %i(1)
+				:i $add_user_control_helper$${StructQBStringQs text = 0x3c1b3ab6StructQBKey button = blueStructInt z = 100000}$
+				:i endcase
+			case %i(2)
+				:i $add_user_control_helper$${StructQBStringQs text = 0x4d1f88f5StructQBKey button = blueStructInt z = 100000}$
+				:i endcase
+			case %i(3)
+				:i $add_user_control_helper$${StructQBStringQs text = 0xa1a26014StructQBKey button = blueStructInt z = 100000}$
+		:i end_switch
+	:i endif
+	:i endfunction]Script setlist_get_next_section 0x4543f6c4 [	:i $setlist_menu$.$GetSingleTag$${StructQBKey current_section}$
+	:i %GLOBAL%$new_section$ = %GLOBAL%$current_section$
+	:i while 
+	:i %GLOBAL%$new_section$ = (%GLOBAL%$new_section$ + %i(1))
+	:i if (%GLOBAL%$new_section$ = %i(4))
+		:i %GLOBAL%$new_section$ = %i(1)
+	:i endif
+	:i if $setlist_is_section_valid$$section$ = %GLOBAL%$new_section$
+		:i $printf$^[12463465]^$a$ = %GLOBAL%$new_section$
+		:i continue
+	:i endif
+	:i loop_to %i(3)
+	:i if NOT (%GLOBAL%$new_section$ = %GLOBAL%$current_section$)
+		:i return :s{$true$$next_section$ = %GLOBAL%$new_section$:s}
+	:i endif
+	:i return${StructQBKey false}$
+	:i endfunction]Script setlist_is_section_valid 0x614c6b74 [	:i $setlist_menu$.$GetTags$
+	:i switch %GLOBAL%$section$
+		:i case %i(1)
+			:i if NOT (%GLOBAL%$section_breaker_index_1$ = %i(99999))
+				:i return${StructQBKey true}$
+			:i endif
+			:i endcase
+		case %i(2)
+			:i if NOT (%GLOBAL%$section_breaker_index_2$ = %i(99999))
+				:i return${StructQBKey true}$
+			:i endif
+			:i endcase
+		case %i(3)
+			:i if NOT (%GLOBAL%$section_breaker_index_3$ = %i(99999))
+				:i return${StructQBKey true}$
+			:i endif
+	:i end_switch
+	:i return${StructQBKey false}$
+	:i endfunction]Script setlist_jump_down_section 0xfa90c587 [	:i $setlist_menu$.$GetTags$
+	:i if NOT $setlist_get_next_section$
+		:i return
+	:i endif
+	:i $PlaySound$${StructQBKey Menu_EnterName_BackStructInt vol = -3StructQBKey buss = front_end}$
+	:i switch %GLOBAL%$next_section$
+		:i case %i(1)
+			:i $focus_index$ = %GLOBAL%$section_breaker_index_1$
+			:i endcase
+		case %i(2)
+			:i $focus_index$ = %GLOBAL%$section_breaker_index_2$
+			:i endcase
+		case %i(3)
+			:i $focus_index$ = %GLOBAL%$section_breaker_index_3$
+	:i end_switch
+	:i if $ResolveScreenElementId$$id$ = :s{$setlist_menu$$child$ = %GLOBAL%$focus_index$:s}
+		:i %GLOBAL%$resolved_id$.$Obj_SpawnScript$$ui_setlist_focus_song$$params$ = :s{$time$ = %f(0.0):s}
+	:i endif
+	:i $LaunchEvent$$Type$ = $unfocus$$target$ = $setlist_menu$$data$ = :s{$child_index$ = %GLOBAL%$tag_selected_index$:s}
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i $LaunchEvent$$Type$ = $focus$$target$ = $setlist_menu$$data$ = :s{$child_index$ = %GLOBAL%$focus_index$:s}
+	:i endfunction]Script setlist_update_current_section 0x4a00eb15 [	:i $setlist_menu$.$GetTags$
+	:i if (%GLOBAL%$index$ >= %GLOBAL%$section_breaker_index_3$)
+		:i %GLOBAL%$current_section$ = %i(3)
+	:i elseif (%GLOBAL%$tag_selected_index$ >= %GLOBAL%$section_breaker_index_2$)
+		:i %GLOBAL%$current_section$ = %i(2)
+	:i elseif (%GLOBAL%$tag_selected_index$ >= %GLOBAL%$section_breaker_index_1$)
+		:i %GLOBAL%$current_section$ = %i(1)
+	:i endif
+	:i $printf$^[3c3c9525]^$a$ = %GLOBAL%$index$$b$ = %GLOBAL%$current_section$
+	:i $setlist_menu$.$settags$$current_section$ = %GLOBAL%$current_section$
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i $setup_custom_setlist_helpers$$Song$ = %GLOBAL%$Song$$jam_song$ = %GLOBAL%$jam_song$
+	:i else 
+		:i $clean_up_user_control_helpers$
+		:i if (~$is_network_game$ = %i(1))
+			:i if $local_player_is_choosing_song$
+				:i $add_user_control_helper$${StructQBStringQs text = 0x4d9ad28fStructQBKey button = greenStructInt z = 100}$
+			:i endif
+		:i else 
+			:i $add_user_control_helper$${StructQBStringQs text = 0x4d9ad28fStructQBKey button = greenStructInt z = 100}$
+		:i endif
+		:i $setlist_show_sort_helper_text$
+		:i $setlist_show_jump_helper_text$
+		:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100}$
+	:i endif
+	:i endfunction]Script ui_return_setlist_unblock_spawned 0xa338ddff [	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i $se_setprops$${StructQBKey unblock_events}$
+	:i endfunction]Script ui_return_setlist 0x47235673 [	:i $clean_up_user_control_helpers$
+	:i if (~$is_network_game$ = %i(0))
+		:i $add_user_control_helper$${StructQBStringQs text = 0x4d9ad28fStructQBKey button = greenStructInt z = 100000}$
+		:i $setlist_show_sort_helper_text$
+		:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100000}$
+	:i endif
+	:i if $SetlistInterface$.$desc_resolvealias$${StructQBKey Name = alias_setlist_menu}$
+		:i $AssignAlias$$id$ = %GLOBAL%$resolved_id$$alias$ = $setlist_menu$
+		:i $setlist_menu$.$Obj_SpawnScript$${StructQBKey ui_return_setlist_unblock_spawned}$
+		:i if (~$is_network_game$ = %i(1))
+			:i if $local_player_is_choosing_song$
+				:i $add_user_control_helper$${StructQBStringQs text = 0x4d9ad28fStructQBKey button = greenStructInt z = 100}$
+			:i endif
+			:i $setlist_show_sort_helper_text$
+			:i $setlist_show_jump_helper_text$
+			:i $add_user_control_helper$${StructQBStringQs text = 0xaf4d5dd2StructQBKey button = redStructInt z = 100}$
+		:i endif
+		:i $SetlistInterface$.$GetTags$
+	:i endif
+	:i $setlist_menu$.$GetTags$
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i $setup_custom_setlist_helpers$$Song$ = %GLOBAL%$last_focused_song$
+	:i endif
+	:i $SpawnScriptLater$${StructQBKey setlist_songpreview_monitor}$
+	:i endfunction]Script ui_setlist_focus_song 0x3a447a12 [	${StructFloat time = 0.10000000149011612}$
+	:i $GetTags$
+	:i $printf$${StructQBStringQs 0x8ac8f64b}$
+	:i $PrintStruct$ isNull 
+	:i if NOT $GotParam$${StructQBKey index}$
+		:i return
+	:i endif
+	:i $se_getparentid$
+	:i %GLOBAL%$parent_id$.$GetTags$
+	:i if (%GLOBAL%$prev_index$ > %GLOBAL%$index$)
+		:i $pos_move$ = %vec2(0.0,-10.0)
+	:i else 
+		:i $pos_move$ = %vec2(0.0,10.0)
+	:i endif
+	:i %GLOBAL%$selected_song_highlighted$ = $false$
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i if $song_is_in_temp_quickplay_song_list$$Song$ = %GLOBAL%$Song$
+			:i %GLOBAL%$selected_song_highlighted$ = $true$
+			:i if $GotParam$${StructQBKey jam_song}$
+				:i if (%GLOBAL%$example_songs$ = %i(1))
+					:i %GLOBAL%$jam_song$ = (%GLOBAL%$jam_song$ + %i(1000))
+				:i endif
+				:i if NOT $song_is_in_temp_jamsession_song_list$$jam_song$ = %GLOBAL%$jam_song$
+					:i %GLOBAL%$selected_song_highlighted$ = $false$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i %GLOBAL%$should_update_pad_choose$ = %i(0)
+	:i if (~$is_network_game$ = %i(1))
+		:i if $local_player_is_choosing_song$
+			:i %GLOBAL%$should_update_pad_choose$ = %i(1)
+		:i endif
+	:i else 
+		:i %GLOBAL%$should_update_pad_choose$ = %i(1)
+	:i endif
+	:i if (%GLOBAL%$should_update_pad_choose$ = %i(1))
+		:i if (%GLOBAL%$selected_song_highlighted$ = $true$)
+			:i $se_setprops$:s{
+				:i $event_handlers$ = :a{
+					:i :s{$pad_choose$$ui_setlist_custom_remove$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+				:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i else 
+			:i %GLOBAL%$pad_choose_params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}
+			:i if (%GLOBAL%$Song$ = $jamsession$)
+				:i %GLOBAL%$pad_choose_params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$$jam_song$ = %GLOBAL%$jam_song$$example_songs$ = %GLOBAL%$example_songs$:s}
+			:i endif
+			:i $PrintStruct$ isNull 
+			:i $se_setprops$:s{
+				:i $event_handlers$ = :a{
+					:i :s{$pad_choose$$ui_setlist_choose_song$$params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+	:i endif
+	:i $setlist_menu$.$settags$$last_focused_song$ = %GLOBAL%$Song$
+	:i if NOT $GotParam$${StructQBKey jam_song}$
+		:i $setlist_update_current_section$$index$ = %GLOBAL%$tag_selected_index$$Song$ = %GLOBAL%$Song$
+	:i else 
+		:i $setlist_update_current_section$$index$ = %GLOBAL%$tag_selected_index$$Song$ = %GLOBAL%$Song$$jam_song$ = %GLOBAL%$jam_song$
+	:i endif
+	:i %GLOBAL%$info_scores_container_alpha$ = %f(1.0)
+	:i %GLOBAL%$instrument_icons_alpha$ = %f(0.0)
+	:i if ((~$game_mode$ = $p2_battle$) OR (~$game_mode$ = $p2_faceoff$) OR (~$game_mode$ = $p2_pro_faceoff$))
+		:i %GLOBAL%$info_scores_container_alpha$ = %f(0.0)
+		:i %GLOBAL%$instrument_icons_alpha$ = %f(0.0)
+	:i endif
+	:i if NOT (%GLOBAL%$tag_selected_index$ < %GLOBAL%$section_breaker_index_3$)
+		:i %GLOBAL%$info_scores_container_alpha$ = %f(0.0)
+		:i %GLOBAL%$instrument_icons_alpha$ = %f(1.0)
+		:i $setlist_get_jammode_playback_tracks$$jam_song$ = %GLOBAL%$jam_song$$example_songs$ = %GLOBAL%$example_songs$
+		:i $icon_no_instrument_guitar_alpha$ = %i(1)
+		:i $icon_no_instrument_bass_alpha$ = %i(1)
+		:i $icon_no_instrument_drums_alpha$ = %i(1)
+		:i $icon_no_instrument_mic_alpha$ = %i(1)
+		:i if $GotParam$${StructQBKey playback_track1}$
+			:i if (%GLOBAL%$playback_track1$ > %i(4294967295))
+				:i $icon_no_instrument_guitar_alpha$ = %i(0)
+			:i endif
+		:i endif
+		:i if $GotParam$${StructQBKey playback_track2}$
+			:i if (%GLOBAL%$playback_track2$ > %i(4294967295))
+				:i $icon_no_instrument_bass_alpha$ = %i(0)
+			:i endif
+		:i endif
+		:i if $GotParam$${StructQBKey playback_track_drums}$
+			:i if (%GLOBAL%$playback_track_drums$ > %i(0))
+				:i $icon_no_instrument_drums_alpha$ = %i(0)
+			:i endif
+		:i endif
+		:i if $GotParam$${StructQBKey playback_track_vocals}$
+			:i if (%GLOBAL%$playback_track_vocals$ > %i(0))
+				:i $icon_no_instrument_mic_alpha$ = %i(0)
+			:i endif
+		:i endif
+	:i endif
+	:i $FormatText$$TextName$ = $song_text$^[66f7e0f4]^$a$ = %GLOBAL%$song_artist$$t$ = %GLOBAL%$song_title$
+	:i $StringToCharArray$$string$ = %GLOBAL%$song_text$
+	:i $GetArraySize$%GLOBAL%$char_array$
+	:i if (%GLOBAL%$array_size$ >= %i(45))
+		:i $FormatText$$TextName$ = $song_text$^[cbba4085]^$a$ = %GLOBAL%$song_artist$$t$ = %GLOBAL%$song_title$
+	:i endif
+	:i $se_setprops$:s{
+		:i $desc$ = %s("setlist_b_info_desc")
+		:i $auto_dims$ = $false$
+		:i $dims$ = %vec2(0.0,150.0)
+		:i $setlist_info_title_artist_text$ = %GLOBAL%$song_text$
+		:i $setlist_info_title_artist_alpha$ = %i(0)
+		:i $setlist_info_title_artist_wrap_alpha$ = %i(0)
+		:i $setlist_info_title_artist_pos$ = :s{%GLOBAL%$pos_move$$relative$:s}
+		:i %GLOBAL%$score_text$
+		:i $info_scores_container_alpha$ = %GLOBAL%$info_scores_container_alpha$
+		:i $instrument_icons_alpha$ = %GLOBAL%$instrument_icons_alpha$
+		:i $icon_no_instrument_guitar_alpha$ = %GLOBAL%$icon_no_instrument_guitar_alpha$
+		:i $icon_no_instrument_bass_alpha$ = %GLOBAL%$icon_no_instrument_bass_alpha$
+		:i $icon_no_instrument_drums_alpha$ = %GLOBAL%$icon_no_instrument_drums_alpha$
+		:i $icon_no_instrument_mic_alpha$ = %GLOBAL%$icon_no_instrument_mic_alpha$
+	:i :s}
+	:i $Obj_GetID$
+	:i $percent_index$ = %i(0)
+	:i $percent_diffs$ = :a{%s("beginner")%s("easy")%s("medium")%s("hard")%s("expert"):a}
+	:i $percent_aliases$ = :a{
+		:i $alias_Setlist_B_stars_beginner$
+		:i $alias_Setlist_B_stars_easy$
+		:i $alias_Setlist_B_stars_medium$
+		:i $alias_Setlist_B_stars_hard$
+		:i $alias_Setlist_B_stars_expert$
+	:i :a}
+	:i $star_diffs$ = :a{
+		:i $beginner_stars$
+		:i $easy_stars$
+		:i $medium_stars$
+		:i $hard_stars$
+		:i $expert_stars$
+	:i :a}
+	:i while 
+	:i $FormatText$$ChecksumName$ = $percent100$%s("%s_percent100")$s$ = (%GLOBAL%$percent_diffs$:a{%GLOBAL%$percent_index$:a})
+	:i if $GotParam$%GLOBAL%$percent100$
+		:i if %GLOBAL%$objID$.$desc_resolvealias$$Name$ = (%GLOBAL%$percent_aliases$:a{%GLOBAL%$percent_index$:a})
+			:i if ( isNull ->%GLOBAL%$percent100$ = %i(1))
+				:i %GLOBAL%$resolved_id$.$se_setprops$$star_texture$ = $song_complete_star_perfect$$star_rgba$ = :a{%i(255)%i(255)%i(255)%i(255):a}
+			:i endif
+			:i if %GLOBAL%$resolved_id$.$desc_resolvealias$$Name$ = $alias_stars$
+				:i $GetScreenElementChildren$$id$ = %GLOBAL%$resolved_id$
+				:i $num_stars$ = ( isNull ->(%GLOBAL%$star_diffs$:a{%GLOBAL%$percent_index$:a}))
+				:i if (%GLOBAL%$num_stars$ = %i(0))
+					:i %GLOBAL%$resolved_id$.$se_setprops$$alpha$ = %i(0)
+				:i else 
+					:i $GetArraySize$%GLOBAL%$children$
+					:i $stars_left$ = %GLOBAL%$array_size$
+					:i if (%GLOBAL%$num_stars$ < %i(5) AND %GLOBAL%$stars_left$ = %i(5))
+						:i if $ScreenElementExists$$id$ = (%GLOBAL%$children$:a{%i(0):a})
+							:i $DestroyScreenElement$$id$ = (%GLOBAL%$children$:a{%i(0):a})
+							:i $stars_left$ = (%GLOBAL%$stars_left$ - %i(1))
+						:i endif
+					:i endif
+					:i if (%GLOBAL%$num_stars$ < %i(4) AND %GLOBAL%$stars_left$ = %i(4))
+						:i if $ScreenElementExists$$id$ = (%GLOBAL%$children$:a{%i(1):a})
+							:i $DestroyScreenElement$$id$ = (%GLOBAL%$children$:a{%i(1):a})
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $percent_index$ = (%GLOBAL%$percent_index$ + %i(1))
+	:i loop_to %i(5)
+	:i if NOT (%GLOBAL%$array_size$ >= %i(45))
+		:i $se_setprops$:s{
+			:i $setlist_info_title_artist_pos$ = :s{(%GLOBAL%$pos_move$ * %i(4294967295))$relative$:s}
+			:i $setlist_info_title_artist_alpha$ = %i(1)
+			:i $time$ = %GLOBAL%$time$
+		:i :s}
+	:i else 
+		:i $se_setprops$:s{
+			:i $setlist_info_title_artist_pos$ = :s{(%GLOBAL%$pos_move$ * %i(4294967295))$relative$:s}
+			:i $setlist_info_title_artist_wrap_alpha$ = %i(1)
+			:i $time$ = %GLOBAL%$time$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$ratio$ = (%GLOBAL%$index$ / (%GLOBAL%$total_songs$ * %f(1.0)))
+	:i $Pos$ = (%vec2(0.0,1.0) * ((%GLOBAL%$ratio$ * %i(385)) - %i(185)))
+	:i $bg_pos$ = (%vec2(0.0,-1.0) * (%GLOBAL%$ratio$ * (%i(4400) - %i(720))))
+	:i $bg_runnerC_pos$ = (%vec2(0.0,-1.0) * (%GLOBAL%$ratio$ * (%i(2200) - %i(720))))
+	:i $bg_runnerL_pos$ = ((%vec2(0.0,-1.0) * (%GLOBAL%$ratio$ * (%i(2200) - %i(720)))) + %vec2(-640.0,0.0))
+	:i $bg_runnerR_pos$ = ((%vec2(0.0,-1.0) * (%GLOBAL%$ratio$ * (%i(2200) - %i(720)))) + %vec2(640.0,0.0))
+	:i $SetlistInterface$.$se_setprops$:s{
+		:i $setlist_B_scrollthumb_pos$ = %GLOBAL%$Pos$
+		:i $setlist_B_BG_pos$ = %GLOBAL%$bg_pos$
+		:i $setlist_B_BG_runnerC_pos$ = %GLOBAL%$bg_runnerC_pos$
+		:i $setlist_B_BG_runnerL_pos$ = %GLOBAL%$bg_runnerL_pos$
+		:i $setlist_B_BG_runnerR_pos$ = %GLOBAL%$bg_runnerR_pos$
+		:i $time$ = %GLOBAL%$time$
+	:i :s}
+	:i %GLOBAL%$parent_id$.$settags$$prev_index$ = %GLOBAL%$index$
+	:i $Obj_GetID$
+	:i $create_custom_setlist_circle$$id$ = %GLOBAL%$objID$
+	:i if (%GLOBAL%$tag_selected_index$ < %GLOBAL%$section_breaker_index_3$)
+		:i $gig_posters_song_focus$$Song$ = %GLOBAL%$Song$
+	:i else 
+		:i $gig_posters_song_focus$
+	:i endif
+	:i endfunction]Script ui_setlist_unfocus_song 0x760b6ba3 [	:i $GetTags$
+	:i $FormatText$$TextName$ = $song_text$^[e3f1881c]^$a$ = %GLOBAL%$song_artist$$t$ = %GLOBAL%$song_title$
+	:i $se_setprops$:s{
+		:i $desc$ = %s("setlist_b_listing_desc")
+		:i $auto_dims$ = $false$
+		:i $dims$ = %vec2(0.0,50.0)
+		:i $listing_text$ = %GLOBAL%$song_text$
+		:i %GLOBAL%$skull_tags$
+	:i :s}
+	:i $Obj_GetID$
+	:i $create_custom_setlist_circle$$id$ = %GLOBAL%$objID$$use_small_circle$
+	:i endfunction]Script ui_setlist_get_next_custom_index 0x046b41a4 [	:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+	:i $i$ = %i(0)
+	:i while 
+	:i if (~$temp_quickplay_song_list$:a{%GLOBAL%$i$:a} = $null$)
+		:i return$custom_index$ = %GLOBAL%$i$$index_max$ = %GLOBAL%$array_size$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return$custom_index$ = %GLOBAL%$array_size$$index_max$ = %GLOBAL%$array_size$
+	:i endfunction]Script set_num_songs_in_quickplay_list 0x129f235c [	:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+	:i $i$ = %i(0)
+	:i $num_songs$ = %i(0)
+	:i while 
+	:i if NOT (~$temp_quickplay_song_list$:a{%GLOBAL%$i$:a} = $null$)
+		:i %GLOBAL%$num_songs$ = (%GLOBAL%$num_songs$ + %i(1))
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i $change$$num_quickplay_song_list$ = %GLOBAL%$num_songs$
+	:i return$num_songs$ = %GLOBAL%$num_songs$
+	:i endfunction]Script ui_setlist_custom_remove 0x770c7d23 [	:i $setlist_menu$.$GetTags$
+	:i $Obj_GetID$
+	:i %GLOBAL%$objID$.$GetSingleTag$$custom_setlist_num$
+	:i if (%GLOBAL%$custom_setlist_num$ > %i(0))
+		:i if %GLOBAL%$objID$.$desc_resolvealias$$Name$ = $alias_custom_setlist_container$
+			:i if $GetScreenElementChildren$$id$ = %GLOBAL%$resolved_id$
+				:i $GetArraySize$%GLOBAL%$children$
+				:i if (%GLOBAL%$array_size$ > %i(0))
+					:i $destroy_menu$$menu_id$ = (%GLOBAL%$children$:a{%i(0):a})
+				:i endif
+			:i endif
+		:i endif
+		:i $SetArrayElement$$ArrayName$ = $temp_quickplay_song_list$$globalarray$$index$ = (%GLOBAL%$custom_setlist_num$ - %i(1))$newvalue$ = $null$
+		:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = (%GLOBAL%$custom_setlist_num$ - %i(1))$newvalue$ = %i(4294967295)
+		:i $set_num_songs_in_quickplay_list$
+		:i $FormatText$$ChecksumName$ = $circle_full_id$%s("cs_dot_helper_circle_%d")$d$ = %GLOBAL%$custom_setlist_num$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$circle_full_id$$alpha$ = %i(1)
+		:i %GLOBAL%$objID$.$settags$$custom_setlist_num$ = %i(0)
+		:i switch (%GLOBAL%$custom_setlist_num$)
+			:i case %i(1)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_1 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+				:i endcase
+			case %i(2)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_2 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+				:i endcase
+			case %i(3)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_3 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+				:i endcase
+			case %i(4)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_4 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+				:i endcase
+			case %i(5)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_5 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+				:i endcase
+			case %i(6)
+				:i $setlist_menu$.$settags$${StructQBKey custom_setlist_num_id_6 = null}$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_Song}$
+		:i end_switch
+		:i $se_setprops$:s{
+			:i $event_handlers$ = :a{
+				:i :s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+			:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $setup_custom_setlist_helpers$
+	:i endif
+	:i endfunction]Script ui_setlist_custom_remove_all 0xa06c0aee [	:i $setlist_menu$.$GetTags$
+	:i $index$ = %i(0)
+	:i while 
+	:i $FormatText$$ChecksumName$ = $custom_setlist_num_id$%s("custom_setlist_num_id_%d")$d$ = (%GLOBAL%$index$ + %i(1))
+	:i $obj_id$ = ( isNull ->%GLOBAL%$custom_setlist_num_id$)
+	:i if (%GLOBAL%$obj_id$ !== $null$)
+		:i if %GLOBAL%$obj_id$.$desc_resolvealias$$Name$ = $alias_custom_setlist_container$
+			:i if $GetScreenElementChildren$$id$ = %GLOBAL%$resolved_id$
+				:i $GetArraySize$%GLOBAL%$children$
+				:i $SoundEvent$${StructQBKey event = QuickPlay_Remove_All_Songs}$
+				:i if (%GLOBAL%$array_size$ > %i(0))
+					:i $destroy_menu$$menu_id$ = (%GLOBAL%$children$:a{%i(0):a})
+				:i endif
+			:i endif
+			:i %GLOBAL%$obj_id$.$GetSingleTag$$Song$
+			:i %GLOBAL%$obj_id$.$se_setprops$:s{
+				:i $event_handlers$ = :a{
+					:i :s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+				:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+		:i $SetArrayElement$$ArrayName$ = $temp_quickplay_song_list$$globalarray$$index$ = %GLOBAL%$index$$newvalue$ = $null$
+		:i $FormatText$$ChecksumName$ = $circle_full_id$%s("cs_dot_helper_circle_%d")$d$ = (%GLOBAL%$index$ + %i(1))
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$circle_full_id$$alpha$ = %i(1)
+		:i %GLOBAL%$obj_id$.$settags$$custom_setlist_num$ = %i(0)
+	:i endif
+	:i %GLOBAL%$index$ = (%GLOBAL%$index$ + %i(1))
+	:i loop_to %i(6)
+	:i $reset_temp_jamsession_song_list$
+	:i $set_num_songs_in_quickplay_list$
+	:i $setup_custom_setlist_helpers$
+	:i endfunction]Script create_custom_setlist_circle 0x3fa66f2e [	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i %GLOBAL%$id$.$GetTags$
+		:i if $GotParam$${StructQBKey custom_setlist_num}$
+			:i if (%GLOBAL%$custom_setlist_num$ > %i(0))
+				:i if %GLOBAL%$id$.$desc_resolvealias$$Name$ = $alias_custom_setlist_container$
+					:i if $GetScreenElementChildren$$id$ = %GLOBAL%$resolved_id$
+						:i $GetArraySize$%GLOBAL%$children$
+						:i if (%GLOBAL%$array_size$ > %i(0))
+							:i $destroy_menu$$menu_id$ = (%GLOBAL%$children$:a{%i(0):a})
+						:i endif
+					:i endif
+					:i $CreateScreenElement$:s{
+						:i $Type$ = $containerelement$
+						:i $parent$ = %GLOBAL%$resolved_id$
+					:i :s}
+					:i $cs_container$ = %GLOBAL%$id$
+					:i $dims$ = %vec2(75.0,75.0)
+					:i $highlight_dims$ = %vec2(160.0,160.0)
+					:i $text_scale$ = %f(1.5)
+					:i if (%GLOBAL%$custom_setlist_num$ = %i(1))
+						:i $text_pos$ = %vec2(-4.0,0.0)
+					:i else 
+						:i $text_pos$ = %vec2(0.0,0.0)
+					:i endif
+					:i if $GotParam$${StructQBKey use_small_circle}$
+						:i $highlight_dims$ = %vec2(106.0,106.0)
+						:i $dims$ = %vec2(50.0,50.0)
+						:i $text_scale$ = %f(1.0)
+					:i endif
+					:i $CreateScreenElement$:s{
+						:i $Type$ = $SpriteElement$
+						:i $parent$ = %GLOBAL%$cs_container$
+						:i $texture$ = $setlist_custom_circle_lg$
+						:i $dims$ = %GLOBAL%$dims$
+						:i $just$ = :a{$center$$center$:a}
+						:i $z_priority$ = %i(20)
+					:i :s}
+					:i $CreateScreenElement$:s{
+						:i $Type$ = $descinterface$
+						:i $desc$ = %s("highlight_sparkle_glow")
+						:i $parent$ = %GLOBAL%$cs_container$
+						:i $dims$ = %GLOBAL%$dims$
+						:i $Pos$ = %vec2(-642.0,-320.0)
+						:i $z_priority$ = %i(19)
+						:i $highlight_glow_dims$ = %GLOBAL%$highlight_dims$
+						:i $highlight_sparkle_dims$ = %GLOBAL%$highlight_dims$
+					:i :s}
+					:i %GLOBAL%$id$.$Obj_SpawnScriptLater$$rotate_highlight_sparkle_glow$$params$ = :s{$id$ = %GLOBAL%$id$$time$ = %i(3):s}
+					:i $FormatText$$TextName$ = $text$^[76b3fda7]^$d$ = %GLOBAL%$custom_setlist_num$
+					:i $CreateScreenElement$:s{
+						:i $Type$ = $textelement$
+						:i $parent$ = %GLOBAL%$cs_container$
+						:i $font$ = $fontgrid_text_a8$
+						:i $text$ = %GLOBAL%$text$
+						:i $Pos$ = %GLOBAL%$text_pos$
+						:i $scale$ = %GLOBAL%$text_scale$
+						:i $rgba$ = :a{%i(0)%i(0)%i(0)%i(255):a}
+						:i $just$ = :a{$center$$center$:a}
+						:i $z_priority$ = %i(21)
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i endfunction]Script ui_setlist_choose_song 0x368772e6 [	${StructInt device_num = 0}$
+	:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+		:i $setlist_menu$.$GetTags$
+		:i if (~$sort_restore_selections$ = %i(0))
+			:i $ui_setlist_get_next_custom_index$
+		:i else 
+			:i $GetArraySize$${StructQBString temp_quickplay_song_list}$
+			:i %GLOBAL%$index_max$ = %GLOBAL%$array_size$
+		:i endif
+		:i if (%GLOBAL%$custom_index$ < %GLOBAL%$index_max$)
+			:i $Obj_GetID$
+			:i %GLOBAL%$objID$.$GetSingleTag$$custom_setlist_num$
+			:i %GLOBAL%$objID$.$GetSingleTag$$jam_song$
+			:i %GLOBAL%$objID$.$GetSingleTag$$example_songs$
+			:i if (%GLOBAL%$custom_setlist_num$ <= %i(0))
+				:i if (~$sort_restore_selections$ = %i(0))
+					:i $SetArrayElement$$ArrayName$ = $temp_quickplay_song_list$$globalarray$$index$ = %GLOBAL%$custom_index$$newvalue$ = %GLOBAL%$Song$
+					:i if $GotParam$${StructQBKey jam_song}$
+						:i if (%GLOBAL%$example_songs$ = %i(1))
+							:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = %GLOBAL%$custom_index$$newvalue$ = (%i(1000) + %GLOBAL%$jam_song$)
+						:i else 
+							:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = %GLOBAL%$custom_index$$newvalue$ = %GLOBAL%$jam_song$
+						:i endif
+					:i endif
+				:i endif
+				:i $set_num_songs_in_quickplay_list$
+				:i %GLOBAL%$objID$.$settags$$custom_setlist_num$ = (%GLOBAL%$custom_index$ + %i(1))
+				:i $create_custom_setlist_circle$$id$ = %GLOBAL%$objID$
+				:i switch (%GLOBAL%$custom_index$ + %i(1))
+					:i case %i(1)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_1$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+						:i endcase
+					case %i(2)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_2$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+						:i endcase
+					case %i(3)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_3$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+						:i endcase
+					case %i(4)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_4$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+						:i endcase
+					case %i(5)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_5$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+						:i endcase
+					case %i(6)
+						:i $setlist_menu$.$settags$$custom_setlist_num_id_6$ = %GLOBAL%$objID$
+						:i if NOT $GotParam$${StructQBKey no_sound}$
+							:i $SoundEvent$${StructQBKey event = QuickPlay_Select_Song}$
+						:i endif
+				:i end_switch
+				:i $se_setprops$:s{
+					:i $event_handlers$ = :a{
+						:i :s{$pad_choose$$ui_setlist_custom_remove$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+					:i :a}
+					:i $replace_handlers$
+				:i :s}
+				:i $FormatText$$ChecksumName$ = $circle_full_id$%s("cs_dot_helper_circle_%d")$d$ = (%GLOBAL%$custom_index$ + %i(1))
+				:i $SetScreenElementProps$$id$ = %GLOBAL%$circle_full_id$$alpha$ = %i(0)
+				:i if NOT $GotParam$${StructQBKey example_songs}$
+					:i $setup_custom_setlist_helpers$$Song$ = %GLOBAL%$Song$
+				:i else 
+					:i if (%GLOBAL%$example_songs$ = %i(1))
+						:i %GLOBAL%$jam_song$ = (%GLOBAL%$jam_song$ + %i(1000))
+					:i endif
+					:i $setup_custom_setlist_helpers$$Song$ = %GLOBAL%$Song$$jam_song$ = %GLOBAL%$jam_song$
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i $ui_setlist_continue$ isNull 
+	:i endif
+	:i endfunction]Script ui_setlist_compact_and_continue 0xea4d014f [	:i $SetSpawnInstanceLimits$${StructInt Max = 1StructQBKey management = ignore_spawn_request}$
+	:i $reset_quickplay_song_list$
+	:i $change$${StructInt quickplay_song_list_current = 0}$
+	:i $outer_index$ = %i(0)
+	:i $inner_index$ = %i(0)
+	:i while 
+	:i if (~$temp_quickplay_song_list$:a{%GLOBAL%$inner_index$:a} !== $null$)
+		:i $SetArrayElement$$ArrayName$ = $quickplay_song_list$$globalarray$$index$ = %GLOBAL%$outer_index$$newvalue$ = (~$temp_quickplay_song_list$:a{%GLOBAL%$inner_index$:a})
+		:i %GLOBAL%$outer_index$ = (%GLOBAL%$outer_index$ + %i(1))
+	:i endif
+	:i %GLOBAL%$inner_index$ = (%GLOBAL%$inner_index$ + %i(1))
+	:i loop_to %i(6)
+	:i $temp_array$ = (~$temp_jamsession_song_list$)
+	:i $reset_temp_jamsession_song_list$
+	:i $outer_index$ = %i(0)
+	:i $inner_index$ = %i(0)
+	:i while 
+	:i if (%GLOBAL%$temp_array$:a{%GLOBAL%$inner_index$:a} !== %i(4294967295))
+		:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = %GLOBAL%$outer_index$$newvalue$ = (%GLOBAL%$temp_array$:a{%GLOBAL%$inner_index$:a})
+		:i %GLOBAL%$outer_index$ = (%GLOBAL%$outer_index$ + %i(1))
+	:i endif
+	:i %GLOBAL%$inner_index$ = (%GLOBAL%$inner_index$ + %i(1))
+	:i loop_to %i(6)
+	:i $temp_array$ = (~$temp_jamsession_song_list$)
+	:i $reset_temp_jamsession_song_list$
+	:i $outer_index$ = %i(0)
+	:i $inner_index$ = %i(0)
+	:i while 
+	:i if (~$quickplay_song_list$:a{%GLOBAL%$inner_index$:a} = $jamsession$)
+		:i $SetArrayElement$$ArrayName$ = $temp_jamsession_song_list$$globalarray$$index$ = %GLOBAL%$inner_index$$newvalue$ = (%GLOBAL%$temp_array$:a{%GLOBAL%$outer_index$:a})
+		:i %GLOBAL%$outer_index$ = (%GLOBAL%$outer_index$ + %i(1))
+	:i endif
+	:i %GLOBAL%$inner_index$ = (%GLOBAL%$inner_index$ + %i(1))
+	:i loop_to %i(6)
+	:i $ui_setlist_continue$$device_num$ = %GLOBAL%$device_num$$Song$ = (~$quickplay_song_list$:a{%i(0):a})
+	:i endfunction]Script ui_setlist_continue 0xc4d92bea [	:i if $ScreenElementExists$${StructQBKey id = setlist_menu}$
+		:i $setlist_menu$.$menu_getselectedindex$
+		:i $ui_event_add_params$$selected_index$ = %GLOBAL%$selected_index$
+	:i endif
+	:i if (%GLOBAL%$Song$ !== $null$)
+		:i $setlist_menu$.$se_setprops$${StructQBKey block_events}$
+		:i $change$$current_song$ = %GLOBAL%$Song$
+		:i $change$$track_last_song$ = %GLOBAL%$Song$
+		:i $setlist_menu$.$GetSingleTag$${StructQBKey from_leaderboard}$
+		:i if $GotParam$${StructQBKey from_leaderboard}$
+			:i $generic_menu_pad_choose_sound$
+			:i $ui_leaderboard_list_select$$song_checksum$ = %GLOBAL%$Song$
+			:i return
+		:i endif
+		:i if (~$is_network_game$ = %i(1))
+			:i $printf$${StructQBStringQs 0xa463d6c4}$
+			:i $choose_random_venue$
+			:i if $search_for_tool_in_quickplay_list$$Song$ = %GLOBAL%$Song$
+				:i $change$${StructQBKey current_level = load_z_tool}$
+			:i endif
+			:i if (~$net_new_matchmaking_ui_flag$ = %i(1))
+				:i $get_player_num_from_controller$$controller_index$ = %GLOBAL%$device_num$
+				:i $getplayerinfo$%GLOBAL%$player_num$$net_obj_id$
+				:i if (%GLOBAL%$net_obj_id$ = ~$online_song_choice_id$)
+					:i $SoundEvent$${StructQBKey event = Song_Affirmation}$
+					:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+					:i $printf$${StructQBStringQs 0xc5fc3c76}$
+					:i $net_request_song$
+				:i else 
+					:i $printf$${StructQBStringQs 0xc0402163}$
+					:i return
+				:i endif
+			:i else 
+				:i $SoundEvent$${StructQBKey event = Song_Affirmation}$
+				:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+				:i $printf$${StructQBStringQs 0xe0b97260}$
+				:i $net_request_song$
+			:i endif
+		:i else 
+			:i if $search_for_tool_in_quickplay_list$$Song$ = %GLOBAL%$Song$
+				:i $change$${StructQBKey current_level = load_z_tool}$
+				:i $can_change_level$ = %i(0)
+			:i else 
+				:i $change$${StructQBString current_level = g_last_venue_selected}$
+				:i $can_change_level$ = %i(1)
+			:i endif
+			:i if (~$practice_enabled$)
+				:i $practice_check_song_for_parts$
+			:i else 
+				:i if NOT (~$top_rockers_enabled$)
+					:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+				:i endif
+				:i if (~$current_num_players$ = %i(1))
+					:i $change$$player1_device$ = %GLOBAL%$device_num$
+				:i endif
+				:i switch (~$game_mode$)
+					:i case $p2_coop$
+						:i endcase
+					case $p2_battle$
+						:i endcase
+					case $p2_pro_faceoff$
+						:i endcase
+					case $p2_faceoff$
+						:i $generic_event_choose$$state$ = $uistate_band_difficulty$$data$ = :s{$p2$ = %i(1)$continue_data$ = :s{$state$ = $uistate_play_song$ isNull :s}:s}
+						:i endcase
+					case $p1_quickplay$
+						:i $Obj_GetID$
+						:i $SetlistInterface$.$settags$$current_id$ = %GLOBAL%$objID$
+						:i $setlist_menu$.$se_setprops$${StructQBKey block_events}$
+						:i $generic_menu_pad_choose_sound$
+						:i $generic_event_choose$$state$ = $uistate_select_difficulty$$data$ = :s{$is_popup$$from_setlist$ = %i(1)$ignore_camera$$can_change_level$ = %GLOBAL%$can_change_level$:s}
+						:i endcase
+					case $p2_quickplay$
+						:i endcase
+					case $p3_quickplay$
+						:i endcase
+					case $p4_quickplay$
+						:i $setlist_menu$.$GetSingleTag$${StructQBKey from_top_rocker}$
+						:i if $GotParam$${StructQBKey from_top_rocker}$
+							:i $generic_event_choose$$state$ = $uistate_select_difficulty$$data$ = :s{$is_popup$$from_setlist$ = %i(1)$ignore_camera$$can_change_level$ = %GLOBAL%$can_change_level$:s}
+							:i return
+						:i endif
+						:i $generic_event_choose$$state$ = $uistate_band_difficulty$$data$ = :s{$continue_data$ = :s{$state$ = $uistate_play_song$ isNull :s}:s}
+						:i endcase
+					default 
+						:i $destroy_band$
+						:i $setlist_menu$.$GetTags$
+						:i if $GotParam$${StructQBKey next_state}$
+							:i if $search_for_tool_in_quickplay_list$
+								:i $generic_event_choose$${StructQBKey state = uistate_play_songStructStruct data{	StructHeader	{		StructQBKey selected_level = load_z_tool		StructInt can_change_level = 0	}}}$
+							:i else 
+								:i $generic_event_choose$$state$ = %GLOBAL%$next_state$
+							:i endif
+						:i else 
+							:i $generic_event_choose$${StructQBKey state = uistate_play_song}$
+						:i endif
+				:i end_switch
+			:i endif
+		:i endif
+	:i endif
+	:i endfunction]Script ui_setlist_back 0xf1d555d0 [	:i if (%GLOBAL%$show_quit_warning$ = %i(1))
+		:i $set_num_songs_in_quickplay_list$
+		:i if (%GLOBAL%$num_songs$ > %i(0))
+			:i $setlist_menu$.$se_setprops$${StructQBKey block_events}$
+			:i $generic_event_choose$${StructQBKey state = uistate_setlist_quit_warningStructStruct data{	StructHeader	{		StructQBKey is_popup	}}}$
+			:i return
+		:i endif
+	:i endif
+	:i $change$${StructInt sort_restore_selections = 0}$
+	:i $ui_setlist_go_back$
+	:i endfunction]Script ui_setlist_go_back 0xc08bcc75 [	:i $SpawnScriptNow$${StructQBKey destroy_setlist_songpreview_monitor}$
+	:i if (~$is_network_game$ = %i(1))
+		:i if (~$net_song_countdown$ = %i(0))
+			:i $Obj_GetID$
+			:i $SetlistInterface$.$settags$$current_id$ = %GLOBAL%$objID$
+			:i $setlist_menu$.$se_setprops$${StructQBKey block_events}$
+			:i $generic_menu_pad_back_sound$
+			:i $generic_event_choose$${StructQBKey state = uistate_online_quit_warningStructStruct data{	StructHeader	{		StructQBKey is_popup	}}}$
+		:i endif
+	:i else 
+		:i $additional_data$ = :s{:s}
+		:i if $ui_event_exists_in_stack$${StructString Name = "gig_posters"}$
+			:i $additional_data$ = :s{$ignore_camera$ = %i(1):s}
+		:i endif
+		:i $generic_event_back$$no_sound$$data$ = :s{$num_states$ = %GLOBAL%$num_states$$came_from_setlist$ = %i(1)%GLOBAL%$additional_data$:s}
+	:i endif
+	:i endfunction]Script setlist_switch_sort 0x0ffcf0c3 [	:i if (~$is_network_game$ = %i(0) OR ~$net_song_countdown$ = %i(0))
+		:i if (%GLOBAL%$for_custom_setlist$ = %i(1))
+			:i $change$${StructInt sort_restore_selections = 1}$
+		:i endif
+		:i $change$${StructInt refresh_from_sort = 1}$
+		:i $generic_menu_pad_choose_sound$
+		:i $LaunchEvent$${StructQBKey Type = unfocusStructQBKey target = setlist_menu}$
+		:i $GetArraySize$${StructQBString setlist_sorts}$
+		:i $change$$setlist_sort_index$ = (~$setlist_sort_index$ + %i(1))
+		:i if (~$setlist_sort_index$ >= %GLOBAL%$array_size$)
+			:i $change$${StructInt setlist_sort_index = 0}$
+		:i endif
+		:i $destroy_setlist_songpreview_monitor$
+		:i $ui_event$${StructQBKey event = menu_refreshStructStruct data{	StructHeader	{		StructQBKey restore_selections	}}}$
+	:i endif
+	:i endfunction]Script setlist_create_jammode_songs 0x04c19a5d [	:i $jam_update_curr_directory_listing$$controller$ = (~$primary_controller$)
+	:i $setlist_add_jammode_songs_list$$songlist$ = (~$jam_curr_directory_listing$) isNull $sorted$ = %i(1)
+	:i $setlist_add_jammode_songs_list$$songlist$ = (~$jam_song_assets$) isNull $example_songs$ = %i(1)$sorted$ = %i(0)
+	:i return$final_num_songs$ = %GLOBAL%$final_num_songs$
+	:i endfunction]Script setlist_add_jammode_songs_list 0xebc13d2b [	${StructInt example_songs = 0StructInt sorted = 0}$
+	:i $GetArraySize$%GLOBAL%$songlist$
+	:i if (%GLOBAL%$array_size$ = %i(0))
+		:i return
+	:i endif
+	:i $total_songs$ = %GLOBAL%$array_size$
+	:i if (%GLOBAL%$sorted$ = %i(1))
+		:i %GLOBAL%$sortable_songlist$ = :a{:a}
+		:i %GLOBAL%$i$ = %i(0)
+		:i while 
+		:i %GLOBAL%$jam_song_data$ = (%GLOBAL%$songlist$:a{%GLOBAL%$i$:a})
+		:i $FormatText$$ChecksumName$ = $Song$%s("jamsong_%i")$i$ = %GLOBAL%$i$
+		:i $AddArrayElement$$array$ = %GLOBAL%$sortable_songlist$$element$ = :s{$song_checksum$ = %GLOBAL%$Song$$song_title$ = (%GLOBAL%$jam_song_data$->$filename$)$song_artist$ = (%GLOBAL%$jam_song_data$->$artist$):s}
+		:i %GLOBAL%$sortable_songlist$ = %GLOBAL%$array$
+		:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+		:i loop_to %GLOBAL%$total_songs$
+		:i %GLOBAL%$sortby$ = (~$setlist_sorts$:a{~$setlist_sort_index$:a}->$Name$)
+		:i if NOT ((%GLOBAL%$sortby$ = $title_alphabetical$) OR (%GLOBAL%$sortby$ = $artist_alphabetical$))
+			:i %GLOBAL%$sortby$ = $title_alphabetical$
+		:i endif
+		:i $SortAndBuildSonglist$$songlist$ = %GLOBAL%$sortable_songlist$$sortby$ = %GLOBAL%$sortby$$output_indices$
+	:i else 
+		:i $CreateIndexArray$%GLOBAL%$total_songs$
+		:i %GLOBAL%$sorted_songlist_indices$ = %GLOBAL%$index_array$
+	:i endif
+	:i $get_player_num_from_controller$$controller_index$ = (~$primary_controller$)
+	:i if (%GLOBAL%$player_num$ >= %i(1))
+		:i $getplayerinfo$%GLOBAL%$player_num$$part$
+	:i else 
+		:i $printf$${StructString 0x00000000 = "WARNING: PLAYER NOT FOUND"}$
+		:i $part$ = $guitar$
+	:i endif
+	:i $i$ = %i(0)
+	:i $song_index$ = %i(0)
+	:i while 
+	:i %GLOBAL%$skip$ = %i(1)
+	:i $song_index$ = (%GLOBAL%$sorted_songlist_indices$:a{%GLOBAL%$i$:a})
+	:i if NOT $GotParam$${StructQBKey num_band_players}$
+		:i $filter_songs_for_single$$song_struct$ = (%GLOBAL%$songlist$:a{%GLOBAL%$song_index$:a})$part$ = %GLOBAL%$part$
+	:i else 
+		:i $filter_songs_for_band$$song_struct$ = (%GLOBAL%$songlist$:a{%GLOBAL%$song_index$:a})$band_controller_types$ = %GLOBAL%$band_controller_types$$num_band_players$ = %GLOBAL%$num_band_players$
+	:i endif
+	:i if (%GLOBAL%$skip$ = %i(0))
+		:i $song_title$ = (%GLOBAL%$songlist$:a{%GLOBAL%$song_index$:a}->$filename$)
+		:i if $StructureContains$$structure$ = (%GLOBAL%$songlist$:a{%GLOBAL%$song_index$:a})$artist$
+			:i $song_artist$ = (%GLOBAL%$songlist$:a{%GLOBAL%$song_index$:a}->$artist$)
+		:i endif
+		:i $Song$ = $jamsession$
+		:i $beginner_skull_alpha$ = %i(1)
+		:i $easy_skull_alpha$ = %i(1)
+		:i $medium_skull_alpha$ = %i(1)
+		:i $hard_skull_alpha$ = %i(1)
+		:i $expert_skull_alpha$ = %i(1)
+		:i $ghost_skull_alpha$ = %f(0.5500000)
+		:i $beginner_text_alpha$ = %i(1)
+		:i $easy_text_alpha$ = %i(1)
+		:i $medium_text_alpha$ = %i(1)
+		:i $hard_text_alpha$ = %i(1)
+		:i $expert_text_alpha$ = %i(1)
+		:i $ghost_text_alpha$ = %i(0)
+		:i $highest_difficulty_texture$ = $icon_difficulty_beginner$
+		:i $highest_difficulty_alpha$ = %i(0)
+		:i $score$ = %i(0)
+		:i $get_difficulty_text_nl$${StructQBKey difficulty = easy_rhythm}$
+		:i $get_formatted_songname_for_jam_mode$$song_prefix$ = %GLOBAL%$song_title$$difficulty_text_nl$ = %GLOBAL%$difficulty_text_nl$$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+		:i $GetGlobalTags$%GLOBAL%$songname$$params$ = $score$$noassert$ = %i(1)
+		:i $FormatText$$TextName$ = $score_beginner_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+		:i if (%GLOBAL%$score$ = %i(0))
+			:i %GLOBAL%$beginner_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+			:i %GLOBAL%$beginner_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+		:i else 
+			:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_beginner$
+			:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+		:i endif
+		:i $score$ = %i(0)
+		:i $get_difficulty_text_nl$${StructQBKey difficulty = easy}$
+		:i $get_formatted_songname_for_jam_mode$$song_prefix$ = %GLOBAL%$song_title$$difficulty_text_nl$ = %GLOBAL%$difficulty_text_nl$$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+		:i $GetGlobalTags$%GLOBAL%$songname$$params$ = $score$$noassert$ = %i(1)
+		:i $FormatText$$TextName$ = $score_easy_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+		:i if (%GLOBAL%$score$ = %i(0))
+			:i %GLOBAL%$easy_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+			:i %GLOBAL%$easy_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+		:i else 
+			:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_easy$
+			:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+		:i endif
+		:i $score$ = %i(0)
+		:i $get_difficulty_text_nl$${StructQBKey difficulty = MEDIUM}$
+		:i $get_formatted_songname_for_jam_mode$$song_prefix$ = %GLOBAL%$song_title$$difficulty_text_nl$ = %GLOBAL%$difficulty_text_nl$$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+		:i $GetGlobalTags$%GLOBAL%$songname$$params$ = $score$$noassert$ = %i(1)
+		:i $FormatText$$TextName$ = $score_medium_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+		:i if (%GLOBAL%$score$ = %i(0))
+			:i %GLOBAL%$medium_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+			:i %GLOBAL%$medium_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+		:i else 
+			:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_medium$
+			:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+		:i endif
+		:i $score$ = %i(0)
+		:i $get_difficulty_text_nl$${StructQBKey difficulty = hard}$
+		:i $get_formatted_songname_for_jam_mode$$song_prefix$ = %GLOBAL%$song_title$$difficulty_text_nl$ = %GLOBAL%$difficulty_text_nl$$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+		:i $GetGlobalTags$%GLOBAL%$songname$$params$ = $score$$noassert$ = %i(1)
+		:i $FormatText$$TextName$ = $score_hard_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+		:i if (%GLOBAL%$score$ = %i(0))
+			:i %GLOBAL%$hard_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+			:i %GLOBAL%$hard_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+		:i else 
+			:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_hard$
+			:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+		:i endif
+		:i $score$ = %i(0)
+		:i $get_difficulty_text_nl$${StructQBKey difficulty = expert}$
+		:i $get_formatted_songname_for_jam_mode$$song_prefix$ = %GLOBAL%$song_title$$difficulty_text_nl$ = %GLOBAL%$difficulty_text_nl$$part$ = (~$part_list_props$->%GLOBAL%$part$->$text_nl$)
+		:i $GetGlobalTags$%GLOBAL%$songname$$params$ = $score$$noassert$ = %i(1)
+		:i $FormatText$$TextName$ = $score_expert_text$^[4d4555da]^$s$ = %GLOBAL%$score$
+		:i if (%GLOBAL%$score$ = %i(0))
+			:i %GLOBAL%$expert_skull_alpha$ = %GLOBAL%$ghost_skull_alpha$
+			:i %GLOBAL%$expert_text_alpha$ = %GLOBAL%$ghost_text_alpha$
+		:i else 
+			:i %GLOBAL%$highest_difficulty_texture$ = $icon_difficulty_expert$
+			:i %GLOBAL%$highest_difficulty_alpha$ = %i(1)
+		:i endif
+		:i $score_text$ = :s{
+			:i $score_beginner_text$ = %GLOBAL%$score_beginner_text$
+			:i $score_easy_text$ = %GLOBAL%$score_easy_text$
+			:i $score_medium_text$ = %GLOBAL%$score_medium_text$
+			:i $score_hard_text$ = %GLOBAL%$score_hard_text$
+			:i $score_expert_text$ = %GLOBAL%$score_expert_text$
+			:i $icon_difficulty_beginner_alpha$ = %GLOBAL%$beginner_skull_alpha$
+			:i $icon_difficulty_easy_alpha$ = %GLOBAL%$easy_skull_alpha$
+			:i $icon_difficulty_medium_alpha$ = %GLOBAL%$medium_skull_alpha$
+			:i $icon_difficulty_hard_alpha$ = %GLOBAL%$hard_skull_alpha$
+			:i $icon_difficulty_expert_alpha$ = %GLOBAL%$expert_skull_alpha$
+			:i $score_beginner_alpha$ = %GLOBAL%$beginner_text_alpha$
+			:i $score_easy_alpha$ = %GLOBAL%$easy_text_alpha$
+			:i $score_medium_alpha$ = %GLOBAL%$medium_text_alpha$
+			:i $score_hard_alpha$ = %GLOBAL%$hard_text_alpha$
+			:i $score_expert_alpha$ = %GLOBAL%$expert_text_alpha$
+		:i :s}
+		:i $skull_tags$ = :s{
+			:i $icon_difficulty_texture$ = %GLOBAL%$highest_difficulty_texture$
+			:i $icon_difficulty_alpha$ = %GLOBAL%$highest_difficulty_alpha$
+		:i :s}
+		:i $FormatText$$TextName$ = $song_text$^[e3f1881c]^$a$ = %GLOBAL%$song_artist$$t$ = %GLOBAL%$song_title$
+		:i $CreateScreenElement$:s{
+			:i $parent$ = $setlist_menu$
+			:i $Type$ = $descinterface$
+			:i $desc$ = %s("setlist_b_listing_desc")
+			:i $auto_dims$ = $false$
+			:i $dims$ = %vec2(0.0,50.0)
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$ui_setlist_focus_song$$params$ = :s{$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$:s}:s}
+				:i :s{$unfocus$$ui_setlist_unfocus_song$:s}
+			:i :a}
+			:i $tags$ = :s{
+				:i $custom_setlist_num$ = %i(0)
+				:i $song_title$ = %GLOBAL%$song_title$
+				:i $song_artist$ = %GLOBAL%$song_artist$
+				:i $score_text$ = %GLOBAL%$score_text$
+				:i $skull_tags$ = %GLOBAL%$skull_tags$
+				:i $Song$ = $jamsession$
+				:i $index$ = %GLOBAL%$final_num_songs$
+				:i $jam_song$ = %GLOBAL%$song_index$
+				:i $example_songs$ = %GLOBAL%$example_songs$
+			:i :s}
+			:i $just$ = :a{$center$$center$:a}
+			:i $listing_text$ = %GLOBAL%$song_text$
+			:i %GLOBAL%$skull_tags$
+		:i :s}
+		:i if (~$is_network_game$ = %i(1))
+			:i if $local_player_is_choosing_song$
+				:i %GLOBAL%$id$.$se_setprops$$event_handlers$ = :a{:s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$$jam_song$ = %GLOBAL%$song_index$$example_songs$ = %GLOBAL%$example_songs$:s}:s}:a}
+			:i endif
+		:i else 
+			:i %GLOBAL%$id$.$se_setprops$$event_handlers$ = :a{:s{$pad_choose$$ui_setlist_choose_song$$params$ = :s{$Song$ = %GLOBAL%$Song$$for_custom_setlist$ = %GLOBAL%$for_custom_setlist$$jam_song$ = %GLOBAL%$song_index$$example_songs$ = %GLOBAL%$example_songs$:s}:s}:a}
+		:i endif
+		:i if (~$sort_restore_selections$ = %i(1))
+			:i if (%GLOBAL%$example_songs$ = %i(1))
+				:i %GLOBAL%$song_index$ = (%GLOBAL%$song_index$ + %i(1000))
+			:i endif
+			:i $get_song_index_from_temp_jamsession_song_list$$jam_song$ = %GLOBAL%$song_index$
+			:i if (%GLOBAL%$jamsession_index$ !== %i(4294967295))
+				:i %GLOBAL%$id$.$ui_setlist_choose_song$:s{
+					:i $for_custom_setlist$ = %GLOBAL%$for_custom_setlist$
+					:i $Song$ = %GLOBAL%$Song$
+					:i $custom_index$ = %GLOBAL%$jamsession_index$
+					:i $no_sound$
+				:i :s}
+			:i endif
+		:i endif
+		:i %GLOBAL%$final_num_songs$ = (%GLOBAL%$final_num_songs$ + %i(1))
+	:i endif
+	:i $i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$total_songs$
+	:i return$final_num_songs$ = %GLOBAL%$final_num_songs$
+	:i endfunction]Script filter_songs_for_single 0x3d9d9bc0 [	:i if $StructureContains$$structure$ = %GLOBAL%$song_struct$$no_qp$
+		:i return${StructInt skip = 1}$
+	:i endif
+	:i %GLOBAL%$skip_it$ = %i(0)
+	:i %GLOBAL%$playback_value$ = %i(0)
+	:i if $StructureContains$$structure$ = %GLOBAL%$song_struct$$playback_track1$
+		:i if (%GLOBAL%$part$ = $guitar$)
+			:i %GLOBAL%$playback_value$ = (%GLOBAL%$song_struct$->$playback_track1$)
+			:i if (%GLOBAL%$playback_value$ = %i(4294967295))
+				:i %GLOBAL%$skip_it$ = %i(1)
+			:i endif
+		:i elseif (%GLOBAL%$part$ = $Bass$)
+			:i %GLOBAL%$playback_value$ = (%GLOBAL%$song_struct$->$playback_track2$)
+			:i if (%GLOBAL%$playback_value$ = %i(4294967295))
+				:i %GLOBAL%$skip_it$ = %i(1)
+			:i endif
+		:i elseif (%GLOBAL%$part$ = $drum$)
+			:i %GLOBAL%$playback_value$ = (%GLOBAL%$song_struct$->$playback_track_drums$)
+			:i if (%GLOBAL%$playback_value$ = %i(0))
+				:i %GLOBAL%$skip_it$ = %i(1)
+			:i endif
+		:i elseif (%GLOBAL%$part$ = $Vocals$)
+			:i %GLOBAL%$playback_value$ = (%GLOBAL%$song_struct$->$playback_track_vocals$)
+			:i if (%GLOBAL%$playback_value$ = %i(0))
+				:i %GLOBAL%$skip_it$ = %i(1)
+			:i endif
+		:i endif
+	:i endif
+	:i return$skip$ = %GLOBAL%$skip_it$
+	:i endfunction]Script filter_songs_for_band 0x6948a41e [	:i if $StructureContains$$structure$ = %GLOBAL%$song_struct$$no_qp$
+		:i return${StructInt skip = 1}$
+	:i endif
+	:i $i$ = %i(0)
+	:i $track1_used$ = %i(0)
+	:i while 
+	:i %GLOBAL%$player_controller$ = (%GLOBAL%$band_controller_types$:a{%GLOBAL%$i$:a})
+	:i switch (%GLOBAL%$player_controller$)
+		:i case %i(1)
+			:i $satisfied$ = %i(0)
+			:i if ((%GLOBAL%$song_struct$->$playback_track1$) > %i(4294967295))
+				:i if (%GLOBAL%$track1_used$ = %i(0))
+					:i $satisfied$ = %i(1)
+					:i $track1_used$ = %i(1)
+				:i endif
+			:i endif
+			:i if (%GLOBAL%$satisfied$ = %i(0))
+				:i if ((%GLOBAL%$song_struct$->$playback_track2$) > %i(4294967295))
+					:i $satisfied$ = %i(1)
+				:i endif
+			:i endif
+			:i if (%GLOBAL%$satisfied$ = %i(0))
+				:i $printf$%s("***** SKIPPING SONG: %a, Reason: Not enough Guitar Tracks ******")$a$ = (%GLOBAL%$song_struct$->$filename$)$channel$ = $jrdebug$
+				:i return${StructInt skip = 1}$
+			:i endif
+			:i endcase
+		case %i(2)
+			:i if ((%GLOBAL%$song_struct$->$playback_track_drums$) = %i(0))
+				:i $printf$%s("***** SKIPPING SONG: %a, Reason: No Drum Track ******")$a$ = (%GLOBAL%$song_struct$->$filename$)$channel$ = $jrdebug$
+				:i return${StructInt skip = 1}$
+			:i endif
+			:i endcase
+		case %i(3)
+			:i if ((%GLOBAL%$song_struct$->$playback_track_vocals$) = %i(0))
+				:i $printf$%s("***** SKIPPING SONG: %a, Reason: No Vocal Track ******")$a$ = (%GLOBAL%$song_struct$->$filename$)$channel$ = $jrdebug$
+				:i return${StructInt skip = 1}$
+			:i endif
+	:i end_switch
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %i(4)
+	:i return${StructInt skip = 0}$
+	:i endfunction]Script search_for_tool_in_quickplay_list 0x724b98ea [	${StructQBKey Song = null}$
+	:i $GetArraySize$${StructQBString quickplay_song_list}$
+	:i $i$ = %i(0)
+	:i while 
+	:i if (~$quickplay_song_list$:a{%GLOBAL%$i$:a} = $Parabola$ OR %GLOBAL%$Song$ = $Parabola$)
+		:i return${StructQBKey true}$
+	:i endif
+	:i if (~$quickplay_song_list$:a{%GLOBAL%$i$:a} = $Schism$ OR %GLOBAL%$Song$ = $Schism$)
+		:i return${StructQBKey true}$
+	:i endif
+	:i if (~$quickplay_song_list$:a{%GLOBAL%$i$:a} = $Vicarious$ OR %GLOBAL%$Song$ = $Vicarious$)
+		:i return${StructQBKey true}$
+	:i endif
+	:i %GLOBAL%$i$ = (%GLOBAL%$i$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i return${StructQBKey false}$
+	:i endfunction]Script setlist_drop_player 0x8412d5d2 [	:i $printf$${StructQBStringQs 0xf20ee645}$
+	:i endfunction]Script setlist_end_game 0xcdd0030a [	:i $printf$${StructQBStringQs 0xb4610154}$
+	:i $PrintStruct$ isNull 
+	:i if ((%GLOBAL%$is_game_over$ = %i(1)) AND (~$net_popup_active$ = %i(0)))
+		:i $wait_for_safe_shutdown$
+		:i if $ScreenElementExists$${StructQBKey id = setlist_menu}$
+			:i $LaunchEvent$${StructQBKey Type = unfocusStructQBKey target = setlist_menu}$
+		:i endif
+		:i if $ScreenElementExists$${StructQBKey id = net_setlist_popup_container}$
+			:i $DestroyScreenElement$${StructQBKey id = net_setlist_popup_container}$
+		:i endif
+		:i if $ScreenElementExists$${StructQBKey id = net_setlist_spinner}$
+			:i $DestroyScreenElement$${StructQBKey id = net_setlist_spinner}$
+		:i endif
+		:i $create_net_popup$${StructQBStringQs title = 0x5ca2c535StructQBStringQs popup_text = 0x32f94482}$
+		:i if $ScreenElementExists$${StructQBKey id = PopupElement}$
+			:i $PopupElement$.$Obj_SpawnScriptNow$${StructQBKey setlist_end_game_spawnedStructQBKey id = not_ui_player_drop_scripts}$
+		:i endif
+	:i endif
+	:i endfunction]Script setlist_end_game_spawned 0xc060b64c [	:i $wait$${StructInt 3StructQBKey seconds}$
+	:i $destroy_net_popup$
+	:i $OnExitRun$${StructQBKey destroy_flaming_wait}$
+	:i $create_flaming_wait$
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i $net_clear_all_remote_player_status$
+	:i $quit_network_game$
+	:i $generic_event_back$${StructQBKey state = UIstate_online}$
+	:i endfunction]Script setlist_get_jammode_playback_tracks 0x3407ae36 [	:i if (%GLOBAL%$example_songs$ = %i(1))
+		:i if (%GLOBAL%$jam_song$ >= %i(1000))
+			:i %GLOBAL%$jam_song$ = (%GLOBAL%$jam_song$ - %i(1000))
+		:i endif
+		:i %GLOBAL%$song_array$ = (~$jam_song_assets$)
+	:i else 
+		:i %GLOBAL%$song_array$ = (~$jam_curr_directory_listing$)
+	:i endif
+	:i $GetArraySize$%GLOBAL%$song_array$
+	:i if NOT (%GLOBAL%$jam_song$ < %GLOBAL%$array_size$)
+		:i $SoftAssert$${StructQBStringQs 0x384acb96}$
+		:i $PrintStruct$ isNull 
+		:i return
+	:i endif
+	:i return(%GLOBAL%$song_array$:a{%GLOBAL%$jam_song$:a})
+	:i endfunction]

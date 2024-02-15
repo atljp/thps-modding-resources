@@ -1,0 +1,45 @@
+// Sector unknown
+//      (Was called sectionPadding in GHTools)
+//
+// In IDA, this is Nx::CPlatGeom
+
+#define CL_SUNKPOINTER 0x77bbff
+#define CL_SUNKPADDING 0x6688cc
+#define CL_SUNKVALUE 0x66aaff
+#define CL_SUNKVECTOR 0x5599ee
+#define CL_SUNKTEMP 0x998866
+
+typedef struct (int eaPaddingStart)
+{
+    local int start = FTell();
+
+    uint sectorBlockLength <bgcolor=CL_SUNKVALUE, comment="Length of the cGeom block">;
+    byte null_a[8] <bgcolor=CL_SUNKPADDING, hidden=true>;
+    int always_256 <bgcolor=CL_SUNKVALUE>;
+
+    CBBox bounding_box <bgcolor=CL_SUNKVECTOR>;
+
+    byte null_b[24] <bgcolor=CL_SUNKPADDING, hidden=true>;
+
+    int first_mesh_index <bgcolor=CL_SUNKVALUE>;
+    int submesh_count <bgcolor=CL_SUNKVALUE>;
+
+    byte null_c[12] <bgcolor=CL_SUNKPADDING, hidden=true>;
+
+    uint dead <bgcolor=CL_SUNKPADDING, comment="DEADDEAD on x360">;
+
+    // For internal purposes, let's simulate the engine storing
+    // pointers to our sMesh objects. The engine uses our 0xEA
+    // padding to store pointers, based on first mesh and the
+    // number of submeshes we have
+
+    local int strucEnd = FTell();
+
+    if (submesh_count > 0)
+    {
+        FSeek(eaPaddingStart + (4*first_mesh_index));
+        uint internalSmeshPtr[submesh_count] <bgcolor=CL_SUNKTEMP, comment="Engine fills at runtime">;
+    }
+
+    FSeek(strucEnd);
+} CGeom;

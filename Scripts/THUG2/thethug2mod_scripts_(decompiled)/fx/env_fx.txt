@@ -1,0 +1,189 @@
+
+:i $DoUpdateLensFlare$ = %i(1,00000001)
+:i $LensFlare_Morph_In$ = %f(0.150000)
+:i $LensFlare_Morph_Out$ = %f(0.100000)
+:i function $DisableSun$
+	:i $change$$DoUpdateLensFlare$ = %i(0,00000000)
+	:i $MaybeHideLensFlare$
+	:i $SetSunProps$$size$ = %i(0,00000000)
+:i endfunction
+:i function $EnableSun$
+	:i $change$$DoUpdateLensFlare$ = %i(1,00000001)
+	:i $UnHideLensFlare$
+	:i $SetSunProps$$size$ = %f(7332.000000)
+:i endfunction
+:i function $CreateLensFlare$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $Lens_Flare_Container$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $alpha$ = %i(0,00000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetArraySize$$Lens_Flare_Data$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $Lens_Flare_Container$
+			:i $id$ =  ($Lens_Flare_Data$:a{%GLOBAL%$index$:a}->$id$) 
+			:i $scale$ =  ($Lens_Flare_Data$:a{%GLOBAL%$index$:a}->$scale$) 
+			:i $texture$ =  ($Lens_Flare_Data$:a{%GLOBAL%$index$:a}->$texture$) 
+			:i $rgba$ =  ($Lens_Flare_Data$:a{%GLOBAL%$index$:a}->$rgba$) 
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $blend$ = $Add$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $SetScreenElementLock$$id$ = $root_window$$on$
+:i endfunction
+:i function $MaybeHideLensFlare$$morph_time$ = %f(0.000000)
+	:i if $ScreenElementExists$$id$ = $Lens_Flare_Container$
+		:i $HideLensFlare$ isNull 
+	:i else 
+		:i $CreateLensFlare$
+	:i endif
+:i endfunction
+:i $Lens_Flare_Data$ = :a{
+	:i :s{
+		:i $id$ = $lf_sprite_1$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(0.800000)
+		:i $scale$ = %f(3.000000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(0,00000000)%i(16,00000010):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_2$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(0.700000)
+		:i $scale$ = %f(2.000000)
+		:i $rgba$ = :a{%i(255,000000ff)%i(128,00000080)%i(0,00000000)%i(20,00000014):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_3$
+		:i $texture$ = $APM_abberation01$
+		:i $pos_scale$ = %f(0.650000)
+		:i $scale$ = %f(0.600000)
+		:i $rgba$ = :a{%i(255,000000ff)%i(128,00000080)%i(100,00000064)%i(32,00000020):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_4$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.630000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = :a{%i(255,000000ff)%i(128,00000080)%i(128,00000080)%i(32,00000020):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_5$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.580000)
+		:i $scale$ = %f(0.450000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(0,00000000)%i(32,00000020):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_6$
+		:i $texture$ = $APM_abberation01$
+		:i $pos_scale$ = %f(0.570000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(0,00000000)%i(32,00000020):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_7$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.490000)
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ = :a{%i(255,000000ff)%i(128,00000080)%i(128,00000080)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_8$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(0.450000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(0,00000000)%i(20,00000014):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_9$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.430000)
+		:i $scale$ = %f(0.850000)
+		:i $rgba$ = :a{%i(255,000000ff)%i(128,00000080)%i(128,00000080)%i(32,00000020):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_10$
+		:i $texture$ = $APM_abberation01$
+		:i $pos_scale$ = %f(0.120000)
+		:i $scale$ = %f(3.100000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(0,00000000)%i(12,0000000c):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_11$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(-0.450000)
+		:i $scale$ = %f(2.750000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(100,00000064)%i(16,00000010):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_12$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(-0.480000)
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(200,000000c8)%i(128,00000080)%i(100,00000064)%i(32,00000020):a}
+	:i :s}
+	:i :a}
+:i $Lens_Flare_Data1$ = :a{
+	:i :s{
+		:i $id$ = $lf_sprite_1$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.800000)
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(196,000000c4)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_2$
+		:i $texture$ = $APM_abberation01$
+		:i $pos_scale$ = %f(0.500000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_3$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(0.333000)
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_4$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(0.125000)
+		:i $scale$ = %f(2.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(64,00000040)%i(128,00000080)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_5$
+		:i $texture$ = $APM_abberation01$
+		:i $pos_scale$ = %f(-0.500000)
+		:i $scale$ = %f(0.850000)
+		:i $rgba$ = :a{%i(196,000000c4)%i(128,00000080)%i(128,00000080)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_6$
+		:i $texture$ = $flare1$
+		:i $pos_scale$ = %f(-0.250000)
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(64,00000040):a}
+	:i :s}
+	:i :s{
+		:i $id$ = $lf_sprite_7$
+		:i $texture$ = $APM_abberation02$
+		:i $pos_scale$ = %f(-0.181800)
+		:i $scale$ = %f(0.850000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i :a}
+:i $SunBurst_Out$ = %f(0.250000)
+:i :end

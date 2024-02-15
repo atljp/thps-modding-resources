@@ -1,0 +1,32 @@
+//------------------------------------------------
+// Thing for _sfx .pak files.
+//------------------------------------------------
+
+#include "../Common.bt"
+
+typedef struct
+{
+    short wFormatTag <bgcolor=CL_SINGLEVALUE>;
+    ushort wChannels <bgcolor=CL_SINGLEVALUE>;
+    uint dwSamplesPerSec <bgcolor=CL_SINGLEVALUE>;
+    uint dwAvgBytesPerSec <bgcolor=CL_SINGLEVALUE, comment="Samples? sample_rate * channels">;
+    ushort wBlockAlign <bgcolor=CL_SINGLEVALUE>;
+    ushort wBitsPerSample <bgcolor=CL_SINGLEVALUE>;
+} FormatChunk;
+
+typedef struct
+{
+    FormatChunk format;
+    ubyte junk[112] <bgcolor=CL_PARSED, hidden=true>;
+    
+    // Let's try to get the size of the file data.
+} THAWSound;
+
+typedef struct
+{
+    THAWSound sound_entry;
+} THAWSoundPak;
+
+LittleEndian();
+
+THAWSoundPak file;

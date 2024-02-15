@@ -1,0 +1,214 @@
+
+:i function $CreateRailEditor$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $camera$:s}
+			:i :s{$component$ = $input$$controller$ = %i(0,00000000):s}
+			:i :s{$component$ = $editorcamera$$min_height$ = %i(0,00000000)$min_radius$ = %i(10,0000000a)$max_radius$ = %i(1000,000003e8)$SimpleCollision$:s}
+			:i :s{$component$ = $raileditor$:s}
+			:i :a}
+		:i $Params$ = :s{$Name$ = $raileditor$$permanent$:s}
+	:i :s}
+	:i $raileditor$.$Hide$
+	:i $raileditor$.$Suspend$
+:i endfunction
+:i function $SwitchOnRailEditor$
+	:i $raileditor$.$SetEditingMode$$Mode$ = $FreeRoaming$
+	:i $Debounce$$X$$time$ = %f(0.200000)$clear$ = %i(1,00000001)
+	:i $raileditor$.$Unsuspend$
+	:i $raileditor$.$Unhide$
+	:i $GetParkEditorCursorPos$
+	:i $raileditor$.$EditorCam_Initialise$$position$ = %GLOBAL%$pos$$cursor_height$ = %i(20,00000014)
+	:i $SetActiveCamera$$id$ = $raileditor$
+	:i if  ($THUGPRO_PS2ButtonsOn$ = %i(1,00000001)) 
+		:i $THUGPRO_PatchTogglePS2Buttons$$off$
+	:i endif
+:i endfunction
+:i function $SwitchOffRailEditor$
+	:i if $raileditor$.$GetEditedRailInfo$$CurrentRail$
+		:i if  (%GLOBAL%$num_points$ < %i(2,00000002)) 
+			:i $raileditor$.$DeleteRail$$rail_id$ = %GLOBAL%$rail_id$
+		:i endif
+	:i endif
+	:i $raileditor$.$Hide$
+	:i $raileditor$.$Suspend$
+	:i $SetActiveCamera$$id$ = $parked_cam$
+	:i if  ($THUGPRO_PS2ButtonsOn$ = %i(1,00000001)) 
+		:i $THUGPRO_PatchTogglePS2Buttons$$on$
+	:i endif
+:i endfunction
+:i $RailEditor_HasPost$ = %i(1,00000001)
+:i $RailEditor_Grid$ = %i(0,00000000)
+:i function $RailEditor_TogglePost$
+	:i if $IsTrue$$RailEditor_HasPost$
+		:i $Change$$RailEditor_HasPost$ = %i(0,00000000)
+	:i else 
+		:i $Change$$RailEditor_HasPost$ = %i(1,00000001)
+	:i endif
+	:i $PlaySound$$GUI_click06$
+:i endfunction
+:i function $RailEditor_ToggleGrid$
+	:i if $IsTrue$$RailEditor_Grid$
+		:i $Change$$RailEditor_Grid$ = %i(0,00000000)
+	:i else 
+		:i $Change$$RailEditor_Grid$ = %i(1,00000001)
+	:i endif
+	:i $PlaySound$$GUI_click06$
+:i endfunction
+:i function $_RailEditorEveryFrame$
+	:i if  ( ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$load_sk5ed_gameplay$) ) 
+		:i $UnHighlightAllRails$
+		:i $GetEditingMode$
+		:i $SkProRailTool_GetCursorPosition$
+		:i if $ObjectExists$$id$ = $RailEditorCursor$
+			:i $RailEditorCursor$.$Obj_SetPosition$$position$ = %GLOBAL%$pos$
+			:i $RailEditorCursor$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$
+		:i endif
+		:i switch %GLOBAL%$Mode$
+			:i case $FreeRoaming$
+				:i if $FindNearestRailPoint$$pos$ = %GLOBAL%$pos$
+					:i $HighlightRailPoint$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$$Flash$$IncludeEndPosts$
+				:i endif
+				:i endcase
+			case $RailLayout$
+				:i $DrawDottedLine$$pos$ = %GLOBAL%$pos$
+				:i endcase
+			case $Grab$
+				:i $GetTags$
+				:i $UpdateRailPointPosition$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$$pos$ = %GLOBAL%$pos$
+				:i $HighlightRailPoint$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $_RailEditorX$
+	:i $GetEditingMode$
+	:i $SkProRailTool_GetCursorPosition$
+	:i if $IsTrue$$RailEditor_HasPost$
+		:i %GLOBAL%$AddPost$ = $AddPost$
+	:i endif
+	:i if $IsTrue$$RailEditor_Grid$
+		:i $RailEditorCursor$.$Obj_GetPosition$
+	:i endif
+	:i switch %GLOBAL%$Mode$
+		:i case $FreeRoaming$
+			:i if $NewRail$
+				:i if $AddNewPosition$$pos$ = %GLOBAL%$pos$%GLOBAL%$AddPost$
+					:i $SetEditingMode$$Mode$ = $RailLayout$
+					:i $rail_editor_create_cursor$
+				:i else 
+					:i if $GetEditedRailInfo$$CurrentRail$
+						:i if  (%GLOBAL%$num_points$ < %i(2,00000002)) 
+							:i $DeleteRail$$rail_id$ = %GLOBAL%$rail_id$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i endcase
+		case $RailLayout$
+			:i if NOT $AddNewPosition$$pos$ = %GLOBAL%$pos$%GLOBAL%$AddPost$
+				:i if $GetEditedRailInfo$$CurrentRail$
+					:i if  (%GLOBAL%$num_points$ < %i(2,00000002)) 
+						:i $DeleteRail$$rail_id$ = %GLOBAL%$rail_id$
+					:i endif
+				:i endif
+				:i $DeleteDottedLine$
+				:i $SetEditingMode$$Mode$ = $FreeRoaming$
+				:i $rail_editor_create_cursor$
+			:i endif
+			:i endcase
+		case $Grab$
+			:i $GetTags$
+			:i if NOT $UpdateRailPointPosition$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$$pos$ = %GLOBAL%$pos$$UpdateSuperSectors$
+			:i else 
+				:i $SetEditingMode$$Mode$ = $FreeRoaming$
+				:i $rail_editor_create_cursor$
+			:i endif
+			:i endcase
+		default 
+			:i end_switch
+	
+:i endfunction
+:i function $_RailEditorCircle$
+	:i $GetEditingMode$
+	:i $SkProRailTool_GetCursorPosition$
+	:i switch %GLOBAL%$Mode$
+		:i case $FreeRoaming$
+			:i if $FindNearestRailPoint$$pos$ = %GLOBAL%$pos$
+				:i $SetTags$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$$OriginalPos$ = %GLOBAL%$NearestPos$
+				:i $EditorCam_SetCursorPos$$position$ = %GLOBAL%$NearestPos$
+				:i $SetEditingMode$$Mode$ = $Grab$
+				:i $rail_editor_create_cursor$
+			:i endif
+			:i endcase
+		default 
+			:i end_switch
+	
+:i endfunction
+:i function $_RailEditorTriangle$
+	:i $GetEditingMode$
+	:i $SkProRailTool_GetCursorPosition$
+	:i switch %GLOBAL%$Mode$
+		:i case $FreeRoaming$
+			:i if $FindNearestRailPoint$$pos$ = %GLOBAL%$pos$
+				:i $DeleteRailPoint$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$
+			:i endif
+			:i endcase
+		case $RailLayout$
+			:i if $GetEditedRailInfo$$CurrentRail$
+				:i if  (%GLOBAL%$num_points$ < %i(2,00000002)) 
+					:i $DeleteRail$$rail_id$ = %GLOBAL%$rail_id$
+				:i endif
+			:i endif
+			:i $DeleteDottedLine$
+			:i $SetEditingMode$$Mode$ = $FreeRoaming$
+			:i $rail_editor_create_cursor$
+			:i endcase
+		case $Grab$
+			:i $GetTags$
+			:i $UpdateRailPointPosition$$rail_id$ = %GLOBAL%$rail_id$$rail_point_index$ = %GLOBAL%$rail_point_index$$pos$ = %GLOBAL%$OriginalPos$$UpdateSuperSectors$
+			:i $EditorCam_SetCursorPos$$position$ = %GLOBAL%$OriginalPos$
+			:i $SetEditingMode$$Mode$ = $FreeRoaming$
+			:i $rail_editor_create_cursor$
+			:i endcase
+		default 
+			:i end_switch
+	
+:i endfunction
+:i function $_RailEditorSquare$
+	:i $GetEditingMode$
+	:i $SkProRailTool_GetCursorPosition$
+	:i switch %GLOBAL%$Mode$
+		:i case $FreeRoaming$
+			:i if $FindNearestRailPoint$$pos$ = %GLOBAL%$pos$$CheckLevelGeometry$
+				:i $Change$$RailEditor_Grid$ = %i(0,00000000)
+				:i $EditorCam_SetCursorPos$$position$ = %GLOBAL%$NearestPos$
+			:i else 
+			:i endif
+			:i endcase
+		case $RailLayout$
+			:i if $FindNearestRailPoint$$pos$ = %GLOBAL%$pos$$CheckLevelGeometry$
+				:i $Change$$RailEditor_Grid$ = %i(0,00000000)
+				:i $EditorCam_SetCursorPos$$position$ = %GLOBAL%$NearestPos$
+			:i else 
+			:i endif
+			:i endcase
+		case $Grab$
+			:i $GetTags$
+			:i if $FindNearestRailPoint$:s{
+					:i $pos$ = %GLOBAL%$pos$
+					:i $CheckLevelGeometry$
+					:i $IgnoreRailId$ = %GLOBAL%$rail_id$
+					:i $IgnoreRailPointIndex$ = %GLOBAL%$rail_point_index$
+				:i :s}
+				:i $Change$$RailEditor_Grid$ = %i(0,00000000)
+				:i $EditorCam_SetCursorPos$$position$ = %GLOBAL%$NearestPos$
+			:i else 
+			:i endif
+			:i endcase
+		default 
+			:i end_switch
+	
+:i endfunction
+:i :end

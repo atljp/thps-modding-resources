@@ -1,0 +1,57 @@
+//------------------------------------------------
+// GH3 Wii .skin or .mdl
+//------------------------------------------------
+
+#include "Common.bt"
+
+#define POS_START 992
+#define FACE_START 6944     
+
+typedef struct
+{
+    uint sixtyFour;
+    ubyte skip_me[6];
+    ubyte nulls[14];
+} MatThing;
+
+typedef struct
+{
+    uint bodyLength <bgcolor=CL_SINGLEVALUE>;
+    QBKey material_checksum <bgcolor=CL_CHECKSUM>;
+    uint constant;
+} FaceClump;
+
+typedef struct
+{
+    uint vertPosCount <bgcolor=CL_SINGLEVALUE, comment="HD vertex positions (in float)">;
+    uint unkB <bgcolor=CL_SINGLEVALUE>;
+    ushort unkCountA <bgcolor=CL_SINGLEVALUE>;
+    ushort texCoordCount <bgcolor=CL_SINGLEVALUE>;
+    uint unkCountB <bgcolor=CL_SINGLEVALUE>;
+    ushort unkCountC <bgcolor=CL_SINGLEVALUE>;
+    ushort materialCount <bgcolor=CL_SINGLEVALUE>;
+
+    FSeek(28);
+    uint meshCount <bgcolor=CL_SINGLEVALUE>;
+
+    uint zeroA;
+    uint zeroB;
+
+    RelativeOffset SkinFooter(0) <bgcolor=CL_POINTER>;
+
+    FSeek(64);
+    uint unkThing <bgcolor=CL_SINGLEVALUE, comment="Constant?">;
+    uint zeroC;
+
+    MatThing matThings[materialCount] <optimize=false>;
+
+    FSeek(POS_START);
+    Vec3 vertex_pos[vertPosCount] <bgcolor=0x888888>;
+
+    FSeek(FACE_START);
+    // FaceClump clumps[meshCount] <optimize=false>;
+    FaceClump clump;
+} GH3WiiSkinFile;
+
+BigEndian();
+GH3WiiSkinFile file;

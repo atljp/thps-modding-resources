@@ -1,0 +1,140 @@
+// ------------------------------------
+// This is probably a pass? Techniques have these
+// and they reference a "P0" whatever that means
+//
+// Nx::CMaterialPass
+// ------------------------------------
+
+typedef struct
+{
+    uint renderStateIndex <bgcolor=CL_SINGLEVALUE>;
+    uint renderStateValue <bgcolor=CL_SINGLEVALUE>;
+} RenderState;
+
+typedef struct
+{
+    RelativeOffset pt_VeryOdd(TemplateListStart) <bgcolor=CL_POINTER>;
+    uint oddValB <bgcolor=CL_SINGLEVALUE>;
+    int numNothings;
+    RelativeOffset pt_ApparentlyPointer(TemplateListStart) <bgcolor=CL_POINTER>;
+} TechniquePassStranger;
+
+typedef struct
+{
+    int microcodeSize <bgcolor=CL_SINGLEVALUE>;
+    int unkVal <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_shaderMicrocode(ShaderListStart) <bgcolor=CL_POINTER>;
+    int pt_shader <comment="IDirect3DVertexShader9*, internal pointer", bgcolor=CL_POINTER>;
+} Nx_CMaterialVertexShader;
+
+typedef struct
+{
+    int microcodeSize <bgcolor=CL_SINGLEVALUE>;
+    int unkVal <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_shaderMicrocode(ShaderListStart) <bgcolor=CL_POINTER>;
+    int pt_shader <comment="IDirect3DPixelShader9*, internal pointer", bgcolor=CL_POINTER>;
+} Nx_CMaterialPixelShader;
+
+typedef struct (uint MAT_START)
+{
+    local uint old_off = FTell();
+
+    RelativeOffset pt_PassText(MAT_START) <bgcolor=CL_POINTER, comment="Usually P0">;
+
+    uint num_render_states <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_RenderStates(MAT_START) <bgcolor=CL_POINTER>;
+
+    if (num_render_states > 0)
+    {
+        old_off = FTell();
+        FSeek(AbsOffset(pt_RenderStates));
+
+        RenderState render_states[num_render_states];
+        FSeek(old_off);
+    }
+
+    if (MaterialLibraryVersion < 4)
+    {
+        int num_unk_states <bgcolor=CL_SINGLEVALUE>;
+        RelativeOffset pt_UnkStates(MAT_START) <bgcolor=CL_POINTER>;
+    }
+
+    uint vsPropCountA <bgcolor=0x8888AA>;
+    uint psPropCountA <bgcolor=CL_SINGLEVALUE>;
+    uint vsPropCountB <bgcolor=0x8888AA>;
+    uint psPropCountB <bgcolor=CL_SINGLEVALUE>;
+    uint texSampleCount <bgcolor=CL_SINGLEVALUE>;
+    uint otherA <bgcolor=CL_SINGLEVALUE>;
+
+    uint numVSConstants;
+    RelativeOffset pt_VSConstants(MAT_START) <bgcolor=CL_POINTER>;
+    uint numPSConstants;
+    RelativeOffset pt_PSConstants(MAT_START) <bgcolor=CL_POINTER>;
+
+    uint otherB;
+
+    uint numParameters <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_Parameters(MAT_START) <bgcolor=CL_POINTER>;
+
+    // Yes, it seriously switches endian here, seriously
+    LittleEndian();
+        uint numGlobalProperties <bgcolor=CL_SINGLEVALUE>;
+        RelativeOffset pt_GlobalProperties(MAT_START) <bgcolor=CL_POINTER>;
+    BigEndian();
+
+    uint numTextures <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_Textures(MAT_START) <bgcolor=CL_POINTER>;
+
+    uint numUnkB <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_unkB(MAT_START) <bgcolor=CL_POINTER>;
+
+    Nx_CMaterialVertexShader vertex_shader <comment="Nx::CMaterialVertexShader">;
+    Nx_CMaterialPixelShader pixel_shader <comment="Nx::CMaterialPixelShader">;
+
+    uint numUIProperties <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_UIProperties(MAT_START) <bgcolor=CL_POINTER>;
+
+    if (MaterialLibraryVersion < 4)
+        ubyte bytesC[40] <bgcolor=0x8888AA>;
+    else
+        ubyte bytesC[32] <bgcolor=0x8888AA>;
+
+    local int i;
+
+    old_off = FTell();
+    FSeek(AbsOffset(pt_PassText));
+    string passName <bgcolor=0x6666FF>;
+    FSeek(old_off);
+
+    if (numParameters && pt_Parameters.offset >= 0)
+    {
+        old_off = FTell();
+        FSeek(AbsOffset(pt_Parameters));
+        for (i=0; i<numParameters; i++)
+            ShaderProperty shaderProperty(MAT_START);
+        FSeek(old_off);
+    }
+
+    if (numGlobalProperties && pt_GlobalProperties.offset >= 0)
+    {
+        old_off = FTell();
+        FSeek(AbsOffset(pt_GlobalProperties));
+        for (i=0; i<numGlobalProperties; i++)
+            ShaderProperty globalProperty(MAT_START);
+        FSeek(old_off);
+    }
+
+    if (numUIProperties && pt_UIProperties.offset >= 0)
+    {
+        old_off = FTell();
+        FSeek(AbsOffset(pt_UIProperties));
+        for (i=0; i<numUIProperties; i++)
+            UIProperty uiProperty(MAT_START);
+        FSeek(old_off);
+    }
+} TechniquePass <read=ReadTechniquePass>;
+
+string ReadTechniquePass(TechniquePass &unk)
+{
+    return unk.passName;
+}

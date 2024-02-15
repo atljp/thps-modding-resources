@@ -1,0 +1,32 @@
+//------------------------------------------------
+// FSB .dat file
+//------------------------------------------------
+
+#include "Common.bt"
+
+typedef struct
+{
+    QBKey checksum <bgcolor=CL_CHECKSUM, comment="QBKey of stream to play">;
+    uint index <bgcolor=CL_SINGLEVALUE, comment="Index in the .fsb directory">;
+    uint zero_a;
+    uint zero_b;
+    uint zero_c;
+} FSBDatChunk <read=ReadFSBChunk>;
+
+string ReadFSBChunk(FSBDatChunk &chnk)
+{
+    local string s;
+
+    return SPrintf(s, "(%s) %d", ReadQBKey(chnk.checksum), chnk.index);
+}
+
+typedef struct
+{
+    uint file_count <bgcolor=CL_SINGLEVALUE, comment="Same as in .fsb">;
+    uint fsb_filesize <bgcolor=CL_CHECKSUM, comment="Filesize of the .fsb, used in GH3">;
+
+    FSBDatChunk chunks[file_count];
+} FSBDatFile;
+
+BigEndian();
+FSBDatFile dat;

@@ -1,0 +1,51 @@
+//------------------------------------------------
+// THP8 / THPG Scene
+//------------------------------------------------
+
+#include "../SceneHeader.bt"
+#include "../Sector.bt"
+#include "../SectorUnknown.bt"
+#include "Mesh.bt"
+#include "THP8Sector.bt"
+
+typedef struct(int starter_offset, int mat_version)
+{
+    NS_SceneHeader header;
+
+    // THP8
+    if (mat_version != 4)
+        THP8Sector sectors[header.sector_count] <optimize=false>;
+
+    // THPG
+    else
+        Sector sectors[header.sector_count] <optimize=false>;
+
+    local int unknowns_start = FTell();
+    local int u;
+
+    // Actually CGeoms
+    for (u=0; u<header.sector_count; u++)
+        SectorUnknown cGeoms(unknowns_start, AbsOffset(header.pt_eaPadding)) <optimize=false>;
+
+    //-------------------------------------------
+
+    byte big_padding[header.big_padding_size] <bgcolor=CL_PADDING>;
+
+    local int m;
+    for (m=0; m<header.sMesh_count; m++)
+        THPGMesh meshes(header.scene_start) <comment="sMesh">;
+
+    // 4 bytes EA for each object
+    int ea_padding[header.sMesh_count] <hidden=true>;
+
+    // Mesh indices for each object, I think
+    // Which mesh does it want to use?
+    int mesh_indices[header.sMesh_count] <bgcolor=CL_SCENE_VALUE>;
+
+    // 4 bytes FF for each object
+    int ff_padding[header.sMesh_count] <hidden=true, bgcolor=CL_SCENE_PADDING>;
+
+    // Pad to nearest 32 bytes... I think
+    SkipTo(32);
+
+} THPGScene;

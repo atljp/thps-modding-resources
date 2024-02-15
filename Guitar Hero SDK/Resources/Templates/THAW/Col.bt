@@ -1,0 +1,284 @@
+//------------------------------------------------
+// .col file - Collision
+//------------------------------------------------
+
+#include "../Common.bt"
+
+#define CL_COLOBJ_CHECKSUM                  0xCCFFFF
+#define CL_COLOBJ_VALUE                     0xAAEEEE
+#define CL_COLOBJ_VECTOR                    0x99DDDD
+#define CL_COLOBJ_PADDING                   0x77BBBB
+
+#define CL_COLVERT_X                        0xAAFFAA
+#define CL_COLVERT_Y                        0x99EE99
+#define CL_COLVERT_Z                        0x88DD88
+
+#define CL_COLFACE_FLAGS                    0x66DDFF
+#define CL_COLFACE_TERRAIN                  0x55CCEE
+#define CL_COLFACE_INDICES                  0x44BBDD
+#define CL_COLFACE_PADDING                  0x33AACC
+
+#define CL_INTENSITY                        0xFFFFAA
+#define CL_COLBSPNODE                       0xFFBBFF
+#define CL_COLBSPNODE_LEAF                  0xDD99DD
+
+#define SIZEOF_COLOBJECT                    64
+
+#define SS_TARGET_MAXDIMS                   1000.0
+#define SS_MAXROWANDCOL                     40
+
+local ubyte IS_THAW_COL = 0;
+local uint BaseVertOffset = 0;
+local uint BaseIntensityOffset = 0;
+local uint BaseFaceOffset = 0;
+local uint BaseTHUG2ThingOffset = 0;
+local uint BaseNodesOffset = 0;
+local uint BaseNodeIndexOffset = 0;
+
+typedef struct
+{
+    ushort x <bgcolor=CL_COLVERT_X>;
+    ushort y <bgcolor=CL_COLVERT_Y>;
+    ushort z <bgcolor=CL_COLVERT_Z>;
+} FixedVert <read=Str("%f, %f, %f", x * 0.0625, y * 0.0625, z * 0.0625)>;
+
+typedef struct
+{
+    float x <bgcolor=CL_COLVERT_X>;
+    float y <bgcolor=CL_COLVERT_Y>;
+    float z <bgcolor=CL_COLVERT_Z>;
+} FloatVert <read=Str("%f, %f, %f", x, y, z)>;
+
+typedef struct (ubyte use_small_faces)
+{
+    ushort face_flags <bgcolor=CL_COLFACE_FLAGS>;
+    
+    ushort terrain_type <bgcolor=CL_COLFACE_TERRAIN>;
+    
+    if (use_small_faces)
+    {
+        ubyte indices[3] <bgcolor=CL_COLFACE_INDICES>;
+        ubyte padding <bgcolor=CL_COLFACE_PADDING, hidden=true>;
+    }
+    else
+        ushort indices[3] <bgcolor=CL_COLFACE_INDICES>;
+} ColFace <read=Str("[0x%02x] [%d] %d, %d, %d", face_flags, terrain_type, indices[0], indices[1], indices[2])>;
+
+typedef struct
+{
+    QBKey checksum <bgcolor=CL_COLOBJ_CHECKSUM>;
+    ushort flags <bgcolor=CL_COLOBJ_VALUE>;
+    ushort num_verts <bgcolor=CL_COLOBJ_VALUE>;
+    ushort num_faces <bgcolor=CL_COLOBJ_VALUE>;
+    ubyte use_small_faces <bgcolor=CL_COLOBJ_VALUE>;
+    ubyte use_fixed <bgcolor=CL_COLOBJ_VALUE>;
+    uint first_face_offset <bgcolor=CL_COLOBJ_VALUE>;
+    CBBox bounds <bgcolor=CL_COLOBJ_VECTOR>;
+    uint first_vert_offset <bgcolor=CL_COLOBJ_VALUE>;
+    int bsp_tree_offset <bgcolor=CL_COLOBJ_VALUE>;
+    int intensity_offset <bgcolor=CL_COLOBJ_VALUE>;
+    
+    if (!IS_THAW_COL)
+        int padding <bgcolor=CL_COLOBJ_PADDING>;
+    else
+        float unk_float <bgcolor=CL_COLOBJ_VALUE>;
+        
+    // Get our vertices.
+    local uint i;
+    local uint old_off = FTell();
+    
+    if (num_verts)
+    {
+        FSeek(BaseVertOffset + first_vert_offset);
+        
+        if (use_fixed)
+            FixedVert vertices[num_verts];
+        else
+            FloatVert vertices[num_verts];
+            
+        FSeek(BaseIntensityOffset + intensity_offset);
+        
+        if (num_verts)
+            ubyte intensities[num_verts] <bgcolor=CL_INTENSITY>;
+    }
+    
+    if (num_faces)
+    {
+        FSeek(BaseFaceOffset + first_face_offset);
+        
+        for (i=0; i<num_faces; i++)
+            ColFace faces(use_small_faces) <optimize=false>;
+    }
+    
+    FSeek(old_off);
+        
+} ColObject <read=Str("[%s] %d verts, %d faces", ReadQBKey(checksum), num_verts, num_faces)>;
+
+typedef struct
+{
+    int split_axis_and_point;
+    uint left_node_start_offset;
+} ColBSPNode <read=ReadColBSPNode>;
+
+string ReadColBSPNode(ColBSPNode &node)
+{
+    local ubyte split_axis = node.split_axis_and_point & 0x03;
+
+    local float split_point = (float) (node.split_axis_and_point >> 2) / 16.0;
+    
+    return Str("Axis: %d, Point: %f, LeftNode Offset: %d", split_axis, split_point, node.left_node_start_offset);    
+}
+
+typedef struct
+{
+    ubyte axis_maybe;
+    ubyte unk;
+    ushort faces;
+    uint face_index_offset;
+    
+    if (faces)
+    {
+        local uint old_off = FTell();
+        FSeek(BaseNodeIndexOffset + (face_index_offset * sizeof(ushort)));
+        ushort indices[faces] <bgcolor=0xAAFFFF>;
+        FSeek(old_off);
+    }
+} ColBSPLeafNode <read=Str("%d faces @ %d", faces, face_index_offset * sizeof(ushort))>;
+
+typedef struct (uint num_nodes)
+{
+    local uint i;
+    local ubyte test_byte;
+    
+    for (i=0; i<num_nodes; i++)
+    {
+        // Test axis. If 3, then it's a leaf. I think.
+        test_byte = ReadByte();
+        
+        if (test_byte == 3)
+            ColBSPLeafNode node <bgcolor=CL_COLBSPNODE_LEAF>;
+        else
+            ColBSPNode node <bgcolor=CL_COLBSPNODE, comment="Splits into leaves">;
+    }
+} ColBSPBlock;
+
+typedef struct
+{
+    uint version_maybe <bgcolor=CL_SINGLEVALUE>;
+    uint num_objects <bgcolor=CL_SINGLEVALUE>;
+    uint total_verts <bgcolor=CL_SINGLEVALUE>;
+    uint total_large_faces <bgcolor=CL_SINGLEVALUE>;
+    uint total_small_faces <bgcolor=CL_SINGLEVALUE>;
+    uint total_large_verts <bgcolor=CL_SINGLEVALUE>;
+    uint total_small_verts <bgcolor=CL_SINGLEVALUE>;
+    uint padding <bgcolor=CL_PADDING, hidden=true>;
+    
+    // See if this is a THUG2 .col file or not.
+    // THAW and THUG2 files are extremely similar.
+    
+    local uint test_int = ReadInt();
+    
+    // THAW
+    if (test_int == 0)
+    {
+        uint thaw_padding[2] <bgcolor=CL_PADDING, hidden=true>;
+        uint supersector_rows <bgcolor=CL_SINGLEVALUE, comment="Based on X value">;
+        uint supersector_columns <bgcolor=CL_SINGLEVALUE, comment="Based on Z (y) value">;
+        CBBox total_col_bounds <bgcolor=CL_SINGLEVALUE>;
+        IS_THAW_COL = 1;
+        Printf("Is THAW .col file.\n");
+        
+        // Supersector math.
+        local float x_dist = total_col_bounds.m_max.values[0] - total_col_bounds.m_min.values[0];
+        local float z_dist = total_col_bounds.m_max.values[2] - total_col_bounds.m_min.values[2];
+        
+        Printf("  THAW SuperSector wants max 40 cols or rows.\n");
+        Printf("  THAW SuperSector wants max dims of 1000.0\n");
+        Printf("\n");
+        Printf("  X Bounds Length: %f\n", x_dist);
+        Printf("  Z Bounds Length: %f\n", z_dist);
+        Printf("\n");
+        Printf("  Row Size (x_dist / row_count): %f\n", x_dist / supersector_rows);
+        Printf("  Col Size (z_dist / col_count): %f\n", z_dist / supersector_columns);
+        Printf("\n");
+        
+        local uint x_divisor = supersector_rows;
+        local uint z_divisor = supersector_columns;
+        
+        if ((x_dist / x_divisor) > SS_TARGET_MAXDIMS)
+        {
+            x_divisor = (int) (x_dist / SS_TARGET_MAXDIMS) + 1;
+            Printf("  Row Width was > maxDims!\n");
+            Printf("    New row count: %d\n", x_divisor);
+            
+            if (x_divisor > SS_MAXROWANDCOL)
+            {
+                Printf("    X STILL above %d, clamping.\n", SS_MAXROWANDCOL);
+                x_divisor = SS_MAXROWANDCOL;
+            }
+        }
+        
+        if ((z_dist / z_divisor) > SS_TARGET_MAXDIMS)
+        {
+            z_divisor = (int) (z_dist / SS_TARGET_MAXDIMS) + 1;
+            Printf("  Col Height was > maxDims!\n");
+            Printf("    New col count: %d\n", z_divisor);
+            
+            if (z_divisor > SS_MAXROWANDCOL)
+            {
+                Printf("    Z STILL above %d, clamping.\n", SS_MAXROWANDCOL);
+                z_divisor = SS_MAXROWANDCOL;
+            }
+        }
+        
+        Printf("\n");
+    }
+    else
+    {
+        IS_THAW_COL = 0;
+        Printf("Is THUG2 .col file.\n");
+    }
+        
+    // Calculate where our vertices start.
+    // This can be done by calculating object size.
+    
+    BaseVertOffset = FTell() + (SIZEOF_COLOBJECT * num_objects);
+    Printf("Vertices start at %d.\n", BaseVertOffset);
+    
+    BaseIntensityOffset = BaseVertOffset + (sizeof(FixedVert) * total_small_verts) + (sizeof(FloatVert) * total_large_verts);
+    Printf("Intensities start at %d. (Small verts are %d bytes, large are %d bytes)\n", BaseIntensityOffset, sizeof(FixedVert), sizeof(FloatVert));
+    
+    BaseFaceOffset = ((BaseIntensityOffset + total_verts) + 3) & 0xFFFFFFFC;
+    Printf("Faces start at %d.\n", BaseFaceOffset);
+    
+    // If THUG2, we have an odd section that has 1 0x00 per face.
+    // BaseTHUG2ThingOffset = ((BaseFaceOffset + (8 * total_small_faces) + (10 * total_large_faces)) + 3) & 0xFFFFFFFC;
+    BaseTHUG2ThingOffset = BaseFaceOffset + (8 * total_small_faces) + (10 * total_large_faces);
+    Printf("THUG2 Thing at %d.\n", BaseTHUG2ThingOffset);
+
+    BaseNodesOffset = (BaseTHUG2ThingOffset + (total_large_faces) + 3) & 0xFFFFFFFC;
+    
+    Printf("Nodes start at %d.\n", BaseNodesOffset);
+
+    ColObject object[num_objects] <optimize=false>;
+    
+    // Odd THUG2 thing.
+    FSeek(BaseTHUG2ThingOffset);
+    ubyte large_tri_optimizations[total_large_faces] <bgcolor=0xDDDDDD, comment="1 byte per face">;
+    
+    FSeek(BaseNodesOffset);
+    uint bsp_nodes_size <bgcolor=CL_SINGLEVALUE>;
+    
+    BaseNodeIndexOffset = BaseNodesOffset + 4 + bsp_nodes_size;
+    Printf("Node indices start at %d. BSP was %d bytes large.\n", BaseNodeIndexOffset, bsp_nodes_size);
+    
+    // Each node is 8 bytes long.
+    local uint num_nodes = (uint) (bsp_nodes_size / 8);
+    
+    Printf("  Had %d nodes.\n", num_nodes);
+    
+    ColBSPBlock bsp_block(num_nodes);
+} ColFile;
+
+LittleEndian();
+ColFile file;

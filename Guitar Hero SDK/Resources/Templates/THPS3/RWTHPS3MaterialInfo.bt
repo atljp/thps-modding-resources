@@ -1,0 +1,73 @@
+//------------------------------------------------
+// THPS3 material plugin info.
+//------------------------------------------------
+
+#define TH3_NORENDER                    (1 << 1)
+#define TH3_USEALPHACUTOFF              (1 << 3)
+#define TH3_USEBLENDMODE                (1 << 4)
+
+typedef struct
+{
+    ubyte value;
+} THPS3BlendFlags <read=ReadBlendFlags>;
+
+string ReadBlendFlags(THPS3BlendFlags& flags)
+{
+    local string s;
+    local string sep = "";
+    
+    if (flags.value & TH3_NORENDER)
+    {
+        s = Str("%s%sTH3_NORENDER", s, sep);
+        sep = " | ";
+    }
+    
+    if (flags.value & TH3_USEALPHACUTOFF)
+    {
+        s = Str("%s%sTH3_USEALPHACUTOFF", s, sep);
+        sep = " | ";
+    }
+    
+    if (flags.value & TH3_USEBLENDMODE)
+    {
+        s = Str("%s%sTH3_USEBLENDMODE", s, sep);
+        sep = " | ";
+    }
+    
+    return s;
+}
+
+typedef struct
+{
+    ubyte r;
+    ubyte g;
+    ubyte b;
+    ubyte a;
+} THPS3RGBA <read=Str("%d, %d, %d, %d", r, g, b, a)>;
+
+typedef struct
+{
+    float x;
+    float y;
+} THPS3Vec2 <read=Str("(%f, %f)", x, y)>;
+
+typedef struct
+{
+    uint material_index;
+    ubyte skip[12];
+    ubyte junk[3];
+    THPS3BlendFlags some_blend_flags;             // 8: Alpha cutoff?
+    ubyte alpha_cutoff;                           // If some_blend_flags is 8
+    THPS3RGBA pass_blends[4];
+    uint skipNumA;
+    uint skipNumB;                                // Maybe additive if this is 0x80
+    ubyte skipB[3];
+    RWSection texture (ST_THPS3_PluginExtension);
+    ubyte has_wibbles_maybe;
+    THPS3Vec2 uv_wibble_amplitude;
+    THPS3Vec2 vecB;
+    THPS3Vec2 vecC;
+    THPS3Vec2 vecD;
+    THPS3Vec2 vecE;
+    THPS3Vec2 vecF;
+} RWTHPS3MaterialInfo;

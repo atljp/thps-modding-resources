@@ -1,0 +1,1954 @@
+
+:i $edit_tricks_menu_1_index$ = %i(0,00000000)
+:i $edit_tricks_menu_2_index$ = %i(0,00000000)
+:i $loading_cat_from_edit_tricks$ = %i(0,00000000)
+:i function $edit_tricks_menu_can_edit$
+	:i $tricks_editable$ = %i(1,00000001)
+	:i $tricks_viewable$ = %i(1,00000001)
+	:i $cat_active$ = %i(1,00000001)
+	:i $cat_shown$ = %i(1,00000001)
+	:i if $GameModeEquals$$is_career$
+		:i $cat_shown$ = %i(0,00000000)
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i if NOT $LevelIs$$load_mainmenu$
+			:i if NOT $root_window$.$GetSingleTag$$no_exit_pause_menu$
+				:i $tricks_editable$ = %i(1,00000001)
+			:i endif
+			:i $cat_active$ = %i(0,00000000)
+		:i endif
+		:i $cat_shown$ = %i(0,00000000)
+	:i else 
+		:i if $InMultiPlayerGame$
+			:i if $GoalManager_HasActiveGoals$$count_all$
+				:i $tricks_editable$ = %i(1,00000001)
+				:i $cat_active$ = %i(0,00000000)
+			:i endif
+		:i endif
+		:i if  ($GoalManager_HasActiveGoals$) 
+			:i $tricks_editable$ = %i(1,00000001)
+			:i $cat_active$ = %i(0,00000000)
+		:i else 
+			:i if $GoalManager_goalIsActive$$name$ = $TrickAttack$
+				:i $tricks_editable$ = %i(1,00000001)
+				:i $cat_active$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i if $Skater$.$IsSkaterOnVehicle$
+		:i $tricks_viewable$ = %i(1,00000001)
+		:i $tricks_editable$ = %i(1,00000001)
+		:i $cat_active$ = %i(0,00000000)
+	:i endif
+	:i if $InNetGame$
+		:i $cat_active$ = %i(0,00000000)
+	:i endif
+	:i if $InSplitScreenGame$
+		:i $cat_active$ = %i(0,00000000)
+	:i endif
+	:i return
+	:s{$tricks_editable$ = %GLOBAL%$tricks_editable$
+		:i $tricks_viewable$ = %GLOBAL%$tricks_viewable$
+		:i $cat_active$ = %GLOBAL%$cat_active$
+		:i $cat_shown$ = %GLOBAL%$cat_shown$
+	:i :s}
+:i endfunction
+:i function $create_edit_tricks_menu$
+	:i $hide_current_goal$
+	:i if $ScreenElementExists$$id$ = $edit_tricks_menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_menu_parts_anchor$
+	:i endif
+	:i $change$$loading_cat_from_edit_tricks$ = %i(0,00000000)
+	:i $dialog_box_exit$
+	:i $edit_tricks_menu_can_edit$
+	:i if  (%GLOBAL%$tricks_editable$ = %i(0,00000000)) 
+		:i $make_new_themed_sub_menu$$title$ = %s(11,"VIEW TRICKS")
+	:i else 
+		:i $make_new_themed_sub_menu$$title$ = %s(11,"EDIT TRICKS")
+	:i endif
+	:i if NOT $LevelIs$$load_mainmenu$
+		:i $PauseMusicAndStreams$%i(1,00000001)
+		:i $pause_menu_gradient$$on$
+	:i else 
+	:i endif
+	:i if $GotParam$$from_ss_menu$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $sub_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $edit_tricks_menu_exit$$from_ss_menu$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $sub_menu$
+			:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $edit_tricks_menu_exit$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $theme_menu_add_item$:s{
+		:i $first_item$
+		:i $text$ = %s(11,"Grab Tricks")
+		:i $pad_choose_script$ = $create_edit_tricks_sub_menu$
+		:i $pad_choose_params$ = :s{$type$ = $grab_tricks$:s}
+		:i $centered$ = %i(1,00000001)
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(11,"Flip Tricks")
+		:i $pad_choose_script$ = $create_edit_tricks_sub_menu$
+		:i $pad_choose_params$ = :s{$type$ = $flip_tricks$:s}
+		:i $centered$ = %i(1,00000001)
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(10,"Lip Tricks")$not_focusable$
+		:i $pad_choose_script$ = $create_edit_tricks_sub_menu$
+		:i $pad_choose_params$ = :s{$type$ = $lip_tricks$:s}
+		:i $centered$ = %i(1,00000001)
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(14,"Special Tricks")
+		:i $pad_choose_script$ = $create_edit_tricks_sub_menu$
+		:i $pad_choose_params$ = :s{$type$ = $special_tricks$:s}
+		:i $centered$ = %i(1,00000001)
+	:i :s}
+	:i if NOT $InNetGame$
+		:i %GLOBAL%$has_active_goals$ = %i(0,00000000)
+		:i if $GoalManager_HasActiveGoals$
+			:i %GLOBAL%$has_active_goals$ = %i(1,00000001)
+		:i else 
+			:i if $GoalManager_GoalExists$$name$ = $TrickAttack$
+				:i if $GoalManager_goalIsActive$$name$ = $TrickAttack$
+					:i %GLOBAL%$has_active_goals$ = %i(1,00000001)
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT  (%GLOBAL%$has_active_goals$ = %i(1,00000001)) 
+			:i $theme_menu_add_item$:s{
+				:i $centered$ = %i(1,00000001)
+				:i $text$ = %s(18,"Load Created Trick")
+				:i $pad_choose_script$ = $launch_load_cat_sequence2$
+				:i $pad_choose_params$ = :s{:s}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$from_ss_menu$
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(4,"Done")
+			:i $pad_choose_script$ = $edit_tricks_menu_exit$
+			:i $pad_choose_params$ = :s{$from_ss_menu$:s}
+			:i $last_item$
+			:i $centered$ = %i(1,00000001)
+			:i $last_menu_item$ = %i(1,00000001)
+		:i :s}
+	:i else 
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(4,"Done")
+			:i $pad_choose_script$ = $edit_tricks_menu_exit$
+			:i $last_item$
+			:i $centered$ = %i(1,00000001)
+			:i $last_menu_item$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i if $LevelIs$$load_mainmenu$
+		:i $add_options_menu_sign_element$$icon$ = $tricks_icon$
+	:i endif
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_edit_tricks_sub_menu$
+	:i $pulse_blur$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i switch %GLOBAL%$type$
+		:i case $grab_tricks$
+			:i %GLOBAL%$title$ = %s(11,"GRAB TRICKS")
+			:i %GLOBAL%$key_combo_array$ = $edit_tricks_menu_grab_key_combos$
+			:i %GLOBAL%$trick_type$ = $GrabTrick$
+			:i %GLOBAL%$vertical_bar_offset$ = %vec2(75.000000,17.000000)
+			:i %GLOBAL%$key_combo_highlight_bar_scale$ = %vec2(3.900000,0.700000)
+			:i %GLOBAL%$key_combo_highlight_bar_pos$ = %vec2(140.000000,-10.000000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_scale$ = %vec2(1.000000,0.700000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_pos$ = %vec2(-42.000000,-10.000000)
+			:i %GLOBAL%$trick_highlight_bar_scale$ = %vec2(2.900000,0.700000)
+			:i endcase
+		case $flip_tricks$
+			:i %GLOBAL%$title$ = %s(11,"FLIP TRICKS")
+			:i %GLOBAL%$key_combo_array$ = $edit_tricks_menu_flip_key_combos$
+			:i %GLOBAL%$trick_type$ = $FlipTrick$
+			:i %GLOBAL%$vertical_bar_offset$ = %vec2(75.000000,17.000000)
+			:i %GLOBAL%$key_combo_highlight_bar_scale$ = %vec2(3.900000,0.700000)
+			:i %GLOBAL%$key_combo_highlight_bar_pos$ = %vec2(140.000000,-10.000000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_scale$ = %vec2(1.000000,0.700000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_pos$ = %vec2(-42.000000,-10.000000)
+			:i %GLOBAL%$trick_highlight_bar_scale$ = %vec2(2.900000,0.700000)
+			:i endcase
+		case $lip_tricks$
+			:i %GLOBAL%$title$ = %s(10,"LIP TRICKS")$not_focusable$
+			:i %GLOBAL%$key_combo_array$ = $edit_tricks_menu_lip_key_combos$
+			:i %GLOBAL%$trick_type$ = $LipMacro2$
+			:i %GLOBAL%$vertical_bar_offset$ = %vec2(75.000000,17.000000)
+			:i %GLOBAL%$key_combo_highlight_bar_scale$ = %vec2(3.900000,0.700000)
+			:i %GLOBAL%$key_combo_highlight_bar_pos$ = %vec2(140.000000,-10.000000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_scale$ = %vec2(1.000000,0.700000)
+			:i %GLOBAL%$key_combo_short_highlight_bar_pos$ = %vec2(-42.000000,-10.000000)
+			:i %GLOBAL%$trick_highlight_bar_scale$ = %vec2(2.900000,0.700000)
+			:i endcase
+		case $special_tricks$
+			:i %GLOBAL%$title$ = %s(14,"SPECIAL TRICKS")
+			:i %GLOBAL%$vertical_bar_offset$ = %vec2(30.000000,17.000000)
+			:i %GLOBAL%$trick_type$ = $special_tricks$
+			:i end_switch
+	
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $edit_tricks_sub_menu_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $edit_tricks_sub_menu_anchor$$alias$ = $current_menu_anchor$
+	:i $edit_tricks_menu_can_edit$
+	:i if  (%GLOBAL%$tricks_editable$ = %i(0,00000000)) 
+		:i $create_helper_text$$generic_helper_text_no_accept$
+	:i else 
+		:i $create_helper_text$$generic_helper_text$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_sub_menu_anchor$
+		:i $id$ = $edit_tricks_menu_parts_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,840.000000)
+	:i :s}
+	:i if $LevelIs$$load_mainmenu$
+		:i $build_top_and_bottom_blocks$$bot_z$ = %i(0,00000000)
+		:i $make_mainmenu_3d_plane$
+		:i %GLOBAL%$root_pos$ = %vec2(40.000000,10.000000)
+		:i %GLOBAL%$grad_bar$ = $no_grad_bar$
+		:i $theme_background$$width$ = %i(6,00000006)$pos$ = %vec2(320.000000,75.000000)$num_parts$ = %f(10.500000)$parent$ = $edit_tricks_menu_parts_anchor$
+	:i else 
+		:i %GLOBAL%$root_pos$ = %vec2(40.000000,20.000000)
+		:i %GLOBAL%$grad_bar$ = $null$
+		:i $theme_background$$width$ = %i(6,00000006)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)$parent$ = $edit_tricks_menu_parts_anchor$
+	:i endif
+	:i $build_theme_sub_title$$title$ = %GLOBAL%$title$%GLOBAL%$grad_bar$
+	:i $AssignAlias$$id$ = $edit_tricks_menu_parts_anchor$$alias$ = $current_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_sub_menu_title$
+		:i $pos$ =  (%GLOBAL%$root_pos$ + %vec2(80.000000,70.000000)) 
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(-56.000000,-5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(128.000000,7.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $edit_tricks_sub_menu_title$$offset$ = %vec2(60.000000,42.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_menu_1$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $edit_tricks_sub_menu_exit$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :s{$focus$$edit_tricks_menu_create_current_mapping_list$$params$ = :s{$key_combo_array$ = %GLOBAL%$key_combo_array$$type$ = %GLOBAL%$type$:s}:s}
+			:i :s{$unfocus$$edit_tricks_menu_destroy_current_mapping_list$:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $edit_tricks_sub_menu_title$$offset$ = %GLOBAL%$vertical_bar_offset$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_menu_vertical_bar$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(2.000000,70.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i %GLOBAL%$vertical_bar_id$ = %GLOBAL%$id$
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$vertical_bar_id$$offset$ = %vec2(8.000000,24.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(400.000000,240.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i %GLOBAL%$vscrolling_menu_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$vscrolling_menu_id$
+		:i $id$ = $edit_tricks_menu_2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_show_on_focus$:s}
+			:i :s{$unfocus$$edit_tricks_menu_hide_on_unfocus$$params$ = %GLOBAL%$unfocus_params$:s}
+			:i :s{$pad_back$$edit_tricks_menu_back_from_trick_list$:s}
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $edit_tricks_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $edit_tricks_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $edit_tricks_menu_2$.$SetTags$$scrolling_parent$ = %GLOBAL%$vscrolling_menu_id$
+	:i if  (%GLOBAL%$trick_type$ = $special_tricks$) 
+		:i $create_special_tricks_menu$
+		:i return
+		
+	:i endif
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$vertical_bar_id$$offset$ = %vec2(48.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(0.000000,245.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $edit_tricks_sub_menu_title$$offset$ = %vec2(-7.000000,-2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Combo")
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i if  (%GLOBAL%$type$ = $lip_tricks$) 
+		:i %GLOBAL%$tap_info_text$ = %s(5,"Trick")
+	:i else 
+		:i %GLOBAL%$tap_info_text$ = %s(23,"Single tap / Double tap")
+	:i endif
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$vertical_bar_id$$offset$ = %vec2(5.000000,-18.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $double_tap_info$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$tap_info_text$
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $scale$ = %f(0.900000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i if $GotParam$$key_combo_array$
+		:i $GetArraySize$%GLOBAL%$key_combo_array$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $edit_tricks_sub_menu_add_key_combo$:s{
+				:i $key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$index$:a}) 
+				:i $highlight_bar_scale$ = %GLOBAL%$key_combo_highlight_bar_scale$
+				:i $short_highlight_bar_scale$ = %GLOBAL%$key_combo_short_highlight_bar_scale$
+				:i $highlight_bar_pos$ = %GLOBAL%$key_combo_highlight_bar_pos$
+				:i $short_highlight_bar_pos$ = %GLOBAL%$key_combo_short_highlight_bar_pos$
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if $GotParam$$trick_type$
+		:i if $GetConfigurableTricksFromType$$type$ = %GLOBAL%$trick_type$%GLOBAL%$special$
+			:i if $GotParam$$ConfigurableCats$
+				:i $GetArraySize$%GLOBAL%$ConfigurableCats$
+				:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+					:i $RemoveParameter$$ConfigurableCats$
+				:i endif
+			:i endif
+			:i $GetArraySize$%GLOBAL%$ConfigurableTricks$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+				:i while
+					
+					:i %GLOBAL%$trick_name$ =  (%GLOBAL%$ConfigurableTricks$:a{%GLOBAL%$index$:a}) 
+					:i if NOT $TrickIsLocked$$trick$ = %GLOBAL%$trick_name$
+						:i $RemoveParameter$$extra_trick_string$
+						:i $GetTrickDisplayText$$trick$ = %GLOBAL%$trick_name$
+						:i if NOT  (%GLOBAL%$type$ = $lip_tricks$) 
+							:i if $GotParam$$extra_trick_string$
+								:i $FormatText$$TextName$ = $trick_display_text$%s(7,"%f / %s")$f$ = %GLOBAL%$trick_display_text$$s$ = %GLOBAL%$extra_trick_string$
+							:i endif
+						:i endif
+						:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+							:i if NOT $GotParam$$ConfigurableCats$
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_name$
+									:i $focus_params$ = :s{$last_item$$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$trick_name$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i else 
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_name$
+									:i $focus_params$ = :s{$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$trick_name$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i endif
+						:i else 
+							:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_name$
+									:i $focus_params$ = :s{$first_item$$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$trick_name$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i else 
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_name$
+									:i $focus_params$ = :s{$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$trick_name$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i endif
+						:i endif
+						:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+					:i endif
+				:i loop_to %GLOBAL%$array_size$
+				:i if $GotParam$$ConfigurableCats$
+					:i $GetArraySize$%GLOBAL%$ConfigurableCats$
+					:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+						:i $edit_tricks_sub_menu_add_header$:s{
+							:i $text$ = %s(14,"Created Tricks")
+						:i :s}
+						:i $index$ = %i(0,00000000)
+						:i while
+							
+							:i %GLOBAL%$cat_num$ =  (%GLOBAL%$ConfigurableCats$:a{%GLOBAL%$index$:a}) 
+							:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$cat_num$
+							:i if $GotParam$$name$
+								:i $printf$%s(9,"name = %n")$n$ = %GLOBAL%$name$
+							:i else 
+								:i $name$ = %s(15,"didn't get name")
+							:i endif
+							:i $trick_display_text$ = %GLOBAL%$name$
+							:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_display_text$
+									:i $focus_params$ = :s{$last_item$$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$cat_num$$createdtrick$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i else 
+								:i $edit_tricks_sub_menu_add_trick$:s{
+									:i $text$ = %GLOBAL%$trick_display_text$
+									:i $trick$ = %GLOBAL%$trick_display_text$
+									:i $focus_params$ = :s{$highlight_bar_scale$ = %GLOBAL%$trick_highlight_bar_scale$:s}
+									:i $pad_choose_params$ = :s{$new_trick$ = %GLOBAL%$cat_num$$createdtrick$$callback$ = $edit_tricks_menu_back_from_trick_list$:s}
+								:i :s}
+							:i endif
+							:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to %GLOBAL%$array_size$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$on$
+		:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$off$
+		:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_2$
+		:i $edit_tricks_menu_back_from_trick_list$
+	:i endif
+	:i $DoScreenElementMorph$$id$ = $edit_tricks_menu_parts_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $AssignAlias$$id$ = $edit_tricks_sub_menu_anchor$$alias$ = $current_menu_anchor$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_1$
+:i endfunction
+:i function $create_special_tricks_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_tricks_menu_1$
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_special_tricks_focus$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i %GLOBAL%$index$ = %i(1,00000001)
+	:i while
+		
+		:i $special_tricks_menu_add_slot$$index$ = %GLOBAL%$index$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$max_specials$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $edit_tricks_sub_menu_title$$offset$ = %vec2(40.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Trick")
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(260.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Combo")
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = $edit_tricks_menu_vertical_bar$$offset$ = %vec2(50.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $edit_tricks_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(0.000000,247.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $edit_tricks_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.900000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = $edit_tricks_menu_vertical_bar$$offset$ = %vec2(280.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $special_tricks_menu_second_vertical_bar$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(2.000000,70.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(9,00000009)
+	:i :s}
+	:i $special_tricks_menu_create_menu_3$
+	:i $DoScreenElementMorph$$id$ = $edit_tricks_menu_parts_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $AssignAlias$$id$ = $edit_tricks_sub_menu_anchor$$alias$ = $current_menu_anchor$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_1$
+:i endfunction
+:i function $special_tricks_menu_create_menu_3$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+	:i if $ObjectExists$$id$ = $special_tricks_menu_key_combo_up_arrow$
+		:i $DestroyScreenElement$$id$ = $special_tricks_menu_key_combo_up_arrow$
+	:i endif
+	:i if $ObjectExists$$id$ = $special_tricks_menu_key_combo_down_arrow$
+		:i $DestroyScreenElement$$id$ = $special_tricks_menu_key_combo_down_arrow$
+	:i endif
+	:i $GetStackedScreenElementPos$$X$$id$ = $special_tricks_menu_second_vertical_bar$$offset$ = %vec2(35.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $special_tricks_menu_key_combo_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $special_tricks_menu_key_combo_up_arrow$$offset$ = %vec2(65.000000,13.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $edit_tricks_menu_3_parent$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(300.000000,244.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $edit_tricks_menu_3$
+		:i $just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_show_on_focus$:s}
+			:i :s{$unfocus$$edit_tricks_menu_hide_on_unfocus$:s}
+			:i :s{$pad_back$$special_tricks_menu_goto_trick_list$$params$ = :s{$hold_menu$:s}:s}
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $special_tricks_menu_key_combo_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $special_tricks_menu_key_combo_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $special_tricks_menu_key_combo_up_arrow$$offset$ = %vec2(0.000000,245.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $special_tricks_menu_key_combo_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i :s}
+:i endfunction
+:i function $special_tricks_menu_create_current_mapping_list$
+	:i $printf$%s(47,"special_tricks_menu_create_current_mapping_list")
+	:i if $ScreenElementExists$$id$ = $special_tricks_current_mapping$
+		:i $DestroyScreenElement$$id$ = $special_tricks_current_mapping$
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_3$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_parts_anchor$$off$
+	:i $GetStackedScreenElementPos$$X$$id$ = $edit_tricks_menu_vertical_bar$$offset$ = %vec2(0.000000,10.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $special_tricks_current_mapping$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $special_tricks_menu_add_special_to_mapping$$index$ = %GLOBAL%$index$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$max_specials$
+	:i $edit_tricks_menu_assign_current_menu_alias$
+:i endfunction
+:i function $edit_tricks_menu_create_current_mapping_list$
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_current_mapping$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_menu_current_mapping$
+	:i endif
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_parts_anchor$$off$
+	:i $GetStackedScreenElementPos$$X$$id$ = $edit_tricks_menu_vertical_bar$$offset$ = %vec2(10.000000,27.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $edit_tricks_menu_parts_anchor$
+		:i $id$ = $edit_tricks_menu_current_mapping$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i if $GotParam$$key_combo_array$
+		:i $GetArraySize$%GLOBAL%$key_combo_array$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = $edit_tricks_menu_current_mapping$
+				:i $dims$ = %vec2(100.000000,22.000000)
+			:i :s}
+			:i if $GoalManager_GetTrickFromKeyCombo$$key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$index$:a}) 
+				:i if NOT  (%GLOBAL%$type$ = $lip_tricks$) 
+					:i if $GotParam$$extra_trick_string$
+						:i $FormatText$$TextName$ = $trick_string$%s(7,"%f / %s")$f$ = %GLOBAL%$trick_string$$s$ = %GLOBAL%$extra_trick_string$
+					:i endif
+				:i endif
+				:i if $GotParam$$cat_num$
+					:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$cat_num$
+					:i if $GotParam$$name$
+						:i $printf$%s(9,"name = %n")$n$ = %GLOBAL%$name$
+					:i else 
+						:i $name$ = %s(15,"didn't get name")
+					:i endif
+					:i $trick_string$ = %GLOBAL%$name$
+				:i endif
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = %GLOBAL%$id$
+					:i $font$ = $small$
+					:i $rgba$ = %GLOBAL%$text_rgba$
+					:i $text$ = %GLOBAL%$trick_string$
+					:i $pos$ = %vec2(-5.000000,0.000000)
+					:i $scale$ = %f(0.750000)
+					:i $just$ = :a{$left$$center$:a}
+				:i :s}
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i $RemoveParameter$$extra_trick_string$
+			:i $RemoveParameter$$cat_num$
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $edit_tricks_menu_assign_current_menu_alias$
+:i endfunction
+:i function $edit_tricks_menu_destroy_current_mapping_list$
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_current_mapping$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_menu_current_mapping$
+	:i endif
+:i endfunction
+:i function $special_tricks_add_categories$
+	:i $DestroyScreenElement$$id$ = $edit_tricks_menu_2$$preserve_parent$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_tricks_menu_2$
+		:i $event_handlers$ = :a{:s{$pad_back$$edit_tricks_menu_back_from_trick_list$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(40.000000,24.000000)
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $dialog$
+		:i $text$ = %s(10,"Categories")
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $scale$ = %f(0.900000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(71.000000,6.000000)
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $ForEachIn$$special_trick_types$$do$ = $special_tricks_menu_add_type_category$$params$ = :s{$index$ = %GLOBAL%$index$:s}
+:i endfunction
+:i function $special_tricks_menu_add_type_category$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_color$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $event_handlers$ = :a{:s{$focus$$special_tricks_menu_focus$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$$special_tricks_menu_unfocus$$params$ = :s{$rgba$ = :a{%i(90,0000005a)%i(90,0000005a)%i(90,0000005a)%i(100,00000064):a}:s}:s}
+			:i :s{$pad_choose$$special_tricks_menu_add_type$$params$ = :s{ isNull :s}:s}
+			:i :s{$pad_start$$special_tricks_menu_add_type$$params$ = :s{ isNull :s}:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :a}
+	:i :s}
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$heading$
+		:i $rgba$ = %GLOBAL%$unhighlight_color$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.800000)
+	:i :s}
+:i endfunction
+:i function $edit_tricks_sub_menu_add_key_combo$:s{$pad_choose_script$ = $edit_tricks_menu_goto_trick_list$
+		:i $highlight_bar_scale$ = %vec2(1.000000,0.700000)
+		:i $parent$ = $edit_tricks_menu_1$
+	:i :s}
+	:i $edit_tricks_menu_can_edit$
+	:i if  (%GLOBAL%$tricks_editable$ = %i(0,00000000)) 
+		:i $pad_choose_script$ = $nullscript$
+	:i endif
+	:i if NOT $GotParam$$focus_params$
+		:i $focus_params$ = :s{$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$
+			:i $highlight_bar_pos$ = %GLOBAL%$highlight_bar_pos$
+		:i :s}
+	:i endif
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $dims$ = %vec2(100.000000,22.000000)
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_key_combo_focus$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$$edit_tricks_menu_key_combo_unfocus$:s}
+			:i :a}
+		:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$index$:s}
+		:i %GLOBAL%$not_focusable$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i if NOT $GotParam$$pad_choose_params$
+		:i $pad_choose_params$ = :s{
+			:i $key_combo$ = %GLOBAL%$key_combo$
+			:i $index$ = %GLOBAL%$index$
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $highlight_script$ = $edit_tricks_menu_key_combo_focus$
+			:i $highlight_bar_scale$ = %GLOBAL%$short_highlight_bar_scale$
+			:i $highlight_bar_pos$ = %GLOBAL%$short_highlight_bar_pos$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $event_handlers$ = :a{:s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :a}
+	:i :s}
+	:i if $GotParam$$not_focusable$
+		:i %GLOBAL%$text_rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(90,0000005a):a}
+	:i else 
+		:i %GLOBAL%$text_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i endif
+	:i if $IsNGC$
+		:i $combo_scale$ = %f(0.640000)
+	:i else 
+		:i $combo_scale$ = %f(0.700000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ =  ($goal_tetris_trick_text$->%GLOBAL%$key_combo$) 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $scale$ = %GLOBAL%$combo_scale$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+:i endfunction
+:i function $edit_tricks_sub_menu_add_trick$$pad_choose_script$ = $edit_tricks_menu_bind_trick$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(400.000000,24.000000)
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_focus$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$$edit_tricks_menu_unfocus$$params$ = :s{$rgba$ = %GLOBAL%$text_rgba$:s}:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :a}
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $scale$ = %f(0.750000)
+	:i :s}
+:i endfunction
+:i function $edit_tricks_sub_menu_add_header$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(400.000000,24.000000)
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $scale$ = %f(0.750000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(100,00000064):a}
+		:i $scale$ = %vec2(46.000000,2.250000)
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+:i endfunction
+:i function $special_tricks_menu_add_slot$:s{$pad_choose_script$ = $special_tricks_menu_goto_trick_list$
+		:i $highlight_bar_scale$ = %vec2(3.900000,0.700000)
+		:i $highlight_bar_pos$ = %vec2(-105.000000,-18.000000)
+	:i :s}
+	:i $edit_tricks_menu_can_edit$
+	:i if  (%GLOBAL%$tricks_editable$ = %i(0,00000000)) 
+		:i $pad_choose_script$ = $nullscript$
+	:i endif
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_1$
+		:i $dims$ = %vec2(40.000000,22.000000)
+		:i $event_handlers$ = :a{:s{$focus$$edit_tricks_menu_focus$$params$ = :s{$highlight_bar_pos$ = %GLOBAL%$highlight_bar_pos$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$first_item$$last_item$$no_arrows$:s}:s}
+			:i :s{$unfocus$$edit_tricks_menu_unfocus$$params$ = :s{$rgba$ = :a{%i(90,0000005a)%i(90,0000005a)%i(90,0000005a)%i(100,00000064):a}:s}:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = :s{$highlight_script$ = $edit_tricks_menu_focus$$highlight_bar_scale$ = %vec2(0.600000,0.700000)$highlight_bar_pos$ = %GLOBAL%$highlight_bar_pos$$index$ = %GLOBAL%$index$:s}:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = :s{$highlight_script$ = $edit_tricks_menu_focus$$highlight_bar_scale$ = %vec2(0.600000,0.700000)$highlight_bar_pos$ = %GLOBAL%$highlight_bar_pos$$index$ = %GLOBAL%$index$:s}:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :a}
+		:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$index$:s}
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $FormatText$$TextName$ = $slot_num$%s(3,"%s-")$s$ = %GLOBAL%$index$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$slot_num$
+		:i $pos$ = %vec2(-60.000000,-5.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_color$
+		:i $z_priority$ = %i(4,00000004)
+		:i $scale$ = %f(0.750000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(-105.000000,-10.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+:i endfunction
+:i function $special_tricks_menu_add_special_to_mapping$
+	:i $printf$%s(42,"special_tricks_menu_add_special_to_mapping")
+	:i $GetSpecialTrickInfo$$index$ = %GLOBAL%$index$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $special_tricks_current_mapping$
+		:i $dims$ = %vec2(40.000000,22.000000)
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i if  (%GLOBAL%$special_trickname$ = $Unassigned$) 
+		:i %GLOBAL%$trick_display_text$ = %s(10,"Unassigned")
+	:i else 
+		:i if  (%GLOBAL%$isCat$ = %i(1,00000001)) 
+			:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$special_trickname$
+			:i if $GotParam$$name$
+				:i $printf$%s(9,"name = %n")$n$ = %GLOBAL%$name$
+			:i else 
+				:i $name$ = %s(15,"didn't get name")
+			:i endif
+			:i $trick_display_text$ = %GLOBAL%$name$
+		:i else 
+			:i $GetTrickDisplayText$$trick$ = %GLOBAL%$special_trickname$
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$special_trickslot$ = $Unassigned$) 
+		:i %GLOBAL%$special_trickslot_text$ = %s(0,"")
+	:i else 
+		:i %GLOBAL%$special_trickslot_text$ =  ($goal_tetris_trick_text$->%GLOBAL%$special_trickslot$) 
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $scale$ = %f(0.750000)
+		:i $text$ = %GLOBAL%$trick_display_text$
+		:i $pos$ = %vec2(10.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$unhighlight_color$
+	:i :s}
+	:i if $IsNGC$
+		:i $combo_scale$ = %f(0.690000)
+	:i else 
+		:i $combo_scale$ = %f(0.750000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $scale$ = %GLOBAL%$combo_scale$
+		:i $text$ = %GLOBAL%$special_trickslot_text$
+		:i $pos$ = %vec2(320.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+:i endfunction
+:i function $special_tricks_menu_add_type$
+	:i $printf$%s(28,"special_tricks_menu_add_type")
+	:i $GetConfigurableTricksFromType$$type$ = %GLOBAL%$type$$special$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$off$
+	:i $DestroyScreenElement$$id$ = $edit_tricks_menu_2$$preserve_parent$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $edit_tricks_menu_2$
+		:i $event_handlers$ = :a{:s{$pad_back$$special_tricks_menu_goto_trick_list$$params$ = :s{$increment_index$:s}:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(40.000000,24.000000)
+		:i $not_focusable$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$heading$
+		:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(100,00000064):a}
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $scale$ = %f(0.900000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(71.000000,6.000000)
+		:i $pos$ = %vec2(-10.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i if NOT $GotParam$$add_cats$
+		:i $GetArraySize$%GLOBAL%$ConfigurableTricks$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i if  ( (%GLOBAL%$index$ = %i(0,00000000))  AND  (%GLOBAL%$type$ = $FlipTrick$) ) 
+				:i %GLOBAL%$first_item$ = $first_item$
+			:i else 
+				:i $RemoveParameter$$first_item$
+				:i if  ( (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) )  AND  (%GLOBAL%$type$ = $Manual$) ) 
+				:i else 
+					:i $RemoveParameter$$last_item$
+				:i endif
+			:i endif
+			:i $is_trick_locked$$trick$ =  (%GLOBAL%$ConfigurableTricks$:a{%GLOBAL%$index$:a}) 
+			:i if  (%GLOBAL%$trick_is_locked$ = %i(0,00000000)) 
+				:i $special_tricks_menu_add_trick$:s{
+					:i $trick$ =  (%GLOBAL%$ConfigurableTricks$:a{%GLOBAL%$index$:a}) 
+					:i $type$ = %GLOBAL%$type$
+					:i $first_item$ = %GLOBAL%$first_item$
+					:i $last_item$ = %GLOBAL%$last_item$
+				:i :s}
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i if $GotParam$$ConfigurableCats$
+			:i $GetArraySize$%GLOBAL%$ConfigurableCats$
+			:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+				:i $index$ = %i(0,00000000)
+				:i while
+					
+					:i %GLOBAL%$cat_num$ =  (%GLOBAL%$ConfigurableCats$:a{%GLOBAL%$index$:a}) 
+					:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$cat_num$
+					:i if $GotParam$$name$
+						:i $printf$%s(9,"name = %n")$n$ = %GLOBAL%$name$
+					:i else 
+						:i $name$ = %s(15,"didn't get name")
+					:i endif
+					:i $trick_display_text$ = %GLOBAL%$name$
+					:i if  (%GLOBAL%$index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+						:i $special_tricks_menu_add_trick$:s{
+							:i $text$ = %GLOBAL%$trick_display_text$
+							:i $trick$ = %GLOBAL%$trick_display_text$
+							:i $type$ = $CAT$
+							:i $cat_num$ = %GLOBAL%$cat_num$
+							:i $last_item$ = $last_item$
+						:i :s}
+					:i else 
+						:i $special_tricks_menu_add_trick$:s{
+							:i $text$ = %GLOBAL%$trick_display_text$
+							:i $trick$ = %GLOBAL%$trick_display_text$
+							:i $type$ = $CAT$
+							:i $cat_num$ = %GLOBAL%$cat_num$
+						:i :s}
+					:i endif
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i endif
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(40.000000,24.000000)
+		:i $not_focusable$
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$on$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$off$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$
+:i endfunction
+:i function $is_trick_locked$
+	:i if NOT $GotParam$$trick$
+		:i return
+		
+	:i endif
+	:i $Skater$ =  ( (%GLOBAL%$trick$->$params$) ->$Skater$) 
+	:i $unlockflag$ =  ( (%GLOBAL%$trick$->$params$) ->$unlockflag$) 
+	:i if $GotParam$$unlockflag$
+		:i if $GetGlobalFlag$$flag$ = %GLOBAL%$unlockflag$
+			:i return
+			$trick_is_locked$ = %i(0,00000000)
+		:i else 
+			:i return
+			$trick_is_locked$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$Skater$
+		:i return
+		$trick_is_locked$ = %i(0,00000000)
+	:i endif
+	:i $GetArraySize$$master_skater_list$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $name$ =  ( ($master_skater_list$:a{%GLOBAL%$index$:a}) ->$name$) 
+		:i if  (%GLOBAL%$name$ = %GLOBAL%$Skater$) 
+			:i $flag$ =  ( ($master_skater_list$:a{%GLOBAL%$index$:a}) ->$unlock_flag$) 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if NOT $GotParam$$flag$
+		:i return
+		
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i return
+		$trick_is_locked$ = %i(0,00000000)
+	:i else 
+		:i return
+		$trick_is_locked$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $special_tricks_menu_add_trick$
+	:i if $GotParam$$first_item$
+		:i $focus_params$ = :s{$first_item$:s}
+	:i else 
+		:i if $GotParam$$last_item$
+			:i $focus_params$ = :s{$last_item$:s}
+		:i endif
+	:i endif
+	:i if NOT  (%GLOBAL%$type$ = $CAT$) 
+		:i $trick_name_string$ =  (%GLOBAL%$trick$->$params$->$name$) 
+	:i else 
+		:i $trick_name_string$ = %GLOBAL%$text$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $edit_tricks_menu_2$
+		:i $dims$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_color$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$anchor_id$
+		:i $event_handlers$ = :a{:s{$focus$$special_tricks_menu_focus$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$$special_tricks_menu_unfocus$$params$ = :s{$rgba$ = :a{%i(90,0000005a)%i(90,0000005a)%i(90,0000005a)%i(100,00000064):a}:s}:s}
+			:i :s{$pad_choose$$special_tricks_menu_select_trick$$params$ = :s{$rgba$ = %GLOBAL%$highlight_color$$highlight_bar_scale$ = %vec2(2.250000,0.700000)$trick$ = %GLOBAL%$trick$$type$ = %GLOBAL%$type$$id$ = %GLOBAL%$anchor_id$$cat_num$ = %GLOBAL%$cat_num$:s}:s}
+			:i :s{$pad_start$$special_tricks_menu_select_trick$$params$ = :s{$rgba$ = %GLOBAL%$highlight_color$$highlight_bar_scale$ = %vec2(2.250000,0.700000)$trick$ = %GLOBAL%$trick$$type$ = %GLOBAL%$type$$id$ = %GLOBAL%$anchor_id$$cat_num$ = %GLOBAL%$cat_num$:s}:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :a}
+	:i :s}
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i if NOT  (%GLOBAL%$type$ = $CAT$) 
+		:i $GetTrickDisplayText$$trick$ = %GLOBAL%$trick$
+	:i else 
+		:i $trick_display_text$ = %GLOBAL%$text$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$trick_display_text$
+		:i $rgba$ = %GLOBAL%$unhighlight_color$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(0.800000)
+	:i :s}
+:i endfunction
+:i function $edit_tricks_menu_focus$$highlight_bar_scale$ = %vec2(1.000000,0.700000)$highlight_bar_pos$ = %vec2(-10.000000,-2.000000)
+	:i $GetTags$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+	:i $KillSpawnedScript$$name$ = $do_random_effect$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_color$
+	:i if $GotParam$$flagged_deck$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$do_scale_up$$params$ = :s{$rgba$ = :a{%i(99,00000063)%i(121,00000079)%i(6,00000006)%i(128,00000080):a}:s}
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect3$
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$highlight_color$
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_highlight_bar$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_menu_highlight_bar$
+	:i endif
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $highlight_angle$ = %i(0,00000000)
+	:i if  (%GLOBAL%$highlight_bar_scale$->%vec2(1.000000,0.000000) > %i(1,00000001)) 
+		:i $highlight_angle$ =  (%GLOBAL%$highlight_angle$ /  (%GLOBAL%$highlight_bar_scale$->%vec2(1.000000,0.000000)) ) 
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $edit_tricks_menu_highlight_bar$
+		:i $texture$ = $de_highlight_bar$
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i $pos$ = %GLOBAL%$highlight_bar_pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $z_priority$ = %i(3,00000003)
+		:i $rot_angle$ = %GLOBAL%$highlight_angle$
+	:i :s}
+	:i if NOT $GotParam$$no_arrows$
+		:i if $ObjectExists$$id$ = $edit_tricks_menu_up_arrow$
+			:i if $GotParam$$first_item$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $edit_tricks_menu_up_arrow$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $edit_tricks_menu_up_arrow$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+				:i :s}
+			:i endif
+		:i endif
+		:i if $ObjectExists$$id$ = $edit_tricks_menu_down_arrow$
+			:i if $GotParam$$last_item$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $edit_tricks_menu_down_arrow$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $edit_tricks_menu_down_arrow$
+					:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+				:i :s}
+			:i endif
+		:i endif
+		:i if  ($ObjectExists$$id$ = $edit_tricks_menu_up_arrow$) 
+			:i $AssignAlias$$id$ = $edit_tricks_menu_2$$alias$ = $current_menu$
+			:i $edit_tricks_menu_2$.$GetTags$
+			:i if $GotParam$$arrow_id$
+				:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect3$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ = %i(1,00000001)$relative_scale$
+	:i if $GotParam$$flagged_deck$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$do_scale_down$$params$ = :s{$rgba$ = :a{%i(25,00000019)%i(83,00000053)%i(67,00000043)%i(128,00000080):a}$no_sound$:s}
+	:i else 
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$unhighlight_color$
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_highlight_bar$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_menu_highlight_bar$
+	:i endif
+:i endfunction
+:i function $special_tricks_menu_focus$$highlight_bar_scale$ = %vec2(2.250000,0.700000)
+	:i $GetTags$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect3$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_color$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$highlight_color$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $highlight_angle$ =  (%GLOBAL%$highlight_angle$ /  (%GLOBAL%$highlight_bar_scale$->%vec2(1.000000,0.000000)) ) 
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(135.000000,10.000000)
+		:i $rgba$ = %GLOBAL%$bar_color$
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $just$ = :a{$center$$center$:a}
+		:i $rot_angle$ = %GLOBAL%$highlight_angle$
+	:i :s}
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_up_arrow$
+		:i if $GotParam$$first_item$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $edit_tricks_menu_up_arrow$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $edit_tricks_menu_up_arrow$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_down_arrow$
+		:i if $GotParam$$last_item$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $edit_tricks_menu_down_arrow$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $edit_tricks_menu_down_arrow$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $edit_tricks_menu_up_arrow$
+		:i $AssignAlias$$id$ = $edit_tricks_menu_2$$alias$ = $current_menu$
+		:i $edit_tricks_menu_2$.$GetTags$
+		:i if $GotParam$$first_item$
+			:i $SetScreenElementProps$$id$ = %GLOBAL%$scrolling_parent$$reset_window_top$
+		:i endif
+		:i if $GotParam$$last_item$
+			:i $SetScreenElementProps$$id$ = %GLOBAL%$scrolling_parent$$reset_window_bottom$
+		:i endif
+		:i if NOT $GotParam$$first_item$
+			:i if NOT $GotParam$$last_item$
+				:i if $GotParam$$arrow_id$
+					:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $special_tricks_menu_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect3$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$scale$ = %i(1,00000001)$relative_scale$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $unhighlight_color$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$unhighlight_color$
+	:i $DestroyScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+:i endfunction
+:i function $edit_tricks_menu_key_combo_focus$$highlight_bar_pos$ = %vec2(-42.000000,-10.000000)
+	:i $GetTags$
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_color$
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $highlight_angle$ =  (%GLOBAL%$highlight_angle$ /  (%GLOBAL%$highlight_bar_scale$->%vec2(1.000000,0.000000)) ) 
+	:i if $GotParam$$rgba$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $relative_scale$
+		:i :s}
+	:i endif
+	:i if $IsNGC$
+		:i $combo_scale$ = :s{$scale1$ = %f(1.050000)$scale2$ = %f(1.100000):s}
+	:i else 
+		:i $combo_scale$ = :s{$scale1$ = %f(1.100000)$scale2$ = %f(1.150000):s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect2$$params$ = %GLOBAL%$combo_scale$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $key_combo_highlight_bar$
+		:i $texture$ = $de_highlight_bar$
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $pos$ = %GLOBAL%$highlight_bar_pos$
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$bar_color$
+		:i $z_priority$ = %i(3,00000003)
+		:i $rot_angle$ = %GLOBAL%$highlight_angle$
+	:i :s}
+	:i if $GotParam$$up_arrow_id$
+		:i if $GotParam$$first_item$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$up_arrow_id$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$up_arrow_id$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$down_arrow_id$
+		:i if $GotParam$$last_item$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$down_arrow_id$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$down_arrow_id$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+			:i :s}
+		:i endif
+	:i endif
+	:i if  ($ObjectExists$$id$ = $special_tricks_menu_key_combo_up_arrow$) 
+		:i $AssignAlias$$id$ = $edit_tricks_menu_3$$alias$ = $current_menu$
+		:i $edit_tricks_menu_3$.$GetTags$
+		:i if $GotParam$$arrow_id$
+			:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_key_combo_unfocus$
+	:i $GetTags$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $scale$ = %i(1,00000001)
+		:i $relative_scale$
+	:i :s}
+	:i if $ObjectExists$$id$ = $key_combo_highlight_bar$
+		:i $DestroyScreenElement$$id$ = $key_combo_highlight_bar$
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_goto_trick_list$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_1$
+	:i $edit_tricks_menu_1_index$ = %GLOBAL%$index$
+	:i if $GotParam$$key_combo$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_2$
+			:i $tags$ = :s{$new_key_combo$ = %GLOBAL%$key_combo$:s}
+		:i :s}
+	:i endif
+	:i if $GotParam$$highlight_script$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$highlight_script$$params$ = :s{$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$:s}
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$
+:i endfunction
+:i function $edit_tricks_menu_special_tricks_focus$
+	:i $special_tricks_menu_create_current_mapping_list$
+:i endfunction
+:i function $special_tricks_menu_goto_trick_list$
+	:i $GetTags$
+	:i if $GotParam$$increment_index$
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i endif
+	:i if NOT $GotParam$$hold_menu$
+		:i $special_tricks_add_categories$
+	:i endif
+	:i if $ObjectExists$$id$ = $special_tricks_temp_trick_highlight_bar$
+		:i $DestroyScreenElement$$id$ = $special_tricks_temp_trick_highlight_bar$
+	:i endif
+	:i if $GotParam$$element_to_unfocus$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$element_to_unfocus$
+			:i $rgba$ = :a{%i(90,0000005a)%i(90,0000005a)%i(90,0000005a)%i(100,00000064):a}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $special_tricks_current_mapping$
+		:i $DestroyScreenElement$$id$ = $special_tricks_current_mapping$
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_1$
+	:i if $GotParam$$index$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_2$
+			:i $tags$ = :s{$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) :s}
+		:i :s}
+	:i endif
+	:i if $GotParam$$highlight_script$
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$%GLOBAL%$highlight_script$$params$ = :s{$highlight_bar_pos$ = %GLOBAL%$highlight_bar_pos$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$:s}
+	:i endif
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$on$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_2$$off$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_3$
+	:i if $GotParam$$index$
+		:i $GetSpecialTrickInfo$$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+		:i if  (%GLOBAL%$special_trickslot$ = $Unassigned$) 
+			:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$
+		:i else 
+			:i if  (%GLOBAL%$isCat$ = %i(1,00000001)) 
+				:i $get_CAT_other_param_values$$trick_index$ = %GLOBAL%$special_trickname$
+				:i if $GotParam$$name$
+					:i $printf$%s(9,"name = %n")$n$ = %GLOBAL%$name$
+				:i else 
+					:i $name$ = %s(15,"didn't get name")
+				:i endif
+				:i $special_trickname_string$ = %GLOBAL%$name$
+			:i else 
+				:i %GLOBAL%$special_trickname_string$ =  ( (%GLOBAL%$special_trickname$) ->$params$->$name$) 
+			:i endif
+			:i $FormatText$$ChecksumName$ = $special_trickname_checksum$%s(2,"%s")$s$ = %GLOBAL%$special_trickname_string$
+			:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$$data$ = :s{$child_id$ = %GLOBAL%$special_trickname_checksum$:s}
+		:i endif
+	:i else 
+		:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_2$
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_back_from_trick_list$
+	:i if $ObjectExists$$id$ = $key_combo_highlight_bar$
+		:i $DestroyScreenElement$$id$ = $key_combo_highlight_bar$
+	:i endif
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_2$
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_1$
+		:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_1$$data$ = :s{$grid_index$ = $edit_tricks_menu_1_index$:s}
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_up_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_down_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_bind_trick$
+	:i $printf$%s(27,"edit_tricks_menu_bind_trick")
+	:i if NOT $GotParam$$new_key_combo$
+		:i $edit_tricks_menu_2$.$GetTags$
+	:i endif
+	:i if NOT $GotParam$$new_key_combo$
+		:i $printf$%s(16,"no new_key_combo")
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$new_trick$
+		:i $printf$%s(12,"no new_trick")
+		:i return
+		
+	:i endif
+	:i if $InSplitScreenGame$
+		:i %GLOBAL%$update_mappings$ = %i(0,00000000)
+	:i else 
+		:i %GLOBAL%$update_mappings$ = %i(1,00000001)
+	:i endif
+	:i if $GotParam$$special$
+		:i if $GoalManager_GetTrickFromKeyCombo$$special$$key_combo$ = %GLOBAL%$new_key_combo$
+			:i $printf$%s(31,"special key combo already bound")
+			:i $BindTrickToKeyCombo$:s{
+				:i $special$
+				:i $index$ = %GLOBAL%$current_index$
+				:i $key_combo$ = $Unassigned$
+				:i $trick$ = $Unassigned$
+				:i $update_mappings$ = %GLOBAL%$update_mappings$
+			:i :s}
+		:i endif
+		:i if $GetKeyComboBoundToTrick$$special$$trick$ = %GLOBAL%$new_trick$$cat_num$ = %GLOBAL%$new_trick$
+			:i $BindTrickToKeyCombo$:s{
+				:i $special$
+				:i $index$ = %GLOBAL%$current_index$
+				:i $key_combo$ = $Unassigned$
+				:i $trick$ = $Unassigned$
+				:i $update_mappings$ = %GLOBAL%$update_mappings$
+			:i :s}
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$createdtrick$
+			:i if $GetKeyComboBoundToTrick$$trick$ = %GLOBAL%$new_trick$$cat_num$ = %GLOBAL%$new_trick$
+				:i $printf$%s(21,"trick already bound 1")
+				:i if $GoalManager_GetTrickFromKeyCombo$$key_combo$ = %GLOBAL%$new_key_combo$
+					:i $printf$%s(11,"rebinding 1")
+					:i $BindTrickToKeyCombo$:s{
+						:i $key_combo$ = %GLOBAL%$current_key_combo$
+						:i $trick$ = %GLOBAL%$trick_checksum$
+						:i $trick$ = %GLOBAL%$cat_num$
+						:i $update_mappings$ = %GLOBAL%$update_mappings$
+					:i :s}
+				:i endif
+			:i endif
+		:i else 
+			:i if $GetKeyComboBoundToTrick$$trick$ = %GLOBAL%$new_trick$$cat_num$ = %GLOBAL%$new_trick$
+				:i $printf$%s(21,"trick already bound 2")
+				:i if $GoalManager_GetTrickFromKeyCombo$$key_combo$ = %GLOBAL%$new_key_combo$
+					:i $printf$%s(11,"rebinding 2")
+					:i if $GotParam$$trick_checksum$
+						:i $BindTrickToKeyCombo$:s{
+							:i $key_combo$ = %GLOBAL%$current_key_combo$
+							:i $trick$ = %GLOBAL%$trick_checksum$
+							:i $update_mappings$ = %GLOBAL%$update_mappings$
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $GotParam$$special$
+		:i if $GotParam$$createdtrick$
+			:i $printf$%s(33,"binding new special created trick")
+			:i $BindTrickToKeyCombo$:s{
+				:i $special$
+				:i $index$ = %GLOBAL%$index$
+				:i $key_combo$ = %GLOBAL%$new_key_combo$
+				:i $trick$ = %GLOBAL%$new_trick$
+				:i $update_mappings$ = %GLOBAL%$update_mappings$
+				:i $CAT$
+			:i :s}
+		:i else 
+			:i $printf$%s(25,"binding new special trick")
+			:i $BindTrickToKeyCombo$:s{
+				:i $special$
+				:i $index$ = %GLOBAL%$index$
+				:i $key_combo$ = %GLOBAL%$new_key_combo$
+				:i $trick$ = %GLOBAL%$new_trick$
+				:i $update_mappings$ = %GLOBAL%$update_mappings$
+			:i :s}
+		:i endif
+	:i else 
+		:i $printf$%s(17,"binding new trick")
+		:i $BindTrickToKeyCombo$:s{
+			:i $key_combo$ = %GLOBAL%$new_key_combo$
+			:i $trick$ = %GLOBAL%$new_trick$
+			:i $update_mappings$ = %GLOBAL%$update_mappings$
+		:i :s}
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $InSplitScreenGame$
+		:i $printf$%s(22,"in a split screen game")
+	:i else 
+		:i $UpdateTrickMappings$$Skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $GoalManager_ReplaceTrickText$$all$
+	:i if $GotParam$$callback$
+		:i %GLOBAL%$callback$
+	:i endif
+:i endfunction
+:i function $special_tricks_menu_select_trick$
+	:i $printf$%s(32,"special_tricks_menu_select_trick")
+	:i $FireEvent$$type$ = $unfocus$$target$ = $edit_tricks_menu_2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $edit_tricks_menu_2$
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i if $GotParam$$id$
+		:i $Theme_GetHighlightedTextColor$$return_value$ = $highlight_color$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $rgba$ = %GLOBAL%$highlight_color$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_3$
+			:i $event_handlers$ = :a{:s{$pad_back$$special_tricks_menu_goto_trick_list$$params$ = :s{$element_to_unfocus$ = %GLOBAL%$id$:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+		:i $Theme_GetHighlightBarColor$$return_value$ = $bar_color$
+		:i $highlight_angle$ = %i(0,00000000)
+		:i $highlight_angle$ =  (%GLOBAL%$highlight_angle$ /  (%GLOBAL%$highlight_bar_scale$->%vec2(1.000000,0.000000)) ) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$id$
+			:i $id$ = $special_tricks_temp_trick_highlight_bar$
+			:i $texture$ = $de_highlight_bar$
+			:i $pos$ = %vec2(-10.000000,-1.000000)
+			:i $rgba$ = %GLOBAL%$bar_color$
+			:i $scale$ = %GLOBAL%$highlight_bar_scale$
+			:i $just$ = :a{$left$$top$:a}
+			:i $rot_angle$ = %GLOBAL%$highlight_angle$
+		:i :s}
+	:i endif
+	:i $DestroyScreenElement$$id$ = $edit_tricks_menu_3_parent$
+	:i $special_tricks_menu_create_menu_3$
+	:i $edit_tricks_menu_3$.$SetTags$$trick$ = %GLOBAL%$trick$
+	:i switch %GLOBAL%$type$
+		:i case $FlipTrick$
+			:i endcase
+		case $GrabTrick$
+			:i endcase
+		case $CAT$
+			:i %GLOBAL%$key_combo_array$ = $special_trick_air_key_combos$
+			:i endcase
+		case $LipMacro2$
+			:i %GLOBAL%$key_combo_array$ = $special_trick_lip_key_combos$
+			:i endcase
+		case $GrindTrick$
+			:i %GLOBAL%$key_combo_array$ = $special_trick_grind_key_combos$
+			:i endcase
+		case $Manual$
+			:i %GLOBAL%$key_combo_array$ = $special_trick_manual_key_combos$
+			:i endcase
+		default 
+			:i $printstruct$ isNull 
+			:i $script_assert$%s(12,"Unknown type")
+			:i end_switch
+	
+	:i $printf$%s(9,"type = %i")$i$ = %GLOBAL%$type$
+	:i if  (%GLOBAL%$type$ = $CAT$) 
+		:i $printf$%s(10,"type = cat")
+		:i $pad_choose_params$ = :s{$createdtrick$ = $createdtrick$
+			:i $cat_num$ = %GLOBAL%$cat_num$
+		:i :s}
+	:i else 
+		:i $printf$%s(18,"type doesn't = cat")
+		:i $pad_choose_params$ = :s{:s}
+	:i endif
+	:i $GetArraySize$%GLOBAL%$key_combo_array$
+	:i %GLOBAL%$key_combo_index$ = %i(0,00000000)
+	:i while
+		
+		:i if  (%GLOBAL%$key_combo_index$ = %i(0,00000000)) 
+			:i %GLOBAL%$first_item$ = $first_item$
+		:i else 
+			:i if  (%GLOBAL%$key_combo_index$ =  (%GLOBAL%$array_size$ - %i(1,00000001)) ) 
+				:i %GLOBAL%$last_item$ = $last_item$
+			:i endif
+		:i endif
+		:i if $GoalManager_GetTrickFromKeyCombo$$special$$key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$key_combo_index$:a}) 
+			:i $edit_tricks_menu_2$.$GetTags$
+			:i $GetSpecialTrickInfo$$index$ = %GLOBAL%$index$
+			:i if NOT  (%GLOBAL%$special_trickslot$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$key_combo_index$:a}) ) 
+				:i %GLOBAL%$not_focusable$ = $not_focusable$
+			:i endif
+		:i endif
+		:i $edit_tricks_sub_menu_add_key_combo$:s{
+			:i $key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$key_combo_index$:a}) 
+			:i $parent$ = $edit_tricks_menu_3$
+			:i $pad_choose_script$ = $special_tricks_menu_select_key_combo$
+			:i $focus_params$ = :s{$highlight_bar_scale$ = %vec2(1.000000,0.700000)
+				:i $up_arrow_id$ = $special_tricks_menu_key_combo_up_arrow$
+				:i $down_arrow_id$ = $special_tricks_menu_key_combo_down_arrow$
+				:i $key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$key_combo_index$:a}) 
+				:i %GLOBAL%$first_item$
+				:i %GLOBAL%$last_item$
+			:i :s}
+			:i $pad_choose_params$ = :s{%GLOBAL%$pad_choose_params$
+				:i $id$ = %GLOBAL%$anchor_id$
+				:i $highlight_script$ = $edit_tricks_menu_key_combo_focus$
+				:i $highlight_bar_scale$ = %GLOBAL%$short_highlight_bar_scale$
+				:i $key_combo$ =  (%GLOBAL%$key_combo_array$:a{%GLOBAL%$key_combo_index$:a}) 
+				:i $index$ = %GLOBAL%$key_combo_index$
+			:i :s}
+			:i $not_focusable$ = %GLOBAL%$not_focusable$
+		:i :s}
+		:i $RemoveParameter$$first_item$
+		:i $RemoveParameter$$last_item$
+		:i $RemoveParameter$$not_focusable$
+		:i %GLOBAL%$key_combo_index$ =  (%GLOBAL%$key_combo_index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_3$$on$
+	:i $SetScreenElementLock$$id$ = $edit_tricks_menu_3_parent$$on$
+	:i $FireEvent$$type$ = $focus$$target$ = $edit_tricks_menu_3$
+:i endfunction
+:i function $special_tricks_menu_select_key_combo$
+	:i $edit_tricks_menu_2$.$GetTags$
+	:i $edit_tricks_menu_3$.$GetTags$
+	:i $printf$%s(36,"special_tricks_menu_select_key_combo")
+	:i if NOT $GotParam$$createdtrick$
+		:i $edit_tricks_menu_bind_trick$$new_key_combo$ = %GLOBAL%$key_combo$$new_trick$ = %GLOBAL%$trick$$index$ = %GLOBAL%$index$$special$
+	:i else 
+		:i $edit_tricks_menu_bind_trick$$new_key_combo$ = %GLOBAL%$key_combo$$new_trick$ = %GLOBAL%$cat_num$$index$ = %GLOBAL%$index$$special$$createdtrick$
+	:i endif
+	:i $special_tricks_menu_goto_trick_list$
+	:i $edit_tricks_menu_back_from_trick_list$
+:i endfunction
+:i function $edit_tricks_menu_show_on_focus$
+	:i $GetTags$
+	:i $DoMorph$$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $edit_tricks_menu_hide_on_unfocus$
+	:i $DoMorph$$alpha$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $special_tricks_menu_key_combo_up_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $special_tricks_menu_key_combo_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $special_tricks_menu_key_combo_down_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $special_tricks_menu_key_combo_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_up_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $edit_tricks_menu_down_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $edit_tricks_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $edit_tricks_menu_assign_current_menu_alias$
+	:i if NOT $GotParam$$id$
+		:i $GetTags$
+	:i endif
+	:i $AssignAlias$$id$ = %GLOBAL%$id$$alias$ = $current_menu$
+:i endfunction
+:i function $edit_tricks_menu_exit$
+	:i if $GotParam$$just_remove$
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $edit_tricks_sub_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $edit_tricks_sub_menu_anchor$
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$load_mainmenu$
+		:i $UnPauseSkaters$
+		:i $MakeSkaterGoto$$SkateshopAI$$params$ = :s{$BlendOk$:s}
+		:i $change$$cas_cam_angle$ = %i(154,0000009a)
+		:i $cas_setup_rotating_camera$$cam_anim$ = $careerCam$
+		:i $launch_ss_menu$$no_animate$
+	:i else 
+		:i $restore_start_key_binding$
+		:i if $InNetGame$
+			:i $create_pause_menu$
+		:i else 
+			:i $create_your_options_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $edit_tricks_sub_menu_exit$
+	:i if $ObjectExists$$id$ = $edit_tricks_sub_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $edit_tricks_sub_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+	:i $GoalManager_ShowPoints$
+	:i if NOT $GoalManager_HasActiveGoals$
+		:i $GoalManager_ShowGoalPoints$
+	:i endif
+	:i $create_edit_tricks_menu$
+:i endfunction
+:i $edit_tricks_menu_grab_key_combos$ = :a{
+	:i $Air_CircleD$
+	:i $Air_CircleDL$
+	:i $Air_CircleDR$
+	:i $Air_CircleL$
+	:i $Air_CircleR$
+	:i $Air_CircleU$
+	:i $Air_CircleUL$
+	:i $Air_CircleUR$
+	:i $Air_D_D_Circle$
+	:i $Air_L_L_Circle$
+	:i $Air_R_R_Circle$
+	:i $Air_U_U_Circle$
+	:i :a}
+:i $edit_tricks_menu_lip_key_combos$ = :a{
+	:i $Lip_TriangleD$
+	:i $Lip_TriangleDL$
+	:i $Lip_TriangleDR$
+	:i $Lip_TriangleL$
+	:i $Lip_TriangleR$
+	:i $Lip_TriangleU$
+	:i $Lip_TriangleUL$
+	:i $Lip_TriangleUR$
+	:i :a}
+:i $edit_tricks_menu_flip_key_combos$ = :a{
+	:i $Air_SquareD$
+	:i $Air_SquareDL$
+	:i $Air_SquareDR$
+	:i $Air_SquareL$
+	:i $Air_SquareR$
+	:i $Air_SquareU$
+	:i $Air_SquareUL$
+	:i $Air_SquareUR$
+	:i $Air_D_D_Square$
+	:i $Air_L_L_Square$
+	:i $Air_R_R_Square$
+	:i $Air_U_U_Square$
+	:i :a}
+:i $special_trick_types$ = :a{
+	:i :s{$type$ = $FlipTrick$$heading$ = %s(10,"Air Tricks"):s}
+	:i :s{$type$ = $GrabTrick$$heading$ = %s(11,"Grab Tricks"):s}
+	:i :s{$type$ = $LipMacro2$$heading$ = %s(10,"Lip Tricks"):s}
+	:i :s{$type$ = $GrindTrick$$heading$ = %s(12,"Grind Tricks"):s}
+	:i :s{$type$ = $Manual$$heading$ = %s(13,"Manual Tricks"):s}
+	:i :s{$type$ = $GrabTrick$$heading$ = %s(14,"Created Tricks")$add_cats$:s}
+	:i :a}
+:i $special_trick_air_key_combos$ = :a{
+	:i $SpAir_D_L_Circle$
+	:i $SpAir_D_R_Circle$
+	:i $SpAir_D_U_Circle$
+	:i $SpAir_L_D_Circle$
+	:i $SpAir_L_R_Circle$
+	:i $SpAir_L_U_Circle$
+	:i $SpAir_R_D_Circle$
+	:i $SpAir_R_L_Circle$
+	:i $SpAir_R_U_Circle$
+	:i $SpAir_U_D_Circle$
+	:i $SpAir_U_L_Circle$
+	:i $SpAir_U_R_Circle$
+	:i $SpAir_D_L_Square$
+	:i $SpAir_D_R_Square$
+	:i $SpAir_D_U_Square$
+	:i $SpAir_L_D_Square$
+	:i $SpAir_L_R_Square$
+	:i $SpAir_L_U_Square$
+	:i $SpAir_R_D_Square$
+	:i $SpAir_R_L_Square$
+	:i $SpAir_R_U_Square$
+	:i $SpAir_U_D_Square$
+	:i $SpAir_U_L_Square$
+	:i $SpAir_U_R_Square$
+	:i :a}
+:i $special_trick_grind_key_combos$ = :a{
+	:i $SpGrind_D_L_Triangle$
+	:i $SpGrind_D_R_Triangle$
+	:i $SpGrind_D_U_Triangle$
+	:i $SpGrind_L_D_Triangle$
+	:i $SpGrind_L_R_Triangle$
+	:i $SpGrind_L_U_Triangle$
+	:i $SpGrind_R_D_Triangle$
+	:i $SpGrind_R_L_Triangle$
+	:i $SpGrind_R_U_Triangle$
+	:i $SpGrind_U_D_Triangle$
+	:i $SpGrind_U_L_Triangle$
+	:i $SpGrind_U_R_Triangle$
+	:i :a}
+:i $special_trick_lip_key_combos$ = :a{
+	:i $SpLip_D_L_Triangle$
+	:i $SpLip_D_R_Triangle$
+	:i $SpLip_D_U_Triangle$
+	:i $SpLip_L_D_Triangle$
+	:i $SpLip_L_R_Triangle$
+	:i $SpLip_L_U_Triangle$
+	:i $SpLip_R_D_Triangle$
+	:i $SpLip_R_L_Triangle$
+	:i $SpLip_R_U_Triangle$
+	:i $SpLip_U_D_Triangle$
+	:i $SpLip_U_L_Triangle$
+	:i $SpLip_U_R_Triangle$
+	:i $SpLip_U_U_Triangle$
+	:i :a}
+:i $special_trick_manual_key_combos$ = :a{
+	:i $SpMan_D_L_Triangle$
+	:i $SpMan_D_R_Triangle$
+	:i $SpMan_D_U_Triangle$
+	:i $SpMan_L_D_Triangle$
+	:i $SpMan_L_R_Triangle$
+	:i $SpMan_L_U_Triangle$
+	:i $SpMan_R_D_Triangle$
+	:i $SpMan_R_L_Triangle$
+	:i $SpMan_R_U_Triangle$
+	:i $SpMan_U_D_Triangle$
+	:i $SpMan_U_L_Triangle$
+	:i $SpMan_U_R_Triangle$
+	:i :a}
+:i :end

@@ -1,0 +1,55 @@
+// Character-like object
+//      (This is used in UI as well)
+
+#include "Geometry.bt"
+
+typedef struct
+{
+    RelativeOffset pointer_matrix(0) <bgcolor=CL_POINTER, comment="Pointer to matrix">;
+    NamePointer object_name <bgcolor=CL_NAME, comment="Pointer to stringtable name">;
+    QBKey id <bgcolor=CL_CHECKSUM, comment="Checksum?">;
+
+    RelativeOffset pointer_geometry(0) <bgcolor=CL_POINTER, comment="Pointer to geometry block">;
+    RelativeOffset pointer_unknowns(0) <bgcolor=CL_POINTER, comment="Pointer to unknowns">;
+    RelativeOffset pointer_values(0) <bgcolor=CL_POINTER, comment="Pointer to unk values">;
+    RelativeOffset pointer_bonelist(0) <bgcolor=CL_POINTER, comment="Pointer to bone list">;
+    RelativeOffset pointer_roots(0) <bgcolor=CL_POINTER, comment="Pointer to root things">;
+
+    char null[4] <bgcolor=CL_PADDING>;
+
+    local uint old_off;
+
+    GCBObject matrix;
+
+    // Geometry block
+    old_off = FTell();
+    FSeek(AbsOffset(pointer_geometry));
+    Geometry geometry;
+    
+    // Unknowns, what are these?
+    if (AbsOffset(pointer_unknowns) > 0)
+    {
+        FSeek(AbsOffset(pointer_unknowns));
+        GCBBlock unknownBlock;
+    }
+
+    // Bones, it seems
+    if (AbsOffset(pointer_bonelist) > 0)
+    {
+        FSeek(AbsOffset(pointer_bonelist));
+        GCBBlock boneBlock;
+    }
+
+    // Some sort of root thing
+    if (AbsOffset(pointer_roots) > 0)
+    {
+        FSeek(AbsOffset(pointer_roots));
+        Count root_count;
+        GCBObject roots[root_count.count] <optimize=false>;
+    }
+} Character <read=ReadCharacter>;
+
+string ReadCharacter(Character &chr)
+{
+    return ReadNamePointer(chr.object_name);
+}

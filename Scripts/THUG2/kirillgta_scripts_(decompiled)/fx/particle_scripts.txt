@@ -1,0 +1,366 @@
+
+:i $Force_Particle_Update_Time$ = %f(1.000000)
+:i function $CreateFlexibleParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $gotparam$$params_script$
+		:i $script_assert$%s(28,"No <params_script> parameter")
+	:i endif
+	:i if NOT $GlobalExists$$name$ = %GLOBAL%$params_script$$type$ = $structure$
+		:i $FormatText$$TextName$ = $msg$%s(30,"'%s' could not be found. Typo?")$s$ = %GLOBAL%$params_script$
+		:i $script_assert$%GLOBAL%$msg$
+	:i endif
+	:i if NOT $gotparam$$objId$
+		:i $Obj_GetId$
+	:i endif
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$objId$
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i if $CutsceneDestroyListActive$
+			:i $AddToCutsceneDestroyList$:s{
+				:i $destroy_func$ = $DestroyFlexibleParticleSystem$
+				:i $name$ = %GLOBAL%$mangled_id$
+				:i $destroy_params$ = :s{$name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$:s}
+			:i :s}
+		:i endif
+		:i $alloc_flexible_particle$$params_script$ =  (%GLOBAL%$params_script$) $name$ = %GLOBAL%$mangled_id$$objId$ = %GLOBAL%$objId$$bone$ = %GLOBAL%$bone$
+	:i endif
+:i endfunction
+:i function $GetFlexibleParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $gotparam$$objId$
+		:i $Obj_GetId$
+	:i endif
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$objId$
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i return
+		$system$ = %GLOBAL%$mangled_id$
+	:i endif
+:i endfunction
+:i function $DestroyFlexibleParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $gotparam$$objId$
+		:i $Obj_GetId$
+	:i endif
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$objId$
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i if $CutsceneDestroyListActive$
+			:i $RemoveFromCutsceneDestroyList$$name$ = %GLOBAL%$mangled_id$
+		:i endif
+		:i %GLOBAL%$mangled_id$.$DestroyParticles$
+	:i endif
+:i endfunction
+:i function $alloc_flexible_particle$$groupID$ = %i(0,00000000)
+	:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$SuspendDistance$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = :a{
+				:i :s{
+					:i $Component$ = $Suspend$
+					:i $SuspendDistance$ =  (%GLOBAL%$params_script$->$SuspendDistance$) 
+				:i :s}
+				:i :s{
+					:i  (%GLOBAL%$params_script$) 
+					:i $Component$ = $lockobj$
+					:i $id$ = %GLOBAL%$objId$
+					:i $bone$ = %GLOBAL%$bone$
+				:i :s}
+				:i :s{
+					:i  (%GLOBAL%$params_script$) 
+					:i $Component$ = $FlexibleParticle$
+					:i $groupID$ = %GLOBAL%$groupID$
+				:i :s}
+				:i :a}
+			:i $Params$ = :s{
+				:i $name$ = %GLOBAL%$name$
+				:i $Params$ = :s{ (%GLOBAL%$params_script$->$Params$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$:s}
+			:i :s}
+		:i :s}
+	:i else 
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = :a{
+				:i :s{
+					:i  (%GLOBAL%$params_script$) 
+					:i $Component$ = $lockobj$
+					:i $id$ = %GLOBAL%$objId$
+					:i $bone$ = %GLOBAL%$bone$
+				:i :s}
+				:i :s{
+					:i  (%GLOBAL%$params_script$) 
+					:i $Component$ = $FlexibleParticle$
+					:i $groupID$ = %GLOBAL%$groupID$
+				:i :s}
+				:i :a}
+			:i $Params$ = :s{
+				:i $name$ = %GLOBAL%$name$
+				:i $Params$ = :s{ (%GLOBAL%$params_script$->$Params$) $name$ = %GLOBAL%$name$$objId$ = %GLOBAL%$objId$:s}
+			:i :s}
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$name$
+		:i %GLOBAL%$name$.$EmitOn$
+	:i else 
+		:i $script_assert$%s(31,"alloc_flexible_particle failed!")
+	:i endif
+:i endfunction
+:i function $CreateGlobalFlexParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $gotparam$$params_script$
+		:i $script_assert$%s(28,"No <params_script> parameter")
+	:i endif
+	:i if NOT $GlobalExists$$name$ = %GLOBAL%$params_script$$type$ = $structure$
+		:i $FormatText$$TextName$ = $msg$%s(30,"'%s' could not be found. Typo?")$s$ = %GLOBAL%$params_script$
+		:i $script_assert$%GLOBAL%$msg$
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+		:i $printf$%s(34,"CreateGlobalFlexParticleSystem: %a")$a$ = %GLOBAL%$name$
+		:i if $CutsceneDestroyListActive$
+			:i $AddToCutsceneDestroyList$:s{
+				:i $destroy_func$ = $DestroyGlobalFlexParticleSystem$
+				:i $name$ = %GLOBAL%$name$
+				:i $destroy_params$ = :s{$name$ = %GLOBAL%$name$:s}
+			:i :s}
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$SuspendDistance$
+			:i $CreateCompositeObject$:s{
+				:i $Components$ = :a{
+					:i :s{
+						:i $Component$ = $Suspend$
+						:i $SuspendDistance$ =  (%GLOBAL%$params_script$->$SuspendDistance$) 
+					:i :s}
+					:i :s{
+						:i $Component$ = $FlexibleParticle$
+						:i $groupID$ = %i(0,00000000)
+						:i  (%GLOBAL%$params_script$) 
+					:i :s}
+					:i :a}
+				:i $Params$ = :s{
+					:i $name$ = %GLOBAL%$name$
+					:i $Params$ = :s{ (%GLOBAL%$params_script$->$Params$) $name$ = %GLOBAL%$name$:s}
+				:i :s}
+			:i :s}
+		:i else 
+			:i $CreateCompositeObject$:s{
+				:i $Components$ = :a{
+					:i :s{
+						:i $Component$ = $FlexibleParticle$
+						:i $groupID$ = %i(0,00000000)
+						:i  (%GLOBAL%$params_script$) 
+					:i :s}
+					:i :a}
+				:i $Params$ = :s{
+					:i $name$ = %GLOBAL%$name$
+					:i $Params$ = :s{ (%GLOBAL%$params_script$->$Params$) $name$ = %GLOBAL%$name$:s}
+				:i :s}
+			:i :s}
+		:i endif
+		:i if $ObjectExists$$id$ = %GLOBAL%$name$
+			:i %GLOBAL%$name$.$EmitOn$
+		:i else 
+			:i $script_assert$%s(38,"CreateGlobalFlexParticleSystem failed!")
+		:i endif
+	:i endif
+:i endfunction
+:i function $DestroyGlobalFlexParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$name$
+		:i if $CutsceneDestroyListActive$
+			:i $RemoveFromCutsceneDestroyList$$name$ = %GLOBAL%$name$
+		:i endif
+		:i %GLOBAL%$name$.$DestroyParticles$
+	:i endif
+:i endfunction
+:i function $CreateFastParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if NOT $gotparam$$params_script$
+		:i $script_assert$%s(28,"No <params_script> parameter")
+	:i endif
+	:i if $gotparam$$attachObjId$
+		:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$attachObjId$
+	:i else 
+		:i %GLOBAL%$mangled_id$ = %GLOBAL%$name$
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i if $CutsceneDestroyListActive$
+			:i $AddToCutsceneDestroyList$:s{
+				:i $destroy_func$ = $DestroyFastParticleSystem$
+				:i $name$ = %GLOBAL%$mangled_id$
+				:i $destroy_params$ = :s{$name$ = %GLOBAL%$name$$attachObjId$ = %GLOBAL%$attachObjId$:s}
+			:i :s}
+		:i endif
+		:i $alloc_fast_particle$:s{$params_script$ =  (%GLOBAL%$params_script$) $name$ = %GLOBAL%$mangled_id$$attachObjId$ = %GLOBAL%$attachObjId$
+			:i $emit_script$ = %GLOBAL%$emit_script$$emit_params$ = %GLOBAL%$emit_params$:s}
+	:i endif
+:i endfunction
+:i function $DestroyFastParticleSystem$
+	:i if NOT $gotparam$$name$
+		:i $script_assert$%s(19,"No <name> parameter")
+	:i endif
+	:i if $gotparam$$attachObjId$
+		:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$attachObjId$
+	:i else 
+		:i %GLOBAL%$mangled_id$ = %GLOBAL%$name$
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i if $CutsceneDestroyListActive$
+			:i $RemoveFromCutsceneDestroyList$$name$ = %GLOBAL%$mangled_id$
+		:i endif
+		:i %GLOBAL%$mangled_id$.$Die$
+	:i endif
+:i endfunction
+:i function $EmitFastParticles$
+	:i if $gotparam$$wait_frames$
+		:i $wait$%GLOBAL%$wait_frames$$frames$
+	:i else 
+		:i $wait$%GLOBAL%$wait_seconds$$seconds$
+	:i endif
+	:i $SetEmitRate$%i(0,00000000)
+	:i while
+		
+		:i if NOT $IsEmitting$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$frame$
+	:i loop_to 
+	:i $Die$
+:i endfunction
+:i function $alloc_fast_particle$$groupID$ = %i(0,00000000)
+	:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$EmitDelay$
+		:i $wait$ (%GLOBAL%$params_script$->$EmitDelay$) $seconds$
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$name$
+		:i if $gotparam$$attachObjId$
+			:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$SuspendDistance$
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = :a{
+						:i :s{
+							:i $Component$ = $Suspend$
+							:i $SuspendDistance$ =  (%GLOBAL%$params_script$->$SuspendDistance$) 
+						:i :s}
+						:i :s{
+							:i $Component$ = $lockobj$
+							:i $id$ = %GLOBAL%$attachObjId$
+							:i  (%GLOBAL%$params_script$) 
+							:i $bone$ = %GLOBAL%$bone$
+						:i :s}
+						:i :s{
+							:i $Component$ = $Particle$
+							:i $name$ = %GLOBAL%$name$
+							:i $groupID$ = %GLOBAL%$groupID$
+							:i  (%GLOBAL%$params_script$) 
+							:i $SystemLifetime$ = %GLOBAL%$SystemLifetime$
+						:i :s}
+						:i :a}
+					:i $Params$ = :s{
+						:i $name$ = %GLOBAL%$name$
+						:i $LocalSpace$
+					:i :s}
+				:i :s}
+			:i else 
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = :a{
+						:i :s{
+							:i $Component$ = $lockobj$
+							:i $id$ = %GLOBAL%$attachObjId$
+							:i  (%GLOBAL%$params_script$) 
+							:i $bone$ = %GLOBAL%$bone$
+						:i :s}
+						:i :s{
+							:i $Component$ = $Particle$
+							:i $name$ = %GLOBAL%$name$
+							:i $groupID$ = %GLOBAL%$groupID$
+							:i  (%GLOBAL%$params_script$) 
+							:i $SystemLifetime$ = %GLOBAL%$SystemLifetime$
+						:i :s}
+						:i :a}
+					:i $Params$ = :s{
+						:i $name$ = %GLOBAL%$name$
+						:i $LocalSpace$
+					:i :s}
+				:i :s}
+			:i endif
+		:i else 
+			:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$SuspendDistance$
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = :a{
+						:i :s{
+							:i $Component$ = $Suspend$
+							:i $SuspendDistance$ =  (%GLOBAL%$params_script$->$SuspendDistance$) 
+						:i :s}
+						:i :s{
+							:i $Component$ = $Particle$
+							:i $name$ = %GLOBAL%$name$
+							:i $groupID$ = %GLOBAL%$groupID$
+							:i  (%GLOBAL%$params_script$) 
+						:i :s}
+						:i :a}
+					:i $Params$ = :s{
+						:i $name$ = %GLOBAL%$name$
+					:i :s}
+				:i :s}
+			:i else 
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = :a{
+						:i :s{
+							:i $Component$ = $Particle$
+							:i $name$ = %GLOBAL%$name$
+							:i $groupID$ = %GLOBAL%$groupID$
+							:i  (%GLOBAL%$params_script$) 
+						:i :s}
+						:i :a}
+					:i $Params$ = :s{
+						:i $name$ = %GLOBAL%$name$
+					:i :s}
+				:i :s}
+			:i endif
+			:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$LocalSpace$
+				:i if NOT $StructureContains$$structure$ = %GLOBAL%$params_script$$pos$
+					:i $printstruct$%GLOBAL%$params_script$
+					:i $script_assert$%s(72,"No <pos> parameter...  system should not have been defined in LocalSpace")
+				:i endif
+				:i if $ObjectExists$$id$ = %GLOBAL%$name$
+					:i %GLOBAL%$name$.$SetStartPos$ ( (%GLOBAL%$params_script$) ->$pos$) 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = %GLOBAL%$name$
+		:i if $StructureContains$$structure$ = %GLOBAL%$params_script$$EmitDuration$
+			:i %GLOBAL%$name$.$Obj_SpawnScript$$EmitFastParticles$$Params$ = :s{$wait_seconds$ =  ( (%GLOBAL%$params_script$) ->$EmitDuration$) :s}
+		:i endif
+		:i if $gotparam$$emit_script$
+			:i %GLOBAL%$name$.$Obj_SpawnScript$%GLOBAL%$emit_script$$Params$ = %GLOBAL%$emit_params$
+		:i endif
+	:i endif
+:i endfunction
+:i function $JOW_RGBAToVector$$rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i return
+	$rgb$ =  (%GLOBAL%$rgba$:a{%i(0,00000000):a} * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$rgba$:a{%i(1,00000001):a} * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$rgba$:a{%i(2,00000002):a} * %vec3(0.000000,0.000000,1.000000)) $a$ =  (%GLOBAL%$rgba$:a{%i(3,00000003):a}) 
+:i endfunction
+:i function $JOW_VectorToRGBA$$rgb$ = %vec3(0.000000,0.000000,0.000000)$a$ = %i(0,00000000)
+	:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i $val$ =  (%GLOBAL%$rgb$->%vec3(1.000000,0.000000,0.000000)) 
+	:i $CastToInteger$$val$
+	:i $SetArrayElement$$arrayName$ = $rgba$$index$ = %i(0,00000000)$newValue$ = %GLOBAL%$val$
+	:i $val$ =  (%GLOBAL%$rgb$->%vec3(0.000000,1.000000,0.000000)) 
+	:i $CastToInteger$$val$
+	:i $SetArrayElement$$arrayName$ = $rgba$$index$ = %i(1,00000001)$newValue$ = %GLOBAL%$val$
+	:i $val$ =  (%GLOBAL%$rgb$->%vec3(0.000000,0.000000,1.000000)) 
+	:i $CastToInteger$$val$
+	:i $SetArrayElement$$arrayName$ = $rgba$$index$ = %i(2,00000002)$newValue$ = %GLOBAL%$val$
+	:i $CastToInteger$$a$
+	:i $SetArrayElement$$arrayName$ = $rgba$$index$ = %i(3,00000003)$newValue$ = %GLOBAL%$a$
+	:i return
+	$rgba$ = %GLOBAL%$rgba$
+:i endfunction
+:i :end

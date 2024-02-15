@@ -1,0 +1,38 @@
+// ----------------------------------------
+// A section in the Havok pak file
+// ----------------------------------------
+
+typedef struct
+{
+    hkPackfileSectionHeader header;
+
+    local uint old_pos = FTell();
+
+    // local uint absStart_classnames = 0;
+    // local uint absStart_types = 0;
+    // local uint absStart_data = 0;
+
+    switch (header.m_sectionTag)
+    {
+        case "__classnames__":
+            absStart_classnames = header.m_absoluteDataStart.value;
+            FSeek(header.m_absoluteDataStart.value);
+            HavokClassNames data;
+        break;
+
+        case "__types__":
+            absStart_types = header.m_absoluteDataStart.value;
+        break;
+
+        case "__data__":
+            absStart_data = header.m_absoluteDataStart.value;
+            HavokPackData data;
+        break;
+
+        default:
+            Printf("Unknown Havok section %d\n", header.m_sectionTag);
+        break;
+    }
+
+    FSeek(old_pos);
+} HavokSection <read=Str("%s", header.m_sectionTag)>;

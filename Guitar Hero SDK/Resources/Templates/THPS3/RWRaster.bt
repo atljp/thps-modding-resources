@@ -1,0 +1,54 @@
+//------------------------------------------------
+// Raster image.
+//------------------------------------------------
+
+#define CL_RASTERVALUE                  0xAAFFCC
+
+enum <ubyte> RasterFilterMode
+{
+    FILTER_NONE = 0x00,
+    FILTER_NEAREST = 0x01,
+    FILTER_LINEAR = 0x02,
+    FILTER_MIP_NEAREST = 0x03,
+    FILTER_MIP_LINEAR = 0x04,
+    FILTER_LINEAR_MIP_NEAREST = 0x05,
+    FILTER_LINEAR_MIP_LINEAR = 0x06
+};
+
+typedef struct
+{
+    ubyte value;
+} RasterUVAddressing <read=Str("%d, %d", (value >> 4) & 0x0F, (value & 0x0F))>;
+
+typedef struct
+{
+    int platform_id <bgcolor=CL_RASTERVALUE>;
+    RasterFilterMode filterMode <bgcolor=CL_RASTERVALUE>;
+    RasterUVAddressing addressing <bgcolor=CL_RASTERVALUE>;
+    ushort padding <hidden=true, bgcolor=CL_RASTERVALUE>;
+    char name[128] <bgcolor=CL_RASTERVALUE>;
+    char maskName[128] <bgcolor=CL_RASTERVALUE>;
+} TextureFormat;
+
+typedef struct
+{
+    uint rasterFormat <bgcolor=CL_RASTERVALUE>;
+    uint hasAlphaMaybe <bgcolor=CL_RASTERVALUE>;
+    ushort width;
+    ushort height;
+    ubyte depth;
+    ubyte numLevels;
+    ubyte rasterType;
+    ubyte compression;
+} RasterFormat;
+
+typedef struct
+{
+    TextureFormat fmt;
+    RasterFormat raster;
+    
+    uint dataSize;
+    
+    if (dataSize)
+        ubyte data[dataSize];
+} RWRaster <read=Str("%s (%dx%d), %dBPP, %d mips, DXT%d", fmt.name, raster.width, raster.height, raster.depth, raster.numLevels, raster.compression)>;

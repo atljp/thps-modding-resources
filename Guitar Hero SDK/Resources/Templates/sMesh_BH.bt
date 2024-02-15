@@ -1,0 +1,87 @@
+// Actual object / mesh
+// (BAND HERO)
+
+typedef struct (int scene_start)
+{
+    Sphere bounding_sphere <bgcolor=CL_MESHFLOATS>;
+
+    RelativeOffset uv_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    byte ff_a[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    int uv_length <bgcolor=CL_MESHVALUE, comment="Length of pure vert UV's">;\
+
+    int zero <bgcolor=CL_MESHPADDING>;
+    uint mesh_flags <bgcolor=CL_MESHVALUE>;
+    int unkValueA <bgcolor=CL_MESHVALUE>;
+
+    byte unks[3] <bgcolor=CL_MESHVALUE>;
+    ubyte uv_stride <bgcolor=CL_MESHVALUE>;
+
+    RelativeOffset face_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    byte ff_b[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    uint face_block_length <bgcolor=CL_MESHVALUE>;
+
+    uint zero_c <bgcolor=CL_MESHPADDING>;
+
+    uint always_258 <bgcolor=CL_MESHVALUE>;
+    uint unkValueB <bgcolor=CL_MESHVALUE>;
+
+    uint zero_d <bgcolor=CL_MESHPADDING>;
+
+    QBKey material <bgcolor=CL_MESHCHECKSUM>;
+
+    byte skip_me_c[12] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    ushort face_count <bgcolor=CL_MESHVALUE>;
+    ushort vertex_count <bgcolor=CL_MESHVALUE>;
+
+    uint zero_e <bgcolor=CL_MESHPADDING>;
+
+    ubyte single_bone <bgcolor=CL_MESHVALUE, comment="Entire mesh weighted to this">;
+    ubyte unkValueC[3] <bgcolor=CL_MESHVALUE>;
+
+    uint unkFlags <bgcolor=CL_MESHVALUE>;
+
+    if (SkinFilePlatform == SKIN_PLAT_PS3)
+    {
+        RelativeOffset vert_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+        uint zero_f <bgcolor=CL_MESHPADDING>;
+    }
+    else
+    {
+        uint zero_f <bgcolor=CL_MESHPADDING>;
+        RelativeOffset vert_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+    }
+
+    uint zero_g <bgcolor=CL_MESHPADDING>;
+    uint face_num <bgcolor=CL_MESHVALUE, comment="Face type? usually 4">;
+    uint zero_h <bgcolor=CL_MESHPADDING>;
+    uint zero_i <bgcolor=CL_MESHPADDING>;
+
+    byte ff_c[4] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    uint zero_j <bgcolor=CL_MESHPADDING>;
+
+    // Read geometry data
+    local int old_off = FTell();
+
+    // UV's
+    if (uv_start.offset > 0)
+    {
+        FSeek(AbsOffset(uv_start));
+        UVBlock uvs(vertex_count, uv_stride, 0);
+    }
+
+    // Faces
+    if (face_start.offset > 0)
+    {
+        FSeek(AbsOffset(face_start));
+        FaceBlock faces(face_count);
+    }
+
+    // Return
+    FSeek(old_off);
+} sMesh_BH;

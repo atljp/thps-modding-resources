@@ -1,0 +1,67 @@
+// Block of UV data
+
+#define CL_UVFLOATS 0xffaaff
+#define CL_UVPADDING 0xcc88cc
+#define CL_UVCOLOR 0xee99ee
+
+typedef struct
+{
+    byte a <bgcolor=CL_UVCOLOR>;
+    byte r <bgcolor=CL_UVCOLOR>;
+    byte g <bgcolor=CL_UVCOLOR>;
+    byte b <bgcolor=CL_UVCOLOR>;
+} UVVertexColor;
+
+int PeekUVColor()
+{
+    local int tell = FTell();
+    local int a = ReadUByte(tell);
+    local int r = ReadUByte(tell+1);
+    local int g = ReadUByte(tell+2);
+    local int b = ReadUByte(tell+3);
+
+    g = g << 8;
+    b = b << 16;
+
+    return r + g + b;
+}
+
+typedef struct (int vertCount, int uvStride, int meshFlags)
+{
+    if (SkinFileVersion == SKIN_VERSION_GHWOR)
+        uint values[8] <bgcolor=CL_UVPADDING>;
+    else
+        ubyte skip_me[32] <hidden=true, bgcolor=CL_UVPADDING>;
+
+    local int vert_start = FTell();
+
+    local int use_colors = 0;
+
+    if (meshFlags & MESHFLAG_HASVERTEXCOLORS)
+        use_colors = 1;
+
+    local int real_uv_stride = use_colors ? (uvStride - 4) : uvStride;
+    local int value_count = Floor(real_uv_stride / 4);
+    local int v, vc;
+
+    for (v=0; v<vertCount; v++)
+    {
+        if (use_colors)
+        {
+            SetForeColor( PeekUVColor() );
+            UVVertexColor color;
+            SetForeColor( cNone );
+        }
+
+        for (vc=0; vc<value_count; vc++)
+            float values <bgcolor=CL_UVFLOATS>;
+    }
+
+    local int vert_block_size = FTell() - vert_start;
+} UVBlock <read=ReadUVBlock>;
+
+string ReadUVBlock(UVBlock &uvs)
+{
+    local string s;
+    return SPrintf(s, "%d vertex bytes", uvs.vert_block_size);
+}

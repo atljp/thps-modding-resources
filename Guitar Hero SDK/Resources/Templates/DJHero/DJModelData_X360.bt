@@ -1,0 +1,128 @@
+//------------------------------------------------
+// X360 platform model data
+//------------------------------------------------
+
+//-----------------------------
+// Texture atlas
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = FTell() + 276;
+
+    TermString atlas_name;
+
+    ubyte odd_id <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte odd_bytes[(odd_id == 0x80) ? 5 : 4] <bgcolor=CL_CHECKSUM>;
+
+    TermString atlas_image;
+
+    ubyte unknown[ender - FTell()] <bgcolor=CL_PARSED>;
+
+    FSeek(ender);
+} DJTextureAtlas <read=ReadDJTextureAtlas>;
+
+string ReadDJTextureAtlas(DJTextureAtlas &atlas)
+{
+    string s;
+    return SPrintf(s, "%s: %s", atlas.atlas_name.charlist, atlas.atlas_image.charlist);
+}
+
+//-----------------------------
+// Material atlas
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = FTell() + 312;
+
+    TermString atlas_name;
+
+    ubyte type_maybe <bgcolor=CL_SINGLEVALUE>;
+    ubyte type_2 <bgcolor=CL_SINGLEVALUE>;
+
+    TermString material_name;
+
+    ubyte unknown[ender - FTell()] <bgcolor=CL_PARSED>;
+
+    FSeek(ender);
+} DJMaterialAtlas <read=ReadDJMaterialAtlas>;
+
+string ReadDJMaterialAtlas(DJMaterialAtlas &atlas)
+{
+    string s;
+    return SPrintf(s, "%s: %s", atlas.atlas_name.charlist, atlas.material_name.charlist);
+}
+
+//-----------------------------
+// Bone of some sort
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = starter + 176;
+   
+    Matrix_4x4 matrix_a <bgcolor=CL_BONEMATRIX>;
+    Matrix_4x4 matrix_b <bgcolor=CL_BONEMATRIX>;
+
+    char bone_name[32] <bgcolor=CL_BONENAME>;
+
+    int parent_index <bgcolor=CL_BONEVALUE>;
+
+    ubyte skip_me[12] <bgcolor=CL_PADDING>;;
+
+    FSeek(ender);
+} DJModelBone_X360 <read=Str("%s -> %d", bone_name, parent_index)>;
+
+typedef struct (uint bone_count)
+{
+    DJModelBone_X360 bones[bone_count] <optimize=false>;
+} DJModelBoneChunk_X360;
+
+//-----------------------------
+// Main data
+//-----------------------------
+
+typedef struct
+{
+    uint unkInt <bgcolor=CL_SINGLEVALUE>;
+    uint unkInt2 <bgcolor=CL_SINGLEVALUE>;
+    uint unkInt3 <bgcolor=CL_SINGLEVALUE>;
+    uint boneCount <bgcolor=CL_SINGLEVALUE>;
+    uint faceBytes <bgcolor=CL_SINGLEVALUE>;
+    uint vertexBytes <bgcolor=CL_SINGLEVALUE>;
+    uint matAtlasCount <bgcolor=CL_SINGLEVALUE>;
+    uint texAtlasCount <bgcolor=CL_SINGLEVALUE>;
+    Vec3 bb_min <bgcolor=CL_FLOATS>;
+    float bb_min_float <bgcolor=CL_FLOATS>;
+    Vec3 bb_max <bgcolor=CL_FLOATS>;
+    float bb_max_float <bgcolor=CL_FLOATS, comment="Flipped endian?">;
+    
+    // Unk values
+    uint unk_values[10] <bgcolor=CL_PARSED>;
+
+    DJTextureAtlas texAtlases[texAtlasCount] <optimize=false>;
+    DJMaterialAtlas matAtlases[matAtlasCount] <optimize=false>;
+
+    uint meshCount <bgcolor=CL_SINGLEVALUE>;
+
+    // We can roughly guess the location of our blobs
+    // (Each mesh is 28 bytes)
+    // (Each bone chunk is 176 bytes)
+
+    local uint FaceBlobPos = FTell() + (28 * meshCount) + (176 * boneCount);
+    local uint VertBlobPos = FaceBlobPos + faceBytes;
+
+    local uint i;
+
+    for (i=0; i<meshCount; i++)
+        DJMesh meshes(FaceBlobPos, VertBlobPos);
+
+    DJModelBoneChunk_X360 bone_chunk(boneCount);
+
+    FSeek(VertBlobPos + vertexBytes);
+} DJModelData_XBox;

@@ -1,0 +1,88 @@
+//------------------------------------------------
+// GH3 PS2 .tex file
+//------------------------------------------------
+
+#include "Common.bt"
+
+LittleEndian();
+
+typedef struct
+{
+    QBKey checksum_maybe <bgcolor=CL_CHECKSUM>;
+    QBKey seems_constant <bgcolor=CL_CHECKSUM>;
+    uint image_type_maybe <bgcolor=CL_SINGLEVALUE>;
+    ushort always_one <bgcolor=CL_SINGLEVALUE>;
+    ushort size_related <bgcolor=CL_SINGLEVALUE>;
+    uint values[6];
+    RelativeOffset odd_off(0) <bgcolor=CL_POINTER>;
+    uint image_data_size <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset off_ish(0) <bgcolor=CL_POINTER>;
+    ushort not_palette_size <bgcolor=CL_SINGLEVALUE>;
+    ushort maybe_height <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset some_off(0) <bgcolor=CL_POINTER>;
+    ushort usually_zero;
+    ushort bits_in_palette <bgcolor=CL_SINGLEVALUE, comment="Total bits in palette">;
+} PS2TextureHeader <read=ReadPS2TextureHeader>;
+
+string ReadPS2TextureHeader(PS2TextureHeader &header)
+{
+    local string s;
+
+    return SPrintf(s, "Type %d, %d pal bits, %d img bytes", header.image_type_maybe, header.bits_in_palette, header.image_data_size);
+}
+
+typedef struct
+{
+    uint unk <bgcolor=0xAAFFAA>;
+    uint values[31] <bgcolor=0x99AA99>;
+} PS2TextureMeta;
+
+typedef struct (uint palette_size)
+{
+    ubyte bytes[palette_size] <bgcolor=0x888888>;
+} PS2Palette;
+
+typedef struct (PS2TextureHeader &header)
+{
+    if (header.image_type_maybe == 0 || header.image_type_maybe == 5)
+        PS2Palette palette(1024);
+    else
+        PS2Palette palette(512);
+
+    ubyte image_data[header.image_data_size] <bgcolor=0xaaaaaa>;
+} PS2ImageBlock;
+
+typedef struct
+{
+    ushort version_maybe <bgcolor=CL_SINGLEVALUE>;
+    ushort unk <bgcolor=CL_SINGLEVALUE>;
+    uint texture_count <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset off_meta_maybe(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_image_data(0) <bgcolor=CL_POINTER>;
+    uint unk <bgcolor=CL_PARSED>;
+    float unk_float <bgcolor=CL_SINGLEVALUE>;
+    QBKey checksum_maybe <bgcolor=CL_CHECKSUM>;
+    uint skip_me[9] <bgcolor=CL_PADDING, hidden=true>;
+    QBKey odd_checksum <bgcolor=CL_CHECKSUM>;
+    uint skip_me_b[2] <bgcolor=CL_PADDING, hidden=true>;
+    uint texture_count_b <bgcolor=CL_SINGLEVALUE>;
+    uint skip_me_c[2] <bgcolor=CL_PADDING, hidden=true>;
+    uint unk_val <bgcolor=CL_SINGLEVALUE>;
+    uint skip_me_d <bgcolor=CL_PADDING, hidden=true>;
+    PS2TextureHeader tex_headers[texture_count] <bgcolor=0x8888FF, optimize=false>;
+
+    // Mipmaps + 1 ?
+    PS2TextureMeta metas[texture_count * 2];
+      
+    FSeek(AbsOffset(off_image_data));
+
+    local int i;
+
+    for (i=0; i<texture_count; i++)
+    {
+        PS2ImageBlock image_block(tex_headers[i]);
+    }
+
+} PS2TexFile;
+
+PS2TexFile tex;

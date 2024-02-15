@@ -1,0 +1,43 @@
+//------------------------------------------------
+// THPG sMesh
+//------------------------------------------------
+
+#include "../GH3/MeshHeader.bt"
+#include "../GH3/UVBlock.bt"
+#include "../GH3/FaceBlock.bt"
+#include "VertexBlock.bt"
+
+typedef struct (int scene_start)
+{
+    GH3MeshHeader header(scene_start);
+    
+    // Read geometry data
+    local int old_off = FTell();
+
+    // UV's
+    FSeek(AbsOffset(header.uv_start));
+        GH3UVBlock uvs(header.vertex_count, header.uv_stride, 0);
+
+    // Vertices (SubMesh Cafe)
+    // Unweighted meshes have values in the UV block
+ 
+    if (header.vert_start.offset >= 0)
+    {
+        FSeek(AbsOffset(header.vert_start));
+            THPGVertexBlock vertices(header.vertex_count, 0);
+    }
+
+    // Faces
+    FSeek(AbsOffset(header.face_start));
+        GH3FaceBlock faces(header.face_short_count, 0);
+
+    // Return
+    FSeek(old_off);
+} THPGMesh <read=ReadTHPGMesh>;
+
+string ReadTHPGMesh(THPGMesh &themesh)
+{
+    local string s;
+
+    return SPrintf(s, "Mat: %s, %d verts, %d face indices", ReadQBKey(themesh.header.material), themesh.header.vertex_count, themesh.header.face_short_count);
+};

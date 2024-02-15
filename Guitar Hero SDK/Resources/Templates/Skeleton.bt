@@ -1,0 +1,84 @@
+//------------------------------------------------
+// GHWT .ske file
+//------------------------------------------------
+
+#include "Common.bt"
+
+#define CL_BONEVEC          0x66FFFF
+#define CL_BONEFLIP         0xFFAAFF
+#define CL_BONEQUAT         0xFFFFAA
+#define CL_BONEMATRIX       0xAAFFAA
+
+// INVERTED POSE LOCAL MATRIX
+typedef struct
+{
+    Vec4 x;
+    Vec4 y;
+    Vec4 z;
+    Vec4 w;
+} BoneMatrix;
+
+typedef struct(uint boneIndex, uint oNames, uint oParents, uint oFlips, uint oFlipIndexes, uint oTypes, uint oMat, uint oVec, uint oQuat)
+{
+    FSeek(oNames + (4 * boneIndex));
+    QBKey bone_name <bgcolor=CL_CHECKSUM>;
+
+    FSeek(oParents + (4 * boneIndex));
+    QBKey bone_parent <bgcolor=CL_CHECKSUM>;
+
+    FSeek(oFlips + (4 * boneIndex));
+    QBKey bone_mirror <bgcolor=CL_BONEFLIP>;
+
+    FSeek(oTypes + boneIndex);
+    ubyte bone_type <bgcolor=CL_SINGLEVALUE>;
+
+    FSeek(oFlipIndexes + (4 * boneIndex));
+    int bone_mirror_index <bgcolor=CL_SINGLEVALUE>;
+
+    FSeek(oVec + (sizeof(Vec4) * boneIndex));
+    Vec4 bone_vector <bgcolor=CL_BONEVEC>;
+
+    FSeek(oQuat + (sizeof(Vec4) * boneIndex));
+    Vec4 bone_quat <bgcolor=CL_BONEQUAT, comment="XYZW">;
+
+    FSeek(oMat + (sizeof(BoneMatrix) * boneIndex));
+    BoneMatrix bone_matrix <bgcolor=CL_BONEMATRIX, comment="Local matrix">;
+
+    // Simulate length of 4
+    FSeek(oNames + (4 * (boneIndex+1)));
+} SkeletonBone <read=ReadSkeletonBone>;
+
+string ReadSkeletonBone(SkeletonBone &bone)
+{
+    local string s;
+
+    return SPrintf(s, "%s - Parent: %s, Mirror: %s", ReadQBKey(bone.bone_name), ReadQBKey(bone.bone_parent), ReadQBKey(bone.bone_mirror));
+}
+
+typedef struct
+{
+    ushort const_a <bgcolor=CL_SINGLEVALUE>;
+    ushort const_b <bgcolor=CL_SINGLEVALUE>;
+    uint bone_count <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte pad[8] <bgcolor=CL_PADDING, hidden=true>;
+
+    RelativeOffset off_boneNames(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_boneParents(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_boneFlips(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_boneFlipIndexes(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_boneTypes(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_matrices(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_vectors(0) <bgcolor=CL_POINTER>;
+    RelativeOffset off_quaternions(0) <bgcolor=CL_POINTER>;
+
+    ubyte pad_b[80] <bgcolor=CL_PADDING, hidden=true>;
+
+    local uint i;
+
+    for (i=0; i<(bone_count & 0xFF); i++)
+        SkeletonBone bone(i, AbsOffset(off_boneNames), AbsOffset(off_boneParents), AbsOffset(off_boneFlips), AbsOffset(off_boneFlipIndexes),
+            AbsOffset(off_boneTypes), AbsOffset(off_matrices), AbsOffset(off_vectors), AbsOffset(off_quaternions));
+} SkeletonFile;
+
+SkeletonFile file;

@@ -1,0 +1,145 @@
+
+:i $ANY_LEVEL_LOADED_YET$ = %i(0,00000000)
+:i $loadscreen_last_game_mode$ = $career$
+:i $parked_loading_screen_in_use$ = %i(0,00000000)
+:i $SHOWSTARTUPMESSAGE$ = %i(0,00000000)
+:i function $startup_loading_screen$
+:i endfunction
+:i function $parked_loading_screen_show$
+:i endfunction
+:i function $parked_loading_screen_clear$
+	:i $Change$$parked_loading_screen_in_use$ = %i(0,00000000)
+:i endfunction
+:i function $loadingscreen_container_destroy$
+	:i $DestroyScreenElement$$id$ = $loadscreen_container$
+:i endfunction
+:i function $loadingscreen_container_hide$
+	:i $DoScreenElementMorph$$id$ = $loadscreen_container$$alpha$ = %f(0.000000)$time$ = %f(0.500000)
+:i endfunction
+:i function $SkProDisplayLoadingScreen$
+	:i $DisplayLoadingScreen$ isNull 
+:i endfunction
+:i function $load_level_handle_loading_screen$
+	:i if  ($ANY_LEVEL_LOADED_YET$ = %i(0,00000000)) 
+		:i $THUGPRO_ToggeScreenElementScaling$$on$
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $loadscreen_container$
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $dims$ = %vec2(640.000000,480.000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $fade_in_box$
+			:i $texture$ = $black$
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $scale$ = %vec2(300.000000,200.000000)
+			:i $z_priority$ = %i(2100,00000834)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $no_zwrite$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $wheel_loading$
+			:i $texture$ = $thugpro_icon_text$
+			:i $pos$ = %vec2(320.000000,340.000000)
+			:i $scale$ = %f(0.300000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $z_priority$ = %i(2404,00000964)
+			:i $rgba$ = :a{%i(123,0000007b)%i(123,0000007b)%i(123,0000007b)%i(0,00000000):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $wheel_bolt$
+			:i $texture$ = $thugpro_icon_wheel_bolt$
+			:i $pos$ = %vec2(320.000000,340.000000)
+			:i $scale$ = %f(0.390000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $z_priority$ = %i(2402,00000962)
+			:i $rgba$ = :a{%i(123,0000007b)%i(123,0000007b)%i(123,0000007b)%i(120,00000078):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $star_loading$
+			:i $texture$ = $thugpro_icon_wheel_new$
+			:i $pos$ = %vec2(320.000000,340.000000)
+			:i $scale$ = %f(0.400000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $z_priority$ = %i(2400,00000960)
+			:i $rgba$ = :a{%i(123,0000007b)%i(123,0000007b)%i(123,0000007b)%i(120,00000078):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $wheel_shadow$
+			:i $texture$ = $thugpro_icon_wheel_shadow$
+			:i $pos$ = %vec2(320.000000,340.000000)
+			:i $scale$ = %f(1.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $z_priority$ = %i(2300,000008fc)
+			:i $rgba$ = :a{%i(123,0000007b)%i(123,0000007b)%i(123,0000007b)%i(120,00000078):a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $logo_tp_$
+			:i $texture$ = $thugpro_logo_new$
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %f(0.400000)
+			:i $pos$ = %vec2(320.000000,210.000000)
+			:i $z_priority$ = %i(2402,00000962)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $Type$ = $SpriteElement$
+			:i $parent$ = $loadscreen_container$
+			:i $id$ = $splashimage$
+			:i $scale$ = %f(1.000000)
+			:i $texture$ =  ( ($splash_images_sprites$) :a{ ($GLOBAL_SPLASH_RAND$) :a}) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $z_priority$ = %i(2000,000007d0)
+		:i :s}
+		:i $DoScreenElementMorph$$id$ = $fade_in_box$$time$ = %f(0.300000)$alpha$ = %i(0,00000000)
+		:i $RunScriptOnScreenElement$$id$ = $star_loading$$spin_dialog_icon$
+		:i $Change$$ANY_LEVEL_LOADED_YET$ = %i(1,00000001)
+	:i endif
+	:i $GetGameMode$
+	:i if $EnteringNetGame$
+		:i %GLOBAL%$GameMode$ = $net$
+	:i endif
+	:i $Change$$loadscreen_last_game_mode$ = %GLOBAL%$GameMode$
+:i endfunction
+:i $GLOBAL_SPLASH_RAND$ = %i(0,00000000)
+:i function $SHUFFLE_SPLASH_IMAGES$
+	:i $GetArraySize$ ($splash_images$) 
+	:i $GetRandomValue$$name$ = $splash_rand$$a$ = %i(0,00000000)$b$ =  ( (%GLOBAL%$array_size$) %i(4294967295,ffffffff)) $integer$
+	:i $Change$$GLOBAL_SPLASH_RAND$ = %GLOBAL%$splash_rand$
+:i endfunction
+:i $splash_images_sprites$ = :a{
+	:i $SplashImage_A$
+	:i $SplashImage_B$
+	:i $SplashImage_C$
+	:i $SplashImage_D$
+	:i $SplashImage_E$
+	:i $SplashImage_F$
+	:i $SplashImage_G$
+	:i $SplashImage_H$
+	:i :a}
+:i $splash_images$ = :a{
+	:i %s(21,"thugpro/SplashImage_A")
+	:i %s(21,"thugpro/SplashImage_B")
+	:i %s(21,"thugpro/SplashImage_C")
+	:i %s(21,"thugpro/SplashImage_D")
+	:i %s(21,"thugpro/SplashImage_E")
+	:i %s(21,"thugpro/SplashImage_F")
+	:i %s(21,"thugpro/SplashImage_G")
+	:i %s(21,"thugpro/SplashImage_H")
+	:i :a}
+:i function $Bootstrap_displayscreen$
+:i endfunction
+:i :end

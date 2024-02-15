@@ -1,0 +1,100 @@
+function $PulseBloom$
+	:i $KillSpawnedScript$$Id$ = $PulseBloom_ScriptId$
+	:i $KillSpawnedScript$$Id$ = $EndBloom_ScriptId$
+	:i $SpawnScript$$PulseBloom_Spawned$$Id$ = $PulseBloom_ScriptId$$Params$ =  isNull 
+:i endfunction
+:i function $EndBloom$
+	:i $KillSpawnedScript$$Id$ = $PulseBloom_ScriptId$
+	:i $KillSpawnedScript$$Id$ = $EndBloom_ScriptId$
+	:i $SpawnScript$$EndBloom_Spawned$$Id$ = $EndBloom_ScriptId$$Params$ =  isNull 
+:i endfunction
+:i function $PulseBloom_Spawned$:s{$initial_bloom_color$ = %i(50,00000032)
+		:i $final_bloom_color$ = %i(80,00000050)
+		:i $initial_strength$ = %i(180,000000b4)
+		:i $final_strength$ = %i(150,00000096)
+		:i $strength_increment$ = %i(1,00000001)
+	:i :s}
+	:i $strength$ = %GLOBAL%$initial_strength$
+	:i $strength_array$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i $bloom$ = %GLOBAL%$initial_bloom_color$
+	:i $bloom_color_array$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i while
+		
+		:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$bloom$
+		:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$bloom$
+		:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$bloom$
+		:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$strength$
+		:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$strength$
+		:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$strength$
+		:i $TODManager_SetTempBloomParams$:s{
+			:i $On$ = %i(1,00000001)
+			:i $bloom1$ = %i(30,0000001e)
+			:i $bloom2$ = %i(80,00000050)
+			:i $Color$ = %GLOBAL%$bloom_color_array$
+			:i $strength$ = %GLOBAL%$strength_array$
+		:i :s}
+		:i $strength$ =  (%GLOBAL%$strength$ - %GLOBAL%$strength_increment$) 
+		:i if  (%GLOBAL%$strength$ < %GLOBAL%$final_strength$) 
+			:i $strength$ = %GLOBAL%$final_strength$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i $bloom$ = %GLOBAL%$final_bloom_color$
+	:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$bloom$
+	:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$bloom$
+	:i $SetArrayElement$$ArrayName$ = $bloom_color_array$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$bloom$
+	:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$strength$
+	:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$strength$
+	:i $SetArrayElement$$ArrayName$ = $strength_array$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$strength$
+	:i $TODManager_SetTempBloomParams$:s{
+		:i $On$ = %i(1,00000001)
+		:i $Color$ = %GLOBAL%$bloom_color_array$
+		:i $strength$ = %GLOBAL%$strength_array$
+	:i :s}
+:i endfunction
+:i function $EndBloom_Spawned$$MaxBloom$ = %i(100,00000064)$FinalBloom$ = %i(255,000000ff)$SpeedDown$ = %i(6,00000006)$strength$ = %i(13,0000000d)
+	:i $bloom$ = %GLOBAL%$MaxBloom$
+	:i $BloomColor$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000):a}
+	:i while
+		
+		:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$bloom$
+		:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$bloom$
+		:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$bloom$
+		:i $TODManager_SetTempBloomParams$$On$ = %i(1,00000001)$Color$ = %GLOBAL%$BloomColor$$strength$ = %GLOBAL%$strength$
+		:i $wait$%i(1,00000001)$gameframe$
+		:i $bloom$ =  (%GLOBAL%$bloom$ + %GLOBAL%$SpeedDown$) 
+		:i if  (%GLOBAL%$bloom$ > %GLOBAL%$FinalBloom$) 
+			:i $bloom$ = %GLOBAL%$FinalBloom$
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(0,00000000)$NewValue$ = %GLOBAL%$bloom$
+	:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(1,00000001)$NewValue$ = %GLOBAL%$bloom$
+	:i $SetArrayElement$$ArrayName$ = $BloomColor$$Index$ = %i(2,00000002)$NewValue$ = %GLOBAL%$bloom$
+	:i $TODManager_SetTempBloomParams$$On$ = %i(1,00000001)$Color$ = %GLOBAL%$BloomColor$$strength$ = %GLOBAL%$strength$
+	:i $TODManager_SetTempBloomParams$$On$ = %i(0,00000000)
+:i endfunction
+:i function $pause_bloom_off$
+	:i $KillSpawnedScript$$Id$ = $PulseBloom_ScriptId$
+	:i $KillSpawnedScript$$Id$ = $EndBloom_ScriptId$
+	:i $SetScreenEffectsOff$
+:i endfunction
+:i function $pause_bloom_on$$MaxBloom$ = %i(100,00000064)$strength$ = %i(7,00000007)
+	:i $SetScreenEffectsOn$
+:i endfunction
+:i function $intensify_bloom$$amount$ = %i(90,0000005a)$Color$ = :a{%i(240,000000f0)%i(240,000000f0)%i(240,000000f0):a}
+	:i return
+	
+	:i if  (%GLOBAL%$amount$ > %i(9600,00002580)) 
+		:i $SetArrayElement$$ArrayName$ = $Color$$Index$ = %i(0,00000000)$NewValue$ =  (%i(240,000000f0) -  ( (%GLOBAL%$amount$%i(4294957696,ffffda80))  / %i(18,00000012)) ) 
+		:i $SetArrayElement$$ArrayName$ = $Color$$Index$ = %i(1,00000001)$NewValue$ =  (%i(240,000000f0) -  ( (%GLOBAL%$amount$%i(4294957696,ffffda80))  / %i(18,00000012)) ) 
+		:i $SetArrayElement$$ArrayName$ = $Color$$Index$ = %i(2,00000002)$NewValue$ =  (%i(240,000000f0) -  ( (%GLOBAL%$amount$%i(4294957696,ffffda80))  / %i(18,00000012)) ) 
+		:i $TODManager_SetTempBloomParams$$On$ = %i(1,00000001)$strength$ = %i(100,00000064)$bloom1$ = %i(100,00000064)$bloom2$ = %i(100,00000064)$Color$ = %GLOBAL%$Color$
+	:i else 
+		:i $TODManager_SetTempBloomParams$$On$ = %i(1,00000001)$strength$ = %i(100,00000064)$bloom1$ = %i(100,00000064)$bloom2$ = %i(70,00000046)$Color$ = %GLOBAL%$Color$
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,116 @@
+//------------------------------------------------
+// X360 mesh data
+//------------------------------------------------
+
+typedef struct
+{
+    Vec3 pos <bgcolor=CL_PARSED>;
+    short weight_a <bgcolor=CL_PARSED>;
+    short weight_b <bgcolor=CL_PARSED>;
+    hfloat vals[4] <bgcolor=CL_PARSED>;
+    QBKey bad_food[2] <bgcolor=CL_CHECKSUM>;
+} THAW360Vertex;
+
+typedef struct
+{
+    uint vertex_count <bgcolor=CL_SINGLEVALUE>;
+    ubyte weight_indices[4] <bgcolor=CL_SINGLEVALUE>;
+    uint constant[2] <bgcolor=CL_PARSED>;
+
+    THAW360Vertex verts[vertex_count];
+} THAW360VertexChunk;
+
+typedef struct
+{
+    QBKey cafe[4] <bgcolor=CL_CHECKSUM>;
+    uint zero <bgcolor=CL_SINGLEVALUE>;
+    uint weight_count[3] <bgcolor=CL_SINGLEVALUE>;
+
+    local uint total_chunks = weight_count[0] + weight_count[1] + weight_count[2];
+    THAW360VertexChunk chunks[total_chunks] <optimize=false>;
+
+} THAW360VertexBlock;
+
+// -----------------------------------------------------------
+
+typedef struct (uint indices_count)
+{
+    uint odd_num <bgcolor=CL_SINGLEVALUE>;
+    QBKey face_const[2] <bgcolor=CL_CHECKSUM>;
+    uint unk <bgcolor=CL_SINGLEVALUE>;
+    uint unk_b <bgcolor=CL_SINGLEVALUE>;
+    ushort indices[indices_count] <bgcolor=CL_PARSED>;
+} THAW360FaceBlock;
+
+// -----------------------------------------------------------
+
+typedef struct
+{
+    ubyte rgba[4] <bgcolor=CL_SINGLEVALUE>;
+    float uv[6] <bgcolor=CL_PARSED>;
+} THAW360UVData;
+
+typedef struct (uint uv_length, uint vertex_count)
+{
+    uint skip_me[5] <bgcolor=CL_PARSED>;
+
+    // How big is stride?
+    local uint stride = uv_length / vertex_count;
+    
+    THAW360UVData verts[vertex_count];
+
+} THAW360UVBlock;
+
+// -----------------------------------------------------------
+
+typedef struct (uint sceneStart)
+{
+    Vec3 odd_vector <bgcolor=CL_PARSED>;
+    uint unk_val <bgcolor=CL_SINGLEVALUE>;
+    float weird_float <bgcolor=CL_SINGLEVALUE>;
+    QBKey material_ref <bgcolor=CL_CHECKSUM>;
+    uint always_same <bgcolor=CL_SINGLEVALUE>;
+    ushort unk_const <bgcolor=CL_PADDING, hidden=true>;
+    ushort unk_a <bgcolor=CL_SINGLEVALUE>;
+
+    ushort face_indices_count <bgcolor=CL_SINGLEVALUE>;
+    ushort vertex_count <bgcolor=CL_SINGLEVALUE>;
+
+    uint unk_const_b <bgcolor=CL_PADDING, hidden=true>;
+
+    uint face_type <bgcolor=CL_SINGLEVALUE, comment="Tristrip">;
+    ubyte odd_bytes[20] <bgcolor=CL_SINGLEVALUE>;
+
+    uint null_a <bgcolor=CL_PADDING, hidden=true>;
+    int neg[2] <bgcolor=CL_PADDING, hidden=true>;
+    uint null_b <bgcolor=CL_PADDING, hidden=true>;
+
+    RelativeOffset off_uv(scene_start) <bgcolor=CL_POINTER>;
+    int neg_b[2] <bgcolor=CL_PADDING, hidden=true>;
+    uint uv_length <bgcolor=CL_SINGLEVALUE>;
+
+    ubyte skipper[14] <bgcolor=CL_PARSED, hidden=true>;
+    ubyte uv_stride <bgcolor=CL_SINGLEVALUE>;
+    ubyte uv_unk <bgcolor=CL_PARSED>;
+
+    RelativeOffset off_faces(scene_start) <bgcolor=CL_POINTER>;
+    RelativeOffset off_submeshcafe(scene_start) <bgcolor=CL_POINTER>;
+
+    ubyte skipper_b[8] <bgcolor=CL_PARSED, hidden=true>;
+
+    local uint old_off = FTell();
+
+    if (off_submeshcafe.offset > 0)
+    {
+        FSeek(AbsOffset(off_submeshcafe));
+        THAW360VertexBlock vert_data;
+    }
+
+    FSeek(AbsOffset(off_faces));
+    THAW360FaceBlock face_data(face_indices_count);
+
+    FSeek(AbsOffset(off_uv));
+    THAW360UVBlock uv_data(uv_length, vertex_count);
+
+    FSeek(old_off);
+} THAW360MeshData;

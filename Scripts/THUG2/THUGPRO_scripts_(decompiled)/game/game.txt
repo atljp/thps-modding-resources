@@ -1,0 +1,128 @@
+
+:i function $PauseMusicAndStreams$
+	:i $PauseMusic$%i(1,00000001)
+	:i $PauseStream$%i(1,00000001)
+:i endfunction
+:i function $UnPauseMusicAndStreams$
+	:i $PauseMusic$%i(0,00000000)
+	:i $PauseStream$%i(0,00000000)
+:i endfunction
+:i function $do_backend_retry$
+	:i if NOT $IsObserving$
+		:i $Skater$.$KillSpecial$
+	:i endif
+	:i $GoalManager_UninitializeAllGoals$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i $ExitSurveyorMode$
+			:i $Skater$.$add_skater_to_world$
+		:i endif
+		:i $ResetProSetFlags$
+		:i if NOT $IsObserving$
+			:i $Skater$.$RunStarted$
+		:i endif
+		:i $ClearPowerups$
+		:i if $GotParam$$start_new$
+			:i $chosen_host_game$
+		:i endif
+	:i endif
+	:i $SpawnScript$$do_screen_freeze$
+:i endfunction
+:i function $do_screen_freeze$
+	:i $PauseGame$
+	:i if $InNetGame$
+		:i $exit_pause_menu$$menu_id$ = $pause_menu$
+		:i $force_close_rankings$
+		:i $destroy_onscreen_keyboard$
+		:i $StartNetworkLobby$
+	:i else 
+		:i $exit_pause_menu$$menu_id$ = $pause_menu$
+		:i $force_close_rankings$
+		:i $SetGameType$$freeskate2p$
+		:i $SetCurrentGameType$
+	:i endif
+	:i $Wait$%i(2,00000002)$gameframe$
+	:i $unpausegame$
+	:i $retry$
+	:i $reset_exit_pause_menu_delay$
+:i endfunction
+:i function $entered_chat_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $destroy_onscreen_keyboard$
+	:i $check_command_exist$$string$ = %GLOBAL%$string$$islocal$ = %i(1,00000001)
+	:i if NOT $GotParam$$not_a_command$
+		:i return
+		
+	:i else 
+		:i $Get_FontColor_ValueAndName$
+		:i $formattext$$textname$ = $txt$%s(4,"%c%s")$c$ = %GLOBAL%$value$$s$ = %GLOBAL%$string$
+		:i $SendChatMessage$$string$ = %GLOBAL%$txt$
+	:i endif
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+	:i $destroy_onscreen_keyboard$
+:i endfunction
+:i function $Zombie_GameInit$
+:i endfunction
+:i function $menu_entered_chat_message$
+	:i $entered_chat_message$
+	:i $create_pause_menu$
+:i endfunction
+:i function $cancel_enter_chat_menu$
+	:i $destroy_onscreen_keyboard$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+:i endfunction
+:i function $cancel_chat_menu$
+	:i $destroy_onscreen_keyboard$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+:i endfunction
+:i function $launch_chat_keyboard$
+	:i $hide_current_goal$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i if $ScreenElementExists$$id$ = $bg_container$
+		:i $DestroyScreenElement$$id$ = $bg_container$
+	:i endif
+	:i $create_onscreen_keyboard$:s{
+		:i $text_block$$allow_cancel$
+		:i $icon$ = %GLOBAL%$icon$
+		:i $keyboard_cancel_script$ = $cancel_chat_menu$
+		:i $keyboard_done_script$ = $menu_entered_chat_message$
+		:i $keyboard_title$ = %s(13,"ENTER MESSAGE")
+		:i $min_length$ = %i(0,00000000)
+		:i $max_length$ = %i(75,0000004b)
+		:i $text$ = %s(0,"")
+	:i :s}
+:i endfunction
+:i function $enter_kb_chat$
+	:i if $ObjectExists$$id$ = $ped_speech_dialog$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_start_dialog$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $goal_description_anchor$
+		:i return
+		
+	:i endif
+	:i $DestroyIfObjectExist$$id$ = $current_menu_anchor$
+	:i $DestroyIfObjectExist$$id$ = $bg_container$
+	:i $create_onscreen_keyboard$:s{
+		:i $allow_cancel$$no_buttons$$text_block$
+		:i $pos$ = %vec2(320.000000,260.000000)
+		:i $keyboard_cancel_script$ = $cancel_enter_chat_menu$
+		:i $keyboard_done_script$ = $entered_chat_message$
+		:i $display_text$ = %s(15,"ENTER MESSAGE: ")
+		:i $keyboard_title$ = %s(13,"ENTER MESSAGE")
+		:i $min_length$ = %i(1,00000001)
+		:i $max_length$ = %i(75,0000004b)
+		:i $display_text_scale$ = %f(0.500000)
+	:i :s}
+:i endfunction
+:i function $PreRunQueuedScripts$
+	:i $SetSlomo$%f(100.000000)
+:i endfunction
+:i function $PostRunQueuedScripts$
+	:i $SetSlomo$%i(1,00000001)
+:i endfunction
+:i :end

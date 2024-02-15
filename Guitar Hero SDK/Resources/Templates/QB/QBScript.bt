@@ -1,0 +1,63 @@
+//------------------------------------------------
+// Script
+//------------------------------------------------
+
+#include "Script/QBInlineScript.bt"
+
+typedef struct (QBItemSharedProps &props)
+{
+    QBKey script_crc <bgcolor=CL_CHECKSUM, comment="CRC of script data">;
+    uint uncom_size <bgcolor=CL_SINGLEVALUE, comment="Uncompressed size">;
+    uint com_size <bgcolor=CL_SINGLEVALUE, comment="Compressed size">;
+
+    // Is the script uncompressed?
+    //if (uncom_size <= com_size)
+    if (false)
+    {
+        LittleEndian();
+        QBInlineScript script_data(com_size) <bgcolor=0xcccccc>;
+        BigEndian();
+    }
+
+    // Compressed
+    else
+    {
+        if (FTell() + com_size > FileSize())
+        {
+            Printf("Com_size %d is bad and passes end of file.", com_size);
+            ubyte script_data[FileSize() - FTell()] <bgcolor=0xcccccc>;
+        }
+        else
+            ubyte script_data[com_size] <bgcolor=0xcccccc>;
+    }
+
+    // Skip to nearest 4-byte boundary
+    SkipTo(4);
+} QBScriptProps;
+
+typedef struct (QBItemSharedProps &props, uint script_size)
+{
+    // Is the script uncompressed?
+    //if (uncom_size <= com_size)
+    if (false)
+    {
+        LittleEndian();
+        QBInlineScript script_data(script_size) <bgcolor=0xcccccc>;
+        BigEndian();
+    }
+
+    // Compressed
+    else
+    {
+        if (FTell() + script_size > FileSize())
+        {
+            Printf("script_size %d is bad and passes end of file.", com_size);
+            ubyte script_data[FileSize() - FTell()] <bgcolor=0xcccccc>;
+        }
+        else
+            ubyte script_data[script_size] <bgcolor=0xcccccc>;
+    }
+
+    // Skip to nearest 4-byte boundary
+    SkipTo(4);
+} QBStructScriptProps;

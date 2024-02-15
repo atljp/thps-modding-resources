@@ -1,0 +1,780 @@
+
+:i function $parked_setup_main_menu_updated$
+	:i if NOT $IsTrue$$temp_fixGaps$
+		:i $THUGPRO_ParkEdHeighPatch$$off$
+		:i $Change$$temp_fixGaps$ = %i(1,00000001)
+	:i endif
+	:i $SetParkEditorPauseMode$$pause$
+	:i $ParkUpdateUsageInfo$
+	:i $dialog_box_exit$$no_pad_start$
+	:i $destroy_onscreen_keyboard$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,100.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $pause_menu$
+		:i $vmenu_id$ = $pause_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $pause_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_pause_exit_sound$:s}
+			:i :s{$pad_back$$parked_continue_editing$$params$ = :s{:s}:s}
+			:i :s{$pad_start$$parked_continue_editing$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $kill_start_key_binding$
+	:i if $GotParam$$from_start$
+		:i $generic_create_pause_menu_sound_thug2$
+	:i endif
+	:i $create_menu_background_title$$title$ = %s(13,"editor paused")$bg_just$ = $left$$no_grain$
+	:i $create_helper_text$$generic_helper_text$
+	:i $make_thpg_menu_item$$text$ = %s(8,"continue")$id$ = $menu_continue$$pad_choose_script$ = $parked_continue_editing$
+	:i $make_thpg_menu_item$$text$ = %s(9,"test play")$id$ = $menu_test_park$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_test_play$:s}
+	:i $make_thpg_menu_item$$text$ = %s(13,"create a goal")$id$ = $menu_create_a_goal$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_create_a_goal$:s}
+	:i $make_thpg_menu_item$$text$ = %s(15,"park properties")$id$ = $menu_park_props$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_create_park_props$:s}
+	:i $make_thpg_menu_item$$text$ = %s(9,"nuke park")$id$ = $menu_clear_park$$pad_choose_script$ = $menu_confirm_quit$$pad_choose_params$ = :s{$yes_script$ = $parked_clear_park$$title$ = %s(11,"CLEAR PARK?"):s}
+	:i $make_thpg_menu_item$$text$ = %s(9,"save park")$id$ = $menu_save_park_mem$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $launch_pause_menu_save_park_sequence$:s}
+	:i $make_thpg_menu_item$$text$ = %s(9,"load park")$id$ = $menu_load_park_mem$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_confirm_load_park$:s}
+	:i $make_thpg_menu_item$$text$ = %s(18,"load pre-made park")$id$ = $menu_load_park$$pad_choose_script$ = $parked_confirm_disk_load_park$
+	:i $make_thpg_menu_item$$text$ = %s(4,"quit")$id$ = $menu_skateshop$$pad_choose_script$ = $parked_quit_chosen$
+	:i $FireEvent$$type$ = $focus$$target$ = $pause_vmenu$
+:i endfunction
+:i function $parked_create_park_props$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $create_menu_background_title$$title$ = %s(15,"park properties")$bg_just$ = $right_scroll$$no_grain$
+	:i $dialog_box_exit$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,200.000000)
+		:i $menu_id$ = $props_menu$
+		:i $vmenu_id$ = $props_vmenu$
+		:i $scrolling_menu_id$ = $props_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $props_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $make_thpg_menu_item$$text$ = %s(12,"switch theme")$id$ = $menu_switch_theme$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_setup_switch_theme_menu_updated$:s}
+	:i $make_thpg_menu_item$$text$ = %s(11,"resize park")$id$ = $menu_resize_park$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_setup_new_resize_screen$$callback$ = $generic_menu_pad_back$:s}
+	:i $make_thpg_menu_item$$text$ = %s(15,"set max players")$id$ = $menu_set_max_players$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $parked_setup_max_players_menu$$callback$ = $generic_menu_pad_back$:s}
+	:i if $THUGPRO_ParkEdHacksOn$
+		:i $parkedhacks$ = %s(2,"on")
+	:i else 
+		:i $parkedhacks$ = %s(3,"off")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(33,"merge, stacking, inf. cap space: ")
+		:i $extra_text$ = %GLOBAL%$parkedhacks$
+		:i $id$ = $ParkEdHacks__id$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $toggle_ParkEdHacks$
+	:i :s}
+	:i $AssignAlias$$id$ = $props_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $toggle_ParkEdHacks$
+	:i $GetTags$
+	:i if $THUGPRO_ParkEdHacksOn$
+		:i $THUGPRO_ParkEdHacks$$off$
+		:i $thugpro_save_key_value$$Key$ = %s(11,"ParkEdHacks")$value$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off")
+		:i :s}
+	:i else 
+		:i $THUGPRO_ParkEdHacks$$on$
+		:i $thugpro_save_key_value$$Key$ = %s(11,"ParkEdHacks")$value$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on")
+		:i :s}
+	:i endif
+:i endfunction
+:i function $parked_setup_switch_theme_menu_updated$
+	:i $printf$%s(30,"parked_setup_switch_theme_menu")
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $create_menu_background_title$$title$ = %s(12,"Switch Theme")$bg_just$ = $right_scroll$$no_grain$
+	:i $dialog_box_exit$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,200.000000)
+		:i $menu_id$ = $shell_menu$
+		:i $vmenu_id$ = $shell_vmenu$
+		:i $scrolling_menu_id$ = $shell_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $shell_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $parked_create_park_props$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $GetEditorTheme$
+	:i $GenerateLevelStructureNameFromTheme$$theme$ = %GLOBAL%$theme$
+	:i $FormatText$$TextName$ = $text$%s(17,"Current Theme: %d")$d$ =  (%GLOBAL%$structure_name$->$theme_name$) 
+	:i if $ScreenElementExists$$id$ = $current_theme_item$
+		:i $DestroyScreenElement$$id$ = $current_theme_item$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $bg_container$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $menu_title$
+			:i $id$ = $current_theme_item$
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %f(1.000000)
+			:i $alpha$ = %f(0.500000)
+			:i $pos$ = %vec2(20.000000,80.000000)
+			:i $just$ = :a{$left$;$center$:a}
+			:i $internal_just$ = :a{$left$;$center$:a}
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $z_priority$ = %i(2002,000007d2)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $menu_title$
+			:i $id$ = $menu_subtitle$
+			:i $pos$ = %vec2(20.000000,80.000000)
+			:i $scale$ = %f(0.400000)
+			:i $texture$ = $tp_menu_title$
+			:i $just$ = :a{$left$;$center$:a}
+			:i $internal_just$ = :a{$left$;$center$:a}
+		:i :s}
+	:i endif
+	:i $GetEditorMaxThemes$
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $id$%s(17,"menu_set_theme_%d")$d$ = %GLOBAL%$i$
+		:i $GenerateLevelStructureNameFromTheme$$theme$ = %GLOBAL%$i$
+		:i if $StructureContains$$structure$ = %GLOBAL%$structure_name$$theme_name$
+			:i $make_thpg_menu_item$:s{
+				:i $text$ =  (%GLOBAL%$structure_name$->$theme_name$) 
+				:i $id$ = %GLOBAL%$id$
+				:i $pad_choose_script$ = $parked_set_theme$
+				:i $pad_choose_params$ = :s{$theme$ = %GLOBAL%$i$$from_menu$:s}
+			:i :s}
+		:i endif
+		:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$max_themes$
+	:i $AssignAlias$$id$ = $shell_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $parked_setup_test_play_menu_updated$
+	:i if NOT $IsTrue$$temp_fixGaps$
+		:i $THUGPRO_ParkEdHeighPatch$$off$
+		:i $Change$$temp_fixGaps$ = %i(1,00000001)
+	:i endif
+	:i $SetParkEditorPauseMode$$pause$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,100.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $pause_menu$
+		:i $vmenu_id$ = $pause_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $pause_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_pause_exit_sound$:s}
+			:i :s{$pad_back$$parked_continue_test_play$$params$ = :s{:s}:s}
+			:i :s{$pad_start$$parked_continue_test_play$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $kill_start_key_binding$
+	:i if $GotParam$$from_start$
+		:i $generic_create_pause_menu_sound_thug2$
+	:i endif
+	:i $create_menu_background_title$$title$ = %s(5,"pause")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $create_helper_text$$generic_helper_text$
+	:i $make_thpg_menu_item$$text$ = %s(8,"continue")$id$ = $menu_continue$$pad_choose_script$ = $parked_continue_test_play$
+	:i if $GoalManager_CanRetryGoal$
+		:i if $GoalManager_GetLastGoalId$
+			:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+				:i $make_thpg_menu_item$$text$ = %s(15,"retry last goal")$id$ = $menu_retry_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$stop_streams$$menu_select_script$ = $RetryCurrentGoal$:s}
+			:i endif
+		:i endif
+	:i endif
+	:i if $GoalManager_HasActiveGoals$
+		:i $make_thpg_menu_item$$text$ = %s(16,"end current goal")$id$ = $menu_end_current_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $end_current_goal_run$:s}
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(10,"view goals")$id$ = $menu_view_goals$$pad_choose_script$ = $view_created_goals_menu_create$
+	:i $make_thpg_menu_item$$text$ = %s(9,"view gaps")$id$ = $menu_skip_to_gap$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $launch_gap_menu$:s}
+	:i $make_thpg_menu_item$$text$ = %s(12,"game options")$id$ = $menu_game_options$$pad_choose_script$ = $create_options_menu$
+	:i if  ( ($IsTrue$$THUG_Pro_Developer$)  OR  ($IsTrue$$THUG_Pro_DevMenu$) ) 
+		:i $make_thpg_menu_item$$text$ = %s(21,"\c3thug pro developer")$id$ = $thug_pro_dev_menu$$pad_choose_script$ = $create_thug_pro_dev_menu$
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(14,"back to editor")$id$ = $menu_skateshop$$pad_choose_script$ = $parked_test_play_back_to_editor$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $parked_spawn_menu$
+	:i $destroy_menu_background_title$
+	:i %GLOBAL%$new_menu_script$
+:i endfunction
+:i function $create_pause_menu$
+	:i if NOT $InNetGame$
+		:i $SpawnScript$$slomo_menu_check$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $net_panel_msg_bg$
+		:i $DestroyScreenElement$$id$ = $net_panel_msg_bg$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $net_panel_msg$
+		:i $DestroyScreenElement$$id$ = $net_panel_msg$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $observe_input_handler$
+		:i $DestroyScreenElement$$id$ = $observe_input_handler$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i $SetParkEditorPauseMode$$pause$
+	:i endif
+	:i if $GotParam$$no_exit$
+		:i $set_pause_menu_allow_continue$$off$
+	:i else 
+		:i if $root_window$.$GetSingleTag$$no_exit_pause_menu$
+			:i $no_exit$ = $no_exit$
+		:i endif
+	:i endif
+	:i $hide_all_hud_items$
+	:i $unhide_current_goal$
+	:i if $IsTrue$$MUSIC_IN_PAUSE_MENU$
+		:i $PauseStream$%i(1,00000001)
+	:i else 
+		:i $PauseMusicAndStreams$
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+				:i if $GameModeEquals$$is_lobby$
+					:i $Change$$AutoServer_PausedTimer$ = %i(1,00000001)
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT $IsObserving$
+			:i $skater$.$NetDisablePlayerInput$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i $CheckForNetBrake$
+		:i endif
+	:i else 
+		:i if $CustomParkMode$$editing$
+			:i $parked_setup_main_menu_updated$ isNull 
+			:i if $IsTrue$$MUSIC_IN_PAUSE_MENU$
+				:i $PauseStream$%i(1,00000001)
+			:i else 
+				:i $PauseMusicAndStreams$
+			:i endif
+			:i return
+			
+		:i endif
+		:i if $CustomParkMode$$testing$
+			:i $parked_setup_test_play_menu_updated$ isNull 
+			:i if $IsTrue$$MUSIC_IN_PAUSE_MENU$
+				:i $PauseStream$%i(1,00000001)
+			:i else 
+				:i $PauseMusicAndStreams$
+			:i endif
+			:i return
+			
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$no_exit$
+		:i $helper$ = $generic_helper_text$
+	:i else 
+		:i $helper$ = $generic_helper_text_no_back$
+	:i endif
+	:i if  ($in_cat_preview_mode$ = %i(1,00000001)) 
+		:i $create_CAT_pause_menu$ isNull 
+		:i return
+		
+	:i endif
+	:i if $GotParam$$no_exit$
+		:i $make_new_skateshop_menu$:s{
+			:i $pos$ = %vec2(40.000000,115.000000)
+			:i $internal_just$ = :a{$center$$center$:a}
+			:i $menu_id$ = $game_pause_menu$
+			:i $vmenu_id$ = $game_pause_vmenu$
+			:i $pad_back_script$ = $nullscript$
+		:i :s}
+	:i else 
+		:i $make_new_skateshop_menu$:s{
+			:i $pos$ = %vec2(40.000000,115.000000)
+			:i $internal_just$ = :a{$center$$center$:a}
+			:i $menu_id$ = $game_pause_menu$
+			:i $vmenu_id$ = $game_pause_vmenu$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $game_pause_vmenu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_pause_exit_sound$:s}
+				:i :s{$pad_back$$handle_start_pressed$$params$ = :s{:s}:s}
+				:i :s{$pad_start$$handle_start_pressed$$params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $kill_start_key_binding$
+	:i $AssignAlias$$id$ = $game_pause_vmenu$$alias$ = $current_menu$
+	:i if $GotParam$$from_start$
+		:i $generic_create_pause_menu_sound$
+	:i endif
+	:i $create_menu_background_title$$title$ = %s(5,"pause")$bg_just$ = $left$$no_grain$$pause_menu$
+	:i $autoserver_status$ = %s(0,"")
+	:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$
+		:i $FormatText$$TextName$ = $autoserver_status$%s(36,"\nAutoserver:\n%a of %b games played")$a$ =  ($AutoLevel_GamesPlayed$) $b$ =  ($AutoLevel_TotalGamesToPlay$) $c$ = %GLOBAL%$vote_text$
+	:i endif
+	:i $vote_text$ = %s(0,"")
+	:i if $GetGlobalFlag$$flag$ = $SERVER_VOTE_LEVEL_OPEN$
+		:i if NOT $IsTrue$$SERVER_VOTE_CAST$
+			:i $vote_text$ = %s(16,"level vote open!")
+		:i else 
+			:i $vote_text$ = %s(21,"\c3level vote casted!")
+		:i endif
+	:i endif
+	:i $FormatText$$TextName$ = $pausemenu_text$%s(6,"\n%a%b")$a$ = %GLOBAL%$autoserver_status$$b$ = %GLOBAL%$vote_text$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $PAUSE_MENU_EXTRA_TEXT_ID$
+		:i $text$ = %GLOBAL%$pausemenu_text$
+	:i :s}
+	:i $pause_menu_gradient$$on$
+	:i if NOT $GotParam$$no_exit$
+		:i $make_thpg_menu_item$:s{$text$ = %s(8,"continue")
+			:i $id$ = $menu_continue$
+			:i $pad_choose_script$ = $handle_pause_continue$
+			:i $pad_choose_sound$ = $generic_pause_exit_sound$
+		:i :s}
+	:i endif
+	:i if $GameModeEquals$$is_singlesession$
+		:i if $GoalManager_goalIsActive$$name$ = $TrickAttack$
+			:i $make_thpg_menu_item$:s{
+				:i $text$ =  (%s(20,"retry high score run")) 
+				:i $id$ = $menu_retry_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$stop_streams$$menu_select_script$ = $RetryCurrentGoal$:s}
+			:i :s}
+			:i $make_thpg_menu_item$:s{
+				:i $text$ =  (%s(18,"end high score run")) 
+				:i $id$ = $menu_end_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$menu_select_script$ = $end_high_score_run$:s}
+			:i :s}
+		:i else 
+			:i $make_thpg_menu_item$:s{
+				:i $text$ = %s(20,"start high score run")
+				:i $id$ = $menu_start_high_score_run$
+				:i $pad_choose_script$ = $menu_select$
+				:i $pad_choose_params$ = :s{$menu_select_script$ = $TrickAttack_MenuStartRun$:s}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_goal_attack$
+		:i if NOT $IsObserving$
+			:i $GetGoalsMode$
+			:i if NOT $IsTrue$$LEVEL_CLASSIC_GOAL_MODE$
+				:i if $GoalManager_HasActiveGoals$
+					:i $make_thpg_menu_item$$text$ = %s(16,"end current goal")$id$ = $menu_end_current_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $end_current_goal_run$:s}
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$goals$ = $goals_created$) 
+				:i if $GoalManager_CanRetryGoal$
+					:i if $GoalManager_GetLastGoalId$
+						:i if NOT $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+							:i $make_thpg_menu_item$$text$ = %s(15,"retry last goal")$id$ = $menu_retry_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$stop_vibration$$menu_select_script$ = $RetryCurrentGoal$:s}
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $make_thpg_menu_item$$text$ = %s(10,"view goals")$id$ = $menu_view_goals$$pad_choose_script$ = $create_view_selected_goals_menu$$pad_choose_params$ = :s{$from_pause$:s}
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i if $GoalManager_HasActiveGoals$
+			:i $make_thpg_menu_item$$text$ = %s(16,"end current goal")$id$ = $menu_end_current_goal$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $end_current_goal_run$:s}
+		:i endif
+		:i $make_thpg_menu_item$$text$ = %s(10,"view goals")$id$ = $menu_view_goals$$pad_choose_script$ = $view_created_goals_menu_create$
+		:i if NOT $LevelIs$$load_sk5ed_gameplay$
+			:i $make_thpg_menu_item$$text$ = %s(13,"create a goal")$id$ = $menu_create_a_goal$$pad_choose_script$ = $create_existing_goals_menu$
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i if NOT $LevelIs$$load_sk5ed_gameplay$
+			:i $make_thpg_menu_item$$text$ = %s(10,"load goals")$id$ = $menu_load_goals$$pad_choose_script$ = $prompt_launch_cag_pause_load$
+			:i $GoalEditor$.$GetNumEditedGoals$$ExcludeParkEditorGoals$
+			:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+				:i $no_edited_goals$ = %i(1,00000001)
+			:i endif
+			:i $make_thpg_menu_item$$text$ = %s(10,"save goals")$id$ = $menu_save_goals$$pad_choose_script$ = $launch_pause_menu_save_created_goals$$not_focusable$ = %GLOBAL%$no_edited_goals$
+		:i endif
+	:i endif
+	:i $display_level_select$ = %i(1,00000001)
+	:i if $InNetGame$
+		:i $display_level_select$ = %i(0,00000000)
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i if NOT $GotParam$$no_exit$
+			:i $display_level_select$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$display_level_select$ = %i(1,00000001)) 
+		:i $make_thpg_menu_item$:s{$text$ = %s(12,"change level")
+			:i $id$ = $menu_level_select$
+			:i $pad_choose_script$ = $launch_level_select_menu$
+			:i $tag_grid_x$ = %i(1,00000001)
+		:i :s}
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GameModeEquals$$is_lobby$
+				:i if NOT $NetworkGamePending$
+					:i if NOT $ChangeLevelPending$
+						:i $make_thpg_menu_item$$text$ = %s(10,"start game")$id$ = $menu_network_start_select$$pad_choose_script$ = $network_game_options_selected$
+					:i endif
+				:i endif
+			:i else 
+				:i $make_thpg_menu_item$$text$ = %s(12,"restart game")$id$ = $menu_network_start_select$$pad_choose_script$ = $network_game_options_selected$
+				:i $make_thpg_menu_item$$text$ = %s(16,"end current game")$id$ = $menu_network_end_select$$pad_choose_script$ = $network_end_game_selected$
+			:i endif
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $NetworkGamePending$
+			:i if $OnServer$
+				:i $make_thpg_menu_item$$text$ = %s(12,"host options")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+			:i endif
+			:i if $IsHost$
+				:i if $GameModeEquals$$is_lobby$
+					:i if NOT $OnServer$
+						:i $make_thpg_menu_item$$text$ = %s(12,"host options")$id$ = $menu_network_server_opts_select$$pad_choose_script$ = $network_options_selected$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $NetworkGamePending$
+			:i if NOT $ChangeLevelPending$
+				:i if NOT $IsHost$
+					:i if $LevelIs$$load_sk5ed_gameplay$
+						:i $make_thpg_menu_item$$text$ = %s(9,"save park")$id$ = $menu_save_park_mem$$pad_choose_script$ = $parked_spawn_menu$$pad_choose_params$ = :s{$new_menu_script$ = $launch_pause_menu_save_park_sequence$:s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $IsObserving$
+		:i %GLOBAL%$trick_text$ = %s(11,"edit tricks")
+		:i %GLOBAL%$trick_helper$ = $edit_tricks_helper_desc$
+		:i $make_thpg_menu_item$$text$ = %GLOBAL%$trick_text$$id$ = $menu_cas$$pad_choose_script$ = $create_edit_tricks_menu$
+	:i endif
+	:i $GetLevelStructureName$
+	:i %GLOBAL%$levelnum$ =  (%GLOBAL%$level_structure_name$->$level_number$) 
+	:i if $ArrayContains$$array$ = $levels_with_gaps$$contains$ = %GLOBAL%$levelnum$
+		:i $make_thpg_menu_item$$text$ = %s(9,"view gaps")$id$ = $menu_view_gaps$$pad_choose_script$ = $launch_gap_menu$
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i %GLOBAL%$level_text$ = %s(12,"change level")
+			:i if  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$) 
+				:i %GLOBAL%$level_text$ = %s(13,"select levels")
+			:i else 
+				:i if $GameModeEquals$$is_lobby$
+					:i %GLOBAL%$level_text$ = %s(12,"change level")
+				:i endif
+			:i endif
+			:i $make_thpg_menu_item$$text$ = %GLOBAL%$level_text$$id$ = $menu_level_select$$pad_choose_script$ = $launch_level_select_menu$$pad_choose_params$ = :s{$show_warning$:s}
+		:i else 
+			:i %GLOBAL%$pad_choose_script$ = $nullscript$
+			:i if $GetGlobalFlag$$flag$ = $SERVER_VOTE_LEVEL_OPEN$
+				:i if $IsTrue$$SERVER_VOTE_CAST$
+					:i %GLOBAL%$focusable$ = $not_focusable$
+				:i endif
+				:i $make_thpg_menu_item$$text$ = %s(10,"level vote")$id$ = $menu_level_vote$$pad_choose_script$ = $launch_level_select_menu$$pad_choose_params$ = :s{$Vote$:s}%GLOBAL%$focusable$
+			:i endif
+		:i endif
+		:i $make_thpg_menu_item$$text$ = %s(11,"player list")$id$ = $menu_network_player_list_select$$pad_choose_script$ = $launch_player_list_menu$
+	:i else 
+		:i $make_thpg_menu_item$$text$ = %s(13,"level options")$id$ = $menu_level_options$$pad_choose_script$ = $create_level_options_menu$
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(12,"game options")$id$ = $menu_game_options$$pad_choose_script$ = $create_options_menu$
+	:i if  ( ($IsTrue$$THUG_Pro_Developer$)  OR  ($IsTrue$$THUG_Pro_DevMenu$) ) 
+		:i $make_thpg_menu_item$$text$ = %s(21,"\c4thug pro developer")$id$ = $thug_pro_dev_menu$$pad_choose_script$ = $create_thug_pro_dev_menu$
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i if NOT $GameModeEquals$$is_lobby$
+				:i $GoalManager_GetTimeLeftInNetGame$
+				:i if  (%GLOBAL%$time_left$ < %i(1,00000001)) 
+					:i if $IsSurveying$
+						:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+							:i %GLOBAL%$InNormalObserveAfterZero$ = %i(1,00000001)
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i if NOT $GoalManager_HasActiveGoals$
+				:i if $IsTrue$$ReJoinNextGame$
+					:i $make_thpg_menu_item$$text$ = %s(19,"rejoining next game")$not_focusable$
+				:i else 
+					:i if NOT $skater$.$OnLip$
+						:i if $IsTrue$$THUGPRO_ObserveOn$
+							:i if $GameModeEquals$$is_lobby$
+								:i $make_thpg_menu_item$:s{$text$ = %s(12,"exit observe")$pad_choose_script$ = $THUGPRO_ObserveMode$$pad_choose_params$ = :s{$off$$FromPauseMenu$:s}:s}
+							:i else 
+								:i $make_thpg_menu_item$:s{$text$ = %s(16,"rejoin next game")$pad_choose_script$ = $THUGPRO_RejoinNextGame$$pad_choose_params$ = :s{$FromPauseMenu$:s}:s}
+							:i endif
+						:i else 
+							:i if NOT $GotParam$$InNormalObserveAfterZero$
+								:i $make_thpg_menu_item$:s{$text$ = %s(7,"observe")$pad_choose_script$ = $THUGPRO_ObserveMode$$pad_choose_params$ = :s{$on$$FromPauseMenu$:s}:s}
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $make_thpg_menu_item$$text$ = %s(4,"quit")$id$ = $menu_quit$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $launch_quit_game_dialog$:s}
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $classic_mode_menu_add_quit_option$
+	:i else 
+		:i if NOT $InNetGame$
+			:i $make_thpg_menu_item$:s{$text$ = %s(4,"quit")
+				:i $id$ = $menu_skateshop$
+				:i $pad_choose_script$ = $generic_menu_pad_choose$
+				:i $pad_choose_params$ = :s{$callback$ = $menu_confirm_quit$:s}
+				:i $tip_text$ = %s(6,"Seeya!")
+			:i :s}
+		:i endif
+	:i endif
+	:i $create_helper_text$%GLOBAL%$helper$
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $on$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $game_pause_vmenu$
+:i endfunction
+:i function $create_mp_pause_menu$
+	:i if $GotParam$$from_start$
+		:i $generic_create_pause_menu_sound_thug2$
+	:i endif
+	:i $SetButtonEventMappings$$unblock_menu_input$
+	:i $kill_start_key_binding$
+	:i $make_new_roundbar_menu$:s{
+		:i $menu_id$ = $pause_menu$
+		:i $vmenu_id$ = $pause_vmenu$
+		:i $pad_back_script$ = $handle_start_pressed$
+		:i $title$ = %s(6,"Paused")
+		:i $additional_create_script$ = $pause_create_tipbox$
+		:i $additional_focus_script$ = $pause_focus_tipbox$
+		:i $additional_unfocus_script$ = $pause_unfocus_tipbox$
+		:i $helper_text$ = %GLOBAL%$helper$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $add_roundbar_menu_item$$text$ = %s(8,"Continue")$id$ = $menu_continue$$pad_choose_script$ = $handle_start_pressed$
+	:i $add_roundbar_menu_item$$text$ = %s(16,"End Current Game")$id$ = $menu_network_end_select$$pad_choose_script$ = $network_end_game_selected$
+	:i $add_roundbar_menu_item$$text$ = %s(7,"Options")$id$ = $menu_mp_options$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $create_options_menu$:s}
+	:i $add_roundbar_menu_item$$text$ = %s(4,"Quit")$id$ = $menu_skateshop$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $menu_confirm_quit$:s}
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $do_localized_pause_title$$pos$ = %vec2(500.000000,40.000000)
+	:i if $IsPAL$
+		:i if NOT $English$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $current_menu_anchor$
+				:i $id$ = $localized_pause_title$
+				:i $font$ = $small$
+				:i $text$ = %s(6,"PAUSED")
+				:i $pos$ = %GLOBAL%$pos$
+				:i $just$ = :a{$right$$bottom$:a}
+				:i $scale$ = %i(2,00000002)
+				:i $rgba$ = :a{%i(128,00000080)%i(40,00000028)%i(10,0000000a)%i(128,00000080):a}
+				:i $shadow$
+				:i $shadow_rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+				:i $shadow_offs$ = %vec2(3.000000,3.000000)
+				:i $z_priority$ = %i(50,00000032)
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $reset_exit_pause_menu_delay$
+	:i $KillSpawnedScript$$name$ = $exit_pause_menu_delay$
+	:i $Change$$exit_pause_menu_ready$ = %i(1,00000001)
+:i endfunction
+:i function $exit_pause_menu_delay$$time$ = %f(0.300000)
+	:i $Change$$exit_pause_menu_ready$ = %i(0,00000000)
+	:i $wait$%GLOBAL%$time$$seconds$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $Change$$exit_pause_menu_ready$ = %i(0,00000000)
+		:i return
+		
+	:i endif
+	:i $Change$$exit_pause_menu_ready$ = %i(1,00000001)
+:i endfunction
+:i $storedslomo$ = %i(1,00000001)
+:i function $slomo_menu_check$
+	:i $wait$%i(2,00000002)$gameframes$
+	:i if $GotParam$$TurnSlomo_BackOn$
+		:i if $skater$.$IsSkaterFocused$
+			:i $SetSlomo$%f(0.500000)
+		:i else 
+			:i if NOT  ($storedslomo$ = %i(1,00000001)) 
+				:i $SetSlomo$ ($storedslomo$) 
+			:i endif
+		:i endif
+	:i else 
+		:i $GetSlomo$
+		:i if NOT  ($slomo$ = %i(1,00000001)) 
+			:i if NOT $skater$.$IsSkaterFocused$
+				:i $Change$ ($storedslomo$ = $slomo$) 
+			:i endif
+			:i $SetSlomo$%i(1,00000001)
+		:i endif
+	:i endif
+	:i $KillSpawnedScript$$name$ = $slomo_menu_check$
+:i endfunction
+:i $is_quitting$ = %i(0,00000000)
+:i function $exit_pause_menu$$menu_id$ = $current_menu_anchor$
+	:i if NOT $InNetGame$
+		:i $SpawnScript$$slomo_menu_check$$params$ = :s{$TurnSlomo_BackOn$:s}
+	:i endif
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $ClearViewerObject$
+	:i $Debounce$$X$$time$ = %f(0.300000)
+	:i $Debounce$$circle$$time$ = %f(0.300000)
+	:i $Debounce$$Triangle$$time$ = %f(0.300000)
+	:i $Debounce$$start$$time$ = %f(0.300000)
+	:i $pause_menu_gradient$$off$
+	:i $Change$$inside_pause$ = %i(0,00000000)
+	:i $Change$$no_focus_sound$ = %i(1,00000001)
+	:i $Change$$viewer_buttons_enabled$ = %i(1,00000001)
+	:i $show_all_hud_items$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i if $ObjectExists$$id$ = $skater$
+				:i $skater$.$NetEnablePlayerInput$
+			:i endif
+		:i endif
+	:i endif
+	:i $UnpauseGame$
+	:i $possibly_add_temp_special_trick$
+	:i $PauseStream$%i(0,00000000)
+	:i $PauseMusic$%i(0,00000000)
+	:i if $root_window$.$GetSingleTag$$need_music_zone_refresh$
+		:i $root_window$.$RemoveTags$$tags$ = :a{$need_music_zone_refresh$:a}
+		:i $SpawnScript$$SFX_refresh_music_box_triggers$$params$ = :s{$wait$:s}
+	:i endif
+	:i $unpause_rain$
+	:i $GoalManager_UnPauseAllGoals$
+	:i if $ObjectExists$$id$ = %GLOBAL%$menu_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$menu_id$
+	:i endif
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $off$:s}
+	:i if $CustomParkMode$$editing$
+		:i if NOT $GotParam$$DoNotSwitchEditorState$
+			:i $SetParkEditorState$$state$ = $edit$
+			:i $SetParkEditorPauseMode$$unpause$
+			:i $SwitchToParkEditorCamera$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i if $GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$
+				:i if NOT $IsTrue$$is_quitting$
+					:i if $GameModeEquals$$is_lobby$
+						:i $Change$$AutoServer_PausedTimer$ = %i(0,00000000)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$dont_restore_start_key_binding$
+		:i $restore_start_key_binding$
+	:i endif
+	:i if NOT $InNetGame$
+		:i if NOT $GameModeEquals$$is_horse$
+			:i $unpauseskaters$
+		:i endif
+	:i endif
+	:i $Change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i if $InNetGame$
+		:i $exit_pause_menu_maybe_create_observe_menu$
+	:i endif
+	:i if $GotParam$$from_level_editor$
+	:i else 
+		:i if NOT  ( ($LevelIs$$load_sk5ed_gameplay$)  OR  ($LevelIs$$load_sk5ed$) ) 
+			:i if NOT $ScreenElementExists$$id$ = $observe_input_handler$
+				:i $restore_skater_camera$
+			:i endif
+		:i endif
+	:i endif
+	:i $Change$$is_quitting$ = %i(0,00000000)
+	:i $KillSpawnedScript$$name$ = $exit_pause_menu_delay$
+	:i $SpawnScript$$exit_pause_menu_delay$$params$ = :s{$time$ = %f(0.400000):s}
+:i endfunction
+:i function $exit_pause_menu_maybe_create_observe_menu$
+	:i if $IsTrue$$THUGPRO_ObserveOn$
+		:i $create_observe_menu$
+		:i return
+		
+	:i endif
+	:i if $IsTrue$$IsObserving$
+		:i $create_observe_menu$
+		:i return
+		
+	:i endif
+	:i if $IsTrue$$JoinedAsObserver$
+		:i $create_observe_menu$
+		:i return
+		
+	:i endif
+	:i if $IsTrue$$JoinedGameInProgress$
+		:i $create_observe_menu$
+		:i return
+		
+	:i endif
+	:i if NOT $GameModeEquals$$is_lobby$
+		:i if NOT $GameModeEquals$$is_singlesession$
+			:i if $IsSurveying$
+				:i $create_observe_menu$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $pause_launch_level$
+	:i $skater$.$StatsManager_Reset$
+	:i if  ( (%GLOBAL%$level$ = $load_boardshop$)  OR  (%GLOBAL%$level$ = $load_cas$) ) 
+		:i $temp$ = %GLOBAL%$level$
+		:i $GetCurrentLevel$
+		:i $array$ = $return_to_level$
+		:i $SetArrayElement$$arrayname$ = $array$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$level$
+		:i $level$ = %GLOBAL%$temp$
+	:i endif
+	:i if $GameModeEquals$$is_career$
+		:i $GoalManager_DeactivateAllGoals$
+		:i $skater$.$ResetSkaterToCustom$
+	:i endif
+	:i $change_level$ isNull 
+:i endfunction
+:i :end

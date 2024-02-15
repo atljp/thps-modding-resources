@@ -1,0 +1,70 @@
+//------------------------------------------------
+// Odd post-block, shows up after objects
+//------------------------------------------------
+
+#include "UAnimation.bt"
+
+typedef struct
+{
+    QBKey magic <bgcolor=CL_MAGIC>;
+    NamePointer bone_name <bgcolor=CL_NAME, comment="Pointer to stringtable name">;
+    uint num <bgcolor=CL_SINGLEVALUE>;
+    uint unkval <bgcolor=CL_SINGLEVALUE>;
+    uint zero <bgcolor=CL_PARSED>;
+    uint seventeen <bgcolor=CL_SINGLEVALUE>;
+    uint last_num <bgcolor=CL_SINGLEVALUE>;
+} PostBlockItem <read=ReadPostBlockItem>;
+
+string ReadPostBlockItem(PostBlockItem &PBI)
+{
+    return ReadNamePointer(PBI.bone_name);
+}
+
+typedef struct
+{
+    Count value_count;
+
+    local uint old_off = FTell();
+    local int i;
+
+    for (i=0; i<value_count.count; i++)
+    {
+        FSeek(value_count.pointers[i]);
+        PostBlockItem item;
+    }
+
+    FSeek(old_off);
+} PostBlockList;
+
+typedef struct
+{
+    Count unk_count;
+    QBKey magic <bgcolor=CL_MAGIC>;
+    uint count_a <bgcolor=CL_SINGLEVALUE>;
+    uint count_b <bgcolor=CL_SINGLEVALUE>;
+    NamePointer blockName <bgcolor=CL_NAME, comment="Pointer to stringtable name">;
+    RelativeOffset pt_MyList(0) <bgcolor=CL_POINTER>;
+    uint unk <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_UAnimation(0) <bgcolor=CL_POINTER, comment="UAnimation thing">;
+
+    local uint old_off = FTell();
+
+    if (AbsOffset(pt_MyList) > 0)
+    {
+        FSeek(AbsOffset(pt_MyList));
+        PostBlockList my_list;
+    }
+
+    if (AbsOffset(pt_UAnimation) > 0)
+    {
+        FSeek(AbsOffset(pt_UAnimation));
+        UAnimation uanimation;
+    }
+
+    FSeek(old_off);
+} PostBlock <read=ReadPostBlock>;
+
+string ReadPostBlock(PostBlock &block)
+{
+    return ReadNamePointer(block.blockName);
+}

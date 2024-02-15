@@ -1,0 +1,905 @@
+
+:i $classic_mode_skip_intro$ = %i(0,00000000)
+:i $THUGPRO_classic_mode_skip_cameras$ = %i(0,00000000)
+:i function $classic_mode_menu_add_pause_options$
+	:i $make_thpg_menu_item$$text$ = %s(11,"retry level")$id$ = $menu_classic_retry$$pad_choose_script$ = $classic_mode_retry$
+	:i if $root_window$.$GetSingleTag$$no_exit_pause_menu$
+		:i $make_thpg_menu_item$$text$ = %s(17,"view goal cameras")$id$ = $menu_classic_goals$$pad_choose_script$ = $classic_mode_view_goal_cameras$
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(10,"view goals")$id$ = $menu_classic_goals_list$$pad_choose_script$ = $classic_mode_view_goals$
+:i endfunction
+:i function $classic_mode_menu_add_quit_option$
+	:i if NOT $root_window$.$GetSingleTag$$no_exit_pause_menu$
+		:i $make_thpg_menu_item$$text$ = %s(7,"end run")$id$ = $menu_classic_endrun$$pad_choose_script$ = $classic_mode_choose_end_run$
+	:i else 
+		:i $make_thpg_menu_item$$text$ = %s(4,"quit")$id$ = $menu_skateshop$$pad_choose_script$ = $generic_menu_pad_choose$$pad_choose_params$ = :s{$callback$ = $menu_confirm_quit$:s}
+	:i endif
+:i endfunction
+:i function $classic_mode_view_goal_cameras$
+	:i $classic_mode_process_intro_cameras$
+	:i $spawnscript$$PlayClassicIntroCameras$$params$ = :s{$callback$ = $classic_mode_view_goal_cameras_back_to_pause$
+		:i $GoalList$ = %GLOBAL%$GoalList$
+		:i $end_run$
+	:i :s}
+:i endfunction
+:i function $classic_mode_view_goal_cameras_back_to_pause$
+	:i $PauseGame$
+	:i $create_pause_menu$
+:i endfunction
+:i function $classic_mode_retry$
+	:i $SkProDisplayLoadingScreen$$freeze$
+	:i $ResetSkaters$
+	:i $GoalManager_DeactivateAllGoals$
+	:i $exit_pause_menu$$dont_restore_start_key_binding$
+	:i $change$$dont_restore_start_key_binding$ = %i(0,00000000)
+	:i $destroy_goal_panel_messages$$all$
+	:i $kill_speech_boxes$
+	:i $TantrumMessageKill$
+	:i $console_clear$
+	:i if $ObjectExists$$id$ = $first_time_goal_info$
+		:i $DestroyScreenElement$$id$ = $first_time_goal_info$
+	:i endif
+	:i $change$$classic_mode_skip_intro$ = %i(1,00000001)
+	:i $TODManager_SetTempBloomParams$$on$ = %i(0,00000000)
+	:i $change$$ParseNodeArrayIgnoreGaps$ = %i(1,00000001)
+	:i $retry$
+:i endfunction
+:i function $classic_mode_choose_end_run$
+	:i $root_window$.$GetSingleTag$$classic_ghost_timed_run_goal$
+	:i $skater$.$BailSkaterTricks$
+	:i $GoalManager_ExpireGoal$$name$ = %GLOBAL%$classic_ghost_timed_run_goal$
+	:i $TODManager_SetTempBloomParams$$on$ = %i(0,00000000)
+:i endfunction
+:i $classic_mode_in_end_run_sequence$ = %i(0,00000000)
+:i function $classic_mode_end_run$
+	:i $change$$classic_mode_in_end_run_sequence$ = %i(1,00000001)
+	:i $CheckClassicAdvancementStatus$
+	:i $classic_mode_process_intro_cameras$$show_beaten$ = %i(1,00000001) isNull 
+	:i $spawnscript$$PlayClassicIntroCameras$$params$ = 
+	:i :s{
+		:i $callback$ = $classic_mode_view_goals$
+		:i $GoalList$ = %GLOBAL%$GoalList$
+		:i $end_run$
+	:i :s}
+:i endfunction
+:i function $classic_mode_done_with_intro$
+	:i $GoalManager_UnPauseAllGoals$
+:i endfunction
+:i function $classic_mode_play_intro_cams$
+	:i $classic_mode_setup_ghost_score_run$
+	:i $GoalManager_ActivateAllGoals$
+	:i $change$$classic_all_goals_complete_message_shown$ = %i(0,00000000)
+	:i $change$$ParseNodeArrayIgnoreGaps$ = %i(0,00000000)
+	:i if  ($classic_mode_skip_intro$ = %i(1,00000001)) 
+		:i $change$$classic_mode_skip_intro$ = %i(0,00000000)
+		:i return
+		
+	:i endif
+	:i $change$$classic_mode_skip_intro$ = %i(0,00000000)
+	:i $GoalManager_PauseAllGoals$
+	:i $classic_mode_process_intro_cameras$
+	:i $spawnscript$$PlayClassicIntroCameras$$params$ = :s{$callback$ = $classic_mode_done_with_intro$
+		:i $GoalList$ = %GLOBAL%$GoalList$
+	:i :s}
+:i endfunction
+:i function $classic_mode_setup_ghost_score_run$
+	:i $GoalManager_GetGoalList$
+	:i $GetArraySize$%GLOBAL%$GoalList$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $goal$ =  (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}->$goalId$) 
+		:i $RemoveParameter$$TimedScoreRun$
+		:i $classic_mode_is_goal_timed$$goal$ = %GLOBAL%$goal$
+		:i if $GotParam$$TimedScoreRun$
+			:i $root_window$.$SetTags$$classic_ghost_timed_run_goal$ = %GLOBAL%$goal$
+			:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal$$params$ = :s{$classic_goal_list$ = %GLOBAL%$GoalList$:s}
+			:i return
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $script_assert$%s(54,"Couldn't find a timed score run. Is this classic mode?")
+:i endfunction
+:i function $classic_mode_get_previous_goal_data$
+	:i $root_window$.$GetSingleTag$$classic_ghost_timed_run_goal$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$classic_ghost_timed_run_goal$
+	:i return
+	$previous_goal_data$ = %GLOBAL%$classic_goal_list$
+:i endfunction
+:i function $classic_mode_process_intro_cameras$$show_beaten$ = %i(0,00000000)
+	:i if NOT $IsTrue$$THUGPRO_classic_mode_skip_cameras$
+		:i $GoalManager_GetGoalList$
+		:i $classic_mode_get_previous_goal_data$
+		:i $GetArraySize$%GLOBAL%$GoalList$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $RemoveParameter$$TimedScoreRun$
+			:i $RemoveParameter$$view_goals_text$
+			:i if $GotParam$$view_goals_cameras$
+				:i $old_cameras$ = %GLOBAL%$view_goals_cameras$
+			:i endif
+			:i $RemoveParameter$$view_goals_cameras$
+			:i $GoalManager_GetGoalParams$$name$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$goalId$) 
+			:i if NOT $GotParam$$view_goals_cameras$
+				:i if $GotParam$$old_cameras$
+					:i $view_goals_cameras$ = %GLOBAL%$old_cameras$
+				:i else 
+					:i $view_goals_cameras$ = :a{
+						:i :s{
+							:i $virtual_cam$
+							:i $targetid$ = $world$
+							:i $targetOffset$ = %vec3(0.000000,0.000000,0.000000)
+							:i $positionOffset$ = %vec3(0.000000,0.000000,0.000000)
+							:i $frames$ = %i(60,0000003c)
+							:i $skippable$ = %i(1,00000001)
+						:i :s}
+						:i :a}
+				:i endif
+				:i $unique_cam$ = %i(0,00000000)
+			:i else 
+				:i $unique_cam$ = %i(1,00000001)
+				:i if NOT $GotParam$$default_level_message_cameras$
+					:i $default_level_message_cameras$ = %GLOBAL%$view_goals_cameras$
+				:i endif
+			:i endif
+			:i $beaten_this_time$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$hasBeaten$) 
+			:i $beaten_last_time$ =  ( (%GLOBAL%$previous_goal_data$:a{%GLOBAL%$index$:a}) ->$hasBeaten$) 
+			:i $show$ = %i(0,00000000)
+			:i $timer$ = %i(180,000000b4)
+			:i if  (%GLOBAL%$beaten_last_time$ = %i(0,00000000)) 
+				:i if  (%GLOBAL%$beaten_this_time$ = %GLOBAL%$show_beaten$) 
+					:i $show$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i $style$ = $classic_goal_intro_style$
+			:i if $GotParam$$TimedScoreRun$
+				:i if $GotParam$$just_unlocked$
+					:i $root_window$.$SetTags$$highlight_change_level$
+					:i if  (%GLOBAL%$just_unlocked$ = $just_unlocked_bracket$) 
+						:i $view_goals_text$ = %s(39,"You've Unlocked the Next Level Bracket!")
+						:i $style$ = $classic_goal_intro_style_bracketmessage$
+					:i else 
+						:i $view_goals_text$ = %s(42,"You've Unlocked the Secret Triangle Level!")
+						:i $style$ = $classic_goal_intro_style_bracketmessage_icon$
+					:i endif
+					:i $view_goals_cameras$ = %GLOBAL%$default_level_message_cameras$
+					:i $show$ = %i(1,00000001)
+					:i $timer$ = %i(360,00000168)
+					:i $unique_cam$ = %i(1,00000001)
+				:i else 
+					:i $show$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i $SetArrayElement$$ArrayName$ = $GoalList$$index$ = %GLOBAL%$index$$newvalue$ = :s{ (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) 
+				:i $show$ = %GLOBAL%$show$
+				:i $view_goals_text$ = %GLOBAL%$view_goals_text$
+				:i $view_goals_cameras$ = %GLOBAL%$view_goals_cameras$
+				:i $unique_cam$ = %GLOBAL%$unique_cam$
+				:i $timer$ = %GLOBAL%$timer$
+				:i $style$ = %GLOBAL%$style$
+			:i :s}
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i return
+		$GoalList$ = %GLOBAL%$GoalList$
+	:i endif
+:i endfunction
+:i function $PlayClassicIntroCameras$
+	:i $GoalManager_ReplaceTrickText$$all$
+	:i if NOT $IsTrue$$THUGPRO_classic_mode_skip_cameras$
+		:i $GetArraySize$%GLOBAL%$GoalList$
+		:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+			:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+				:i $exit_pause_menu$$dont_restore_start_key_binding$
+			:i endif
+			:i if $GotParam$$end_run$
+				:i $inside_run$ = $inside_run$
+			:i endif
+			:i $SetUpChapterMenu$
+			:i $SetScreenElementLock$$id$ = $root_window$$off$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = $root_window$
+				:i $id$ = $classic_intro_root$
+				:i $event_handlers$ = :a{:s{$pad_choose$$classic_intro_advance_cam$:s}:a}
+			:i :s}
+			:i $FireEvent$$type$ = $focus$$target$ = $classic_intro_root$
+			:i $GetCurrentLevelName$
+			:i $create_panel_block$:s{$parent$ = $classic_intro_root$
+				:i $id$ = $intro_title$
+				:i $font_face$ = $testtitle$
+				:i $text$ = %GLOBAL%$level_name$
+				:i $rgba$ = :a{%i(16,00000010)%i(67,00000043)%i(113,00000071)%i(90,0000005a):a}
+				:i $pos$ = %vec2(320.000000,50.000000)
+				:i $time$ = %i(200000,00030d40)
+				:i $dims$ = %vec2(616.000000,0.000000)
+				:i $scale$ = %f(1.800000)
+				:i $just$ = :a{$center$$top$:a}
+				:i $internal_just$ = :a{$center$$top$:a}
+			:i :s}
+			:i $index$ = %i(0,00000000)
+			:i while
+				
+				:i if  ( ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$show$)  = %i(1,00000001)) 
+					:i $skip_me$ = %i(0,00000000)
+				:i else 
+					:i $skip_me$ = %i(1,00000001)
+				:i endif
+				:i if $classic_intro_root$.$GetSingleTag$$pressed_x$
+					:i if  ( ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$unique_cam$)  = %i(0,00000000)) 
+						:i $skip_me$ = %i(1,00000001)
+					:i else 
+						:i $classic_intro_root$.$RemoveTags$$tags$ = :a{$pressed_x$:a}
+					:i endif
+				:i endif
+				:i if  (%GLOBAL%$skip_me$ = %i(0,00000000)) 
+					:i $DeBounce$$X$$time$ = %f(0.300000)
+					:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+					:i $spawnscript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(200,000000c8):s}
+					:i $GetCurrentSkaterCamAnimName$
+					:i $GetIntroSkaterCamName$$index$ = %GLOBAL%$index$$cam$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$view_goals_cameras$:a{%i(0,00000000):a}) 
+					:i if NOT  (%GLOBAL%$name$ = %GLOBAL%$CurrentSkaterCamAnimName$) 
+						:i $KillSkaterCamAnim$$current$
+						:i $PlayIntroSkaterCam$$index$ = %GLOBAL%$index$$cam$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$view_goals_cameras$:a{%i(0,00000000):a}) 
+					:i endif
+					:i $spawnscript$$display_classic_goal_intro_panel$$params$ = :s{$goal_name$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$view_goals_text$) 
+						:i $beaten$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$hasBeaten$) 
+						:i $style$ =  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$style$) 
+					:i :s}
+					:i $PauseStream$%i(0,00000000)
+					:i $StopStream$$UnlockOldTHPSLevel$
+					:i $KillSpawnedScript$$name$ = $PlayTHPSSoundAfterWait$
+					:i $spawnscript$$PlayTHPSSoundAfterWait$
+					:i $timer$ = %i(0,00000000)
+					:i while
+						
+						:i if  (%GLOBAL%$timer$ >  ( (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) ->$timer$) ) 
+							:i continue
+							
+						:i endif
+						:i if $classic_intro_root$.$GetSingleTag$$pressed_x$
+							:i continue
+							
+						:i endif
+						:i if $SkaterCamAnimFinished$
+							:i continue
+							
+						:i endif
+						:i $timer$ =  (%GLOBAL%$timer$ + %i(1,00000001)) 
+						:i $wait$%i(1,00000001)$gameframes$
+					:i loop_to 
+				:i endif
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+			:i $KillSkaterCamAnim$$all$
+			:i $StopStream$$UnlockOldTHPSLevel$
+			:i if $ScreenElementExists$$id$ = $classic_intro_root$
+				:i $DestroyScreenElement$$id$ = $classic_intro_root$
+			:i endif
+			:i $KillChapterMenu$$inside_run$ = %GLOBAL%$inside_run$
+		:i endif
+		:i $RemoveParameter$$goals$
+	:i endif
+	:i $SafeCallback$ isNull 
+:i endfunction
+:i function $PlayTHPSSoundAfterWait$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $PlayStream$$UnlockOldTHPSLevel$$vol$ = %i(150,00000096)
+:i endfunction
+:i function $classic_intro_advance_cam$
+	:i $classic_intro_root$.$SetTags$$pressed_x$
+:i endfunction
+:i function $classic_mode_view_goals_exit$
+	:i $DestroyScreenElement$$id$ = $view_goals_root$
+	:i if  ($classic_mode_in_end_run_sequence$ = %i(0,00000000)) 
+		:i if $GotParam$$back$
+			:i $generic_menu_pad_back_sound$
+		:i else 
+			:i $generic_menu_pad_choose_sound$
+		:i endif
+		:i $create_pause_menu$
+	:i else 
+		:i $generic_menu_pad_choose_sound$
+		:i $classic_mode_do_high_scores$
+	:i endif
+:i endfunction
+:i function $classic_mode_do_high_scores$
+	:i $UpdateRecords$
+	:i $UpdateInitials$
+	:i $ResetComboRecords$
+	:i if $NewRecord$
+		:i $high_scores_menu_create$
+	:i else 
+		:i $classic_mode_do_end_run_stats$
+	:i endif
+:i endfunction
+:i function $classic_mode_do_end_run_stats$
+	:i $GetStatValue$$points_available$
+	:i if  (%GLOBAL%$stat_value$ > %i(0,00000000)) 
+		:i if NOT $GotParam$$overridden$
+			:i $create_classic_stats_menu$$end_run$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $gamemode_end_run_maybe_save$
+:i endfunction
+:i function $gamemode_end_run_maybe_save$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $change$$classic_mode_in_end_run_sequence$ = %i(0,00000000)
+	:i if $root_window$.$GetSingleTag$$highlight_change_level$
+		:i $ingame_confirm_save$
+		:i return
+		
+	:i endif
+	:i $create_pause_menu$
+:i endfunction
+:i function $classic_mode_view_goals$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $CheckNeedCompletionMessages$
+	:i if $GotParam$$need_completion_messages$
+		:i $spawnscript$$DoCompletionMessagesNow$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$end_run$
+		:i $PauseGame$
+		:i $kill_start_key_binding$
+		:i $set_pause_menu_allow_continue$$off$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $kill_speech_boxes$
+	:i $TantrumMessageKill$
+	:i $console_clear$
+	:i $hide_all_hud_items$
+	:i $kill_start_key_binding$
+	:i $GoalManager_ReplaceTrickText$$all$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $view_goals_root$
+		:i $not_focusable$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $view_goals_root$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$classic_mode_view_goals_exit$$params$ = :s{$back$:s}:s}
+			:i :s{$pad_choose$$classic_mode_view_goals_exit$:s}
+			:i :a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_helper_text$:s{
+		:i $parent$ = $view_goals_root$
+		:i $helper_pos$ = %vec2(320.000000,464.000000)
+		:i $helper_text_elements$ = :a{:s{$text$ = %s(14,"\bn/\bm = Done"):s}:a}
+	:i :s}
+	:i $GoalManager_GetGoalList$
+	:i $classic_mode_get_previous_goal_data$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $view_goals_root$
+		:i $pos$ = %vec2(320.000000,105.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $not_focusable$
+	:i :s}
+	:i $container_id$ = %GLOBAL%$id$
+	:i $position$ = %vec2(0.000000,0.000000)
+	:i $scale$ = %f(0.900000)
+	:i $left_right_pos$ = %i(4294967295,ffffffff)
+	:i $any_goals_beaten$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$GoalList$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $goal$ =  (%GLOBAL%$GoalList$:a{%GLOBAL%$index$:a}) 
+		:i $RemoveParameter$$TimedScoreRun$
+		:i $classic_mode_is_goal_timed$$goal$ =  (%GLOBAL%$goal$->$goalId$) 
+		:i if NOT $GotParam$$TimedScoreRun$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = %GLOBAL%$container_id$
+				:i $pos$ = %GLOBAL%$position$
+			:i :s}
+			:i if  (%GLOBAL%$left_right_pos$ < %i(0,00000000)) 
+				:i $left_right_pos$ = %i(1,00000001)
+			:i else 
+				:i $left_right_pos$ = %i(4294967295,ffffffff)
+			:i endif
+			:i $local_container_id$ = %GLOBAL%$id$
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$local_container_id$$classic_view_goals_animate_in$$params$ = :s{$left_right_pos$ = %GLOBAL%$left_right_pos$
+				:i $position$ = %GLOBAL%$position$
+				:i $index$ = %GLOBAL%$index$
+			:i :s}
+			:i $GoalManager_GetGoalParams$$name$ =  (%GLOBAL%$goal$->$goalId$) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$local_container_id$
+				:i $shadow$
+				:i $shadow_rgba$ = $UI_text_shadow_color$
+				:i $shadow_offs$ = $UI_text_shadow_offset$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$view_goals_text$
+				:i $scale$ = %GLOBAL%$scale$
+				:i $pos$ = %vec2(0.000000,0.000000)
+				:i $just$ = :a{$center$$center$:a}
+			:i :s}
+			:i if  ( (%GLOBAL%$previous_goal_data$:a{%GLOBAL%$index$:a}->$hasBeaten$)  = %i(1,00000001)) 
+				:i %GLOBAL%$id$.$SetProps$$rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}
+			:i else 
+				:i if  ( (%GLOBAL%$goal$->$hasBeaten$)  = %i(1,00000001)) 
+					:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$classic_view_goals_style$$params$ = :s{$color$ = :a{%i(128,00000080)%i(40,00000028)%i(40,00000028)%i(128,00000080):a}$wait_first$:s}
+				:i endif
+			:i endif
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$local_container_id$
+				:i $pos$ = %vec2(0.000000,0.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $scale$ = %vec2(50.000000,3.000000)
+				:i $texture$ = $white2$
+				:i $z_priority$ = %i(2,00000002)
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+			:i :s}
+			:i $position$ =  (%GLOBAL%$position$ + %vec2(0.000000,28.000000)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $spawnscript$$SK6_SFX_ShowClassicGoals$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(0.000000,-150.000000)
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $container_id$ = %GLOBAL%$id$
+	:i $GetCurrentLevelName$
+	:i $FormatText$$TextName$ = $title$%s(8,"%a Goals")$a$ = %GLOBAL%$level_name$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$title$
+		:i $scale$ = %f(1.800000)
+		:i $pos$ = %vec2(0.000000,2.000000)
+		:i $rgba$ = :a{%i(30,0000001e)%i(60,0000003c)%i(128,00000080)%i(128,00000080):a}
+		:i $just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$container_id$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(50.000000,6.000000)
+		:i $texture$ = $white2$
+		:i $z_priority$ = %i(4294967294,fffffffe)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(100,00000064):a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$container_id$$classic_view_goals_title$
+	:i $FireEvent$$type$ = $focus$$target$ = $view_goals_root$
+:i endfunction
+:i function $classic_view_goals_title$
+	:i $wait$%f(0.450000)$seconds$
+	:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %f(0.150000)$pos$ = %vec2(0.000000,-40.000000)
+:i endfunction
+:i function $classic_view_goals_animate_in$
+	:i $DoMorph$$pos$ =  (%GLOBAL%$position$ + %GLOBAL%$left_right_pos$ * %vec2(600.000000,0.000000)) 
+	:i $wait$ (%GLOBAL%$index$ * %i(2,00000002)) $gameframes$
+	:i $DoMorph$$pos$ =  (%GLOBAL%$position$ - %GLOBAL%$left_right_pos$ * %vec2(100.000000,0.000000)) $time$ = %f(0.200000)
+	:i $DoMorph$$pos$ = %GLOBAL%$position$$time$ = %f(0.100000)
+:i endfunction
+:i function $classic_view_goals_style$$color$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i if $GotParam$$wait_first$
+		:i $wait$%f(0.600000)$seconds$
+	:i endif
+	:i $SetProps$$rgba$ = %GLOBAL%$color$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.200000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.800000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.200000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$relative_scale$
+	:i while
+		
+		:i $DoMorph$$time$ = %f(0.500000)$scale$ = %f(1.050000)
+		:i $DoMorph$$time$ = %f(0.500000)$scale$ = %f(0.950000)
+	:i loop_to 
+:i endfunction
+:i function $classic_goal_intro_style$$color$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i $SetProps$$rgba$ = %GLOBAL%$color$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.600000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.800000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.200000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$relative_scale$
+:i endfunction
+:i function $classic_goal_intro_style_bracketmessage$$color$ = :a{%i(121,00000079)%i(80,00000050)%i(6,00000006)%i(128,00000080):a}
+	:i $SetProps$$rgba$ = %GLOBAL%$color$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(10.800000)$relative_scale$$rot_angle$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.800000)$relative_scale$$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.200000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$relative_scale$$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.700000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.500000)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.030000)$scale$ = %f(1.500000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %f(1.750000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.800000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.300000)$relative_scale$$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $classic_goal_intro_style_bracketmessage_icon$$color$ = :a{%i(121,00000079)%i(80,00000050)%i(6,00000006)%i(128,00000080):a}
+	:i $SetProps$$rgba$ = %GLOBAL%$color$
+	:i $SetScreenElementLock$$id$ = $classic_intro_root$$off$
+	:i $Theme_GetPauseBarColor$$return_value$ = $bar_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_intro_root$
+		:i $id$ = $unlocked_sign_icon$
+		:i $texture$ = $white$
+		:i $scale$ = %i(3,00000003)
+		:i $z_priority$ = %i(4294967286,fffffff6)
+		:i $rgba$ = :a{%i(128,00000080)%i(109,0000006d)%i(9,00000009)%i(80,00000050):a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $unlocked_sign_icon$$unlocked_sign_icon_animate$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(10.800000)$relative_scale$$rot_angle$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.800000)$relative_scale$$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.200000)$relative_scale$
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %i(1,00000001)$relative_scale$$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.700000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.500000)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(3,00000003)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.800000)$rot_angle$ = %i(4,00000004)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %i(1,00000001)$rot_angle$ = %i(6,00000006)
+	:i $DoMorph$$time$ = %f(0.100000)$alpha$ = %f(0.600000)$rot_angle$ = %i(5,00000005)
+	:i $DoMorph$$time$ = %f(0.030000)$scale$ = %f(1.500000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %f(1.750000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.800000)$relative_scale$$rot_angle$ = %i(5,00000005)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.300000)$relative_scale$$alpha$ = %i(0,00000000)
+:i endfunction
+:i function $unlocked_sign_icon_animate$
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,600.000000)
+	:i $DoMorph$$time$ = %f(0.200000)$pos$ = %vec2(320.000000,240.000000)
+	:i $GetTags$
+	:i $SetTags$$random_effect_done$ = %i(0,00000000)
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$do_random_effect2$
+	:i while
+		
+		:i $GetTags$
+		:i if  (%GLOBAL%$random_effect_done$ = %i(1,00000001)) 
+			:i $SetTags$$random_effect_done$ = %i(0,00000000)
+			:i $RunScriptOnScreenElement$$id$ = $unlocked_sign_icon$$do_random_effect2$$params$ = :s{
+				:i $id$ = $unlocked_sign_icon$
+				:i $effect$ = select(2f,45, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8):OFFSET(9):OFFSET(10):OFFSET(11):OFFSET(12):OFFSET(13):OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19):OFFSET(20):OFFSET(21):OFFSET(22):OFFSET(23):OFFSET(24):OFFSET(25):OFFSET(26):OFFSET(27):OFFSET(28):OFFSET(29):OFFSET(30):OFFSET(31):OFFSET(32):OFFSET(33):OFFSET(34):OFFSET(35):OFFSET(36):OFFSET(37):OFFSET(38):OFFSET(39):OFFSET(40):OFFSET(41):OFFSET(42):OFFSET(43):OFFSET(44)
+					 :POS(0) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(1) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(2) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(3) %i(8,00000008)
+				:BREAKTO(45)
+					 :POS(4) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(5) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(6) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(7) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(8) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(9) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(10) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(11) %i(10,0000000a)
+				:BREAKTO(45)
+					 :POS(12) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(13) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(14) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(15) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(16) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(17) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(18) %i(8,00000008)
+				:BREAKTO(45)
+					 :POS(19) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(20) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(21) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(22) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(23) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(24) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(25) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(26) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(27) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(28) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(29) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(30) %i(1,00000001)
+				:BREAKTO(45)
+					 :POS(31) %i(9,00000009)
+				:BREAKTO(45)
+					 :POS(32) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(33) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(34) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(35) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(36) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(37) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(38) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(39) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(40) %i(2,00000002)
+				:BREAKTO(45)
+					 :POS(41) %i(3,00000003)
+				:BREAKTO(45)
+					 :POS(42) %i(5,00000005)
+				:BREAKTO(45)
+					 :POS(43) %i(6,00000006)
+				:BREAKTO(45)
+					 :POS(44) %i(1,00000001) :POS(45) 
+					:i  isNull 
+				:i :s}
+			:i endif
+			:i $wait$%i(4,00000004)$frame$
+		:i loop_to %i(40,00000028)
+		:i $DoMorph$$time$ = %f(0.400000)$alpha$ = %i(0,00000000)$scale$ = %f(0.500000)
+	:i endfunction
+	:i function $classic_goal_intro_complete_style$$color$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $SetProps$$rgba$ = %GLOBAL%$color$
+		:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)$relative_scale$
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.600000)$relative_scale$
+		:i while
+			
+			:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.850000)$relative_scale$
+			:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(1.150000)$relative_scale$
+		:i loop_to 
+	:i endfunction
+	:i $classic_all_goals_complete_message_shown$ = %i(0,00000000)
+	:i function $classic_mode_check_for_all_complete_message$
+		:i if $IsTrue$$classic_all_goals_complete_message_shown$
+			:i return
+			
+		:i endif
+		:i $change$$classic_all_goals_complete_message_shown$ = %i(1,00000001)
+		:i $GetClassicLevelGoalCount$
+		:i if  (%GLOBAL%$classic_goal_count$ = %i(10,0000000a)) 
+			:i $wait$%f(0.500000)$seconds$
+			:i $goal_panel_wait_for_my_turn$
+			:i $spawnscript$$Goal_Success_Message_Sound$
+			:i $create_panel_message$:s{
+				:i $id$ = $all_goals_completed_message$
+				:i $text$ = %s(19,"All Goals Complete!")
+				:i $style$ = $classic_goals_all_complete_message$
+			:i :s}
+		:i endif
+	:i endfunction
+	:i function $classic_goals_all_complete_message$
+		:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+		:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,125.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+		:i $DoMorph$$time$ = %f(0.200000)$alpha$ = %i(1,00000001)
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(2.500000)
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.500000)
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(2.000000)
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.400000)
+		:i $DoMorph$$pos$ = %vec2(321.000000,126.000000)$time$ = %f(0.100000)
+		:i $DoMorph$$pos$ = %vec2(319.000000,124.000000)$time$ = %f(0.100000)
+		:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(1.400000)
+		:i $DoMorph$$time$ = %f(0.300000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+		:i $Die$
+	:i endfunction
+	:i function $classic_mode_is_goal_timed$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal$
+		:i if $GotParam$$TimedScoreRun$
+			:i return
+			$TimedScoreRun$
+		:i endif
+	:i endfunction
+	:i function $display_classic_goal_intro_panel$$style$ = $classic_goal_intro_style$
+		:i if $ScreenElementExists$$id$ = $intro_panel$
+			:i $DestroyScreenElement$$id$ = $intro_panel$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $intro_panel_complete$
+			:i $DestroyScreenElement$$id$ = $intro_panel_complete$
+		:i endif
+		:i $create_panel_block$:s{$parent$ = $classic_intro_root$
+			:i $id$ = $intro_panel$
+			:i $font_face$ = $small$
+			:i $text$ = %GLOBAL%$goal_name$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i $pos$ = %vec2(320.000000,200.000000)
+			:i $time$ = %i(3000,00000bb8)
+			:i $dims$ = %vec2(300.000000,200.000000)
+			:i $scale$ = %f(1.600000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$center$$top$:a}
+			:i $time$ = %i(10000,00002710)
+		:i :s}
+		:i if  (%GLOBAL%$beaten$ = %i(1,00000001)) 
+			:i $color$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $create_panel_block$:s{$parent$ = $classic_intro_root$
+				:i $id$ = $intro_panel_complete$
+				:i $font_face$ = $small$
+				:i $text$ = %s(9,"Complete!")
+				:i $rgba$ = %GLOBAL%$color$
+				:i $pos$ = %vec2(320.000000,240.000000)
+				:i $time$ = %i(3000,00000bb8)
+				:i $dims$ = %vec2(300.000000,200.000000)
+				:i $scale$ = %i(2,00000002)
+				:i $just$ = :a{$center$$center$:a}
+				:i $internal_just$ = :a{$center$$top$:a}
+				:i $time$ = %i(10000,00002710)
+			:i :s}
+			:i $RunScriptOnScreenElement$$id$ = $intro_panel_complete$$classic_goal_intro_complete_style$$params$ = :s{$color$ = %GLOBAL%$color$:s}
+		:i else 
+			:i $RunScriptOnScreenElement$$id$ = $intro_panel$%GLOBAL%$style$
+		:i endif
+	:i endfunction
+	:i function $CheckClassicAdvancementStatus$
+		:i if NOT $GameModeEquals$$is_classic$
+			:i return
+			
+		:i endif
+		:i if $IsTrue$$DEMO_BUILD$
+			:i return
+			
+		:i endif
+		:i $GetCurrentLevel$
+		:i $GetArraySize$$level_select_menu_classic_level_info$
+		:i $GetClassicModeTargetGoalsComplete$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i if $StructureContains$$structure$ =  ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) $level$
+				:i $GetClassicLevelGoalCount$$level$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+				:i if  ( ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = %GLOBAL%$level$) 
+					:i if NOT  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+						:i $next_index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i $bracket1$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$bracket$) 
+						:i while
+							
+							:i if  (%GLOBAL%$next_index$ < %GLOBAL%$array_size$) 
+								:i if $StructureContains$$structure$ =  ($level_select_menu_classic_level_info$:a{%GLOBAL%$next_index$:a}) $flag$
+									:i $flag$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$next_index$:a}) ->$flag$) 
+									:i $bracket2$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$next_index$:a}) ->$bracket$) 
+									:i if  (%GLOBAL%$bracket2$ =  (%GLOBAL%$bracket1$ + %i(1,00000001)) ) 
+										:i if NOT $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+											:i $just_unlocked$ = $just_unlocked_bracket$
+											:i if NOT  (%GLOBAL%$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$) 
+												:i $SetGlobalFlag$$flag$ = %GLOBAL%$flag$
+											:i endif
+										:i endif
+										:i if $StructureContains$$structure$ =  ($level_select_menu_classic_level_info$:a{%GLOBAL%$next_index$:a}) $seen_flag$
+											:i $seen_flag$ =  ($level_select_menu_classic_level_info$:a{%GLOBAL%$next_index$:a}->$seen_flag$) 
+											:i if NOT  (%GLOBAL%$seen_flag$ = $LEVEL_SEEN_SE2$) 
+												:i $SetGlobalFlag$$flag$ = %GLOBAL%$seen_flag$
+											:i endif
+										:i endif
+									:i endif
+								:i endif
+							:i else 
+								:i continue
+								
+							:i endif
+							:i $next_index$ =  (%GLOBAL%$next_index$ + %i(1,00000001)) 
+						:i loop_to %GLOBAL%$array_size$
+					:i endif
+				:i endif
+				:i if  ( ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_la$) 
+					:i if NOT  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+						:i if NOT $GetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$
+							:i $just_unlocked$ = $just_unlocked_se2$
+							:i $SetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$
+							:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_SE2$
+							:i $SetClassicTotalGoals$%i(140,0000008c)
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i $GetClassicLevelGoalCount$$get_total$
+		:i if  (%GLOBAL%$total_goals_complete$ = %GLOBAL%$total_goals_possible$) 
+			:i $GetClassicModeCompleteFlag$
+			:i $SetGlobalFlag$$flag$ = %GLOBAL%$complete_flag$
+		:i endif
+		:i return
+		$just_unlocked$ = %GLOBAL%$just_unlocked$
+	:i endfunction
+	:i function $GetClassicModeCompleteFlag$
+		:i $GoalManager_GetDifficultyLevel$
+		:i if  (%GLOBAL%$difficulty_level$ = %i(0,00000000)) 
+			:i $flag$ = $GAME_COMPLETED_CLASSIC_NORMAL$
+		:i else 
+			:i $flag$ = $GAME_COMPLETED_CLASSIC_SICK$
+		:i endif
+		:i return
+		$complete_flag$ = %GLOBAL%$flag$
+	:i endfunction
+	:i $classic_mode_use_cheat_points$ = %i(0,00000000)
+	:i function $GetClassicModeTargetGoalsComplete$
+		:i if $IsTrue$$classic_mode_use_cheat_points$
+			:i return
+			$target_goals_complete$ = %i(1,00000001)
+		:i endif
+		:i $GoalManager_GetDifficultyLevel$
+		:i if  (%GLOBAL%$difficulty_level$ = %i(0,00000000)) 
+			:i return
+			$target_goals_complete$ = %i(6,00000006)
+		:i else 
+			:i return
+			$target_goals_complete$ = %i(8,00000008)
+		:i endif
+	:i endfunction
+	:i function $IsClassicModeComplete$
+		:i $GetClassicModeCompleteFlag$
+		:i if $GetGlobalFlag$$flag$ = %GLOBAL%$complete_flag$
+			:i return
+			$classic_mode_completed$
+		:i endif
+	:i endfunction
+	:i :end
+	

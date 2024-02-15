@@ -1,0 +1,76 @@
+// Actual object / mesh
+// (TONY HAWK'S PROVING GROUND)
+
+typedef struct (int scene_start)
+{
+    Sphere bounding_sphere <bgcolor=CL_MESHFLOATS>;
+
+    ushort unkA <bgcolor=CL_MESHVALUE>;
+    ushort unkB <bgcolor=CL_MESHVALUE>;
+
+    QBKey material <bgcolor=CL_MESHCHECKSUM>;
+
+    uint const_not_flags <bgcolor=CL_MESHVALUE>;
+
+    uint mesh_flags <bgcolor=CL_MESHVALUE>;
+
+    uint unkC <bgcolor=CL_MESHVALUE>;
+
+    ushort face_count <bgcolor=CL_MESHVALUE>;
+    ushort vertex_count <bgcolor=CL_MESHVALUE>;
+
+    uint face_num <bgcolor=CL_MESHVALUE, comment="Face type? usually 4">;
+    uint zeros_a[5] <bgcolor=CL_MESHPADDING>;
+
+    RelativeOffset uv_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    byte ff_a[8] <hidden=true, bgcolor=CL_MESHPADDING>;
+
+    int uv_length <bgcolor=CL_MESHVALUE, comment="Length of pure vert UV's">;\
+
+    uint zeros_b[2] <bgcolor=CL_MESHPADDING>;
+
+    byte zeroByteA <bgcolor=CL_MESHPADDING>;
+    ubyte uv_bool <bgcolor=CL_MESHVALUE>;
+    ubyte uv_stride <bgcolor=CL_MESHVALUE>;
+    byte zeroByteB <bgcolor=CL_MESHPADDING>;
+
+    RelativeOffset face_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+    RelativeOffset vert_start(scene_start) <bgcolor=CL_MESHPOINTER>;
+
+    uint zeros_c <bgcolor=CL_MESHPADDING>;
+    uint unkD <bgcolor=CL_MESHVALUE>;
+
+    uint zeros_d[3] <bgcolor=CL_MESHPADDING>;
+    uint zeros_e[2] <bgcolor=CL_MESHPADDING>;
+    
+    // Read geometry data
+    local int old_off = FTell();
+
+    // UV's
+    FSeek(AbsOffset(uv_start));
+    UVBlock uvs(vertex_count, uv_stride, 0);
+
+    // Faces
+    FSeek(AbsOffset(face_start));
+    FaceBlock faces(face_count);
+
+    // Vertices (SubMesh Cafe)
+    // Unweighted meshes have values in the UV block
+    //if (vert_start.offset != 0xFFFFFFFF)
+    if (mesh_flags & MESHFLAG_HASWEIGHTS)
+    {
+        FSeek(AbsOffset(vert_start));
+        uint verts_here;
+    }
+
+    // Return
+    FSeek(old_off);
+} sMesh_THPG <read=ReadsMesh_THPG>;
+
+string ReadsMesh_THPG(sMesh_THPG &themesh)
+{
+    local string s;
+
+    return SPrintf(s, "Mat: %s, %d verts, %d faces, %d UVstride", ReadQBKey(themesh.material), themesh.vertex_count, themesh.face_count, themesh.uv_stride);
+}

@@ -1,0 +1,58 @@
+//------------------------------------------------
+// DJ HERO 1 MSB: BLOCK
+// Could be many different types!
+//------------------------------------------------
+
+#include "DJBlockTextures.bt"
+#include "DJBlockShaders.bt"
+#include "DJBlockModelData.bt"
+
+enum <uint> BlockType
+{
+    BT_UNK = 1,
+    BT_TEXTUREFILES = 3,
+    BT_SHADERFILES = 4,
+    BT_MODELDATA = 6
+};
+
+typedef struct
+{
+    local uint blockStart = FTell();
+    local ubyte bad_block = false;
+
+    BlockType type <bgcolor=CL_SINGLEVALUE>;
+    uint contentsSize <bgcolor=CL_SINGLEVALUE>;
+    uint blockSize <bgcolor=CL_SINGLEVALUE>;
+
+    // Align to 32 byte boundary
+    SkipTo(32);
+
+    switch (type)
+    {
+        case BT_UNK:
+            // Unknown block has no data at all
+            // DJBlockUnknown data;
+            break;
+
+        case BT_TEXTUREFILES:
+            DJBlockTextures data;
+            break;
+
+        case BT_SHADERFILES:
+            DJBlockShaders data;
+            break;
+
+        case BT_MODELDATA:
+            DJBlockModelData data;
+            break;
+
+        default:
+            bad_block = true;
+            Printf("Unknown block type: %d\n", type);
+            break;
+    }
+
+    // Align to 32 byte boundary
+    SkipTo(32);
+
+} DJBlock <read=Str("%s (%d content bytes, %d block bytes)", EnumToString(type), contentsSize, blockSize)>;

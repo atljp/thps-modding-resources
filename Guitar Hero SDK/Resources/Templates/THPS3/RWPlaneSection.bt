@@ -1,0 +1,38 @@
+//------------------------------------------------
+// PlaneSection data.
+//------------------------------------------------
+
+typedef struct
+{
+    RWSectionType section_type <bgcolor=0xAAAAAA>;
+    uint size <bgcolor=0xAAAAAA>;
+    uint id_stamp <bgcolor=0xAAAAAA>;
+    
+    RWSectionType struc_section_type <bgcolor=0xAAAAAA>;
+    uint struc_size <bgcolor=0xAAAAAA>;
+    uint struc_id_stamp <bgcolor=0xAAAAAA>;
+    
+    uint bsp[6] <bgcolor=0xAAAAAA>;
+    
+    RWSection atomic_section(ST_PlaneSection);
+} RWPlaneSubSection;
+
+typedef struct
+{
+    uint bsp[6];
+    RWSection atomic_section(ST_PlaneSection);
+    
+    local uint test_int = ReadInt();
+    
+    // To prevent ludicrous nesting, we'll
+    // "simulate" an array of RWPlaneSections.
+    //
+    // 010 and pretty much any other program
+    // would have a fit if we literally nested these.
+    
+    while (test_int == 0x0A)
+    {
+        RWPlaneSubSection sub;
+        test_int = ReadInt();
+    }
+} RWPlaneSection;

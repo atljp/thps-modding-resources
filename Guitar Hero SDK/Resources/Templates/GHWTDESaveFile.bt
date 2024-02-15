@@ -1,0 +1,31 @@
+//------------------------------------------------
+// GHWTDE .sav file
+//------------------------------------------------
+
+#include "Common.bt"
+#include "WrittenBuffer.bt"
+
+typedef struct
+{
+    QBKey id;
+    uint writtenBufferSize;
+
+    local uint endPos = FTell() + writtenBufferSize;
+
+    // WrittenBuffer buffer;
+    ubyte data[writtenBufferSize];
+    
+    FSeek(endPos);
+
+} GlobalTag <read=Str("%s: %d bytes", ReadQBKey(this.id), this.writtenBufferSize)>;
+
+typedef struct
+{
+    uint version;
+    uint numtags;
+
+    GlobalTag tags[numtags] <optimize=false>;
+} GHWTDESave;
+
+LittleEndian();
+GHWTDESave saveFile;

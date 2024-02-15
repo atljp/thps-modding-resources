@@ -1,0 +1,992 @@
+
+:i function $create_dialog_box_with_wait$
+	:i if  ($no_load$ = %i(0,00000000)) 
+		:i $memcard_menus_cleanup$
+	:i else 
+		:i %GLOBAL%$no_bg$ = $no_bg$
+	:i endif
+	:i $create_snazzy_dialog_box$:s{ isNull $no_animate$:s}
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $DisableReset$
+	:i $EnableReset$
+	:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+:i endfunction
+:i function $mcmess_CheckingCard$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(12,"Checking ...")
+				:i $text$ = %sc(166,"Checking memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1. Do not remove memory card (8MB) (for PlayStation?2), controller, or reset/switch off the console")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(12,"Checking ...")
+				:i $text$ = %sc(22,"Checking hard disk ...")
+				:i $no_bg$ = %GLOBAL%$no_bg$
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(13,"Accessing ...")
+				:i $text$ = %sc(89,"Accessing. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_SavingData$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(10,"Saving ...")
+				:i $text$ = %sc(132,"Saving data. Do not remove memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1, controller, or reset/switch off the console.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(28,"Saving %f to hard disk ...\n")
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(10,"Saving ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %GLOBAL%$text$
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(10,"Saving ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %sc(91,"Saving data. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_OverwritingData$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(15,"Overwriting ...")
+				:i $text$ = %sc(133,"Overwriting data. Do not remove memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1, controller, or reset/switch off console.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(33,"Overwriting %f to hard disk ...\n")
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(15,"Overwriting ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %GLOBAL%$text$
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(15,"Overwriting ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %sc(96,"Overwriting data. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_LoadingData$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(11,"Loading ...")
+				:i $text$ = %sc(111,"Loading data. Do not remove memory card (8MB) (for PlayStation?2), controller, or reset/switch off the console.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i $no_animate$ = %GLOBAL%$no_animate$
+			:i endcase
+		case $xbox$
+			:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(31,"Loading %f from hard disk ...\n")
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(11,"Loading ...")
+				:i $text_dims$ = %vec2(400.000000,0.000000)
+				:i $text$ = %GLOBAL%$text$
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i $no_animate$ = %GLOBAL%$no_animate$
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(11,"Loading ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %sc(92,"Loading data. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i $no_animate$ = %GLOBAL%$no_animate$
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_DeletingFile$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(12,"Deleting ...")
+				:i $text$ = %sc(130,"Deleting data. Do not remove memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1, controller, or reset/switch off console.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(32,"Deleting %f from hard disk ...\n")
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(12,"Deleting ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %GLOBAL%$text$
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %sc(12,"Deleting ...")
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $text$ = %sc(93,"Deleting data. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_SaveSuccessful$
+	:i if $CheckPS2SaveState$
+		:i $FormatText$$TextName$ = $text$%s(105,"SAVE NOT SUCCESSFUL!!!\n\n CALL GARY: 310-422-4519\n or 818-610-4155\n\n TELL HIM THIS:\n Save State = %d")$d$ = %GLOBAL%$save_state$
+	:i else 
+		:i %GLOBAL%$text$ = %sc(15,"Save successful")
+		:i if $InNetGame$
+			:i if $LevelIs$$load_sk5ed_gameplay$
+				:i $FormatText$$TextName$ = $TP_NET_SavedPark_MSG$%s(26,"I saved this Created Park!")
+				:i $SendChatMessage$$String$ = %GLOBAL%$TP_NET_SavedPark_MSG$
+			:i endif
+		:i endif
+	:i endif
+	:i $create_memcard_success_dialog_box$:s{
+		:i $title$ = %sc(10,"Successful")
+		:i $text$ = %GLOBAL%$text$
+	:i :s}
+:i endfunction
+:i function $mcmess_OverwriteSuccessful$
+	:i if $CheckPS2SaveState$
+		:i $FormatText$$TextName$ = $text$%s(110,"OVERWRITE NOT SUCCESSFUL!!!\n\n CALL GARY: 310-422-4519\n or 818-610-4155\n\n TELL HIM THIS:\n Save State = %d")$d$ = %GLOBAL%$save_state$
+	:i else 
+		:i %GLOBAL%$text$ = %sc(20,"Overwrite successful")
+		:i if $InNetGame$
+			:i if $LevelIs$$load_sk5ed_gameplay$
+				:i $FormatText$$TextName$ = $TP_NET_SavedPark_MSG$%s(26,"I saved this Created Park!")
+				:i $SendChatMessage$$String$ = %GLOBAL%$TP_NET_SavedPark_MSG$
+			:i endif
+		:i endif
+	:i endif
+	:i $create_memcard_success_dialog_box$:s{
+		:i $title$ = %sc(10,"Successful")
+		:i $text$ = %GLOBAL%$text$
+	:i :s}
+:i endfunction
+:i function $mcmess_LoadSuccessful$
+	:i $create_memcard_success_dialog_box$:s{
+		:i $title$ = %sc(10,"Successful")
+		:i $text$ = %sc(15,"Load Successful")
+	:i :s}
+:i endfunction
+:i function $mcmess_FormattingCard$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_dialog_box_with_wait$:s{
+				:i $title$ = %s(13,"Formatting...")
+				:i $text$ = %s(165,"Formatting memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1. Do not remove memory card (8MB) (for PlayStation?2), controller, or reset/switch off console.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_dialog_box_with_wait$:s{
+				:i $text_dims$ = %vec2(400.000000,0.000000)
+				:i $title$ = %s(13,"Formatting...")
+				:i $text$ = %s(90,"Formatting. Do not touch the Nintendo GameCube Memory Card in Slot A, or the POWER Button.")
+				:i $add_loading_anim$ = $add_loading_anim$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_FormatSuccessful$
+	:i $memcard_menus_cleanup$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %sc(10,"Successful")
+		:i $text$ = %sc(17,"Format Successful")
+		:i $pad_back_script$ = $RetryScript$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $RetryScript$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $create_memcard_error_dialog_box$
+	:i $memcard_menus_cleanup$
+	:i $create_error_box$:s{
+		:i  isNull 
+		:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+			:i :s{$font$ = $small$$text$ = %sc(4,"Quit")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $create_memcard_success_dialog_box$
+	:i $memcard_menus_cleanup$
+	:i $create_snazzy_dialog_box$:s{
+		:i  isNull 
+		:i $pad_back_script$ = $DoneScript$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = $DoneScript$$pad_choose_params$ = :s{$type$ = %GLOBAL%$type$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $mcmess_FormatFailed$
+	:i $memcard_menus_cleanup$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(102,"Format failed! Please check memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1 and try again.")
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $goto$$mcmess_DamagedCard$
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorSaveFailed$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i if $CheckPS2SaveState$
+				:i $FormatText$$TextName$ = $text$%s(105,"SAVE NOT SUCCESSFUL!!!\n\n CALL GARY: 310-422-4519\n or 818-610-4155\n\n TELL HIM THIS:\n Save State = %d")$d$ = %GLOBAL%$save_state$
+			:i else 
+				:i %GLOBAL%$text$ = :a{
+					:i %sc(15,"Save failed !\n")
+					:i %sc(24,"Check memory card (8MB) ")
+					:i %sc(35,"(for PlayStation?2) in MEMORY CARD ")
+					:i %sc(28,"slot 1 and please try again.")
+					:i :a}
+			:i endif
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(22,"Failed trying to save.")
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(83,"Save failed !\nCheck Nintendo GameCube Memory Card in Slot A and please try again !")
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorOverwriteFailed$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i if $CheckPS2SaveState$
+				:i $FormatText$$TextName$ = $text$%s(110,"OVERWRITE NOT SUCCESSFUL!!!\n\n CALL GARY: 310-422-4519\n or 818-610-4155\n\n TELL HIM THIS:\n Save State = %d")$d$ = %GLOBAL%$save_state$
+			:i else 
+				:i %GLOBAL%$text$ = :a{
+					:i %sc(20,"Overwrite failed !\n")
+					:i %sc(31,"Please check memory card (8MB) ")
+					:i %sc(35,"(for PlayStation?2) in MEMORY CARD ")
+					:i %sc(28,"slot 1 and please try again.")
+					:i :a}
+			:i endif
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(27,"Failed trying to overwrite.")
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(88,"Overwrite failed !\nCheck Nintendo GameCube Memory Card in Slot A and please try again !")
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorbadParkMaxPlayers$$back_script$ = $reload_anims_then_run_abort_script$$back_params$ = :s{:s}
+	:i $FormatText$:s{
+		:i $TextName$ = $text$
+		:i %sc(88,"This park cannot run with %p players.\nThe maximum number of players for this park is %m")
+		:i $p$ = %GLOBAL%$num_players$
+		:i $m$ = %GLOBAL%$MaxPlayers$
+	:i :s}
+	:i $create_error_box$:s{
+		:i $title$ = %sc(9,"Warning !")
+		:i $text$ = %GLOBAL%$text$
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $pad_back_script$ = %GLOBAL%$back_script$
+		:i $pad_back_params$ = %GLOBAL%$back_params$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(2,"OK")$pad_choose_script$ = %GLOBAL%$back_script$$pad_choose_params$ = %GLOBAL%$back_params$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i $autoload_cas_failed$ = %i(0,00000000)
+:i $autoload_net_failed$ = %i(0,00000000)
+:i function $mcmess_ErrorLoadFailed$
+	:i if $IsTrue$$in_autoload$
+		:i switch %GLOBAL%$file_type$
+			:i case $OptionsAndPros$
+				:i $change$$autoload_cas_failed$ = %i(1,00000001)
+				:i endcase
+			case $NetworkSettings$
+				:i $change$$autoload_net_failed$ = %i(1,00000001)
+				:i endcase
+			default 
+				:i end_switch
+		
+		:i $change$$in_autoload$ = %i(0,00000000)
+		:i $reload_anims_then_run_abort_script$
+	:i else 
+		:i $GetPlatform$
+		:i $GetFileTypeName$$file_type$ = %GLOBAL%$file_type$
+		:i $FormatText$$TextName$ = $text$%sc(67,"%s appears to be damaged and cannot be used. Press \bm to continue.")$s$ = %GLOBAL%$filetype_name$
+		:i $memcard_menus_cleanup$
+		:i $create_error_box$:s{
+			:i $title$ = %sc(0,"")
+			:i $text$ = %GLOBAL%$text$
+			:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+			:i $buttons$ = :a{
+				:i :s{$font$ = $small$$text$ = %sc(8,"Continue")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $mcmess_NGCDeleteCorruptFile$
+	:i $memcard_menus_cleanup$
+	:i $create_error_box$:s{
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $title$ = %s(9,"Warning !")
+		:i $text$ = %s(52,"The Memory Card in Slot A contains a corrupted file.")
+		:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %s(23,"Continue without Saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+			:i :s{$font$ = $small$$text$ = %s(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+			:i :s{$font$ = $small$$text$ = %s(21,"Delete Corrupted Data")$pad_choose_script$ = $NGC_delete_bad_file$$pad_choose_params$ =  isNull :s}
+			:i :a}
+	:i :s}
+	:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+:i endfunction
+:i function $mcmess_ErrorNoCardInSlot$
+	:i $memcard_menus_cleanup$
+	:i if  ($SavingOrLoading$ = $Saving$) 
+		:i $ContinueText$ = %sc(23,"Continue without saving")
+	:i else 
+		:i $ContinueText$ = %sc(8,"Continue")
+	:i endif
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = :a{
+					:i %sc(41,"No memory card (8MB) (for PlayStation?2) ")
+					:i %sc(24,"in MEMORY CARD slot 1.  ")
+					:i :a}
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :s{$font$ = $small$$text$ = %GLOBAL%$ContinueText$$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(52,"There is no Nintendo GameCube Memory Card in Slot A.")
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :s{$font$ = $small$$text$ = %GLOBAL%$ContinueText$$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorNotEnoughRoomNoTHPSFilesExist$$SpaceRequired$ = %i(0,00000000)$SpaceAvailable$ = %i(0,00000000)
+	:i $memcard_menus_cleanup$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(133,"Insufficient free space on memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1.\n%f requires %sKB of free space to save data.")
+				:i $s$ = %GLOBAL%$SpaceRequired$
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(135,"Your hard disk does not have enough free space to save.\nAt least %s KB are needed to save the current %f.\nPlease free at least %n KB.")
+				:i $s$ = %GLOBAL%$SpaceRequired$
+				:i $f$ = %GLOBAL%$filetype_name$
+				:i $n$ =  (%GLOBAL%$SpaceRequired$ - %GLOBAL%$SpaceAvailable$) 
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(400.000000,0.000000)
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(199,"There is not enough space on the Memory Card in Slot A. In order to save the current %t file 1 file and %b blocks are required. To manage the contents of your Memory Card, use the Memory Card Screen.")
+				:i $t$ = %GLOBAL%$filetype_name$
+				:i $b$ = %GLOBAL%$SpaceRequired$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(400.000000,0.000000)
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorNotEnoughRoomButTHPSFilesExist$$SpaceRequired$ = %i(0,00000000)
+	:i $memcard_menus_cleanup$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$FileType$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(180,"Insufficient free space on memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1.\n%f requires %sKB of free space to save data.\nWould you like to overwrite previous %f data?")
+				:i $s$ = %GLOBAL%$SpaceRequired$
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(450.000000,0.000000)
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(8,"Continue")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$DoNotShowNotEnoughRoomMessage$$Save$$FileType$ = %GLOBAL%$FileType$:s}:s}
+					:i :s{$font$ = $small$$text$ = %sc(4,"Quit")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(167,"Your hard disk does not have enough free space to save.\nAt least %s KB are needed to save the current %f.\nYou will need to either delete or overwrite existing saves.")
+				:i $s$ = %GLOBAL%$SpaceRequired$
+				:i $f$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(450.000000,0.000000)
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(8,"Continue")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$DoNotShowNotEnoughRoomMessage$$Save$$FileType$ = %GLOBAL%$FileType$:s}:s}
+					:i :s{$font$ = $small$$text$ = %sc(4,"Quit")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i if $GotParam$$Overwrite$
+				:i %GLOBAL%$word$ = %sc(9,"overwrite")
+			:i else 
+				:i %GLOBAL%$word$ = %sc(4,"save")
+			:i endif
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(265,"There is not enough space on the Memory Card in Slot A. In order to %w the current %t file 1 file and %b blocks are required.\nYou will need to either delete or overwrite existing THUG 2 files. To manage the contents of your Memory Card, use the Memory Card Screen.")
+				:i $w$ = %GLOBAL%$word$
+				:i $t$ = %GLOBAL%$filetype_name$
+				:i $b$ = %GLOBAL%$SpaceRequired$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(450.000000,0.000000)
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :s{$font$ = $small$$text$ = %sc(29,"Delete/Overwrite THUG 2 files")$pad_choose_script$ = $launch_files_menu$$pad_choose_params$ = :s{$DoNotShowNotEnoughRoomMessage$$Save$$FileType$ = %GLOBAL%$FileType$:s}:s}
+					:i :a}
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorDeleteFailed$
+	:i if $CardIsDamaged$
+		:i $goto$$mcmess_DamagedCard$
+	:i endif
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(15,"Delete failed !")
+				:i $text$ = %sc(109,"Delete Failed! Please check memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1 and please try again.")
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %sc(15,"Delete failed !")
+				:i $text$ = %sc(17,"Unable to delete.")
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_memcard_error_dialog_box$:s{
+				:i $text_dims$ = %vec2(350.000000,0.000000)
+				:i $title$ = %sc(15,"Delete failed !")
+				:i $text$ = %sc(68,"Check Nintendo GameCube Memory Card in Slot A and please try again !")
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_NoFiles$
+	:i $GetFileTypeName$$file_type$ = %GLOBAL%$MenuFileType$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(94,"No THUG 2 %n save data present on memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1.")
+				:i $n$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %s(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(36,"No THUG Pro %n present on hard disk.")
+				:i $n$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $memcard_menus_cleanup$
+			:i $create_error_box$:s{
+				:i $title$ = %s(8,"No Saves")
+				:i $text$ = %GLOBAL%$text$
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(4,"Quit")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(69,"No THUG 2 %n data present on Nintendo GameCube Memory Card in Slot A.")
+				:i $n$ = %GLOBAL%$filetype_name$
+			:i :s}
+			:i $create_memcard_error_dialog_box$:s{
+				:i $title$ = %s(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorNotFormatted$$QuitText$ = %sc(27,"Continue without formatting")$BackScript$ = $reload_anims_then_run_abort_script$
+	:i $memcard_menus_cleanup$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_error_box$:s{
+				:i $text_dims$ = %vec2(600.000000,0.000000)
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(77,"Memory card (8MB) (for PlayStation?2)\n in MEMORY CARD slot 1 is unformatted.")
+				:i $pad_back_script$ = %GLOBAL%$BackScript$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %GLOBAL%$QuitText$$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :s{$font$ = $small$$text$ = %sc(45,"Format memory card (8MB) (for PlayStation?2)?")$pad_choose_script$ = $mcmess_FormatYesNo$$pad_choose_params$ = :s{$BackScript$ = %GLOBAL%$BackScript$:s}:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i if $CardIsForeign$
+				:i $create_error_box$:s{
+					:i $text_dims$ = %vec2(590.000000,0.000000)
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %sc(65,"The Memory Card in Slot A is corrupted and needs to be formatted.")
+					:i $pad_back_script$ = %GLOBAL%$BackScript$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :s{$font$ = $small$$text$ = %sc(18,"Format Memory Card")$pad_choose_script$ = $mcmess_FormatYesNo$$pad_choose_params$ = :s{$BackScript$ = %GLOBAL%$BackScript$:s}:s}
+						:i :a}
+				:i :s}
+			:i else 
+				:i $create_error_box$:s{
+					:i $text_dims$ = %vec2(590.000000,0.000000)
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %sc(89,"The Memory Card in Slot A is corrupted and needs to be formatted.\nDo you want to format?")
+					:i $pad_back_script$ = %GLOBAL%$BackScript$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :s{$font$ = $small$$text$ = %sc(18,"Format Memory Card")$pad_choose_script$ = $mcmess_FormatYesNo$$pad_choose_params$ = :s{$BackScript$ = %GLOBAL%$BackScript$:s}:s}
+						:i :a}
+				:i :s}
+			:i endif
+			:i end_switch
+	
+	:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+:i endfunction
+:i function $mcmess_ErrorNotFormattedNoFormatOption$
+	:i $memcard_menus_cleanup$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %sc(75,"Memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1 is unformatted.")
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(8,"Continue")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i if $CardIsForeign$
+				:i $create_error_box$:s{
+					:i $text_dims$ = %vec2(350.000000,0.000000)
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %sc(65,"The Memory Card in Slot A is corrupted and needs to be formatted.")
+					:i $pad_back_script$ = %GLOBAL%$BackScript$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :s{$font$ = $small$$text$ = %sc(18,"Format Memory Card")$pad_choose_script$ = $mcmess_FormatYesNo$$pad_choose_params$ = :s{$BackScript$ = $reload_anims_then_run_abort_script$:s}:s}
+						:i :a}
+				:i :s}
+			:i else 
+				:i $create_error_box$:s{
+					:i $text_dims$ = %vec2(350.000000,0.000000)
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %sc(107,"The Nintendo GameCube Memory Card in Slot A is corrupted and needs to be formatted.\nDo you want to format?")
+					:i $pad_back_script$ = %GLOBAL%$BackScript$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :s{$font$ = $small$$text$ = %sc(18,"Format Memory Card")$pad_choose_script$ = $mcmess_FormatYesNo$$pad_choose_params$ = :s{$BackScript$ = $reload_anims_then_run_abort_script$:s}:s}
+						:i :a}
+				:i :s}
+			:i endif
+			:i end_switch
+	
+	:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+:i endfunction
+:i function $mcmess_FormatYesNo$$BackScript$ = $reload_anims_then_run_abort_script$
+	:i $memcard_menus_cleanup$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $create_snazzy_dialog_box$:s{
+				:i $title$ = %sc(6,"Format")
+				:i $text$ = %sc(92,"Are you sure you wish to format memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1?")
+				:i $pad_back_script$ = %GLOBAL%$BackScript$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = $DoFormatCard$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $create_snazzy_dialog_box$:s{
+				:i $title$ = %sc(6,"Format")
+				:i $text$ = %sc(103,"All previously saved data on Memory Card in Slot A will be lost. Would you like to continue formatting?")
+				:i $pad_back_script$ = %GLOBAL%$BackScript$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(3,"Yes")$pad_choose_script$ = $DoFormatCard$:s}
+					:i :a}
+			:i :s}
+			:i end_switch
+	
+	:i $CheckForCardRemoval$$menu_id$ = $dialog_box_anchor$
+:i endfunction
+:i function $GetSaveSizes$
+	:i $GetMemCardSpaceRequired$$OptionsAndPros$
+	:i %GLOBAL%$SaveSize_OptionsAndPros$ = %GLOBAL%$SpaceRequired$
+	:i $GetMemCardSpaceRequired$$NetworkSettings$
+	:i %GLOBAL%$SaveSize_NetworkSettings$ = %GLOBAL%$SpaceRequired$
+	:i $GetMemCardSpaceRequired$$Park$
+	:i %GLOBAL%$SaveSize_Park$ = %GLOBAL%$SpaceRequired$
+	:i $GetMemCardSpaceRequired$$Cat$
+	:i %GLOBAL%$SaveSize_CreateATrick$ = %GLOBAL%$SpaceRequired$
+	:i $GetMemCardSpaceRequired$$CreatedGoals$
+	:i %GLOBAL%$SaveSize_Goals$ = %GLOBAL%$SpaceRequired$
+	:i $GetMemCardSpaceRequired$$CreatedGraphic$
+	:i %GLOBAL%$SaveSize_CreatedGraphic$ = %GLOBAL%$SpaceRequired$
+	:i return
+	 isNull 
+:i endfunction
+:i function $mcmess_ErrorNotEnoughSpaceToSaveAllTypes$
+	:i if  ($no_load$ = %i(0,00000000)) 
+		:i $memcard_menus_cleanup$
+	:i else 
+		:i %GLOBAL%$no_bg$ = $no_bg$
+	:i endif
+	:i $GetSaveSizes$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(473,"Insufficient free space on memory card (8MB) (for PlayStation?2) in MEMORY CARD slot 1.\nAt least %c KB of free space is required to save Game Progress. 94 KB of free space is needed for the\nmanagement of Your Network Configuration file. An\nadditional %n KB of free space is also required to save\nonline preferences.\n\nStory/Skater requires %c KB\nOnline Preferences requires %n KB\nPark requires %p KB\nTricks require %t KB\nGoals require %g KB\nGraphics Require %u KB")
+				:i $c$ = %GLOBAL%$SaveSize_OptionsAndPros$
+				:i $n$ = %GLOBAL%$SaveSize_NetworkSettings$
+				:i $u$ = %GLOBAL%$SaveSize_CreatedGraphic$
+				:i $p$ = %GLOBAL%$SaveSize_Park$
+				:i $t$ = %GLOBAL%$SaveSize_CreateATrick$
+				:i $g$ = %GLOBAL%$SaveSize_Goals$
+				:i $z$ = %s(0,"")
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(580.000000,0.000000)
+				:i $pos_tweak$ = %vec2(0.000000,-33.000000)
+				:i $no_animate$
+				:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(42,"Continue without saving all types of files")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $xbox$
+			:i $GetMemCardSpaceAvailable$
+			:i $total_blocks_needed$ =  (%GLOBAL%$SaveSize_OptionsAndPros$ + %GLOBAL%$SaveSize_Park$ + %GLOBAL%$SaveSize_CreateATrick$ + %GLOBAL%$SaveSize_Goals$ + %GLOBAL%$SaveSize_CreatedGraphic$) 
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(228,"Your hard disk does not have enough free space to save all types of THUG saves.\nPlease free at least %f KB.\n\nGame Progress requires %c KB\nPark requires %p KB\nTricks require %t KB\nGoals require %g KB\nGraphics Require %u KB")
+				:i $c$ = %GLOBAL%$SaveSize_OptionsAndPros$
+				:i $p$ = %GLOBAL%$SaveSize_Park$
+				:i $t$ = %GLOBAL%$SaveSize_CreateATrick$
+				:i $g$ = %GLOBAL%$SaveSize_Goals$
+				:i $u$ = %GLOBAL%$SaveSize_CreatedGraphic$
+				:i $f$ =  (%GLOBAL%$total_blocks_needed$ - %GLOBAL%$SpaceAvailable$) 
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(0,"")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(560.000000,0.000000)
+				:i $pos_tweak$ = %vec2(0.000000,-15.000000)
+				:i $no_animate$
+				:i $no_bg$ = %GLOBAL%$no_bg$
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(47,"Continue without saving all types of game saves")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(416,"The Memory Card in Slot A does not have sufficient \nspace to save all types of THUG 2 save files. Saved \ndata may be loaded and overwritten.\n\nGame Progress requires 1 file and %c blocks.\nPark requires 1 file and %p blocks.\nTricks require 1 file and %t blocks.\nGoals require 1 file and %g blocks.\nGraphics Require 1 file and %u blocks\nTo manage the contents of your Memory Card, \nuse the Memory Card Screen.")
+				:i $c$ = %GLOBAL%$SaveSize_OptionsAndPros$
+				:i $p$ = %GLOBAL%$SaveSize_Park$
+				:i $t$ = %GLOBAL%$SaveSize_CreateATrick$
+				:i $g$ = %GLOBAL%$SaveSize_Goals$
+				:i $u$ = %GLOBAL%$SaveSize_CreatedGraphic$
+			:i :s}
+			:i if $GotParam$$no_manager$
+				:i $create_error_box$:s{
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %GLOBAL%$text$
+					:i $text_dims$ = %vec2(550.000000,0.000000)
+					:i $pos_tweak$ = %vec2(15.000000,-17.000000)
+					:i $no_animate$
+					:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(42,"Continue without saving all types of files")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :a}
+				:i :s}
+			:i else 
+				:i $create_error_box$:s{
+					:i $title$ = %sc(9,"Warning !")
+					:i $text$ = %GLOBAL%$text$
+					:i $text_dims$ = %vec2(550.000000,0.000000)
+					:i $pos_tweak$ = %vec2(15.000000,-17.000000)
+					:i $no_animate$
+					:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+					:i $buttons$ = :a{
+						:i :s{$font$ = $small$$text$ = %sc(42,"Continue without saving all types of files")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+						:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+						:i :s{$font$ = $small$$text$ = %sc(18,"Manage Memory Card")$pad_choose_script$ = $QuitToDashboard$:s}
+						:i :a}
+				:i :s}
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_ErrorNoCardOnBootup$
+	:i $memcard_menus_cleanup$
+	:i $GetSaveSizes$
+	:i $GetPlatform$
+	:i switch %GLOBAL%$Platform$
+		:i case $ps2$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(493,"No memory card (8MB) (for PlayStation?2)\n in MEMORY CARD slot 1.\nPlease insert a memory card (8MB) (for PlayStation?2)\nwith at least %c KB free space for Game Progress.\n94 KB of free space is needed for the management of\nYour Network Configuration file. An additional %n KB of\nfree space is also required to save online preferences.\n\nGame Progress requires %c KB\nOnline Preferences requires %n KB\nPark requires %p KB\nTricks require %t KB\nGoals require %g KB\nGraphics Require %u KB")
+				:i $c$ = %GLOBAL%$SaveSize_OptionsAndPros$
+				:i $n$ = %GLOBAL%$SaveSize_NetworkSettings$
+				:i $u$ = %GLOBAL%$SaveSize_CreatedGraphic$
+				:i $p$ = %GLOBAL%$SaveSize_Park$
+				:i $t$ = %GLOBAL%$SaveSize_CreateATrick$
+				:i $g$ = %GLOBAL%$SaveSize_Goals$
+				:i $z$ = %s(0,"")
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(560.000000,0.000000)
+				:i $pos_tweak$ = %vec2(0.000000,-33.000000)
+				:i $no_animate$
+				:i $pad_back_script$ = $generic_menu_pad_back$
+				:i $pad_back_params$ = :s{$callback$ = $reload_anims_then_run_abort_script$:s}
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(47,"Continue without saving all types of game files")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i endcase
+		case $ngc$
+			:i $FormatText$:s{
+				:i $TextName$ = $text$
+				:i %sc(229,"No Memory Card detected in Slot A.\n\nGame Progress requires 1 file and %c blocks\nPark requires 1 file and %p blocks\nTricks require 1 file and %t blocks\nGoals require 1 file and %g blocks\nGraphics Require 1 file and %u blocks")
+				:i $c$ = %GLOBAL%$SaveSize_OptionsAndPros$
+				:i $p$ = %GLOBAL%$SaveSize_Park$
+				:i $t$ = %GLOBAL%$SaveSize_CreateATrick$
+				:i $g$ = %GLOBAL%$SaveSize_Goals$
+				:i $u$ = %GLOBAL%$SaveSize_CreatedGraphic$
+			:i :s}
+			:i $create_error_box$:s{
+				:i $title$ = %sc(9,"Warning !")
+				:i $text$ = %GLOBAL%$text$
+				:i $text_dims$ = %vec2(500.000000,0.000000)
+				:i $pos_tweak$ = %vec2(0.000000,0.000000)
+				:i $no_animate$
+				:i $pad_back_script$ = $generic_menu_pad_back$
+				:i $pad_back_params$ = :s{$callback$ = $reload_anims_then_run_abort_script$:s}
+				:i $buttons$ = :a{
+					:i :s{$font$ = $small$$text$ = %sc(42,"Continue without saving all types of files")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+					:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+					:i :a}
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $mcmess_DamagedCard$
+	:i $memcard_menus_cleanup$
+	:i $create_error_box$:s{
+		:i $title$ = %sc(5,"Error")
+		:i $text$ = %sc(56,"The Memory Card in Slot A is damaged and cannot be used.")
+		:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+			:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $mcmess_BadDevice$
+	:i $memcard_menus_cleanup$
+	:i $create_error_box$:s{
+		:i $title$ = %sc(5,"Error")
+		:i $text$ = %sc(52,"Wrong device in Slot A. Please insert a Memory Card.")
+		:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+			:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $mcmess_BadSectorSize$
+	:i $memcard_menus_cleanup$
+	:i $create_error_box$:s{
+		:i $title$ = %sc(5,"Error")
+		:i $text$ = %sc(70,"The Memory Card in Slot A is not compatible with the THUG 2 save file.")
+		:i $pad_back_script$ = $reload_anims_then_run_abort_script$
+		:i $buttons$ = :a{
+			:i :s{$font$ = $small$$text$ = %sc(23,"Continue without saving")$pad_choose_script$ = $reload_anims_then_run_abort_script$:s}
+			:i :s{$font$ = $small$$text$ = %sc(5,"Retry")$pad_choose_script$ = $RetryScript$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i :end

@@ -1,0 +1,101 @@
+
+:i $goal_horse_mp_genericParams$ = :s{
+	:i $goal_text$ = %s(35,"Complete the other players' tricks!")
+	:i $time$ = %i(10,0000000a)
+	:i $net$
+	:i $init$ = $goal_horse_mp_init$
+	:i $activate$ = $goal_horse_mp_activate$
+	:i $deactivate$ = $goal_horse_mp_deactivate$
+	:i $expire$ = $goal_horse_mp_expire$
+	:i $goal_description$ = %s(6,"Horse!")
+:i :s}
+:i function $goal_horse_mp_init$
+:i endfunction
+:i function $goal_horse_mp_activate$
+	:i $RunScriptOnScreenElement$$id$ = $the_time$$clock_morph$
+	:i $ResetScore$
+:i endfunction
+:i function $goal_horse_mp_deactivate$
+	:i if $ObjectExists$$id$ = $horse_score_menu$
+		:i $DestroyScreenElement$$id$ = $horse_score_menu$
+	:i endif
+	:i $printf$%s(16,"DEACTIVATE HORSE")
+:i endfunction
+:i function $horse_mp_done$
+	:i $dialog_box_exit$
+	:i $do_backend_retry$
+:i endfunction
+:i function $goal_horse_mp_expire$
+	:i $printf$%s(12,"EXPIRE HORSE")
+	:i if $ObjectExists$$id$ = $goal_message$
+		:i $DestroyScreenElement$$id$ = $goal_message$
+	:i endif
+	:i $printf$%s(20,"goal_horse_mp_expire")
+:i endfunction
+:i function $AddGoal_Horse_Mp$
+	:i $GoalManager_AddGoal$$name$ = $horse_mp$:s{
+		:i $params$ = :s{$goal_horse_mp_genericParams$:s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_Horse_Mp$
+	:i $GoalManager_EditGoal$$name$ = $horse_mp$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $horse_mp$
+	:i $create_horse_score_menu$
+:i endfunction
+:i function $EndGoal_Horse_Mp$
+	:i $GoalManager_DeactivateGoal$$name$ = $horse_mp$
+:i endfunction
+:i function $create_horse_score_menu$
+	:i if NOT $ObjectExists$$id$ = $horse_score_menu$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $horse_score_menu$
+			:i $font$ = $dialog$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %i(0,00000000)
+			:i $dims$ = %vec2(640.000000,480.000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $VMenu$
+			:i $parent$ = $horse_score_menu$
+			:i $id$ = $horse_score_vmenu$
+			:i $font$ = $dialog$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(45.000000,60.000000)
+			:i $scale$ = %f(0.900000)
+			:i $padding_scale$ = %f(0.700000)
+			:i $internal_scale$ = %i(1,00000001)
+			:i $internal_just$ = :a{$left$$top$:a}
+		:i :s}
+		:i %GLOBAL%$index$ = %i(1,00000001)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $current_id$%s(14,"horse_score_%i")$i$ = %GLOBAL%$index$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $horse_score_vmenu$
+				:i $id$ = %GLOBAL%$current_id$
+				:i $font$ = $dialog$
+				:i $text$ = %s(0,"")
+				:i $scale$ = %f(0.900000)
+				:i $rgba$ = :a{%i(108,0000006c)%i(112,00000070)%i(120,00000078)%i(128,00000080):a}
+				:i $not_focusable$
+				:i $z_priority$ = %i(4294967291,fffffffb)
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %i(3,00000003)
+		:i $RunScriptOnScreenElement$$id$ = $horse_score_menu$$menu_onscreen$$params$ = :s{$preserve_menu_state$:s}
+	:i endif
+:i endfunction
+:i function $update_horse_score$
+	:i if $ObjectExists$$id$ = $horse_score_menu$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$id$
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i endif
+:i endfunction
+:i :end

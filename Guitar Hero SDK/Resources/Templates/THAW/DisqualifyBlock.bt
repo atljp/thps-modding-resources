@@ -1,0 +1,42 @@
+// Footer that contains blocks of polygons (or something) to disqualify
+
+#define CL_DQNUM                0xFFCC88
+#define CL_DQJUNK               0xCC9977
+#define CL_DQINDEX              0xFFBB77
+#define CL_DQPOLYS              0xFFAA66
+#define CL_DQSING               0xBB8866
+
+//------------------------------------------------
+
+typedef struct
+{
+    uint poly_flags <bgcolor=CL_DQPOLYS>;
+    ushort unk_index <bgcolor=CL_DQINDEX>;
+    ushort mesh_index <bgcolor=CL_DQINDEX>;
+    uint unkb <bgcolor=CL_DQJUNK>;
+    uint unkc <bgcolor=CL_DQJUNK>;
+} DisqualPoly <read=ReadDisqualPoly>;
+
+string ReadDisqualPoly(DisqualPoly &dq)
+{
+    local string s;
+
+    return SPrintf(s, "[%x] Mesh %d: %d", dq.poly_flags, dq.mesh_index, dq.unk_index);
+}
+
+//------------------------------------------------
+
+typedef struct
+{
+    local uint dq_start = FTell();
+
+    ubyte version_maybe <bgcolor=CL_SINGLEVALUE>;
+    ubyte hdr_length <bgcolor=CL_SINGLEVALUE, comment="Length of DQ header">;
+    ushort unk_b <bgcolor=CL_SINGLEVALUE>;
+    uint char_hide <bgcolor=CL_SINGLEVALUE, comment="Are these flags? Idk">;
+    uint poly_count <bgcolor=CL_SINGLEVALUE, comment="Number of polys to hide">;
+    RelativeOffset pt_disqs(dq_start) <bgcolor=CL_POINTER, comment="Offset to DQ's?">;
+
+    if (poly_count > 0)
+        DisqualPoly polys[poly_count];
+} DisqualifyBlock;

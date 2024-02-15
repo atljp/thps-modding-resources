@@ -1,0 +1,88 @@
+//------------------------------------------------
+// GHWT:DE .sav file
+// Contains scores and other things
+//------------------------------------------------
+
+#include "Common.bt"
+
+typedef struct
+{
+    uint nameLength;
+    wstring str;
+} WideString <read=ReadWideString>;
+
+string ReadWideString(WideString &wstr)
+{
+    return wstr.str;
+}
+
+typedef struct
+{
+    int maxScores;
+    WideString names[maxScores] <optimize=false>;
+    int scores[maxScores];
+    int tr_stars[maxScores];
+    int bestscore;
+    int beststars;
+    ubyte tr_percent100;
+    ubyte goldstar;
+    int stars;
+    int score;
+    ubyte percent100;
+    ubyte unlocked;
+} SongScore;
+
+// -----------------------------------------
+
+typedef struct
+{
+    QBKey id;
+    uint numDiffs;
+    SongScore scores[numDiffs] <optimize=false>;
+} SongInstrument <read=ReadSongInstrument>;
+
+string ReadSongInstrument(SongInstrument &ins)
+{
+    local string s;
+    return SPrintf(s, "%s: %d difficulties", ReadQBKey(ins.id), ins.numDiffs);
+}
+
+// -----------------------------------------
+
+typedef struct
+{
+    QBKey id;
+    uint numInstruments;
+    SongInstrument instruments[numInstruments] <optimize=false>;
+} SongEntry <read=ReadSongEntry>;
+
+string ReadSongEntry(SongEntry &entry)
+{
+    local string s;
+    return SPrintf(s, "%s: %d instruments", ReadQBKey(entry.id), entry.numInstruments);
+}
+
+// -----------------------------------------
+
+typedef struct
+{
+    uint numSongs;
+    SongEntry entries[numSongs] <optimize=false>;
+} SongData <read=ReadSongData>;
+
+string ReadSongData(SongData &dat)
+{
+    local string s;
+    return SPrintf(s, "%d songs", dat.numSongs);
+}
+
+// -----------------------------------------
+
+typedef struct
+{
+    uint version;
+    SongData songData;
+} SavFile;
+
+LittleEndian();
+SavFile file;

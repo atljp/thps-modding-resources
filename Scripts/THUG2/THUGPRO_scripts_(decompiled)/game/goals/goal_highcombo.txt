@@ -1,0 +1,92 @@
+
+:i $goal_highcombo_genericParams$ = :s{
+	:i $goal_text$ = %s(22,"generic highcombo text")
+	:i $view_goals_text$ = %s(10,"High combo")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_highcombo_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_highcombo_activate$
+	:i $success$ = $goal_highcombo_success$
+	:i $fail$ = $goal_highcombo_fail$
+	:i $deactivate$ = $goal_highcombo_deactivate$
+	:i $expire$ = $goal_highcombo_expire$
+	:i $trigger_obj_id$ = $TRG_G_HIGHCOMBO_Pro$
+	:i $restart_node$ = $TRG_G_HIGHCOMBO_RestartNode$
+	:i $start_pad_id$ = $G_HIGHCOMBO_StartPad$
+	:i $exception_set$ = %i(0,00000000)
+	:i $score$ = %i(10000,00002710)
+	:i $record_type$ = $score$
+	:i $high_combo$
+:i :s}
+:i function $goal_highcombo_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_check_score$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i if NOT  (%GLOBAL%$last_score_landed$ < %GLOBAL%$score$) 
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_highcombo_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_enter_area$
+	:i if NOT $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_HasWonGoal$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $KillSpawnedScript$$name$ = $goal_highcombo_wait_and_activate$
+	:i if $SkaterCurrentScorePotGreaterThan$%i(0,00000000)
+		:i $SpawnScript$$goal_highcombo_wait_and_activate$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i else 
+		:i $goal_highcombo_combo_started$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_highcombo_combo_started$
+	:i $GoalManager_ActivateGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_highcombo_wait_and_activate$
+	:i $SetException$$ex$ = $SkaterEnterCombo$$scr$ = $goal_highcombo_combo_started$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i $Block$
+:i endfunction
+:i function $goal_highcombo_leave_area$
+	:i if NOT $GoalManager_GoalExists$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i if $GoalManager_GoalIsLocked$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $KillSpawnedScript$$name$ = $goal_highcombo_wait_and_activate$
+	:i if $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i :end

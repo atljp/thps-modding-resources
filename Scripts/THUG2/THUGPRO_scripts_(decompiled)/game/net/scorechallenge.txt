@@ -1,0 +1,83 @@
+
+:i $goal_scorechallenge_genericParams$ = :s{
+	:i $goal_text$ = %s(38,"You must score the most points to win!")
+	:i $unlimited_time$ = %i(1,00000001)
+	:i $score$ = %i(1000000,000f4240)
+	:i $net$
+	:i $init$ = $goal_scorechallenge_init$
+	:i $activate$ = $goal_scorechallenge_activate$
+	:i $active$ = $goal_scorechallenge_active$
+	:i $deactivate$ = $goal_scorechallenge_deactivate$
+	:i $goal_description$ = %s(16,"Score Challenge!")
+:i :s}
+:i function $goal_scorechallenge_init$
+:i endfunction
+:i function $goal_scorechallenge_activate$
+	:i if NOT $IsHost$
+		:i if  ($GetGlobalFlag$$flag$ = $FLAG_TOGGLE_GRAFF_MODE$) 
+			:i $Change$$GraffMode$ = %i(1,00000001)
+			:i $UnSetGlobalFlag$$flag$ = $FLAG_TOGGLE_GRAFF_MODE$
+		:i else 
+			:i $Change$$GraffMode$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if $IsTrue$$GraffMode$
+		:i $Toggle_ShouldModulateColor$$on$
+		:i $FormatText$$TextName$ = $msg_text$%s(36,"%aGraff Challenge\n\c0%s tags to win")$a$ =  ($gamemode_color$) $s$ = %GLOBAL%$score$
+	:i else 
+		:i $Toggle_ShouldModulateColor$$off$
+		:i $get_points_string_with_commas$$score$ = %GLOBAL%$score$
+		:i $FormatText$$TextName$ = $msg_text$%s(42,"%aScore Challenge\n\c0%t\n\c0points to win")$a$ =  ($gamemode_color$) $t$ = %GLOBAL%$points_string$
+	:i endif
+	:i $msg_pos$ =  ($panel_block_goal_desc_pos$) 
+	:i $create_panel_block$$id$ = $mp_goal_text$$parent$ = $root_window$$text$ = %GLOBAL%$msg_text$$style$ = $panel_message_goal$$final_pos$ = %GLOBAL%$msg_pos$$scale$ = %f(0.750000)$font_face$ = $testtitle$
+	:i $printf$%s(63,"************** ACTIVATING SCORECHALLENGE **********************")
+	:i $ResetScore$
+:i endfunction
+:i function $goal_scorechallenge_active$
+	:i if $AnySkaterTotalScoreAtLeast$%GLOBAL%$score$
+		:i if $OnServer$
+			:i if $CalculateFinalScores$
+				:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+				:i $goal_scorechallenge_finished$
+			:i endif
+		:i else 
+			:i $GoalManager_DeactivateGoal$$name$ = %GLOBAL%$goal_id$
+			:i $goal_scorechallenge_finished$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_scorechallenge_deactivate$
+	:i $destroy_goal_panel_messages$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+:i endfunction
+:i function $goal_scorechallenge_finished$
+	:i $destroy_goal_panel_messages$
+	:i if $ObjectExists$$id$ = $mp_goal_text$
+		:i $DestroyScreenElement$$id$ = $mp_goal_text$
+	:i endif
+	:i $printf$%s(30,"goal_scorechallenge_deactivate")
+	:i $ResetScorePot$
+	:i if $OnServer$
+		:i if $InInternetMode$
+			:i $ReportStats$$final$
+		:i endif
+	:i endif
+	:i $create_rankings$
+:i endfunction
+:i function $AddGoal_scorechallenge$
+	:i $GoalManager_AddGoal$$name$ = $scorechallenge$:s{
+		:i $params$ = :s{$goal_scorechallenge_genericParams$
+		:i :s}
+	:i :s}
+:i endfunction
+:i function $StartGoal_scorechallenge$
+	:i if $InSplitScreenGame$
+		:i $SetScreenModeFromGameMode$
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = $scorechallenge$$params$ =  isNull 
+	:i $GoalManager_ActivateGoal$$name$ = $scorechallenge$
+:i endfunction
+:i :end

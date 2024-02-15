@@ -1,0 +1,49 @@
+//------------------------------------------------
+// DJ HERO 1: MSB MODEL
+//------------------------------------------------
+
+#include "../Common.bt"
+#include "DJBlock.bt"
+
+typedef struct
+{
+    char magic[4] <bgcolor=CL_CHECKSUM>;
+    uint filesize <bgcolor=CL_SINGLEVALUE>;
+    char console[4] <bgcolor=CL_CHECKSUM>;
+    uint unk_a <bgcolor=CL_SINGLEVALUE>;
+    uint unk_b <bgcolor=CL_SINGLEVALUE>;
+    uint unk_c <bgcolor=CL_SINGLEVALUE>;
+    uint unk_d <bgcolor=CL_SINGLEVALUE>;
+    uint main_data_size <bgcolor=CL_SINGLEVALUE>;
+} DJMSB_Header <read=ReadDJMSB_Header>;
+
+string ReadDJMSB_Header(DJMSB_Header &hed)
+{
+    local string consoleString;
+
+    if (hed.console[2] == 'X')
+        consoleString = "X360";
+    else if (hed.console[2] == 'S')
+        consoleString = "PS3";
+    else
+        consoleString = "???";
+
+    return Str("(%s File) %d bytes", consoleString, hed.filesize);
+}
+
+typedef struct
+{
+    DJMSB_Header header;
+
+    local ubyte abort = false;
+
+    while (!FEof() && !abort)
+    {
+        DJBlock block;
+
+        if (block.bad_block)
+            abort = true;
+    }
+} DJMSB;
+
+DJMSB msb_file;

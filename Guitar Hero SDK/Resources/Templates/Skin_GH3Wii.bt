@@ -1,0 +1,205 @@
+// GH3 Wii model
+// Heavy WIP, only looking at prison gas for now
+
+#include "Common.bt"
+
+#define CL_STRIPFLAG 0x66ffff
+#define CL_STRIPCOUNT 0x55dddd
+#define CL_INDEXVERT 0x66ff66
+#define CL_INDEXUNK 0x55cc55
+#define CL_INDEXTEX 0x55aa55
+#define CL_MATHUNK 0x55ff55
+#define CL_WIISECTION 0x55ffaa
+#define CL_WIIGARBAGE 0xffaaaa
+#define CL_TEXCOORD 0x66ffff
+#define CL_WIIFOOTER 0x66aaff
+
+#define MATTHINGSIZE 96
+#define SKIP_START 2464
+
+typedef struct
+{
+    ushort vert_index[2] <bgcolor=CL_INDEXVERT>;
+    ubyte unk <bgcolor=CL_INDEXUNK>;
+    ushort coord_index <bgcolor=CL_INDEXTEX>;
+} GH3WiiIndex;
+
+typedef struct
+{
+    ubyte flags <bgcolor=CL_STRIPFLAG>;
+    ushort index_count <bgcolor=CL_STRIPCOUNT>;
+
+    GH3WiiIndex indices[index_count];
+} GH3WiiStrip;
+
+#define CL_HEADER_SIZE    0x66aaff
+#define CL_HEADER_SIZEB   0x66ccff
+#define CL_HEADER_SIZEC   0x66eeff
+#define CL_HEADER_NULL    0x446688
+
+// Not actually sure what this is yet
+typedef struct
+{
+    uint constant <bgcolor=CL_HEADER_SIZE>;
+    ubyte null[6] <bgcolor=CL_HEADER_NULL, hidden=true>;
+    ushort unk_a <bgcolor=CL_HEADER_SIZEC>;
+
+    local int i = (unk_a == 224) ? 20 : 4;
+    ubyte null_b[i] <bgcolor=CL_PADDING, hidden=true>;
+
+    ushort unk_b <bgcolor=CL_HEADER_SIZEB>;   // Usually 41
+    ushort unk_c <bgcolor=CL_HEADER_SIZEC>;
+    ubyte null_ff[4] <bgcolor=CL_HEADER_NULL, hidden=true>;
+} GH3WiiHeaderMeta;
+
+// What is this?
+typedef struct (uint thing_size)
+{
+    ubyte constant[thing_size] <bgcolor=CL_WIISECTION>;
+} GH3WiiHeaderSection;
+
+// Has mesh checksums, I think
+typedef struct
+{
+    QBKey checksum_a <bgcolor=CL_CHECKSUM>;
+    ubyte skip_me[20] <bgcolor=CL_PADDING, hidden=true>;
+    QBKey checksum_b <bgcolor=CL_CHECKSUM>;
+    ubyte skip_me_b[4] <bgcolor=CL_PADDING, hidden=true>;
+} GH3WiiChecksumBlock;
+
+// No idea
+typedef struct
+{
+    ubyte skip_me[32] <bgcolor=CL_WIIGARBAGE>;
+} GH3WiiGarbageBlock;
+
+typedef struct
+{
+    short x <bgcolor=CL_TEXCOORD>;
+    short y <bgcolor=CL_TEXCOORD>;
+} TexCoordEntry <read=ReadTexCoordEntry>;
+
+string ReadTexCoordEntry(TexCoordEntry &ent)
+{
+    local string s;
+    return SPrintf(s, "(%f, %f)", ent.x / 1024.0, ent.y / 1024.0);
+}
+
+// Texture coordinates
+typedef struct (uint count)
+{
+    TexCoordEntry coords[count];
+} TexCoords;
+
+// Some sort of mesh block
+typedef struct
+{
+    ushort skip[2] <bgcolor=CL_PARSED, hidden=true>;
+    uint face_block_size <bgcolor=CL_SINGLEVALUE, comment="Size of face block?">;
+    ushort total_verts <bgcolor=CL_SINGLEVALUE, comment="TOTAL vertices!">;
+    ubyte skip_me_a[22] <bgcolor=CL_PARSED, hidden=true>;
+    float unk_float <bgcolor=CL_SINGLEVALUE>;
+    ubyte skip_me_b[12] <bgcolor=CL_PARSED, hidden=true>;
+    short oddity[2] <bgcolor=CL_SINGLEVALUE>;
+    Vec3 coords <bgcolor=CL_FLOATS>;
+} GH3WiiMeshBlock;
+
+#define CL_VERTX 0x888888
+#define CL_VERTY 0x666666
+#define CL_VERTZ 0x444444
+
+typedef struct
+{
+    short pos_x <bgcolor=CL_VERTX>;
+    short pos_y <bgcolor=CL_VERTY>;
+    short pos_z <bgcolor=CL_VERTZ>;
+
+    local float real_pos_x = pos_x / 4096.0;
+    local float real_pos_y = pos_y / 4096.0;
+    local float real_pos_z = pos_z / 4096.0;
+
+    char null[6] <bgcolor=CL_PADDING>;
+} Vertex;
+
+typedef struct
+{
+    uint vertex_count <bgcolor=CL_SINGLEVALUE>;
+    ubyte bone_indices[4] <bgcolor=CL_SINGLEVALUE>;
+    Vertex vert[vertex_count] <optimize=false>;
+} Vertices;
+
+typedef struct
+{   
+    SkipTo(32);
+    uint unk_count_a <bgcolor=CL_SINGLEVALUE>;
+    ubyte unk_a[44] <hidden=true, bgcolor=CL_FLOATS>;
+
+    uint unk_count_b <bgcolor=CL_SINGLEVALUE>;
+    local int i;
+    ubyte byte_val[33];
+
+    // Read strips
+    local byte test_byte = ReadByte();
+    local int read_strips = 0;
+
+    while (test_byte != 0)
+    {
+        read_strips ++;
+        GH3WiiStrip strip <optimize=false>;
+        test_byte = ReadByte();
+    }
+
+    Printf("Read %d strips.\n", read_strips);
+    ubyte padder[44] <bgcolor=CL_PADDING, hidden=true>;
+} StripBlock;
+
+typedef struct
+{
+    ubyte null[8] <bgcolor=CL_PADDING, hidden=true>;
+    uint tex_coord_count <bgcolor=CL_SINGLEVALUE>;
+    uint unk_a <bgcolor=CL_SINGLEVALUE>;
+    ushort unk_b <bgcolor=CL_SINGLEVALUE>;
+    ushort mat_count <bgcolor=CL_SINGLEVALUE>;
+    ubyte null_b[8] <bgcolor=CL_PADDING, hidden=true>;
+    ushort unkcount <bgcolor=CL_SINGLEVALUE>;
+    ushort mesh_count <bgcolor=CL_SINGLEVALUE>;
+    ubyte null_c[8] <bgcolor=CL_PADDING, hidden=true>;
+    RelativeOffset footer_pointer(0) <bgcolor=CL_POINTER>;
+
+    // Always seems to be the same amount
+    FSeek(FTell() + 28);
+    GH3WiiHeaderMeta metas[mat_count] <optimize=false>;
+
+    SkipTo(32);
+
+    // Same count, whatever size this block is
+    ubyte material_hunk[160 * mat_count] <bgcolor=CL_MATHUNK>;
+
+    local int i;
+    for (i=0; i<mat_count; i++)
+    {
+        GH3WiiHeaderSection sections(160);
+    }
+
+    FSeek(SKIP_START);
+
+    GH3WiiChecksumBlock sumblocks[mat_count];
+    GH3WiiGarbageBlock garbageblocks[mesh_count];
+    
+    TexCoords texcoords(tex_coord_count);
+
+    SkipTo(32);
+
+    GH3WiiMeshBlock meshblock;
+
+    Vertices verts[mesh_count] <optimize=false>;
+
+    SkipTo(32);
+
+    StripBlock stripz[mesh_count] <optimize=false>;
+
+    FSeek(AbsOffset(footer_pointer));
+    ubyte footer[16] <bgcolor=CL_WIIFOOTER>;
+} GH3WiiSkin;
+
+GH3WiiSkin skin;

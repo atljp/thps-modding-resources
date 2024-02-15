@@ -1,0 +1,186 @@
+//------------------------------------------------
+// Common stuff
+//------------------------------------------------
+
+typedef struct
+{
+    SkipTo(16);
+
+    float x <bgcolor=0xAAAAAA>;
+    float y <bgcolor=0x999999>;
+    float z <bgcolor=0x888888>;
+    float w <bgcolor=0x777777>;
+} hkVector4 <read=ReadhkVector4>;
+
+string ReadhkVector4(hkVector4 &vec)
+{
+    return Str("(%f, %f, %f, %f)", vec.x, vec.y, vec.z, vec.w);
+}
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    
+    local uint old_pos = FTell();
+    local int dest = LocalFixupDestination(FTell());
+    local string final_value = "???";
+
+
+    if (dest)
+    {
+        FSeek(dest);
+        string value;
+        final_value = value;
+    }
+
+    FSeek(old_pos);
+
+    uint null_pointer <bgcolor=0xCCCCAA>;
+
+} HavokNamePointer <read=ReadHavokNamePointer>;
+
+string ReadHavokNamePointer(HavokNamePointer &ptr)
+{
+    return ptr.final_value;
+}
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    uint value <bgcolor=0xAAAACC>;
+
+} LinkMarker <read=Str("<LINK HERE>")>;
+
+typedef struct
+{
+    SkipTo(4);
+
+    local uint testInt = ReadInt();
+
+    if (testInt)
+        uint value <bgcolor=0xCCCCAA>;
+    else
+        uint value <bgcolor=0xEEEEEE>;
+
+} OptionalLinkMarker <read=Str(testInt ? "<LINK HERE>" : "Unused link")>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    uint value <bgcolor=0xAACCCC>;
+} PointerMarker <read=Str("<POINTS TO>")>;
+
+// ----
+
+typedef struct
+{
+    ubyte value <bgcolor=0xAAAAAA>;
+} hkBool <read=Str("%s", value ? "true" : "false")>;
+
+// ----
+
+typedef struct
+{
+    byte value <bgcolor=0xAAAAAA>;
+} hkUFloat8 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    byte value <bgcolor=0xAAAAAA>;
+} hkUint8 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    signed byte value <bgcolor=0xAAAAAA>;
+} hkInt8 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(2);
+    ushort value <bgcolor=0xAAAAAA>;
+} hkUint16 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(2);
+    short value <bgcolor=0xAAAAAA>;
+} hkInt16 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    int value <bgcolor=0xAAAAAA>;
+} hkInt32 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    uint value <bgcolor=0xAAAAAA>;
+} hkUint32 <read=Str("%d", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(4);
+    float value <bgcolor=0xAAAAAA>;
+} hkReal <read=Str("%f", value)>;
+
+// ----
+
+typedef struct
+{
+    SkipTo(2);
+    short value <bgcolor=0xAAAAAA>;
+} hkHalf <read=ReadhkHalf>;
+
+string ReadhkHalf(hkHalf &half)
+{
+    local uchar byteArray[4] = {0, 0, 0, 0};
+
+    byteArray[0] = (half.value & 0xFF00) >> 8;
+    byteArray[1] = (half.value & 0x00FF);
+
+    // return Str("%f", u.f);
+    return Str("%f", ConvertBytesToFloat(byteArray));
+}
+
+// ----
+
+typedef struct
+{
+    unsigned long value <bgcolor=0xAAAAAA>;
+} hkUlong <read=Str("%d", value)>;
+
+// ----
+
+/// A generic object with metadata.
+typedef struct hkVariant
+{
+    //HavokLocalFixup m_object;
+    //HavokLocalFixup m_class;
+
+    HavokGlobalFixup m_object;
+    uint m_class;
+
+	// void* m_object;
+	// const hkClass* m_class;
+} hkVariant;

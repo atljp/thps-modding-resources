@@ -1,0 +1,2341 @@
+
+:i $SkaterId$ = $Skater$
+:i function $DrivingAi$
+	:i $ClearAllWalkingExceptions$
+	:i $ClearExceptions$
+	:i $SetEventhandler$$Ex$ = $Vehicle_BodyCollision$$Scr$ = $Vehicle_BodyCollision$
+	:i $SetEventhandler$$Ex$ = $SkaterCollideBail$$Scr$ = $DrivingCollisionLost$
+	:i $SetEventhandler$$Ex$ = $MadeOtherSkaterBail$$Scr$ = $MadeOtherSkaterBailCar$
+	:i $SetException$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun$
+	:i $SetException$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun$
+	:i $Block$
+:i endfunction
+:i function $ToggleUserControlledVehicleMode$
+	:i if NOT $Skater$.$Driving$
+		:i if $InNetGame$
+			:i $Obj_GetId$
+			:i $BroadcastEnterVehicle$$SkaterId$ = %GLOBAL%$ObjId$$control_type$ =  (%GLOBAL%$VehicleSetup$->$control_type$) 
+		:i endif
+		:i $Skater$.$BashOff$
+		:i $Skater$.$NollieOff$
+		:i $Skater$.$PressureOff$
+		:i $Skater$.$LandSkaterTricks$
+		:i $Skater$.$ResetSwitched$
+		:i $Skater$.$ClearTrickQueues$
+		:i $Skater$.$DestroyAllSpecialItems$
+		:i $Skater$.$SparksOff$
+		:i $Skater$.$VibrateOff$
+		:i $Skater$.$StopBalanceTrick$
+		:i $Skater$.$KillExtraTricks$
+		:i $Skater$.$SetExtraTricks$$NoTricks$
+		:i $createPlayerVehicle$ isNull 
+		:i $Skater$.$PausePhysics$
+		:i $Skater$.$SkaterLoopingSound_TurnOff$
+		:i $Skater$.$TakeBoardFromSkater$
+		:i $Skater$.$Obj_ShadowOff$
+		:i $GoalManager_HideAllGoalPeds$%i(1,00000001)
+		:i $Skater$.$SetDriving$
+		:i $Debounce$$X$
+		:i $Debounce$$Square$
+		:i $MakeSkaterGoto$$DrivingAi$
+		:i $SetActiveCamera$$Id$ = $PlayerVehicleCamera$
+	:i else 
+		:i $Skater$.$GetCameraId$
+		:i if NOT $GameIsPaused$
+			:i %GLOBAL%$CameraId$.$UnPause$
+		:i endif
+		:i $SetActiveCamera$$Id$ = %GLOBAL%$CameraId$
+		:i $PlayerVehicle$.$Die$
+		:i $PlayerVehicleCamera$.$Die$
+		:i $Skater$.$UnsetDriving$
+		:i $Skater$.$ReturnBoardToSkater$
+		:i $Skater$.$Obj_ShadowOn$$ShadowType$ = $Detailed$
+		:i $Skater$.$ResetRigidBodyCollisionRadiusBoost$
+		:i $GoalManager_HideAllGoalPeds$%i(0,00000000)
+		:i $Change$$driving_parked_car$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $createPlayerVehicle$$VehicleSetup$ = $defaultCarSetup$
+	:i if $GotParam$$Exitable$
+		:i $VehicleSetup$ =  (%GLOBAL%$VehicleSetup$ + :s{$Exitable$:s}) 
+	:i endif
+	:i if $GotParam$$edited_goal$
+		:i $VehicleSetup$ =  (%GLOBAL%$VehicleSetup$ + :s{$edited_goal$:s}) 
+	:i endif
+	:i if NOT $ObjectExists$$Id$ = $PlayerVehicle$
+		:i $Skater$.$Obj_GetPosition$
+		:i $Skater$.$Obj_GetOrientation$
+		:i if  ( ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+			:i $CreateCompositeObject$:s{
+				:i $components$ = :a{
+					:i :s{
+						:i $component$ = $skeleton$
+						:i $skeletonName$ = $car$
+					:i :s}
+					:i :s{
+						:i $component$ = $vehicle$
+					:i :s}
+					:i :s{
+						:i $component$ = $motion$
+					:i :s}
+					:i :s{
+						:i $component$ = $vehiclesound$
+					:i :s}
+					:i :s{
+						:i $component$ = $sound$
+					:i :s}
+					:i :s{
+						:i $component$ = $input$
+						:i $player$ = %i(0,00000000)
+					:i :s}
+					:i :s{
+						:i $component$ = $model$
+						:i $UseModelLights$
+					:i :s}
+					:i :a}
+				:i $params$ = :s{
+					:i $name$ = $PlayerVehicle$
+					:i %GLOBAL%$VehicleSetup$
+					:i $pos$ = %GLOBAL%$pos$
+				:i :s}
+			:i :s}
+		:i else 
+			:i if NOT $GoalManager_GoalIsActive$$name$ = $ctf$
+				:i $CreateCompositeObject$:s{
+					:i $components$ = :a{
+						:i :s{
+							:i $component$ = $skeleton$
+							:i $skeletonName$ = $car$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehicle$
+						:i :s}
+						:i :s{
+							:i $component$ = $motion$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehiclesound$
+						:i :s}
+						:i :s{
+							:i $component$ = $sound$
+						:i :s}
+						:i :s{
+							:i $component$ = $input$
+							:i $player$ = %i(0,00000000)
+						:i :s}
+						:i :s{
+							:i $component$ = $model$
+							:i $UseModelLights$
+						:i :s}
+						:i :a}
+					:i $params$ = :s{
+						:i $name$ = $PlayerVehicle$
+						:i %GLOBAL%$VehicleSetup$
+					:i :s}
+				:i :s}
+			:i else 
+				:i $CreateCompositeObject$:s{
+					:i $components$ = :a{
+						:i :s{
+							:i $component$ = $skeleton$
+							:i $skeletonName$ = $car$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehicle$
+						:i :s}
+						:i :s{
+							:i $component$ = $motion$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehiclesound$
+						:i :s}
+						:i :s{
+							:i $component$ = $sound$
+						:i :s}
+						:i :s{
+							:i $component$ = $input$
+							:i $player$ = %i(0,00000000)
+						:i :s}
+						:i :s{
+							:i $component$ = $model$
+							:i $UseModelLights$
+						:i :s}
+						:i :a}
+					:i $params$ = :s{
+						:i $name$ = $PlayerVehicle$
+						:i %GLOBAL%$VehicleSetup$
+						:i $pos$ = %GLOBAL%$pos$
+					:i :s}
+				:i :s}
+			:i endif
+		:i endif
+		:i if $StructureContains$$Structure$ = %GLOBAL%$VehicleSetup$$RCCarCamera$
+			:i $CreateCompositeObject$:s{
+				:i $components$ = :a{
+					:i :s{
+						:i $component$ = $cameralookaround$
+					:i :s}
+					:i :s{
+						:i $component$ = $vehiclecamera$
+						:i $subject$ = $PlayerVehicle$
+						:i $RCCarVehicleCameraSetup$
+					:i :s}
+					:i :s{
+						:i $component$ = $camera$
+					:i :s}
+					:i :s{
+						:i $component$ = $input$
+						:i $player$ = %i(0,00000000)
+					:i :s}
+					:i :a}
+				:i $params$ = :s{$name$ = $PlayerVehicleCamera$:s}
+			:i :s}
+		:i else 
+			:i if $StructureContains$$Structure$ = %GLOBAL%$VehicleSetup$$BusUkCamera$
+				:i $CreateCompositeObject$:s{
+					:i $components$ = :a{
+						:i :s{
+							:i $component$ = $cameralookaround$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehiclecamera$
+							:i $subject$ = $PlayerVehicle$
+							:i $BusUKvehicleCameraSetup$
+						:i :s}
+						:i :s{
+							:i $component$ = $camera$
+						:i :s}
+						:i :s{
+							:i $component$ = $input$
+							:i $player$ = %i(0,00000000)
+						:i :s}
+						:i :a}
+					:i $params$ = :s{$name$ = $PlayerVehicleCamera$:s}
+				:i :s}
+			:i else 
+				:i $CreateCompositeObject$:s{
+					:i $components$ = :a{
+						:i :s{
+							:i $component$ = $cameralookaround$
+						:i :s}
+						:i :s{
+							:i $component$ = $vehiclecamera$
+							:i $subject$ = $PlayerVehicle$
+							:i $vehicleCameraSetup$
+						:i :s}
+						:i :s{
+							:i $component$ = $camera$
+						:i :s}
+						:i :s{
+							:i $component$ = $input$
+							:i $player$ = %i(0,00000000)
+						:i :s}
+						:i :a}
+					:i $params$ = :s{$name$ = $PlayerVehicleCamera$:s}
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT  ( ($LevelIs$$load_sk5ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+		:i if NOT $GoalManager_GoalIsActive$$name$ = $ctf$
+			:i $PlayerVehicle$.$Vehicle_MoveToRestart$$TRG_Team_Restart$
+		:i endif
+	:i endif
+:i endfunction
+:i function $NonLocalClientInVehicle$
+	:i $MangleChecksums$$A$ = %GLOBAL%$SkaterId$$B$ = $NonLocalPlayerVehicle$
+	:i $NonLocalPlayerVehicle$ = %GLOBAL%$mangled_id$
+	:i if $ObjectExists$$Id$ = %GLOBAL%$NonLocalPlayerVehicle$
+		:i %GLOBAL%$NonLocalPlayerVehicle$.$GetTags$
+		:i if NOT  (%GLOBAL%$control_type$ = %GLOBAL%$current_control_type$) 
+			:i $remove_car_from_non_local_skater$$SkaterId$ = %GLOBAL%$SkaterId$
+		:i endif
+	:i endif
+	:i if NOT $ObjectExists$$Id$ = %GLOBAL%$NonLocalPlayerVehicle$
+		:i $lock_car_to_non_local_skater$$SkaterId$ = %GLOBAL%$SkaterId$$control_type$ = %GLOBAL%$control_type$
+	:i endif
+	:i $GetVehicleSetup$$control_type$ = %GLOBAL%$control_type$
+	:i if NOT $StructureContains$$Structure$ = %GLOBAL%$VehicleSetup$$make_skater_visible$
+		:i %GLOBAL%$SkaterId$.$Hide$
+	:i else 
+		:i %GLOBAL%$SkaterId$.$Obj_ShadowOff$
+		:i %GLOBAL%$SkaterId$.$SwitchOffAtomic$$Board$
+		:i %GLOBAL%$SkaterId$.$UnHide$
+	:i endif
+:i endfunction
+:i function $NonLocalClientExitVehicle$
+	:i $remove_car_from_non_local_skater$$SkaterId$ = %GLOBAL%$SkaterId$
+	:i %GLOBAL%$SkaterId$.$UnHide$
+	:i %GLOBAL%$SkaterId$.$Obj_ShadowOn$$ShadowType$ = $Simple$
+	:i %GLOBAL%$SkaterId$.$SwitchOnAtomic$$Board$
+:i endfunction
+:i function $lock_car_to_non_local_skater$
+	:i $Change$$SkaterId$ = %GLOBAL%$SkaterId$
+	:i $MangleChecksums$$A$ = %GLOBAL%$SkaterId$$B$ = $NonLocalPlayerVehicle$
+	:i $NonLocalPlayerVehicle$ = %GLOBAL%$mangled_id$
+	:i $GetVehicleSetup$$control_type$ = %GLOBAL%$control_type$
+	:i $CreateCompositeObject$:s{
+		:i $components$ = :a{
+			:i :s{
+				:i $component$ = $staticvehicle$
+			:i :s}
+			:i :s{
+				:i $component$ = $skeleton$
+				:i $skeletonName$ = $car$
+			:i :s}
+			:i :s{
+				:i $component$ = $lockobj$
+			:i :s}
+			:i :s{
+				:i $component$ = $setdisplaymatrix$
+			:i :s}
+			:i :s{
+				:i $component$ = $model$
+				:i $model$ =  (%GLOBAL%$VehicleSetup$->$model$) 
+				:i $UseModelLights$
+			:i :s}
+			:i :s{
+				:i $component$ = $modellightupdate$
+			:i :s}
+			:i :a}
+		:i $params$ = :s{$name$ = %GLOBAL%$NonLocalPlayerVehicle$:s}
+	:i :s}
+	:i %GLOBAL%$NonLocalPlayerVehicle$.$Obj_LockToObject$$Id$ = %GLOBAL%$SkaterId$ (%vec3(0.000000,0.000000,0.000000) -  (%GLOBAL%$VehicleSetup$->$skater_pos$) ) 
+	:i %GLOBAL%$NonLocalPlayerVehicle$.$SetTags$$current_control_type$ = %GLOBAL%$control_type$
+:i endfunction
+:i function $remove_car_from_non_local_skater$
+	:i $MangleChecksums$$A$ = %GLOBAL%$SkaterId$$B$ = $NonLocalPlayerVehicle$
+	:i $NonLocalPlayerVehicle$ = %GLOBAL%$mangled_id$
+	:i if $ObjectExists$$Id$ = %GLOBAL%$NonLocalPlayerVehicle$
+		:i %GLOBAL%$NonLocalPlayerVehicle$.$Die$
+	:i endif
+:i endfunction
+:i function $DrivingCollisionLost$
+	:i $PlayerVehicle$.$Vehicle_LostCollision$ isNull 
+:i endfunction
+:i function $GetVehicleSetup$
+	:i switch %GLOBAL%$control_type$
+		:i case $JunkerCar$
+			:i return
+			$VehicleSetup$ = $TransCarSetup$
+			:i endcase
+		case $RallyCar$
+			:i return
+			$VehicleSetup$ = $CustomCarSetup$
+			:i endcase
+		case $ImpalaCar$
+			:i return
+			$VehicleSetup$ = $ImpalaCarSetup$
+			:i endcase
+		case $TaxiCar$
+			:i return
+			$VehicleSetup$ = $TaxiCarSetup$
+			:i endcase
+		case $PoliceCar$
+			:i return
+			$VehicleSetup$ = $PoliceCarSetup$
+			:i endcase
+		case $SecurityCart$
+			:i return
+			$VehicleSetup$ = $SecurityCartSetup$
+			:i endcase
+		case $GardnersCart$
+			:i return
+			$VehicleSetup$ = $GardnersCartSetup$
+			:i endcase
+		case $ElCaminoCar$
+			:i return
+			$VehicleSetup$ = $ElCaminoCarSetup$
+			:i endcase
+		case $Blimp$
+			:i return
+			$VehicleSetup$ = $BlimpSetup$
+			:i endcase
+		case $LadaCar$
+			:i return
+			$VehicleSetup$ = $LadaCarSetup$
+			:i endcase
+		case $MiniBajaCar$
+			:i return
+			$VehicleSetup$ = $MiniBajaCarSetup$
+			:i endcase
+		case $LimoCar$
+			:i return
+			$VehicleSetup$ = $LimoCarSetup$
+			:i endcase
+		case $Forklift$
+			:i return
+			$VehicleSetup$ = $ForkliftSetup$
+			:i endcase
+		case $BusUk$
+			:i return
+			$VehicleSetup$ = $BusUkSetup$
+			:i endcase
+		case $RcCar$
+			:i return
+			$VehicleSetup$ = $RcCarSetup$
+			:i endcase
+		case $TaurusCar$
+			:i return
+			$VehicleSetup$ = $TaurusCarSetup$
+			:i endcase
+		case $PickupTruck$
+			:i return
+			$VehicleSetup$ = $PickupTruckSetup$
+			:i endcase
+		case $wranglerCar$
+			:i return
+			$VehicleSetup$ = $wranglerCarSetup$
+			:i endcase
+		case $SportsCar$
+			:i return
+			$VehicleSetup$ = $SportsCarSetup$
+			:i endcase
+		case $SmartCar$
+			:i return
+			$VehicleSetup$ = $SmartCarSetup$
+			:i endcase
+		case $CrownIt$
+			:i return
+			$VehicleSetup$ = $CrownSetup$
+			:i endcase
+		case $OldVan$
+			:i return
+			$VehicleSetup$ = $OldVanSetup$
+			:i end_switch
+	
+:i endfunction
+:i $vehicleCameraSetup$ = :s{
+	:i $alignment_rate$ = %f(3.500000)
+	:i $offset_height$ = %i(55,00000037)
+	:i $offset_distance$ = %i(240,000000f0)
+	:i $angle$ = %i(0,00000000)
+:i :s}
+:i $RCCarVehicleCameraSetup$ = :s{
+	:i $alignment_rate$ = %f(3.500000)
+	:i $offset_height$ = %i(15,0000000f)
+	:i $offset_distance$ = %i(50,00000032)
+	:i $angle$ = %i(0,00000000)
+:i :s}
+:i $BusUKvehicleCameraSetup$ = :s{
+	:i $alignment_rate$ = %f(3.500000)
+	:i $offset_height$ = %i(70,00000046)
+	:i $offset_distance$ = %i(350,0000015e)
+	:i $angle$ = %i(0,00000000)
+:i :s}
+:i function $Vehicle_BodyCollision$
+	:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ =  (%i(50,00000032) + %i(50,00000032) * %GLOBAL%$Strength$) $Duration$ =  (%f(0.100000) + %f(0.100000) * %GLOBAL%$Strength$) 
+:i endfunction
+:i $artificial_collision_duration$ = %f(3.000000)
+:i $coll_forward_imp$ = %i(150,00000096)
+:i $coll_sideways_imp$ = %i(100,00000064)
+:i $coll_upwards_imp$ = %i(300,0000012c)
+:i $coll_spin_rot$ = %i(2,00000002)
+:i $coll_flip_rot$ = %i(3,00000003)
+:i $vehicle_physics_artificial_collision_duration$ = %i(3,00000003)
+:i $vehicle_physics_netcoll_forward_impulse$ = %i(250,000000fa)
+:i $vehicle_physics_netcoll_sideways_impulse$ = %i(100,00000064)
+:i $vehicle_physics_netcoll_upwards_impulse$ = %i(300,0000012c)
+:i $vehicle_physics_netcoll_spin_impulse$ = %i(2,00000002)
+:i $vehicle_physics_netcoll_flip_impulse$ = %i(3,00000003)
+:i $TransCarSetup$ = :s{
+	:i $control_type$ = $JunkerCar$
+	:i $model$ = %s(31,"veh\veh_transam\veh_transam.mdl")
+	:i $level$ = $Load_Sk5Ed_gameplay$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(36.000000,28.000000,140.000000)
+			:i %vec3(-36.000000,28.000000,140.000000)
+			:i %vec3(36.000000,28.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(26.000000,48.000000,58.000000)
+			:i %vec3(-26.000000,48.000000,58.000000)
+			:i %vec3(26.000000,48.000000,4.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $CustomCarSetup$ = :s{
+	:i $control_type$ = $RallyCar$
+	:i $model$ = %s(29,"veh\veh_custom\veh_custom.mdl")
+	:i $angle$ = %vec3(0.000000,180.000000,0.000000)
+	:i $sounds$ = $NJ_nasalracer$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(42.000000,24.000000,134.000000)
+			:i %vec3(-42.000000,24.000000,134.000000)
+			:i %vec3(42.000000,24.000000,-30.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(22.000000,55.000000,54.000000)
+			:i %vec3(-22.000000,55.000000,54.000000)
+			:i %vec3(22.000000,63.000000,-26.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $BlimpSetup$ = :s{
+	:i $control_type$ = $Blimp$
+	:i $model$ = %s(27,"veh\Veh_Blimp\Veh_Blimp.mdl")
+	:i $sounds$ = $NJ_nasalracer$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967256,ffffffd8)
+	:i $mass$ = %i(500,000001f4)
+	:i $moment_of_inertia$ = %vec3(4000000.000000,8000000.000000,4000000.000000)
+	:i $body_restitution$ = %f(0.200000)
+	:i $body_friction$ = %f(0.100000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(270,0000010e)
+	:i $collision_control$ = %f(0.200000)
+	:i $max_steering_angle$ = %i(45,0000002d)
+	:i $constant_rotational_damping$ = %i(0,00000000)
+	:i $quadratic_rotational_damping$ = %f(0.000010)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(28.000000,30.000000,60.000000)
+			:i %vec3(-28.000000,30.000000,60.000000)
+			:i %vec3(28.000000,30.000000,-66.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(18.000000,45.000000,30.000000)
+			:i %vec3(-18.000000,45.000000,30.000000)
+			:i %vec3(18.000000,45.000000,-30.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(50,00000032)
+		:i $drag_torque$ = %i(5,00000005)
+		:i $upshift_rpm$ = %i(7500,00001d4c)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %f(1.500000)
+		:i $gear_ratios$ = :a{
+			:i %f(2.500000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $no_handbrake$
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(9,00000009)
+		:i $moment$ = %i(1000,000003e8)
+		:i $spring_rate$ = %i(100,00000064)
+		:i $damping_rate$ = %i(35,00000023)
+		:i $static_friction$ = %f(1.000000)
+		:i $min_static_grip_velocity$ = %i(10,0000000a)
+		:i $max_static_grip_velocity$ = %i(11,0000000b)
+		:i $min_dynamic_grip_velocity$ = %i(12,0000000c)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(0,00000000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(0,00000000)
+			:i $dynamic_friction$ = %f(0.800000)
+			:i $handbrake_throttle_friction$ = %i(0,00000000)
+			:i $handbrake_locked_friction$ = %i(0,00000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(0,00000000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(0,00000000)
+			:i $dynamic_friction$ = %f(0.800000)
+			:i $handbrake_throttle_friction$ = %i(0,00000000)
+			:i $handbrake_locked_friction$ = %i(0,00000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(0,00000000)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(0.800000)
+			:i $handbrake_throttle_friction$ = %i(0,00000000)
+			:i $handbrake_locked_friction$ = %i(0,00000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(0,00000000)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(0.800000)
+			:i $handbrake_throttle_friction$ = %i(0,00000000)
+			:i $handbrake_locked_friction$ = %i(0,00000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $GardnersCartSetup$ = :s{
+	:i $control_type$ = $GardnersCart$
+	:i $model$ = %s(45,"veh\Veh_SDKart_Gardens\Veh_SDKart_Gardens.mdl")
+	:i $level$ = $Load_SD$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $SD_Cart$
+	:i $make_skater_visible$
+	:i $skater_pos$ = %vec3(-10.730000,1.000000,26.180000)
+	:i $skater_anim$ = $Ped_Driver_Turn_Range$
+	:i $suspension_center_of_mass$ = %i(4294967272,ffffffe8)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.700000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(18,00000012)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %f(0.500000)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $vert_correction$
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(25.000000,25.000000,58.000000)
+			:i %vec3(-25.000000,25.000000,58.000000)
+			:i %vec3(25.000000,25.000000,-60.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(25.000000,48.000000,56.000000)
+			:i %vec3(-25.000000,48.000000,56.000000)
+			:i %vec3(25.000000,48.000000,10.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(350,0000015e)
+		:i $drag_torque$ = %i(300,0000012c)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(9,00000009)
+			:i %i(6,00000006)
+			:i %f(2.500000)
+			:i %f(0.750000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(9,00000009)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(40,00000028)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(20,00000014)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(2.000000)
+			:i $handbrake_locked_friction$ = %f(2.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(2.000000)
+			:i $handbrake_locked_friction$ = %f(2.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $SecurityCartSetup$ = :s{
+	:i $control_type$ = $SecurityCart$
+	:i $model$ = %s(47,"veh\Veh_SDKart_Security\Veh_SDKart_Security.mdl")
+	:i $sounds$ = $SD_Cart$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $make_skater_visible$
+	:i $skater_pos$ = %vec3(-10.810000,1.000000,26.180000)
+	:i $skater_anim$ = $Ped_Driver_Turn_Range$
+	:i $suspension_center_of_mass$ = %i(4294967272,ffffffe8)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.700000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(18,00000012)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %f(0.500000)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $vert_correction$
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(25.000000,25.000000,58.000000)
+			:i %vec3(-25.000000,25.000000,58.000000)
+			:i %vec3(25.000000,25.000000,-60.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(25.000000,48.000000,56.000000)
+			:i %vec3(-25.000000,48.000000,56.000000)
+			:i %vec3(25.000000,48.000000,10.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(350,0000015e)
+		:i $drag_torque$ = %i(300,0000012c)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(9,00000009)
+			:i %i(6,00000006)
+			:i %f(2.500000)
+			:i %f(0.750000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(9,00000009)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(40,00000028)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(20,00000014)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(2.000000)
+			:i $handbrake_locked_friction$ = %f(2.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967284,fffffff4)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(2.000000)
+			:i $handbrake_locked_friction$ = %f(2.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $ForkliftSetup$ = :s{
+	:i $control_type$ = $Forklift$
+	:i $model$ = %s(33,"veh\Veh_forklift\Veh_forklift.mdl")
+	:i $level$ = $Load_VC$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $VC_LeafBlower$
+	:i $make_skater_visible$
+	:i $skater_pos$ = %vec3(0.000000,22.000000,60.000000)
+	:i $skater_anim$ = $Ped_Driver_Turn_Range$
+	:i $suspension_center_of_mass$ = %i(4294967266,ffffffe2)
+	:i $mass$ = %i(800,00000320)
+	:i $moment_of_inertia$ = %vec3(4000000.000000,3000000.000000,4000000.000000)
+	:i $body_restitution$ = %f(0.200000)
+	:i $body_friction$ = %f(0.100000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(270,0000010e)
+	:i $collision_control$ = %f(0.200000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(500000,0007a120)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(28.000000,70.000000,40.000000)
+			:i %vec3(-28.000000,70.000000,40.000000)
+			:i %vec3(28.000000,70.000000,-50.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(28.000000,30.000000,50.000000)
+			:i %vec3(-28.000000,30.000000,50.000000)
+			:i %vec3(28.000000,30.000000,-55.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(50,00000032)
+		:i $drag_torque$ = %i(50,00000032)
+		:i $upshift_rpm$ = %i(7500,00001d4c)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %f(1.500000)
+		:i $gear_ratios$ = :a{
+			:i %f(2.500000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $no_handbrake$
+	:i $all_wheels$ = :s{
+		:i $moment$ = %i(1000,000003e8)
+		:i $spring_rate$ = %i(300,0000012c)
+		:i $damping_rate$ = %i(35,00000023)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(2,00000002)
+		:i $max_static_grip_velocity$ = %i(8,00000008)
+		:i $min_dynamic_grip_velocity$ = %i(18,00000012)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $radius$ = %i(15,0000000f)
+			:i $max_draw_y_offset$ = %i(4294967271,ffffffe7)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(2.500000)
+			:i $handbrake_locked_friction$ = %f(2.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(15,0000000f)
+			:i $max_draw_y_offset$ = %i(4294967271,ffffffe7)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(2.500000)
+			:i $handbrake_locked_friction$ = %f(2.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(11,0000000b)
+			:i $max_draw_y_offset$ = %i(4294967291,fffffffb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(1.500000)
+			:i $handbrake_locked_friction$ = %f(1.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(11,0000000b)
+			:i $max_draw_y_offset$ = %i(4294967291,fffffffb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(1.500000)
+			:i $handbrake_locked_friction$ = %f(1.500000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $ImpalaCarSetup$ = :s{
+	:i $control_type$ = $ImpalaCar$
+	:i $model$ = %s(41,"veh\veh_chevy_impala\veh_chevy_impala.mdl")
+	:i $level$ = $Load_NY$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967276,ffffffec)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(39.500000,26.000000,126.000000)
+			:i %vec3(-40.500000,26.000000,126.000000)
+			:i %vec3(39.500000,26.000000,-60.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(31.000000,46.000000,52.000000)
+			:i %vec3(-31.000000,46.000000,52.000000)
+			:i %vec3(31.000000,42.000000,-8.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(3.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-22.500000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-22.500000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-19.500000)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-19.500000)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $PoliceCarSetup$ = :s{
+	:i $control_type$ = $PoliceCar$
+	:i $model$ = %s(44,"veh\fl\veh_policecar_fl\veh_policecar_fl.mdl")
+	:i $level$ = $Load_FL$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $FL_PoliceCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967272,ffffffe8)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(33.000000,25.000000,150.000000)
+			:i %vec3(-33.000000,25.000000,150.000000)
+			:i %vec3(33.000000,25.000000,-65.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(28.000000,55.000000,62.000000)
+			:i %vec3(-28.000000,55.000000,62.000000)
+			:i %vec3(28.000000,55.000000,-2.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $ElCaminoCarSetup$ = :s{
+	:i $control_type$ = $ElCaminoCar$
+	:i $model$ = %s(29,"veh\veh_camino\veh_camino.mdl")
+	:i $level$ = $Load_HI$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,6000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(36.000000,27.000000,151.000000)
+			:i %vec3(-36.000000,27.000000,151.000000)
+			:i %vec3(36.000000,33.000000,-58.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,53.000000,68.000000)
+			:i %vec3(-24.000000,53.000000,68.000000)
+			:i %vec3(24.000000,53.000000,38.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-24.500000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-24.500000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967279,ffffffef)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967279,ffffffef)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $LimoCarSetup$ = :s{
+	:i $control_type$ = $LimoCar$
+	:i $model$ = %s(25,"veh\veh_limo\veh_limo.mdl")
+	:i $level$ = $Load_VC$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967281,fffffff1)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,20000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(39.500000,25.000000,212.000000)
+			:i %vec3(-39.500000,25.000000,212.000000)
+			:i %vec3(39.500000,25.000000,-85.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(27.000000,64.000000,115.000000)
+			:i %vec3(-27.000000,64.000000,115.000000)
+			:i %vec3(27.000000,64.000000,-28.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(2.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.700001)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967270,ffffffe6)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967270,ffffffe6)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $MiniBajaCarSetup$ = :s{
+	:i $control_type$ = $MiniBajaCar$
+	:i $model$ = %s(33,"veh\veh_minibaja\veh_minibaja.mdl")
+	:i $level$ = $Load_SE$
+	:i $alternate_level$ = $Load_Sk5Ed_gameplay$
+	:i $sounds$ = $RU_ForeignCar$
+	:i $make_skater_visible$
+	:i $skater_pos$ = %vec3(-0.650000,-2.000000,4.070000)
+	:i $skater_anim$ = $Ped_Baha_Drive$
+	:i $suspension_center_of_mass$ = %i(4294967275,ffffffeb)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.600000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.700000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(25,00000019)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %f(0.500000)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $vert_correction$
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(37.000000,30.000000,41.000000)
+			:i %vec3(-37.000000,30.000000,41.000000)
+			:i %vec3(37.000000,30.000000,-36.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(12.000000,64.000000,16.000000)
+			:i %vec3(-12.000000,64.000000,16.000000)
+			:i %vec3(12.000000,64.000000,-28.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(550,00000226)
+		:i $drag_torque$ = %i(450,000001c2)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(9,00000009)
+			:i %i(6,00000006)
+			:i %f(2.500000)
+			:i %f(0.750000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(14,0000000e)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(16,00000010)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(20,00000014)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %i(3,00000003)
+			:i $handbrake_locked_friction$ = %i(3,00000003)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(1.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967276,ffffffec)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(1.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $TaurusCarSetup$ = :s{
+	:i $control_type$ = $TaurusCar$
+	:i $model$ = %s(37,"veh\veh_taurustype\veh_TaurusType.mdl")
+	:i $level$ = $Load_RU$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $LadaCarSetup$ = :s{
+	:i $control_type$ = $LadaCar$
+	:i $model$ = %s(25,"veh\veh_lada\veh_lada.mdl")
+	:i $level$ = $Load_RU$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $BusUkSetup$ = :s{
+	:i $control_type$ = $BusUk$
+	:i $model$ = %s(27,"veh\Veh_BusUK\Veh_BusUK.mdl")
+	:i $sounds$ = $UKBus_Sound_Profile$
+	:i $BusUkCamera$
+	:i $suspension_center_of_mass$ = %i(4294967266,ffffffe2)
+	:i $mass$ = %i(800,00000320)
+	:i $moment_of_inertia$ = %vec3(4000000.000000,3000000.000000,4000000.000000)
+	:i $body_restitution$ = %f(0.200000)
+	:i $body_friction$ = %f(0.100000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(270,0000010e)
+	:i $collision_control$ = %f(0.200000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(500000,0007a120)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(28.000000,70.000000,40.000000)
+			:i %vec3(-28.000000,70.000000,40.000000)
+			:i %vec3(28.000000,70.000000,-50.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(28.000000,30.000000,50.000000)
+			:i %vec3(-28.000000,30.000000,50.000000)
+			:i %vec3(28.000000,30.000000,-55.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(50,00000032)
+		:i $drag_torque$ = %i(50,00000032)
+		:i $upshift_rpm$ = %i(7500,00001d4c)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %f(1.500000)
+		:i $gear_ratios$ = :a{
+			:i %f(2.500000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $no_handbrake$
+	:i $all_wheels$ = :s{
+		:i $moment$ = %i(1000,000003e8)
+		:i $spring_rate$ = %i(300,0000012c)
+		:i $damping_rate$ = %i(35,00000023)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(2,00000002)
+		:i $max_static_grip_velocity$ = %i(8,00000008)
+		:i $min_dynamic_grip_velocity$ = %i(18,00000012)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $radius$ = %i(15,0000000f)
+			:i $max_draw_y_offset$ = %i(4294967271,ffffffe7)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(2.500000)
+			:i $handbrake_locked_friction$ = %f(2.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(15,0000000f)
+			:i $max_draw_y_offset$ = %i(4294967271,ffffffe7)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(2.500000)
+			:i $handbrake_locked_friction$ = %f(2.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(11,0000000b)
+			:i $max_draw_y_offset$ = %i(4294967291,fffffffb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(1.500000)
+			:i $handbrake_locked_friction$ = %f(1.500000)
+		:i :s}
+		:i :s{
+			:i $radius$ = %i(11,0000000b)
+			:i $max_draw_y_offset$ = %i(4294967291,fffffffb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(500,000001f4)
+			:i $dynamic_friction$ = %f(4.000000)
+			:i $handbrake_throttle_friction$ = %f(1.500000)
+			:i $handbrake_locked_friction$ = %f(1.500000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $RcCarSetup$ = :s{
+	:i $control_type$ = $RcCar$
+	:i $model$ = %s(21,"veh\veh_rc\veh_rc.mdl")
+	:i $sounds$ = $SD_Cart$
+	:i $RCCarCamera$
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(9000,00002328)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.700000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(49,00000031)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(1.000000,1.000000,1.000000)
+			:i %vec3(-1.000000,1.000000,1.000000)
+			:i %vec3(1.000000,1.000000,-1.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(1.000000,1.000000,1.000000)
+			:i %vec3(-1.000000,1.000000,1.000000)
+			:i %vec3(1.000000,1.000000,-1.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(1000,000003e8)
+		:i $drag_torque$ = %i(500,000001f4)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %f(2.500000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(13,0000000d)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(2.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %f(-25.500000)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(2000,000007d0)
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967270,ffffffe6)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967270,ffffffe6)
+			:i $steering$ = $fixed$
+			:i $drive$ = $fixed$
+			:i $brake_torque$ = %i(1000,000003e8)
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $PickupTruckSetup$ = :s{
+	:i $control_type$ = $PickupTruck$
+	:i $model$ = %s(29,"veh\veh_pickup\veh_pickup.mdl")
+	:i $level$ = $Load_RU$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $wranglerCarSetup$ = :s{
+	:i $control_type$ = $wranglerCar$
+	:i $model$ = %s(33,"veh\veh_wrangler\veh_wrangler.mdl")
+	:i $sounds$ = $default$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $SportsCarSetup$ = :s{
+	:i $control_type$ = $SportsCar$
+	:i $model$ = %s(45,"veh\veh_smallsportscar\veh_smallsportscar.mdl")
+	:i $level$ = $Load_RU$
+	:i $alternate_level$ = %i(0,00000000)
+	:i $sounds$ = $RU_ForeignCar$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967280,fffffff0)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $OldVanSetup$ = :s{
+	:i $control_type$ = $OldVan$
+	:i $model$ = %sc(29,"veh/veh_oldvan/veh_oldvan.mdl")
+	:i $sounds$ = $default$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(3,00000003)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(3,00000003)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $SmartCarSetup$ = :s{
+	:i $control_type$ = $SmartCar$
+	:i $model$ = %s(35,"veh\veh_smart_car\veh_smart_car.mdl")
+	:i $sounds$ = $SD_Cart$
+	:i $skater_pos$ = %vec3(0.000000,0.000000,0.000000)
+	:i $suspension_center_of_mass$ = %i(4294967274,ffffffea)
+	:i $mass$ = %i(2943,00000b7f)
+	:i $moment_of_inertia$ = %vec3(6000000.000000,5000000.000000,6000000.000000)
+	:i $body_restitution$ = %f(0.300000)
+	:i $body_friction$ = %f(0.200000)
+	:i $body_wipeout_friction$ = %f(0.400000)
+	:i $body_spring$ = %i(1200,000004b0)
+	:i $collision_control$ = %f(0.250000)
+	:i $max_steering_angle$ = %i(30,0000001e)
+	:i $constant_rotational_damping$ = %i(2000000,001e8480)
+	:i $quadratic_rotational_damping$ = %f(0.000100)
+	:i $in_air_slerp_strength$ = %i(5,00000005)
+	:i $in_air_slerp_time_delay$ = %i(1,00000001)
+	:i $in_air_slerp_velocity_cutoff$ = %i(350,0000015e)
+	:i $colliders$ = :a{
+		:i :a{
+			:i %vec3(29.000000,30.000000,118.000000)
+			:i %vec3(-29.000000,30.000000,118.000000)
+			:i %vec3(29.000000,30.000000,-44.000000)
+			:i :a}
+		:i :a{
+			:i %vec3(24.000000,56.000000,65.000000)
+			:i %vec3(-24.000000,56.000000,65.000000)
+			:i %vec3(24.000000,56.000000,0.000000)
+			:i :a}
+		:i :a}
+	:i $engine$ = :s{
+		:i $drive_torque$ = %i(400,00000190)
+		:i $drag_torque$ = %i(800,00000320)
+		:i $upshift_rpm$ = %i(5000,00001388)
+		:i $differential_ratio$ = %i(5,00000005)
+		:i $reverse_torque_ratio$ = %i(1,00000001)
+		:i $gear_ratios$ = :a{
+			:i %i(4,00000004)
+			:i %i(3,00000003)
+			:i %f(1.500000)
+			:i %f(0.650000)
+			:i %i(0,00000000)
+			:i :a}
+	:i :s}
+	:i $all_wheels$ = :s{
+		:i $radius$ = %i(11,0000000b)
+		:i $moment$ = %i(3570,00000df2)
+		:i $spring_rate$ = %i(200,000000c8)
+		:i $damping_rate$ = %i(28,0000001c)
+		:i $static_friction$ = %f(4.000000)
+		:i $min_static_grip_velocity$ = %i(8,00000008)
+		:i $max_static_grip_velocity$ = %i(12,0000000c)
+		:i $min_dynamic_grip_velocity$ = %i(30,0000001e)
+		:i $handbrake_torque$ = %i(3000,00000bb8)
+		:i $brake_torque$ = %i(2000,000007d0)
+	:i :s}
+	:i $wheels$ = :a{
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $left$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(4294967275,ffffffeb)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(2.800000)
+			:i $handbrake_throttle_friction$ = %f(3.500000)
+			:i $handbrake_locked_friction$ = %f(4.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(3,00000003)
+			:i $steering$ = $fixed$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :s{
+			:i $max_draw_y_offset$ = %i(3,00000003)
+			:i $steering$ = $right$
+			:i $drive$ = $yes$
+			:i $dynamic_friction$ = %f(3.500000)
+			:i $handbrake_throttle_friction$ = %f(3.000000)
+			:i $handbrake_locked_friction$ = %f(1.000000)
+		:i :s}
+		:i :a}
+:i :s}
+:i $CrownSetup$ = :s{
+	:i $control_type$ = $CrownIt$
+:i :s}
+:i $defaultCarSetup$ = $CustomCarSetup$
+:i :end

@@ -1,0 +1,1345 @@
+
+:i $ENABLE_WALKING_180FLIP_SKATER$ = %i(1,00000001)
+:i function $SwitchToWalkingPhysics$
+	:i if  ($ENABLE_WALKING_180FLIP_SKATER$ = %i(1,00000001)) 
+		:i $flip_skater_if_180_off$
+	:i endif
+	:i $BroadcastEvent$$Type$ = $SkaterExitSkating$
+	:i $ClearTrickQueues$
+	:i $SkaterPhysicsControl_SwitchSkatingToWalking$
+	:i $SkaterLoopingSound_TurnOff$
+	:i $EnableInputEvents$
+	:i $BroadcastEvent$$Type$ = $SkaterEnterWalking$
+	:i $KillExtraTricks$
+	:i $PressureOff$
+	:i $NollieOff$
+	:i $Obj_SpawnScript$$ClearLipLock$
+	:i $SetTrickName$%sc(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+:i endfunction
+:i function $ClearLipLock$
+	:i $ClearAllowLipNoGrind$
+	:i $wait$%i(15,0000000f)$frames$
+	:i $ClearAllowLipNoGrind$
+:i endfunction
+:i function $SwitchToSkatingPhysics$
+	:i $BroadcastEvent$$Type$ = $SkaterExitWalking$
+	:i $ClearAllWalkingExceptions$
+	:i $ClearTrickQueue$
+	:i $Obj_KillSpawnedScript$$Id$ = $ComboRunOutTrickDisplayDelay$
+	:i $Obj_KillSpawnedScript$$Id$ = $ActivateGroundTricksDelay$
+	:i $SetProps$$remove_tags$ = :a{$WalkingGroundTricksInactive$:a}
+	:i $SetTrickName$%sc(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+	:i $RunTimer_Pause$
+	:i $SkaterPhysicsControl_SwitchWalkingToSkating$
+	:i $BroadcastEvent$$Type$ = $SkaterEnterSkating$
+:i endfunction
+:i $WalkGroundTricks$ = :a{
+	:i :s{$SwitchControl_Trigger$$Scr$ = $WalkingRunToSkating$:s}
+	:i :a}
+:i $WalkAirTricks_NO_AS$ = :a{
+	:i :s{$SwitchControl_Trigger$$Scr$ = $WalkingAirToSkating$:s}
+	:i :a}
+:i $WalkAirTricks_AS$ = :a{
+	:i :s{$SwitchControl_Trigger$$Scr$ = $WalkingAirToSkating$:s}
+	:i :s{$trigger$ = :s{$TapTwiceRelease$;$up$;$X$;%i(400,00000190):s}$Scr$ = $Air_Shuffle$$params$ = :s{$nose$:s}:s}
+	:i :a}
+:i $WalkAirTricks$ = :a{
+	:i :s{$SwitchControl_Trigger$$Scr$ = $WalkingAirToSkating$:s}
+	:i :s{$trigger$ = :s{$TapTwiceRelease$;$up$;$X$;%i(400,00000190):s}$Scr$ = $Air_Shuffle$$params$ = :s{$nose$:s}:s}
+	:i :a}
+:i function $BeginWalkingGenericTrick$
+	:i $CleanUp_WalkingtoSkating$
+	:i if NOT $OnGround$
+		:i $PerhapsAwardCaveman$
+	:i endif
+:i endfunction
+:i function $BeginWalkingManualTrick$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i $CleanUp_WalkingtoSkating$
+	:i $PerhapsAwardCaveman$
+:i endfunction
+:i function $WalkingToRailTrick$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i $PlayAnim$$Anim$ = $JumpAirTo5050$$From$ = %i(0,00000000)$To$ = %f(0.300000)$Seconds$
+	:i $SetException$$Ex$ = $PointRailSpin$$Scr$ = $PointRailSpin$
+	:i $PerhapsAwardCaveman$$HaveNotSwitchedPhysicsStatesYet$
+	:i $SetTrickName$%sc(0,"")
+	:i $SetTrickScore$%i(0,00000000)
+	:i $Display$$Blockspin$
+	:i $CleanUp_WalkingtoSkating$
+:i endfunction
+:i function $WalkingAirToTransitionTrick$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i $PlayAnim$$Anim$ = $JumpAirToAirIdle$
+	:i $CleanUp_WalkingtoSkating$
+	:i $WaitAnimWhilstChecking$
+	:i $Goto$$Airborne$$params$ = :s{$NoSkateToWalkTricks$:s}
+:i endfunction
+:i function $WalkingRunToSkating$
+	:i $SkaterLoopingSound_TurnOff$
+	:i if  ( ($GetGlobalFlag$$flag$ = $FLAG_EXPERT_MODE_NO_WALKING$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$) ) 
+		:i $SetQueueTricks$$Jumptricks$$WalkToSkateTransition_GroundTricks$
+	:i else 
+		:i $SetQueueTricks$$Jumptricks$$WalkToSkateTransition_GroundTricks$$SkateToWalkTricks$
+	:i endif
+	:i if $AnimEquals$:a{$SkateToWalk$$WSkateToRun$$SlowSkateToStand$$BrakeToStand$:a}
+		:i $PlayAnim$$Anim$ = $WRunToSkate$$SyncToReversePreviousAnim$$EffectivePreviousAnimDuration$ = %f(0.500000)
+	:i else 
+		:i $PlayAnim$$Anim$ = $WRunToSkate$
+	:i endif
+	:i $SetEventHandler$$Ex$ = $FlailHitWall$$Scr$ = $FlailVibrate$
+	:i $SetEventHandler$$Ex$ = $FlailLeft$$Scr$ = $FlailVibrate$
+	:i $SetEventHandler$$Ex$ = $FlailRight$$Scr$ = $FlailVibrate$
+	:i $ClearException$$RunHasEnded$
+	:i $ClearException$$GoalHasEnded$
+	:i $ClearException$$Ollied$
+	:i $wait$$CavemanBailDuration$$Seconds$
+	:i $SetException$$Ex$ = $Ollied$$Scr$ = $Ollie$$params$ = :s{$OutAnim$ = $JumpAirToAirIdle$$SyncOutAnimToPreviousAnim$:s}
+	:i $WaitAnimWhilstChecking$$AndManuals$
+	:i $LandSkaterTricks$
+	:i $Goto$$OnGroundAi$
+:i endfunction
+:i function $WalkToSkateTransition_ToggleStance$
+	:i $ApplyStanceToggle$
+	:i $WaitAnimWhilstChecking$$AndManuals$
+	:i $LandSkaterTricks$
+	:i $Goto$$OnGroundAi$
+:i endfunction
+:i function $WalkingAirToSkating$
+	:i $SkaterLoopingSound_TurnOff$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i $PlayAnim$$Anim$ = $JumpAirToAirIdle$
+	:i $wait$$CavemanBailDuration$$Seconds$
+	:i $WaitAnimWhilstChecking$
+	:i $Goto$$Airborne$$params$ = :s{$NoSkateToWalkTricks$:s}
+:i endfunction
+:i function $ComboRunOutTrickDisplayDelay$
+	:i $Obj_GetId$
+	:i $SetEventHandler$$Ex$ = $SkaterExitCombo$$Scr$ = $FilterSkaterExitComboEvent$$params$ = :s{$ThisSkaterId$ = %GLOBAL%$ObjId$:s}
+	:i $wait$$RunoutTrickDelay$$Seconds$
+	:i $SetTrickName$%sc(13,"Combo Run Out")
+	:i $SetTrickScore$$COMBO_RUNOUT_SCORE$
+	:i $Display$$Blockspin$
+:i endfunction
+:i function $FilterSkaterExitComboEvent$
+	:i if  (%GLOBAL%$SkaterId$ = %GLOBAL%$ThisSkaterId$) 
+		:i $Goto$$NullScript$
+	:i endif
+:i endfunction
+:i function $PerhapsAwardCaveman$
+	:i if NOT $GotParam$$HaveNotSwitchedPhysicsStatesYet$
+		:i $GetPreviousPhysicsStateDuration$
+		:i if  (%GLOBAL%$PreviousPhysicsStateDuration$ > $RunoutTrickDelay$) 
+			:i $SetTrickName$%sc(7,"Caveman")
+			:i $SetTrickScore$$CAVEMAN_SCORE$
+			:i $Display$
+		:i endif
+	:i else 
+		:i $GetTimeSincePhysicsSwitch$
+		:i if  (%GLOBAL%$TimeSincePhysicsSwitch$ > $RunoutTrickDelay$) 
+			:i $SetTrickName$%sc(7,"Caveman")
+			:i $SetTrickScore$$CAVEMAN_SCORE$
+			:i $Display$
+		:i endif
+	:i endif
+:i endfunction
+:i function $ActivateGroundTricksDelay$
+	:i $wait$$CavemanBailDuration$$Seconds$
+	:i $SetProps$$remove_tags$ = :a{$WalkingGroundTricksInactive$:a}
+	:i if $Walk_Ground$
+		:i $SetWalkingGroundTricks$
+	:i endif
+:i endfunction
+:i function $SetWalkingGroundTricks$
+	:i if NOT $IsBoardMissing$
+		:i $GetTags$
+		:i if NOT $GotParam$$WalkingGroundTricksInactive$
+			:i $SetQueueTricks$$WalkGroundTricks$
+		:i else 
+			:i $SetQueueTricks$$NoTricks$
+		:i endif
+	:i else 
+		:i $SetQueueTricks$$NoTricks$
+	:i endif
+	:i $SetExtraGrindTricks$$NoTricks$
+	:i $SetManualTricks$$NoTricks$
+:i endfunction
+:i function $SetWalkingAirTricks$
+	:i if NOT $IsBoardMissing$
+		:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_AIRSHUFFLE$
+			:i $SetQueueTricks$$special$ = $SpecialTricks$$AirTricks$$WalkAirTricks_NO_AS$
+		:i else 
+			:i if  ($enable_air_shuffle$ = %i(1,00000001)) 
+				:i $SetQueueTricks$$special$ = $SpecialTricks$$AirTricks$$WalkAirTricks_AS$
+			:i else 
+				:i $SetQueueTricks$$special$ = $SpecialTricks$$AirTricks$$WalkAirTricks_NO_AS$
+			:i endif
+		:i endif
+		:i $SetExtraGrindTricks$$special$ = $SpecialGrindTricks$$GrindTricks$
+		:i if  ( ($GetGlobalFlag$$flag$ = $FLAG_EXPERT_MODE_NO_MANUALS$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$) ) 
+			:i $SetManualTricks$$NoTricks$
+		:i else 
+			:i $SetManualTricks$$special$ = $SpecialManualTricks$$GroundManualTricks$
+		:i endif
+	:i else 
+		:i $SetQueueTricks$$NoTricks$
+		:i $SetExtraGrindTricks$$NoTricks$
+		:i $SetManualTricks$$NoTricks$
+	:i endif
+:i endfunction
+:i function $SetWalkingOffTricks$
+	:i $SetQueueTricks$$NoTricks$
+	:i $SetExtraGrindTricks$$NoTricks$
+	:i $SetManualTricks$$NoTricks$
+:i endfunction
+:i function $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$$WalkingTricksState$ = $UNSET$
+	:i $GetTags$
+	:i if NOT  (%GLOBAL%$NewWalkingTrickState$ = %GLOBAL%$WalkingTricksState$) 
+		:i $ClearTrickQueues$
+		:i switch %GLOBAL%$NewWalkingTrickState$
+			:i case $GROUND$
+				:i $ClearExceptionGroup$$WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $BankDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $AcidDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $Rail$$Scr$ = $WalkingToRailTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $RunTimer_Unpause$
+				:i $SetEventHandler$$Ex$ = $RunTimerUp$$Scr$ = $Walk_LandSkaterTricks$$Group$ = $RunTimerEvents$
+				:i $SetEventHandler$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun_WalkingEvent$$Group$ = $WalkingEndRunEvents$
+				:i $SetEventHandler$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun_WalkingEvent$$Group$ = $WalkingEndRunEvents$
+				:i $ResetLandedFromVert$
+				:i $ResetLandingFromBankDrop$
+				:i $LaunchStateChangeEvent$$State$ = $Skater_OnGround$
+				:i $SetWalkingGroundTricks$
+				:i endcase
+			case $AIR$
+				:i $ClearEventBuffer$$Buttons$ = :a{$up$$DOWN$:a}$OlderThan$ = %i(0,00000000)
+				:i $ClearExceptionGroup$$WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $BankDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $AcidDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $SetException$$Ex$ = $Rail$$Scr$ = $WalkingToRailTrick$$Group$ = $WalkingTransitionTrickExceptions$
+				:i $ClearExceptionGroup$$WalkingEndRunEvents$
+				:i $ClearExceptionGroup$$RunTimerEvents$
+				:i $LaunchStateChangeEvent$$State$ = $Skater_InAir$
+				:i $SetWalkingAirTricks$
+				:i endcase
+			case $Off$
+				:i $ClearExceptionGroup$$WalkingTransitionTrickExceptions$
+				:i $RunTimer_Unpause$
+				:i $SetEventHandler$$Ex$ = $RunTimerUp$$Scr$ = $Walk_LandSkaterTricks$$Group$ = $RunTimerEvents$
+				:i $SetEventHandler$$Ex$ = $RunHasEnded$$Scr$ = $EndOfRun_WalkingEvent$$Group$ = $WalkingEndRunEvents$
+				:i $SetEventHandler$$Ex$ = $GoalHasEnded$$Scr$ = $Goal_EndOfRun_WalkingEvent$$Group$ = $WalkingEndRunEvents$
+				:i $ResetLandedFromVert$
+				:i $ResetLandingFromBankDrop$
+				:i $SetWalkingOffTricks$
+				:i end_switch
+		
+		:i $SetTags$$WalkingTricksState$ = %GLOBAL%$NewWalkingTrickState$
+	:i endif
+:i endfunction
+:i function $Walk_LandSkaterTricks$
+	:i $LandSkaterTricks$
+	:i $Obj_KillSpawnedScript$$Id$ = $ComboRunOutTrickDisplayDelay$
+:i endfunction
+:i function $WaitAnimWalking$
+	:i while
+		
+		:i $DoNextManualTrick$$ScriptToRunFirst$ = $BeginWalkingManualTrick$$FromWalk$
+		:i $DoNextTrick$$ScriptToRunFirst$ = $BeginWalkingGenericTrick$
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+:i endfunction
+:i function $WaitWalking$
+	:i while
+		
+		:i $DoNextManualTrick$$ScriptToRunFirst$ = $BeginWalkingManualTrick$$FromWalk$
+		:i $DoNextTrick$$ScriptToRunFirst$ = $BeginWalkingGenericTrick$
+		:i $wait$%i(1,00000001)$GameFrame$
+	:i loop_to 
+:i endfunction
+:i function $PlayWalkAnim$
+	:i if NOT $IsBoardMissing$
+		:i $PlayAnim$ isNull 
+	:i else 
+		:i if $IsForceWalkOn$
+			:i $PlayAnim$ isNull 
+		:i else 
+			:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$Anim$$SuffixString$ = %s(8,"_Partial")
+			:i if $AnimExists$%GLOBAL%$appended_id$
+				:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $WalkOnly$
+					:i $Obj_AddAnimSubset$$SubsetId$ = $WalkOnly$
+					:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $WalkOnly$$BlendWeight$ = %i(1,00000001)
+					:i if $Obj_AnimationFlipped$
+						:i $Obj_Flip$$SubsetId$ = $WalkOnly$
+					:i endif
+				:i endif
+				:i $PlayAnim$ isNull 
+				:i $PlayAnim$ isNull $Anim$ = %GLOBAL%$appended_id$$SubsetId$ = $WalkOnly$
+			:i else 
+				:i $PlayAnim$ isNull 
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $PlaySpeedChosenAnim$
+	:i $Walk_GetSpeedScale$
+	:i if NOT $GotParam$$NoSpeedUpdate$
+		:i switch %GLOBAL%$SpeedScale$
+			:i case $WALK_SLOW$
+				:i $Walk_ScaleAnimSpeed$$Run$$StandardSpeed$ =  (%GLOBAL%$Speeds$:a{%i(0,00000000):a}) 
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(0,00000000):a})  isNull 
+				:i endcase
+			case $WALK_FAST$
+				:i $Walk_ScaleAnimSpeed$$Run$$StandardSpeed$ =  (%GLOBAL%$Speeds$:a{%i(1,00000001):a}) 
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(1,00000001):a})  isNull 
+				:i endcase
+			case $RUN_SLOW$
+				:i $Walk_ScaleAnimSpeed$$Run$$StandardSpeed$ =  (%GLOBAL%$Speeds$:a{%i(2,00000002):a}) 
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(2,00000002):a})  isNull 
+				:i endcase
+			case $RUN_FAST$
+				:i $Walk_ScaleAnimSpeed$$Run$$StandardSpeed$ =  (%GLOBAL%$Speeds$:a{%i(3,00000003):a}) 
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(3,00000003):a})  isNull 
+				:i end_switch
+		
+	:i else 
+		:i $Walk_ScaleAnimSpeed$$Off$
+		:i switch %GLOBAL%$SpeedScale$
+			:i case $WALK_SLOW$
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(0,00000000):a}) $Speed$ =  (%GLOBAL%$Speeds$:a{%i(0,00000000):a})  isNull 
+				:i endcase
+			case $WALK_FAST$
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(1,00000001):a}) $Speed$ =  (%GLOBAL%$Speeds$:a{%i(1,00000001):a})  isNull 
+				:i endcase
+			case $RUN_SLOW$
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(2,00000002):a}) $Speed$ =  (%GLOBAL%$Speeds$:a{%i(2,00000002):a})  isNull 
+				:i endcase
+			case $RUN_FAST$
+				:i $PlayWalkAnim$$Anim$ =  (%GLOBAL%$Anims$:a{%i(3,00000003):a}) $Speed$ =  (%GLOBAL%$Speeds$:a{%i(3,00000003):a})  isNull 
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $RunSpeedChosenAnim$
+	:i $PlaySpeedChosenAnim$$NoRestart$ isNull 
+	:i while
+		
+		:i $WaitAnimWalkingFrame$
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $WaitAnimWalkingFrame$
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $WaitAnimWalkingFrame$
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $WaitAnimWalkingFrame$
+		:i if $AnimFinished$
+			:i continue
+			
+		:i endif
+		:i $PlaySpeedChosenAnim$$SyncToPreviousAnim$$NoRestart$ isNull 
+	:i loop_to 
+:i endfunction
+:i function $CycleSpeedChosenAnim$
+	:i $PlaySpeedChosenAnim$$Cycle$$NoRestart$ isNull 
+	:i while
+		
+		:i $WaitWalkingFrame$
+		:i $WaitWalkingFrame$
+		:i $WaitWalkingFrame$
+		:i $WaitWalkingFrame$
+		:i $PlaySpeedChosenAnim$$Cycle$$SyncToPreviousAnim$$NoRestart$ isNull 
+	:i loop_to 
+:i endfunction
+:i function $WaitWalkingFrame$
+	:i $DoNextManualTrick$$ScriptToRunFirst$ = $BeginWalkingManualTrick$$FromWalk$
+	:i $DoNextTrick$$ScriptToRunFirst$ = $BeginWalkingGenericTrick$
+	:i $wait$%i(1,00000001)$GameFrame$
+:i endfunction
+:i function $WaitAnimWalkingFrame$
+	:i $DoNextManualTrick$$ScriptToRunFirst$ = $BeginWalkingManualTrick$$FromWalk$
+	:i $DoNextTrick$$ScriptToRunFirst$ = $BeginWalkingGenericTrick$
+	:i if $AnimFinished$
+		:i return
+		
+	:i endif
+	:i $wait$%i(1,00000001)$GameFrame$
+:i endfunction
+:i function $ClearAllWalkingExceptions$
+	:i $ClearExceptionGroup$$WalkingStateExceptions$
+	:i $ClearExceptionGroup$$WalkingEvents$
+	:i $ClearExceptionGroup$$WalkingEndRunEvents$
+	:i $ClearExceptionGroup$$WalkingTransitionTrickExceptions$
+	:i $ClearExceptionGroup$$WalkingCollideEvents$
+	:i $ClearExceptionGroup$$RunTimerEvents$
+:i endfunction
+:i $JustStoppedSkatingState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Run$$Scr$ = $SkateToRunState$:s}
+	:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $SkateToStandState$:s}
+	:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkateToStandState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+	:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+	:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $SkateToAirState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $SkateToAirState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $SkateToAirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Rail$$Scr$ = $WalkingToRailTrick$:s}
+	:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+	:i :a}
+:i $JustStoppedSkatingState_Restart_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Run$$Scr$ = $StandState$:s}
+	:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+	:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $StandState$:s}
+	:i :s{$Exception$$Ex$ = $Land$$Scr$ = $StandState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $HangState$:s}
+	:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+	:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Rail$$Scr$ = $WalkingToRailTrick$:s}
+	:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+	:i :a}
+:i function $JustStoppedSkatingState$
+	:i if $istrue$$doublefistin_doublecanon$ = %i(1,00000001)
+		:i $HandleDoubleCanOff$
+	:i endif
+	:i if NOT $GotParam$$Restart$
+		:i $ResetEventHandlersFromTable$$JustStoppedSkatingState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+		:i $SetException$$Ex$ = $BankDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+		:i $SetException$$Ex$ = $AcidDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+	:i else 
+		:i $ResetEventHandlersFromTable$$JustStoppedSkatingState_Restart_ExceptionTable$$Group$ = $WalkingStateExceptions$
+		:i $SetException$$Ex$ = $BankDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+		:i $SetException$$Ex$ = $AcidDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+		:i $PlayWalkAnim$$Anim$ = $WStand$$BlendPeriod$ = %i(0,00000000)
+		:i $BlendPeriodOut$%i(0,00000000)
+		:i $GetCameraId$
+		:i %GLOBAL%$CameraId$.$WalkCamera_Reset$
+	:i endif
+	:i $SetEventHandler$$Ex$ = $Trigger_L2$$Scr$ = $CameraFlushButton$$Group$ = $WalkingEvents$
+	:i $SetEventHandler$$Ex$ = $Release_X$$Scr$ = $JumpButton$$Group$ = $WalkingEvents$
+	:i $SetEventHandler$$Ex$ = $MadeOtherSkaterBail$$Scr$ = $MadeOtherSkaterBailWalk$$Group$ = $WalkingCollideEvents$
+	:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$$Group$ = $WalkingCollideEvents$
+	:i $SetTags$$WalkingGroundTricksInactive$
+	:i $Obj_SpawnScript$$ActivateGroundTricksDelay$$Id$ = $ActivateGroundTricksDelay$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $UNSET$
+	:i if $CurrentScorePotGreaterThan$%i(0,00000000)
+		:i $Obj_SpawnScript$$ComboRunOutTrickDisplayDelay$$Id$ = $ComboRunOutTrickDisplayDelay$
+	:i endif
+	:i $WaitWalking$
+:i endfunction
+:i $SkateToRunState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $SkateToStandState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkateToStandState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :a}
+:i function $SkateToRunState$
+	:i $ResetEventHandlersFromTable$$SkateToRunState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+	:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i if $AnimEquals$$WRunToSkate$
+		:i $RunSpeedChosenAnim$$Anims$ = :a{$SkateToWalk$$SkateToWalk$$WSkateToRun$$WSkateToRun$:a}$Speeds$ = :a{%i(1,00000001)%i(1,00000001)%f(1.300000)%f(1.300000):a}$BlendPeriod$ = %f(0.300000)$SyncToReversePreviousAnim$$NoSpeedUpdate$ isNull 
+	:i else 
+		:i $RunSpeedChosenAnim$$Anims$ = :a{$SkateToWalk$$SkateToWalk$$WSkateToRun$$WSkateToRun$:a}$Speeds$ = :a{%i(1,00000001)%i(1,00000001)%f(1.300000)%f(1.300000):a}$BlendPeriod$ = %f(0.100000)$NoSpeedUpdate$ isNull 
+	:i endif
+	:i $Goto$$RunState$
+:i endfunction
+:i $SkateToStandState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Run$$Scr$ = $SkateToRunState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :a}
+:i function $SkateToStandState$
+	:i $ResetEventHandlersFromTable$$SkateToStandState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+	:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i if $AnimEquals$:a{$SlowDownBrake$$NewBrakeIdle$$NewBrakeIdle3$$NewBrakeIdle6$$NewBrakeIdle7$$NewBrakeIdle8$:a}
+		:i $PlayAnim$$Anim$ = $BrakeToStand$$BlendPeriod$ = %f(0.300000)
+	:i else 
+		:i if $AnimEquals$$WRunToSkate$
+			:i $PlayAnim$$Anim$ = $SlowSkateToStand$$BlendPeriod$ = %f(0.300000)$SyncToReversePreviousAnim$$EffectivePreviousAnimDuration$ = %f(0.500000) isNull 
+		:i else 
+			:i $PlayAnim$$Anim$ = $SlowSkateToStand$$BlendPeriod$ = %f(0.100000) isNull 
+		:i endif
+	:i endif
+	:i $WaitAnimWalking$
+	:i $Goto$$StandState$
+:i endfunction
+:i $SkateToRotateState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Run$$Scr$ = $SkateToRunState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $SkateToStandState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkateToStandState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :a}
+:i function $SkateToRotateState$
+	:i $ResetEventHandlersFromTable$$SkateToRotateState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+	:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i if $AnimEquals$$WRunToSkate$
+		:i $PlayAnim$$Anim$ = $SkateToWalk$$BlendPeriod$ = %f(0.300000)$SyncToReversePreviousAnim$ isNull 
+	:i else 
+		:i if $AnimEquals$$SkateToRun$
+			:i $PlayAnim$$Anim$ = $SkateToRun$$BlendPeriod$ = %f(0.100000) isNull 
+		:i else 
+			:i $PlayAnim$$Anim$ = $SkateToWalk$$BlendPeriod$ = %f(0.100000) isNull 
+		:i endif
+	:i endif
+	:i $WaitAnimWalking$
+	:i $Goto$$RunState$
+:i endfunction
+:i $SkateToAirState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+	:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+	:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+	:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+	:i :a}
+:i function $SkateToAirState$
+	:i $GetSpeed$
+	:i $SetTags$$ksk_speed$ = %GLOBAL%$Speed$
+	:i $ResetEventHandlersFromTable$$SkateToAirState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+	:i $Walk_ScaleAnimSpeed$$Off$
+	:i $PlayAnim$$Anim$ = $AirIdleToJumpAir$$BlendPeriod$ = %f(0.300000)
+	:i $WaitAnimWalking$
+	:i $Goto$$AirState$
+:i endfunction
+:i $RunState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Ride$$Scr$ = $StandToRideState$:s}
+	:i :a}
+:i function $RunState$
+	:i $ResetEventHandlersFromTable$$RunState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+	:i if $GotParam$$NoSkid$
+		:i $SetException$$Ex$ = $Skid$$Scr$ = $StandState$$Group$ = $WalkingStateExceptions$
+	:i else 
+		:i $SetException$$Ex$ = $Skid$$Scr$ = $SkidState$$Group$ = $WalkingStateExceptions$
+	:i endif
+	:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+	:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+	:i $CycleSpeedChosenAnim$$Anims$ = :a{$WalkSlow$$WalkFast$$WRun$$FastRun$:a}$Speeds$ = :a{%f(63.880001)%f(130.440002)%i(350,0000015e)%i(520,00000208):a}$BlendPeriod$ = %f(0.100000)
+:i endfunction
+:i $StandState_ExceptionTable$ = :a{
+	:i :s{$Exception$$Ex$ = $Run$$Scr$ = $StandToRunState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+	:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+	:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $StandJumpState$:s}
+	:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+	:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+	:i :s{$Exception$$Ex$ = $Ride$$Scr$ = $StandToRideState$:s}
+	:i :a}
+:i function $PlayWalkStandAnim$
+	:i while
+		
+		:i $PlayWalkAnim$$BlendPeriod$ = %f(0.100000)$Anim$ = select(2f,2, 03 00 01 00) :OFFSET(0):OFFSET(1)
+				 :POS(0) $WStand$
+			:BREAKTO(2)
+				 :POS(1) select(40,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6):OFFSET(7):OFFSET(8)
+					 :POS(3) $WStandIdle1$
+				:BREAKTO(2)
+					 :POS(4) $WStandIdle2$
+				:BREAKTO(2)
+					 :POS(5) $WStandIdle3$
+				:BREAKTO(2)
+					 :POS(6) $WStandIdle4$
+				:BREAKTO(2)
+					 :POS(7) $WStandIdle5$
+				:BREAKTO(2)
+					 :POS(8) $WStandIdle6$ :POS(2) 
+				:i $WaitAnimWalking$
+			:i loop_to 
+		:i endfunction
+		:i function $StandState$
+			:i $ResetEventHandlersFromTable$$StandState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i if $THUGPRO_THUGWalkingPhysicsOn$
+				:i $Walk_ScaleAnimSpeed$$Off$
+				:i if $SpeedGreaterThan$ ($walk_parameters$->$max_fast_walk_speed$) 
+					:i $PlayWalkAnim$$Anim$ = $_180RunSkid$$NoRestart$$From$ = %i(75,0000004b)$BlendPeriod$ = %f(0.500000)
+					:i $WaitAnim$%i(40,00000028)$Percent$
+				:i endif
+				:i $PlayWalkAnim$$Anim$ = $WStand$$NoRestart$$BlendPeriod$ = %f(0.300000)
+				:i $WaitAnimWalking$
+			:i else 
+				:i $GetSpeed$
+				:i $SetSpeed$ (%f(0.450000) * %GLOBAL%$Speed$) 
+				:i $Walk_ScaleAnimSpeed$$Off$
+				:i if $AnimEquals$:a{$_180RunSkid$$SkateToSkid$:a}
+					:i $PlayWalkAnim$$Anim$ = $WStand$$NoRestart$$BlendPeriod$ = %f(0.300000)
+				:i else 
+					:i $PlayWalkAnim$$Anim$ = $WStand$$NoRestart$$BlendPeriod$ = %f(0.100000)
+				:i endif
+			:i endif
+			:i $WaitAnimWalking$
+			:i $PlayWalkStandAnim$
+		:i endfunction
+		:i $StandToRunState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+			:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $StandState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ride$$Scr$ = $StandToRideState$:s}
+			:i :a}
+		:i function $StandToRunState$
+			:i $ResetEventHandlersFromTable$$StandToRunState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $RunSpeedChosenAnim$$Anims$ = :a{$WStandToWalk$$WStandToWalk$$WStandToRun$$WStandToRun$:a}$Speeds$ = :a{%i(100,00000064)%i(100,00000064)%i(370,00000172)%i(370,00000172):a}$BlendPeriod$ = %f(0.100000)
+			:i $Goto$$RunState$
+		:i endfunction
+		:i $SkidState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+			:i :s{$Exception$$Ex$ = $Run$$Scr$ = $RunState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ride$$Scr$ = $StandToRideState$:s}
+			:i :a}
+		:i function $SkidState$
+			:i $ResetEventHandlersFromTable$$SkidState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $_180RunSkid$$NoRestart$$BlendPeriod$ = %f(0.100000)
+			:i $WaitAnimWalking$
+			:i $Goto$$StandState$
+		:i endfunction
+		:i $GroundPunchState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ride$$Scr$ = $StandToRideState$:s}
+			:i :a}
+		:i function $GroundPunchState$
+			:i $ResetEventHandlersFromTable$$GroundPunchState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $WalkingSlap$$BlendPeriod$ = %f(0.100000)$To$ = %i(25,00000019)
+			:i $WaitAnimWalking$
+			:i $Goto$$GroundOrAirWaitState$
+		:i endfunction
+		:i $AirPunchState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $AirPunchState$
+			:i $ResetEventHandlersFromTable$$AirPunchState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $WalkingSlap$$BlendPeriod$ = %f(0.100000)$To$ = %i(25,00000019)
+			:i $WaitAnimWalking$
+			:i $Goto$$GroundOrAirWaitState$
+		:i endfunction
+		:i $RunJumpState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $RunJumpState$
+			:i $ResetEventHandlersFromTable$$RunJumpState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $RunToJump$$BlendPeriod$ = %f(0.100000)
+			:i $WaitAnimWalking$
+			:i $Goto$$AirState$
+		:i endfunction
+		:i $StandJumpState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $StandJumpState$
+			:i $ResetEventHandlersFromTable$$StandJumpState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $StandToJump$$BlendPeriod$ = %f(0.100000)
+			:i $WaitAnimWalking$
+			:i $Goto$$AirState$
+		:i endfunction
+		:i $WallplantState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $WallplantState$
+			:i $ResetEventHandlersFromTable$$WallplantState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $BroadcastEvent$$Type$ = $SkaterWallplant$
+			:i if $CurrentScorePotGreaterThan$%i(0,00000000)
+				:i $SetTrickName$%sc(9,"Wall Jump")
+				:i $SetTrickScore$%i(100,00000064)
+				:i $Display$
+			:i endif
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $Jump_DoubleJump$$BlendPeriod$ = %f(0.020000)
+			:i $WaitAnimWalking$
+			:i $Goto$$AirState$
+		:i endfunction
+		:i $AirState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $AirState$
+			:i $GetSpeed$
+			:i $SetTags$$ksk_speed$ = %GLOBAL%$Speed$
+			:i $ResetEventHandlersFromTable$$AirState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $BlockTaggingOff$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $JumpAir$$Cycle$$NoRestart$$BlendPeriod$ = %f(0.100000)
+			:i $WaitWalking$
+		:i endfunction
+		:i $LandState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandLandState$:s}
+			:i :s{$Exception$$Ex$ = $Run$$Scr$ = $RunLandState$:s}
+			:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkidState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :a}
+		:i function $LandState$
+			:i $ResetEventHandlersFromTable$$LandState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $WaitWalking$
+		:i endfunction
+		:i $StandLandState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Run$$Scr$ = $RunState$:s}
+			:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkidState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $StandJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :a}
+		:i function $StandLandState$
+			:i $ResetEventHandlersFromTable$$StandLandState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i if $THUGPRO_THUGWalkingPhysicsOn$
+				:i if $SpeedGreaterThan$ ($walk_parameters$->$max_fast_walk_speed$) 
+					:i $PlayWalkAnim$$Anim$ = $_180RunSkid$$NoRestart$$To$ = %i(10,0000000a)$BlendPeriod$ = %f(0.000000)
+				:i else 
+					:i $PlayWalkAnim$$Anim$ = $JumpLandToStand$$BlendPeriod$ = %f(0.050000)
+				:i endif
+			:i else 
+				:i $PlayWalkAnim$$Anim$ = $JumpLandToStand$$BlendPeriod$ = %f(0.050000)
+			:i endif
+			:i $WaitAnimWalking$
+			:i $Goto$$StandState$
+		:i endfunction
+		:i $RunLandState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+			:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkidState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $RunJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :a}
+		:i function $RunLandState$
+			:i $ResetEventHandlersFromTable$$RunLandState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $GROUND$
+			:i $RunSpeedChosenAnim$$Anims$ = :a{$JumpLandToWalk$$JumpLandToWalk$$JumpLandToRun$$JumpLandToRun$:a}$Speeds$ = :a{%f(1.500000)%f(1.500000)%f(1.750000)%f(1.750000):a}$BlendPeriod$ = %f(0.100000)$NoSpeedUpdate$
+			:i $BlendPeriodOut$%f(0.300000)
+			:i $WaitAnimWalking$
+			:i $Goto$$RunState$
+		:i endfunction
+		:i $HangState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $HangMoveLeft$$Scr$ = $HangMoveLeftState$:s}
+			:i :s{$Exception$$Ex$ = $HangMoveRight$$Scr$ = $HangMoveRightState$:s}
+			:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $PullUpFromHang$$Scr$ = $PullUpFromHangState$:s}
+			:i :a}
+		:i function $HangState$
+			:i $THUGPRO_ToggleHangControls$$on$
+			:i $ResetEventHandlersFromTable$$HangState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i if $AnimEquals$:a{$JumpToSwingHang$$JumpToWallHang$:a}
+				:i $WaitAnimWalking$
+			:i endif
+			:i $PlayWalkAnim$$Anim$ = $HangIdle$$Cycle$$NoRestart$$BlendPeriod$ = %f(0.300000)
+			:i $WaitWalking$
+		:i endfunction
+		:i $AirToHangState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $HangMoveLeft$$Scr$ = $HangMoveLeftState$:s}
+			:i :s{$Exception$$Ex$ = $HangMoveRight$$Scr$ = $HangMoveRightState$:s}
+			:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $PullUpFromHang$$Scr$ = $PullUpFromHangState$:s}
+			:i :a}
+		:i function $AirToHangState$
+			:i $THUGPRO_ToggleHangControls$$on$
+			:i $ResetEventHandlersFromTable$$AirToHangState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $Walk_GetHangInitAnimType$
+			:i $GetSingleTag$$ksk_speed$
+			:i switch %GLOBAL%$HangInitAnimType$
+				:i case $SWING$
+					:i $PlayWalkAnim$$Anim$ = $JumpToSwingHang$$BlendPeriod$ = %i(0,00000000)
+					:i endcase
+				case $WALL$
+					:i $PlayWalkAnim$$Anim$ = $JumpToWallHang$$BlendPeriod$ = %i(0,00000000)
+					:i end_switch
+			
+			:i $WaitAnimWalking$
+			:i $Goto$$HangState$
+		:i endfunction
+		:i function $PlayHangMoveAnimCycle$
+			:i $BlendPeriodOut$%f(0.300000)
+			:i $PreviousPartialAnim$ = $UndeterminedOverlay$
+			:i $OnExitRun$$PlayHangMoveAnimCycle_cleanup$
+			:i while
+				
+				:i $Walk_GetHangAngle$
+				:i if $GotParam$$ReverseAngle$
+					:i $HangAngle$ =  (%i(0,00000000) - %GLOBAL%$HangAngle$) 
+				:i endif
+				:i if  ( (%GLOBAL%$HangAngle$ < %i(5,00000005))  AND  (%GLOBAL%$HangAngle$ > %i(4294967291,fffffffb)) ) 
+					:i $PartialAnim$ = $NoOverlay$
+				:i else 
+					:i if  (%GLOBAL%$HangAngle$ > %i(0,00000000)) 
+						:i if  (%GLOBAL%$HangAngle$ < %i(15,0000000f)) 
+							:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(10,"10_Partial")
+							:i $PartialAnim$ = %GLOBAL%$appended_id$
+						:i else 
+							:i if  (%GLOBAL%$HangAngle$ < %i(25,00000019)) 
+								:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(10,"20_Partial")
+								:i $PartialAnim$ = %GLOBAL%$appended_id$
+							:i else 
+								:i if  (%GLOBAL%$HangAngle$ < %i(35,00000023)) 
+									:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(10,"30_Partial")
+									:i $PartialAnim$ = %GLOBAL%$appended_id$
+								:i else 
+									:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(10,"40_Partial")
+									:i $PartialAnim$ = %GLOBAL%$appended_id$
+								:i endif
+							:i endif
+						:i endif
+					:i else 
+						:i if  (%GLOBAL%$HangAngle$ > %i(4294967281,fffffff1)) 
+							:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(12,"10_PartialUp")
+							:i $PartialAnim$ = %GLOBAL%$appended_id$
+						:i else 
+							:i if  (%GLOBAL%$HangAngle$ > %i(4294967271,ffffffe7)) 
+								:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(12,"20_PartialUp")
+								:i $PartialAnim$ = %GLOBAL%$appended_id$
+							:i else 
+								:i if  (%GLOBAL%$HangAngle$ > %i(4294967261,ffffffdd)) 
+									:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(12,"30_PartialUp")
+									:i $PartialAnim$ = %GLOBAL%$appended_id$
+								:i else 
+									:i $AppendSuffixToChecksum$$Base$ = %GLOBAL%$HangAnim$$SuffixString$ = %s(12,"40_PartialUp")
+									:i $PartialAnim$ = %GLOBAL%$appended_id$
+								:i endif
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+				:i if NOT  (%GLOBAL%$PreviousPartialAnim$ = %GLOBAL%$PartialAnim$) 
+					:i $PlayAnim$$Anim$ = %GLOBAL%$HangAnim$$Cycle$%GLOBAL%$SyncToPreviousAnim$$BlendPeriod$ = %f(0.100000)
+					:i if  (%GLOBAL%$PartialAnim$ = $NoOverlay$) 
+						:i if $Obj_AnimSubsetExists$$SubsetId$ = $Hanging$
+							:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Hanging$$BlendWeight$ = %f(0.000000)
+							:i $Obj_SetAnimSubsetWeight$$BlendWeight$ = %f(1.000000)
+						:i endif
+					:i else 
+						:i if NOT $Obj_AnimSubsetExists$$SubsetId$ = $Hanging$
+							:i $Obj_AddAnimSubset$$SubsetId$ = $Hanging$
+							:i if $Obj_AnimationFlipped$
+								:i $Obj_Flip$$SubsetId$ = $Hanging$
+							:i endif
+						:i endif
+						:i $Obj_SetAnimSubsetWeight$$SubsetId$ = $Hanging$$BlendWeight$ = %f(0.500000)
+						:i $PlayAnim$$SubsetId$ = $Hanging$$Anim$ = %GLOBAL%$PartialAnim$$Cycle$%GLOBAL%$SyncToPreviousAnim$$BlendPeriod$ = %f(0.100000)
+					:i endif
+				:i endif
+				:i $PreviousPartialAnim$ = %GLOBAL%$PartialAnim$
+				:i $SyncToPreviousAnim$ = $SyncToPreviousAnim$
+				:i $DoNextManualTrick$$ScriptToRunFirst$ = $BeginWalkingManualTrick$$FromWalk$
+				:i $DoNextTrick$$ScriptToRunFirst$ = $BeginWalkingGenericTrick$
+				:i $wait$%i(1,00000001)$GameFrame$
+			:i loop_to 
+		:i endfunction
+		:i function $PlayHangMoveAnimCycle_cleanup$
+			:i if $Obj_AnimSubsetExists$$SubsetId$ = $Hanging$
+				:i $Obj_RemoveAnimSubset$$SubsetId$ = $Hanging$
+			:i endif
+		:i endfunction
+		:i $HangMoveLeftState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $HangState$:s}
+			:i :s{$Exception$$Ex$ = $HangMoveRight$$Scr$ = $HangMoveRightState$:s}
+			:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $PullUpFromHang$$Scr$ = $PullUpFromHangState$:s}
+			:i :a}
+		:i function $HangMoveLeftState$
+			:i $ResetEventHandlersFromTable$$HangMoveLeftState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$HangMove$
+			:i if $Flipped$
+				:i $PlayHangMoveAnimCycle$$HangAnim$ = $HangLeft$$ReverseAngle$
+			:i else 
+				:i $PlayHangMoveAnimCycle$$HangAnim$ = $HangRight$$ReverseAngle$
+			:i endif
+		:i endfunction
+		:i $HangMoveRightState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $HangState$:s}
+			:i :s{$Exception$$Ex$ = $HangMoveLeft$$Scr$ = $HangMoveLeftState$:s}
+			:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $HangToAirState$:s}
+			:i :s{$Exception$$Ex$ = $PullUpFromHang$$Scr$ = $PullUpFromHangState$:s}
+			:i :a}
+		:i function $HangMoveRightState$
+			:i $ResetEventHandlersFromTable$$HangMoveRightState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$HangMove$
+			:i if $Flipped$
+				:i $PlayHangMoveAnimCycle$$HangAnim$ = $HangRight$
+			:i else 
+				:i $PlayHangMoveAnimCycle$$HangAnim$ = $HangLeft$
+			:i endif
+		:i endfunction
+		:i $HangToAirState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $HangToAirState$
+			:i $ResetEventHandlersFromTable$$HangToAirState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $ClearException$$JumpRequested$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $AIR$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $HangIdleToDrop$$BlendPeriod$ = %f(0.050000)
+			:i $WaitAnimWalking$
+			:i $Goto$$AirState$
+		:i endfunction
+		:i $PullUpFromHangState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $PullUpFromHangState$
+			:i $ResetEventHandlersFromTable$$PullUpFromHangState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $HangOnToTheTop$$BlendPeriod$ = %f(0.050000)$Speed$ =  ($walk_parameters$->$hang_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $PlayWalkAnim$$Anim$ = $WStand$$Cycle$$BlendPeriod$ = %f(0.300000)
+			:i $Goto$$GroundOrAirWaitState$
+		:i endfunction
+		:i $DropToHangState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $DropToHangState$
+			:i $THUGPRO_ToggleHangControls$$on$
+			:i $ResetEventHandlersFromTable$$DropToHangState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_InHang$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $StandToHang$$BlendPeriod$ = %f(0.300000)$Speed$ =  ($walk_parameters$->$hang_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $Goto$$HangState$
+		:i endfunction
+		:i $LadderOntoBottomState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderOntoBottomState$
+			:i $ResetEventHandlersFromTable$$LadderOntoBottomState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $LadderClimbFromStandIdle$$BlendPeriod$ = %f(0.300000)$Speed$ =  ($walk_parameters$->$ladder_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $Goto$$LadderMoveUpState$
+		:i endfunction
+		:i $LadderOntoTopState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderOntoTopState$
+			:i $ResetEventHandlersFromTable$$LadderOntoTopState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $LadderOntoTheTop$$Backwards$$BlendPeriod$ = %f(0.300000)$Speed$ =  ($walk_parameters$->$ladder_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $Goto$$LadderMoveDownState$
+		:i endfunction
+		:i $LadderMoveUpState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $LadderMoveDown$$Scr$ = $LadderMoveDownState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+			:i :s{$Exception$$Ex$ = $LadderOffBottom$$Scr$ = $LadderOffBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOffTop$$Scr$ = $LadderOffTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderMoveUpState$
+			:i $ResetEventHandlersFromTable$$LadderMoveUpState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$LadderMove$
+			:i $PlayWalkAnim$$Anim$ = $LadderFastClimb$$Cycle$$BlendPeriod$ = %f(0.300000) isNull 
+			:i $WaitAnimWalking$
+		:i endfunction
+		:i $LadderMoveDownState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $LadderMoveUp$$Scr$ = $LadderMoveUpState$$params$ = :s{$SyncToPreviousAnim$:s}:s}
+			:i :s{$Exception$$Ex$ = $LadderOffBottom$$Scr$ = $LadderOffBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOffTop$$Scr$ = $LadderOffTopState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderMoveDownState$
+			:i $ResetEventHandlersFromTable$$LadderMoveDownState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$LadderMove$
+			:i $PlayWalkAnim$$Anim$ = $LadderFastClimb$$Cycle$$Backwards$$BlendPeriod$ = %f(0.300000) isNull 
+			:i $WaitAnimWalking$
+		:i endfunction
+		:i $LadderOffBottomState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderOffBottomState$
+			:i $ResetEventHandlersFromTable$$LadderOffBottomState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $LadderClimbFromStandIdle$$Backwards$$BlendPeriod$ = %f(0.300000)$Speed$ =  ($walk_parameters$->$ladder_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $PlayWalkAnim$$Anim$ = $WStand$$Cycle$$BlendPeriod$ = %f(0.300000)
+			:i $Goto$$GroundOrAirWaitState$
+		:i endfunction
+		:i $LadderOffTopState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $AirState$:s}
+			:i :a}
+		:i function $LadderOffTopState$
+			:i $ResetEventHandlersFromTable$$LadderOffTopState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetWalkingTrickState$$NewWalkingTrickState$ = $Off$
+			:i $LaunchStateChangeEvent$$State$ = $Skater_OnLadder$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $LadderOntoTheTop$$BlendPeriod$ = %f(0.300000)$Speed$ =  ($walk_parameters$->$ladder_anim_wait_speed$) 
+			:i $WaitAnimWalking$
+			:i $Walk_AnimWaitComplete$
+			:i $PlayWalkAnim$$Anim$ = $WStand$$Cycle$$BlendPeriod$ = %f(0.300000)
+			:i $Goto$$GroundOrAirWaitState$
+		:i endfunction
+		:i function $WalkBailState$
+			:i $ClearExceptionGroup$$WalkingStateExceptions$
+			:i $BailSkaterTricks$
+			:i $DisablePlayerInput$$AllowCameraControl$
+			:i $InBail$
+			:i $BashOn$
+			:i $Obj_SpawnScript$$BailBoardControl$$params$ = :s{$BoardOffFrame$ = %i(10,0000000a)$BoardVel$ = %vec3(0.000000,0.000000,200.000000)$BoardRotVel$ = %vec3(0.000000,0.000000,0.000000)$BoardSkaterVel$ = %i(1,00000001):s}
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayWalkAnim$$Anim$ = $WalkingBail$
+			:i $Obj_WaitAnimFinished$
+			:i $PlayWalkAnim$$Anim$ = $WalkingBail$$PingPong$$From$ = $End$$To$ = %i(100,00000064)$Speed$ = %f(0.800000)$BlendPeriod$ = %f(0.100000)
+			:i $WaitForEvent$$Type$ = $Stand$
+			:i $PlayWalkAnim$$Anim$ = $WalkingBailGetUp$
+			:i $Obj_WaitAnimFinished$
+			:i $SwitchOnBoard$
+			:i $BailDone$
+			:i $Goto$$StandState$
+		:i endfunction
+		:i $GroundOrAirWaitState_ExceptionTable$ = :a{
+			:i :s{$Exception$$Ex$ = $Run$$Scr$ = $RunState$:s}
+			:i :s{$Exception$$Ex$ = $Stand$$Scr$ = $StandState$:s}
+			:i :s{$Exception$$Ex$ = $Skid$$Scr$ = $SkidState$:s}
+			:i :s{$Exception$$Ex$ = $Hang$$Scr$ = $AirToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Ladder$$Scr$ = $LadderMoveUpState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoBottom$$Scr$ = $LadderOntoBottomState$:s}
+			:i :s{$Exception$$Ex$ = $LadderOntoTop$$Scr$ = $LadderOntoTopState$:s}
+			:i :s{$Exception$$Ex$ = $Land$$Scr$ = $LandState$:s}
+			:i :s{$Exception$$Ex$ = $AIR$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $Jump$$Scr$ = $StandJumpState$:s}
+			:i :s{$Exception$$Ex$ = $WalkOffEdge$$Scr$ = $AirState$:s}
+			:i :s{$Exception$$Ex$ = $DropToHang$$Scr$ = $DropToHangState$:s}
+			:i :s{$Exception$$Ex$ = $Rail$$Scr$ = $WalkingToRailTrick$:s}
+			:i :s{$Exception$$Ex$ = $Wallplant$$Scr$ = $WallplantState$:s}
+			:i :a}
+		:i function $GroundOrAirWaitState$
+			:i $ResetEventHandlersFromTable$$GroundOrAirWaitState_ExceptionTable$$Group$ = $WalkingStateExceptions$
+			:i $SetException$$Ex$ = $BankDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+			:i $SetException$$Ex$ = $AcidDrop$$Scr$ = $WalkingAirToTransitionTrick$$Group$ = $WalkingTransitionTrickExceptions$
+			:i $WaitWalking$
+		:i endfunction
+		:i function $StandToRideState$
+			:i $ClearAllWalkingExceptions$
+			:i $Goto$$RideState$
+		:i endfunction
+		:i function $RideState$
+			:i $ClearExceptionGroup$$WalkingStateExceptions$
+			:i $SetException$$Ex$ = $Stand$$Scr$ = $RideToStandState$$Group$ = $WalkingStateExceptions$
+			:i while
+				
+				:i $wait$%i(1,00000001)$GameFrame$
+			:i loop_to 
+		:i endfunction
+		:i function $RideToStandState$
+			:i $ClearExceptionGroup$$WalkingStateExceptions$
+			:i $Goto$$StandState$
+		:i endfunction
+		:i function $CameraFlushButton$
+			:i $GetCameraId$
+			:i %GLOBAL%$CameraId$.$WalkCamera_FlushRequest$
+		:i endfunction
+		:i function $JumpButton$
+			:i $LaunchEvent$$Type$ = $JumpRequested$
+		:i endfunction
+		:i function $JumpRequestedEvent$
+			:i $ClearEventHandler$$JumpRequested$
+			:i if NOT $Walking$
+				:i return
+				
+			:i endif
+			:i $Walk_GetState$
+			:i switch %GLOBAL%$State$
+				:i case $WALKING_GROUND$
+					:i $Walk_Jump$
+					:i $LaunchEvent$$Type$ = $Jump$
+					:i endcase
+				case $WALKING_AIR$
+					:i $Walk_GetStateTime$
+					:i if  (%GLOBAL%$StateTime$ < $Skater_Late_Jump_Slop$) 
+						:i $Walk_Jump$
+						:i $LaunchEvent$$Type$ = $Jump$
+					:i endif
+					:i endcase
+				case $WALKING_HANG$
+					:i $Walk_GetStateDuration$
+					:i if  (%GLOBAL%$StateDuration$ > %f(0.500000)) 
+						:i $Walk_Jump$
+						:i $LaunchEvent$$Type$ = $Jump$
+					:i else 
+						:i $Walk_GetPreviousState$
+						:i if NOT  (%GLOBAL%$PreviousState$ = $WALKING_AIR$) 
+							:i $Walk_Jump$
+							:i $LaunchEvent$$Type$ = $Jump$
+						:i else 
+							:i $SetEventHandler$$Ex$ = $JumpRequested$$Scr$ = $JumpRequestedEvent$$Group$ = $WalkingEvents$
+						:i endif
+					:i endif
+					:i endcase
+				case $WALKING_LADDER$
+					:i $Walk_Jump$
+					:i $LaunchEvent$$Type$ = $Jump$
+					:i endcase
+				case $WALKING_ANIMWAIT$
+					:i $Walk_Jump$
+					:i $LaunchEvent$$Type$ = $Jump$
+					:i end_switch
+			
+		:i endfunction
+		:i function $TakeBoardFromSkater$
+			:i $SetBoardMissing$
+			:i $SwitchOffBoard$
+		:i endfunction
+		:i function $ReturnBoardToSkater$
+			:i $UnsetBoardMissing$
+			:i if $Walking$
+				:i $GetTags$
+				:i switch %GLOBAL%$WalkingTricksState$
+					:i case $GROUND$
+						:i $SetWalkingGroundTricks$
+						:i endcase
+					case $AIR$
+						:i $SetWalkingAirTricks$
+						:i endcase
+					case $Off$
+						:i $SetWalkingOffTricks$
+						:i end_switch
+				
+			:i endif
+			:i $SwitchOnBoard$
+			:i if $Obj_AnimSubsetExists$$SubsetId$ = $WalkOnly$
+				:i $Obj_RemoveAnimSubset$$SubsetId$ = $WalkOnly$
+			:i endif
+		:i endfunction
+		:i function $flip_skater_if_180_off$
+			:i if $InVertAir$
+				:i return
+				
+			:i endif
+			:i $GetActualSpin$
+			:i while
+				
+				:i if  ( (%GLOBAL%$spin$ > %i(360,00000168))  OR  (%GLOBAL%$spin$ = %i(360,00000168)) ) 
+					:i $spin$ =  (%GLOBAL%$spin$ - %i(360,00000168)) 
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to 
+			:i if  (%GLOBAL%$spin$ < %i(270,0000010e)) 
+				:i if  (%GLOBAL%$spin$ > %i(90,0000005a)) 
+					:i $FlipAfter$
+					:i $RotateAfter$
+					:i $BlendPeriodOut$%i(0,00000000)
+				:i endif
+			:i endif
+		:i endfunction
+		:i $max_sticker_streak_angle$ = %f(60.000000)
+		:i $max_graffiti_streak_angle$ = %f(60.000000)
+		:i function $tag_wall_standing$
+			:i $MakeSkaterGoto$$spawned_wall_tag$
+		:i endfunction
+		:i function $tag_wall_hanging$
+			:i $MakeSkaterGoto$$spawned_wall_tag$$params$ = :s{$Anim$ = $hanging_tag$$is_hanging$:s}
+		:i endfunction
+		:i function $spawned_wall_tag$$Anim$ = $standing_tag2$
+			:i $OnExitRun$$TagClearFlagsScript$
+			:i $ProjectilesOff$
+			:i $EnterTagging$
+			:i $ClearExceptionGroup$$WalkingStateExceptions$
+			:i $DisablePlayerInput$$AllowCameraControl$
+			:i $SetException$$Ex$ = $SkaterCollideBail$$Scr$ = $SkaterCollideBail$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i if $SkaterIsNamed$$skater_shrek$
+				:i if $GotParam$$is_hanging$
+					:i $Anim$ = $Shrek_BurpHangingTag$
+				:i else 
+					:i $Anim$ = $Shrek_BurpTag$
+				:i endif
+			:i else 
+				:i if  ($Graffiti_Tag_style$ = %i(1,00000001)) 
+					:i if $GotParam$$is_hanging$
+						:i $Anim$ = $Shrek_BurpHangingTag$
+					:i else 
+						:i $Anim$ = $Shrek_BurpTag$
+					:i endif
+				:i else 
+					:i $Obj_SpawnScript$$THUG2_SFX_Tag_Spray_Wallplant$
+					:i $TurnOnSpecialItem$$specialitem_details$ = $spraycan_details$
+				:i endif
+			:i endif
+			:i $PlayAnim$$Anim$ = %GLOBAL%$Anim$$BlendPeriod$ = %f(0.400000)
+			:i while
+				
+				:i if $Released$$Triangle$
+					:i if NOT $SkaterIsNamed$$skater_shrek$
+						:i $StopSound$$SK6_Walk_Spray_Tag_01$
+					:i endif
+					:i continue
+					
+				:i endif
+				:i if $AnimFinished$
+					:i if $held$$Triangle$
+						:i $wait$%f(0.050000)$Second$
+					:i endif
+					:i continue
+					
+				:i endif
+				:i $waitonegameframe$
+			:i loop_to 
+			:i $EnablePlayerInput$
+			:i if $GotParam$$is_hanging$
+				:i $Goto$$HangState$
+			:i else 
+				:i $Goto$$GroundOrAirWaitState$
+			:i endif
+		:i endfunction
+		:i function $TagClearFlagsScript$
+			:i $ProjectilesOn$
+			:i $ExitTagging$
+			:i $TagClearFlags$
+			:i $TurnOffSpecialItem$
+			:i $SprayPaintOff$
+		:i endfunction
+		:i function $GraffitiTagTrick$
+			:i $printf$%s(12,"graffiti tag")
+			:i if $GotParam$$tag_size$
+				:i $SetTrickScore$ (%GLOBAL%$tag_size$ * %i(10,0000000a)) 
+			:i else 
+				:i $SetTrickScore$%i(100,00000064)
+			:i endif
+			:i $SetTrickName$%s(12,"Graffiti Tag")
+			:i $Display$
+		:i endfunction
+		:i function $walking_wallplant_switch$
+			:i $MakeSkaterGoto$$walking_wallplant_switch2$
+		:i endfunction
+		:i function $walking_wallplant_switch2$
+			:i $Walk_ScaleAnimSpeed$$Off$
+			:i $PlayAnim$$Anim$ = $JumpAirToAirIdle$$Speed$ = %f(3.000000)
+			:i $CleanUp_WalkingtoSkating$
+			:i $WaitAnimWhilstChecking$
+			:i $rotate$$y$$angle$ = %i(180,000000b4)
+			:i $WalkingWallplant$
+			:i $Goto$$Airborne$$params$ = :s{$NoSkateToWalkTricks$:s}
+		:i endfunction
+		:i :end
+		

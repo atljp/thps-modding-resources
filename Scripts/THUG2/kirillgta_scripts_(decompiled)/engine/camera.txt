@@ -1,0 +1,33 @@
+
+:i $camera_fov$ = %f(72.000000)
+:i $widescreen_camera_fov$ = %f(88.180000)
+:i $compact_camera_fov$ = %f(80.000000)
+:i $current_screen_mode$ = $standard_screen_mode$
+:i function $screen_setup_standard$
+	:i $SetScreen$$Aspect$ = %f(1.333333)$Angle$ = $camera_fov$$letterbox$ = %i(0,00000000)
+	:i if $GotParam$$set_screen_flags$
+		:i $UnSetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+		:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_STANDARD$
+	:i endif
+	:i $change$$current_screen_mode$ = $standard_screen_mode$
+	:i $printf$%s(18,"change to standard")
+:i endfunction
+:i function $screen_setup_widescreen$
+	:i $SetScreen$$Aspect$ = %f(1.777778)$Angle$ = $widescreen_camera_fov$$letterbox$ = %i(0,00000000)
+	:i if $GotParam$$set_screen_flags$
+		:i $UnSetGlobalFlag$$flag$ = $SCREEN_MODE_STANDARD$
+		:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+	:i endif
+	:i $change$$current_screen_mode$ = $widescreen_screen_mode$
+	:i $printf$%s(20,"change to widescreen")
+:i endfunction
+:i function $screen_setup_letterbox$
+	:i $SetScreen$$Aspect$ = %f(1.777778)$Angle$ = $widescreen_camera_fov$$letterbox$ = %i(1,00000001)
+	:i if $GotParam$$set_screen_flags$
+		:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_STANDARD$
+		:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_WIDE$
+	:i endif
+	:i $change$$current_screen_mode$ = $letterbox_screen_mode$
+	:i $printf$%s(19,"change to letterbox")
+:i endfunction
+:i :end

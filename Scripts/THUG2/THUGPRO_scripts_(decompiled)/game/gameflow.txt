@@ -1,0 +1,541 @@
+
+:i $back_to_local_net_menu$ = %i(0,00000000)
+:i $dont_unhide_loading_screen$ = %i(0,00000000)
+:i $in_cinematic_sequence$ = %i(0,00000000)
+:i $is_zure$ = %i(0,00000000)
+:i function $Game_Update$
+	:i $GoalManager_UpdateAllGoals$
+:i endfunction
+:i function $load_requested_level$
+	:i $GetCurrentLevel$
+	:i $LoadLevel$$level$ = %GLOBAL%$level$
+:i endfunction
+:i function $InitializeGameFlow$
+	:i $load_requested_level$
+	:i $StandardGameFlow$
+:i endfunction
+:i function $ChangeLevelGameFlow$
+	:i $PauseMusic$%i(0,00000000)
+	:i $Change$$is_first_start_run$ = %i(1,00000001)
+	:i $Change$$FirstTimeInSplitScreen$ = %i(1,00000001)
+	:i if NOT $IsObserving$
+		:i $Skater$.$SetCustomRestart$$clear$
+	:i endif
+	:i $load_requested_level$
+	:i if NOT $InSplitScreenGame$
+		:i $ResetSkaters$
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $GameModeEquals$$is_lobby$
+			:i $SetGameType$$netlobby$
+			:i $SetCurrentGameType$
+		:i endif
+		:i if $OnServer$
+			:i $GetPreferenceChecksum$$pref_type$ = $network$$team_mode$
+			:i switch %GLOBAL%$checksum$
+				:i case $teams_none$
+					:i $SetNumTeams$%i(0,00000000)
+					:i $printf$%s(13,"Team mode off")
+					:i endcase
+				case $teams_two$
+					:i $SetNumTeams$%i(2,00000002)
+					:i $printf$%s(7,"2 Teams")
+					:i endcase
+				case $teams_three$
+					:i $SetNumTeams$%i(3,00000003)
+					:i $printf$%s(7,"3 Teams")
+					:i endcase
+				case $teams_four$
+					:i $SetNumTeams$%i(4,00000004)
+					:i $printf$%s(7,"4 Teams")
+					:i end_switch
+			
+		:i endif
+		:i $ForEachIn$$net_game_type_info$$do$ = $MaybeDisableGameTypes$
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i $THUGPRO_ShowStoredConsoleMessages$
+		:i endif
+	:i endif
+	:i while
+		
+		:i if $SkatersAreReady$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i $SetScreenModeFromGameMode$
+	:i $StandardGameFlow$
+:i endfunction
+:i function $GameFlow_Startup$
+	:i $LaunchViewer$
+	:i if NOT $InNetGame$
+		:i $kill_panel_messages$
+	:i endif
+	:i $goal_panel_reset_queue$
+	:i if $InNetGame$
+		:i while
+			
+			:i $wait$%i(1,00000001)$gameframe$
+			:i if $SkatersAreReady$
+				:i continue
+				
+			:i endif
+		:i loop_to %i(120,00000078)
+		:i while
+			
+			:i if $SkatersAreReady$
+				:i $dialog_box_exit$
+				:i continue
+				
+			:i endif
+			:i if NOT $SkatersAreReady$
+				:i if NOT $ScreenElementExists$$id$ = $dialog_box_anchor$
+					:i if NOT $ScreenElementExists$$id$ = $quit_dialog_anchor$
+						:i $HideLoadingScreen$
+						:i $exit_pause_menu$
+						:i $create_dialog_box$:s{$title$ = $net_status_msg$
+							:i $text$ = $net_message_waiting$
+							:i $buttons$ = :a{:s{$text$ = %s(4,"Quit")$pad_choose_script$ = $quit_network_game$:s}
+								:i :a}
+							:i $no_animate$
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+	:i else 
+		:i while
+			
+			:i $wait$%i(1,00000001)$gameframe$
+			:i if $SkatersAreReady$
+				:i continue
+				
+			:i endif
+		:i loop_to 
+	:i endif
+	:i $RestartLevel$
+	:i $InitializeSkaters$
+	:i $KillMessages$
+	:i $PauseStream$%i(0,00000000)
+	:i if $InNetGame$
+		:i if $GameModeEquals$$is_lobby$
+			:i if $OnServer$
+				:i $server_enter_free_skate$
+				:i if  ( ($GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_FCFS_MODE_ENABLED$) ) 
+					:i $SpawnScript$$update_auto_modes$
+				:i endif
+			:i else 
+				:i if $IsHost$
+					:i $server_enter_free_skate$
+					:i if  ( ($GetGlobalFlag$$flag$ = $FLAG_AUTO_SERVER_MODE$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_AUTO_LEVEL_MODE$)  OR  ($GetGlobalFlag$$flag$ = $FLAG_FCFS_MODE_ENABLED$) ) 
+						:i $SpawnScript$$update_auto_modes$
+					:i endif
+				:i else 
+					:i $client_enter_free_skate$
+				:i endif
+			:i endif
+			:i if $InInternetMode$
+				:i if $OnServer$
+					:i $PostGame$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i $ReinsertSkaters$
+	:i endif
+	:i $SetScreenModeFromGameMode$
+	:i if $InMultiplayerGame$
+		:i $destroy_panel_stuff$
+		:i $create_panel_stuff$
+	:i endif
+	:i if $GameModeEquals$$is_horse$
+		:i $StartHorse$
+	:i endif
+	:i if $CustomParkMode$$editing$
+		:i $SetActiveCamera$$id$ = $parked_cam$
+	:i endif
+	:i $create_menu_camera$
+	:i if NOT $ObjectExists$$id$ = $Overview_Cam01$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $viewercam_composite_structure$
+			:i $params$ = :s{$name$ = $Overview_Cam01$$permanent$:s}
+		:i :s}
+	:i endif
+	:i if NOT $ObjectExists$$id$ = $Overview_Cam02$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $viewercam_composite_structure$
+			:i $params$ = :s{$name$ = $Overview_Cam02$$permanent$:s}
+		:i :s}
+	:i endif
+	:i $Overview_Cam01$.$Obj_SetPosition$$Position$ = %vec3(0.000000,7000.000000,2000.000000)
+	:i $Overview_Cam01$.$Obj_SetOrientation$$x$ = %i(90,0000005a)$y$ = %i(90,0000005a)
+:i endfunction
+:i $dont_restore_start_key_binding$ = %i(0,00000000)
+:i $GameRunRespawns$ = %i(1,00000001)
+:i $is_first_start_run$ = %i(0,00000000)
+:i function $GameFlow_StartRun$
+	:i $printf$%s(17,"GameFlow_StartRun")
+	:i $UnPauseSkaters$
+	:i $SFX_Change_Footstep_Sounds_To_Default$
+	:i $THUGPRO_ToggleSticker$$on$
+	:i $Change$$ACTIVEWPLOOP$ = %i(0,00000000)
+	:i $Change$$AlreadyEndedRun$ = %i(0,00000000)
+	:i $index$ = $number_of_console_lines$
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{$console_message_vmenu$$child$ =  ($number_of_console_lines$ - %GLOBAL%$index$) :s}
+			:i $RunScriptOnScreenElement$$id$ = :s{$console_message_vmenu$$child$ =  ($number_of_console_lines$ - %GLOBAL%$index$) :s}$console_message_wait_and_die$
+		:i else 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+	:i loop_to $number_of_console_lines$
+	:i if $ObjectExists$$id$ = $goal_comp_out_of_bounds_warning$
+		:i $DestroyScreenElement$$id$ = $goal_comp_out_of_bounds_warning$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $GameModeEquals$$is_singlesession$
+			:i $GoalManager_SetEndRunType$$name$ = $TrickAttack$$EndOfRun$
+			:i $GoalManager_EditGoal$$name$ = $TrickAttack$$params$ = :s{$time$ = %i(120,00000078):s}
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $screenflash$
+		:i $fadetoblack$$off$$time$ = %GLOBAL%$FadeOffTime$$id$ = $screenflash$
+	:i endif
+	:i if NOT $InNetGame$
+		:i if $IsTrue$$should_reload_custom_last_level$
+			:i $Change$$should_reload_custom_last_level$ = %i(0,00000000)
+			:i $level_select_change_level$$level$ =  ($last_loaded_custom_level_script$) 
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $IsTrue$$force_return_to_mainmenu$
+		:i $Change$$force_return_to_mainmenu$ = %i(0,00000000)
+		:i $Change$$show_custom_level_validation_failed$ = %i(1,00000001)
+		:i if $InNetGame$
+			:i $quit_network_game$
+		:i else 
+			:i $level_select_change_level_quit$$level$ = $Load_MainMenu$
+		:i endif
+		:i return
+		
+	:i endif
+	:i if $InNetGame$
+		:i $Change$$observe_overview_cam_state$ = %i(0,00000000)
+		:i $update_all_player_names$
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i $Skater$.$Obj_SpawnScript$$CleanUp_Scuffs$
+			:i if $IsTrue$$THUGPRO_ObserveOn$
+				:i if $IsTrue$$InDropin$
+					:i $ResetSkaters$
+					:i $Skater$.$Obj_WaitAnimFinished$
+				:i endif
+				:i if $IsTrue$$RejoinNextGame$
+					:i $THUGPRO_ObserveMode$$off$
+					:i $Change$$RejoinNextGame$ = %i(0,00000000)
+					:i if $IsTrue$$THUGPRO_EnteringNetLevel$
+						:i $Change$$THUGPRO_EnteringNetLevel$ = %i(0,00000000)
+						:i $ResetSkaters$
+					:i else 
+						:i $THUGPRO_ResetPhysics_or_ResetSkaters$
+					:i endif
+				:i else 
+					:i $THUGPRO_ObserveMode$$on$
+				:i endif
+			:i else 
+				:i if $IsTrue$$THUGPRO_EnteringNetLevel$
+					:i $Change$$THUGPRO_EnteringNetLevel$ = %i(0,00000000)
+					:i $ResetSkaters$
+				:i else 
+					:i $GetGameMode$
+					:i if  ( ($GameModeEquals$$is_trick_attack$)  OR  (%GLOBAL%$GameMode$ = $netgraffiti$)  OR  (%GLOBAL%$GameMode$ = $netcombomambo$)  OR  (%GLOBAL%$GameMode$ = $netlobby$) ) 
+						:i $THUGPRO_ResetPhysics_or_ResetSkaters$
+					:i else 
+						:i $ResetSkaters$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i else 
+		:i $Skater$.$Obj_SpawnScript$$CleanUp_Scuffs$
+		:i if $LevelIs$$Load_MainMenu$
+			:i $ResetSkaters$$node_name$ = $trg_playerrestart$$RestartWalking$
+		:i else 
+			:i $ResetSkaters$
+		:i endif
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if  ( ( ($LEVEL_ORIGINAL_GAME$)  = $THPS4$)  OR  ($LevelIs$$Load_NY$) ) 
+			:i $HandleProtrickObjects$
+		:i endif
+		:i $HandleLevelOptionObjects$
+	:i endif
+	:i if $InNetGame$
+		:i $thugpro_update_tod$
+	:i endif
+	:i if $GameModeEquals$$default_time_limit$
+		:i $ResetClock$
+	:i else 
+	:i endif
+	:i if $IsTrue$$GLOBAL_SkipTrackAtRuns$
+		:i if NOT $GameModeEquals$$is_horse$
+			:i $SkipMusicTrack$
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_horse$
+		:i $horse_start_run$
+	:i endif
+	:i if $InNetGame$
+		:i if $OnServer$
+		:i else 
+			:i $LaunchQueuedScripts$
+			:i if $IsObserving$
+				:i if $GameModeEquals$$is_goal_attack$
+					:i $GoalManager_InitializeAllSelectedGoals$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT  ($next_level_script$ = $nullscript$) 
+		:i if  ($next_level_script$ = $select_sponsor_select_after_movies$) 
+			:i $SkProDisplayLoadingScreen$$blank$
+			:i $Change$$dont_unhide_loading_screen$ = %i(1,00000001)
+			:i $Change$$dont_restore_start_key_binding$ = %i(1,00000001)
+		:i endif
+		:i $SpawnScript$$next_level_script$
+		:i $Change$$next_level_script$ = $nullscript$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $GameModeEquals$$is_career$
+			:i $StartCurrentChapter$
+		:i endif
+		:i if $GameModeEquals$$is_classic$
+			:i $classic_mode_play_intro_cams$
+		:i endif
+		:i if NOT  ($dont_restore_start_key_binding$ = %i(1,00000001)) 
+			:i $restore_start_key_binding$
+		:i endif
+	:i endif
+	:i $Change$$is_first_start_run$ = %i(0,00000000)
+	:i $thugpro_init_dynamic_level_changes$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $printf$%s(30,"@@@@ should spawn menu now....")
+		:i $maybe_auto_load_from_memory_card_update$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $LevelIs$$load_cas$
+			:i if  ($launch_to_createatrick$ = %i(1,00000001)) 
+				:i $PauseGame$
+				:i $Change$$inside_pause$ = %i(1,00000001)
+				:i if $MusicIsPaused$
+					:i $Change$$music_was_paused$ = %i(1,00000001)
+				:i else 
+					:i $Change$$music_was_paused$ = %i(0,00000000)
+				:i endif
+				:i $PauseStream$%i(1,00000001)
+				:i $pause_menu_gradient$$on$
+				:i $create_pre_cat_menu$$from_mainmenu$
+				:i $Change$$check_for_unplugged_controllers$ = %i(1,00000001)
+				:i $Change$$launch_to_createatrick$ = %i(0,00000000)
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $GameFlow_PlayRun$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $ScreenElementExists$$id$ = $controller_unplugged_dialog_anchor$
+			:i $kill_start_key_binding$
+		:i else 
+			:i if NOT  ($dont_restore_start_key_binding$ = %i(1,00000001)) 
+				:i $restore_start_key_binding$
+			:i endif
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i $restore_start_key_binding$
+	:i endif
+	:i if $InSplitScreenGame$
+		:i if $IsTrue$$FirstTimeInSplitScreen$
+			:i $PauseGame$
+		:i endif
+	:i endif
+	:i $wait$%i(1,00000001)$gameframe$
+	:i if $IsMovieQueued$
+		:i while
+			
+			:i if $HasMovieStarted$
+				:i continue
+				
+			:i endif
+			:i $wait$%i(1,00000001)$gameframe$
+		:i loop_to 
+	:i endif
+	:i if $InMultiplayerGame$
+	:i else 
+		:i $UseOnePadInFrontEnd$
+	:i endif
+	:i $EnableActuators$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $ObjectExists$$id$ = $LevelSelectMasterContainer$
+			:i $THUGPRO_LevelSelect_menu_exit$$no_new_menu$$from_gameflow$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if $IsHost$
+			:i $GetPreferenceChecksum$$pref_type$ = $network$$game_type$
+			:i if  (%GLOBAL%$checksum$ = $netgoalattack$) 
+				:i if $IsTrue$$LEVEL_DISABLE_GOAL_ATTACK$
+					:i $SetPreferencesFromUI$:s{$prefs$ = $network$$field$ = %s(9,"game_type")$checksum$ = $nettrickattack$$string$ = %s(12,"Trick Attack"):s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if  ($toggled_fps_on$ = %i(1,00000001)) 
+		:i $ToggleFPS$
+		:i $ToggleFPS$
+	:i endif
+	:i if  ($toggled_geom_stats_on$ = %i(1,00000001)) 
+		:i $ToggleGeomStats$
+		:i $ToggleGeomStats$
+	:i endif
+	:i $wait$%i(2,00000002)$gameframe$
+	:i $Change$$is_changing_levels$ = %i(0,00000000)
+	:i if NOT  ($dont_unhide_loading_screen$ = %i(1,00000001)) 
+		:i $HideLoadingScreen$
+	:i endif
+	:i while
+		
+		:i if $ShouldEndRun$
+			:i $printf$%s(25,"************ SHOULD BREAK")
+			:i continue
+			
+		:i endif
+		:i if $GameModeEquals$$is_horse$
+			:i if $FirstTrickStarted$
+				:i $HideClock$
+				:i $GoalManager_ZeroGoalTimer$$name$ = $horse_mp$
+				:i $printf$%s(26,"************ TRICK STARTED")
+				:i continue
+				
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $GameFlow_WaitEnd$
+	:i $printf$%s(32,"************ IN GAMEFLOW_WAITEND")
+	:i while
+		
+		:i if $EndRunSelected$
+			:i continue
+			
+		:i endif
+		:i if $IsCareerMode$
+		:i else 
+			:i if $GameModeEquals$$is_singlesession$
+				:i continue
+				
+			:i else 
+				:i if NOT $LevelIs$$Load_MainMenu$
+					:i if $AllSkatersAreIdle$
+						:i continue
+						
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i $EnableActuators$%i(0,00000000)
+	:i $wait$%i(2,00000002)
+	$game$$frames$
+	:i if NOT $GameModeEquals$$is_singlesession$
+		:i if NOT $InSplitScreenGame$
+			:i $UnpauseGame$
+		:i endif
+	:i endif
+	:i $wait$%i(2,00000002)
+	$game$$frames$
+	:i $KillMessages$
+	:i $KillSpawnedScript$$name$ = $SK3_Killskater_Finish$
+:i endfunction
+:i function $GameFlow_End$
+	:i $Change$$is_first_start_run$ = %i(0,00000000)
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if $ObjectExists$$id$ = $LevelSelectMasterContainer$
+			:i $THUGPRO_LevelSelect_menu_exit$$no_new_menu$$from_gameflow$
+		:i endif
+	:i endif
+	:i $printf$%s(42,"************** IN GAMEFLOW END************")
+	:i while
+		
+		:i if $CalculateFinalScores$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+	:i if $InNetGame$
+		:i if $OnServer$
+			:i $wait$%i(5,00000005)$gameframes$
+			:i $LoadPendingPlayers$
+		:i endif
+	:i endif
+:i endfunction
+:i function $StandardGameFlow$
+	:i $printf$%s(26,"starting standard gameflow")
+	:i $GameFlow_Startup$
+	:i $StandardGameFlowBody$
+:i endfunction
+:i function $StandardGameFlowToggleView$
+	:i $printf$%s(26,"starting standard gameflow")
+	:i $GameFlow_Startup$
+	:i $ToggleViewMode$
+	:i $StandardGameFlowBody$
+:i endfunction
+:i function $StandardGameFlowBody$
+	:i if NOT $LevelIs$$Load_Sk5ed$
+		:i $THUGPROResetViewer$$force_reset$
+	:i endif
+	:i while
+		
+		:i $GameFlow_StartRun$
+		:i $GameFlow_PlayRun$
+		:i $GameFlow_WaitEnd$
+		:i if $GameModeEquals$$is_horse$
+			:i if $EndRunSelected$
+				:i continue
+				
+			:i endif
+			:i $horse_end_run$
+			:i if $HorseEnded$
+				:i continue
+				
+			:i else 
+				:i $InitializeSkaters$
+			:i endif
+		:i else 
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i if $GameModeEquals$$is_horse$
+		:i $horse_uninit$
+	:i endif
+	:i if NOT $LevelIs$$Load_Sk5ed$
+		:i $THUGPROResetViewer$$force_reset$
+	:i endif
+	:i $GameFlow_End$
+	:i while
+		
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i :end

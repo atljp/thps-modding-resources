@@ -1,0 +1,108 @@
+
+:i function $playmovie_script_temp$
+:i endfunction
+:i $play_mainmenu_attract_movie$ = %i(1,00000001)
+:i function $playmovie_script$
+	:i %GLOBAL%$anims_unloaded$ = %i(0,00000000)
+	:i %GLOBAL%$parts_pre_unloaded$ = %i(0,00000000)
+	:i %GLOBAL%$temp_pre_unloaded$ = %i(0,00000000)
+	:i if $LevelIs$$Load_MainMenu$
+		:i if  ($play_mainmenu_attract_movie$ = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+		:i $PauseObjects$
+		:i %GLOBAL%$anims_unloaded$ = %i(1,00000001)
+		:i $printf$%s(20,"Unloading anims here")
+		:i if $isNGC$
+			:i if $InPreFile$%s(20,"skaterparts_temp.pre")
+				:i $UnloadPreFile$%s(20,"skaterparts_temp.pre")
+				:i %GLOBAL%$temp_pre_unloaded$ = %i(1,00000001)
+			:i endif
+		:i else 
+			:i if $InPreFile$%s(15,"skaterparts.pre")
+				:i $UnloadPreFile$%s(15,"skaterparts.pre")
+				:i %GLOBAL%$parts_pre_unloaded$ = %i(1,00000001)
+			:i endif
+			:i if $InPreFile$%s(20,"skaterparts_temp.pre")
+				:i $UnloadPreFile$%s(20,"skaterparts_temp.pre")
+				:i %GLOBAL%$temp_pre_unloaded$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i $mempushcontext$%i(0,00000000)
+	:i $playmovie$ isNull 
+	:i if $isXbox$
+		:i %GLOBAL%$time$ = %f(6.000000)
+	:i else 
+		:i %GLOBAL%$time$ = %f(4.500000)
+	:i endif
+	:i if NOT $isNGC$
+		:i if $LevelIs$$Load_MainMenu$
+			:i $DisplayLoadingScreen$%s(16,"loadscrn_generic")%GLOBAL%$time$
+		:i endif
+	:i endif
+	:i $mempopcontext$
+	:i if  (%GLOBAL%$anims_unloaded$ = %i(1,00000001)) 
+		:i $printf$%s(20,"Reloading anims here")
+		:i $UnpauseObjects$
+	:i endif
+	:i if  (%GLOBAL%$parts_pre_unloaded$ = %i(1,00000001)) 
+		:i if NOT $LevelIs$$Load_MainMenu$
+			:i $script_assert$%s(71,"Can only unload skaterparts/play movies from skateshop (mainmenu) level")
+		:i endif
+		:i if NOT $isNGC$
+			:i $LoadPreFile$%s(15,"skaterparts.pre")
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$temp_pre_unloaded$ = %i(1,00000001)) 
+		:i if NOT $isNGC$
+			:i $LoadPreFile$%s(20,"skaterparts_temp.pre")
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$temp_pre_unloaded$ = %i(1,00000001)) 
+		:i if $isNGC$
+			:i $LoadPreFile$%s(20,"skaterparts_temp.pre")$use_bottom_up_heap$
+		:i endif
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $HideLoadingScreen$
+	:i endif
+:i endfunction
+:i function $ingame_play_movie$
+	:i $ingame_pre_movie_cleanup$
+	:i $mempushcontext$%i(0,00000000)
+	:i if $GotParam$$movies$
+		:i $GetArraySize$%GLOBAL%$movies$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $playmovie$ (%GLOBAL%$movies$:a{%GLOBAL%$index$:a}) 
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i $playmovie$ isNull 
+	:i endif
+	:i $mempopcontext$
+	:i $ingame_post_movie_cleanup$ isNull 
+:i endfunction
+:i function $ingame_pre_movie_cleanup$
+	:i $DisplayLoadingScreen$$blank$
+	:i $goalmanager_levelunload$
+	:i $cleanup$$preserve_skaters$
+	:i $KillMessages$
+:i endfunction
+:i function $ingame_post_movie_cleanup$$loading_screen$ = $blank$
+	:i $mempushcontext$%i(0,00000000)
+	:i $DisplayLoadingScreen$%GLOBAL%$loading_screen$
+	:i $mempopcontext$
+	:i if NOT $GotParam$$level$
+		:i $GetCurrentLevel$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $change_level$$level$ = %GLOBAL%$level$
+	:i $restore_start_key_binding$
+:i endfunction
+:i :end

@@ -1,0 +1,89 @@
+// ------------------------------------
+// Actual template entry, contains
+// pointers to techniques and everything
+// else that makes up the template
+//
+// Nx::CMaterialTemplate
+// ------------------------------------
+
+#define CL_TEMPLATE_NUMBER              0xAACCFF
+#define CL_TEMPLATE_CHECKSUM            0xAAEEFF
+#define CL_TEMPLATE_POINTER             0x88AADD
+
+#include "MaterialTechnique.bt"
+
+typedef struct (uint32 MAT_START)
+{
+    local uint old_off;
+    local int i;
+
+    uint priority_maybe <bgcolor=CL_TEMPLATE_NUMBER, comment="Used as priority interally when sorting">;
+
+    RelativeOffset pt_templateName(MAT_START) <bgcolor=CL_TEMPLATE_POINTER, comment="Pointer to template name">;
+
+    // ---------------------
+
+    old_off = FTell();
+    FSeek(AbsOffset(pt_templateName));
+    string templateName <bgcolor=0x66FF66>;
+    FSeek(old_off);
+
+    // ---------------------
+
+    QBKey checksum <bgcolor=CL_TEMPLATE_CHECKSUM>;
+    uint flags_a <bgcolor=CL_TEMPLATE_NUMBER, comment="Added onto at runtime">;
+    uint flags_b <bgcolor=CL_TEMPLATE_NUMBER, comment="Not an offset in memory, more flags?">;
+    uint always_zero <bgcolor=CL_TEMPLATE_NUMBER>;
+
+    uint numTechniques <bgcolor=CL_TEMPLATE_NUMBER, comment="Maybe?">;
+    RelativeOffset pt_techniques(MAT_START) <bgcolor=CL_TEMPLATE_POINTER, comment="Section C pointer?">;
+
+    // ---------------------
+
+    old_off = FTell();
+    FSeek(AbsOffset(pt_techniques));
+    
+    if (MaterialLibraryVersion >= 4 && numTechniques > 5)
+    {
+        for(i=0; i<5; i++)
+            Nx_CMaterialTechnique techniques(MAT_START);
+    }
+    else
+    {
+        for(i=0; i<numTechniques; i++)
+            Nx_CMaterialTechnique techniques(MAT_START);
+    }
+
+    FSeek(old_off);
+
+    // ---------------------
+
+    uint numUIProperties <bgcolor=CL_TEMPLATE_NUMBER>;
+    RelativeOffset pt_UIProperties(MAT_START) <bgcolor=CL_TEMPLATE_POINTER>;
+
+    old_off = FTell();
+    FSeek(AbsOffset(pt_UIProperties));
+
+    for (i=0; i<numUIProperties; i++)
+        UIProperty uiProperty(MAT_START);
+
+    FSeek(old_off);
+    
+} Nx_CMaterialTemplate <read=ReadMaterialTemplate>;
+
+string ReadMaterialTemplate(Nx_CMaterialTemplate &entry)
+{
+    local string s;
+
+    return SPrintf(s, "%s: %s", ReadQBKey(entry.checksum), entry.templateName);
+}
+
+typedef struct (int ct, uint MAT_START)
+{
+    local int i;
+
+    for (i=0; i<ct; i++)
+    {
+        Nx_CMaterialTemplate template(MAT_START) <optimize=false, comment="Nx::CMaterialTemplate">;
+    }
+} MaterialTemplateBlock;

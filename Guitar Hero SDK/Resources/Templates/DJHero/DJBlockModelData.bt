@@ -1,0 +1,89 @@
+//------------------------------------------------
+// DJ HERO 1 MSB: MODEL DATA
+// Contains model data, dummy
+//------------------------------------------------
+
+#include "DJMesh.bt"
+
+#define CL_MATATLAS_NAME    0xFFAACC
+#define CL_MATATLAS_SHADER  0xFFBBCC
+#define CL_MATATLAS_VALUE   0xEE99BB
+#define CL_MATATLAS_PARAMS  0xDD88AA
+#define CL_MATATLAS_PAD     0xCC7799
+
+#define CL_TEXATLAS_NAME    0xCCAAFF
+#define CL_TEXATLAS_PATH    0xBB99EE
+#define CL_TEXATLAS_PAD     0xAA88DD
+
+#define CL_BONENAME         0xAADDFF
+#define CL_BONEVALUE        0x99CCEE
+#define CL_BONEMATRIX       0x88BBDD
+
+//-----------------------------
+// Bone of some sort
+//-----------------------------
+
+typedef struct
+{
+    local uint starter = FTell();
+    local uint ender = starter + 176;
+   
+    char bone_name[32] <bgcolor=CL_BONENAME>;
+    Matrix_4x4 matrix_a <bgcolor=CL_BONEMATRIX>;
+    Matrix_4x4 matrix_b <bgcolor=CL_BONEMATRIX>;
+    int parent_index <bgcolor=CL_BONEVALUE>;
+    uint zeros[3] <bgcolor=CL_PADDING>;
+
+    FSeek(ender);
+} DJModelBone <read=Str("%s", bone_name)>;
+
+//-----------------------------
+
+#include "DJModelData_X360.bt"
+#include "DJModelData_DJH2_X360.bt"
+#include "DJModelData_PS3.bt"
+
+local uint faceVertBlobStart = 0;
+local uint meshDataStart = 0;
+
+//-----------------------------
+
+enum <ushort> ModelType
+{
+    MTYPE_XBOX = 0xB0FE,
+    MTYPE_PS3 = 0x5033,
+    MTYPE_DJH2_XBOX = 0x5833,
+};
+
+//-----------------------------
+// Holder for main section data
+//-----------------------------
+
+typedef struct
+{
+    local uint block_start_pos = FTell();
+
+    ModelType modelType;
+    ushort unk <bgcolor=CL_SINGLEVALUE>;
+
+    switch (modelType)
+    {
+        case MTYPE_XBOX:
+            DJModelData_XBox data;
+            break;
+
+        case MTYPE_PS3:
+            DJModelData_PS3 data;
+            FSeek(block_start_pos + data.entireBlockBytes);
+            break;
+
+        case MTYPE_DJH2_XBOX:
+            DJModelData_DJH2_XBox data;
+            FSeek(block_start_pos + data.entireBlockBytes);
+            break;
+
+        default:
+            Printf("Unknown model block type: %x\n", modelType);
+            break;
+    }
+} DJBlockModelData;

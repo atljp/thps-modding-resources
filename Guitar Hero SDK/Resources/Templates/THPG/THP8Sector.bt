@@ -1,0 +1,24 @@
+// Sector
+
+#define CL_SECTORPADDING 0x6666aa
+#define CL_SECTORPADDING_SPECIAL 0x7777bb
+#define CL_SECTORCHECKSUM 0x9999ff
+#define CL_SECTORVALUE 0x8888ff
+#define CL_SECTORVECTOR 0x7777ff
+
+typedef struct
+{
+    byte null_a[4] <bgcolor=CL_SECTORPADDING, hidden=true>;
+    QBKey checksum <bgcolor=CL_SECTORCHECKSUM>;
+    uint sector_flags <bgcolor=CL_SECTORVALUE>;
+    uint skip_me[9] <bgcolor=CL_SECTORPADDING, hidden=true>;
+
+    Sphere bounds_sphere <bgcolor=CL_SECTORVECTOR>;
+
+    uint skip_me_b[4] <bgcolor=CL_SECTORPADDING, hidden=true>;
+} THP8Sector <read=ReadTHP8Sector>;
+
+string ReadTHP8Sector(THP8Sector &sec)
+{
+    return ReadQBKey(sec.checksum) + ", " + ReadSphere(sec.bounds_sphere);
+}

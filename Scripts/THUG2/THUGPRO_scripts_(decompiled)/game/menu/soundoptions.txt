@@ -1,0 +1,1548 @@
+
+:i $user_soundtracks_array$ = :a{:a}
+:i $MUSIC_IN_PAUSE_MENU$ = %i(0,00000000)
+:i $GLOBAL_Music_Mode$ = %i(0,00000000)
+:i $current_soundtrack$ = $THUG2_Soundtrack$
+:i function $launch_sound_options_menu$
+	:i if $GotParam$$from_options$
+		:i $create_sound_options_menu$$from_options$
+	:i else 
+		:i if $GotParam$$from_parked$
+			:i $create_sound_options_menu$$from_parked$
+		:i else 
+			:i $create_sound_options_menu$
+		:i endif
+	:i endif
+:i endfunction
+:i function $create_music_options_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $SetMusicVolume$$MusicVolOutsideBox$
+	:i if $MusicIsPaused$
+		:i $PauseMusic$%i(0,00000000)
+	:i endif
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $music_options_menu$
+		:i $vmenu_id$ = $music_options_vmenu$
+	:i :s}
+	:i if $LevelIs$$Load_MainMenu$
+		:i $pad_back_script$ = $create_setup_options_menu$
+	:i else 
+		:i $pad_back_script$ = $create_options_menu$
+	:i endif
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $music_options_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :s{$pad_back$%GLOBAL%$pad_back_script$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(13,"music options")$bg_just$ = $left$$show_music_info$$player_right$$no_grain$
+	:i $GetValueFromVolume$$cdvol$
+	:i $FormatText$$textName$ = $cdvol$%s(2,"%v")$v$ = %GLOBAL%$value$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"Music Level:")
+		:i $id$ = $menu_music_level$
+		:i $extra_text$ = %GLOBAL%$cdvol$
+		:i $option_arrows$
+		:i $option_arrows_callback$ = $menu_turn_music_down_or_down$
+	:i :s}
+	:i if $IsTrue$$GLOBAL_Music_Mode$
+		:i $extra_text$ = %s(5,"Music")
+		:i $not_focusable$ = %GLOBAL%$focusable$
+	:i else 
+		:i $extra_text$ = %s(8,"Ambience")
+		:i $not_focusable$ = %GLOBAL%$not_focusable$
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(11,"Music Mode:")
+		:i $id$ = $menu_music_mode$
+		:i $extra_text$ = %GLOBAL%$extra_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $menu_cycle_music_mode$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(17,"Choose Soundtrack")
+		:i $id$ = $menu_soundtrack$
+		:i $pad_choose_script$ = $create_soundtrack_menu$
+		:i $pad_choose_params$ = :s{:s}
+	:i :s}
+	:i if $THUGPRO_IsUsingDefaultSoundtrack$
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(14,"Edit Tracklist")
+			:i $id$ = $menu_playlist$
+			:i $pad_choose_script$ = $create_tracklist_menu$
+			:i $pad_choose_params$ = :s{:s}
+		:i :s}
+	:i else 
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(9,"Tracklist")
+			:i $id$ = $menu_playlist$
+			:i $pad_choose_script$ = $create_tracklist_menu$
+			:i $pad_choose_params$ = :s{:s}
+		:i :s}
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"Skip Track")
+		:i $id$ = $menu_skip_track$
+		:i $pad_choose_script$ = $skip_track$
+		:i $pad_choose_params$ = :s{:s}
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $song_text$ = %s(6,"Random")
+	:i else 
+		:i $song_text$ = %s(8,"In order")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"Music Order:")
+		:i $extra_text$ = %GLOBAL%$song_text$
+		:i $id$ = $menu_song_order$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_song_order$
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(22,"Skip track at new run ")
+		:i $id$ = $menu_SkipTrackAtRuns$
+		:i $pad_choose_script$ = $toggle_SkipTrackAtRuns$
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(25,"Play music in pause menu ")
+		:i $id$ = $menu_music_in_pause$
+		:i $pad_choose_script$ = $toggle_music_in_pause$
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(12,"Music Zones ")
+		:i $id$ = $menu_sound_zones$
+		:i $pad_choose_script$ = $toggle_music_zones$
+	:i :s}
+	:i if NOT $IsTrue$$GLOBAL_SkipTrackAtRuns$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_SkipTrackAtRuns$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_SkipTrackAtRuns$$fast$
+	:i endif
+	:i if NOT $IsTrue$$MUSIC_IN_PAUSE_MENU$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_music_in_pause$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_music_in_pause$$fast$
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $SOUNDS_MUSICBOXES_OFF$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_sound_zones$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_sound_zones$$fast$
+	:i endif
+	:i $AssignAlias$$id$ = $music_options_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_sound_options_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $sound_options_menu$
+		:i $vmenu_id$ = $sound_options_vmenu$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sound_options_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$sound_options_exit$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(13,"sound options")$bg_just$ = $left$$no_grain$
+	:i $GetValueFromVolume$$sfxvol$
+	:i $FormatText$$textName$ = $sfxvol$%s(2,"%v")$v$ = %GLOBAL%$value$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"sound level:")
+		:i $id$ = $menu_sound_level$
+		:i $extra_text$ = %GLOBAL%$sfxvol$
+		:i $option_arrows$
+		:i $option_arrows_callback$ = $menu_turn_sound_down_or_down$
+	:i :s}
+	:i switch  ($GLOBAL_TP_GroundTerrainSFX$) 
+		:i case $classic$
+			:i $extra_text$ = %s(7,"Classic")
+			:i endcase
+		case $thaw$
+			:i $extra_text$ = %s(4,"THAW")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(19,"Ground Terrain SFX:")
+		:i $id$ = $menu_GroundTerrain_sfx$
+		:i $extra_text$ = %GLOBAL%$extra_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $menu_cycle_TP_GroundTerrainSFX$
+	:i :s}
+	:i switch  ($GLOBAL_ExtraTrickSFX$) 
+		:i case $ExtraTrick$
+			:i $extra_text$ = %s(4,"THUG")
+			:i endcase
+		case $ExtraTrick_THPS4$
+			:i $extra_text$ = %s(5,"THPS4")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(16,"Extra Trick SFX:")
+		:i $id$ = $menu_extratrick_sfx$
+		:i $extra_text$ = %GLOBAL%$extra_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $menu_cycle_ExtraTrickSFX$
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(15,"special sounds ")
+		:i $id$ = $menu_sound_special$
+		:i $pad_choose_script$ = $toggle_special_sounds$
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(13,"skater voice ")
+		:i $id$ = $menu_skater_voices$
+		:i $pad_choose_script$ = $toggle_skater_voice$
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SOUNDS_SPECIALSOUNDS_OFF$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_sound_special$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_sound_special$$fast$
+	:i endif
+	:i if $IsTrue$$GLOBAL_SkaterVoiceOff$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_skater_voices$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_skater_voices$$fast$
+	:i endif
+	:i $AssignAlias$$id$ = $sound_options_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $menu_cycle_music_mode$
+	:i $GetTags$
+	:i if NOT $IsTrue$$GLOBAL_Music_Mode$
+		:i $thugpro_save_key_value$$Key$ = %s(10,"Music_Mode")$value$ = %i(1,00000001)$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(5,"Music")
+		:i :s}
+		:i if $ScreenElementExists$$id$ = $track_info_container$
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $track_info_container$
+				:i $alpha$ = %f(1.000000)
+			:i :s}
+		:i endif
+	:i else 
+		:i $thugpro_save_key_value$$Key$ = %s(10,"Music_Mode")$value$ = %i(0,00000000)$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(8,"Ambience")
+		:i :s}
+		:i if $ScreenElementExists$$id$ = $track_info_container$
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $track_info_container$
+				:i $alpha$ = %f(0.000000)
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $menu_cycle_ExtraTrickSFX$
+	:i $GetTags$
+	:i if  ( ($GLOBAL_ExtraTrickSFX$)  = $ExtraTrick_THPS4$) 
+		:i $thugpro_save_key_value$$Key$ = %s(13,"ExtraTrickSFX")$value$ = $THUG$$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(4,"THUG")
+		:i :s}
+		:i $change$ ( ($GLOBAL_ExtraTrickSFX$)  = $ExtraTrick$) 
+	:i else 
+		:i $thugpro_save_key_value$$Key$ = %s(13,"ExtraTrickSFX")$value$ = $THPS4$$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(5,"THPS4")
+		:i :s}
+		:i $change$ ( ($GLOBAL_ExtraTrickSFX$)  = $ExtraTrick_THPS4$) 
+	:i endif
+:i endfunction
+:i function $menu_cycle_TP_GroundTerrainSFX$
+	:i $GetTags$
+	:i if  ( ($GLOBAL_TP_GroundTerrainSFX$)  = $classic$) 
+		:i $thugpro_save_key_value$$Key$ = %s(19,"TP_GroundTerrainSFX")$value$ = $thaw$$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(4,"THAW")
+		:i :s}
+		:i $change$ ( ($GLOBAL_TP_GroundTerrainSFX$)  = $thaw$) 
+		:i $change$$TA_REVERT_CONC_UG2_CHANCE$ = %i(0,00000000)
+		:i $change$$TA_REVERT_CONC_AW_CHANCE$ = %i(1,00000001)
+		:i $change$$TA_OLLIE_CONC_UG2_CHANCE$ = %i(0,00000000)
+		:i $change$$TA_OLLIE_CONC19_UG2_CHANCE$ = %i(0,00000000)
+		:i $change$$TA_OLLIE_CONC_AW_CHANCE$ = %i(8,00000008)
+		:i $change$$TA_OLLIE_CONC19_AW_CHANCE$ = %i(1,00000001)
+	:i else 
+		:i $thugpro_save_key_value$$Key$ = %s(19,"TP_GroundTerrainSFX")$value$ = $classic$$apply_changes$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %s(7,"Classic")
+		:i :s}
+		:i $change$ ( ($GLOBAL_TP_GroundTerrainSFX$)  = $classic$) 
+		:i $change$$TA_REVERT_CONC_UG2_CHANCE$ = %i(1,00000001)
+		:i $change$$TA_REVERT_CONC_AW_CHANCE$ = %i(0,00000000)
+		:i $change$$TA_OLLIE_CONC_UG2_CHANCE$ = %i(8,00000008)
+		:i $change$$TA_OLLIE_CONC19_UG2_CHANCE$ = %i(1,00000001)
+		:i $change$$TA_OLLIE_CONC_AW_CHANCE$ = %i(0,00000000)
+		:i $change$$TA_OLLIE_CONC19_AW_CHANCE$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $GetTracksEnabled$
+	:i %GLOBAL%$num_enabled$ = %i(0,00000000)
+	:i $GetArraySize$$playlist_tracks$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if $TrackEnabled$%GLOBAL%$index$
+			:i %GLOBAL%$num_enabled$ =  (%GLOBAL%$num_enabled$ + %i(1,00000001)) 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$num_enabled$ = %GLOBAL%$num_enabled$
+:i endfunction
+:i function $add_music_track_text$$parent$ = $current_menu_anchor$$pos$ = %vec2(575.000000,320.000000)
+	:i if NOT  ($current_soundtrack$ = $null$) 
+		:i return
+		
+	:i endif
+	:i $GetTracksEnabled$
+	:i if  (%GLOBAL%$num_enabled$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $pos$ = %vec2(575.000000,320.000000)
+	:i endif
+	:i $GetCurrentTrack$
+	:i if  (%GLOBAL%$current_track$ = %i(999,000003e7)) 
+		:i return
+		
+	:i endif
+	:i if NOT $TrackEnabled$%GLOBAL%$current_track$
+		:i return
+		
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $music_track_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $dims$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $THUGPRO_GetTrackInfo$$track_num$ = %GLOBAL%$current_track$
+	:i $current_band_text$ = %GLOBAL%$band$
+	:i $FormatText$$textName$ = $current_track_text$%s(6,"''%t''")$t$ = %GLOBAL%$track_title$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $music_track_anchor$
+		:i $id$ = $music_band_text$
+		:i $text$ = %GLOBAL%$current_band_text$
+		:i $font$ = $testtitle$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(4.000000,10.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.800000)
+	:i :s}
+	:i $GetScreenElementDims$$id$ = $music_band_text$
+	:i if  (%GLOBAL%$width$ > %i(260,00000104)) 
+		:i %GLOBAL%$scale$ =  (%f(260.000000) / %GLOBAL%$width$) 
+		:i $DoScreenElementMorph$$id$ = $music_band_text$$time$ = %i(0,00000000)$scale$ = %GLOBAL%$scale$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $music_track_anchor$
+		:i $id$ = $music_track_text$
+		:i $text$ = %GLOBAL%$current_track_text$
+		:i $font$ = $dialog$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %f(0.800000)
+		:i $pos$ = %vec2(4.000000,28.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.800000)
+	:i :s}
+	:i $GetScreenElementDims$$id$ = $music_track_text$
+	:i if  (%GLOBAL%$width$ > %i(250,000000fa)) 
+		:i %GLOBAL%$scale$ =  (%f(0.800000) * %f(250.000000) / %GLOBAL%$width$) 
+		:i $DoScreenElementMorph$$id$ = $music_track_text$$time$ = %i(0,00000000)$scale$ = %GLOBAL%$scale$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $music_track_anchor$
+		:i $texture$ = $kyron$
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(14.000000,15.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i if $IsTrue$$ForceAmbientSFXToMusicVolume$
+		:i $DoScreenElementMorph$$id$ = $music_track_anchor$$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $spawn_update_music_track_text$
+	:i if $ScreenElementExists$$id$ = $track_info_container$
+		:i $RunScriptOnScreenElement$$id$ = $track_info_container$$thugpro_update_music_track_text$$params$ = :s{ isNull :s}
+	:i endif
+:i endfunction
+:i function $thugpro_update_music_track_text$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $track_info_container$
+		:i $alpha$ = %f(0.000000)
+		:i $time$ = %f(0.200000)
+	:i :s}
+	:i $Wait$%f(0.200000)$seconds$
+	:i $GetCurrentTrack$
+	:i $THUGPRO_GetTrackInfo$$track_num$ = %GLOBAL%$current_track$
+	:i $FormatText$$textName$ = $current_track_text$%s(2,"%t")$t$ = %GLOBAL%$track_title$
+	:i $FormatText$$textName$ = $current_artist_text$%s(2,"%a")$a$ = %GLOBAL%$band$
+	:i $SetScreenElementProps$:s{
+		:i $text$ = %GLOBAL%$current_track_text$
+		:i $id$ = :s{$track_info_container$$child$ = $song_name$:s}
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $text$ = %GLOBAL%$current_artist_text$
+		:i $id$ = :s{$track_info_container$$child$ = $artist_name$:s}
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = $track_info_container$
+		:i $alpha$ = %f(1.000000)
+		:i $time$ = %f(0.100000)
+	:i :s}
+:i endfunction
+:i function $update_music_track_text$
+	:i if $ScreenElementExists$$id$ = $music_track_anchor$
+		:i if $IsTrue$$ForceAmbientSFXToMusicVolume$
+			:i $DoScreenElementMorph$$id$ = $music_track_anchor$$alpha$ = %i(0,00000000)
+		:i endif
+		:i $GetScreenElementPosition$$id$ = $music_track_anchor$
+		:i $old_pos$ = %GLOBAL%$ScreenElementPos$
+		:i $generic_menu_animate_out$$force$$menu$ = $music_track_anchor$
+	:i else 
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$current_track$
+		:i $Wait$%f(2.500000)$seconds$
+		:i $GetCurrentTrack$
+	:i endif
+	:i if NOT $IsTrue$$ForceAmbientSFXToMusicVolume$
+		:i $DoScreenElementMorph$$id$ = $music_track_anchor$$alpha$ = %i(1,00000001)
+	:i endif
+	:i $THUGPRO_GetTrackInfo$$track_num$ = %GLOBAL%$current_track$
+	:i $current_band_text$ = %GLOBAL%$band$
+	:i $FormatText$$textName$ = $current_track_text$%s(6,"''%t''")$t$ = %GLOBAL%$track_title$
+	:i if $ScreenElementExists$$id$ = $music_band_text$
+		:i $SetScreenElementProps$$id$ = $music_band_text$$text$ = %GLOBAL%$current_band_text$
+		:i $SetScreenElementProps$$id$ = $music_track_text$$text$ = %GLOBAL%$current_track_text$
+	:i endif
+	:i $DoScreenElementMorph$$id$ = $music_band_text$$time$ = %i(0,00000000)$scale$ = %f(1.000000)
+	:i $GetScreenElementDims$$id$ = $music_band_text$
+	:i if  (%GLOBAL%$width$ > %i(245,000000f5)) 
+		:i %GLOBAL%$scale$ =  (%f(245.000000) / %GLOBAL%$width$) 
+		:i $DoScreenElementMorph$$id$ = $music_band_text$$time$ = %i(0,00000000)$scale$ = %GLOBAL%$scale$
+	:i endif
+	:i $GetScreenElementDims$$id$ = $music_band_text$
+	:i $DoScreenElementMorph$$id$ = $music_band_text$$time$ = %i(0,00000000)$scale$ = %f(1.000000)
+	:i if  (%GLOBAL%$width$ > %i(250,000000fa)) 
+		:i %GLOBAL%$scale$ =  (%f(250.000000) / %GLOBAL%$width$) 
+		:i $DoScreenElementMorph$$id$ = $music_track_text$$time$ = %i(0,00000000)$scale$ = %GLOBAL%$scale$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $music_track_anchor$
+		:i $generic_menu_animate_in$$force$$menu$ = $music_track_anchor$$pos$ = %GLOBAL%$old_pos$
+	:i endif
+:i endfunction
+:i function $update_volume_bar$
+	:i $printf$%s(31,"update_volume_bar not available")
+:i endfunction
+:i function $boombox_speaker_pulse$
+	:i $printf$%s(35,"boombox_speaker_pulse not available")
+:i endfunction
+:i function $sound_options_exit$
+	:i $KillSpawnedScript$$name$ = $shake_projector$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GotParam$$just_remove$
+		:i return
+		
+	:i endif
+	:i $SFX_Music_Volume_Box_Restore_State$$sound_options$
+	:i if  ($FadeMusicOutRunning$ = %i(1,00000001)) 
+		:i $SetMusicVolume$%i(0,00000000)
+	:i endif
+	:i if  ($FadeMusicInRunning$ = %i(1,00000001)) 
+		:i $SetMusicVolume$$MusicVolOutsideBox$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $create_setup_options_menu$
+	:i else 
+		:i $create_options_menu$
+	:i endif
+:i endfunction
+:i function $sound_options_show_levels$
+:i endfunction
+:i function $toggle_song_order$
+	:i if NOT $GetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $PlaySongsRandomly$
+		:i $SetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"RandomSongOrder")$value$ = %i(1,00000001)
+	:i else 
+		:i $PlaySongsInOrder$
+		:i $UnsetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"RandomSongOrder")$value$ = %i(0,00000000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $song_text$ = %s(6,"Random")
+	:i else 
+		:i $song_text$ = %s(8,"In order")
+	:i endif
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$song_text$
+	:i :s}
+:i endfunction
+:i function $toggle_special_sounds$
+	:i if NOT $GetGlobalFlag$$flag$ = $SOUNDS_SPECIALSOUNDS_OFF$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_sound_special$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"SpecialSoundsOff")$value$ = %i(1,00000001)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_sound_special$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"SpecialSoundsOff")$value$ = %i(0,00000000)$apply_changes$
+		:i $PlaySound$$HUD_specialtrickAA$
+	:i endif
+:i endfunction
+:i function $toggle_music_zones$
+	:i if NOT $GetGlobalFlag$$flag$ = $SOUNDS_MUSICBOXES_OFF$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_sound_zones$
+		:i $thugpro_save_key_value$$Key$ = %s(13,"MusicBoxesOff")$value$ = %i(1,00000001)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_sound_zones$
+		:i $thugpro_save_key_value$$Key$ = %s(13,"MusicBoxesOff")$value$ = %i(0,00000000)$apply_changes$
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i $root_window$.$SetTags$$need_music_zone_refresh$
+	:i endif
+:i endfunction
+:i function $refresh_music_zones$
+	:i if $GetGlobalFlag$$flag$ = $SOUNDS_MUSICBOXES_OFF$
+		:i $SetScreenElementProps$$id$ = $menu_sound_zone_chk$$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i else 
+		:i $SetScreenElementProps$$id$ = $menu_sound_zone_chk$$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+	:i endif
+:i endfunction
+:i function $toggle_skater_voice$
+	:i if NOT $IsTrue$$GLOBAL_SkaterVoiceOff$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_skater_voices$
+		:i $change$$GLOBAL_SkaterVoiceOff$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(14,"SkaterVoiceOff")$value$ = %i(1,00000001)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_skater_voices$
+		:i $change$$GLOBAL_SkaterVoiceOff$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(14,"SkaterVoiceOff")$value$ = %i(0,00000000)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_SkipTrackAtRuns$
+	:i if $IsTrue$$GLOBAL_SkipTrackAtRuns$
+		:i $do_thpg_checkbox_item_off$$id$ = $menu_SkipTrackAtRuns$
+		:i $change$$GLOBAL_SkipTrackAtRuns$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SkipTrackAtRuns")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = $menu_SkipTrackAtRuns$
+		:i $change$$GLOBAL_SkipTrackAtRuns$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SkipTrackAtRuns")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_music_in_pause$
+	:i $GetTags$
+	:i if $IsTrue$$MUSIC_IN_PAUSE_MENU$
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(19,"MUSIC_IN_PAUSE_MENU")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(19,"MUSIC_IN_PAUSE_MENU")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $menu_sound_level_focus$
+	:i $GetTags$
+	:i $main_theme_focus$
+	:i if $GotParam$$music_level$
+		:i $value$ =  ($MusicVolOutsideBox$ / %i(10,0000000a)) 
+	:i else 
+		:i $GetValueFromVolume$$sfxvol$
+	:i endif
+	:i $printf$%GLOBAL%$value$
+	:i if  (%GLOBAL%$value$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}:s}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :s}
+	:i endif
+	:i if  (%GLOBAL%$value$ = %i(10,0000000a)) 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}:s}
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :s}
+	:i endif
+:i endfunction
+:i function $menu_sound_level_unfocus$
+	:i $GetTags$
+	:i $main_theme_unfocus$
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(5,00000005):s}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}:s}
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(6,00000006):s}$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}:s}
+:i endfunction
+:i function $menu_turn_music_down_or_down$
+	:i if $GotParam$$left$
+		:i $menu_turn_music_down$
+	:i else 
+		:i $menu_turn_music_up$
+	:i endif
+:i endfunction
+:i function $menu_turn_sound_down_or_down$
+	:i if $GotParam$$left$
+		:i $menu_turn_sound_down$
+	:i else 
+		:i $menu_turn_sound_up$
+	:i endif
+:i endfunction
+:i function $menu_turn_music_down$
+	:i $GetTags$
+	:i $GetValueFromVolume$$cdvol$
+	:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+		:i %GLOBAL%$value$ =  (%GLOBAL%$value$ - %i(1,00000001)) 
+		:i $sound_options_set_level$$level$ = %GLOBAL%$value$$id$ = $menu_music_level$$type$ = $cdvol$
+	:i endif
+	:i if $IsTrue$$GLOBAL_Music_Mode$
+		:i if  (%GLOBAL%$value$ < %i(1,00000001)) 
+			:i if $ScreenElementExists$$id$ = $track_info_container$
+				:i $DoScreenElementMorph$:s{
+					:i $id$ = $track_info_container$
+					:i $alpha$ = %f(0.000000)
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $menu_turn_music_up$
+	:i $GetTags$
+	:i $GetValueFromVolume$$cdvol$
+	:i if  (%GLOBAL%$value$ < %i(10,0000000a)) 
+		:i %GLOBAL%$value$ =  (%GLOBAL%$value$ + %i(1,00000001)) 
+		:i $sound_options_set_level$$level$ = %GLOBAL%$value$$id$ = $menu_music_level$$type$ = $cdvol$
+	:i endif
+	:i if $IsTrue$$GLOBAL_Music_Mode$
+		:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+			:i if $ScreenElementExists$$id$ = $track_info_container$
+				:i $DoScreenElementMorph$:s{
+					:i $id$ = $track_info_container$
+					:i $alpha$ = %f(1.000000)
+				:i :s}
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $menu_turn_sound_down$
+	:i $GetTags$
+	:i $GetValueFromVolume$$sfxvol$
+	:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+		:i %GLOBAL%$value$ =  (%GLOBAL%$value$ - %i(1,00000001)) 
+		:i $sound_options_set_level$$level$ = %GLOBAL%$value$$id$ = $menu_sound_level$$type$ = $sfxvol$
+		:i $PlaySound$$ollieconc$$vol$ = %i(70,00000046)
+	:i endif
+:i endfunction
+:i function $menu_turn_sound_up$
+	:i $GetTags$
+	:i $GetValueFromVolume$$sfxvol$
+	:i if  (%GLOBAL%$value$ < %i(10,0000000a)) 
+		:i %GLOBAL%$value$ =  (%GLOBAL%$value$ + %i(1,00000001)) 
+		:i $sound_options_set_level$$level$ = %GLOBAL%$value$$id$ = $menu_sound_level$$type$ = $sfxvol$
+		:i $PlaySound$$ollieconc$$vol$ = %i(70,00000046)
+	:i endif
+:i endfunction
+:i function $sound_options_set_level$
+	:i $FormatText$$textName$ = $vol$%s(2,"%v")$v$ = %GLOBAL%$level$
+	:i if $GotParam$$id$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %GLOBAL%$vol$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$level$ =  (%GLOBAL%$level$ * %i(10,0000000a)) 
+	:i switch %GLOBAL%$type$
+		:i case $cdvol$
+			:i $SetMusicVolume$%GLOBAL%$level$
+			:i $change$$MusicVolOutsideBox$ = %GLOBAL%$level$
+			:i $change$$FadeTempMusicVol$ = %GLOBAL%$level$
+			:i $thugpro_save_key_value$$Key$ = %s(10,"MusicLevel")$value$ = %GLOBAL%$level$
+			:i endcase
+		case $sfxvol$
+			:i $SetSfxVolume$%GLOBAL%$level$
+			:i $thugpro_save_key_value$$Key$ = %s(10,"SoundLevel")$value$ = %GLOBAL%$level$
+			:i end_switch
+	
+:i endfunction
+:i function $skip_track$
+	:i $skiptrack$
+:i endfunction
+:i function $pulse_item$
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(0.900000)
+	:i $DoMorph$$time$ = %f(0.050000)$scale$ = %f(1.000000)
+:i endfunction
+:i function $create_playlist_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $playlist_bg_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $playlist_bg_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Toggle"):s}
+			:i :s{$text$ = %s(19,"\bo = Preview Track"):s}
+			:i :a}
+	:i :s}
+	:i $kill_start_key_binding$
+	:i $create_menu_background_title$$title$ = %s(8,"playlist")$bg_just$ = $right_nobg$$title_pos$ = %vec2(215.000000,64.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $playlist_bg_anchor$
+		:i $id$ = $playlist_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,620.000000)
+	:i :s}
+	:i $theme_background$$width$ = %f(7.000000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)$parent$ = $playlist_menu$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $playlist_menu$
+		:i $id$ = $playlist_top_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.000000,6.000000)
+		:i $pos$ = %vec2(36.000000,90.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_top_anchor$
+		:i $id$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $pos$ = %vec2(55.000000,113.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $z_priority$ = %i(50,00000032)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_top_anchor$
+		:i $id$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $pos$ = %vec2(580.000000,113.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $hmenu$
+		:i $parent$ = $playlist_top_anchor$
+		:i $id$ = $playlist_hmenu$
+		:i $pos$ = %vec2(320.000000,140.000000)
+		:i $event_handlers$ = :a{:s{$pad_down$$focus_playlist_vmenu$:s}
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_playlist_menu$:s}:s}
+			:i :s{$pad_left$$generic_menu_scroll_sideways_sound$$params$ = :s{:s}:s}
+			:i :s{$pad_right$$generic_menu_scroll_sideways_sound$$params$ = :s{:s}:s}
+			:i :s{$pad_left$$set_which_arrow$$params$ = :s{$arrow$ = $left_arrow$:s}:s}
+			:i :s{$pad_right$$set_which_arrow$$params$ = :s{$arrow$ = $right_arrow$:s}:s}
+			:i :a}
+	:i :s}
+	:i $playlist_hmenu_add_item$:s{$text$ = %s(4,"Punk")$genre$ = %i(0,00000000):s}
+	:i $playlist_hmenu_add_item$:s{$text$ = %s(7,"Hip Hop")$genre$ = %i(1,00000001):s}
+	:i $playlist_hmenu_add_item$:s{$text$ = %s(10,"Rock/Other")$genre$ = %i(2,00000002):s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.000000,0.100000)
+		:i $pos$ = %vec2(36.000000,138.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(71.000000,3.000000)
+		:i $pos$ = %vec2(36.000000,138.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $playlist_menu$
+		:i $id$ = $playlist_bottom_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $alpha$ = %f(0.500000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $text$ = %s(4,"Band")
+		:i $font$ = $dialog$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %vec2(75.000000,150.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.500000)
+		:i $pos$ = %vec2(210.000000,160.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $text$ = %s(4,"Song")
+		:i $font$ = $dialog$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %vec2(245.000000,150.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.500000)
+		:i $pos$ = %vec2(460.000000,160.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $text$ = %s(5,"Genre")
+		:i $font$ = $dialog$
+		:i $scale$ = %i(1,00000001)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %vec2(505.000000,150.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_menu$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(0.800000,28.500000)
+		:i $pos$ = %vec2(555.000000,160.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $id$ = $view_gaps_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $pos$ = %vec2(320.000000,142.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $id$ = $view_gaps_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %vec2(320.000000,370.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $playlist_bottom_anchor$
+		:i $id$ = $playlist_scrolling_menu$
+		:i $dims$ = %vec2(640.000000,200.000000)
+		:i $pos$ = %vec2(320.000000,180.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $playlist_scrolling_menu$
+		:i $id$ = $playlist_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$focus_playlist_hmenu$:s}
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $view_gaps_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $view_gaps_menu_down_arrow$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_playlist_menu$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $playlist_vmenu$$alias$ = $current_menu$
+	:i $kill_start_key_binding$
+	:i $add_tracks_to_menu$
+	:i $Wait$%i(2,00000002)$gameframes$
+	:i $SetScreenElementProps$$id$ = $playlist_scrolling_menu$$reset_window_top$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $end_pos$ = %vec2(320.000000,222.000000)
+	:i endif
+	:i $finish_themed_sub_menu$$menu$ = $playlist_menu$$end_pos$ = %GLOBAL%$end_pos$
+	:i $FireEvent$$type$ = $focus$$target$ = $playlist_hmenu$
+:i endfunction
+:i function $exit_playlist_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GotParam$$from_options$
+		:i $create_music_options_menu$$from_options$
+	:i else 
+		:i $create_music_options_menu$
+	:i endif
+:i endfunction
+:i function $add_tracks_to_menu$
+	:i $GetArraySize$$playlist_tracks$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( (%GLOBAL%$index$ = $locked_track1$)  OR  (%GLOBAL%$index$ = $locked_track2$) ) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $containerElement$
+				:i $parent$ = $current_menu$
+				:i $dims$ = %vec2(0.000000,0.000000)
+				:i $heap$ = $topdown$
+				:i $not_focusable$
+			:i :s}
+		:i else 
+			:i $playlist_menu_add_item$:s{$index$ = %GLOBAL%$index$:s}
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $change_track_state$
+	:i $GetTags$
+	:i if $TrackEnabled$%GLOBAL%$index$
+		:i $ChangeTrackState$%GLOBAL%$index$$off$
+		:i $PauseMusic$%i(1,00000001)
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $ChangeTrackState$%GLOBAL%$index$$on$
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $update_genre_checks$
+:i endfunction
+:i function $is_genre_on$
+	:i $printf$%s(11,"is_genre_on")
+	:i $on$ = %i(1,00000001)
+	:i $GetArraySize$$playlist_tracks$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( ($playlist_tracks$:a{%GLOBAL%$index$:a}) ->$genre$)  = %GLOBAL%$genre$) 
+			:i if  ( (%GLOBAL%$index$ = $locked_track1$)  OR  (%GLOBAL%$index$ = $locked_track2$) ) 
+			:i else 
+				:i if NOT $TrackEnabled$%GLOBAL%$index$
+					:i $on$ = %i(0,00000000)
+					:i continue
+					
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$on$ = %GLOBAL%$on$
+:i endfunction
+:i function $toggle_playlist_genre$$genre$ = %i(0,00000000)
+	:i $found_first$ = %i(0,00000000)
+	:i $GetArraySize$$playlist_tracks$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if  ( ( ($playlist_tracks$:a{%GLOBAL%$index$:a}) ->$genre$)  = %GLOBAL%$genre$) 
+			:i if  (%GLOBAL%$found_first$ = %i(0,00000000)) 
+				:i $found_first$ = %i(1,00000001)
+				:i if $TrackEnabled$%GLOBAL%$index$
+					:i $toggle$ = %i(0,00000000)
+				:i else 
+					:i $toggle$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$toggle$ = %i(1,00000001)) 
+				:i if $ScreenElementExists$$id$ = :s{$playlist_vmenu$$child$ = :s{%GLOBAL%$index$$child$ = %i(4,00000004):s}:s}
+					:i $ChangeTrackState$%GLOBAL%$index$$on$
+					:i $DoScreenElementMorph$$id$ = :s{$playlist_vmenu$$child$ = :s{%GLOBAL%$index$$child$ = %i(4,00000004):s}:s}$alpha$ = %i(1,00000001)
+				:i endif
+			:i else 
+				:i if $ScreenElementExists$$id$ = :s{$playlist_vmenu$$child$ = :s{%GLOBAL%$index$$child$ = %i(4,00000004):s}:s}
+					:i $ChangeTrackState$%GLOBAL%$index$$off$
+					:i $DoScreenElementMorph$$id$ = :s{$playlist_vmenu$$child$ = :s{%GLOBAL%$index$$child$ = %i(4,00000004):s}:s}$alpha$ = %i(0,00000000)
+				:i endif
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $StopSound$$ThisMenuSelectSound$
+	:i $PlaySound$$de_menuselect$$vol$ = %i(100,00000064)$id$ = $ThisMenuSelectSound$
+	:i $update_genre_checks$
+:i endfunction
+:i function $preview_music_track$
+	:i $GetTags$
+	:i if $IsTrue$$GLOBAL_Music_Mode$
+		:i if NOT $TrackEnabled$%GLOBAL%$index$
+			:i $ChangeTrackState$%GLOBAL%$index$$on$
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(4,00000004):s}$alpha$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if $MusicIsPaused$
+			:i $StopMusic$
+			:i $PauseMusic$%i(0,00000000)
+			:i $Wait$%i(1,00000001)$gameframes$
+			:i $PlayTrack$%GLOBAL%$index$
+		:i else 
+			:i $PauseMusic$%i(1,00000001)
+		:i endif
+		:i $update_genre_checks$
+	:i endif
+:i endfunction
+:i function $playlist_hmenu_add_item$
+	:i switch %GLOBAL%$genre$
+		:i case %i(0,00000000)
+			:i $dims$ = %vec2(130.000000,50.000000)
+			:i endcase
+		case %i(1,00000001)
+			:i $dims$ = %vec2(165.000000,50.000000)
+			:i endcase
+		case %i(2,00000002)
+			:i $dims$ = %vec2(220.000000,50.000000)
+			:i endcase
+		default 
+			:i return
+			
+			:i end_switch
+	
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $playlist_hmenu$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $event_handlers$ = :a{:s{$pad_choose$$toggle_playlist_genre$$params$ = :s{$genre$ = %GLOBAL%$genre$:s}:s}
+			:i :s{$focus$$playlist_hmenu_focus$:s}
+			:i :s{$unfocus$$playlist_hmenu_unfocus$:s}
+			:i :a}
+	:i :s}
+	:i $anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $z_priority$ = %i(50,00000032)
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$text$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(1.500000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(4.000000,13.000000)
+	:i $is_genre_on$$genre$ = %GLOBAL%$genre$
+	:i if  (%GLOBAL%$on$ = %i(1,00000001)) 
+		:i $alpha$ = %i(1,00000001)
+	:i else 
+		:i $alpha$ = %i(0,00000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $checkmark$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $checkbox$
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,5.000000)) 
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+:i endfunction
+:i function $update_genre_checks$
+	:i $genre$ = %i(0,00000000)
+	:i while
+		
+		:i $is_genre_on$$genre$ = %GLOBAL%$genre$
+		:i if  (%GLOBAL%$on$ = %i(1,00000001)) 
+			:i $alpha$ = %i(1,00000001)
+		:i else 
+			:i $alpha$ = %i(0,00000000)
+		:i endif
+		:i $DoScreenElementMorph$$id$ = :s{$playlist_hmenu$$child$ = :s{%GLOBAL%$genre$$child$ = %i(1,00000001):s}:s}$alpha$ = %GLOBAL%$alpha$
+		:i $genre$ =  (%GLOBAL%$genre$ + %i(1,00000001)) 
+	:i loop_to %i(3,00000003)
+:i endfunction
+:i function $playlist_hmenu_focus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :s}
+	:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :s}
+	:i $playlist_hmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+:i endfunction
+:i function $playlist_hmenu_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :s}
+	:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :s}
+	:i $playlist_hmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+:i endfunction
+:i function $focus_playlist_hmenu$
+	:i $GetTags$
+	:i if  (%GLOBAL%$tag_selected_id$ = $top_item$) 
+		:i $FireEvent$$type$ = $unfocus$$target$ = $playlist_vmenu$
+		:i $DoScreenElementMorph$$id$ = $playlist_bottom_anchor$$alpha$ = %f(0.500000)
+		:i $FireEvent$$type$ = $focus$$target$ = $playlist_hmenu$
+		:i $DoScreenElementMorph$$id$ = $playlist_top_anchor$$alpha$ = %f(1.000000)
+	:i endif
+:i endfunction
+:i function $focus_playlist_vmenu$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $playlist_hmenu$
+	:i $DoScreenElementMorph$$id$ = $playlist_top_anchor$$alpha$ = %f(0.500000)
+	:i $FireEvent$$type$ = $focus$$target$ = $playlist_vmenu$
+	:i $DoScreenElementMorph$$id$ = $playlist_bottom_anchor$$alpha$ = %f(1.000000)
+:i endfunction
+:i function $playlist_menu_add_item$$highlight_bar_scale$ = %vec2(4.350000,0.500000)$highlight_bar_pos$ = %vec2(321.000000,0.000000)
+	:i if  (%GLOBAL%$index$ = %i(0,00000000)) 
+		:i $id$ = $top_item$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $containerElement$
+		:i $parent$ = $current_menu$
+		:i $id$ = %GLOBAL%$id$
+		:i $dims$ = %vec2(500.000000,20.000000)
+		:i $event_handlers$ = :a{:s{$focus$$playlist_menu_focus$$params$ = %GLOBAL%$focus_params$:s}
+			:i :s{$unfocus$$playlist_menu_unfocus$:s}
+			:i :s{$pad_choose$$change_track_state$$params$ = :s{$index$ = %GLOBAL%$index$:s}:s}
+			:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_start$$change_track_state$$params$ = :s{$index$ = %GLOBAL%$index$:s}:s}
+			:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_option$$preview_music_track$$params$ = :s{$index$ = %GLOBAL%$index$:s}:s}
+			:i :a}
+		:i $heap$ = $topdown$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %GLOBAL%$highlight_bar_pos$
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(3,00000003)
+		:i $heap$ = $topdown$
+	:i :s}
+	:i $band$ =  ( ($playlist_tracks$:a{%GLOBAL%$index$:a}) ->$band$) 
+	:i $track_title$ =  ( ($playlist_tracks$:a{%GLOBAL%$index$:a}) ->$track_title$) 
+	:i $genre$ =  ( ($playlist_tracks$:a{%GLOBAL%$index$:a}) ->$genre$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$band$
+		:i $pos$ = %vec2(55.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.700000)
+		:i $heap$ = $topdown$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$track_title$
+		:i $pos$ = %vec2(220.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.700000)
+		:i $heap$ = $topdown$
+	:i :s}
+	:i switch %GLOBAL%$genre$
+		:i case %i(0,00000000)
+			:i $genre_text$ = %s(4,"Punk")
+			:i endcase
+		case %i(1,00000001)
+			:i $genre_text$ = %s(7,"Hip Hop")
+			:i endcase
+		case %i(2,00000002)
+			:i $genre_text$ = %s(10,"Rock/Other")
+			:i endcase
+		default 
+			:i $genre_text$ = %s(0,"")
+			:i end_switch
+	
+	:i $CreateScreenElement$:s{
+		:i $type$ = $textElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $dialog$
+		:i $text$ = %GLOBAL%$genre_text$
+		:i $pos$ = %vec2(510.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %f(0.700000)
+		:i $heap$ = $topdown$
+	:i :s}
+	:i if $TrackEnabled$%GLOBAL%$index$
+		:i $alpha$ = %i(1,00000001)
+	:i else 
+		:i $alpha$ = %i(0,00000000)
+	:i endif
+	:i $checkboxpos$ = %vec2(568.000000,-4.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $checkmark$
+		:i $pos$ = %GLOBAL%$checkboxpos$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $just$ = :a{$left$$center$:a}
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(5,00000005)
+		:i $heap$ = $topdown$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $checkbox$
+		:i $pos$ =  (%GLOBAL%$checkboxpos$ + %vec2(0.000000,5.000000)) 
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %f(0.500000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) 
+		:i $z_priority$ = %i(4,00000004)
+		:i $heap$ = $topdown$
+	:i :s}
+:i endfunction
+:i function $playlist_menu_focus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(1,00000001)
+	:i $index$ = %i(1,00000001)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}
+			:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :s}
+		:i else 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(4,00000004)
+	:i $playlist_vmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+	:i $generic_menu_update_arrows$$menu_id$ = $playlist_vmenu$$up_arrow_id$ = $view_gaps_menu_up_arrow$$down_arrow_id$ = $view_gaps_menu_down_arrow$
+:i endfunction
+:i function $playlist_menu_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(0,00000000)
+	:i $index$ = %i(1,00000001)
+	:i while
+		
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}
+			:i $DoScreenElementMorph$:s{$id$ = :s{%GLOBAL%$id$$child$ = %GLOBAL%$index$:s}$rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :s}
+		:i else 
+			:i continue
+			
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to 
+	:i $PauseMusic$%i(1,00000001)
+:i endfunction
+:i function $create_soundtrack_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(353.799988,143.500000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,180.000000)
+		:i $menu_id$ = $soundtrack_menu$
+		:i $vmenu_id$ = $soundtrack_vmenu$
+		:i $scrolling_menu_id$ = $soundtrack_menu_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(17,"choose soundtrack")$bg_just$ = $right_scroll$$no_grain$$scrolling_arrows$$soundtrack_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $soundtrack_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_music_options_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $THUGPRO_FillSoundtrackMenu$
+	:i $pause_menu_gradient$$off$
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $soundtrack_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $thugpro_set_soundtrack$
+	:i if  (%GLOBAL%$sountrack_checksum$ = $default$) 
+		:i $THUGPRO_SetSoundtrack$$default$
+	:i else 
+		:i $THUGPRO_SetSoundtrack$$soundtrack$ = %GLOBAL%$sountrack$
+	:i endif
+:i endfunction
+:i function $create_tracklist_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(200.000000,80.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,250.000000)
+		:i $menu_id$ = $tracklist_menu$
+		:i $vmenu_id$ = $tracklist_vmenu$
+		:i $scrolling_menu_id$ = $tracklist_menu_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $tracklist_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_music_options_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(9,"tracklist")$title_pos$ = %vec2(300.000000,80.000000)$bg_just$ = $right_nobg$$show_music_info$$player_right$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $bg_container$
+		:i $texture$ = $top_gradient$
+		:i $id$ = $tracklist_background_gradient$
+		:i $alpha$ = %f(0.800000)
+		:i $scale$ = %vec2(50.000000,20.000000)
+		:i $pos$ = %vec2(160.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $THUGPRO_FillTracklistMenu$
+	:i $pause_menu_gradient$$off$
+	:i if $THUGPRO_IsUsingDefaultSoundtrack$
+		:i $create_helper_text$:s{
+			:i $helper_text_elements_pc$ = :a{
+				:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+				:i :s{$text$ = %s(10,"\bn = Back"):s}
+				:i :s{$text$ = %s(18,"\bm = Toggle track"):s}
+				:i :s{$text$ = %s(19,"\bo = Preview track"):s}
+				:i :a}
+			:i $helper_text_elements_console$ = :a{
+				:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+				:i :s{$text$ = %s(10,"\m1 = Back"):s}
+				:i :s{$text$ = %s(18,"\m0 = Toggle track"):s}
+				:i :s{$text$ = %s(19,"\me = Preview track"):s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $create_helper_text$:s{
+			:i $helper_text_elements_pc$ = :a{
+				:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+				:i :s{$text$ = %s(10,"\bn = Back"):s}
+				:i :s{$text$ = %s(19,"\bo = Preview track"):s}
+				:i :a}
+			:i $helper_text_elements_console$ = :a{
+				:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+				:i :s{$text$ = %s(10,"\m1 = Back"):s}
+				:i :s{$text$ = %s(19,"\me = Preview track"):s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i $AssignAlias$$id$ = $tracklist_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $thugpro_tracklist_preview_song$
+	:i if $IsTrue$$GLOBAL_Music_Mode$
+		:i $PlayTrack$%GLOBAL%$track_num$
+		:i $spawn_update_music_track_text$$current_track$ = %GLOBAL%$track_num$
+	:i endif
+:i endfunction
+:i function $add_soundtrack_menu_item$
+	:i $FormatText$$ChecksumName$ = $menu_id$%s(18,"soundtrack_menu_%a")$a$ = %GLOBAL%$checksum$
+	:i $make_thpg_menu_item$:s{$text$ = %GLOBAL%$text$$id$ = %GLOBAL%$menu_id$$pad_choose_script$ = $thugpro_set_soundtrack$$pad_choose_params$ = :s{$sountrack$ = %GLOBAL%$name$$sountrack_checksum$ = %GLOBAL%$checksum$:s}:s}
+:i endfunction
+:i function $add_tracklist_menu_item$
+	:i $FormatText$$ChecksumName$ = $menu_id$%s(17,"tracklist_menu_%a")$a$ = %GLOBAL%$track_title$
+	:i $FormatText$$textName$ = $menu_text$%s(6,"%a: %b")$a$ = %GLOBAL%$band$$b$ = %GLOBAL%$track_title$
+	:i if $THUGPRO_IsUsingDefaultSoundtrack$
+		:i %GLOBAL%$checked_state$ = %i(0,00000000)
+		:i if $TrackEnabled$%GLOBAL%$track_num$
+			:i %GLOBAL%$checked_state$ = %i(1,00000001)
+		:i endif
+		:i $make_thugpro_menu_item$:s{$text$ = %GLOBAL%$menu_text$$id$ = %GLOBAL%$menu_id$$pad_choose_script$ = $thugpro_tracklist_change_track_state$$pad_choose_params$ = :s{$track_num$ = %GLOBAL%$track_num$:s}$pad_option_script$ = $thugpro_tracklist_preview_song$$pad_option_params$ = :s{$track_num$ = %GLOBAL%$track_num$:s}$checkbox$$checked_state$ = %GLOBAL%$checked_state$:s}
+	:i else 
+		:i $make_thugpro_menu_item$:s{$text$ = %GLOBAL%$menu_text$$id$ = %GLOBAL%$menu_id$$pad_choose_script$ = $thugpro_tracklist_change_track_state$$pad_choose_params$ = :s{$track_num$ = %GLOBAL%$track_num$:s}$pad_option_script$ = $thugpro_tracklist_preview_song$$pad_option_params$ = :s{$track_num$ = %GLOBAL%$track_num$:s}:s}
+	:i endif
+:i endfunction
+:i function $thugpro_tracklist_change_track_state$
+	:i if $THUGPRO_IsUsingDefaultSoundtrack$
+		:i $GetTags$
+		:i if $TrackEnabled$%GLOBAL%$track_num$
+			:i $ChangeTrackState$%GLOBAL%$track_num$$off$
+			:i $PauseMusic$%i(1,00000001)
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}$alpha$ = %i(0,00000000)
+			:i endif
+		:i else 
+			:i $ChangeTrackState$%GLOBAL%$track_num$$on$
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $checkmark$:s}$alpha$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i $THUGPRO_SaveSoundtrackInfo$
+	:i endif
+:i endfunction
+:i function $SetSoundtrack$
+	:i $FormatText$$ChecksumName$ = $trackchecksum$%s(2,"%t")$t$ = %GLOBAL%$track$
+	:i $printf$%s(15,"soundtrack = %i")$i$ = %GLOBAL%$trackchecksum$
+	:i $generic_menu_pad_choose$
+	:i $SoundtrackExists$$trackname$ = %GLOBAL%$track$
+	:i $printf$%s(21,"soundtrack index = %i")$i$ = %GLOBAL%$index$
+	:i if NOT  ($current_soundtrack$ = %GLOBAL%$trackchecksum$) 
+		:i $StopMusic$
+	:i endif
+	:i if  (%GLOBAL%$index$ = %i(4294967295,ffffffff)) 
+		:i $printf$%s(12,"use playlist")
+		:i $UseStandardSoundtrack$
+	:i else 
+		:i $printf$%s(14,"use soundtrack")
+		:i $UseUserSoundtrack$%GLOBAL%$index$
+	:i endif
+	:i $change$$current_soundtrack$ = %GLOBAL%$trackchecksum$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $create_music_options_menu$
+	:i else 
+		:i $create_music_options_menu$$from_options$
+	:i endif
+:i endfunction
+:i function $SoundtrackExists$$trackname$ = %s(0,"")
+	:i $printf$%s(14,"trackname = %t")$t$ = %GLOBAL%$trackname$
+	:i $FormatText$$ChecksumName$ = $tracknamesum$%s(2,"%t")$t$ = %GLOBAL%$trackname$
+	:i $GetNumSoundtracks$
+	:i if NOT  (%GLOBAL%$numsoundtracks$ = %i(0,00000000)) 
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetSoundtrackName$%GLOBAL%$index$
+			:i $printf$%s(19,"soundtrackname = %t")$t$ = %GLOBAL%$soundtrackname$
+			:i $FormatText$$ChecksumName$ = $soundtracksum$%s(2,"%s")$s$ = %GLOBAL%$soundtrackname$
+			:i if  (%GLOBAL%$tracknamesum$ = %GLOBAL%$soundtracksum$) 
+				:i return
+				:s{$index$ = %GLOBAL%$index$:s}
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$numsoundtracks$
+	:i endif
+	:i return
+	:s{$index$ = %i(4294967295,ffffffff):s}
+:i endfunction
+:i function $set_loaded_soundtrack$
+	:i $printf$%s(21,"set_loaded_soundtrack")
+	:i if NOT $isxbox$
+		:i return
+		
+	:i endif
+	:i $current_soundtrack_exists$
+	:i if NOT  ($current_soundtrack$ = $null$) 
+		:i $StopMusic$
+	:i endif
+	:i if  (%GLOBAL%$index$ = %i(4294967295,ffffffff)) 
+		:i $printf$%s(12,"use playlist")
+		:i $UseStandardSoundtrack$
+		:i $trackchecksum$ = $null$
+	:i else 
+		:i $printf$%s(17,"use soundtrack %i")$i$ = %GLOBAL%$index$
+		:i $UseUserSoundtrack$%GLOBAL%$index$
+	:i endif
+	:i $change$$current_soundtrack$ = %GLOBAL%$trackchecksum$
+:i endfunction
+:i function $current_soundtrack_exists$
+	:i $GetNumSoundtracks$
+	:i if NOT  (%GLOBAL%$numsoundtracks$ = %i(0,00000000)) 
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $GetSoundtrackName$%GLOBAL%$index$
+			:i $FormatText$$ChecksumName$ = $soundtracksum$%s(2,"%s")$s$ = %GLOBAL%$soundtrackname$
+			:i if  ($current_soundtrack$ = %GLOBAL%$soundtracksum$) 
+				:i return
+				:s{$index$ = %GLOBAL%$index$:s}
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$numsoundtracks$
+	:i endif
+	:i return
+	:s{$index$ = %i(4294967295,ffffffff):s}
+:i endfunction
+:i :end

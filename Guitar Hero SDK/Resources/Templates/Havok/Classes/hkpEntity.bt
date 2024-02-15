@@ -1,0 +1,46 @@
+typedef struct
+{
+    OptionalLinkMarker m_util;
+    hkUint16 m_capacity;
+    hkUint8 m_eventFilter;
+    hkUint8 m_userFilter;
+} SpuCollisionCallback;
+
+typedef struct
+{
+    hkpWorldObject super;
+    hkpMaterial material;
+
+    if (HAVOK_VERSION > 5)
+    {
+        HavokGlobalFixup m_limitContactImpulseUtil;
+        hkReal m_damageMultiplier;
+        HavokGlobalFixup m_breakableBody;
+    }
+    else
+        HavokGlobalFixup m_breakOffPartsUtil;
+
+    hkInt32 m_solverData;
+    hkInt16 m_storageIndex <comment="hkObjectIndex">;
+    hkUint16 m_processContactCallbackDelay;
+    hkSmallArray m_constraintsMaster;
+    hkArray m_constraintsSlave;
+    hkArray m_constraintRuntime;
+    HavokGlobalFixup m_simulationIsland;
+    hkInt8 m_autoRemoveLevel;
+    hkUint8 m_numUserDatasInContactPointProperties;
+    hkUint32 m_uid;
+    SpuCollisionCallback m_spuCollisionCallback;
+    HavokGlobalFixup m_extendedListeners;
+    hkpMaxSizeMotion m_motion;
+    hkSmallArray m_collisionListeners;
+    hkSmallArray m_actions;
+
+    // A hierarchy of local frames attached to the entity.
+    if (HAVOK_VERSION > 5)
+    {
+        // hkRefPtr<hkLocalFrame> m_localFrame;
+        LinkMarker m_localFrame;
+    }
+
+} hkpEntity;

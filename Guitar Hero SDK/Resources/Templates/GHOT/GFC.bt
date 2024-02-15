@@ -1,0 +1,55 @@
+//------------------------------------------------
+// GHOT .gfc file
+//------------------------------------------------
+
+#include "../Common.bt"
+
+typedef struct
+{
+    uint zsize <bgcolor=CL_SINGLEVALUE>;
+    uint offset <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset dummy_next(0) <bgcolor=CL_POINTER>;
+    ubyte zipped <bgcolor=CL_SINGLEVALUE>;
+
+    SkipTo(4);
+} GFCBlock <read=ReadGFCBlock>;
+
+string ReadGFCBlock(GFCBlock &block)
+{
+    local string s;
+    
+    return SPrintf(s, "[%s] %d bytes, off: %d, next: %d", block.zipped == 0x7A ? "ZIPPED" : "--", block.zsize, block.offset, AbsOffset(block.dummy_next));
+}
+
+//------------------------------------------------
+
+typedef struct
+{
+    QBKey hash <bgcolor=CL_CHECKSUM>;
+    int size <bgcolor=CL_SINGLEVALUE>;
+    int block <bgcolor=CL_SINGLEVALUE>;
+} GFCEntry <read=ReadGFCEntry>;
+
+string ReadGFCEntry(GFCEntry &entry)
+{
+    local string s;
+    return SPrintf(s, "%s: %d bytes, block %d", ReadQBKey(entry.hash), entry.size, entry.block);
+}
+
+//------------------------------------------------
+
+typedef struct
+{
+    uint magic <bgcolor=CL_CHECKSUM>;
+    uint gobSize <bgcolor=CL_SINGLEVALUE>;
+    uint blockCount <bgcolor=CL_SINGLEVALUE>;
+    uint fileCount <bgcolor=CL_SINGLEVALUE>;
+
+    GFCBlock blocks[blockCount];
+    QBKey blockLong[blockCount] <bgcolor=CL_CHECKSUM>;
+
+    GFCEntry entry[fileCount];
+} GFCFile;
+
+BigEndian();
+GFCFile file;

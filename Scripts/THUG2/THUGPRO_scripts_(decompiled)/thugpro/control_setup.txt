@@ -1,0 +1,2287 @@
+
+:i $Desc_Controls_CharLimit$ = %s(95,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+:i $Desc_Controls_AirShuffle$ = %s(74,"Toggle AirShuffle. Get off board, up + up + jump. Performs an in-air jump.")
+:i $Desc_Controls_AutoBrake$ = %s(68,"If the skater should brake automatically when you're in a game menu.")
+:i $Desc_Controls_AutoKick$ = %s(56,"If disabled, you need to press flip (\b1) to gain speed.")
+:i $Desc_Controls_BankDrop$ = %s(63,"Allows you to drop onto angled surfaces like kickers and banks.")
+:i $Desc_Controls_Boostplant$ = %s(45,"Enables the WalliePlant input buffer exploit.")
+:i $Desc_Controls_Buttslap$ = %s(54,"Toggle trick late jump exploit. Performs a jump boost.")
+:i $Desc_Controls_Drift$ = %s(69,"Toggle horizontal & vertical movement control in off-board air state.")
+:i $Desc_Controls_Dropdown$ = %s(42,"Change control binding for rail dropdowns.")
+:i $Desc_Controls_DropDownSpinDelay$ = %s(37,"Toggle spin delay for rail dropdowns.")
+:i $Desc_Controls_FlipRoll$ = %s(28,"Toggle aerial flip controls.")
+:i $Desc_Controls_Freakouts$ = %s(53,"Enable the freakout meter that appears after bailing.")
+:i $Desc_Controls_GraffitiTags$ = %s(94,"Change graffiti tag style. In walking mode, press grind (\b0) when near a wall to spray paint.")
+:i $Desc_Controls_HighOllie$ = %s(75,"Allows you to perform a high ollie by quickly pressing jump after an ollie.")
+:i $Desc_Controls_LadderGrab$ = %s(72,"Change control binding for grabbing rails or ladders in off-board state.")
+:i $Desc_Controls_LandPivot$ = %s(84,"Allows you to do a pivot when you land from normal air state. Similar to the Revert.")
+:i $Desc_Controls_LipSpin$ = %s(57,"Allows you continue your rotation when doing a lip trick.")
+:i $Desc_Controls_NatasSpin$ = %s(63,"Change control binding for natas spinning on poles or hydrants.")
+:i $Desc_Controls_OffBoardButtons$ = %s(72,"Change control binding for getting on and off the board/walking control.")
+:i $Desc_Controls_PowerSlide$ = %s(81,"Change control binding for 180 powerslides. Performs a quick 180 while on ground.")
+:i $Desc_Controls_RailSpin$ = %s(60,"Allows you continue your rotation when starting a new grind.")
+:i $Desc_Controls_Revert$ = %s(93,"Change control binding for Revert. Allows you continue your combo when landing from vert air.")
+:i $Desc_Controls_ShoulderSpin$ = %s(58,"Change control binding for shoulder spins/in air rotation.")
+:i $Desc_Controls_ShoulderSpinLag$ = %s(86,"Toggle shoulder spin/in air rotation delay. The amount of time before rotation starts.")
+:i $Desc_Controls_ShoulderSpinTaps$ = %s(49,"Toggle 180 degree shoulder spins/in air rotation.")
+:i $Desc_Controls_SpineDropButtons$ = %s(56,"Change control binding for Spine Transfer and Acid Drop.")
+:i $Desc_Controls_StallButtons$ = %s(34,"Toggle rail stall button controls.")
+:i $Desc_Controls_Stalls$ = %s(19,"Toggle rail stalls.")
+:i $Desc_Controls_StanceToggleMode$ = %s(59,"Change control binding for skater switch or regular stance.")
+:i $Desc_Controls_THUGWalkPhysics$ = %s(36,"Enables THUG1-style walking physics.")
+:i $Desc_Controls_WalkSpin$ = %s(68,"Allows you continue your rotation when switching to off-board state.")
+:i $Desc_Controls_Wallplant$ = %s(33,"Change Wallplant control binding.")
+:i $Desc_Controls_WallSpin$ = %s(65,"This lets you continue your rotation while performing a Wallride.")
+:i $Desc_Controls_Wallsuffle$ = %s(37,"Enables the Wallride shuffle exploit.")
+:i $Desc_Controls_WPCavemanCooldown$ = %s(73,"Toggle the Wallplant cooldown when going from off-board state to skating.")
+:i $Desc_Controls_WPLateOllie$ = %s(58,"Allows you to do a late jump after Wallplants/Sticker Slap")
+:i $Desc_Controls_WPWRCooldown$ = %s(56,"Toggle the re-Wallride cooldown after doing a Wallplant.")
+:i $Desc_Controls_WRPlants$ = %s(37,"Allows you to angled Wallride plants.")
+:i $Desc_Controls_WalliePlantInput$ = %s(51,"Change input mode for WalliePlants and BoostPlants.")
+:i $THUGPRO_PS2ButtonsOn$ = %i(0,00000000)
+:i $dd_button$ = $R2$
+:i $sc_button$ = $R1$
+:i $wp_button$ = $X_button$
+:i $natas_buttons$ = $L2_R2$
+:i $spinkey_button$ = $L2_R2$
+:i $ENABLE_SPIN_LAG$ = %i(1,00000001)
+:i $spinekey_button$ = $L2_and_R2$
+:i $tp_c_spineButtonA$ = $l2$
+:i $tp_c_spineButtonB$ = $R2$
+:i $ladder_grab_button_array$ = :a{$R1$;$L1$;$R2$;$l2$;$l3$:a}
+:i $ladder_grab_button$ = $R1$
+:i $PressureStanceMode$ = %i(1,00000001)
+:i $ShoulderSpinButton_Options$ = :a{$L2_R2$$L1_R1$$R1_R2$$L1_L2$$Disabled$:a}
+:i $powerslide_button$ = $DownDown_R2$
+:i $landpivotson$ = %i(0,00000000)
+:i $enable_high_ollies$ = %i(1,00000001)
+:i $WALLIEPLANT_INPUT_MODE$ = %i(0,00000000)
+:i $skpro_revert_option_current$ = %i(0,00000000)
+:i $skpro_revert_options$ = :a{
+	:i :s{
+		:i $text$ = %s(19,"\be / \bf (L2 / R2)")
+		:i $id$ = $L2_R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$R2$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{$Trigger$ = :s{$Press$;$l2$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\bg / \bh (L1 / R1)")
+		:i $id$ = $L1_R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$Black$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{$Trigger$ = :s{$Press$;$White$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\be + \bf (L2 + R2)")
+		:i $id$ = $L2_and_R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$PressTwoAnyOrder$;$R2$;$l2$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\bg + \bh (L1 + R1)")
+		:i $id$ = $L1_and_R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$PressTwoAnyOrder$;$Black$;$White$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\be (L2)")
+		:i $id$ = $l2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$l2$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bf (R2)")
+		:i $id$ = $R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$R2$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bg (L1)")
+		:i $id$ = $L1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$Black$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bh (R1)")
+		:i $id$ = $R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$White$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(16,"\bl (Focus / L3)")
+		:i $id$ = $l3$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$l3$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(25,"Custom (Swivel Lock / R3)")
+		:i $id$ = $R3$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$R3$;%i(200,000000c8):s}$Scr$ = $Revert$:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :a}
+:i $skpro_dropdown_option_current$ = %i(0,00000000)
+:i $skpro_dropdown_options$ = :a{
+	:i :s{
+		:i $text$ = %s(8,"\be (L2)")
+		:i $id$ = $l2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$l2$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bf (R2)")
+		:i $id$ = $R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$R2$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bg (L1)")
+		:i $id$ = $L1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$Black$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(8,"\bh (R1)")
+		:i $id$ = $R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$White$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\be / \bf (L2 / R2)")
+		:i $id$ = $L2_R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$R2$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$TriggerRight$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{$Trigger$ = :s{$Press$;$l2$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$TriggerLeft$$GrindBail$ = $Airborne$:s}:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\bg / \bh (L1 / R1)")
+		:i $id$ = $L1_R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$Press$;$Black$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$TriggerLeft$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{$Trigger$ = :s{$Press$;$White$;%i(100,00000064):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$TriggerRight$$GrindBail$ = $Airborne$:s}:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\be + \bf (L2 + R2)")
+		:i $id$ = $L2_and_R2$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$PressTwoAnyOrder$;$R2$;$l2$;%i(400,00000190):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :s{
+		:i $text$ = %s(19,"\bg + \bh (L1 + R1)")
+		:i $id$ = $L1_and_R1$
+		:i $triggers$ = :a{
+			:i :s{$Trigger$ = :s{$PressTwoAnyOrder$;$Black$;$White$;%i(400,00000190):s}$Scr$ = $SkateInOrBail$$Params$ = :s{$GrindRelease$$GrindBail$ = $Airborne$:s}:s}
+			:i :s{:s}
+			:i :a}
+	:i :s}
+	:i :a}
+:i function $create_control_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $control_setup_menu$
+		:i $vmenu_id$ = $control_setup_vmenu$
+	:i :s}
+	:i if NOT $LevelIs$$Load_mainmenu$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $control_setup_vmenu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{:s}:s}
+				:i :s{$pad_back$$create_options_menu$$Params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $control_setup_vmenu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{:s}:s}
+				:i :s{$pad_back$$create_setup_options_menu$$Params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $create_menu_background_title$$title$ = %s(13,"control setup")$bg_just$ = $left$$no_grain$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(6,"in air")
+		:i $pad_choose_script$ = $create_inair_setup_menu$
+		:i $id$ = $in_air_menu_item$
+		:i $child_texture$ = $icon_general$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"on ground")
+		:i $pad_choose_script$ = $create_onground_setup_menu$
+		:i $id$ = $on_ground_menu_item$
+		:i $child_texture$ = $icon_general$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(8,"on rails")
+		:i $pad_choose_script$ = $create_grind_setup_menu$
+		:i $id$ = $grind_setup_menu_item$
+		:i $child_texture$ = $icon_rail$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(22,"wallplants & wallrides")
+		:i $pad_choose_script$ = $create_walltricks_setup_menu$
+		:i $id$ = $walltricks_setup_menu_item$
+		:i $child_texture$ = $icon_wall$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(23,"walk & state transition")
+		:i $pad_choose_script$ = $create_walking_setup_menu$
+		:i $id$ = $walking_setup_menu_item$
+		:i $child_texture$ = $icon_general$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(7,"presets")
+		:i $pad_choose_script$ = $create_preset_menu$
+		:i $pad_choose_params$ = :s{$return_to_menu$:s}
+		:i $id$ = $preset_setup_menu_item$
+		:i $child_texture$ = $icon_gamepad$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $control_setup_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_preset_menu$
+	:i $dialog_box_exit$
+	:i $generic_menu_cleanup$
+	:i if $GotParam$$dialog$
+		:i $create_snazzy_dialog_box$:s{
+			:i $title$ = %sc(7,"Presets")
+			:i $text$ = %sc(20,"Select control setup")
+			:i $buttons$ = :a{
+				:i :s{
+					:i $text$ = %sc(13,"Default Setup")
+					:i $pad_choose_script$ = $thugpro_ControlOptions_UsePreset$
+					:i $pad_choose_params$ = :s{$preset$ = $default$:s}
+				:i :s}
+				:i :s{
+					:i $text$ = %sc(9,"PS2 Setup")
+					:i $pad_choose_script$ = $thugpro_ControlOptions_UsePreset$
+					:i $pad_choose_params$ = :s{$preset$ = $PS2$:s}
+				:i :s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $create_menu_background_title$$title$ = %s(13,"change preset")$bg_just$ = $left$$no_grain$
+		:i $make_new_menu$:s{
+			:i $parent$ = $root_window$
+			:i $menu_id$ = $preset_menu$
+			:i $vmenu_id$ = $preset_vmenu$
+			:i $pos$ = %vec2(40.000000,143.500000)
+			:i $dims$ = %vec2(640.000000,380.000000)
+			:i $no_menu_title$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $preset_vmenu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{:s}:s}
+				:i :s{$pad_back$$thugpro_ControlOptions_back$$Params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %sc(13,"Default Setup")
+			:i $pad_choose_script$ = $thugpro_ControlOptions_UsePreset$
+			:i $pad_choose_params$ = :s{$preset$ = $default$ isNull :s}
+		:i :s}
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %sc(9,"PS2 Setup")
+			:i $pad_choose_script$ = $thugpro_ControlOptions_UsePreset$
+			:i $pad_choose_params$ = :s{$preset$ = $PS2$ isNull :s}
+		:i :s}
+		:i $create_helper_text$$generic_helper_text$
+		:i $AssignAlias$$id$ = $preset_vmenu$$alias$ = $current_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $create_control_options_top_bar_elements$$top_bar_id$ = $control_menu_top_bar$$top_bar_title$ = %s(5,"Combo")
+	:i $MangleChecksums$$a$ = %GLOBAL%$top_bar_id$$b$ = $_message$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = %GLOBAL%$top_bar_id$
+		:i $texture$ = $Black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,7.000000)
+		:i $pos$ = %vec2(65.000000,87.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(6.000000,-25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = %GLOBAL%$mangled_id$
+		:i $font$ = $small$
+		:i $text$ = %s(0,"")
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(475.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$top_bar_title$
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) 
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$top_bar_id$$offset$ = %vec2(60.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $Black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(355.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $Black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$top_bar_id$$offset$ = %vec2(0.000000,250.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $Black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $scale$ = %vec2(124.000000,6.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+:i endfunction
+:i function $return_to_inair_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_inair_setup_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $in_air_vmenu$$data$ = :s{$child_id$ = $spin_button_assign_menu$:s}
+:i endfunction
+:i function $create_inair_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $in_air_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $in_air_anchor$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(12,"in-air setup")
+		:i $bg_just$ = $right_nobg$
+		:i $no_grain$
+		:i $title_pos$ = %vec2(200.000000,69.000000)
+		:i $title_text_just$ = :a{$left$;$center$:a}
+		:i $title_text_offset$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i $theme_background$:s{
+		:i $width$ = %f(6.350000)
+		:i $pos$ = %vec2(320.000000,85.000000)
+		:i $num_parts$ = %f(10.500000)
+	:i :s}
+	:i $create_control_options_top_bar_elements$$top_bar_id$ = $in_air_menu_top_bar$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $in_air_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,345.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $in_air_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $in_air_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $create_control_setup_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $get_spinkey_menu_text$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"shoulder spin ")
+		:i $extra_text$ = %GLOBAL%$menu_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_spinkey_assignment$
+		:i $id$ = $spin_button_assign_menu$
+		:i $text_desc$ =  ($Desc_Controls_ShoulderSpin$) 
+	:i :s}
+	:i if $IsTrue$$ENABLE_SPIN_LAG$
+		:i $Spin_Lag_text$ = %s(7,"enabled")
+	:i else 
+		:i $Spin_Lag_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"spin lag ")
+		:i $extra_text$ = %GLOBAL%$Spin_Lag_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_Spin_Lag$
+		:i $id$ = $Spin_lag_id$
+		:i %GLOBAL%$spin_lag_focusable$
+		:i $text_desc$ =  ($Desc_Controls_ShoulderSpinLag$) 
+	:i :s}
+	:i if $IsTrue$$GLOBAL_SpinTapsOn$
+		:i $spintaps_value$ = %s(7,"enabled")
+	:i else 
+		:i $spintaps_value$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"180 spin taps ")
+		:i $id$ = $menu_spintaps$
+		:i $extra_text$ = %GLOBAL%$spintaps_value$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $change_basic_control_options$
+		:i $option_arrows_callback_params$ = :s{$spintaps$$return$:s}
+		:i %GLOBAL%$180_spin_taps_focusable$
+		:i $text_desc$ =  ($Desc_Controls_ShoulderSpinTaps$) 
+	:i :s}
+	:i if  ($ENABLE_DROPDOWN_DELAY$ = %i(1,00000001)) 
+		:i $dropdown_delay_text$ = %s(7,"enabled")
+	:i else 
+		:i $dropdown_delay_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(25,"spin lag from drop downs ")
+		:i $extra_text$ = %GLOBAL%$dropdown_delay_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_dropdown_delay$
+		:i $id$ = $dropdown_delay_id$
+		:i %GLOBAL%$dd_delay_focusable$
+		:i $text_desc$ =  ($Desc_Controls_DropDownSpinDelay$) 
+		:i $bar_length$ = %f(27.000000)
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_AIRSHUFFLE$
+		:i $as_focusable$ = $not_focusable$
+		:i $temp_airshuffle$ = %s(8,"disabled")
+	:i else 
+		:i if  ($enable_air_shuffle$ = %i(1,00000001)) 
+			:i $temp_airshuffle$ = %s(7,"enabled")
+		:i else 
+			:i $temp_airshuffle$ = %s(8,"disabled")
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"air shuffle ")
+		:i $extra_text$ = %GLOBAL%$temp_airshuffle$
+		:i $id$ = $ProCrastination_menu_enable_air_shuffle$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $Toggle_Air_Shuffle$
+		:i %GLOBAL%$as_focusable$
+		:i $text_desc$ =  ($Desc_Controls_AirShuffle$) 
+	:i :s}
+	:i if $THUGPRO_DriftOn$
+		:i $drift_text$ = %s(7,"enabled")
+	:i else 
+		:i $drift_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"in-air drift ")
+		:i $extra_text$ = %GLOBAL%$drift_text$
+		:i $id$ = $drift_toggle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_drift$
+		:i $text_desc$ =  ($Desc_Controls_Drift$) 
+	:i :s}
+	:i switch  ($tp_c_spineButtonA$) 
+		:i case $l2$
+			:i if  ( ($tp_c_spineButtonB$)  = $R2$) 
+				:i if $THUGPRO_OneButtonSpineOn$
+					:i $change$$spinekey_button$ = $l2_or_r2$
+				:i else 
+					:i $change$$spinekey_button$ = $L2_and_R2$
+				:i endif
+			:i endif
+			:i endcase
+		case $R2$
+			:i $change$$spinekey_button$ = $R2$
+			:i endcase
+		case $l3$
+			:i $change$$spinekey_button$ = $l3$
+			:i end_switch
+	
+	:i switch  ($spinekey_button$) 
+		:i case $L2_and_R2$
+			:i $spinekey_text$ = %s(19,"\be + \bf (L2 + R2)")
+			:i endcase
+		case $l2_or_r2$
+			:i $spinekey_text$ = %s(21,"\be or \bf (L2 or R2)")
+			:i endcase
+		case $R2$
+			:i $spinekey_text$ = %s(8,"\bf (R2)")
+			:i endcase
+		case $l3$
+			:i $spinekey_text$ = %s(11,"\bl (Focus)")
+			:i endcase
+		default 
+			:i $spinekey_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(25,"spine/acid drop transfer ")
+		:i $extra_text$ = %GLOBAL%$spinekey_text$
+		:i $id$ = $spine_transfer_assignment_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_spinekey_assignment$
+		:i $text_desc$ =  ($Desc_Controls_SpineDropButtons$) 
+		:i $bar_length$ = %f(35.000000)
+	:i :s}
+	:i if $SkaterFlipsOn$
+		:i %GLOBAL%$aerialflips_text$ = %s(7,"enabled")
+	:i else 
+		:i %GLOBAL%$aerialflips_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"flip/roll ")
+		:i $extra_text$ = %GLOBAL%$aerialflips_text$
+		:i $id$ = $menu_skaterflip$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_skaterflipping$
+		:i $text_desc$ =  ($Desc_Controls_FlipRoll$) 
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_BUTTSLAP$
+		:i $bs_focusable$ = $not_focusable$
+		:i $bs_text$ = %s(8,"disabled")
+	:i else 
+		:i if $IsTrue$$THUGPRO_BS_Enabled$
+			:i $bs_text$ = %s(7,"enabled")
+		:i else 
+			:i $bs_text$ = %s(8,"disabled")
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"buttslap ")
+		:i $extra_text$ = %GLOBAL%$bs_text$
+		:i $id$ = $menu_bstoggle$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_buttslap$
+		:i %GLOBAL%$bs_focusable$
+		:i $text_desc$ =  ($Desc_Controls_Buttslap$) 
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_HIGH_OLLIE$
+		:i $HighOllie_Focusable$ = $not_focusable$
+		:i $high_ollie_text$ = %s(8,"disabled")
+	:i else 
+		:i if  ($enable_high_ollies$ = %i(1,00000001)) 
+			:i $high_ollie_text$ = %s(7,"enabled")
+		:i else 
+			:i $high_ollie_text$ = %s(8,"disabled")
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"boned ollie ")
+		:i $extra_text$ = %GLOBAL%$high_ollie_text$
+		:i $id$ = $menu_highollietoggle$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $Toggle_High_Ollies$
+		:i %GLOBAL%$HighOllie_Focusable$
+		:i $text_desc$ =  ($Desc_Controls_HighOllie$) 
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_onground_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $on_ground_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $on_ground_anchor$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(12,"ground setup")
+		:i $bg_just$ = $right_nobg$
+		:i $no_grain$
+		:i $title_pos$ = %vec2(200.000000,69.000000)
+		:i $title_text_just$ = :a{$left$;$center$:a}
+		:i $title_text_offset$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i $theme_background$:s{
+		:i $width$ = %f(6.350000)
+		:i $pos$ = %vec2(320.000000,85.000000)
+		:i $num_parts$ = %f(10.500000)
+	:i :s}
+	:i $create_control_options_top_bar_elements$$top_bar_id$ = $on_ground_menu_top_bar$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $on_ground_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $on_ground_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $on_ground_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $create_control_setup_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $get_skater_number$
+	:i $num$ = %GLOBAL%$skater_number$
+	:i if $InNetGame$
+		:i if NOT $IsHost$
+			:i %GLOBAL%$focusable$ = $not_focusable$
+		:i endif
+	:i endif
+	:i if $IsTrue$$GLOBAL_AutoKickOn$
+		:i $autokick_value$ = %s(7,"enabled")
+	:i else 
+		:i $autokick_value$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"autokick ")
+		:i $id$ = $menu_autokick$
+		:i $extra_text$ = %GLOBAL%$autokick_value$
+		:i $pad_choose_script$ = $change_basic_control_options$
+		:i $pad_choose_params$ = :s{$autokick$$return$:s}
+		:i $option_arrows$
+		:i $option_arrows_callback$ = $change_basic_control_options$
+		:i $option_arrows_callback_params$ = :s{$autokick$$return$:s}
+		:i $pad_choose_script$ = $change_basic_control_options$
+		:i $pad_choose_params$ = :s{$autokick$$left$$return$:s}
+		:i $text_desc$ =  ($Desc_Controls_AutoKick$) 
+	:i :s}
+	:i if $InNetGame$
+		:i if $IsTrue$$GLOBAL_AutoBrakeOn$
+			:i $AutoBrake_toggle_text$ = %s(7,"enabled")
+		:i else 
+			:i $AutoBrake_toggle_text$ = %s(8,"disabled")
+		:i endif
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(11,"auto-brake ")
+			:i $extra_text$ = %GLOBAL%$AutoBrake_toggle_text$
+			:i $id$ = $menu_auto_brake$
+			:i $pad_choose_script$ = $toggle_auto_brake_option_new$
+			:i $toggle_pos$ = %vec2(163.000000,12.000000)
+			:i $option_arrows$
+			:i $option_arrows_callback$ = $toggle_auto_brake_option_new$
+			:i $text_desc$ =  ($Desc_Controls_AutoBrake$) 
+		:i :s}
+	:i endif
+	:i switch  ($powerslide_button$) 
+		:i case $DownDown_R2$
+			:i $powerslide_button_text$ = %s(32,"2x \b4  + \bf (Down + Down + R2)")
+			:i endcase
+		case $Down_R2$
+			:i $powerslide_button_text$ = %s(22,"\b4  + \bf (Down + R2)")
+			:i endcase
+		case $Down_R1$
+			:i $powerslide_button_text$ = %s(22,"\b4  + \bh (Down + R1)")
+			:i endcase
+		case $DownDown_R1$
+			:i $powerslide_button_text$ = %s(32,"2x \b4  + \bh (Down + Down + R1)")
+			:i endcase
+		case $Down_R2_Fancy$
+			:i $powerslide_button_text$ = %s(20,"\bf + Direction (R2)")
+			:i endcase
+		case $R1_R1$
+			:i $powerslide_button_text$ = %s(17,"\bh + \bh (R1 x2)")
+			:i endcase
+		default 
+			:i $powerslide_button_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(11,"powerslide ")
+		:i $extra_text$ = %GLOBAL%$powerslide_button_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_powerslide_assignment$
+		:i $id$ = $power_button_assign_menu$
+		:i $text_desc$ =  ($Desc_Controls_PowerSlide$) 
+		:i $bar_length$ = %f(22.000000)
+	:i :s}
+	:i $revert_button_text$ =  ( ( ($skpro_revert_options$) :a{ ($skpro_revert_option_current$) :a}) ->$text$) 
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(7,"revert ")
+		:i $extra_text$ = %GLOBAL%$revert_button_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $revert_button_assignment$
+		:i $id$ = $revert_button_assign_menu$
+		:i $text_desc$ =  ($Desc_Controls_Revert$) 
+	:i :s}
+	:i if  ($landpivotson$ = %i(1,00000001)) 
+		:i $landpivot_text$ = %s(7,"enabled")
+	:i else 
+		:i $landpivot_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"land pivots ")
+		:i $extra_text$ = %GLOBAL%$landpivot_text$
+		:i $id$ = $landpivot_toggle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_landpivots$
+		:i $text_desc$ =  ($Desc_Controls_LandPivot$) 
+	:i :s}
+	:i if  ($PressureStanceMode$ = %i(0,00000000)) 
+		:i %GLOBAL%$pressuremode_text$ = %s(6,"toggle")
+	:i else 
+		:i %GLOBAL%$pressuremode_text$ = %s(14,"hold & release")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(24,"pressure & nollie setup ")
+		:i $extra_text$ = %GLOBAL%$pressuremode_text$
+		:i $id$ = $pressuremode_toggle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_pressurestancemode$
+		:i $text_desc$ =  ($Desc_Controls_StanceToggleMode$) 
+		:i $bar_length$ = %f(20.000000)
+	:i :s}
+	:i if  ($Toggle_Graffiti_Tags$ = %i(0,00000000)) 
+		:i $graff_tags_text$ = %s(8,"disabled")
+	:i else 
+		:i if  ($Graffiti_Tag_style$ = %i(0,00000000)) 
+			:i $graff_tags_text$ = %s(5,"spray")
+		:i else 
+			:i $graff_tags_text$ = %s(4,"burp")
+		:i endif
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"graffiti tag ")
+		:i $extra_text$ = %GLOBAL%$graff_tags_text$
+		:i $id$ = $graff_tags_toggle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $func_toggle_graffiti_tags$
+		:i $text_desc$ =  ($Desc_Controls_GraffitiTags$) 
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $TANTRUM_OFF$
+		:i $freakout_text$ = %s(8,"disabled")
+	:i else 
+		:i $freakout_text$ = %s(7,"enabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"freakouts ")
+		:i $extra_text$ = %GLOBAL%$freakout_text$
+		:i $id$ = $menu_tantrum$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_display_tantrum$
+		:i $text_desc$ =  ($Desc_Controls_Freakouts$) 
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_grind_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $grind_setup_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $grind_setup_anchor$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(15,"on rail options")
+		:i $bg_just$ = $right_nobg$
+		:i $no_grain$
+		:i $title_pos$ = %vec2(200.000000,69.000000)
+		:i $title_text_just$ = :a{$left$;$center$:a}
+		:i $title_text_offset$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i $theme_background$:s{
+		:i $width$ = %f(6.350000)
+		:i $pos$ = %vec2(320.000000,85.000000)
+		:i $num_parts$ = %f(10.500000)
+	:i :s}
+	:i $create_control_options_top_bar_elements$$top_bar_id$ = $grind_setup_menu_top_bar$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $grind_setup_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $grind_setup_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $grind_setup_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $create_control_setup_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $dropdown_button_text$ =  ( ( ($skpro_dropdown_options$) :a{ ($skpro_dropdown_option_current$) :a}) ->$text$) 
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"dropdown ")
+		:i $extra_text$ = %GLOBAL%$dropdown_button_text$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $dropdown_button_assignment$
+		:i $id$ = $dropdown_assignment_menu$
+		:i $text_desc$ =  ($Desc_Controls_Dropdown$) 
+	:i :s}
+	:i if  ($GetGlobalFlag$$flag$ = $FLAG_STALLS$) 
+		:i $stall_enabled_text$ = %s(7,"enabled")
+	:i else 
+		:i $stall_enabled_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(7,"stalls ")
+		:i $extra_text$ = %GLOBAL%$stall_enabled_text$
+		:i $id$ = $ac_stalls_menu$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $m_toggle_stall$
+		:i $text_desc$ =  ($Desc_Controls_Stalls$) 
+	:i :s}
+	:i $get_stall_button_text$$value$ =  ($GLOBAL_StallButtonTrigger$) 
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"stall buttons ")
+		:i $extra_text$ = %GLOBAL%$stall_button_text$
+		:i $id$ = $stall_buttons_menu$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $toggle_stall_buttons$
+		:i $text_desc$ =  ($Desc_Controls_StallButtons$) 
+	:i :s}
+	:i if  ($GetGlobalFlag$$flag$ = $FLAG_UG1RAILSPIN$) 
+		:i $railspin_enabled_text$ = %s(7,"enabled")
+	:i else 
+		:i $railspin_enabled_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"rail spin ")
+		:i $extra_text$ = %GLOBAL%$railspin_enabled_text$
+		:i $id$ = $ac_railspin_menu$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $m_toggle_railspin$
+		:i $text_desc$ =  ($Desc_Controls_RailSpin$) 
+	:i :s}
+	:i if $IsTrue$$ENABLE_LIP_SPINS$
+		:i $lipspin_text$ = %s(7,"enabled")
+	:i else 
+		:i $lipspin_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(9,"lip spin ")
+		:i $extra_text$ = %GLOBAL%$lipspin_text$
+		:i $id$ = $menu_lipspin_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_lipspin$
+		:i $text_desc$ =  ($Desc_Controls_LipSpin$) 
+	:i :s}
+	:i switch $natas_buttons$
+		:i case $L2_R2$
+			:i $natas_buttons_text$ = %s(26,"\b0 + \be / \bf (L2 or R2)")
+			:i endcase
+		case $L1_R1$
+			:i $natas_buttons_text$ = %s(26,"\b0 + \bg / \bh (L1 or R1)")
+			:i endcase
+		default 
+			:i $natas_buttons_text$ = %s(8,"\c2error")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(19,"natas spin buttons ")
+		:i $extra_text$ = %GLOBAL%$natas_buttons_text$
+		:i $id$ = $natas_buttons_menu$$option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_natas_buttons$
+		:i $text_desc$ =  ($Desc_Controls_NatasSpin$) 
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_walltricks_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $walltricks_setup_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $walltricks_setup_anchor$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(10,"wall setup")
+		:i $bg_just$ = $right_nobg$
+		:i $no_grain$
+		:i $title_pos$ = %vec2(200.000000,69.000000)
+		:i $title_text_just$ = :a{$left$;$center$:a}
+		:i $title_text_offset$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i $theme_background$:s{
+		:i $width$ = %f(6.350000)
+		:i $pos$ = %vec2(320.000000,85.000000)
+		:i $num_parts$ = %f(10.500000)
+	:i :s}
+	:i $create_control_options_top_bar_elements$$top_bar_id$ = $walltricks_setup_menu_top_bar$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $walltricks_setup_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $walltricks_setup_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $walltricks_setup_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $create_control_setup_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(21,"wallplant late ollie ")
+		:i $id$ = $ac_wpollie_menu$
+		:i $pad_choose_script$ = $m_toggle_wpollie$
+		:i $text_desc$ =  ($Desc_Controls_WPLateOllie$) 
+		:i $bar_length$ = %f(15.000000)
+	:i :s}
+	:i if  ($WALLPLANT_ALLOW_OLLIE$ = %i(1,00000001)) 
+		:i $do_thpg_checkbox_item_on$$id$ = $ac_wpollie_menu$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $ac_wpollie_menu$$fast$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(15,"wallride plant ")
+		:i $id$ = $enable_wallrideplant_id$
+		:i $pad_choose_script$ = $toggle_wallrideplant$
+		:i $text_desc$ =  ($Desc_Controls_WRPlants$) 
+		:i $bar_length$ = %f(12.500000)
+	:i :s}
+	:i if  ($ENABLE_WALLRIDEPLANT$ = %i(1,00000001)) 
+		:i $do_thpg_checkbox_item_on$$id$ = $enable_wallrideplant_id$$fast$
+	:i else 
+		:i $do_thpg_checkbox_item_off$$id$ = $enable_wallrideplant_id$$fast$
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_BOOSTPLANT$
+		:i $bp_focusable$ = $not_focusable$
+	:i endif
+	:i $make_thpg_checkbox_item$:s{
+		:i $text$ = %s(12,"boostplants ")
+		:i $id$ = $ac_bp_menu$
+		:i $pad_choose_script$ = $m_toggle_bp$
+		:i %GLOBAL%$bp_focusable$
+		:i $text_desc$ =  ($Desc_Controls_Boostplant$) 
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $SERVER_CHEAT_DISABLE_BOOSTPLANT$
+		:i $do_thpg_checkbox_item_off$$id$ = $ac_bp_menu$$fast$
+	:i else 
+		:i if  ($ENABLE_WALLRIDE_BOOSTPLANT$ = %i(1,00000001)) 
+			:i $do_thpg_checkbox_item_on$$id$ = $ac_bp_menu$$fast$
+		:i else 
+			:i $do_thpg_checkbox_item_off$$id$ = $ac_bp_menu$$fast$
+		:i endif
+	:i endif
+	:i if  ($WALLIEPLANT_INPUT_MODE$ = %i(0,00000000)) 
+		:i $wallieplant_input_text$ = %s(10,"single tap")
+	:i else 
+		:i $wallieplant_input_text$ = %s(10,"double tap")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(23,"wallieplant input mode ")
+		:i $extra_text$ = %GLOBAL%$wallieplant_input_text$
+		:i $id$ = $menu_wallieplant_input$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_wallieplant_input$
+		:i $text_desc$ =  ($Desc_Controls_WalliePlantInput$) 
+	:i :s}
+	:i $get_wallplant_trick_string$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(16,"wallplant trick ")
+		:i $extra_text$ = %GLOBAL%$wallplant_trick_string$
+		:i $id$ = $menu_wallplant_trick_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_wallplant_trick$
+		:i $text_desc$ =  ($Desc_Controls_Wallplant$) 
+	:i :s}
+	:i if $THUGPRO_WallplantWallrideCooldown$
+		:i $wp_wr_cooldown_text$ = %s(7,"enabled")
+	:i else 
+		:i $wp_wr_cooldown_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(34,"wallride cooldown after wallplant ")
+		:i $extra_text$ = %GLOBAL%$wp_wr_cooldown_text$
+		:i $id$ = $menu_wp_wr_cooldown_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_wp_wr_cooldown$
+		:i $text_desc$ =  ($Desc_Controls_WPWRCooldown$) 
+		:i $bar_length$ = %f(26.000000)
+	:i :s}
+	:i if $THUGPRO_CavemanWallrideCooldown$
+		:i $wallshuffle_text$ = %s(8,"disabled")
+	:i else 
+		:i $wallshuffle_text$ = %s(7,"enabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"wallshuffle ")
+		:i $extra_text$ = %GLOBAL%$wallshuffle_text$
+		:i $id$ = $menu_wallshuffle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_wallshuffle$
+		:i $text_desc$ =  ($Desc_Controls_Wallsuffle$) 
+	:i :s}
+	:i if $THUGPRO_CavemanWallplantCooldown$
+		:i $drift_wp_cooldown_text$ = %s(7,"enabled")
+	:i else 
+		:i $drift_wp_cooldown_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(33,"wallplant cooldown after caveman ")
+		:i $extra_text$ = %GLOBAL%$drift_wp_cooldown_text$
+		:i $id$ = $menu_drift_wp_cooldown_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_drift_wp_cooldown$
+		:i $text_desc$ =  ($Desc_Controls_WPCavemanCooldown$) 
+		:i $bar_length$ = %f(27.000000)
+	:i :s}
+	:i if $IsTrue$$ENABLE_WALLRIDE_SPINS$
+		:i $wallspin_text$ = %s(7,"enabled")
+	:i else 
+		:i $wallspin_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"wall spin ")
+		:i $extra_text$ = %GLOBAL%$wallspin_text$
+		:i $id$ = $menu_wallspin_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_wallspin$
+		:i $text_desc$ =  ($Desc_Controls_WallSpin$) 
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_walking_setup_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $walking_setup_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $walking_setup_anchor$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$:s{
+		:i $title$ = %s(18,"walk control setup")
+		:i $bg_just$ = $right_nobg$$no_grain$
+		:i $title_pos$ = %vec2(200.000000,69.000000)
+		:i $title_text_just$ = :a{$left$;$center$:a}
+		:i $title_text_offset$ = %vec2(40.000000,24.000000)
+	:i :s}
+	:i $theme_background$:s{
+		:i $width$ = %f(6.350000)
+		:i $pos$ = %vec2(320.000000,85.000000)
+		:i $num_parts$ = %f(10.500000)
+	:i :s}
+	:i $create_control_options_top_bar_elements$$top_bar_id$ = $walking_setup_menu_top_bar$
+	:i $GetStackedScreenElementPos$$Y$$id$ = $walking_setup_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $walking_setup_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $walking_setup_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $create_control_setup_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i switch  ($sc_button$) 
+		:i case $R1$
+			:i $sc_button_text$ = %s(8,"\bh (R1)")
+			:i endcase
+		case $L1$
+			:i $sc_button_text$ = %s(8,"\bg (L1)")
+			:i endcase
+		case $BLACK_WHITE$
+			:i $sc_button_text$ = %s(21,"\bg or \bh (L1 or R1)")
+			:i endcase
+		case $L1_R1$
+			:i $sc_button_text$ = %s(19,"\bg + \bh (L1 + R1)")
+			:i endcase
+		default 
+			:i $sc_button_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(23,"on & off board/walking ")
+		:i $extra_text$ = %GLOBAL%$sc_button_text$
+		:i $id$ = $sc_button_assign_menu$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_switch_control_assignment$
+		:i $text_desc$ =  ($Desc_Controls_OffBoardButtons$) 
+	:i :s}
+	:i $ladder_grab_get_string$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(17,"rail/ladder grab ")
+		:i $extra_text$ = %GLOBAL%$extra_text$
+		:i $id$ = $ladder_button_assign_menu$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_ladder_grab_button$
+		:i $text_desc$ =  ($Desc_Controls_LadderGrab$) 
+	:i :s}
+	:i $RemoveParameter$$extra_text$
+	:i if  ($ENABLE_WALKING_180FLIP_SKATER$ = %i(1,00000001)) 
+		:i $flip_180_text$ = %s(7,"enabled")
+	:i else 
+		:i $flip_180_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(10,"walk spin ")
+		:i $extra_text$ = %GLOBAL%$flip_180_text$
+		:i $id$ = $flip_180_toggle_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_walking_180flip$
+		:i $text_desc$ =  ($Desc_Controls_WalkSpin$) 
+	:i :s}
+	:i if $THUGPRO_THUGWalkingPhysicsOn$
+		:i $extra_text$ = %s(7,"enabled")
+	:i else 
+		:i $extra_text$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(18,"thug walk physics ")
+		:i $extra_text$ = %GLOBAL%$extra_text$
+		:i $id$ = $menu_thug_walk_physics_id$
+		:i $option_arrows$
+		:i $pad_choose$
+		:i $option_arrows_callback$ = $toggle_thug_walk_physics$
+		:i $text_desc$ =  ($Desc_Controls_THUGWalkPhysics$) 
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $set_revert_button$$index$ = %i(0,00000000)
+	:i %GLOBAL%$tmpArray$ = $Reverts$
+	:i $SetArrayElement$:s{
+		:i $arrayname$ = $tmpArray$
+		:i $index$ = %i(0,00000000)
+		:i $newvalue$ =  ( ( ($skpro_revert_options$) :a{%GLOBAL%$index$:a}) ->$triggers$:a{%i(0,00000000):a}) 
+	:i :s}
+	:i $SetArrayElement$:s{
+		:i $arrayname$ = $tmpArray$
+		:i $index$ = %i(1,00000001)
+		:i $newvalue$ =  ( ( ($skpro_revert_options$) :a{%GLOBAL%$index$:a}) ->$triggers$:a{%i(1,00000001):a}) 
+	:i :s}
+	:i $change$$skpro_revert_option_current$ = %GLOBAL%$index$
+:i endfunction
+:i function $revert_button_assignment$
+	:i $GetTags$
+	:i %GLOBAL%$button_index$ =  ($skpro_revert_option_current$) 
+	:i if $GotParam$$left$
+		:i $array_previous_wraparound$$index$ = %GLOBAL%$button_index$$array$ =  ($skpro_revert_options$) 
+	:i else 
+		:i $array_next_wraparound$$index$ = %GLOBAL%$button_index$$array$ =  ($skpro_revert_options$) 
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(12,"RevertButton")$value$ = %GLOBAL%$index$$apply_changes$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ =  ( ( ($skpro_revert_options$) :a{%GLOBAL%$index$:a}) ->$text$) 
+:i endfunction
+:i function $Toggle_High_Ollies$
+	:i $GetTags$
+	:i if  ($enable_high_ollies$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+		:i $thugpro_save_key_value$$Key$ = %s(12,"HighOlliesOn")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i if  ($enable_high_ollies$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+			:i $thugpro_save_key_value$$Key$ = %s(12,"HighOlliesOn")$value$ = %i(1,00000001)$apply_changes$
+		:i endif
+	:i endif
+:i endfunction
+:i function $toggle_buttslap$
+	:i $GetTags$
+	:i if $IsTrue$$THUGPRO_BS_Enabled$
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+		:i $thugpro_save_key_value$$Key$ = %s(10,"bs_enabled")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+		:i $thugpro_save_key_value$$Key$ = %s(10,"bs_enabled")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_thug_walk_physics$
+	:i $GetTags$
+	:i if $THUGPRO_THUGWalkingPhysicsOn$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(18,"THUGWalkingPhysics")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(18,"THUGWalkingPhysics")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_auto_brake_option_new$
+	:i $GetTags$
+	:i if NOT $IsTrue$$GLOBAL_AutoBrakeOn$
+		:i $thugpro_save_key_value$$Key$ = %s(11,"AutoBrakeOn")$value$ = %i(1,00000001)$apply_changes$
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+	:i else 
+		:i $thugpro_save_key_value$$Key$ = %s(11,"AutoBrakeOn")$value$ = %i(0,00000000)$apply_changes$
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+	:i endif
+:i endfunction
+:i function $toggle_onebuttonspine$
+	:i $GetTags$
+	:i if NOT $THUGPRO_OneButtonSpineOn$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $THUGPRO_ToggleOneButtonSpine$$on$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"OneButtonSpineOn")$value$ = %i(1,00000001)
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $THUGPRO_ToggleOneButtonSpine$$off$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"OneButtonSpineOn")$value$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $THUGPRO_HandleKeybindButton$
+	:i if $GotParam$$a$
+		:i $change$$tp_c_spineButtonA$ =  (%GLOBAL%$button$) 
+	:i else 
+		:i if $GotParam$$b$
+			:i $change$$tp_c_spineButtonB$ =  (%GLOBAL%$button$) 
+		:i endif
+	:i endif
+	:i $THUGPRO_BindSpineKeys$$buttonA$ =  ($tp_c_spineButtonA$) $buttonB$ =  ($tp_c_spineButtonB$) 
+:i endfunction
+:i function $toggle_ps2_buttons$
+	:i $GetTags$
+	:i if  ($THUGPRO_PS2ButtonsOn$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $change$$THUGPRO_PS2ButtonsOn$ = %i(1,00000001)
+		:i $THUGPRO_PatchTogglePS2Buttons$$on$
+		:i $THUGPRO_BindSpineKeys$$buttonA$ =  ($tp_c_spineButtonA$) $buttonB$ =  ($tp_c_spineButtonB$) 
+		:i $thugpro_save_key_value$$Key$ = %s(12,"PS2ButtonsOn")$value$ = %i(1,00000001)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonA")$value$ =  ($tp_c_spineButtonA$) 
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonB")$value$ =  ($tp_c_spineButtonB$) 
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $change$$THUGPRO_PS2ButtonsOn$ = %i(0,00000000)
+		:i $THUGPRO_PatchTogglePS2Buttons$$off$
+		:i $THUGPRO_BindSpineKeys$$buttonA$ =  ($tp_c_spineButtonA$) $buttonB$ =  ($tp_c_spineButtonB$) 
+		:i $thugpro_save_key_value$$Key$ = %s(12,"PS2ButtonsOn")$value$ = %i(0,00000000)
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonA")$value$ =  ($tp_c_spineButtonA$) 
+		:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonB")$value$ =  ($tp_c_spineButtonB$) 
+	:i endif
+:i endfunction
+:i function $ladder_grab_get_string$
+	:i switch  ($ladder_grab_button$) 
+		:i case $R1$
+			:i return
+			$extra_text$ = %s(8,"\bh (R1)")
+			:i endcase
+		case $L1$
+			:i return
+			$extra_text$ = %s(8,"\bg (L1)")
+			:i endcase
+		case $R2$
+			:i return
+			$extra_text$ = %s(8,"\bf (R2)")
+			:i endcase
+		case $l2$
+			:i return
+			$extra_text$ = %s(8,"\be (L2)")
+			:i endcase
+		case $l3$
+			:i return
+			$extra_text$ = %s(11,"\bl (Focus)")
+			:i endcase
+		default 
+			:i return
+			$extra_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+:i endfunction
+:i function $toggle_ladder_grab_button$
+	:i $GetTags$
+	:i $get_index_of_item_in_array$$item$ =  ($ladder_grab_button$) $array$ =  ($ladder_grab_button_array$) 
+	:i if $GotParam$$left$
+		:i if $GotParam$$item_index$
+			:i $array_previous_wraparound$$index$ = %GLOBAL%$item_index$$array$ =  ($ladder_grab_button_array$) 
+		:i endif
+	:i else 
+		:i if $GotParam$$item_index$
+			:i $array_next_wraparound$$index$ = %GLOBAL%$item_index$$array$ =  ($ladder_grab_button_array$) 
+		:i endif
+	:i endif
+	:i if $GotParam$$index$
+		:i $change$$ladder_grab_button$ =  ( ($ladder_grab_button_array$) :a{%GLOBAL%$index$:a}) 
+	:i endif
+	:i $RemoveParameter$$extra_text$
+	:i $ladder_grab_get_string$
+	:i if NOT $GotParam$$no_menu$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$extra_text$:s}
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+	:i endif
+	:i if NOT $GotParam$$dont_save$
+		:i $thugpro_save_key_value$$Key$ = %s(13,"LadderGrabKey")$value$ =  ($ladder_grab_button$) 
+	:i endif
+	:i $set_ladder_grab_button$
+:i endfunction
+:i function $set_ladder_grab_button$
+	:i $THUGPRO_BindLadderGrabKey$$button$ =  ($ladder_grab_button$) 
+:i endfunction
+:i function $toggle_wallplant_trick$
+	:i $GetTags$
+	:i $new_index$ =  ($WALLPLANT_TRICK_OPTION$) 
+	:i if $GotParam$$left$
+		:i if  ( ($WALLPLANT_TRICK_OPTION$)  = %i(0,00000000)) 
+			:i $new_index$ = %i(4,00000004)
+		:i else 
+			:i $new_index$ =  ( ($WALLPLANT_TRICK_OPTION$)  - %i(1,00000001)) 
+		:i endif
+	:i else 
+		:i if  ( ($WALLPLANT_TRICK_OPTION$)  = %i(4,00000004)) 
+			:i $new_index$ = %i(0,00000000)
+		:i else 
+			:i $new_index$ =  ( ($WALLPLANT_TRICK_OPTION$)  + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i $get_wallplant_trick_string$$index$ = %GLOBAL%$new_index$
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$wallplant_trick_string$:s}
+	:i $thugpro_save_key_value$$Key$ = %s(13,"WallplantOnly")$value$ = %GLOBAL%$new_index$$apply_changes$
+:i endfunction
+:i function $get_wallplant_trick_string$
+	:i if NOT $GotParam$$index$
+		:i $index$ =  ($WALLPLANT_TRICK_OPTION$) 
+	:i endif
+	:i $extra_text$ = %s(8,"\c2error")
+	:i switch %GLOBAL%$index$
+		:i case %i(0,00000000)
+			:i $extra_text$ = %s(24,"wallplant & sticker slap")
+			:i endcase
+		case %i(1,00000001)
+			:i $extra_text$ = %s(28,"wallplant only ( \b3 + \b4 )")
+			:i endcase
+		case %i(2,00000002)
+			:i $extra_text$ = %s(22,"wallplant only ( \b3 )")
+			:i endcase
+		case %i(3,00000003)
+			:i $extra_text$ = %s(17,"sticker slap only")
+			:i endcase
+		case %i(4,00000004)
+			:i $extra_text$ = %s(8,"disabled")
+			:i endcase
+		default 
+			:i $extra_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+	:i return
+	$wallplant_trick_string$ = %GLOBAL%$extra_text$
+:i endfunction
+:i function $toggle_wallspin$
+	:i $GetTags$
+	:i if $IsTrue$$ENABLE_WALLRIDE_SPINS$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(16,"WallrideSpinouts")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(16,"WallrideSpinouts")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_drift_wp_cooldown$
+	:i $GetTags$
+	:i if $THUGPRO_CavemanWallplantCooldown$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(24,"CavemanWallplantCooldown")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(24,"CavemanWallplantCooldown")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_wallshuffle$
+	:i $GetTags$
+	:i if $THUGPRO_CavemanWallrideCooldown$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(23,"CavemanWallrideCooldown")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(23,"CavemanWallrideCooldown")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_wp_wr_cooldown$
+	:i $GetTags$
+	:i if $THUGPRO_WallplantWallrideCooldown$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(25,"WallplantWallrideCooldown")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(25,"WallplantWallrideCooldown")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_wallieplant_input$
+	:i $GetTags$
+	:i if $IsTrue$$WALLIEPLANT_INPUT_MODE$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(10,"single tap"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(20,"WallieplantInputMode")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(10,"double tap"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(20,"WallieplantInputMode")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $set_dropdown_button$$index$ = %i(0,00000000)
+	:i %GLOBAL%$tmpArray$ = $GrindRelease$
+	:i $SetArrayElement$:s{
+		:i $arrayname$ = $tmpArray$
+		:i $index$ = %i(0,00000000)
+		:i $newvalue$ =  ( ( ($skpro_dropdown_options$) :a{%GLOBAL%$index$:a}) ->$triggers$:a{%i(0,00000000):a}) 
+	:i :s}
+	:i $SetArrayElement$:s{
+		:i $arrayname$ = $tmpArray$
+		:i $index$ = %i(1,00000001)
+		:i $newvalue$ =  ( ( ($skpro_dropdown_options$) :a{%GLOBAL%$index$:a}) ->$triggers$:a{%i(1,00000001):a}) 
+	:i :s}
+	:i $change$$skpro_dropdown_option_current$ = %GLOBAL%$index$
+:i endfunction
+:i function $dropdown_button_assignment$
+	:i $GetTags$
+	:i %GLOBAL%$button_index$ =  ($skpro_dropdown_option_current$) 
+	:i if $GotParam$$left$
+		:i $array_previous_wraparound$$index$ = %GLOBAL%$button_index$$array$ =  ($skpro_dropdown_options$) 
+	:i else 
+		:i $array_next_wraparound$$index$ = %GLOBAL%$button_index$$array$ =  ($skpro_dropdown_options$) 
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(17,"DropdownButtonNew")$value$ = %GLOBAL%$index$$apply_changes$
+	:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ =  ( ( ($skpro_dropdown_options$) :a{%GLOBAL%$index$:a}) ->$text$) 
+:i endfunction
+:i function $toggle_switch_control_assignment$
+	:i if $GotParam$$left$
+		:i switch  ($sc_button$) 
+			:i case $L1$
+				:i $change_switch_control_assignment$:s{$R1$:s}
+				:i endcase
+			case $R1$
+				:i $change_switch_control_assignment$:s{$BLACK_WHITE$:s}
+				:i endcase
+			case $BLACK_WHITE$
+				:i $change_switch_control_assignment$:s{$L1_R1$:s}
+				:i endcase
+			case $L1_R1$
+				:i $change_switch_control_assignment$:s{$L1$:s}
+				:i end_switch
+		
+	:i else 
+		:i switch  ($sc_button$) 
+			:i case $L1$
+				:i $change_switch_control_assignment$:s{$L1_R1$:s}
+				:i endcase
+			case $R1$
+				:i $change_switch_control_assignment$:s{$L1$:s}
+				:i endcase
+			case $BLACK_WHITE$
+				:i $change_switch_control_assignment$:s{$R1$:s}
+				:i endcase
+			case $L1_R1$
+				:i $change_switch_control_assignment$:s{$BLACK_WHITE$:s}
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $change_switch_control_assignment$
+	:i if $GotParam$$L1$
+		:i $change$$sc_button$ = $L1$
+		:i $change$$SwitchControl_Trigger$ = :s{$Trigger$ = :s{$Press$;$Black$;%i(10,0000000a):s}:s}
+		:i $save_value$ = $L1$
+		:i $menu_text$ = %s(8,"\bg (L1)")
+	:i endif
+	:i if $GotParam$$R1$
+		:i $change$$sc_button$ = $R1$
+		:i $change$$SwitchControl_Trigger$ = :s{$Trigger$ = :s{$Press$;$White$;%i(10,0000000a):s}:s}
+		:i $save_value$ = $R1$
+		:i $menu_text$ = %s(8,"\bh (R1)")
+	:i endif
+	:i if $GotParam$$BLACK_WHITE$
+		:i $change$$sc_button$ = $BLACK_WHITE$
+		:i $change$$SwitchControl_Trigger$ = :s{$Trigger$ = :s{$Press$;$Black$;%i(10,0000000a):s}$Alt_Trigger$ = :s{$Press$;$White$;%i(10,0000000a):s}:s}
+		:i $save_value$ = $BLACK_WHITE$
+		:i $menu_text$ = %s(21,"\bg or \bh (L1 or R1)")
+	:i endif
+	:i if $GotParam$$L1_R1$
+		:i $change$$sc_button$ = $L1_R1$
+		:i $change$$SwitchControl_Trigger$ = :s{$Trigger$ = :s{$PressTwoAnyOrder$;$White$;$Black$;%i(400,00000190):s}:s}
+		:i $save_value$ = $L1_R1$
+		:i $menu_text$ = %s(19,"\bg + \bh (L1 + R1)")
+	:i endif
+	:i if NOT $GotParam$$dont_save$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"SwitchButton")$value$ = %GLOBAL%$save_value$
+	:i endif
+	:i if NOT $GotParam$$no_menu$
+		:i $GetTags$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$menu_text$:s}
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+	:i endif
+:i endfunction
+:i function $toggle_powerslide_assignment$
+	:i if $GotParam$$left$
+		:i switch  ($powerslide_button$) 
+			:i case $DownDown_R2$
+				:i $change_powerslide_assignment$:s{$R1_R1$:s}
+				:i endcase
+			case $Down_R2$
+				:i $change_powerslide_assignment$:s{$DownDown_R2$:s}
+				:i endcase
+			case $Down_R1$
+				:i $change_powerslide_assignment$:s{$Down_R2$:s}
+				:i endcase
+			case $DownDown_R1$
+				:i $change_powerslide_assignment$:s{$Down_R1$:s}
+				:i endcase
+			case $R1_R1$
+				:i $change_powerslide_assignment$:s{$DownDown_R1$:s}
+				:i end_switch
+		
+	:i else 
+		:i switch  ($powerslide_button$) 
+			:i case $DownDown_R2$
+				:i $change_powerslide_assignment$:s{$Down_R2$:s}
+				:i endcase
+			case $Down_R2$
+				:i $change_powerslide_assignment$:s{$Down_R1$:s}
+				:i endcase
+			case $Down_R1$
+				:i $change_powerslide_assignment$:s{$DownDown_R1$:s}
+				:i endcase
+			case $DownDown_R1$
+				:i $change_powerslide_assignment$:s{$R1_R1$:s}
+				:i endcase
+			case $R1_R1$
+				:i $change_powerslide_assignment$:s{$DownDown_R2$:s}
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $change_powerslide_assignment$
+	:i %GLOBAL%$tmpArray$ = $GroundTricks$
+	:i if $GotParam$$DownDown_R2$
+		:i $change$$powerslide_button$ = $DownDown_R2$
+		:i $SetArrayElement$:s{
+			:i $arrayname$ = $tmpArray$
+			:i $index$ = %i(0,00000000)
+			:i $newvalue$ = :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $down$;$b$ = $down$;$R2$;%i(400,00000190):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+		:i :s}
+		:i $menu_text$ = %s(31,"2x \b4 + \bf (Down + Down + R2)")
+		:i $save_value$ = $DownDown_R2$
+	:i endif
+	:i if $GotParam$$Down_R2$
+		:i $change$$powerslide_button$ = $Down_R2$
+		:i $SetArrayElement$:s{
+			:i $arrayname$ = $tmpArray$
+			:i $index$ = %i(0,00000000)
+			:i $newvalue$ = :s{$Trigger$ = :s{$InOrder$;$a$ = $down$;$b$ = $R2$;%i(400,00000190):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+		:i :s}
+		:i $menu_text$ = %s(21,"\b4 + \bf (Down + R2)")
+		:i $save_value$ = $Down_R2$
+	:i endif
+	:i if $GotParam$$DownDown_R1$
+		:i $change$$powerslide_button$ = $DownDown_R1$
+		:i $SetArrayElement$:s{
+			:i $arrayname$ = $tmpArray$
+			:i $index$ = %i(0,00000000)
+			:i $newvalue$ = :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $down$;$b$ = $down$;$White$;%i(400,00000190):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+		:i :s}
+		:i $menu_text$ = %s(31,"2x \b4 + \bh (Down + Down + R1)")
+		:i $save_value$ = $DownDown_R1$
+	:i endif
+	:i if $GotParam$$Down_R1$
+		:i $change$$powerslide_button$ = $Down_R1$
+		:i $SetArrayElement$:s{
+			:i $arrayname$ = $tmpArray$
+			:i $index$ = %i(0,00000000)
+			:i $newvalue$ = :s{$Trigger$ = :s{$InOrder$;$a$ = $down$;$b$ = $White$;%i(400,00000190):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+		:i :s}
+		:i $menu_text$ = %s(21,"\b4 + \bh (Down + R1)")
+		:i $save_value$ = $Down_R1$
+	:i endif
+	:i if $GotParam$$R1_R1$
+		:i $change$$powerslide_button$ = $R1_R1$
+		:i $SetArrayElement$:s{
+			:i $arrayname$ = $tmpArray$
+			:i $index$ = %i(0,00000000)
+			:i $newvalue$ = :s{$Trigger$ = :s{$InOrder$;$a$ = $White$;$b$ = $White$;%i(400,00000190):s}$Scr$ = $ToggleSwitchRegular$$Params$ = :s{$PowerSlide$:s}:s}
+		:i :s}
+		:i $menu_text$ = %s(14,"2x \bh (2x R1)")
+		:i $save_value$ = $R1_R1$
+	:i endif
+	:i if NOT $GotParam$$dont_save$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"PowerslideButton")$value$ = %GLOBAL%$save_value$
+	:i endif
+	:i if NOT $GotParam$$no_menu$
+		:i $GetTags$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %GLOBAL%$menu_text$
+		:i :s}
+		:i $GetStackedScreenElementPos$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $offset$ = %vec2(5.000000,8.000000)
+			:i $X$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}
+			:i $pos$ = %GLOBAL%$pos$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $toggle_spinkey_assignment$
+	:i $GetTags$
+	:i $get_index_of_item_in_array$$item$ =  ($GLOBAL_ShoulderSpinButtons$) $array$ =  ($ShoulderSpinButton_Options$) 
+	:i if $GotParam$$item_index$
+		:i if $GotParam$$left$
+			:i $array_previous_wraparound$$index$ = %GLOBAL%$item_index$$array$ =  ($ShoulderSpinButton_Options$) 
+		:i else 
+			:i $array_next_wraparound$$index$ = %GLOBAL%$item_index$$array$ =  ($ShoulderSpinButton_Options$) 
+		:i endif
+		:i if $GotParam$$index$
+			:i $thugpro_save_key_value$$Key$ = %s(19,"ShoulderSpinButtons")$value$ =  ( ($ShoulderSpinButton_Options$) :a{%GLOBAL%$index$:a}) $apply_changes$
+			:i $change$$GLOBAL_ShoulderSpinButtons$ =  ( ($ShoulderSpinButton_Options$) :a{%GLOBAL%$index$:a}) 
+		:i endif
+		:i $get_spinkey_menu_text$
+	:i endif
+	:i if $GotParam$$menu_text$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$menu_text$:s}
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+	:i endif
+:i endfunction
+:i function $get_spinkey_menu_text$
+	:i switch  ($GLOBAL_ShoulderSpinButtons$) 
+		:i case $L2_R2$
+			:i $extra_text$ = %s(19,"\be + \bf (L2 + R2)")
+			:i endcase
+		case $L1_R1$
+			:i $extra_text$ = %s(19,"\bg + \bh (L1 + R1)")
+			:i endcase
+		case $R1_R2$
+			:i $extra_text$ = %s(19,"\bh + \bf (R1 + R2)")
+			:i endcase
+		case $L1_L2$
+			:i $extra_text$ = %s(19,"\bg + \be (L1 + L2)")
+			:i endcase
+		case $Disabled$
+			:i $extra_text$ = %s(8,"disabled")
+			:i endcase
+		default 
+			:i $extra_text$ = %s(9,"\c2ERROR!")
+			:i end_switch
+	
+	:i return
+	$menu_text$ = %GLOBAL%$extra_text$
+:i endfunction
+:i function $toggle_spinekey_assignment$
+	:i if $GotParam$$left$
+		:i switch  ($spinekey_button$) 
+			:i case $L2_and_R2$
+				:i $change_spinekey_assignment$$buttons$ = $l3$
+				:i endcase
+			case $l2_or_r2$
+				:i $change_spinekey_assignment$$buttons$ = $L2_and_R2$
+				:i endcase
+			case $R2$
+				:i $change_spinekey_assignment$$buttons$ = $l2_or_r2$
+				:i endcase
+			case $l3$
+				:i $change_spinekey_assignment$$buttons$ = $R2$
+				:i end_switch
+		
+	:i else 
+		:i switch  ($spinekey_button$) 
+			:i case $L2_and_R2$
+				:i $change_spinekey_assignment$$buttons$ = $l2_or_r2$
+				:i endcase
+			case $l2_or_r2$
+				:i $change_spinekey_assignment$$buttons$ = $R2$
+				:i endcase
+			case $R2$
+				:i $change_spinekey_assignment$$buttons$ = $l3$
+				:i endcase
+			case $l3$
+				:i $change_spinekey_assignment$$buttons$ = $L2_and_R2$
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i function $change_spinekey_assignment$
+	:i if NOT $GotParam$$no_menu$
+		:i $GetTags$
+	:i endif
+	:i switch %GLOBAL%$buttons$
+		:i case $L2_and_R2$
+			:i $change$$spinekey_button$ = $L2_and_R2$
+			:i $change$$tp_c_spineButtonA$ = $l2$
+			:i $change$$tp_c_spineButtonB$ = $R2$
+			:i %GLOBAL%$extra_text$ = %s(19,"\be + \bf (L2 + R2)")
+			:i endcase
+		case $l2_or_r2$
+			:i $change$$spinekey_button$ = $l2_or_r2$
+			:i $change$$tp_c_spineButtonA$ = $l2$
+			:i $change$$tp_c_spineButtonB$ = $R2$
+			:i $AddParams$:s{$OneButton$:s}
+			:i %GLOBAL%$extra_text$ = %s(21,"\be or \bf (L2 or R2)")
+			:i endcase
+		case $R2$
+			:i $change$$spinekey_button$ = $R2$
+			:i $change$$tp_c_spineButtonA$ = $R2$
+			:i $change$$tp_c_spineButtonB$ = $R2$
+			:i $AddParams$:s{$OneButton$:s}
+			:i %GLOBAL%$extra_text$ = %s(8,"\bf (R2)")
+			:i endcase
+		case $l3$
+			:i $change$$spinekey_button$ = $l3$
+			:i $change$$tp_c_spineButtonA$ = $l3$
+			:i $change$$tp_c_spineButtonB$ = $l3$
+			:i $AddParams$:s{$OneButton$:s}
+			:i %GLOBAL%$extra_text$ = %s(11,"\bl (Focus)")
+			:i end_switch
+	
+	:i if $GotParam$$OneButton$
+		:i $thugpro_save_key_value$$Key$ = %s(16,"OneButtonSpineOn")$value$ = %i(1,00000001)$apply_changes$
+	:i else 
+		:i $thugpro_save_key_value$$Key$ = %s(16,"OneButtonSpineOn")$value$ = %i(0,00000000)$apply_changes$
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonA")$value$ =  ($tp_c_spineButtonA$) $apply_changes$
+	:i $thugpro_save_key_value$$Key$ = %s(15,"SpineKeyButtonB")$value$ =  ($tp_c_spineButtonB$) $apply_changes$
+	:i if NOT $GotParam$$no_menu$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$extra_text$:s}
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+	:i endif
+:i endfunction
+:i function $m_toggle_railspin$
+	:i $GetTags$
+	:i if  ($GetGlobalFlag$$flag$ = $FLAG_UG1RAILSPIN$) 
+		:i $UnsetGlobalFlag$$flag$ = $FLAG_UG1RAILSPIN$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(10,"RailSpinOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $SetGlobalFlag$$flag$ = $FLAG_UG1RAILSPIN$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(10,"RailSpinOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $m_toggle_stall$
+	:i $GetTags$
+	:i if  ($GetGlobalFlag$$flag$ = $FLAG_STALLS$) 
+		:i $UnsetGlobalFlag$$flag$ = $FLAG_STALLS$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(8,"StallsOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $SetGlobalFlag$$flag$ = $FLAG_STALLS$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(8,"StallsOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $toggle_drift$
+	:i $GetTags$
+	:i if $THUGPRO_DriftOn$
+		:i $THUGPRO_ToggleDrift$$off$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"DriftEnabled")$value$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+		:i :s}
+	:i else 
+		:i $THUGPRO_ToggleDrift$$on$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"DriftEnabled")$value$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+		:i :s}
+	:i endif
+:i endfunction
+:i function $toggle_walking_180flip$
+	:i $GetTags$
+	:i if  ($ENABLE_WALKING_180FLIP_SKATER$ = %i(1,00000001)) 
+		:i $change$$ENABLE_WALKING_180FLIP_SKATER$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(17,"Walking_180FlipOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $change$$ENABLE_WALKING_180FLIP_SKATER$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(17,"Walking_180FlipOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $toggle_landpivots$
+	:i $GetTags$
+	:i if  ($landpivotson$ = %i(1,00000001)) 
+		:i $change$$landpivotson$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(12,"landpivotson")$value$ = %i(0,00000000)
+	:i else 
+		:i $change$$landpivotson$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(12,"landpivotson")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $func_toggle_graffiti_tags$
+	:i if $GotParam$$right$
+		:i if  ($Toggle_Graffiti_Tags$ = %i(0,00000000)) 
+			:i $change$$Toggle_Graffiti_Tags$ = %i(1,00000001)
+			:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(1,00000001)$apply_changes$
+			:i $change$$Graffiti_Tag_style$ = %i(0,00000000)
+			:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(0,00000000)
+			:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(5,"spray"):s}
+		:i else 
+			:i if  ($Graffiti_Tag_style$ = %i(0,00000000)) 
+				:i $change$$Graffiti_Tag_style$ = %i(1,00000001)
+				:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(1,00000001)
+				:i $change$$Toggle_Graffiti_Tags$ = %i(1,00000001)
+				:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(1,00000001)$apply_changes$
+				:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(4,"burp"):s}
+			:i else 
+				:i $change$$Toggle_Graffiti_Tags$ = %i(0,00000000)
+				:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(0,00000000)$apply_changes$
+				:i $change$$Graffiti_Tag_style$ = %i(0,00000000)
+				:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(0,00000000)
+				:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+			:i endif
+		:i endif
+	:i else 
+		:i if $GotParam$$left$
+			:i if  ($Toggle_Graffiti_Tags$ = %i(0,00000000)) 
+				:i $change$$Toggle_Graffiti_Tags$ = %i(1,00000001)
+				:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(1,00000001)$apply_changes$
+				:i $change$$Graffiti_Tag_style$ = %i(1,00000001)
+				:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(1,00000001)
+				:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(4,"burp"):s}
+			:i else 
+				:i if  ($Graffiti_Tag_style$ = %i(1,00000001)) 
+					:i $change$$Toggle_Graffiti_Tags$ = %i(1,00000001)
+					:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(1,00000001)$apply_changes$
+					:i $change$$Graffiti_Tag_style$ = %i(0,00000000)
+					:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(0,00000000)
+					:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(5,"spray"):s}
+				:i else 
+					:i $change$$Toggle_Graffiti_Tags$ = %i(0,00000000)
+					:i $thugpro_save_key_value$$Key$ = %s(10,"grafftagon")$value$ = %i(0,00000000)$apply_changes$
+					:i $change$$Graffiti_Tag_style$ = %i(0,00000000)
+					:i $thugpro_save_key_value$$Key$ = %s(13,"grafftagstyle")$value$ = %i(0,00000000)
+					:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $GetStackedScreenElementPos$$X$$id$ = :s{$graff_tags_toggle_id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+	:i $SetScreenElementProps$:s{$id$ = :s{$graff_tags_toggle_id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+:i endfunction
+:i function $m_toggle_wpollie$
+	:i $GetTags$
+	:i if  ($WALLPLANT_ALLOW_OLLIE$ = %i(1,00000001)) 
+		:i $change$$WALLPLANT_ALLOW_OLLIE$ = %i(0,00000000)
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(17,"Wallplant_OllieOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $change$$WALLPLANT_ALLOW_OLLIE$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(17,"Wallplant_OllieOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $toggle_pressurestancemode$
+	:i if NOT $GotParam$$mode$
+		:i if  ($PressureStanceMode$ = %i(1,00000001)) 
+			:i %GLOBAL%$mode$ = %i(0,00000000)
+		:i else 
+			:i %GLOBAL%$mode$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i %GLOBAL%$tmpArray$ = $GroundTricks$
+	:i switch %GLOBAL%$mode$
+		:i case %i(1,00000001)
+			:i $change$$PressureStanceMode$ = %i(1,00000001)
+			:i $SetArrayElement$:s{$arrayname$ = $tmpArray$$index$ = %i(3,00000003)$newvalue$ = :s{$Trigger$ = :s{$Release$;$l2$;%i(20,00000014):s}$Scr$ = $ToggleNollieRegular$$Params$ = :s{$nollie$ = %i(1,00000001):s}:s}:s}
+			:i $save_value$ = %i(1,00000001)
+			:i $menu_text$ = %s(14,"hold & release")
+			:i endcase
+		case %i(0,00000000)
+			:i $change$$PressureStanceMode$ = %i(0,00000000)
+			:i $SetArrayElement$:s{$arrayname$ = $tmpArray$$index$ = %i(3,00000003)$newvalue$ = :s{:s{:s}:s}:s}
+			:i $save_value$ = %i(0,00000000)
+			:i $menu_text$ = %s(6,"toggle")
+			:i end_switch
+	
+	:i if NOT $GotParam$$dont_save$
+		:i $thugpro_save_key_value$$Key$ = %s(18,"PressureStanceMode")$value$ = %GLOBAL%$save_value$
+	:i endif
+	:i if NOT $GotParam$$no_menu$
+		:i $GetTags$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$menu_text$:s}
+		:i $GetStackedScreenElementPos$$X$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$offset$ = %vec2(5.000000,8.000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $_right_arrow$:s}$pos$ = %GLOBAL%$pos$:s}
+	:i endif
+:i endfunction
+:i function $toggle_wallrideplant$
+	:i $GetTags$
+	:i if  ($ENABLE_WALLRIDEPLANT$ = %i(1,00000001)) 
+		:i $change$$ENABLE_WALLRIDEPLANT$ = %i(0,00000000)
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"WallridePlantOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $change$$ENABLE_WALLRIDEPLANT$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(15,"WallridePlantOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $m_toggle_bp$
+	:i $GetTags$
+	:i if  ($ENABLE_WALLRIDE_BOOSTPLANT$ = %i(1,00000001)) 
+		:i $change$$ENABLE_WALLRIDE_BOOSTPLANT$ = %i(0,00000000)
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"BoostplantOn")$value$ = %i(0,00000000)
+	:i else 
+		:i $change$$ENABLE_WALLRIDE_BOOSTPLANT$ = %i(1,00000001)
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(12,"BoostplantOn")$value$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $toggle_dropdown_delay$
+	:i $GetTags$
+	:i if  ($ENABLE_DROPDOWN_DELAY$ = %i(1,00000001)) 
+		:i $change$$ENABLE_DROPDOWN_DELAY$ = %i(0,00000000)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i if NOT $GotParam$$no_menu$
+			:i $thugpro_save_key_value$$Key$ = %s(15,"DropDownDelayOn")$value$ = %i(0,00000000)
+		:i endif
+	:i else 
+		:i $change$$ENABLE_DROPDOWN_DELAY$ = %i(1,00000001)
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i if NOT $GotParam$$no_menu$
+			:i $thugpro_save_key_value$$Key$ = %s(15,"DropDownDelayOn")$value$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $toggle_Spin_Lag$
+	:i $GetTags$
+	:i if $IsTrue$$ENABLE_SPIN_LAG$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(9,"SpinLagOn")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(9,"SpinLagOn")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_skaterflipping$
+	:i $GetTags$
+	:i if $SkaterFlipsOn$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(11,"SkaterFlips")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(11,"SkaterFlips")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $change_basic_control_options$
+	:i $GetTags$
+	:i if $GotParam$$vibration$
+		:i $get_skater_number$
+		:i $num$ = %GLOBAL%$skater_number$
+		:i if $VibrationIsOn$%GLOBAL%$num$
+			:i $thugpro_save_key_value$$Key$ = %s(11,"VibrationOn")$value$ = %i(0,00000000)$apply_changes$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_vibration$$child$ = $extra_text$:s}$text$ = %s(3,"off"):s}
+		:i else 
+			:i $thugpro_save_key_value$$Key$ = %s(11,"VibrationOn")$value$ = %i(1,00000001)$apply_changes$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_vibration$$child$ = $extra_text$:s}$text$ = %s(2,"on"):s}
+		:i endif
+		:i if $GotParam$$return$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$autokick$
+		:i if $IsTrue$$GLOBAL_AutoKickOn$
+			:i $thugpro_save_key_value$$Key$ = %s(10,"AutoKickOn")$value$ = %i(0,00000000)$apply_changes$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_autokick$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i else 
+			:i $thugpro_save_key_value$$Key$ = %s(10,"AutoKickOn")$value$ = %i(1,00000001)$apply_changes$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_autokick$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i endif
+		:i if $GotParam$$return$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$spintaps$
+		:i if $IsTrue$$GLOBAL_SpinTapsOn$
+			:i $thugpro_save_key_value$$Key$ = %s(10,"SpinTapsOn")$value$ = %i(0,00000000)$apply_changes$
+			:i $SetScreenElementProps$$id$ = :s{$menu_spintaps$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+		:i else 
+			:i $thugpro_save_key_value$$Key$ = %s(10,"SpinTapsOn")$value$ = %i(1,00000001)$apply_changes$
+			:i $SetScreenElementProps$$id$ = :s{$menu_spintaps$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+		:i endif
+		:i if $GotParam$$return$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $GotParam$$left$
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $_left_arrow$:s}$menu_blink_arrow$
+	:i else 
+		:i if $GotParam$$left$
+			:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $_left_arrow$:s}$menu_blink_arrow$
+		:i endif
+	:i endif
+:i endfunction
+:i function $toggle_wallplant_only$
+	:i $GetTags$
+	:i if  ($StickerSlapDisabled$ = %i(1,00000001)) 
+		:i $do_thpg_checkbox_item_off$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(13,"WallplantOnly")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $do_thpg_checkbox_item_on$$id$ = %GLOBAL%$id$
+		:i $thugpro_save_key_value$$Key$ = %s(13,"WallplantOnly")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i function $toggle_stall_buttons$
+	:i $GetTags$
+	:i $tmp_new_value$ =  ($GLOBAL_StallButtonTrigger$) 
+	:i if $GotParam$$left$
+		:i switch  ($GLOBAL_StallButtonTrigger$) 
+			:i case $Black$
+				:i $tmp_new_value$ = $l2$
+				:i endcase
+			case $l2$
+				:i $tmp_new_value$ = $White$
+				:i endcase
+			case $White$
+				:i $tmp_new_value$ = $R2$
+				:i endcase
+			case $R2$
+				:i $tmp_new_value$ = $Black$
+				:i end_switch
+		
+	:i else 
+		:i switch  ($GLOBAL_StallButtonTrigger$) 
+			:i case $l2$
+				:i $tmp_new_value$ = $Black$
+				:i endcase
+			case $Black$
+				:i $tmp_new_value$ = $R2$
+				:i endcase
+			case $R2$
+				:i $tmp_new_value$ = $White$
+				:i endcase
+			case $White$
+				:i $tmp_new_value$ = $l2$
+				:i end_switch
+		
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(18,"StallButtonTrigger")$value$ = %GLOBAL%$tmp_new_value$$apply_changes$
+	:i $wait$%i(1,00000001)$frames$
+	:i $get_stall_button_text$$value$ = %GLOBAL%$tmp_new_value$
+	:i $wait$%i(1,00000001)$frames$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$stall_button_text$
+	:i :s}
+:i endfunction
+:i function $get_stall_button_text$
+	:i switch  (%GLOBAL%$value$) 
+		:i case $Black$
+			:i $extra_text$ = %s(14,"\b0 + \bh (L1)")
+			:i endcase
+		case $R2$
+			:i $extra_text$ = %s(14,"\b0 + \bf (R2)")
+			:i endcase
+		case $White$
+			:i $extra_text$ = %s(14,"\b0 + \bg (R1)")
+			:i endcase
+		case $l2$
+			:i $extra_text$ = %s(14,"\b0 + \be (L2)")
+			:i endcase
+		default 
+			:i $extra_text$ = %s(8,"\c2error")
+			:i end_switch
+	
+	:i return
+	$stall_button_text$ = %GLOBAL%$extra_text$
+:i endfunction
+:i function $toggle_natas_buttons$
+	:i $GetTags$
+	:i $natas_buttons_text$ = %s(8,"\c2error")
+	:i if $CheckSumEquals$$a$ =  ($natas_buttons$) $b$ = $L2_R2$
+		:i $natas_buttons_text$ = %s(26,"\b0 + \bg / \bh (L1 or R1)")
+		:i $thugpro_save_key_value$$Key$ = %s(12,"NatasButtons")$value$ = $L1_R1$$apply_changes$
+	:i else 
+		:i if $CheckSumEquals$$a$ =  ($natas_buttons$) $b$ = $L1_R1$
+			:i $natas_buttons_text$ = %s(26,"\b0 + \be / \bf (L2 or R2)")
+			:i $thugpro_save_key_value$$Key$ = %s(12,"NatasButtons")$value$ = $L2_R2$$apply_changes$
+		:i endif
+	:i endif
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$natas_buttons_text$:s}
+:i endfunction
+:i function $toggle_lipspin$
+	:i $GetTags$
+	:i if $IsTrue$$ENABLE_LIP_SPINS$
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(8,"disabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(11,"LipSpinouts")$value$ = %i(0,00000000)$apply_changes$
+	:i else 
+		:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(7,"enabled"):s}
+		:i $thugpro_save_key_value$$Key$ = %s(11,"LipSpinouts")$value$ = %i(1,00000001)$apply_changes$
+	:i endif
+:i endfunction
+:i :end

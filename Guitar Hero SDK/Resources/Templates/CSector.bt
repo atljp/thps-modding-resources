@@ -1,0 +1,57 @@
+// Sector
+
+#define CL_SECTORPADDING 0x6666aa
+#define CL_SECTORPADDING_SPECIAL 0x7777bb
+#define CL_SECTORCHECKSUM 0x9999ff
+#define CL_SECTORVALUE 0x8888ff
+#define CL_SECTORVECTOR 0x7777ff
+
+#define SECTORFLAG_NOGEOMETRY           0x00000020
+
+typedef struct
+{
+    byte null_a[4] <bgcolor=CL_SECTORPADDING, hidden=true>;
+    QBKey m_checksum <bgcolor=CL_SECTORCHECKSUM>;
+    uint m_flags <bgcolor=CL_SECTORVALUE>;
+
+    QBKey m_light_group <bgcolor=CL_SECTORCHECKSUM>;
+
+    if (SkinFileVersion == SKIN_VERSION_THP8)
+        ubyte null_skipme[64] <bgcolor=CL_SECTORPADDING>;
+    else
+    {
+        byte null_ff[8] <bgcolor=CL_SECTORPADDING_SPECIAL, hidden=true>;
+        byte null_b[40] <bgcolor=CL_SECTORPADDING, hidden=true>;
+    
+        Sphere bounds_sphere <bgcolor=CL_SECTORVECTOR>;
+    
+        byte null_c[16] <bgcolor=CL_SECTORPADDING, hidden=true>;
+    }
+
+    local uint old_pos = FTell();
+    local ubyte hasCGeom = 0;
+
+    if (CGeom_Pos > 0 && ((m_flags & SECTORFLAG_NOGEOMETRY) == 0) )
+        hasCGeom = 1;
+
+    if (SkinFileVersion == SKIN_VERSION_THPG)
+        hasCGeom = 1;
+
+    if (hasCGeom)
+    {
+        FSeek(CGeom_Pos);
+
+        CGeom cGeom(EAPad_Pos);
+        CGeom_Pos = FTell();
+
+        FSeek(old_pos);
+    }
+} CSector <read=ReadCSector>;
+
+string ReadCSector(CSector &sec)
+{
+    if (SkinFileVersion == SKIN_VERSION_THP8)
+        return Str("%s", ReadQBKey(sec.m_checksum));
+
+    return Str("%s", ReadQBKey(sec.m_checksum) + ", " + ReadSphere(sec.bounds_sphere));
+}

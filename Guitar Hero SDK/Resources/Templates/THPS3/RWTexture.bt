@@ -1,0 +1,33 @@
+//------------------------------------------------
+// Texture data.
+//------------------------------------------------
+
+#define CL_TEXTUREVALUE                     0xFFFFAA
+
+enum <ubyte> TextureFilterMode
+{
+    FILTERNAFILTERMODE = 0,
+    FILTERNEAREST = 1,
+    FILTERLINEAR = 2,
+    FILTERMIPNEAREST = 3,
+    FILTERMIPLINEAR = 4,
+    FILTERLINEARMIPNEAREST = 5,
+    FILTERLINEARMIPLINEAR = 6
+};
+
+typedef struct
+{
+    ubyte value;
+} UVAddressing <read=Str("%d, %d", (value >> 4) & 0x0F, value & 0x0F)>;
+
+typedef struct
+{
+    ushort value;
+} MipAndPadding <read=Str("%s", (value & 0x01) ? "Uses mip levels" : "No mip levels")>;
+
+typedef struct
+{
+    TextureFilterMode texture_filtering <bgcolor=CL_TEXTUREVALUE>;
+    UVAddressing uv_addressing <bgcolor=CL_TEXTUREVALUE>;
+    MipAndPadding mip_and_padding <bgcolor=CL_TEXTUREVALUE>;
+} RWTexture;

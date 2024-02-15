@@ -1,0 +1,601 @@
+
+:i function $CreateGoalEditor$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $camera$:s}
+			:i :s{$component$ = $input$$controller$ = %i(0,00000000):s}
+			:i :s{$component$ = $editorcamera$$max_radius$ = %i(2000,000007d0):s}
+			:i :s{$component$ = $goaleditor$:s}
+			:i :a}
+		:i $Params$ = :s{$Name$ = $goaleditor$$permanent$:s}
+	:i :s}
+	:i $goaleditor$.$Hide$
+	:i $goaleditor$.$Suspend$
+:i endfunction
+:i function $InitialiseCreatedGoals$
+	:i $goaleditor$.$GetMaxGoalsPerLevel$
+	:i $i$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $goal_id$%s(13,"CreatedGoal%d")$d$ = %GLOBAL%$i$
+		:i if $GoalManager_GoalExists$$Name$ = %GLOBAL%$goal_id$
+			:i $GoalManager_RemoveGoal$$Name$ = %GLOBAL%$goal_id$
+		:i endif
+		:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$max_goals$
+	:i $GetCurrentLevel$
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$level$$b$ = $Load_Sk5Ed_gameplay$
+		:i $level$ = $Load_Sk5Ed$
+	:i endif
+	:i $goaleditor$.$GetEditedGoalsInfo$$level$ = %GLOBAL%$level$
+	:i if $gotparam$$EditedGoalsInfo$
+		:i $GetArraySize$%GLOBAL%$EditedGoalsInfo$
+		:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+			:i return
+			
+		:i endif
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i $safe_goal$ = %i(1,00000001)
+			:i if  ( (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}->$goal_type$)  = $gap$) 
+				:i if NOT $StructureContains$$structure$ =  (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}) $gaps$
+					:i $safe_goal$ = %i(0,00000000)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$safe_goal$ = %i(1,00000001)) 
+				:i $goal_id$ =  (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}->$goal_id$) 
+				:i $pro_name$ =  (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$i$:a}->$pro_name$) 
+				:i $goaleditor$.$AddEditedGoalToGoalManager$$goal_id$ = %GLOBAL%$goal_id$
+				:i $goaleditor$.$WriteEditedGoalNodePositions$$goal_id$ = %GLOBAL%$goal_id$
+			:i endif
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i if NOT $gotparam$$DoNotCreateGoalPeds$
+			:i $GoalManager_InitializeAllGoals$
+		:i endif
+	:i endif
+:i endfunction
+:i function $ChooseRandomCreatedGoalPedModel$
+	:i if  ( ($LevelIs$$Load_Sk5Ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+		:i $GetEditorTheme$
+		:i if  (%GLOBAL%$theme$ = %i(16,00000010)) 
+			:i $Obj_InitModel$$model$ = %s(25,"Peds/Ped_imp/Ped_imp.skin")$use_asset_manager$ = %i(1,00000001)
+		:i else 
+			:i $Obj_InitModelFromProfile$:s{$struct$ = $random_male_profile$
+				:i $use_asset_manager$ = %i(1,00000001)
+				:i $texDictOffset$ = %i(0,00000000)
+			:i :s}
+		:i endif
+	:i else 
+		:i $Obj_InitModelFromProfile$:s{$struct$ = $random_male_profile$
+			:i $use_asset_manager$ = %i(1,00000001)
+			:i $texDictOffset$ = %i(0,00000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_editor_destroy_cursor$
+	:i if $ObjectExists$$id$ = $GoalEditorCursor$
+		:i $goal_editor_delete_marker_object$$Name$ = $GoalEditorCursor$
+		:i if $IsNGC$
+			:i $FinishRendering$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_editor_create_checkpoint_marker$$pos$ = %vec3(0.000000,0.000000,0.000000)$angle$ = %i(0,00000000)
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $motion$:s}
+			:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+			:i :a}
+		:i $Params$ = :s{$Name$ = %GLOBAL%$Name$:s}
+	:i :s}
+	:i %GLOBAL%$Name$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+	:i %GLOBAL%$Name$.$Obj_SetOrientation$$x$ = %i(0,00000000)$y$ = %GLOBAL%$angle$$z$ = %i(0,00000000)
+	:i if NOT $gotparam$$no_hide$
+		:i %GLOBAL%$Name$.$Hide$
+	:i endif
+	:i $goal_race_create_cones$$Name$ = %GLOBAL%$Name$
+:i endfunction
+:i function $goal_editor_create_cursor$
+	:i $goal_editor_destroy_cursor$
+	:i switch %GLOBAL%$Type$
+		:i case $Ped$
+			:i $CreateCompositeObject$:s{
+				:i $Components$ = 
+				:i :a{
+					:i :s{$component$ = $motion$:s}
+					:i :s{$component$ = $Suspend$$NeverSuspend$:s}
+					:i :s{$component$ = $skeleton$$SkeletonName$ = $THPS6_human$:s}
+					:i :s{$component$ = $model$:s}
+					:i :s{$component$ = $animBlender$$SkeletonName$ = $THPS6_human$:s}
+					:i :a}
+				:i $Params$ = :s{$Name$ = $GoalEditorCursor$:s}
+			:i :s}
+			:i if  ( ($LevelIs$$Load_Sk5Ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+				:i $GoalEditorCursor$.$ChooseRandomCreatedGoalPedModel$
+			:i else 
+				:i $GoalEditorCursor$.$Obj_InitModelFromProfile$:s{
+					:i $struct$ = $random_male_profile$
+					:i $use_asset_manager$ = %i(1,00000001)
+					:i $texDictOffset$ = %i(0,00000000):s}
+			:i endif
+			:i $GoalEditorCursor$.$Obj_SpawnScript$$cursor_ped_script$
+			:i endcase
+		case $Checkpoint$
+			:i $goal_editor_create_checkpoint_marker$ isNull $Name$ = $GoalEditorCursor$$no_hide$
+			:i endcase
+		default 
+			:i $CreateCompositeObject$:s{
+				:i $Components$ = 
+				:i :a{
+					:i :s{$component$ = $motion$:s}
+					:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+					:i :a}
+				:i $Params$ = :s{$Name$ = $GoalEditorCursor$:s}
+			:i :s}
+			:i end_switch
+	
+:i endfunction
+:i function $goal_editor_update_cursor_position$
+	:i if $ObjectExists$$id$ = $GoalEditorCursor$
+		:i $GoalEditorCursor$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+		:i $angle$ =  (%GLOBAL%$angle$ * %i(180,000000b4) / %f(3.141593)) 
+		:i $GoalEditorCursor$.$Obj_SetOrientation$$y$ = %GLOBAL%$angle$
+	:i endif
+:i endfunction
+:i function $cursor_ped_script$
+	:i while
+		
+		:i if  ( ($LevelIs$$Load_Sk5Ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+			:i select(2f,2, 01 00 0a 00) :OFFSET(0):OFFSET(1)
+				 :POS(0) $Obj_PlayAnim$$Anim$ = $WStand$
+				:i 
+			:BREAKTO(2)
+				 :POS(1) $Obj_PlayAnim$$Anim$ = $WStand$
+				:i  :POS(2) 
+		:i else 
+			:i select(2f,3, 01 00 01 00 01 00) :OFFSET(3):OFFSET(4):OFFSET(5)
+				 :POS(3) $Obj_PlayAnim$$Anim$ = $Ped_M_Cheering$
+				:BREAKTO(6)
+					 :POS(4) $Obj_PlayAnim$$Anim$ = $Ped_M_ThumbUp$
+				:BREAKTO(6)
+					 :POS(5) $Obj_PlayAnim$$Anim$ = $Ped_M_Clap$ :POS(6) 
+			:i endif
+			:i $Obj_WaitAnimFinished$
+		:i loop_to 
+	:i endfunction
+	:i function $delete_goal_editor_marker_objects$
+		:i $i$ = %i(0,00000000)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $object$%s(24,"GoalEditorMarkerObject%d")$d$ = %GLOBAL%$i$
+			:i $goal_editor_delete_marker_object$$Name$ = %GLOBAL%$object$
+			:i $i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+		:i loop_to %i(12,0000000c)
+	:i endfunction
+	:i function $goal_editor_delete_marker_object$
+		:i if $ObjectExists$$id$ = %GLOBAL%$Name$
+			:i %GLOBAL%$Name$.$Die$
+		:i endif
+		:i $goal_race_kill_cones$$Name$ = %GLOBAL%$Name$
+	:i endfunction
+	:i function $goal_editor_create_marker_object$
+		:i $goal_editor_delete_marker_object$$Name$ = %GLOBAL%$Name$
+		:i switch %GLOBAL%$Type$
+			:i case $Letter$
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = 
+					:i :a{
+						:i :s{$component$ = $motion$:s}
+						:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+						:i :a}
+					:i $Params$ = :s{$Name$ = %GLOBAL%$Name$:s}
+				:i :s}
+				:i %GLOBAL%$Name$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+				:i %GLOBAL%$Name$.$Obj_Hover$$Amp$ = %i(6,00000006)$Freq$ = %i(2,00000002)
+				:i %GLOBAL%$Name$.$Obj_RotY$$speed$ = %i(200,000000c8)
+				:i endcase
+			case $Ped$
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = 
+					:i :a{
+						:i :s{$component$ = $motion$:s}
+						:i :s{$component$ = $Suspend$$NeverSuspend$:s}
+						:i :s{$component$ = $skeleton$$SkeletonName$ = $THPS6_human$:s}
+						:i :s{$component$ = $model$:s}
+						:i :s{$component$ = $animBlender$$SkeletonName$ = $THPS6_human$:s}
+						:i :a}
+					:i $Params$ = :s{$Name$ = %GLOBAL%$Name$:s}
+				:i :s}
+				:i if  ( ($LevelIs$$Load_Sk5Ed$)  OR  ($LevelIs$$Load_Sk5Ed_gameplay$) ) 
+					:i %GLOBAL%$Name$.$ChooseRandomCreatedGoalPedModel$
+				:i else 
+					:i %GLOBAL%$Name$.$Obj_InitModelFromProfile$:s{
+						:i $struct$ = $random_male_profile$
+						:i $use_asset_manager$ = %i(1,00000001)
+						:i $texDictOffset$ = %i(0,00000000):s}
+				:i endif
+				:i %GLOBAL%$Name$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+				:i %GLOBAL%$Name$.$Obj_SetOrientation$$x$ = %i(0,00000000)$y$ = %GLOBAL%$angle$$z$ = %i(0,00000000)
+				:i %GLOBAL%$Name$.$Obj_SpawnScript$$cursor_ped_script$
+				:i endcase
+			case $Checkpoint$
+				:i $goal_editor_create_checkpoint_marker$ isNull 
+				:i endcase
+			default 
+				:i $CreateCompositeObject$:s{
+					:i $Components$ = 
+					:i :a{
+						:i :s{$component$ = $motion$:s}
+						:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+						:i :a}
+					:i $Params$ = :s{$Name$ = %GLOBAL%$Name$:s}
+				:i :s}
+				:i %GLOBAL%$Name$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+				:i %GLOBAL%$Name$.$Obj_SetOrientation$$x$ = %i(0,00000000)$y$ = %GLOBAL%$angle$$z$ = %i(0,00000000)
+				:i end_switch
+		
+	:i endfunction
+	:i function $goal_editor_refresh_goal_object_position$
+		:i if $ObjectExists$$id$ = %GLOBAL%$Name$
+			:i %GLOBAL%$Name$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+		:i endif
+	:i endfunction
+	:i function $goal_editor_play_placement_success_sound$
+		:i $generic_menu_pad_choose_sound$
+	:i endfunction
+	:i function $goal_editor_play_placement_fail_sound$
+		:i $generic_menu_buzzer_sound$
+	:i endfunction
+	:i function $goal_editor_play_backup_success_sound$
+		:i $generic_menu_pad_back_sound$
+	:i endfunction
+	:i function $goal_editor_play_backup_fail_sound$
+		:i $generic_menu_buzzer_sound$
+	:i endfunction
+	:i $EditorCam_TurnSpeed$ = %f(0.040000)
+	:i $EditorCam_TiltSpeed$ = %f(0.030000)
+	:i $EditorCam_TiltMin$ = %f(0.500000)
+	:i $EditorCam_TiltMax$ = %f(1.570700)
+	:i $EditorCam_InOutSpeed$ = %f(0.030000)
+	:i $EditorCam_MoveSpeedMin$ = %i(5,00000005)
+	:i $EditorCam_MoveSpeedMax$ = %i(25,00000019)
+	:i $EditorCam_UpDownSpeedMin$ = %i(1,00000001)
+	:i $EditorCam_UpDownSpeedMax$ = %i(16,00000010)
+	:i $EditorCam_MaxHeight$ = %i(1000,000003e8)
+	:i $EditorCam_MaxY$ = %i(2500,000009c4)
+	:i $EditorCam_CursorCollisionFirstUpOffset$ = %i(100,00000064)
+	:i $EditorCam_CursorCollisionDownOffset$ = %i(4294957296,ffffd8f0)
+	:i $EditorCam_YCatchUpFactor$ = %f(0.050000)
+	:i $EditedGoal_ExtraParams_Combo$ = 
+	:i :s{
+		:i $goal_type$ = %s(12,"CreatedCombo")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(38,"Get the C-O-M-B-O letters in one combo")
+	:i :s}
+	:i $EditedGoal_ExtraParams_Skate$ = 
+	:i :s{
+		:i $goal_type$ = %s(12,"CreatedSkate")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(29,"Collect the S-K-A-T-E letters")
+	:i :s}
+	:i $EditedGoal_ExtraParams_HighScore$ = 
+	:i :s{
+		:i $goal_text$ = %s(10,"High Score")
+		:i $goal_type$ = %s(16,"CreatedHighScore")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(16,"Get a high score")
+	:i :s}
+	:i $edited_high_score_goal_text$ = %s(27,"Get a High Score: %d Points")
+	:i $EditedGoal_ExtraParams_HighCombo$ = 
+	:i :s{
+		:i $goal_text$ = %s(10,"High Combo")
+		:i $goal_type$ = %s(16,"CreatedHighCombo")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(16,"Get a high combo")
+	:i :s}
+	:i $edited_high_combo_goal_text$ = %s(27,"Get a High Combo: %d Points")
+	:i $EditedGoal_ExtraParams_SkateTris$ = 
+	:i :s{
+		:i $goal_text$ = %s(12,"Skate-Tricks")
+		:i $goal_type$ = %s(19,"CreatedSkate-Tricks")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(32,"Nail the tricks as they come up.")
+		:i $view_goals_text$ = %s(12,"Skate-Tricks")
+	:i :s}
+	:i $EditedGoal_ExtraParams_ComboSkateTris$ = 
+	:i :s{
+		:i $goal_text$ = %s(18,"Combo Skate-Tricks")
+		:i $goal_type$ = %s(24,"CreatedComboSkate-Tricks")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(32,"Nail the combos as they come up.")
+		:i $view_goals_text$ = %s(18,"Combo Skate-Tricks")
+	:i :s}
+	:i $EditedGoal_ExtraParams_TrickTris$ = 
+	:i :s{
+		:i $goal_text$ = %s(9,"TrickTris")
+		:i $goal_type$ = %s(21,"CreatedComboTrickTris")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(32,"Nail the tricks as they come up.")
+		:i $view_goals_text$ = %s(9,"Tricktris")
+	:i :s}
+	:i $EditedGoal_ExtraParams_Gap$ = 
+	:i :s{
+		:i $goal_text$ = %s(9,"Gaps goal")
+		:i $goal_type$ = %s(10,"CreatedGap")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(28,"See if you can get this gap.")
+		:i $goal_flags$ = :a{$got_1$:a}
+	:i :s}
+	:i $EditedGoal_ExtraParams_Race$ = 
+	:i :s{
+		:i $goal_text$ = %s(9,"Race goal")
+		:i $goal_type$ = %s(11,"CreatedRace")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(36,"See if you can get through the race.")
+		:i $goal_flags$ = :a{$got_1$:a}
+	:i :s}
+	:i $EditedGoal_ExtraParams_TrickBeat$ = 
+	:i :s{
+		:i $goal_text$ = %s(22,"Trick to the beat goal")
+		:i $goal_type$ = %s(16,"CreatedTrickBeat")
+		:i $pro$ = %s(5,"Kenzo")
+		:i $no_stream$
+		:i $full_name$ = %s(12,"Created Goal")
+		:i $goal_description$ = %s(18,"Trick to the Beat!")
+		:i $beat_window_time$ = %i(255,000000ff)
+		:i $total_to_win$ = %i(10,0000000a)
+		:i $block_size$ = %i(1,00000001)
+		:i $goal_trick_beat_key_combos$ = :a{
+			:i $Air_SquareD$
+			:i $Air_SquareR$
+			:i $Air_SquareL$
+			:i $Air_SquareU$
+			:i :a}
+		:i $tempo$ = %i(105,00000069)
+	:i :s}
+	:i function $goal_editor_get_beat_pattern$
+		:i $beat_pattern$ = :a{
+			:i :s{$sounds$ = :a{:s{$BailBodyPunch02_11$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(100,00000064) + %vec2(0.100000,3.000000)) :s}:a}
+			:i :s}
+			:i :s{:s}
+			:i :s{$sounds$ = :a{:s{$BailBoard02$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}
+					:i :s{$DE_PauseFlyIn$$vol$ =  (%i(75,0000004b) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(150,00000096) + %vec2(0.100000,3.000000)) :s}
+					:i :a}
+			:i :s}
+			:i :s{:s}
+			:i :s{$pulse$
+				:i $sounds$ = :a{:s{$BailBodyFall01$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}
+					:i :s{$BailBodyFall04$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(140,0000008c) + %vec2(0.100000,3.000000)) :s}
+					:i :a}
+			:i :s}
+			:i :s{:s}
+			:i :s{$sounds$ = :a{:s{$BailBoard02$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}:a}
+			:i :s}
+			:i :s{
+			:i :s}
+			:i :s{
+			:i :s}
+			:i :s{:s}
+			:i :s{$sounds$ = :a{:s{$BailBoard02$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}
+					:i :a}
+			:i :s}
+			:i :s{:s}
+			:i :s{$pulse$
+				:i $sounds$ = :a{:s{$BailBodyFall01$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}
+					:i :s{$BailBodyFall04$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(140,0000008c) + %vec2(0.100000,3.000000)) :s}
+					:i :a}
+			:i :s}
+			:i :s{:s}
+			:i :s{$sounds$ = :a{:s{$BailBoard02$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(200,000000c8) + %vec2(0.100000,3.000000)) :s}
+					:i :s{$BailBodyPunch02_11$$vol$ =  (%i(100,00000064) + %vec2(0.100000,4.000000)) $pitch$ =  (%i(100,00000064) + %vec2(0.100000,3.000000)) :s}
+					:i :a}
+			:i :s}
+			:i :s{:s}
+			:i :a}
+		:i return
+		$beat_pattern$ = %GLOBAL%$beat_pattern$
+	:i endfunction
+	:i $cag_key_combos$ = 
+	:i :a{
+		:i :s{
+			:i $text$ = %s(17,"Basic Flip Tricks")
+			:i $key_combos$ = 
+			:i :a{
+				:i $Air_SquareU$
+				:i $Air_SquareD$
+				:i $Air_SquareL$
+				:i $Air_SquareR$
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(20,"Diagonal Flip Tricks")
+			:i $key_combos$ = 
+			:i :a{
+				:i $Air_SquareUL$
+				:i $Air_SquareUR$
+				:i $Air_SquareDL$
+				:i $Air_SquareDR$
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(17,"Basic Grab Tricks")
+			:i $key_combos$ = 
+			:i :a{
+				:i $Air_CircleU$
+				:i $Air_CircleD$
+				:i $Air_CircleL$
+				:i $Air_CircleR$
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(20,"Diagonal Grab Tricks")
+			:i $key_combos$ = 
+			:i :a{
+				:i $Air_CircleUL$
+				:i $Air_CircleUR$
+				:i $Air_CircleDL$
+				:i $Air_CircleDR$
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(22,"Double Tap Basic Flips")
+			:i $key_combos$ = 
+			:i :a{
+				:i :s{$key_combo$ = $Air_SquareD$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareU$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareR$$num_taps$ = %i(2,00000002):s}
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(25,"Double Tap Diagonal Flips")
+			:i $key_combos$ = 
+			:i :a{
+				:i :s{$key_combo$ = $Air_SquareUL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareUR$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareDL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_SquareDR$$num_taps$ = %i(2,00000002):s}
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(22,"Double Tap Basic Grabs")
+			:i $key_combos$ = 
+			:i :a{
+				:i :s{$key_combo$ = $Air_CircleD$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleU$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleR$$num_taps$ = %i(2,00000002):s}
+				:i :a}
+		:i :s}
+		:i :s{
+			:i $text$ = %s(25,"Double Tap Diagonal Grabs")
+			:i $key_combos$ = 
+			:i :a{
+				:i :s{$key_combo$ = $Air_CircleUL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleUR$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleDL$$num_taps$ = %i(2,00000002):s}
+				:i :s{$key_combo$ = $Air_CircleDR$$num_taps$ = %i(2,00000002):s}
+				:i :a}
+		:i :s}
+		:i :a}
+	:i $emergency_key_combos$ = :a{
+		:i $Air_CircleU$
+		:i $Air_CircleD$
+		:i $Air_CircleL$
+		:i $Air_CircleR$
+		:i $Air_CircleUL$
+		:i $Air_CircleUR$
+		:i $Air_CircleDL$
+		:i $Air_CircleDR$
+		:i $Air_SquareU$
+		:i $Air_SquareD$
+		:i $Air_SquareL$
+		:i $Air_SquareR$
+		:i $Air_SquareUL$
+		:i $Air_SquareUR$
+		:i $Air_SquareDL$
+		:i $Air_SquareDR$
+		:i :a}
+	:i $EditorCam_CursorCollisionEnableDistMax$ = %i(3000,00000bb8)
+	:i $EditorCam_CameraCatchUpFactor$ = %f(0.300000)
+	:i $GoalEditor_ObjectHeight$ = %i(27,0000001b)
+	:i $GoalEditor_DefaultMinDistBetweenPositions$ = %i(50,00000032)
+	:i $GoalEditor_MinDistBetweenObjectsandSkater$ = %i(100,00000064)
+	:i $EditedGoal_Pro_Node$ = 
+	:i :s{
+		:i $pos$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $Pedestrian$
+		:i $Type$ = $Ped_From_Profile$
+		:i $SkeletonName$ = $THPS6_human$
+		:i $DefaultAnimName$ = $WStandIdle1$
+		:i $PedAI_Type$ = $Stand$
+		:i $AnimName$ = $animload_THPS6_human$
+		:i $profile$ = $random_male_profile$
+		:i $SuspendDistance$ = %i(3000,00000bb8)
+		:i $lod_dist1$ = %i(200,000000c8)
+		:i $lod_dist2$ = %i(400,00000190)
+	:i :s}
+	:i $EditedGoal_Restart_Node$ = 
+	:i :s{
+		:i $pos$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $Restart$
+		:i $Type$ = $Player1$
+		:i $CreatedAtStart$
+		:i $RestartName$ = %s(20,"Edited goal: Restart")
+		:i $restart_types$ = :a{$Player1$:a}
+	:i :s}
+	:i $EditedGoal_Object_Node$ = 
+	:i :s{
+		:i $pos$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $GameObject$
+		:i $SuspendDistance$ = %i(0,00000000)
+		:i $lod_dist1$ = %i(400,00000190)
+		:i $lod_dist2$ = %i(401,00000191)
+	:i :s}
+	:i $EditedGoal_success_cam_anims$ = 
+	:i :a{
+		:i :s{
+			:i $virtual_cam$
+			:i $targetOffset$ = %vec3(1.200000,62.400002,0.000000)$positionOffset$ = %vec3(-2.400000,0.000000,26.400000)
+			:i $frames$ = %i(120,00000078)
+			:i $skippable$ = %i(1,00000001)
+			:i $play_hold$
+		:i :s}
+		:i :a}
+	:i function $CountNumCreatedGoalsWon$
+		:i $goaleditor$.$GetEditedGoalsInfo$$level$ = %GLOBAL%$level$
+		:i $num_goals$ = %i(0,00000000)
+		:i $num_goals_won$ = %i(0,00000000)
+		:i if $gotparam$$EditedGoalsInfo$
+			:i $GetArraySize$%GLOBAL%$EditedGoalsInfo$
+			:i if $gotparam$$array_size$
+				:i if  (%GLOBAL%$array_size$ > %i(0,00000000)) 
+					:i while
+						
+						:i if  (%GLOBAL%$EditedGoalsInfo$:a{%GLOBAL%$num_goals$:a}->$won_goal$) 
+							:i $num_goals_won$ =  (%GLOBAL%$num_goals_won$ + %i(1,00000001)) 
+						:i endif
+						:i $num_goals$ =  (%GLOBAL%$num_goals$ + %i(1,00000001)) 
+					:i loop_to %GLOBAL%$array_size$
+				:i endif
+			:i endif
+		:i endif
+		:i return
+		$num_goals$ = %GLOBAL%$num_goals$$num_goals_won$ = %GLOBAL%$num_goals_won$
+	:i endfunction
+	:i function $goal_editor_finished_placing_objects$
+		:i $Change$$goal_editor_placement_mode$ = %i(0,00000000)
+		:i if  ($THUGPRO_PS2ButtonsOn$ = %i(1,00000001)) 
+			:i $THUGPRO_PatchTogglePS2Buttons$$on$
+		:i endif
+		:i $goaleditor$.$Hide$
+		:i $goaleditor$.$Suspend$
+		:i $create_edit_goal_menu$
+	:i endfunction
+	:i :end
+	

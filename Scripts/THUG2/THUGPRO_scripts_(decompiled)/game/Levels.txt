@@ -1,0 +1,4505 @@
+
+:i $UsePreFilesForLevelLoading$ = %i(1,00000001)
+:i $fake_net$ = %i(0,00000000)
+:i $AssertOnMissingScripts$ = %i(0,00000000)
+:i $AssertOnMissingAssets$ = %i(0,00000000)
+:i $AlwaysDump$ = %i(1,00000001)
+:i $next_level_script$ = $nullscript$
+:i $ingame_screen_mode$ = $current_screen_mode$
+:i function $cleanup_before_loading_level$
+	:i $Change$$DoLevelCleanup$ = %i(1,00000001)
+	:i $printf$%s(52,"*********************** cleanup_before_loading_level")
+	:i $Cleanup$
+	:i $StopMusic$
+	:i $PauseMusic$
+	:i $ClearMusicTrackList$
+:i endfunction
+:i $last_loaded_custom_level_script$ = $nullscript$
+:i $force_return_to_mainmenu$ = %i(0,00000000)
+:i function $_CustomLevelFallbackScript$
+	:i $printf$%s(49,"*********************** CustomLevelFallbackScript")
+	:i $Change$$force_return_to_mainmenu$ = %i(1,00000001)
+	:i $load_level$$Level_SkProDefault$
+:i endfunction
+:i function $request_level$
+	:i if $gotparam$$level$
+		:i $RequestLevel$%GLOBAL%$level$
+	:i else 
+		:i $script_assert$%s(33,"request_level needs a level param")
+	:i endif
+:i endfunction
+:i function $LoadLevel$
+	:i $MemPushContext$%i(0,00000000)
+	:i $ScreenElementSystemCleanup$
+	:i $LaunchLevel$ isNull 
+	:i $MemPopContext$
+:i endfunction
+:i $LEVEL_USE_DEFAULT_TOD$ = %i(0,00000000)
+:i $LEVEL_DISABLE_GOAL_EDITOR$ = %i(0,00000000)
+:i $LEVEL_DISABLE_GOAL_ATTACK$ = %i(0,00000000)
+:i $LEVEL_CLASSIC_GOAL_MODE$ = %i(0,00000000)
+:i $LEVEL_ORIGINAL_GAME$ = $THUG2$
+:i $DoLevelCleanup$ = %i(0,00000000)
+:i $dont_change_tod$ = %i(1,00000001)
+:i $__from_skateshop$ = %i(1,00000001)
+:i function $LoadZone$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $star_loading$
+		:i $texture$ = $star$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $scale$ = %f(1.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(123,0000007b)%i(123,0000007b)%i(123,0000007b)%i(60,0000003c):a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $star_loading$$spin_dialog_icon$
+	:i $DoScreenElementMorph$$id$ = $player1_panel_container$$alpha$ = %f(0.000000)$time$ = %f(0.200000)
+	:i $fadetoblack$$on$$time$ = %f(0.250000)$alpha$ = %f(0.500000)
+	:i $wait$%f(0.400000)$seconds$
+	:i $Change$$dont_change_tod$ = %i(1,00000001)
+	:i if NOT $IsObserving$
+		:i $GetSkaterId$
+		:i %GLOBAL%$objId$.$NetEnablePlayerInput$
+	:i endif
+	:i $really_change_level$ isNull 
+	:i $wait$%f(0.100000)$seconds$
+	:i $fadetoblack$$off$$time$ = %f(0.250000)
+:i endfunction
+:i $LevelNum_TR$ = %i(9,00000009)
+:i $LevelNum_BO$ = %i(1,00000001)
+:i $LevelNum_BA$ = %i(2,00000002)
+:i $LevelNum_BE$ = %i(3,00000003)
+:i $LevelNum_AU$ = %i(4,00000004)
+:i $LevelNum_NO$ = %i(5,00000005)
+:i $LevelNum_ST$ = %i(6,00000006)
+:i $LevelNum_SE$ = %i(7,00000007)
+:i $LevelNum_SE2$ = %i(8,00000008)
+:i $LevelNum_NJ$ = %i(10,0000000a)
+:i $LevelNum_SC$ = %i(12,0000000c)
+:i $LevelNum_PH$ = %i(13,0000000d)
+:i $LevelNum_DJ$ = %i(14,0000000e)
+:i $LevelNum_LA$ = %i(15,0000000f)
+:i $LevelNum_CA$ = %i(16,00000010)
+:i $LevelNum_AP$ = %i(17,00000011)
+:i $LevelNum_Default$ = %i(11,0000000b)
+:i $LevelNum_Skateshop$ = %i(0,00000000)
+:i $LevelNum_Sk5ed$ = %i(11,0000000b)
+:i $levels_with_gaps$ = :a{
+	:i $LevelNum_TR$
+	:i $LevelNum_BO$
+	:i $LevelNum_BA$
+	:i $LevelNum_BE$
+	:i $LevelNum_AU$
+	:i $LevelNum_NO$
+	:i $LevelNum_ST$
+	:i $LevelNum_SE$
+	:i $LevelNum_SE2$
+	:i $LevelNum_SC$
+	:i $LevelNum_PH$
+	:i $LevelNum_DJ$
+	:i $LevelNum_LA$
+	:i $LevelNum_CA$
+	:i $LevelNum_AP$
+	:i $LevelNum_Sk5ed$
+	:i :a}
+:i function $LoadLevelPreFile$
+	:i if $istrue$$UsePreFilesForLevelLoading$
+		:i $LoadPreFile$ isNull 
+	:i endif
+:i endfunction
+:i $skaterparts_loaded$ = %i(0,00000000)
+:i function $LoadSkaterParts$:s{$pre_files$ = :a{
+			:i %s(15,"skaterparts.pre")
+			:i %s(20,"skaterparts_temp.pre")
+			:i :a}:s}
+	:i if $gotparam$$unload$
+		:i if NOT  ($skaterparts_loaded$) 
+			:i return
+			
+		:i endif
+		:i $printf$%s(25,"Unloading skater parts...")
+		:i $Change$$skaterparts_loaded$ = %i(0,00000000)
+	:i else 
+		:i if  ($skaterparts_loaded$) 
+			:i return
+			
+		:i endif
+		:i $printf$%s(23,"Loading Skater Parts...")
+		:i $Change$$skaterparts_loaded$ = %i(1,00000001)
+	:i endif
+	:i $GetArraySize$%GLOBAL%$pre_files$
+	:i $index$ = %i(0,00000000)
+	:i if NOT $istrue$$cas_artist$
+		:i while
+			
+			:i if $gotparam$$unload$
+				:i $printf$ (%GLOBAL%$pre_files$:a{%GLOBAL%$index$:a}) 
+				:i $UnloadPreFile$ (%GLOBAL%$pre_files$:a{%GLOBAL%$index$:a}) $dont_assert$
+			:i else 
+				:i $printf$ (%GLOBAL%$pre_files$:a{%GLOBAL%$index$:a}) 
+				:i $MemPushContext$$SkProPermanent$
+				:i $LoadPreFile$ (%GLOBAL%$pre_files$:a{%GLOBAL%$index$:a}) 
+				:i $MemPopContext$
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+:i endfunction
+:i function $set_level_lights$$fog_red$ = %i(0,00000000)$fog_blue$ = %i(0,00000000)$fog_green$ = %i(0,00000000)$fog_alpha$ = %i(0,00000000)$fog_dist$ = %i(0,00000000)
+	:i $printf$%s(10,"heading=%h")$h$ = %GLOBAL%$heading_0$
+	:i $SetLightAmbientColor$$r$ = %GLOBAL%$ambient_red$$g$ = %GLOBAL%$ambient_green$$b$ = %GLOBAL%$ambient_blue$
+	:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = %GLOBAL%$heading_0$$pitch$ = %GLOBAL%$pitch_0$
+	:i $SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %GLOBAL%$red_0$$g$ = %GLOBAL%$green_0$$b$ = %GLOBAL%$blue_0$
+	:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = %GLOBAL%$heading_1$$pitch$ = %GLOBAL%$pitch_1$
+	:i $SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %GLOBAL%$red_1$$g$ = %GLOBAL%$green_1$$b$ = %GLOBAL%$blue_1$
+	:i $SetDynamicLightModulationFactor$$ambient$$value$ = %GLOBAL%$ambient_mod_factor_lo$$value2$ = %GLOBAL%$ambient_mod_factor_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(0,00000000)$value$ = %GLOBAL%$mod_factor_0_lo$$value2$ = %GLOBAL%$mod_factor_0_hi$
+	:i $SetDynamicLightModulationFactor$$directional$ = %i(1,00000001)$value$ = %GLOBAL%$mod_factor_0_lo$$value2$ = %GLOBAL%$mod_factor_0_lo$
+:i endfunction
+:i $THUGPRO_IsJoiningServer$ = %i(0,00000000)
+:i $THUGPRO_EnteringNetLevel$ = %i(0,00000000)
+:i $load_level_times_called$ = %i(0,00000000)
+:i $has_loaded_permanent_anims$ = %i(0,00000000)
+:i function $load_level$$level_number$ = %i(0,00000000)$COIM_size$ = %i(1331200,00145000)
+	:i if $gotparam$$indoor$
+		:i $Change$$LEVEL_USE_DEFAULT_TOD$ = %i(1,00000001)
+	:i else 
+		:i $Change$$LEVEL_USE_DEFAULT_TOD$ = %i(0,00000000)
+	:i endif
+	:i if $gotparam$$DisableGoalEditor$
+		:i $Change$$LEVEL_DISABLE_GOAL_EDITOR$ = %i(1,00000001)
+	:i else 
+		:i $Change$$LEVEL_DISABLE_GOAL_EDITOR$ = %i(0,00000000)
+	:i endif
+	:i if $gotparam$$DisableGoalAttack$
+		:i $Change$$LEVEL_DISABLE_GOAL_ATTACK$ = %i(1,00000001)
+	:i else 
+		:i $Change$$LEVEL_DISABLE_GOAL_ATTACK$ = %i(0,00000000)
+	:i endif
+	:i if $gotparam$$HasClassicGoals$
+		:i $Change$$LEVEL_CLASSIC_GOAL_MODE$ = %i(1,00000001)
+	:i else 
+		:i $Change$$LEVEL_CLASSIC_GOAL_MODE$ = %i(0,00000000)
+	:i endif
+	:i if $gotparam$$game$
+		:i $Change$$LEVEL_ORIGINAL_GAME$ = %GLOBAL%$game$
+	:i else 
+		:i $Change$$LEVEL_ORIGINAL_GAME$ = $unknown$
+	:i endif
+	:i if $gotparam$$frontend_level$
+		:i if  (%GLOBAL%$frontend_level$ = %i(1,00000001)) 
+			:i $LoadSkaterParts$
+		:i endif
+	:i endif
+	:i $TODManager_Reset$
+	:i $TODManager_SetTODScript$%GLOBAL%$tod_script$
+	:i $THUGPRO_TriggerButtonPatch$$on$
+	:i $THUGPRO_ToggleSticker$$on$
+	:i $Change$$ACTIVEWPLOOP$ = %i(0,00000000)
+	:i $Change$$EXITWPLOOP$ = %i(1,00000001)
+	:i $Change$$DoLevelCleanup$ = %i(0,00000000)
+	:i if $InNetGame$
+		:i if $gotparam$$IsBigLevel$
+			:i $THUGPRO_SetBigLevel$%i(1,00000001)
+		:i else 
+			:i $THUGPRO_SetBigLevel$%i(0,00000000)
+		:i endif
+		:i if $gotparam$$IsTallLevel$
+			:i $THUGPRO_SetBigLevel$%i(1,00000001)$Height$
+		:i else 
+			:i $THUGPRO_SetBigLevel$%i(0,00000000)$Height$
+		:i endif
+	:i else 
+		:i $THUGPRO_SetBigLevel$%i(0,00000000)
+	:i endif
+	:i if $gotparam$$wallride_hack$
+		:i $HackWallRidesOn$
+	:i else 
+		:i $HackWallRidesOff$
+	:i endif
+	:i if NOT $gotparam$$DisableBackfacePatch$
+		:i $THUGPRO_ToggleBackfacePatch$$on$
+	:i else 
+		:i $THUGPRO_ToggleBackfacePatch$$off$
+	:i endif
+	:i if $InNetGame$
+		:i $Change$$THUGPRO_EnteringNetLevel$ = %i(1,00000001)
+		:i if $OnServer$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_01_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_02_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_03_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_04_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_05_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_06_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_07_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_LEVEL_CHANGE_08_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_G_COMP_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET1_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET2_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET3_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET4_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET5_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET6_GEO_ON$$off$
+			:i $BroadcastOmnigon$$cheat_flag$ = $SERVER_PROSET7_GEO_ON$$off$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if NOT $istrue$$THUGPRO_IsJoiningServer$
+			:i $UnSetAllServerLevelFlags$
+		:i endif
+	:i else 
+		:i $UnSetAllServerLevelFlags$
+	:i endif
+	:i $Change$$freemem_script_lowest$ = %i(999999999,3b9ac9ff)
+	:i $Change$$freemem_main_lowest$ = %i(999999999,3b9ac9ff)
+	:i if $gotparam$$isUserLevel$
+		:i $UserContent_UpdateLevelStructInfo$$level$ = %GLOBAL%$level$$name$ = %GLOBAL%$name$$index$ = %GLOBAL%$index$
+		:i $Change$$last_loaded_custom_level_script$ = %GLOBAL%$load_script$
+	:i else 
+		:i if NOT $InNetGame$
+			:i if NOT  (%GLOBAL%$load_script$ = $Load_SkProDefault$) 
+				:i $Change$$last_loaded_custom_level_script$ = $nullscript$
+			:i endif
+		:i endif
+	:i endif
+	:i $SetLevelStructureName$$name$ = %GLOBAL%$structure_name$
+	:i $load_level_handle_ambient_sfx$$ambient_track$ = %GLOBAL%$ambient_track$
+	:i $kill_start_key_binding$
+	:i $printf$%s(53,"replace_handlers to take away start key in load_level")
+	:i $SetScoreAccumulation$%i(0,00000000)
+	:i $SetScoreDegradation$%i(0,00000000)
+	:i if $ObjectExists$$id$ = $skater$
+		:i if $skater$.$IsLocalSkater$
+			:i $skater$.$MotoSkateboardOff$
+		:i endif
+	:i endif
+	:i $printf$%s(37,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+	:i $printf$%s(13,"@@@ LOADLEVEL")
+	:i if $EnteringNetGame$
+		:i if $OnServer$
+			:i $printf$%s(13,"@@@ AS SERVER")
+		:i else 
+			:i $printf$%s(13,"@@@ AS CLIENT")
+		:i endif
+	:i else 
+		:i $printf$%s(16,"@@@ NON NET GAME")
+	:i endif
+	:i if $gotparam$$fast$
+		:i $load_level_handle_loading_screen$ isNull 
+	:i else 
+		:i $load_level_handle_loading_screen$ isNull 
+	:i endif
+	:i $exit_pause_menu$
+	:i $CareerStartLevel$$level$ = %GLOBAL%$level_number$
+	:i if NOT $InNetGame$
+		:i $PushMemProfile$%s(12,"Path Manager")
+		:i $AllocatePathManMemory$
+		:i $PopMemProfile$
+	:i endif
+	:i $ResetLevelFlags$
+	:i if $gotparam$$park_editor$
+		:i $ParkEdMemSnapshot$$reset$
+		:i $ParkEdMemSnapshot$$startload$
+	:i endif
+	:i if $gotparam$$thugpro_scn_pre$
+		:i $LoadLevelPreFile$ (%GLOBAL%$level$ + %s(15,"scn_thugpro.pre")) 
+	:i else 
+		:i if $gotparam$$scnpre$
+			:i if NOT $InNetGame$
+				:i $LoadLevelPreFile$%GLOBAL%$scnpre$
+			:i else 
+				:i if $gotparam$$park_editor$
+					:i $LoadLevelPreFile$%GLOBAL%$scnpre$
+				:i else 
+					:i $LoadLevelPreFile$ (%GLOBAL%$level$ + %s(7,"scn.pre")) 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $gotparam$$park_editor$
+		:i $LoadLevelPreFile$%s(20,"thugpro_sk5edscn.pre")
+	:i endif
+	:i if $gotparam$$sky$
+		:i $LoadScene$$scene$ = %GLOBAL%$sky$
+	:i endif
+	:i $LoadPreFile$%s(18,"thugpro_models.pre")
+	:i if $gotparam$$default_sky$
+		:i $LoadScene$$scene$ = %s(11,"default_sky")
+	:i endif
+	:i if NOT $gotparam$$NoScene$
+		:i if $gotparam$$park_editor$
+			:i $LoadScene$$scene$ = %GLOBAL%$level$$is_dictionary$
+			:i if $gotparam$$outer_shell$
+				:i $ParkEdMemSnapshot$$start_outer_shell$
+				:i if $gotparam$$load_shell_collision$
+					:i $LoadScene$$scene$ = %GLOBAL%$outer_shell$
+				:i else 
+					:i $LoadScene$$scene$ = %GLOBAL%$outer_shell$$no_supersectors$
+				:i endif
+				:i $ParkEdMemSnapshot$$end_outer_shell$
+			:i endif
+		:i else 
+			:i if $gotparam$$level$
+				:i $LoadScene$$scene$ = %GLOBAL%$level$
+			:i endif
+		:i endif
+	:i endif
+	:i if $gotparam$$level_name$
+		:i $SetLevelName$%GLOBAL%$level_name$
+	:i else 
+		:i $SetLevelName$%GLOBAL%$level$
+	:i endif
+	:i if $gotparam$$thugpro_scn_pre$
+		:i $UnloadPreFile$ (%GLOBAL%$level$ + %s(15,"scn_thugpro.pre")) $dont_assert$
+	:i else 
+		:i if $gotparam$$scnpre$
+			:i if NOT $InNetGame$
+				:i $UnloadPreFile$%GLOBAL%$scnpre$$dont_assert$
+			:i else 
+				:i if $gotparam$$park_editor$
+					:i $UnloadPreFile$%GLOBAL%$scnpre$$dont_assert$
+				:i else 
+					:i $UnloadPreFile$ (%GLOBAL%$level$ + %s(7,"scn.pre")) $dont_assert$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $gotparam$$park_editor$
+		:i $UnloadPreFile$%s(20,"thugpro_sk5edscn.pre")$dont_assert$
+	:i endif
+	:i if $gotparam$$default_sky$
+	:i endif
+	:i if $gotparam$$pre$
+		:i $LoadLevelPreFile$%GLOBAL%$pre$
+	:i endif
+	:i if $gotparam$$thugpro_prx$
+		:i $LoadLevelPreFile$%GLOBAL%$thugpro_prx$
+	:i endif
+	:i if $gotparam$$qb$
+		:i if $gotparam$$park_editor$
+			:i $NodeArrayManLoad$%GLOBAL%$qb$
+		:i else 
+			:i $NodeArrayManLoad$%GLOBAL%$qb$
+			:i %GLOBAL%$need_goal_editor_nodes$ = %i(0,00000000)
+			:i if $InSplitScreenGame$
+				:i %GLOBAL%$need_goal_editor_nodes$ = %i(1,00000001)
+			:i endif
+			:i if $InNetGame$
+				:i %GLOBAL%$need_goal_editor_nodes$ = %i(1,00000001)
+			:i endif
+			:i if $GameModeEquals$$is_creategoals$
+				:i %GLOBAL%$need_goal_editor_nodes$ = %i(1,00000001)
+			:i endif
+			:i if  (%GLOBAL%$need_goal_editor_nodes$ = %i(1,00000001)) 
+				:i if NOT $istrue$$LEVEL_DISABLE_GOAL_EDITOR$
+					:i $AddGoalEditorNodesToLevelNodeArray$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $gotparam$$park_editor$
+	:i else 
+		:i if $gotparam$$qb$
+			:i if NOT $gotparam$$frontend_level$
+			:i endif
+			:i $PreloadModels$
+		:i endif
+	:i endif
+	:i $PushMemProfile$%s(23,"Level-specific QB files")
+	:i if $gotparam$$level_qb$
+		:i $UnloadQB$%GLOBAL%$level_qb$
+		:i $LoadQB$%GLOBAL%$level_qb$$LevelSpecific$
+	:i endif
+	:i if $gotparam$$level_sfx_qb$
+		:i $LoadQB$%GLOBAL%$level_sfx_qb$$LevelSpecific$
+	:i endif
+	:i if $gotparam$$more_level_qbs$
+		:i if NOT $IsArray$%GLOBAL%$more_level_qbs$
+			:i $script_assert$%s(30,"more_level_qbs is not an array")
+		:i endif
+		:i $GetArraySize$%GLOBAL%$more_level_qbs$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i %GLOBAL%$curr_level_qb$ =  (%GLOBAL%$more_level_qbs$:a{%GLOBAL%$index$:a}) 
+			:i $UnloadQB$%GLOBAL%$curr_level_qb$
+			:i $LoadQB$%GLOBAL%$curr_level_qb$$LevelSpecific$
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i if $gotparam$$frontend_level$
+		:i if $DateEquals$:s{
+				:i $day_from$ =  ($global_day_from$) 
+				:i $day_to$ =  ($global_day_to$) 
+				:i $month_from$ =  ($global_month_from$) 
+				:i $month_to$ =  ($global_month_to$) 
+			:i :s}
+			:i $use_alternate_default_params$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i if $gotparam$$use_alternate_default_params$
+		:i $tod_manager_set_default_params$$use_alternate_default_params$
+	:i else 
+		:i $tod_manager_set_default_params$
+	:i endif
+	:i $THUGProPreloadModels$
+	:i $PopMemProfile$
+	:i if NOT $gotparam$$dont_load_random_peds$
+		:i if $gotparam$$qb$
+			:i $preselect_random_parts$ isNull 
+		:i endif
+	:i endif
+	:i $SetThisLevelSoundBanks$$ThisLevel$ = %GLOBAL%$level$
+	:i if $gotparam$$park_editor$
+		:i $LoadTerrain$
+	:i else 
+		:i $SetTerrainDefault$
+		:i if $gotparam$$qb$
+			:i $LoadTerrain$
+		:i endif
+	:i endif
+	:i if $gotparam$$park_editor$
+		:i $ParkEdMemSnapshot$$endload$
+	:i endif
+	:i $startup_handle_stats$ isNull 
+	:i $SetAllStats$$value$ = %i(0,00000000)
+	:i if $GameModeEquals$$is_classic$
+		:i if $gotparam$$default_stats_classic$
+			:i if  ($level_stats$ = %i(1,00000001)) 
+				:i $SetAllStats$$value$ = %GLOBAL%$default_stats_classic$
+			:i endif
+		:i endif
+	:i else 
+		:i if $InNetGame$
+			:i $SetAllStats$$value$ = %i(10,0000000a)
+		:i else 
+			:i if $gotparam$$default_stats$
+				:i if  ($level_stats$ = %i(1,00000001)) 
+					:i $SetAllStats$$value$ = %GLOBAL%$default_stats$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i if $ScriptExists$$load_level_anims$
+			:i $PushMemProfile$%s(20,"Level Specific Anims")
+			:i $load_level_anims$
+			:i $PopMemProfile$
+		:i endif
+	:i endif
+	:i if NOT $InNetGame$
+		:i if $ScriptExists$$LoadCameras$
+			:i $PushMemProfile$%s(13,"Level Cameras")
+			:i $LoadCameras$
+			:i $PopMemProfile$
+		:i endif
+	:i endif
+	:i if $ScriptExists$$LoadObjectAnims$
+		:i $PushMemProfile$%s(12,"Object Anims")
+		:i $LoadObjectAnims$
+		:i $PopMemProfile$
+	:i endif
+	:i $PushMemProfile$%s(17,"Particle Textures")
+	:i if $ScriptExists$$LoadAllParticleTextures$
+		:i $LoadAllParticleTextures$
+	:i endif
+	:i if $ScriptExists$$load_level_particle_textures$
+		:i $load_level_particle_textures$
+	:i endif
+	:i if $ScriptExists$$load_level_fast_particle_textures$
+		:i $load_level_fast_particle_textures$
+	:i endif
+	:i if $ScriptExists$$load_cutscene_particle_textures$
+		:i $load_cutscene_particle_textures$
+	:i endif
+	:i if $ScriptExists$$load_cutscene_fast_particle_textures$
+		:i $load_cutscene_fast_particle_textures$
+	:i endif
+	:i $PopMemProfile$
+	:i if $gotparam$$extranetanimsscript$
+		:i if $InNetGame$
+			:i $printf$%s(52,"                    WE'RE IN A NET GAME!!!!!!!!!!!!!")
+			:i $PushMemProfile$%s(20,"Level Specific Anims")
+			:i %GLOBAL%$extranetanimsscript$
+			:i $PopMemProfile$
+		:i endif
+	:i endif
+	:i if $gotparam$$park_editor$
+	:i else 
+		:i if $gotparam$$startup_script$
+			:i if $ScriptExists$%GLOBAL%$startup_script$
+				:i %GLOBAL%$startup_script$
+			:i endif
+		:i endif
+	:i endif
+	:i $FormatText$$ChecksumName$ = $loading_sounds_script$%s(16,"%i_LoadingSounds")$i$ = %GLOBAL%$level$
+	:i if $ScriptExists$%GLOBAL%$loading_sounds_script$
+		:i %GLOBAL%$loading_sounds_script$
+	:i endif
+	:i if $gotparam$$models_in_script_prx$
+		:i if NOT $InMultiPlayerGame$
+			:i if $gotparam$$qb$
+				:i if NOT $gotparam$$frontend_level$
+					:i if $gotparam$$park_editor$
+						:i $PreloadPedestrians$$no_random$
+					:i else 
+						:i if NOT $gotparam$$dont_load_random_peds$
+							:i $PreloadPedestrians$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $gotparam$$pre$
+		:i $UnloadPreFile$%GLOBAL%$pre$$dont_assert$
+	:i endif
+	:i if $gotparam$$thugpro_prx$
+		:i $UnloadPreFile$%GLOBAL%$thugpro_prx$$dont_assert$
+	:i endif
+	:i if NOT $InMultiPlayerGame$
+		:i if $gotparam$$pedpre$
+			:i $LoadPreFile$%GLOBAL%$pedpre$$dont_assert$
+		:i endif
+	:i endif
+	:i if NOT $InMultiPlayerGame$
+		:i if $gotparam$$qb$
+			:i if NOT $gotparam$$frontend_level$
+				:i if $gotparam$$park_editor$
+					:i $PreloadPedestrians$$no_random$
+				:i else 
+					:i if NOT $gotparam$$dont_load_random_peds$
+						:i $PreloadPedestrians$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if $InMultiPlayerGame$
+		:i $PreloadModel$$name$ = %s(5,"crown")
+	:i endif
+	:i if NOT $InMultiPlayerGame$
+		:i if $gotparam$$pedpre$
+			:i $UnloadPreFile$%GLOBAL%$pedpre$$dont_assert$
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$level_number$ = $LevelNum_Skateshop$) 
+		:i $LoadPreFile$%s(19,"mainmenusprites.pre")
+		:i $load_cas_textures_to_main_memory$$no_pre_file$
+		:i $UnloadPreFile$%s(19,"mainmenusprites.pre")
+	:i endif
+	:i $PushMemProfile$%s(47,"Level Collision decompressed PIP + Supersectors")
+	:i if NOT $gotparam$$NoScene$
+		:i if $istrue$$UsePreFilesForLevelLoading$
+			:i if $gotparam$$thugpro_col_pre$
+				:i $LoadPipPre$ (%GLOBAL%$level$ + %s(15,"col_thugpro.pre")) $heap$ = $bottomup$
+			:i else 
+				:i if $gotparam$$colpre$
+					:i if NOT $InNetGame$
+						:i $LoadPipPre$%GLOBAL%$colpre$$heap$ = $bottomup$
+					:i else 
+						:i if $gotparam$$park_editor$
+							:i $LoadPipPre$%GLOBAL%$colpre$$heap$ = $bottomup$
+						:i else 
+							:i $LoadPipPre$ (%GLOBAL%$level$ + %s(7,"col.pre")) $heap$ = $bottomup$
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if NOT $gotparam$$NoScene$
+		:i if $InNetGame$
+			:i if $gotparam$$park_editor$
+				:i $LoadCollision$$scene$ = %GLOBAL%$level$
+			:i else 
+				:i $LoadCollision$$scene$ = %GLOBAL%$level$
+			:i endif
+		:i else 
+			:i $LoadCollision$$scene$ = %GLOBAL%$level$
+		:i endif
+	:i endif
+	:i if $gotparam$$load_shell_collision$
+		:i if $gotparam$$outer_shell$
+			:i if $istrue$$UsePreFilesForLevelLoading$
+				:i %GLOBAL%$extension$ = %s(7,"col.pre")
+				:i $LoadPipPre$ (%GLOBAL%$outer_shell$ + %GLOBAL%$extension$) $heap$ = $bottomupheap$
+			:i endif
+			:i $LoadCollision$$scene$ = %GLOBAL%$outer_shell$
+		:i endif
+	:i else 
+	:i endif
+	:i $PopMemProfile$
+	:i $Change$$ParseNodeArrayIgnoreGaps$ = %i(0,00000000)
+	:i if $gotparam$$park_editor$
+		:i if $gotparam$$startup_script$
+			:i %GLOBAL%$startup_script$
+		:i endif
+	:i else 
+		:i if $gotparam$$qb$
+			:i $ParseNodeArray$
+			:i $CleanUpAndRemoveSymbol$$TriggerScripts$
+			:i $CleanUpAndRemoveSymbol$$LoadAllParticleTextures$
+			:i $CleanUpAndRemoveSymbol$$load_level_particle_textures$
+			:i $CleanUpAndRemoveSymbol$$load_level_fast_particle_textures$
+			:i $CleanUpAndRemoveSymbol$$load_cutscene_particle_textures$
+			:i $CleanUpAndRemoveSymbol$$load_cutscene_fast_particle_textures$
+			:i $CleanUpAndRemoveSymbol$$LoadTerrain$
+			:i $CleanUpAndRemoveSymbol$$load_level_anims$
+			:i $CleanUpAndRemoveSymbol$$LoadCameras$
+			:i $CleanUpAndRemoveSymbol$$LoadObjectAnims$
+		:i endif
+	:i endif
+	:i $FormatText$$ChecksumName$ = $nodearray$%s(12,"%i_NodeArray")$i$ = %GLOBAL%$level$
+	:i $ForEachIn$%GLOBAL%$nodearray$$Do$ = $thugpro_handleAdditionalNodeData$
+	:i if $GameModeEquals$$is_career$
+		:i $GetOptionalChapterGoalsScript$$level$ = %GLOBAL%$load_script$
+	:i endif
+	:i if $gotparam$$goals_script$
+		:i if NOT $ScriptExists$%GLOBAL%$goals_script$
+			:i $script_assert$%s(54,"goals_script defined in level structure does not exist")
+		:i endif
+		:i $PushMemProfile$%s(12,"Goals script")
+		:i %GLOBAL%$goals_script$
+		:i $PopMemProfile$
+	:i else 
+		:i if $InNetGame$
+			:i $add_multiplayer_mode_goals$
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_creategoals$
+		:i $InitialiseCreatedGoals$
+	:i else 
+		:i if $InNetGame$
+			:i $InitialiseCreatedGoals$$DoNotCreateGoalPeds$
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_singlesession$
+		:i $AddGoal_TrickAttack$
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i if NOT  (%GLOBAL%$load_script$ = $Load_Mainmenu$) 
+			:i $AddGoal_TimedScorerun$
+		:i endif
+	:i endif
+	:i $init_goal_manager$
+	:i if $gotparam$$setup_script$
+		:i if $ScriptExists$%GLOBAL%$setup_script$
+			:i $PushMemProfile$%s(12,"Setup Script")
+			:i %GLOBAL%$setup_script$
+			:i $PopMemProfile$
+		:i endif
+	:i endif
+	:i if $InNetGame$
+		:i if $OnServer$
+			:i if $istrue$$LEVEL_USE_DEFAULT_TOD$
+				:i $thugpro_reset_tod_flags$
+				:i $Server_BroadcastTOD$$tod_state$ = $afternoon$
+			:i endif
+		:i endif
+		:i $Change$$THUGPRO_IsJoiningServer$ = %i(0,00000000)
+	:i else 
+		:i if $istrue$$LEVEL_USE_DEFAULT_TOD$
+			:i $thugpro_reset_tod_flags$
+		:i endif
+		:i if NOT $istrue$$dont_change_tod$
+			:i $thugpro_reset_tod_flags$
+		:i endif
+		:i $thugpro_update_tod$
+		:i $Change$$dont_change_tod$ = %i(0,00000000)
+	:i endif
+	:i if $gotparam$$uber_frig_height$
+		:i $Change$$uber_frig_current_height$ = %GLOBAL%$uber_frig_height$
+	:i else 
+		:i $Change$$uber_frig_current_height$ = $uber_frig_default_height$
+	:i endif
+	:i $SFX_refresh_music_box_triggers$
+	:i %GLOBAL%$is_frontend$ = %i(0,00000000)
+	:i if $gotparam$$frontend_level$
+		:i %GLOBAL%$is_frontend$ = %GLOBAL%$frontend_level$
+	:i endif
+	:i $UnloadPreFile$%s(18,"thugpro_models.pre")$dont_assert$
+	:i if $InSplitScreenGame$
+		:i $AllocateSplitScreenDMA$
+	:i endif
+	:i if $gotparam$$frontend_level$
+		:i if  ($current_screen_mode$ = $standard_screen_mode$) 
+			:i $Change$$ingame_screen_mode$ = $standard_screen_mode$
+		:i else 
+			:i $Change$$ingame_screen_mode$ =  ($current_screen_mode$) 
+			:i $screen_setup_standard$
+		:i endif
+	:i else 
+		:i if NOT  ($ingame_screen_mode$ =  ($current_screen_mode$) ) 
+			:i switch  ($ingame_screen_mode$) 
+				:i case $standard_screen_mode$
+					:i $screen_setup_standard$
+					:i endcase
+				case $widescreen_screen_mode$
+					:i $screen_setup_widescreen$
+					:i endcase
+				case $16_10_screen_mode$
+					:i $screen_setup_16_10$
+					:i endcase
+				case $letterbox_screen_mode$
+					:i $screen_setup_letterbox$
+					:i end_switch
+			
+		:i endif
+	:i endif
+	:i $UnPauseGame$
+	:i if $gotparam$$viewer_mode$
+		:i $gameflow$$StandardGameFlowToggleView$
+		:i $printf$%s(62,"****************************************** CHANGING ASSERT = 0")
+		:i $Change$$AssertOnMissingScripts$ = %i(0,00000000)
+		:i $Change$$AssertOnMissingAssets$ = %i(0,00000000)
+	:i else 
+		:i $gameflow$$StandardGameFlow$
+	:i endif
+	:i if $gotparam$$nosun$
+		:i $DisableSun$
+	:i else 
+		:i $EnableSun$
+	:i endif
+	:i if NOT $gotparam$$frontend_level$
+		:i $Change$$__from_skateshop$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $reset_level$
+	:i $ResetLevelFlags$
+	:i $GetLevelStructureName$
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$level_structure_name$) $setup_script$
+		:i  (%GLOBAL%$level_structure_name$->$setup_script$) 
+	:i endif
+:i endfunction
+:i function $OverrideSkaterSpeed$$speed$ = %i(1000,000003e8)
+	:i while
+		
+		:i if $ObjectExists$$id$ = $skater$
+			:i $printf$%s(44,"############################################")
+			:i $printf$%s(44,"######### Overriding Skater Speed    #######")
+			:i $printf$%s(42,"######### Speed = %i               #######")$i$ = %GLOBAL%$speed$
+			:i $printf$%s(44,"############################################")
+			:i $skater$.$overridelimits$$max$ = %GLOBAL%$speed$$CurrentLevel$
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $GetCurrentLevelName$
+	:i $GoalManager_GetLevelPrefix$
+	:i $FormatText$$ChecksumName$ = $level_info$%s(8,"Level_%i")$i$ = %GLOBAL%$level_prefix$
+	:i return
+	$level_name$ =  (%GLOBAL%$level_info$->$name$) 
+:i endfunction
+:i function $init_goal_manager$
+	:i $GoalManager_LevelLoad$
+	:i $GoalManager_UpdateFamilyTrees$
+	:i $GoalManager_InitializeAllGoals$
+	:i $GoalManager_SetCanStartGoal$%i(1,00000001)
+	:i if $CareerLevelIs$$LevelNum_Skateshop$
+		:i $GoalManager_HideGoalPoints$
+		:i $GoalManager_HidePoints$
+	:i else 
+		:i if NOT $InMultiPlayerGame$
+			:i $GoalManager_ShowGoalPoints$
+		:i endif
+		:i if NOT  ($in_cinematic_sequence$) 
+			:i $GoalManager_ShowPoints$
+		:i endif
+	:i endif
+:i endfunction
+:i function $level_cleanup_assets$
+	:i %GLOBAL%$skaterNum$ = %i(0,00000000)
+	:i while
+		
+		:i if $SkaterExists$$skater$ = %GLOBAL%$skaterNum$
+			:i $printf$%s(47,"Cleaning up level-specific assets for skater %d")$d$ = %GLOBAL%$objId$
+			:i if %GLOBAL%$objId$.$IsLocalSkater$
+				:i %GLOBAL%$objId$.$kill_all_vehicles$
+				:i %GLOBAL%$objId$.$SetAmmo$%i(0,00000000)
+				:i %GLOBAL%$objId$.$ClearPagerMessages$
+			:i endif
+		:i endif
+		:i %GLOBAL%$skaterNum$ =  (%GLOBAL%$skaterNum$ + %i(1,00000001)) 
+	:i loop_to %i(8,00000008)
+	:i $SFX_Change_Footstep_Sounds_To_Default$
+:i endfunction
+:i function $Load_Default$
+	:i $load_level$$Level_Default$
+:i endfunction
+:i function $Load_SkProDefault$
+	:i $load_level$$Level_SkProDefault$
+:i endfunction
+:i function $Load_EmptyDefault$
+	:i $load_level$$Level_EmptyDefault$
+:i endfunction
+:i function $Load_BO$
+	:i $load_level$$Level_BO$
+:i endfunction
+:i function $Load_AU$
+	:i $load_level$$Level_AU$
+:i endfunction
+:i function $Load_BA$
+	:i $load_level$$Level_BA$
+:i endfunction
+:i function $Load_BE$
+	:i $load_level$$Level_BE$
+:i endfunction
+:i function $Load_NO$
+	:i $load_level$$Level_NO$
+:i endfunction
+:i function $Load_ST$
+	:i $load_level$$Level_ST$
+:i endfunction
+:i function $Load_SE$
+	:i $load_level$$Level_SE$
+:i endfunction
+:i function $Load_SE2$
+	:i $load_level$$Level_SE2$
+:i endfunction
+:i function $Load_TR$
+	:i $load_level$$Level_TR$
+:i endfunction
+:i function $Load_TestLevel$
+	:i $load_level$$level_testlevel$
+:i endfunction
+:i function $Load_LA$
+	:i $load_level$$Level_LA$
+:i endfunction
+:i function $Load_SC$
+	:i $load_level$$Level_SC$
+:i endfunction
+:i function $Load_PH$
+	:i $load_level$$Level_PH$
+:i endfunction
+:i function $Load_DJ$
+	:i $load_level$$Level_DJ$
+:i endfunction
+:i function $Load_CA$
+	:i $load_level$$Level_CA$
+:i endfunction
+:i function $Load_AP$
+	:i $load_level$$Level_AP$
+:i endfunction
+:i function $Load_NJ$
+	:i $load_level$$Level_NJ$
+:i endfunction
+:i function $Load_NY$
+	:i $load_level$$Level_NY$
+:i endfunction
+:i function $Load_FL$
+	:i $load_level$$Level_FL$
+:i endfunction
+:i function $Load_SD$
+	:i $load_level$$Level_SD$
+:i endfunction
+:i function $Load_HI$
+	:i $load_level$$Level_HI$
+:i endfunction
+:i function $Load_VC$
+	:i $load_level$$Level_VC$
+:i endfunction
+:i function $Load_SJ$
+	:i $load_level$$Level_SJ$
+:i endfunction
+:i function $Load_RU$
+	:i $load_level$$Level_RU$
+:i endfunction
+:i function $Load_HH$
+	:i $load_level$$Level_HH$
+:i endfunction
+:i function $Load_cnv$
+	:i $load_level$$Level_cnv$
+:i endfunction
+:i function $Load_alc$
+	:i $load_level$$level_alc$
+:i endfunction
+:i function $Load_sf2$
+	:i $load_level$$level_sf2$
+:i endfunction
+:i function $Load_sch$
+	:i $load_level$$level_sch$
+:i endfunction
+:i function $Load_kon$
+	:i $load_level$$level_kon$
+:i endfunction
+:i function $Load_zoo$
+	:i $load_level$$level_zoo$
+:i endfunction
+:i function $Load_lon$
+	:i $load_level$$level_lon$
+:i endfunction
+:i function $Load_jnk$
+	:i $load_level$$level_jnk$
+:i endfunction
+:i function $Load_hof$
+	:i $load_level$$level_hof$
+:i endfunction
+:i function $Load_practice$
+	:i $load_level$$level_practice$
+:i endfunction
+:i function $Load_ware$
+	:i $load_level$$Level_ware$
+:i endfunction
+:i function $Load_z_ma$
+	:i $load_level$$Level_z_ma$
+:i endfunction
+:i function $Load_skatepark$
+	:i $load_level$$Level_skatepark$
+:i endfunction
+:i function $Load_z_dn$
+	:i $load_level$$Level_z_dn$
+:i endfunction
+:i function $Load_burn$
+	:i $load_level$$Level_burn$
+:i endfunction
+:i function $Load_ros$
+	:i $load_level$$Level_ros$
+:i endfunction
+:i function $Load_sc2$
+	:i $load_level$$Level_SC2$
+:i endfunction
+:i function $Load_HN$
+	:i $load_level$$Level_HN$
+:i endfunction
+:i function $Load_VN$
+	:i $load_level$$Level_VN$
+:i endfunction
+:i function $Load_z_ms$
+	:i $load_level$$Level_z_ms$
+:i endfunction
+:i function $Load_vans$
+	:i $load_level$$Level_vans$
+:i endfunction
+:i function $Load_sz$
+	:i $load_level$$Level_sz$
+:i endfunction
+:i function $Load_HISCH$
+	:i $load_level$$Level_HISCH$
+:i endfunction
+:i function $Load_atlanta$
+	:i $load_level$$Level_atlanta$
+:i endfunction
+:i function $Load_kyoto$
+	:i $load_level$$Level_kyoto$
+:i endfunction
+:i function $Load_z_center$
+	:i $load_level$$Level_z_center$
+:i endfunction
+:i function $Load_z_funpark$
+	:i $load_level$$Level_z_funpark$
+:i endfunction
+:i function $Load_z_riod$
+	:i $load_level$$Level_z_riod$
+:i endfunction
+:i function $load_foun$
+	:i $load_level$$level_foun$
+:i endfunction
+:i function $load_rio$
+	:i $load_level$$level_rio$
+:i endfunction
+:i function $load_sub$
+	:i $load_level$$level_sub$
+:i endfunction
+:i function $load_tok$
+	:i $load_level$$level_tok$
+:i endfunction
+:i function $load_shp$
+	:i $load_level$$level_shp$
+:i endfunction
+:i function $load_si$
+	:i $load_level$$level_si$
+:i endfunction
+:i function $load_oil$
+	:i $load_level$$level_oil$
+:i endfunction
+:i function $load_toystory_bedroom$
+	:i $load_level$$level_toystory_bedroom$
+:i endfunction
+:i $level_toystory_bedroom$ = :s{
+	:i $game$ = $DESA$
+	:i $structure_name$ = $level_toystory_bedroom$
+	:i $load_script$ = $load_toystory_bedroom$
+	:i $name$ = %s(11,"ANDY'S ROOM")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(16,"toystory_bedroom")
+	:i $sky$ = %s(11,"default_sky")
+	:i $nosun$
+	:i $startup_script$ = $toystory_bedroom_Startup$
+	:i $goals_script$ = $toystory_bedroom_goals$
+	:i $setup_script$ = $toystory_bedroom_setup$
+	:i $qb$ = %s(43,"levels\toystory_bedroom\toystory_bedroom.qb")
+	:i $level_qb$ = %s(51,"levels\toystory_bedroom\toystory_bedroom_scripts.qb")
+	:i $pre$ = %s(28,"toystory_bedroom_scripts.pre")
+	:i $scnpre$ = %s(23,"toystory_bedroomscn.pre")
+	:i $colpre$ = %s(23,"toystory_bedroomcol.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(51,"levels\toystory_bedroom\toystory_bedroom_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $indoor$
+	:i $wallride_hack$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $overview_cam_angle$ = %i(4294967251,ffffffd3)
+	:i $overview_cam_zoom$ = %vec3(-1000.000000,50000.000000,5000.000000)
+:i :s}
+:i $Level_Test$ = :s{
+	:i $game$ = $THUGPRO$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $nosun$
+	:i $structure_name$ = $Level_Test$
+	:i $load_script$ = $Load_Test$
+	:i $name$ = %s(4,"Test")
+	:i $level$ = %s(4,"Test")
+	:i $sky$ = %s(11,"default_Sky")
+	:i $startup_script$ = $test_startup$
+	:i $goals_script$ = $test_goals$
+	:i $setup_script$ = $test_setup$
+	:i $qb$ = %s(19,"levels\test\test.qb")
+	:i $level_qb$ = %s(27,"levels\test\test_scripts.qb")
+	:i $default_level_stuff$
+:i :s}
+:i $Level_SkProDefault$ = :s{
+	:i $game$ = $THUGPRO$
+	:i $structure_name$ = $Level_SkProDefault$
+	:i $load_script$ = $Load_SkProDefault$
+	:i $name$ = %s(16,"THUG Pro Default")
+	:i $level$ = %s(12,"SkProDefault")
+	:i $NoScene$
+	:i $pre$ = %s(24,"SkProDefault_Scripts.pre")
+	:i $qb$ = %s(35,"levels\SkProDefault\SkProDefault.qb")
+	:i $level_qb$ = %s(43,"levels\SkProDefault\SkProDefault_scripts.qb")
+	:i $startup_script$ = $SkProDefault_Startup$
+	:i $goals_script$ = $SkProDefault_goals$
+	:i $setup_script$ = $SkProDefault_setup$
+	:i $viewer_mode$ = %i(1,00000001)
+	:i $loading_time$ = %f(9.500000)
+	:i $level_number$ = $LevelNum_Default$
+:i :s}
+:i $Level_Default$ = :s{
+	:i $structure_name$ = $Level_Default$
+	:i $load_script$ = $Load_Default$
+	:i $name$ = %s(7,"Default")
+	:i $loading_time$ = %f(9.500000)
+	:i $level$ = %s(7,"Default")
+	:i $NoScene$
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $qb$ = %s(25,"levels\Default\Default.qb")
+	:i $level_qb$ = %s(33,"levels\Default\Default_scripts.qb")
+	:i $startup_script$ = $Default_Startup$
+	:i $goals_script$ = $Default_goals$
+	:i $setup_script$ = $Default_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $viewer_mode$ = %i(1,00000001)
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+:i :s}
+:i $Level_EmptyDefault$ = :s{
+	:i $structure_name$ = $Level_EmptyDefault$
+	:i $load_script$ = $Load_EmptyDefault$
+	:i $name$ = %s(7,"Default")
+	:i $loading_time$ = %f(9.500000)
+	:i $level$ = %s(7,"Default")
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $viewer_mode$ = %i(1,00000001)
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %f(120.000000)
+	:i $pitch_0$ = %f(-127.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %f(-45.000000)
+	:i $pitch_1$ = %f(-110.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.100000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+:i :s}
+:i $Level_TR$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_TR$
+	:i $load_script$ = $Load_TR$
+	:i $name$ = %s(8,"Training")
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $loading_time$ = %f(9.350000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $COIM_size$ = %i(614400,00096000)
+	:i $pre$ = %s(14,"TR_scripts.pre")
+	:i $thugpro_scn_pre$
+	:i $level$ = %s(2,"TR")
+	:i $sky$ = %s(6,"TR_Sky")
+	:i $qb$ = %s(23,"levels\TR\thugpro\TR.qb")
+	:i $thugpro_col_pre$
+	:i $pedpre$ = %s(9,"TRped.pre")
+	:i $level_qb$ = %s(23,"levels\TR\TR_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\TR\TR_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_tr.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\TR\TR_cutscene_particle_data.qb")
+		:i %s(35,"levels\TR\TR_level_particle_data.qb")
+		:i %s(43,"levels\TR\TR_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\TR\TR_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $TR_Startup$
+	:i $goals_script$ = $TR_goals$
+	:i $setup_script$ = $TR_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(7,00000007)
+	:i $level_number$ = $LevelNum_TR$
+	:i $skip_teammate_pro$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $indoor$
+	:i $nosun$
+	:i $overview_cam_pos$ = %vec3(-1473.689941,4401.080078,-2635.700928)
+	:i $overview_cam_angle$ = %i(180,000000b4)
+:i :s}
+:i $Level_BO$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_BO$
+	:i $load_script$ = $Load_BO$
+	:i $name$ = %s(6,"Boston")
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $loading_time$ = %f(12.400000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $COIM_size$ = %i(768000,000bb800)
+	:i $pre$ = %s(14,"BO_scripts.pre")
+	:i $scnpre$ = %s(9,"BOscn.pre")
+	:i $level$ = %s(2,"BO")
+	:i $sky$ = %s(6,"BO_Sky")
+	:i $qb$ = %s(23,"levels\BO\thugpro\BO.qb")
+	:i $colpre$ = %s(9,"BOcol.pre")
+	:i $pedpre$ = %s(9,"BOped.pre")
+	:i $level_qb$ = %s(23,"levels\BO\BO_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\BO\BO_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_bo.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\BO\BO_cutscene_particle_data.qb")
+		:i %s(35,"levels\BO\BO_level_particle_data.qb")
+		:i %s(43,"levels\BO\BO_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\BO\BO_level_fast_particle_data.qb")
+		:i %s(23,"levels\bo\bo_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $BO_Startup$
+	:i $goals_script$ = $BO_goals$
+	:i $setup_script$ = $BO_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(7,00000007)
+	:i $level_number$ = $LevelNum_BO$
+	:i $special_ped_info$ = :a{
+		:i :s{$type$ = $pro$$flag$ = $PRO_FOUND_01$:s}
+		:i :s{$type$ = $guest$$name$ = $benfranklin$:s}
+		:i :s{$type$ = $flavor$$name$ = $segwayrider$:s}
+		:i :a}
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(6,00000006)
+	:i $num_m_torsos$ = %i(6,00000006)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $overview_cam_angle$ = %i(180,000000b4)
+	:i $overview_cam_zoom$ = %vec3(0.000000,4000.000000,500.000000)
+:i :s}
+:i $Level_BA$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_BA$
+	:i $load_script$ = $Load_BA$
+	:i $name$ = %s(9,"Barcelona")
+	:i $ambient_track$ = %s(5,"ba_bg")
+	:i $loading_time$ = %f(13.390000)
+	:i $COIM_size$ = %i(1536000,00177000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $pre$ = %s(14,"BA_scripts.pre")
+	:i $scnpre$ = %s(9,"BAscn.pre")
+	:i $level$ = %s(2,"BA")
+	:i $sky$ = %s(6,"BA_Sky")
+	:i $qb$ = %s(23,"levels\BA\thugpro\BA.qb")
+	:i $colpre$ = %s(9,"BAcol.pre")
+	:i $pedpre$ = %s(9,"BAped.pre")
+	:i $thugpro_prx$ = %s(14,"thugpro_ba.pre")
+	:i $level_qb$ = %s(23,"levels\BA\BA_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\BA\BA_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\BA\BA_cutscene_particle_data.qb")
+		:i %s(35,"levels\BA\BA_level_particle_data.qb")
+		:i %s(43,"levels\BA\BA_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\BA\BA_level_fast_particle_data.qb")
+		:i %s(23,"levels\ba\ba_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $BA_Startup$
+	:i $goals_script$ = $BA_goals$
+	:i $setup_script$ = $thugpro_BA_Setup$
+	:i $tod_script$ = $BA_TOD$
+	:i $default_stats$ = %i(7,00000007)
+	:i $default_stats_classic$ = %i(3,00000003)
+	:i $level_number$ = $LevelNum_BA$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(100,00000064)
+	:i $fog_blue$ = %i(150,00000096)
+	:i $fog_green$ = %i(120,00000078)
+	:i $fog_alpha$ = %i(50,00000032)
+	:i $fog_dist$ = %i(1000,000003e8)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_angle$ = %i(4294967233,ffffffc1)
+	:i $overview_cam_zoom$ = %vec3(1000.000000,7500.000000,1000.000000)
+:i :s}
+:i $Level_BE$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_BE$
+	:i $load_script$ = $Load_BE$
+	:i $name$ = %s(6,"Berlin")
+	:i $ambient_track$ = %s(5,"be_bg")
+	:i $loading_time$ = %f(14.580000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $pre$ = %s(14,"BE_scripts.pre")
+	:i $scnpre$ = %s(9,"BEscn.pre")
+	:i $level$ = %s(2,"BE")
+	:i $sky$ = %s(6,"BE_Sky")
+	:i $qb$ = %s(15,"levels\BE\BE.qb")
+	:i $colpre$ = %s(9,"BEcol.pre")
+	:i $pedpre$ = %s(9,"BEped.pre")
+	:i $level_qb$ = %s(23,"levels\BE\BE_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\BE\BE_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_be.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\BE\BE_cutscene_particle_data.qb")
+		:i %s(35,"levels\BE\BE_level_particle_data.qb")
+		:i %s(43,"levels\BE\BE_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\BE\BE_level_fast_particle_data.qb")
+		:i %s(23,"levels\be\be_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $BE_Startup$
+	:i $goals_script$ = $BE_goals$
+	:i $setup_script$ = $BE_setup$
+	:i $default_stats$ = %i(8,00000008)
+	:i $default_stats_classic$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_BE$
+	:i $skip_teammate_pro$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(3,00000003)
+	:i $num_f_heads$ = %i(3,00000003)
+	:i $num_f_torsos$ = %i(3,00000003)
+	:i $num_f_legs$ = %i(3,00000003)
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(3000.000000,8000.000000,-5000.000000)
+:i :s}
+:i $Level_AU$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_AU$
+	:i $load_script$ = $Load_AU$
+	:i $name$ = %s(9,"Australia")
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $loading_time$ = %f(12.280000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $pre$ = %s(14,"AU_scripts.pre")
+	:i $scnpre$ = %s(9,"AUscn.pre")
+	:i $level$ = %s(2,"AU")
+	:i $sky$ = %s(6,"AU_Sky")
+	:i $qb$ = %s(23,"levels\AU\thugpro\AU.qb")
+	:i $colpre$ = %s(9,"AUcol.pre")
+	:i $pedpre$ = %s(9,"AUped.pre")
+	:i $level_qb$ = %s(23,"levels\AU\AU_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\AU\AU_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_au.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\AU\AU_cutscene_particle_data.qb")
+		:i %s(35,"levels\AU\AU_level_particle_data.qb")
+		:i %s(43,"levels\AU\AU_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\AU\AU_level_fast_particle_data.qb")
+		:i %s(23,"levels\au\au_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $AU_Startup$
+	:i $goals_script$ = $AU_goals$
+	:i $setup_script$ = $AU_thugpro_Setup$
+	:i $default_stats$ = %i(6,00000006)
+	:i $default_stats_classic$ = %i(4,00000004)
+	:i $level_number$ = $LevelNum_AU$
+	:i $sun_theta$ = :a{%f(50.000000)%f(65.000000)%f(90.000000)%f(90.000000):a}
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $num_f_heads$ = %i(4,00000004)
+	:i $num_f_torsos$ = %i(4,00000004)
+	:i $num_f_legs$ = %i(4,00000004)
+	:i $special_ped_info$ = :a{
+		:i :s{$type$ = $pro$$flag$ = $PRO_FOUND_04$:s}
+		:i :s{$name$ = $shrimpvendor$$type$ = $guest$:s}
+		:i :s{$name$ = $minikartdriver$$type$ = $flavor$:s}
+		:i :a}
+	:i $overview_cam_zoom$ = %vec3(3500.000000,6500.000000,0.000000)
+:i :s}
+:i $Level_NO$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_NO$
+	:i $load_script$ = $Load_NO$
+	:i $name$ = %s(11,"New Orleans")
+	:i $ambient_track$ = %s(5,"no_bg")
+	:i $loading_time$ = %f(13.930000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $pre$ = %s(14,"NO_scripts.pre")
+	:i $scnpre$ = %s(9,"NOscn.pre")
+	:i $level$ = %s(2,"NO")
+	:i $sky$ = %s(6,"NO_Sky")
+	:i $qb$ = %s(15,"levels\NO\NO.qb")
+	:i $colpre$ = %s(9,"NOcol.pre")
+	:i $pedpre$ = %s(9,"NOped.pre")
+	:i $level_qb$ = %s(23,"levels\NO\NO_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\NO\NO_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\NO\NO_cutscene_particle_data.qb")
+		:i %s(35,"levels\NO\NO_level_particle_data.qb")
+		:i %s(43,"levels\NO\NO_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\NO\NO_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $NO_Startup$
+	:i $goals_script$ = $NO_goals$
+	:i $setup_script$ = $NO_setup$
+	:i $default_stats$ = %i(8,00000008)
+	:i $default_stats_classic$ = %i(7,00000007)
+	:i $level_number$ = $LevelNum_NO$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(1.300000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(3,00000003)
+	:i $num_m_torsos$ = %i(3,00000003)
+	:i $num_m_legs$ = %i(3,00000003)
+	:i $num_f_heads$ = %i(4,00000004)
+	:i $num_f_torsos$ = %i(4,00000004)
+	:i $num_f_legs$ = %i(3,00000003)
+	:i $special_ped_info$ = :a{
+		:i :s{$type$ = $pro$$flag$ = $PRO_FOUND_05$:s}
+		:i :s{$type$ = $guest$$name$ = $jester$:s}
+		:i :s{$type$ = $flavor$$name$ = $voodoo$:s}
+		:i :a}
+	:i $overview_cam_angle$ = %i(90,0000005a)
+	:i $overview_cam_zoom$ = %vec3(-1500.000000,6000.000000,-1000.000000)
+:i :s}
+:i $level_testlevel$ = :s{
+	:i $structure_name$ = $level_testlevel$
+	:i $load_script$ = $Load_TestLevel$
+	:i $name$ = %s(9,"TestLevel")
+	:i $loading_time$ = %f(9.500000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $pre$ = %s(21,"TestLevel_scripts.pre")
+	:i $scnpre$ = %s(16,"TestLevelscn.pre")
+	:i $level$ = %s(9,"TestLevel")
+	:i $sky$ = %s(13,"TestLevel_sky")
+	:i $qb$ = %s(29,"levels\TestLevel\TestLevel.qb")
+	:i $colpre$ = %s(16,"TestLevelcol.pre")
+	:i $level_qb$ = %s(37,"levels\TestLevel\TestLevel_scripts.qb")
+	:i $startup_script$ = $TestLevel_Startup$
+	:i $goals_script$ = $TestLevel_goals$
+	:i $setup_script$ = $TestLevel_setup$
+	:i $default_stats$ = %i(10,0000000a)
+	:i $default_stats_classic$ = %i(10,0000000a)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_hi$ = %f(1.300000)
+	:i $mod_factor_1_lo$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(10,0000000a)
+	:i $num_m_torsos$ = %i(10,0000000a)
+	:i $num_m_legs$ = %i(8,00000008)
+:i :s}
+:i $Level_ST$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_ST$
+	:i $load_script$ = $Load_ST$
+	:i $name$ = %s(8,"Skatopia")
+	:i $ambient_track$ = %s(5,"st_bg")
+	:i $loading_time$ = %f(10.250000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(1,00000001)
+	:i $pre$ = %s(14,"ST_scripts.pre")
+	:i $scnpre$ = %s(9,"STscn.pre")
+	:i $level$ = %s(2,"ST")
+	:i $sky$ = %s(6,"ST_Sky")
+	:i $qb$ = %s(15,"levels\ST\ST.qb")
+	:i $colpre$ = %s(9,"STcol.pre")
+	:i $pedpre$ = %s(9,"STped.pre")
+	:i $level_qb$ = %s(23,"levels\ST\ST_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\ST\ST_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_st.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\ST\ST_cutscene_particle_data.qb")
+		:i %s(35,"levels\ST\ST_level_particle_data.qb")
+		:i %s(43,"levels\ST\ST_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\ST\ST_level_fast_particle_data.qb")
+		:i %s(23,"levels\st\st_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $ST_Startup$
+	:i $goals_script$ = $ST_goals$
+	:i $setup_script$ = $ST_setup$
+	:i $default_stats$ = %i(7,00000007)
+	:i $default_stats_classic$ = %i(4,00000004)
+	:i $level_number$ = $LevelNum_ST$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $special_ped_info$ = :a{
+		:i :s{$type$ = $pro$$flag$ = $PRO_FOUND_06$:s}
+		:i :s{$type$ = $guest$$name$ = $sheckler$:s}
+		:i :s{$type$ = $flavor$$name$ = $chainsawskater$:s}
+		:i :a}
+	:i $overview_cam_zoom$ = %vec3(0.000000,-2000.000000,1000.000000)
+:i :s}
+:i $Level_SE$ = :s{
+	:i $game$ = $THUG2$
+	:i $structure_name$ = $Level_SE$
+	:i $load_script$ = $Load_SE$
+	:i $name$ = %s(10,"Pro Skater")
+	:i $ambient_track$ = :a{%s(5,"se_bg")
+		:i %s(6,"se_bg2")
+		:i %s(6,"se_bg3")
+		:i :a}
+	:i $loading_time$ = %f(9.470000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"SE_scripts.pre")
+	:i $scnpre$ = %s(9,"SEscn.pre")
+	:i $level$ = %s(2,"SE")
+	:i $sky$ = %s(6,"SE_Sky")
+	:i $qb$ = %s(15,"levels\SE\SE.qb")
+	:i $colpre$ = %s(9,"SEcol.pre")
+	:i $pedpre$ = %s(9,"SEped.pre")
+	:i $level_qb$ = %s(23,"levels\SE\SE_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\SE\SE_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\SE\SE_cutscene_particle_data.qb")
+		:i %s(35,"levels\SE\SE_level_particle_data.qb")
+		:i %s(43,"levels\SE\SE_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\SE\SE_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $SE_Startup$
+	:i $goals_script$ = $SE_goals$
+	:i $setup_script$ = $SE_setup$
+	:i $default_stats$ = %i(7,00000007)
+	:i $default_stats_classic$ = %i(7,00000007)
+	:i $level_number$ = $LevelNum_SE$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $uber_frig_height$ = %f(800.000000)
+	:i $overview_cam_zoom$ = %vec3(0.000000,20000.000000,-10000.000000)
+:i :s}
+:i $Level_SE2$ = :s{
+	:i $game$ = $THUG2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_SE2$
+	:i $load_script$ = $Load_SE2$
+	:i $name$ = %s(12,"The Triangle")
+	:i $ambient_track$ = %s(6,"se2_bg")
+	:i $loading_time$ = %f(7.310000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(15,"SE2_scripts.pre")
+	:i $scnpre$ = %s(10,"SE2scn.pre")
+	:i $level$ = %s(3,"SE2")
+	:i $sky$ = %s(7,"SE2_Sky")
+	:i $qb$ = %s(17,"levels\SE2\SE2.qb")
+	:i $colpre$ = %s(10,"SE2col.pre")
+	:i $pedpre$ = %s(10,"SE2ped.pre")
+	:i $level_qb$ = %s(25,"levels\SE2\SE2_scripts.qb")
+	:i $level_sfx_qb$ = %s(21,"levels\SE2\SE2_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(40,"levels\SE2\SE2_cutscene_particle_data.qb")
+		:i %s(37,"levels\SE2\SE2_level_particle_data.qb")
+		:i %s(45,"levels\SE2\SE2_cutscene_fast_particle_data.qb")
+		:i %s(42,"levels\SE2\SE2_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $SE2_Startup$
+	:i $goals_script$ = $SE2_goals$
+	:i $setup_script$ = $SE2_setup$
+	:i $default_stats$ = %i(7,00000007)
+	:i $default_stats_classic$ = %i(9,00000009)
+	:i $level_number$ = $LevelNum_SE2$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.100000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0_lo$ = %i(0,00000000)
+	:i $mod_factor_0_hi$ = %i(0,00000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.300000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_zoom$ = %vec3(0.000000,8000.000000,0.000000)
+	:i $overview_cam_hide_objects$ = :a{$CG_Vortex_01$$CG_Vortex_02$$CG_Vortex3_spinny$:a}
+:i :s}
+:i function $Load_Mainmenu2$
+	:i $load_level$$level_Mainmenu2$
+:i endfunction
+:i $level_Mainmenu2$ = :s{
+	:i $game$ = $THUG2$
+	:i $structure_name$ = $level_Mainmenu$
+	:i $load_script$ = $Load_Mainmenu$
+	:i $name$ = %s(9,"Main Menu")
+	:i $loading_time$ = %f(6.750000)
+	:i $COIM_size$ = %i(10240,00002800)
+	:i $loading_time_xbox$ = %f(11.000000)
+	:i $level_name$ = %s(8,"mainmenu")
+	:i $pre$ = %s(20,"mainmenu_scripts.pre")
+	:i $scnpre$ = %s(15,"mainmenuscn.pre")
+	:i $level$ = %s(8,"mainmenu")
+	:i $qb$ = %s(27,"levels\mainmenu\mainmenu.qb")
+	:i $colpre$ = %s(15,"mainmenucol.pre")
+	:i $level_qb$ = %s(39,"levels\mainmenu\fix\mainmenu_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(35,"levels\mainmenu\mainmenu_options.qb")
+		:i %s(35,"levels\mainmenu\fix\mainmenu_net.qb")
+		:i %s(31,"levels\mainmenu\mainmenu_cas.qb")
+		:i %s(36,"levels\mainmenu\neversoft_skaters.qb")
+		:i %s(39,"levels\mainmenu\mainmenu_facemapping.qb")
+		:i %s(26,"levels\mainmenu\casmenu.qb")
+		:i %s(28,"levels\mainmenu\colormenu.qb")
+		:i %s(30,"levels\mainmenu\scalingmenu.qb")
+		:i %s(40,"levels\mainmenu\edit_graphics_premade.qb")
+		:i %s(40,"levels\mainmenu\edit_graphics_sprites.qb")
+		:i %s(35,"levels\mainmenu\instructions_caf.qb")
+		:i %s(37,"levels\mainmenu\edit_graphics_menu.qb")
+		:i :a}
+	:i $startup_script$ = $mainmenu_startup$
+	:i $default_stats$ = %i(8,00000008)
+	:i $level_number$ = $LevelNum_Skateshop$
+	:i $frontend_level$ = %i(1,00000001)
+	:i $skip_teammate_pro$
+	:i $ambient_red$ = %i(66,00000042)
+	:i $ambient_green$ = %i(67,00000043)
+	:i $ambient_blue$ = %i(68,00000044)
+	:i $ambient_mod_factor_lo$ = %f(0.000000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %f(-90.000000)
+	:i $pitch_0$ = %f(-10.000000)
+	:i $red_0$ = %i(0,00000000)
+	:i $green_0$ = %i(0,00000000)
+	:i $blue_0$ = %i(0,00000000)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %f(-120.000000)
+	:i $pitch_1$ = %f(120.000000)
+	:i $red_1$ = %i(0,00000000)
+	:i $green_1$ = %i(0,00000000)
+	:i $blue_1$ = %i(0,00000000)
+	:i $mod_factor_1_lo$ = %f(0.000000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+:i :s}
+:i function $Load_Mainmenu$
+	:i $load_level$$level_Mainmenu$
+:i endfunction
+:i $level_Mainmenu$ = :s{
+	:i $game$ = $THUG1$
+	:i $structure_name$ = $level_Mainmenu$
+	:i $load_script$ = $Load_Mainmenu$
+	:i $name$ = %s(10,"Skate Shop")
+	:i $loading_time$ = %f(6.750000)
+	:i $COIM_size$ = %i(10240,00002800)
+	:i $loading_time_xbox$ = %f(11.000000)
+	:i $level_name$ = %s(9,"skateshop")
+	:i $level$ = %s(9,"skateshop")
+	:i $nosun$
+	:i $qb$ = %s(29,"levels\skateshop\skateshop.qb")
+	:i $level_qb$ = %s(37,"levels\skateshop\skateshop_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(33,"levels\skateshop\skateshop_cas.qb")
+		:i %s(29,"levels\skateshop\colormenu.qb")
+		:i :a}
+	:i $startup_script$ = $skateshop_startup$
+	:i $default_stats$ = %i(8,00000008)
+	:i $level_number$ = $LevelNum_Skateshop$
+	:i $frontend_level$ = %i(1,00000001)
+	:i $skip_teammate_pro$
+	:i $ambient_red$ = %i(66,00000042)
+	:i $ambient_green$ = %i(67,00000043)
+	:i $ambient_blue$ = %i(68,00000044)
+	:i $ambient_mod_factor_lo$ = %f(0.000000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %f(-90.000000)
+	:i $pitch_0$ = %f(-10.000000)
+	:i $red_0$ = %i(0,00000000)
+	:i $green_0$ = %i(0,00000000)
+	:i $blue_0$ = %i(0,00000000)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %f(-120.000000)
+	:i $pitch_1$ = %f(120.000000)
+	:i $red_1$ = %i(0,00000000)
+	:i $green_1$ = %i(0,00000000)
+	:i $blue_1$ = %i(0,00000000)
+	:i $mod_factor_1_lo$ = %f(0.000000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $pre$ = %s(21,"skateshop_scripts.pre")
+	:i $scnpre$ = %s(16,"skateshopscn.pre")
+	:i $colpre$ = %s(16,"skateshopcol.pre")
+:i :s}
+:i $Level_LA$ = :s{
+	:i $game$ = $THPS3$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_LA$
+	:i $load_script$ = $Load_LA$
+	:i $name$ = %s(11,"Los Angeles")
+	:i $ambient_track$ = %s(5,"la_bg")
+	:i $loading_time$ = %f(8.670000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"LA_scripts.pre")
+	:i $scnpre$ = %s(9,"LAscn.pre")
+	:i $level$ = %s(2,"LA")
+	:i $sky$ = %s(6,"LA_Sky")
+	:i $qb$ = %s(15,"levels\LA\LA.qb")
+	:i $colpre$ = %s(9,"LAcol.pre")
+	:i $pedpre$ = %s(9,"LAped.pre")
+	:i $level_qb$ = %s(23,"levels\LA\LA_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\LA\LA_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\LA\LA_cutscene_particle_data.qb")
+		:i %s(35,"levels\LA\LA_level_particle_data.qb")
+		:i %s(43,"levels\LA\LA_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\LA\LA_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $LA_Startup$
+	:i $goals_script$ = $LA_goals$
+	:i $setup_script$ = $LA_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(9,00000009)
+	:i $level_number$ = $LevelNum_LA$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_zoom$ = %vec3(0.000000,10000.000000,0.000000)
+:i :s}
+:i $Level_SC$ = :s{
+	:i $game$ = $THPS1$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_SC$
+	:i $load_script$ = $Load_SC$
+	:i $name$ = %s(8,"School 1")
+	:i $ambient_track$ = %s(5,"sc_bg")
+	:i $loading_time$ = %f(6.150000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"SC_scripts.pre")
+	:i $scnpre$ = %s(9,"SCscn.pre")
+	:i $level$ = %s(2,"SC")
+	:i $sky$ = %s(6,"SC_Sky")
+	:i $qb$ = %s(15,"levels\SC\SC.qb")
+	:i $thugpro_col_pre$
+	:i $pedpre$ = %s(9,"SCped.pre")
+	:i $level_qb$ = %s(23,"levels\SC\SC_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\SC\SC_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_sc.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\SC\SC_cutscene_particle_data.qb")
+		:i %s(35,"levels\SC\SC_level_particle_data.qb")
+		:i %s(43,"levels\SC\SC_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\SC\SC_level_fast_particle_data.qb")
+		:i %s(23,"levels\sc\sc_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $SC_Startup$
+	:i $goals_script$ = $SC_goals$
+	:i $setup_script$ = $SC_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_SC$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_angle$ = %i(4294967251,ffffffd3)
+	:i $overview_cam_zoom$ = %vec3(1000.000000,0.000000,-1000.000000)
+:i :s}
+:i $Level_HN$ = :s{
+	:i $game$ = $THPS2$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_HN$
+	:i $load_script$ = $Load_HN$
+	:i $name$ = %s(6,"Hangar")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"hn")
+	:i $qb$ = %s(15,"levels\hn\hn.qb")
+	:i $level_qb$ = %s(23,"levels\hn\hn_scripts.qb")
+	:i $startup_script$ = $hn_Startup$
+	:i $goals_script$ = $hn_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(72,00000048)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(72,00000048)
+	:i $ambient_mod_factor$ = %f(0.200000)
+	:i $heading_0$ = %i(4294967266,ffffffe2)
+	:i $pitch_0$ = %i(4294967236,ffffffc4)
+	:i $red_0$ = %i(110,0000006e)
+	:i $green_0$ = %i(110,0000006e)
+	:i $blue_0$ = %i(105,00000069)
+	:i $mod_factor_0$ = %f(0.900000)
+	:i $heading_1$ = %i(200,000000c8)
+	:i $pitch_1$ = %i(33,00000021)
+	:i $red_1$ = %i(23,00000017)
+	:i $green_1$ = %i(24,00000018)
+	:i $blue_1$ = %i(30,0000001e)
+	:i $mod_factor_1$ = %f(0.900000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"hn_scripts.pre")
+	:i $scnpre$ = %s(9,"hnscn.pre")
+	:i $colpre$ = %s(9,"hncol.pre")
+	:i $indoor$
+	:i $overview_cam_zoom$ = %vec3(-2500.000000,4000.000000,0.000000)
+	:i $overview_cam_hide_objects$ = :a{
+		:i $roof_break_heli$
+		:i $piece_roof_fall$
+		:i $piece_roof_fall_01$
+		:i $roof_piece_fall_03$
+		:i $SkHan_Wall2$
+		:i $SkHan_Wall5$
+		:i $SkHan_Wall0$
+		:i $SkHan_Wall15$
+		:i $SkHan_Wall16$
+		:i $SkHan_Wall17$
+		:i $JG_HN_TunnelRoof$
+		:i $Han_Wind_Tunnel7$
+		:i :a}
+:i :s}
+:i $Level_VN$ = :s{
+	:i $game$ = $THPS2$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_VN$
+	:i $load_script$ = $Load_VN$
+	:i $name$ = %s(6,"Venice")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"VN")
+	:i $sky$ = %s(6,"vn_Sky")
+	:i $qb$ = %s(15,"levels\VN\VN.qb")
+	:i $level_qb$ = %s(23,"levels\VN\VN_scripts.qb")
+	:i $startup_script$ = $VN_Startup$
+	:i $goals_script$ = $VN_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(72,00000048)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(72,00000048)
+	:i $ambient_mod_factor$ = %f(0.200000)
+	:i $heading_0$ = %i(4294967266,ffffffe2)
+	:i $pitch_0$ = %i(4294967236,ffffffc4)
+	:i $red_0$ = %i(110,0000006e)
+	:i $green_0$ = %i(110,0000006e)
+	:i $blue_0$ = %i(105,00000069)
+	:i $mod_factor_0$ = %f(0.900000)
+	:i $heading_1$ = %i(200,000000c8)
+	:i $pitch_1$ = %i(33,00000021)
+	:i $red_1$ = %i(23,00000017)
+	:i $green_1$ = %i(24,00000018)
+	:i $blue_1$ = %i(30,0000001e)
+	:i $mod_factor_1$ = %f(0.900000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"vn_scripts.pre")
+	:i $scnpre$ = %s(9,"vnscn.pre")
+	:i $colpre$ = %s(9,"vncol.pre")
+	:i $overview_cam_pos$ = %vec3(1056.072021,8086.354004,1931.711060)
+:i :s}
+:i $Level_SC2$ = :s{
+	:i $game$ = $THPS2$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_SC2$
+	:i $load_script$ = $Load_sc2$
+	:i $name$ = %s(9,"School II")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"SC2")
+	:i $sky$ = %s(7,"sc2_Sky")
+	:i $nosun$
+	:i $qb$ = %s(17,"levels\SC2\SC2.qb")
+	:i $level_qb$ = %s(25,"levels\SC2\SC2_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\SC2\SC2_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $SC2_Startup$
+	:i $goals_script$ = $SC2_Goals$
+	:i $setup_script$ = $SC2_Setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(72,00000048)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(72,00000048)
+	:i $ambient_mod_factor$ = %f(0.200000)
+	:i $heading_0$ = %i(4294967266,ffffffe2)
+	:i $pitch_0$ = %i(4294967236,ffffffc4)
+	:i $red_0$ = %i(110,0000006e)
+	:i $green_0$ = %i(110,0000006e)
+	:i $blue_0$ = %i(105,00000069)
+	:i $mod_factor_0$ = %f(0.900000)
+	:i $heading_1$ = %i(200,000000c8)
+	:i $pitch_1$ = %i(33,00000021)
+	:i $red_1$ = %i(23,00000017)
+	:i $green_1$ = %i(24,00000018)
+	:i $blue_1$ = %i(30,0000001e)
+	:i $mod_factor_1$ = %f(0.900000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(15,"sc2_scripts.pre")
+	:i $scnpre$ = %s(10,"sc2scn.pre")
+	:i $colpre$ = %s(10,"sc2col.pre")
+:i :s}
+:i $Level_PH$ = :s{
+	:i $game$ = $THPS2$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_PH$
+	:i $load_script$ = $Load_PH$
+	:i $name$ = %s(6,"Philly")
+	:i $ambient_track$ = %s(5,"ph_bg")
+	:i $loading_time$ = %f(7.120000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"PH_scripts.pre")
+	:i $scnpre$ = %s(9,"PHscn.pre")
+	:i $level$ = %s(2,"PH")
+	:i $sky$ = %s(6,"PH_Sky")
+	:i $qb$ = %s(15,"levels\PH\PH.qb")
+	:i $colpre$ = %s(9,"PHcol.pre")
+	:i $level_qb$ = %s(23,"levels\PH\PH_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\PH\PH_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_ph.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\PH\PH_cutscene_particle_data.qb")
+		:i %s(35,"levels\PH\PH_level_particle_data.qb")
+		:i %s(43,"levels\PH\PH_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\PH\PH_level_fast_particle_data.qb")
+		:i %s(23,"levels\ph\ph_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $PH_Startup$
+	:i $goals_script$ = $PH_goals$
+	:i $setup_script$ = $PH_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(8,00000008)
+	:i $level_number$ = $LevelNum_PH$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(0.000000,5000.000000,3000.000000)
+	:i $overview_cam_hide_objects$ = :a{$PH_Phillyside_Ceiling0$$PH_Phillyside_Ceiling01$$PH_Phillyside_Ceiling5$$DT_underbridge01$:a}
+:i :s}
+:i $Level_DJ$ = :s{
+	:i $game$ = $THPS1$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_DJ$
+	:i $load_script$ = $Load_DJ$
+	:i $name$ = %s(12,"Downhill Jam")
+	:i $ambient_track$ = %s(5,"dj_bg")
+	:i $loading_time$ = %f(5.860000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"DJ_scripts.pre")
+	:i $scnpre$ = %s(9,"DJscn.pre")
+	:i $level$ = %s(2,"DJ")
+	:i $sky$ = %s(6,"DJ_Sky")
+	:i $qb$ = %s(15,"levels\DJ\DJ.qb")
+	:i $colpre$ = %s(9,"DJcol.pre")
+	:i $pedpre$ = %s(9,"DJped.pre")
+	:i $level_qb$ = %s(23,"levels\DJ\DJ_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\DJ\DJ_sfx.qb")
+	:i $thugpro_col_pre$
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\DJ\DJ_cutscene_particle_data.qb")
+		:i %s(35,"levels\DJ\DJ_level_particle_data.qb")
+		:i %s(43,"levels\DJ\DJ_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\DJ\DJ_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $DJ_Startup$
+	:i $goals_script$ = $DJ_goals$
+	:i $setup_script$ = $DJ_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(6,00000006)
+	:i $level_number$ = $LevelNum_DJ$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_pos$ = %vec3(2500.000000,10000.000000,0.000000)
+:i :s}
+:i $Level_CA$ = :s{
+	:i $game$ = $THPS3$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_CA$
+	:i $load_script$ = $Load_CA$
+	:i $name$ = %s(6,"Canada")
+	:i $nosun$
+	:i $ambient_track$ = %s(5,"ca_bg")
+	:i $loading_time$ = %f(6.800000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"CA_scripts.pre")
+	:i $scnpre$ = %s(9,"CAscn.pre")
+	:i $level$ = %s(2,"CA")
+	:i $sky$ = %s(6,"CA_Sky")
+	:i $qb$ = %s(15,"levels\CA\CA.qb")
+	:i $colpre$ = %s(9,"CAcol.pre")
+	:i $pedpre$ = %s(9,"CAped.pre")
+	:i $thugpro_sky_scn_pre$
+	:i $level_qb$ = %s(23,"levels\CA\CA_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\CA\CA_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(38,"levels\CA\CA_cutscene_particle_data.qb")
+		:i %s(35,"levels\CA\CA_level_particle_data.qb")
+		:i %s(43,"levels\CA\CA_cutscene_fast_particle_data.qb")
+		:i %s(40,"levels\CA\CA_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $CA_Startup$
+	:i $goals_script$ = $CA_goals$
+	:i $setup_script$ = $CA_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(8,00000008)
+	:i $level_number$ = $LevelNum_CA$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_pos$ = %vec3(1975.968018,9068.752930,4968.952148)
+	:i $overview_cam_angle$ = %f(45.000000)
+:i :s}
+:i $Level_AP$ = :s{
+	:i $game$ = $THPS3$
+	:i $HasClassicGoals$
+	:i $structure_name$ = $Level_AP$
+	:i $load_script$ = $Load_AP$
+	:i $name$ = %s(7,"Airport")
+	:i $ambient_track$ = %s(5,"ap_bg")
+	:i $loading_time$ = %f(7.830000)
+	:i $COIM_size$ = %i(1331200,00145000)
+	:i $tod_manager_active$ = %i(0,00000000)
+	:i $pre$ = %s(14,"AP_scripts.pre")
+	:i $scnpre$ = %s(9,"APscn.pre")
+	:i $level$ = %s(2,"AP")
+	:i $sky$ = %s(6,"AP_Sky")
+	:i $qb$ = %s(15,"levels\AP\AP.qb")
+	:i $thugpro_col_pre$
+	:i $pedpre$ = %s(9,"APped.pre")
+	:i $level_qb$ = %s(23,"levels\AP\AP_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\AP\AP_sfx.qb")
+	:i $thugpro_prx$ = %s(14,"thugpro_ap.pre")
+	:i $more_level_qbs$ = :a{
+		:i %s(35,"levels\AP\AP_level_particle_data.qb")
+		:i %s(40,"levels\AP\AP_level_fast_particle_data.qb")
+		:i %s(23,"levels\ap\ap_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $AP_Startup$
+	:i $goals_script$ = $AP_goals$
+	:i $setup_script$ = $AP_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $default_stats_classic$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_AP$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0_lo$ = %f(1.400000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(0.400000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $overview_cam_angle$ = %i(90,0000005a)
+	:i $overview_cam_zoom$ = %vec3(-22000.000000,30000.000000,4000.000000)
+:i :s}
+:i $Level_NJ$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableBackfacePatch$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_NJ$
+	:i $load_script$ = $Load_NJ$
+	:i $name$ = %s(10,"New Jersey")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"NJ")
+	:i $sky$ = %s(6,"nj_Sky")
+	:i $qb$ = %s(15,"levels\NJ\NJ.qb")
+	:i $level_qb$ = %s(23,"levels\NJ\NJ_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\NJ\NJ_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\nj\nj_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $NJ_Startup$
+	:i $goals_script$ = $nj_goals$
+	:i $setup_script$ = $nj_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %i(50,00000032)
+	:i $pitch_0$ = %i(330,0000014a)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %i(240,000000f0)
+	:i $pitch_1$ = %i(330,0000014a)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.400000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(1000,000003e8)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"NJ_scripts.pre")
+	:i $scnpre$ = %s(9,"NJscn.pre")
+	:i $colpre$ = %s(9,"NJcol.pre")
+	:i $overview_cam_angle$ = %i(4294967286,fffffff6)
+	:i $overview_cam_zoom$ = %vec3(0.000000,10000.000000,0.000000)
+:i :s}
+:i $Level_NY$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_NY$
+	:i $load_script$ = $Load_NY$
+	:i $name$ = %s(9,"Manhattan")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"ny")
+	:i $sky$ = %s(6,"ny_Sky")
+	:i $qb$ = %s(15,"levels\ny\ny.qb")
+	:i $level_qb$ = %s(23,"levels\NY\ny_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\NY\ny_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\ny\ny_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $ny_Startup$
+	:i $goals_script$ = $ny_goals$
+	:i $setup_script$ = $NY_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %f(330.000000)
+	:i $pitch_0$ = %f(330.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %f(150.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(126,0000007e)
+	:i $fog_blue$ = %i(227,000000e3)
+	:i $fog_green$ = %i(169,000000a9)
+	:i $fog_alpha$ = %i(45,0000002d)
+	:i $fog_dist$ = %i(1000,000003e8)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"ny_scripts.pre")
+	:i $scnpre$ = %s(9,"nyscn.pre")
+	:i $colpre$ = %s(9,"nycol.pre")
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(1000.000000,7000.000000,2000.000000)
+	:i $overview_cam_hide_objects$ = 
+	:i :a{
+		:i $NightOn_JG_NY_77NightLights$$NY_CW_Office_lights03$
+		:i $JG_NY_77BuildingTop$$JG_NY_77LowerWindows$
+		:i $NY_CW_Office_lights$$CW_Chase_pills03$
+		:i $NY_Chase_EG_JP01_a$$NY_Chase_EG_JP01$
+		:i $NY_Chase_EG_JP_noIn_roof$
+		:i $NY_Chase_EG_JP_In_roofwall$
+		:i $cw_chase_struts$
+		:i $cw_chase_strut$
+		:i $cw_chase_struts_a$
+		:i $cw_chase_strut_a$
+		:i :a}
+:i :s}
+:i $Level_FL$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_FL$
+	:i $load_script$ = $Load_FL$
+	:i $name$ = %s(5,"Tampa")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"FL")
+	:i $sky$ = %s(6,"FL_Sky")
+	:i $nosun$
+	:i $level_qb$ = %s(23,"levels\fl\FL_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\FL\FL_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\fl\fl_thugpro.qb")
+		:i :a}
+	:i $qb$ = %s(15,"levels\fl\fl.qb")
+	:i $startup_script$ = $fl_Startup$
+	:i $goals_script$ = $fl_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"fl_scripts.pre")
+	:i $scnpre$ = %s(9,"flscn.pre")
+	:i $colpre$ = %s(9,"flcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,7000.000000,2000.000000)
+:i :s}
+:i $Level_SD$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_SD$
+	:i $load_script$ = $Load_SD$
+	:i $name$ = %s(9,"San Diego")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"SD")
+	:i $sky$ = %s(6,"SD_Sky")
+	:i $qb$ = %s(15,"levels\SD\SD.qb")
+	:i $level_qb$ = %s(23,"levels\SD\SD_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\SD\SD_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\sd\sd_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $SD_Startup$
+	:i $goals_script$ = $sd_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %i(159,0000009f)
+	:i $pitch_0$ = %i(308,00000134)
+	:i $red_0$ = %i(136,00000088)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(110,0000006e)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"SD_scripts.pre")
+	:i $scnpre$ = %s(9,"SDscn.pre")
+	:i $colpre$ = %s(9,"SDcol.pre")
+:i :s}
+:i $Level_HI$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_HI$
+	:i $load_script$ = $Load_HI$
+	:i $name$ = %s(6,"Hawaii")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"HI")
+	:i $sky$ = %s(6,"hi_Sky")
+	:i $nosun$
+	:i $qb$ = %s(15,"levels\HI\HI.qb")
+	:i $level_qb$ = %s(23,"levels\HI\HI_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\HI\HI_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\hi\hi_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $HI_Startup$
+	:i $goals_script$ = $hi_goals$
+	:i $setup_script$ = $hi_Setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %f(320.000000)
+	:i $pitch_0$ = %f(330.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %f(160.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(150,00000096)
+	:i $fog_blue$ = %i(235,000000eb)
+	:i $fog_green$ = %i(170,000000aa)
+	:i $fog_alpha$ = %i(38,00000026)
+	:i $fog_dist$ = %i(1000,000003e8)
+	:i $num_m_heads$ = %i(8,00000008)
+	:i $num_m_torsos$ = %i(8,00000008)
+	:i $num_m_legs$ = %i(6,00000006)
+	:i $num_f_heads$ = %i(4,00000004)
+	:i $num_f_torsos$ = %i(4,00000004)
+	:i $num_f_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"HI_scripts.pre")
+	:i $scnpre$ = %s(9,"HIscn.pre")
+	:i $colpre$ = %s(9,"HIcol.pre")
+	:i $overview_cam_zoom$ = %vec3(-1000.000000,12000.000000,4000.000000)
+:i :s}
+:i $Level_VC$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_VC$
+	:i $load_script$ = $Load_VC$
+	:i $name$ = %s(9,"Vancouver")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"vc")
+	:i $sky$ = %s(6,"vc_Sky")
+	:i $nosun$
+	:i $qb$ = %s(15,"levels\vc\vc.qb")
+	:i $level_qb$ = %s(23,"levels\vc\vc_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\vc\vc_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\vc\vc_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $vc_Startup$
+	:i $goals_script$ = $VC_Goals$
+	:i $setup_script$ = $VC_setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $extranetanimsscript$ = $animload_Ped_Driver$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %f(200.000000)
+	:i $pitch_0$ = %f(330.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %f(40.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(80,00000050)
+	:i $fog_green$ = %i(90,0000005a)
+	:i $fog_blue$ = %i(120,00000078)
+	:i $fog_alpha$ = %i(30,0000001e)
+	:i $fog_dist$ = %f(300.000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"VC_scripts.pre")
+	:i $scnpre$ = %s(9,"VCscn.pre")
+	:i $colpre$ = %s(9,"VCcol.pre")
+	:i $overview_cam_angle$ = %i(90,0000005a)
+	:i $overview_cam_zoom$ = %vec3(-2000.000000,20000.000000,-10000.000000)
+:i :s}
+:i $Level_SJ$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_SJ$
+	:i $load_script$ = $Load_SJ$
+	:i $name$ = %s(13,"Slam City Jam")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"sj")
+	:i $qb$ = %s(15,"levels\sj\sj.qb")
+	:i $level_qb$ = %s(23,"levels\sj\sj_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\sj\sj_sfx.qb")
+	:i $startup_script$ = $sj_Startup$
+	:i $goals_script$ = $SJ_Goals$
+	:i $setup_script$ = $SJ_Setup$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(58,0000003a)
+	:i $ambient_green$ = %i(57,00000039)
+	:i $ambient_blue$ = %i(59,0000003b)
+	:i $ambient_mod_factor$ = %f(0.750000)
+	:i $heading_0$ = %i(351,0000015f)
+	:i $pitch_0$ = %i(303,0000012f)
+	:i $red_0$ = %i(80,00000050)
+	:i $green_0$ = %i(63,0000003f)
+	:i $blue_0$ = %i(59,0000003b)
+	:i $mod_factor_0$ = %f(1.260000)
+	:i $heading_1$ = %i(314,0000013a)
+	:i $pitch_1$ = %i(272,00000110)
+	:i $red_1$ = %i(47,0000002f)
+	:i $green_1$ = %i(50,00000032)
+	:i $blue_1$ = %i(52,00000034)
+	:i $mod_factor_1$ = %f(0.460000)
+	:i $fog_red$ = %i(27,0000001b)
+	:i $fog_blue$ = %i(23,00000017)
+	:i $fog_green$ = %i(19,00000013)
+	:i $fog_alpha$ = %i(70,00000046)
+	:i $fog_dist$ = %i(705,000002c1)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"SJ_scripts.pre")
+	:i $scnpre$ = %s(9,"SJscn.pre")
+	:i $colpre$ = %s(9,"SJcol.pre")
+	:i $overview_cam_zoom$ = %vec3(1000.000000,8000.000000,-500.000000)
+	:i $overview_cam_hide_objects$ = :a{
+		:i $g_dome_00$$g_dome_01$$g_dome_02$$g_dome_03$
+		:i $g_dome_04$$g_dome_043$$g_dome_05$$g_dome_06$
+		:i $g_dome_07$$g_dome_08$$g_dome_09$$g_dome_10$
+		:i $g_dome_11$$g_dome_12$$g_dome_13$$g_dome_14$
+		:i $g_dome_15$$g_dome_16$$g_dome_17$$g_dome_18$
+		:i $g_dome_19$$g_dome_2$$g_dome_20$$g_dome_21$
+		:i $g_dome_22$$g_dome_23$$g_dome_24$$g_dome_25$
+		:i $g_dome_26$$g_dome_27$$g_dome_28$$g_dome_29$
+		:i $g_dome_30$$g_dome_31$$g_dome_32$$g_dome_33$
+		:i $g_dome_34$$g_dome_35$$g_dome_36$
+		:i $g_jumbo_tron_03$
+		:i :a}
+:i :s}
+:i $Level_RU$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_RU$
+	:i $load_script$ = $Load_RU$
+	:i $name$ = %s(6,"Moscow")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"ru")
+	:i $sky$ = %s(6,"ru_Sky")
+	:i $nosun$
+	:i $qb$ = %s(15,"levels\ru\ru.qb")
+	:i $level_qb$ = %s(23,"levels\ru\ru_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\ru\ru_sfx.qb")
+	:i $startup_script$ = $ru_Startup$
+	:i $setup_script$ = $RU_Setup$
+	:i $goals_script$ = $ru_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(69,00000045)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(79,0000004f)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %f(135.000000)
+	:i $pitch_0$ = %f(330.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %f(300.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(140,0000008c)
+	:i $fog_blue$ = %i(135,00000087)
+	:i $fog_green$ = %i(135,00000087)
+	:i $fog_alpha$ = %i(50,00000032)
+	:i $fog_dist$ = %i(500,000001f4)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"RU_scripts.pre")
+	:i $scnpre$ = %s(9,"RUscn.pre")
+	:i $colpre$ = %s(9,"RUcol.pre")%i(90,0000005a)
+	:i $overview_cam_zoom$ = %vec3(4000.000000,15000.000000,-8000.000000)
+:i :s}
+:i $Level_HH$ = :s{
+	:i $game$ = $THUG1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_HH$
+	:i $load_script$ = $Load_HH$
+	:i $name$ = %s(16,"Hotter Than Hell")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"hh")
+	:i $sky$ = %s(6,"hh_Sky")
+	:i $nosun$
+	:i $qb$ = %s(15,"levels\HH\HH.qb")
+	:i $level_qb$ = %s(23,"levels\HH\HH_scripts.qb")
+	:i $level_sfx_qb$ = %s(19,"levels\HH\HH_sfx.qb")
+	:i $startup_script$ = $hh_Startup$
+	:i $goals_script$ = $hh_goals$
+	:i $default_stats$ = %i(5,00000005)
+	:i $level_number$ = $LevelNum_Default$
+	:i $ambient_red$ = %i(44,0000002c)
+	:i $ambient_green$ = %i(37,00000025)
+	:i $ambient_blue$ = %i(29,0000001d)
+	:i $ambient_mod_factor$ = %f(0.300000)
+	:i $heading_0$ = %f(50.000000)
+	:i $pitch_0$ = %f(360.000000)
+	:i $red_0$ = %i(130,00000082)
+	:i $green_0$ = %i(120,00000078)
+	:i $blue_0$ = %i(97,00000061)
+	:i $mod_factor_0$ = %f(1.400000)
+	:i $heading_1$ = %f(270.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(58,0000003a)
+	:i $green_1$ = %i(62,0000003e)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1$ = %f(0.100000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+	:i $pre$ = %s(14,"HH_scripts.pre")
+	:i $scnpre$ = %s(9,"HHscn.pre")
+	:i $colpre$ = %s(9,"HHcol.pre")
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(1000.000000,6000.000000,-1000.000000)
+:i :s}
+:i $level_practice$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableCTF$
+	:i $DisableGraffiti$
+	:i $structure_name$ = $level_practice$
+	:i $load_script$ = $Load_practice$
+	:i $name$ = %s(9,"Skateshop")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(8,"practice")
+	:i $sky$ = %s(12,"practice_Sky")
+	:i $startup_script$ = $practice_Startup$
+	:i $goals_script$ = $practice_goals$
+	:i $setup_script$ = $practice_setup$
+	:i $qb$ = %s(27,"levels\practice\practice.qb")
+	:i $level_qb$ = %s(35,"levels\practice\practice_scripts.qb")
+	:i $default_level_stuff$
+	:i $pre$ = %s(20,"practice_scripts.pre")
+	:i $scnpre$ = %s(15,"practicescn.pre")
+	:i $colpre$ = %s(15,"practicecol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,2000.000000,0.000000)
+:i :s}
+:i $level_sch$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $level_sch$
+	:i $load_script$ = $Load_sch$
+	:i $name$ = %s(7,"College")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"sch")
+	:i $sky$ = %s(7,"sch_Sky")
+	:i $startup_script$ = $sch_Startup$
+	:i $goals_script$ = $sch_goals$
+	:i $setup_script$ = $sch_setup$
+	:i $qb$ = %s(17,"levels\sch\sch.qb")
+	:i $level_qb$ = %s(25,"levels\sch\sch_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\sch\sch_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"SCH_scripts.pre")
+	:i $scnpre$ = %s(10,"SCHscn.pre")
+	:i $colpre$ = %s(10,"SCHcol.pre")
+	:i $overview_cam_zoom$ = %vec3(1000.000000,6000.000000,1000.000000)
+:i :s}
+:i $level_alc$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $structure_name$ = $level_alc$
+	:i $load_script$ = $Load_alc$
+	:i $name$ = %s(8,"Alcatraz")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"alc")
+	:i $sky$ = %s(7,"alc_Sky")
+	:i $startup_script$ = $alc_Startup$
+	:i $goals_script$ = $alc_goals$
+	:i $setup_script$ = $alc_setup$
+	:i $qb$ = %s(17,"levels\alc\alc.qb")
+	:i $level_qb$ = %s(25,"levels\alc\alc_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\alc\alc_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"ALC_scripts.pre")
+	:i $scnpre$ = %s(10,"ALCscn.pre")
+	:i $colpre$ = %s(10,"ALCcol.pre")
+	:i $overview_cam_zoom$ = %vec3(-1000.000000,11000.000000,1000.000000)
+:i :s}
+:i $level_sf2$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $level_sf2$
+	:i $load_script$ = $Load_sf2$
+	:i $name$ = %s(13,"San Francisco")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"sf2")
+	:i $sky$ = %s(7,"sf2_Sky")
+	:i $default_level_lights$
+	:i $startup_script$ = $sf2_Startup$
+	:i $goals_script$ = $sf2_goals$
+	:i $setup_script$ = $sf2_setup$
+	:i $qb$ = %s(17,"levels\sf2\sf2.qb")
+	:i $level_qb$ = %s(25,"levels\sf2\sf2_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\sf2\sf2_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"SF2_scripts.pre")
+	:i $scnpre$ = %s(10,"SF2scn.pre")
+	:i $colpre$ = %s(10,"SF2col.pre")
+	:i $overview_cam_angle$ = %i(4294967206,ffffffa6)
+	:i $overview_cam_zoom$ = %vec3(-2000.000000,8000.000000,0.000000)
+:i :s}
+:i $level_kon$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $level_kon$
+	:i $load_script$ = $Load_kon$
+	:i $name$ = %s(4,"Kona")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"kon")
+	:i $sky$ = %s(7,"kon_Sky")
+	:i $startup_script$ = $kon_Startup$
+	:i $goals_script$ = $kon_goals$
+	:i $setup_script$ = $kon_setup$
+	:i $qb$ = %s(17,"levels\kon\kon.qb")
+	:i $level_qb$ = %s(25,"levels\kon\kon_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\kon\kon_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"KON_scripts.pre")
+	:i $scnpre$ = %s(10,"KONscn.pre")
+	:i $colpre$ = %s(10,"KONcol.pre")
+:i :s}
+:i $level_lon$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $level_lon$
+	:i $load_script$ = $Load_lon$
+	:i $name$ = %s(6,"London")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"lon")
+	:i $sky$ = %s(7,"lon_Sky")
+	:i $startup_script$ = $lon_Startup$
+	:i $goals_script$ = $lon_goals$
+	:i $setup_script$ = $lon_setup$
+	:i $qb$ = %s(17,"levels\lon\lon.qb")
+	:i $level_qb$ = %s(25,"levels\lon\lon_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\lon\lon_thugpro.qb")
+		:i %s(37,"levels\lon\lon_level_particle_data.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"LON_scripts.pre")
+	:i $scnpre$ = %s(10,"LONscn.pre")
+	:i $colpre$ = %s(10,"LONcol.pre")
+	:i $overview_cam_zoom$ = %vec3(4000.000000,3000.000000,-1000.000000)
+:i :s}
+:i $level_jnk$ = :s{
+	:i $game$ = $THPS4$
+	:i $structure_name$ = $level_jnk$
+	:i $load_script$ = $Load_jnk$
+	:i $name$ = %s(8,"Shipyard")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"jnk")
+	:i $sky$ = %s(7,"jnk_Sky")
+	:i $startup_script$ = $jnk_Startup$
+	:i $goals_script$ = $jnk_goals$
+	:i $setup_script$ = $jnk_setup$
+	:i $qb$ = %s(17,"levels\jnk\jnk.qb")
+	:i $level_qb$ = %s(25,"levels\jnk\jnk_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\jnk\jnk_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"JNK_scripts.pre")
+	:i $scnpre$ = %s(10,"JNKscn.pre")
+	:i $colpre$ = %s(10,"JNKcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,8000.000000,0.000000)
+:i :s}
+:i $level_zoo$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $level_zoo$
+	:i $load_script$ = $Load_zoo$
+	:i $name$ = %s(3,"Zoo")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"zoo")
+	:i $sky$ = %s(7,"zoo_Sky")
+	:i $startup_script$ = $zoo_Startup$
+	:i $goals_script$ = $zoo_goals$
+	:i $setup_script$ = $zoo_setup$
+	:i $qb$ = %s(17,"levels\zoo\zoo.qb")
+	:i $level_qb$ = %s(25,"levels\zoo\zoo_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\zoo\zoo_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"ZOO_scripts.pre")
+	:i $scnpre$ = %s(10,"ZOOscn.pre")
+	:i $colpre$ = %s(10,"ZOOcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,7000.000000,3000.000000)
+:i :s}
+:i $Level_cnv$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $structure_name$ = $Level_cnv$
+	:i $load_script$ = $Load_cnv$
+	:i $name$ = %s(8,"Carnival")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"cnv")
+	:i $sky$ = %s(7,"cnv_Sky")
+	:i $startup_script$ = $cnv_Startup$
+	:i $goals_script$ = $cnv_goals$
+	:i $setup_script$ = $cnv_setup$
+	:i $qb$ = %s(17,"levels\cnv\cnv.qb")
+	:i $level_qb$ = %s(25,"levels\cnv\cnv_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\cnv\cnv_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"CNV_scripts.pre")
+	:i $scnpre$ = %s(10,"CNVscn.pre")
+	:i $colpre$ = %s(10,"CNVcol.pre")
+	:i $overview_cam_zoom$ = %vec3(-500.000000,5000.000000,-2000.000000)
+:i :s}
+:i $level_hof$ = :s{
+	:i $game$ = $THPS4$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $nosun$
+	:i $structure_name$ = $level_hof$
+	:i $load_script$ = $Load_hof$
+	:i $name$ = %s(7,"Chicago")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(3,"hof")
+	:i $sky$ = %s(7,"hof_Sky")
+	:i $startup_script$ = $hof_Startup$
+	:i $goals_script$ = $hof_goals$
+	:i $setup_script$ = $hof_setup$
+	:i $qb$ = %s(17,"levels\hof\hof.qb")
+	:i $level_qb$ = %s(25,"levels\hof\hof_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(25,"levels\hof\hof_thugpro.qb")
+		:i :a}
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"HOF_scripts.pre")
+	:i $scnpre$ = %s(10,"HOFscn.pre")
+	:i $colpre$ = %s(10,"HOFcol.pre")
+	:i $wallride_hack$
+	:i $overview_cam_angle$ = %i(4294967206,ffffffa6)
+	:i $overview_cam_zoom$ = %vec3(0.000000,5000.000000,0.000000)
+:i :s}
+:i $Level_vans$ = :s{
+	:i $game$ = $THAW$
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_vans$
+	:i $load_script$ = $Load_vans$
+	:i $name$ = %s(9,"Vans Park")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(4,"vans")
+	:i $nosun$
+	:i $indoor$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $qb$ = %s(19,"levels\vans\vans.qb")
+	:i $level_qb$ = %s(27,"levels\vans\vans_scripts.qb")
+	:i $startup_script$ = $vans_Startup$
+	:i $setup_script$ = $vans_setup$
+	:i $goals_script$ = $vans_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(16,"VANS_scripts.pre")
+	:i $scnpre$ = %s(11,"VANSscn.pre")
+	:i $colpre$ = %s(11,"VANScol.pre")
+	:i $overview_cam_hide_objects$ = :a{$z_sv_jc_rafters$$Z_SV_JH_JC_GEO_CEILING02$$Z_SV_JC_GEO_CEILING03$$Z_SV_JC_GEO_CEILING04$$Z_SV_JC_GEO_CEILING05$:a}
+:i :s}
+:i $Level_skatepark$ = :s{
+	:i $game$ = $THPS1$
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_skatepark$
+	:i $load_script$ = $Load_skatepark$
+	:i $name$ = %s(9,"Skatepark")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(9,"skatepark")
+	:i $nosun$
+	:i $indoor$
+	:i $DisableGoalEditor$
+	:i $qb$ = %s(29,"levels\skatepark\skatepark.qb")
+	:i $level_qb$ = %s(37,"levels\skatepark\skatepark_scripts.qb")
+	:i $startup_script$ = $skatepark_Startup$
+	:i $setup_script$ = $skatepark_setup$
+	:i $goals_script$ = $skatepark_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(21,"skatepark_scripts.pre")
+	:i $scnpre$ = %s(16,"skateparkscn.pre")
+	:i $colpre$ = %s(16,"skateparkcol.pre")
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(0.000000,12000.000000,-200.000000)
+:i :s}
+:i $Level_sz$ = :s{
+	:i $game$ = $THAW$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_sz$
+	:i $load_script$ = $Load_sz$
+	:i $name$ = %s(10,"Santa Cruz")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(2,"sz")
+	:i $sky$ = %s(6,"sz_sky")
+	:i $qb$ = %s(15,"levels\sz\sz.qb")
+	:i $level_qb$ = %s(23,"levels\sz\sz_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(23,"levels\sz\sz_thugpro.qb")
+		:i %s(35,"levels\sz\sz_level_particle_data.qb")
+		:i %s(40,"levels\sz\sz_level_fast_particle_data.qb")
+		:i :a}
+	:i $startup_script$ = $sz_startup$
+	:i $setup_script$ = $sz_setup$
+	:i $goals_script$ = $sz_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(14,"SZ_scripts.pre")
+	:i $scnpre$ = %s(9,"SZscn.pre")
+	:i $colpre$ = %s(9,"SZcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,25000.000000,10000.000000)
+:i :s}
+:i $Level_atlanta$ = :s{
+	:i $game$ = $THAW$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_atlanta$
+	:i $load_script$ = $Load_atlanta$
+	:i $name$ = %s(7,"Atlanta")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(7,"atlanta")
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $qb$ = %s(25,"levels\atlanta\atlanta.qb")
+	:i $level_qb$ = %s(33,"levels\atlanta\atlanta_scripts.qb")
+	:i $level_sfx_qb$ = %s(29,"levels\atlanta\atlanta_sfx.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(33,"levels\atlanta\atlanta_thugpro.qb")
+		:i :a}
+	:i $setup_script$ = $at_Setup$
+	:i $startup_script$ = $at_Startup$
+	:i $goals_script$ = $at_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(19,"atlanta_scripts.pre")
+	:i $scnpre$ = %s(14,"atlantascn.pre")
+	:i $colpre$ = %s(14,"atlantacol.pre")
+	:i $overview_cam_zoom$ = %vec3(500.000000,40000.000000,-1500.000000)
+:i :s}
+:i $Level_kyoto$ = :s{
+	:i $game$ = $THAW$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $nosun$
+	:i $structure_name$ = $Level_kyoto$
+	:i $load_script$ = $Load_kyoto$
+	:i $name$ = %s(5,"Kyoto")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(5,"kyoto")
+	:i $default_sky$
+	:i $qb$ = %s(21,"levels\kyoto\kyoto.qb")
+	:i $level_qb$ = %s(29,"levels\kyoto\kyoto_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(29,"levels\kyoto\kyoto_thugpro.qb")
+		:i :a}
+	:i $setup_script$ = $kyoto_Setup$
+	:i $startup_script$ = $kyoto_Startup$
+	:i $goals_script$ = $kyoto_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(17,"kyoto_scripts.pre")
+	:i $scnpre$ = %s(12,"kyotoscn.pre")
+	:i $colpre$ = %s(12,"kyotocol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,28000.000000,0.000000)
+:i :s}
+:i $Level_HISCH$ = :s{
+	:i $game$ = $THP8$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $wallride_hack$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_HISCH$
+	:i $load_script$ = $Load_HISCH$
+	:i $name$ = %s(11,"High School")
+	:i $loading_time$ = %f(4.000000)
+	:i $level$ = %s(5,"HISCH")
+	:i $sky$ = %s(11,"default_sky")
+	:i $qb$ = %s(21,"levels\HISCH\HISCH.qb")
+	:i $level_qb$ = %s(29,"levels\HISCH\HISCH_scripts.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(29,"levels\hisch\hisch_thugpro.qb")
+		:i :a}
+	:i $startup_script$ = $HISCH_startup$
+	:i $setup_script$ = $HISCH_setup$
+	:i $goals_script$ = $HISCH_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(17,"HISCH_scripts.pre")
+	:i $scnpre$ = %s(12,"HISCHscn.pre")
+	:i $colpre$ = %s(12,"HISCHcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,3000.000000,1500.000000)
+:i :s}
+:i $Level_z_funpark$ = :s{
+	:i $game$ = $THP8$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_z_funpark$
+	:i $load_script$ = $Load_z_funpark$
+	:i $name$ = %s(8,"Fun Park")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(9,"z_funpark")
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $qb$ = %s(29,"levels\z_funpark\z_funpark.qb")
+	:i $level_qb$ = %s(37,"levels\z_funpark\z_funpark_scripts.qb")
+	:i $setup_script$ = $z_funpark_setup$
+	:i $startup_script$ = $z_funpark_startup$
+	:i $default_level_stuff$
+	:i $pre$ = %s(21,"z_funpark_scripts.pre")
+	:i $scnpre$ = %s(16,"z_funparkscn.pre")
+	:i $colpre$ = %s(16,"z_funparkcol.pre")
+	:i $overview_cam_zoom$ = %vec3(-27000.000000,52000.000000,-30000.000000)
+:i :s}
+:i $Level_z_center$ = :s{
+	:i $game$ = $THP8$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_z_center$
+	:i $load_script$ = $Load_z_center$
+	:i $name$ = %s(11,"City center")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(8,"z_center")
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $qb$ = %s(27,"levels\z_center\z_center.qb")
+	:i $level_qb$ = %s(35,"levels\z_center\z_center_scripts.qb")
+	:i $setup_script$ = $z_center_Setup$
+	:i $startup_script$ = $z_center_Startup$
+	:i $default_level_stuff$
+	:i $pre$ = %s(20,"z_center_scripts.pre")
+	:i $scnpre$ = %s(15,"z_centerscn.pre")
+	:i $colpre$ = %s(15,"z_centercol.pre")
+	:i $overview_cam_zoom$ = %vec3(-2000.000000,4000.000000,-200.000000)
+:i :s}
+:i $Level_z_riod$ = :s{
+	:i $game$ = $THPS3$
+	:i $indoor$
+	:i $nosun$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_z_riod$
+	:i $load_script$ = $Load_z_riod$
+	:i $name$ = %s(14,"Rio - Downhill")
+	:i $loading_time$ = %f(8.500000)
+	:i $level$ = %s(6,"z_riod")
+	:i $sky$ = %s(10,"sunset_sky")
+	:i $qb$ = %s(23,"levels\z_riod\z_riod.qb")
+	:i $level_qb$ = %s(31,"levels\z_riod\z_riod_scripts.qb")
+	:i $setup_script$ = $z_riod_Setup$
+	:i $startup_script$ = $z_riod_Startup$
+	:i $default_level_stuff$
+	:i $pre$ = %s(18,"z_riod_scripts.pre")
+	:i $scnpre$ = %s(13,"z_riodscn.pre")
+	:i $colpre$ = %s(13,"z_riodcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,20000.000000,17000.000000)
+:i :s}
+:i function $load_z_el$
+	:i $load_level$$level_z_el$
+:i endfunction
+:i $level_z_el$ = :s{
+	:i $game$ = $THAW$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $default_level_stuff$
+	:i $name$ = %s(7,"East LA")
+	:i $level$ = %s(4,"z_el")
+	:i $sky$ = %s(11,"Default_Sky")
+	:i $qb$ = %s(19,"levels\z_el\z_el.qb")
+	:i $level_qb$ = %s(27,"levels\z_el\z_el_scripts.qb")
+	:i $level_sfx_qb$ = %s(31,"levels\z_el\z_el_sfx_scripts.qb")
+	:i $structure_name$ = $level_z_el$
+	:i $load_script$ = $load_z_el$
+	:i $goals_script$ = $z_el_goals$
+	:i $setup_script$ = $z_el_setup$
+	:i $startup_script$ = $z_el_startup$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $loading_time$ = %f(8.500000)
+	:i $pre$ = %s(16,"z_el_scripts.pre")
+	:i $scnpre$ = %s(11,"z_elscn.pre")
+	:i $colpre$ = %s(11,"z_elcol.pre")
+	:i $overview_cam_zoom$ = %vec3(-9000.000000,43000.000000,0.000000)
+:i :s}
+:i function $load_z_sm$
+	:i $load_level$$level_z_sm$
+:i endfunction
+:i $level_z_sm$ = :s{
+	:i $game$ = $THAW$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableBackfacePatch$
+	:i $default_level_stuff$
+	:i $name$ = %s(12,"Santa Monica")
+	:i $level$ = %s(4,"z_sm")
+	:i $sky$ = %s(6,"SD_Sky")
+	:i $qb$ = %s(19,"levels\z_sm\z_sm.qb")
+	:i $level_qb$ = %s(27,"levels\z_sm\z_sm_scripts.qb")
+	:i $structure_name$ = $level_z_sm$
+	:i $load_script$ = $load_z_sm$
+	:i $goals_script$ = $z_sm_goals$
+	:i $setup_script$ = $z_sm_setup$
+	:i $startup_script$ = $z_sm_startup$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $loading_time$ = %f(8.500000)
+	:i $pre$ = %s(16,"z_sm_scripts.pre")
+	:i $scnpre$ = %s(11,"z_smscn.pre")
+	:i $colpre$ = %s(11,"z_smcol.pre")
+	:i $overview_cam_zoom$ = %vec3(2000.000000,16000.000000,-1000.000000)
+:i :s}
+:i function $load_z_bh$
+	:i $load_level$$level_z_bh$
+:i endfunction
+:i $level_z_bh$ = :s{
+	:i $game$ = $THAW$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $default_level_stuff$
+	:i $name$ = %s(13,"Beverly Hills")
+	:i $level$ = %s(4,"z_bh")
+	:i $sky$ = %s(8,"thaw_Sky")
+	:i $qb$ = %s(19,"levels\z_bh\z_bh.qb")
+	:i $level_qb$ = %s(27,"levels\z_bh\z_bh_scripts.qb")
+	:i $level_sfx_qb$ = %s(31,"levels\z_bh\z_bh_sfx_scripts.qb")
+	:i $more_level_qbs$ = :a{%s(27,"levels\z_bh\z_bh_thugpro.qb"):a}
+	:i $structure_name$ = $level_z_bh$
+	:i $load_script$ = $load_z_bh$
+	:i $goals_script$ = $z_bh_goals$
+	:i $setup_script$ = $z_bh_setup$
+	:i $startup_script$ = $z_bh_startup$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $loading_time$ = %f(8.500000)
+	:i $pre$ = %s(16,"z_bh_scripts.pre")
+	:i $scnpre$ = %s(11,"z_bhscn.pre")
+	:i $colpre$ = %s(11,"z_bhcol.pre")
+	:i $overview_cam_zoom$ = %vec3(2500.000000,11000.000000,1500.000000)
+	:i $overview_cam_angle$ = %i(4294967206,ffffffa6)
+:i :s}
+:i function $load_z_sv2$
+	:i $load_level$$level_z_sv2$
+:i endfunction
+:i $level_z_sv2$ = :s{
+	:i $game$ = $THAW$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $default_level_stuff$
+	:i $default_sky$
+	:i $indoor$
+	:i $nosun$
+	:i $name$ = %s(9,"The Ruins")
+	:i $level$ = %s(5,"z_sv2")
+	:i $qb$ = %s(21,"levels\z_sv2\z_sv2.qb")
+	:i $level_qb$ = %s(29,"levels\z_sv2\z_sv2_scripts.qb")
+	:i $more_level_qbs$ = :a{%s(29,"levels\z_sv2\z_sv2_thugpro.qb"):a}
+	:i $structure_name$ = $level_z_sv2$
+	:i $load_script$ = $load_z_sv2$
+	:i $goals_script$ = $z_sv2_goals$
+	:i $setup_script$ = $z_sv2_setup$
+	:i $startup_script$ = $z_sv2_startup$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $loading_time$ = %f(8.500000)
+	:i $pre$ = %s(17,"z_sv2_scripts.pre")
+	:i $scnpre$ = %s(12,"z_sv2scn.pre")
+	:i $colpre$ = %s(12,"z_sv2col.pre")
+:i :s}
+:i function $load_z_sr$
+	:i $load_level$$level_z_sr$
+:i endfunction
+:i $level_z_sr$ = :s{
+	:i $game$ = $THAW$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableBackfacePatch$
+	:i $default_level_stuff$
+	:i $name$ = %s(11,"Skate Ranch")
+	:i $level$ = %s(4,"z_sr")
+	:i $sky$ = %s(8,"thaw_Sky")
+	:i $qb$ = %s(19,"levels\z_sr\z_sr.qb")
+	:i $level_qb$ = %s(27,"levels\z_sr\z_sr_scripts.qb")
+	:i $more_level_qbs$ = :a{%s(27,"levels\z_sr\z_sr_thugpro.qb"):a}
+	:i $structure_name$ = $level_z_sr$
+	:i $load_script$ = $load_z_sr$
+	:i $goals_script$ = $z_sr_goals$
+	:i $setup_script$ = $z_sr_setup$
+	:i $startup_script$ = $z_sr_startup$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $loading_time$ = %f(8.500000)
+	:i $pre$ = %s(16,"z_sr_scripts.pre")
+	:i $scnpre$ = %s(11,"z_srscn.pre")
+	:i $colpre$ = %s(11,"z_srcol.pre")
+:i :s}
+:i $level_foun$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $models_in_script_prx$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $level_foun$
+	:i $load_script$ = $load_foun$
+	:i $name$ = %s(7,"Foundry")
+	:i $level$ = %s(4,"foun")
+	:i $nosun$
+	:i $qb$ = %s(19,"levels\foun\foun.qb")
+	:i $level_qb$ = %s(27,"levels\foun\foun_scripts.qb")
+	:i $setup_script$ = $CJR_Foun_LoadingScript$
+	:i $startup_script$ = $foun_startup$
+	:i $goals_script$ = $foun_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(16,"foun_scripts.pre")
+	:i $scnpre$ = %s(11,"founscn.pre")
+	:i $colpre$ = %s(11,"founcol.pre")
+	:i $indoor$
+	:i $nosun$
+	:i $overview_cam_zoom$ = %vec3(1000.000000,1000.000000,0.000000)
+	:i $overview_cam_hide_objects$ = :a{
+		:i $Pipes_Ceiling01$
+		:i $Pipes_Ceiling02$
+		:i $Pipes_Ceiling03$
+		:i $Opti_sWallSection_North_01$
+		:i $Opti_Generator_Exterior01$
+		:i :a}
+:i :s}
+:i $level_rio$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $models_in_script_prx$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $level_rio$
+	:i $load_script$ = $load_rio$
+	:i $name$ = %s(3,"Rio")
+	:i $level$ = %s(3,"rio")
+	:i $sky$ = %s(7,"rio_Sky")
+	:i $startup_script$ = $rio_startup$
+	:i $goals_script$ = $rio_goals$
+	:i $setup_script$ = $rio_setup$
+	:i $qb$ = %s(17,"levels\rio\rio.qb")
+	:i $level_qb$ = %s(25,"levels\rio\rio_scripts.qb")
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"rio_scripts.pre")
+	:i $scnpre$ = %s(10,"rioscn.pre")
+	:i $colpre$ = %s(10,"riocol.pre")
+	:i $nosun$
+	:i $overview_cam_zoom$ = %vec3(3000.000000,32000.000000,7000.000000)
+:i :s}
+:i $level_sub$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $ambient_track$ = %s(5,"st_bg")
+	:i $nosun$
+	:i $models_in_script_prx$
+	:i $structure_name$ = $level_sub$
+	:i $load_script$ = $load_sub$
+	:i $name$ = %s(8,"Suburbia")
+	:i $level$ = %s(3,"sub")
+	:i $sky$ = %s(7,"sub_Sky")
+	:i $qb$ = %s(17,"levels\sub\sub.qb")
+	:i $level_qb$ = %s(25,"levels\sub\sub_scripts.qb")
+	:i $startup_script$ = $sub_startup$
+	:i $goals_script$ = $sub_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"sub_scripts.pre")
+	:i $scnpre$ = %s(10,"subscn.pre")
+	:i $colpre$ = %s(10,"subcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,17000.000000,0.000000)
+:i :s}
+:i $level_tok$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $nosun$
+	:i $indoor$
+	:i $models_in_script_prx$
+	:i $structure_name$ = $level_tok$
+	:i $load_script$ = $load_tok$
+	:i $name$ = %s(5,"Tokyo")
+	:i $level$ = %s(3,"tok")
+	:i $sky$ = %s(7,"tok_Sky")
+	:i $qb$ = %s(17,"levels\tok\tok.qb")
+	:i $level_qb$ = %s(25,"levels\tok\tok_scripts.qb")
+	:i $setup_script$ = $tok_setup$
+	:i $startup_script$ = $tok_startup$
+	:i $goals_script$ = $tok_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"tok_scripts.pre")
+	:i $scnpre$ = %s(10,"tokscn.pre")
+	:i $colpre$ = %s(10,"tokcol.pre")
+	:i $overview_cam_zoom$ = %vec3(2000.000000,17000.000000,-2000.000000)
+:i :s}
+:i $level_shp$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $models_in_script_prx$
+	:i $structure_name$ = $level_shp$
+	:i $load_script$ = $load_shp$
+	:i $name$ = %s(11,"Cruise Ship")
+	:i $level$ = %s(3,"shp")
+	:i $sky$ = %s(7,"shp_Sky")
+	:i $qb$ = %s(17,"levels\shp\shp.qb")
+	:i $level_qb$ = %s(25,"levels\shp\shp_scripts.qb")
+	:i $setup_script$ = $shp_setup$
+	:i $startup_script$ = $shp_startup$
+	:i $goals_script$ = $shp_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"shp_scripts.pre")
+	:i $scnpre$ = %s(10,"shpscn.pre")
+	:i $colpre$ = %s(10,"shpcol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,22000.000000,1000.000000)
+:i :s}
+:i $level_si$ = :s{
+	:i $game$ = $THPS3$
+	:i $indoor$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $models_in_script_prx$
+	:i $structure_name$ = $level_si$
+	:i $load_script$ = $load_si$
+	:i $name$ = %s(13,"Skater Island")
+	:i $level$ = %s(2,"si")
+	:i $sky$ = %s(6,"si_Sky")
+	:i $qb$ = %s(15,"levels\si\si.qb")
+	:i $level_qb$ = %s(23,"levels\si\si_scripts.qb")
+	:i $setup_script$ = $ALF_SI_Init$
+	:i $startup_script$ = $si_startup$
+	:i $goals_script$ = $si_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(14,"si_scripts.pre")
+	:i $scnpre$ = %s(9,"siscn.pre")
+	:i $colpre$ = %s(9,"sicol.pre")
+	:i $overview_cam_angle$ = %i(180,000000b4)
+	:i $overview_cam_zoom$ = %vec3(-1000.000000,10000.000000,3500.000000)
+	:i $overview_cam_hide_objects$ = :a{$SI_Ceiling01$$SI_SmallBeam$$SI_BigBeam$$SI_BigBeam01$:a}
+:i :s}
+:i $level_oil$ = :s{
+	:i $game$ = $THPS3$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $indoor$
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $nosun$
+	:i $models_in_script_prx$
+	:i $structure_name$ = $level_oil$
+	:i $load_script$ = $load_oil$
+	:i $name$ = %s(7,"Oil Rig")
+	:i $level$ = %s(3,"oil")
+	:i $sky$ = %s(7,"oil_Sky")
+	:i $startup_script$ = $oil_startup$
+	:i $goals_script$ = $oil_goals$
+	:i $setup_script$ = $oil_setup$
+	:i $qb$ = %s(17,"levels\oil\oil.qb")
+	:i $level_qb$ = %s(25,"levels\oil\oil_scripts.qb")
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"oil_scripts.pre")
+	:i $scnpre$ = %s(10,"oilscn.pre")
+	:i $colpre$ = %s(10,"oilcol.pre")
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(0.000000,26000.000000,-1000.000000)
+:i :s}
+:i $Level_ware$ = :s{
+	:i $game$ = $THPS1$
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $structure_name$ = $Level_ware$
+	:i $load_script$ = $Load_ware$
+	:i $name$ = %s(9,"Warehouse")
+	:i $level$ = %s(4,"ware")
+	:i $nosun$
+	:i $qb$ = %s(19,"levels\ware\ware.qb")
+	:i $level_qb$ = %s(27,"levels\ware\ware_scripts.qb")
+	:i $setup_script$ = $ware_setup$
+	:i $startup_script$ = $ware_Startup$
+	:i $goals_script$ = $ware_goals$
+	:i $default_level_stuff$
+	:i $indoor$
+	:i $pre$ = %s(16,"ware_scripts.pre")
+	:i $scnpre$ = %s(11,"warescn.pre")
+	:i $colpre$ = %s(11,"warecol.pre")
+:i :s}
+:i function $Load_z_ma$
+	:i $load_level$$Level_z_ma$
+:i endfunction
+:i $Level_z_ma$ = :s{
+	:i $game$ = $THPS1$
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableBackfacePatch$
+	:i $default_level_stuff$
+	:i $indoor$$IsBigLevel$$nosun$
+	:i $structure_name$ = $Level_z_ma$
+	:i $load_script$ = $Load_z_ma$
+	:i $name$ = %s(8,"The Mall")
+	:i $level$ = %s(4,"z_ma")
+	:i $sky$ = %s(8,"thaw_Sky")
+	:i $qb$ = %s(19,"levels\z_ma\z_ma.qb")
+	:i $level_qb$ = %s(27,"levels\z_ma\z_ma_scripts.qb")
+	:i $setup_script$ = $z_ma_setup$
+	:i $startup_script$ = $z_ma_Startup$
+	:i $goals_script$ = $z_ma_goals$
+	:i $pre$ = %s(16,"z_ma_scripts.pre")
+	:i $scnpre$ = %s(11,"z_mascn.pre")
+	:i $colpre$ = %s(11,"z_macol.pre")
+:i :s}
+:i $Level_z_dn$ = :s{
+	:i $game$ = $THPS1$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_z_dn$
+	:i $load_script$ = $Load_z_dn$
+	:i $name$ = %s(11,"Minneapolis")
+	:i $level$ = %s(4,"z_dn")
+	:i $nosun$
+	:i $qb$ = %s(19,"levels\z_dn\z_dn.qb")
+	:i $level_qb$ = %s(27,"levels\z_dn\z_dn_scripts.qb")
+	:i $setup_script$ = $z_dn_setup$
+	:i $startup_script$ = $z_dn_Startup$
+	:i $goals_script$ = $z_dn_goals$
+	:i $default_level_stuff$
+	:i $indoor$
+	:i $pre$ = %s(16,"z_dn_scripts.pre")
+	:i $scnpre$ = %s(11,"z_dnscn.pre")
+	:i $colpre$ = %s(11,"z_dncol.pre")
+	:i $overview_cam_zoom$ = %vec3(-2000.000000,15000.000000,-2000.000000)
+:i :s}
+:i $Level_burn$ = :s{
+	:i $game$ = $THPS1$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $wallride_hack$
+	:i $nosun$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_burn$
+	:i $load_script$ = $Load_burn$
+	:i $name$ = %s(8,"Burnside")
+	:i $level$ = %s(4,"burn")
+	:i $sky$ = %s(8,"burn_Sky")
+	:i $startup_script$ = $burn_startup$
+	:i $qb$ = %s(19,"levels\burn\burn.qb")
+	:i $default_level_stuff$
+	:i $pre$ = %s(16,"burn_scripts.pre")
+	:i $scnpre$ = %s(11,"burnscn.pre")
+	:i $colpre$ = %s(11,"burncol.pre")
+	:i $overview_cam_angle$ = %i(90,0000005a)
+	:i $overview_cam_zoom$ = %vec3(-800.000000,7000.000000,400.000000)
+:i :s}
+:i $Level_ros$ = :s{
+	:i $game$ = $THPS1$
+	:i $ambient_track$ = %s(5,"st_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $indoor$
+	:i $structure_name$ = $Level_ros$
+	:i $load_script$ = $Load_ros$
+	:i $name$ = %s(7,"Roswell")
+	:i $level$ = %s(3,"ros")
+	:i $sky$ = %s(7,"ros_Sky")
+	:i $nosun$
+	:i $qb$ = %s(17,"levels\ros\ros.qb")
+	:i $startup_script$ = $ros_Startup$
+	:i $default_level_stuff$
+	:i $pre$ = %s(15,"ros_scripts.pre")
+	:i $scnpre$ = %s(10,"rosscn.pre")
+	:i $colpre$ = %s(10,"roscol.pre")
+	:i $overview_cam_zoom$ = %vec3(0.000000,2000.000000,-1000.000000)
+	:i $overview_cam_hide_objects$ = :a{$garage_ceiling$$surrounding_ground01$:a}
+:i :s}
+:i $Level_z_ms$ = :s{
+	:i $game$ = $THPS2$
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $DisableGoalEditor$
+	:i $DisableGoalAttack$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_z_ms$
+	:i $load_script$ = $Load_z_ms$
+	:i $name$ = %s(9,"Marseille")
+	:i $level$ = %s(4,"z_ms")
+	:i $sky$ = %s(13,"steamboat_sky")
+	:i $indoor$
+	:i $qb$ = %s(19,"levels\z_ms\z_ms.qb")
+	:i $level_qb$ = %s(27,"levels\z_ms\z_ms_scripts.qb")
+	:i $setup_script$ = $z_ms_setup$
+	:i $startup_script$ = $z_ms_Startup$
+	:i $goals_script$ = $z_ms_goals$
+	:i $default_level_stuff$
+	:i $pre$ = %s(16,"z_ms_scripts.pre")
+	:i $scnpre$ = %s(11,"z_msscn.pre")
+	:i $colpre$ = %s(11,"z_mscol.pre")
+	:i $overview_cam_angle$ = %i(0,00000000)
+	:i $overview_cam_zoom$ = %vec3(-7000.000000,16500.000000,-500.000000)
+:i :s}
+:i $default_level_stuff$ = :s{
+	:i $DisableGoalEditor$
+	:i $loading_time$ = %f(8.500000)
+	:i $default_stats$ = %i(10,0000000a)
+	:i $level_number$ = $LevelNum_Default$
+	:i $num_m_heads$ = %i(4,00000004)
+	:i $num_m_torsos$ = %i(4,00000004)
+	:i $num_m_legs$ = %i(4,00000004)
+:i :s}
+:i $default_level_lights$ = :s{
+	:i $ambient_red$ = %i(54,00000036)
+	:i $ambient_green$ = %i(63,0000003f)
+	:i $ambient_blue$ = %i(64,00000040)
+	:i $ambient_mod_factor_lo$ = %f(1.000000)
+	:i $ambient_mod_factor_hi$ = %f(1.000000)
+	:i $heading_0$ = %i(60,0000003c)
+	:i $pitch_0$ = %i(350,0000015e)
+	:i $red_0$ = %i(42,0000002a)
+	:i $green_0$ = %i(40,00000028)
+	:i $blue_0$ = %i(36,00000024)
+	:i $mod_factor_0_lo$ = %f(1.000000)
+	:i $mod_factor_0_hi$ = %f(1.000000)
+	:i $heading_1$ = %i(305,00000131)
+	:i $pitch_1$ = %i(37,00000025)
+	:i $red_1$ = %i(72,00000048)
+	:i $green_1$ = %i(70,00000046)
+	:i $blue_1$ = %i(66,00000042)
+	:i $mod_factor_1_lo$ = %f(1.000000)
+	:i $mod_factor_1_hi$ = %f(1.000000)
+:i :s}
+:i function $GenerateLevelStructureNameFromTheme$
+	:i if  (%GLOBAL%$theme$ > %i(0,00000000)) 
+		:i $FormatText$$ChecksumName$ = $structure_name$%s(13,"Level_sk5ed%d")$d$ =  (%GLOBAL%$theme$ + %i(1,00000001)) 
+	:i else 
+		:i $structure_name$ = $Level_Sk5Ed$
+	:i endif
+	:i return
+	$structure_name$ = %GLOBAL%$structure_name$
+:i endfunction
+:i function $Load_Sk5Ed$
+	:i $GetEditorTheme$
+	:i $load_parked_textures_to_main_memory$
+	:i $GenerateLevelStructureNameFromTheme$$theme$ = %GLOBAL%$theme$
+	:i if $IsXbox$
+		:i $load_level$%GLOBAL%$structure_name$
+	:i endif
+	:i $THUGPRO_ParkEdHeighPatch$$off$
+	:i $Change$$temp_fixGaps$ = %i(1,00000001)
+:i endfunction
+:i function $Load_Sk5Ed_gameplay$
+	:i $GetEditorTheme$
+	:i if  (%GLOBAL%$theme$ > %i(0,00000000)) 
+		:i $FormatText$$ChecksumName$ = $structure_name$%s(13,"Level_sk5ed%d")$d$ =  (%GLOBAL%$theme$ + %i(1,00000001)) 
+	:i else 
+		:i $structure_name$ = $Level_Sk5Ed$
+	:i endif
+	:i $load_level$%GLOBAL%$structure_name$$startup_script$ = $Sk5Ed_Startup_gameplay$
+	:i if NOT $istrue$$temp_fixGaps$
+		:i $THUGPRO_ParkEdHeighPatch$$off$
+		:i $Change$$temp_fixGaps$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i $Level_sk5ed_defaults$ = 
+:i :s{
+	:i $park_editor$
+	:i $load_script$ = $Load_Sk5Ed$
+	:i $name$ = %s(12,"Created Park")
+	:i $loading_time$ = %f(6.810000)
+	:i $loading_time_xbox$ = %i(9,00000009)
+	:i $startup_script$ = $Sk5Ed_Startup$
+	:i $goals_script$ = $Sk5Ed_goals$
+	:i $default_stats$ = %i(10,0000000a)
+	:i $default_stats_classic$ = %i(10,0000000a)
+	:i $level_number$ = $LevelNum_Sk5ed$
+	:i $pre$ = %s(17,"thugpro_sk5ed.pre")
+	:i $level$ = %s(5,"sk5ed")
+	:i $level_name$ = %s(5,"sk5ed")
+	:i $pedpre$ = %s(12,"sk5edped.pre")
+	:i $colpre$ = %s(20,"thugpro_sk5edcol.pre")
+	:i $level_qb$ = %s(30,"levels\sk5ed\editor_scripts.qb")
+	:i $qb$ = %s(29,"levels\sk5ed\thugpro\sk5ed.qb")
+	:i $more_level_qbs$ = :a{
+		:i %s(43,"levels\sk5ed\thugpro\ParkEd_node_scripts.qb")
+		:i %s(49,"levels\sk5ed\thugpro\ParkEd_fast_particle_data.qb")
+		:i :a}
+	:i $ambient_red$ = %i(72,00000048)
+	:i $ambient_green$ = %i(72,00000048)
+	:i $ambient_blue$ = %i(72,00000048)
+	:i $ambient_mod_factor_lo$ = %f(0.500000)
+	:i $ambient_mod_factor_hi$ = %f(0.000000)
+	:i $heading_0$ = %f(90.000000)
+	:i $pitch_0$ = %f(-60.000000)
+	:i $red_0$ = %i(75,0000004b)
+	:i $green_0$ = %i(75,0000004b)
+	:i $blue_0$ = %i(75,0000004b)
+	:i $mod_factor_0_lo$ = %f(0.700000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %f(0.000000)
+	:i $pitch_1$ = %f(-90.000000)
+	:i $red_1$ = %i(0,00000000)
+	:i $green_1$ = %i(0,00000000)
+	:i $blue_1$ = %i(0,00000000)
+	:i $mod_factor_1_lo$ = %f(1.000000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_red$ = %i(0,00000000)
+	:i $fog_green$ = %i(0,00000000)
+	:i $fog_blue$ = %i(0,00000000)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(0,00000000)
+:i :s}
+:i $Level_Sk5Ed$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed$
+	:i $loading_time$ = %f(7.110000)
+	:i $loading_time_xbox$ = %i(9,00000009)
+	:i $scnpre$ = %s(18,"sk5ed_shellscn.pre")
+	:i $sky$ = %s(9,"sk5ed_sky")
+	:i $outer_shell$ = %s(11,"sk5ed_shell")
+	:i $theme_name$ = %s(10,"Antarctica")
+:i :s}
+:i $Level_Sk5Ed2$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed2$
+	:i $loading_time$ = %f(7.380000)
+	:i $scnpre$ = %s(19,"sk5ed2_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed2_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed2_shell")
+	:i $theme_name$ = %s(4,"Mars")
+:i :s}
+:i $Level_Sk5Ed3$ = :s{
+	:i $ambient_track$ = %s(5,"st_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed3$
+	:i $loading_time$ = %f(7.120000)
+	:i $scnpre$ = %s(19,"sk5ed3_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed3_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed3_shell")
+	:i $theme_name$ = %s(8,"Cemetary")
+:i :s}
+:i $Level_Sk5Ed4$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed4$
+	:i $loading_time$ = %f(7.150000)
+	:i $scnpre$ = %s(19,"sk5ed4_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed4_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed4_shell")
+	:i $theme_name$ = %s(8,"Race Car")
+:i :s}
+:i $Level_Sk5Ed5$ = :s{
+	:i $ambient_track$ = %s(5,"no_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed5$
+	:i $loading_time$ = %f(7.590000)
+	:i $scnpre$ = %s(19,"sk5ed5_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed5_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed5_shell")
+	:i $theme_name$ = %s(5,"Swamp")
+:i :s}
+:i $Level_Sk5Ed6$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed6$
+	:i $loading_time$ = %f(7.590000)
+	:i $scnpre$ = %s(19,"sk5ed6_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed6_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed6_shell")
+	:i $theme_name$ = %s(8,"Suburbia")
+:i :s}
+:i $Level_Sk5Ed7$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed7$
+	:i $loading_time$ = %i(8,00000008)
+	:i $scnpre$ = %s(19,"sk5ed7_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed7_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed7_shell")
+	:i $theme_name$ = %s(12,"City Rooftop")
+:i :s}
+:i $Level_Sk5Ed8$ = :s{
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $nosun$
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed8$
+	:i $loading_time$ = %i(8,00000008)
+	:i $scnpre$ = %s(19,"sk5ed8_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed8_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed8_shell")
+	:i $theme_name$ = %s(11,"Lost Island")
+:i :s}
+:i $Level_Sk5Ed9$ = :s{
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed9$
+	:i $loading_time$ = %i(8,00000008)
+	:i $scnpre$ = %s(19,"sk5ed9_shellscn.pre")
+	:i $sky$ = %s(10,"sk5ed9_Sky")
+	:i $outer_shell$ = %s(12,"sk5ed9_shell")
+	:i $theme_name$ = %s(9,"Warehouse")
+	:i $indoor$
+	:i $nosun$
+:i :s}
+:i $Level_Sk5Ed10$ = :s{
+	:i $ambient_track$ = %s(5,"st_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed10$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed10_shellscn.pre")
+	:i $sky$ = %s(11,"sk5ed10_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed10_shell")
+	:i $theme_name$ = %s(11,"Prison Yard")
+	:i $indoor$
+	:i $nosun$
+:i :s}
+:i $Level_Sk5Ed11$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed11$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed11_shellscn.pre")
+	:i $sky$ = %s(11,"sk5ed11_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed11_shell")
+	:i $theme_name$ = %s(7,"Western")
+:i :s}
+:i $Level_Sk5Ed12$ = :s{
+	:i $ambient_track$ = %s(5,"la_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed12$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed12_shellscn.pre")
+	:i $sky$ = %s(11,"sk5ed12_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed12_shell")
+	:i $theme_name$ = %s(11,"Los Angeles")
+:i :s}
+:i $Level_Sk5Ed13$ = :s{
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed13$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed13_shellscn.pre")
+	:i $sky$ = %s(8,"thaw_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed13_shell")
+	:i $theme_name$ = %s(7,"Carrier")
+:i :s}
+:i $Level_Sk5Ed14$ = :s{
+	:i $ambient_track$ = %s(5,"au_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed14$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed14_shellscn.pre")
+	:i $sky$ = %s(11,"sk5ed14_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed14_shell")
+	:i $theme_name$ = %s(5,"Beach")
+	:i $fence_type$ = $Sk4Ed_Fence_20x20_Invisible$
+	:i $shell_pieces$ = :a{
+		:i :a{
+			:i $Sk3Ed_Shell_Bch_Island01$
+			:i $Sk3Ed_Shell_Bch_16x16_Floor01$
+			:i $Sk3Ed_Shell_Bch_16x16_Floor02$
+			:i $Sk3Ed_Shell_Bch_16x16_Planter01$
+			:i $Sk3Ed_Shell_Bch_16x16_Barrier01$
+			:i $Sk3Ed_Shell_Bch_16x16_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortWall01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sand01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_High01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Low01$
+			:i $Sk3Ed_Shell_Bch_30x30_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_Surf01$
+			:i $Sk3Ed_Shell_Bch_30x30_Planter01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sidewalk01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree02$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree03$
+			:i $Sk3Ed_Shell_Bch_30x30_Plaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_LowPalm01$
+			:i $Sk3Ed_Shell_Bch_30x30_Storefront01$
+			:i $Sk3Ed_Shell_Bch_30x30_HighRise01$
+			:i $Sk3Ed_Shell_Bch_30x30_Hotel01$
+			:i $Sk3Ed_Shell_Bch_30x30_SandPlaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_Volleyball01$
+			:i $Sk3Ed_Shell_Bch_30x30_BeachTent01$
+			:i $Sk3Ed_Shell_Bch_30x30_Umbrella01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortLamp01$
+			:i $Sk3Ed_Shell_Bch_30x30_GarbageCan01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Bch_Island01$
+			:i $Sk3Ed_Shell_Bch_24x24_Floor01$
+			:i $Sk3Ed_Shell_Bch_24x24_Floor02$
+			:i $Sk3Ed_Shell_Bch_24x24_Planter01$
+			:i $Sk3Ed_Shell_Bch_24x24_Barrier01$
+			:i $Sk3Ed_Shell_Bch_24x24_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortWall01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sand01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_High01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Low01$
+			:i $Sk3Ed_Shell_Bch_30x30_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_Surf01$
+			:i $Sk3Ed_Shell_Bch_30x30_Planter01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sidewalk01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree02$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree03$
+			:i $Sk3Ed_Shell_Bch_30x30_Plaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_LowPalm01$
+			:i $Sk3Ed_Shell_Bch_30x30_Storefront01$
+			:i $Sk3Ed_Shell_Bch_30x30_HighRise01$
+			:i $Sk3Ed_Shell_Bch_30x30_Hotel01$
+			:i $Sk3Ed_Shell_Bch_30x30_SandPlaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_Volleyball01$
+			:i $Sk3Ed_Shell_Bch_30x30_BeachTent01$
+			:i $Sk3Ed_Shell_Bch_30x30_Umbrella01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortLamp01$
+			:i $Sk3Ed_Shell_Bch_30x30_GarbageCan01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Bch_Island01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortWall01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sand01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_High01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Low01$
+			:i $Sk3Ed_Shell_Bch_30x30_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_Surf01$
+			:i $Sk3Ed_Shell_Bch_30x30_Planter01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sidewalk01$
+			:i $Sk3Ed_Shell_Bch_30x30_Barrier01$
+			:i $Sk3Ed_Shell_Bch_30x30_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree02$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree03$
+			:i $Sk3Ed_Shell_Bch_30x30_Plaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_LowPalm01$
+			:i $Sk3Ed_Shell_Bch_30x30_Storefront01$
+			:i $Sk3Ed_Shell_Bch_30x30_HighRise01$
+			:i $Sk3Ed_Shell_Bch_30x30_Hotel01$
+			:i $Sk3Ed_Shell_Bch_30x30_SandPlaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_Volleyball01$
+			:i $Sk3Ed_Shell_Bch_30x30_BeachTent01$
+			:i $Sk3Ed_Shell_Bch_30x30_Umbrella01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortLamp01$
+			:i $Sk3Ed_Shell_Bch_30x30_GarbageCan01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Bch_Island01$
+			:i $Sk3Ed_Shell_Bch_30x18_Floor01$
+			:i $Sk3Ed_Shell_Bch_30x18_Floor02$
+			:i $Sk3Ed_Shell_Bch_30x18_Planter01$
+			:i $Sk3Ed_Shell_Bch_30x18_Barrier01$
+			:i $Sk3Ed_Shell_Bch_30x18_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortWall01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sand01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_High01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Low01$
+			:i $Sk3Ed_Shell_Bch_30x30_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_Surf01$
+			:i $Sk3Ed_Shell_Bch_30x30_Planter01$
+			:i $Sk3Ed_Shell_Bch_30x30_Sidewalk01$
+			:i $Sk3Ed_Shell_Bch_30x30_Barrier01$
+			:i $Sk3Ed_Shell_Bch_30x30_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_StreetLamp_Reflection01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree01$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree02$
+			:i $Sk3Ed_Shell_Bch_30x30_PalmTree03$
+			:i $Sk3Ed_Shell_Bch_30x30_Plaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_LowPalm01$
+			:i $Sk3Ed_Shell_Bch_30x30_Storefront01$
+			:i $Sk3Ed_Shell_Bch_30x30_HighRise01$
+			:i $Sk3Ed_Shell_Bch_30x30_Hotel01$
+			:i $Sk3Ed_Shell_Bch_30x30_SandPlaza01$
+			:i $Sk3Ed_Shell_Bch_30x30_Volleyball01$
+			:i $Sk3Ed_Shell_Bch_30x30_BeachTent01$
+			:i $Sk3Ed_Shell_Bch_30x30_Umbrella01$
+			:i $Sk3Ed_Shell_Bch_30x30_ShortLamp01$
+			:i $Sk3Ed_Shell_Bch_30x30_GarbageCan01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Bch_Island01$
+			:i $Sk3Ed_Shell_Bch_80x6_ShortWall01$
+			:i $Sk3Ed_Shell_Bch_80x6_Sand01$
+			:i $Sk3Ed_Shell_Bch_80x6_StreetLamp_High01$
+			:i $Sk3Ed_Shell_Bch_80x6_StreetLamp_Low01$
+			:i $Sk3Ed_Shell_Bch_80x6_Sidewalk01$
+			:i $Sk3Ed_Shell_Bch_80x6_StreetLamp_Reflection01$
+			:i $Sk3Ed_Shell_Bch_80x6_Plaza01$
+			:i $Sk3Ed_Shell_Bch_80x6_Surf01$
+			:i $Sk3Ed_Shell_Bch_80x6_HighRise01$
+			:i $Sk3Ed_Shell_Bch_80x6_BeachTent01$
+			:i $Sk3Ed_Shell_Bch_80x6_Umbrella01$
+			:i $Sk3Ed_Shell_Bch_80x6_ShortLamp01$
+			:i $Sk3Ed_Shell_Bch_80x6_SandPlaza01$
+			:i $Sk3Ed_Shell_Bch_80x6_Planter01$
+			:i $Sk3Ed_Shell_Bch_80x6_PalmTree01$
+			:i $Sk3Ed_Shell_Bch_80x6_PalmTree02$
+			:i $Sk3Ed_Shell_Bch_80x6_PalmTree03$
+			:i $Sk3Ed_Shell_Bch_80x6_PalmTree04$
+			:i $Sk3Ed_Shell_Bch_80x6_GarbageCan01$
+			:i $Sk3Ed_Shell_Bch_80x6_Hotel01$
+			:i $Sk3Ed_Shell_Bch_80x6_LowPalm01$
+			:i $Sk3Ed_Shell_Bch_80x6_Storefront01$
+			:i $Sk3Ed_Shell_Bch_80x6_Barrier01$
+			:i $Sk3Ed_Shell_Bch_80x6_Barrier_Reflection01$
+			:i $Sk3Ed_Shell_Bch_80x6_Reflection01$
+			:i :a}
+		:i :a}
+:i :s}
+:i $Level_Sk5Ed15$ = :s{
+	:i $ambient_track$ = %s(5,"bo_bg")
+	:i $Level_sk5ed_defaults$
+	:i $structure_name$ = $Level_Sk5Ed15$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed15_shellscn.pre")
+	:i $sky$ = %s(11,"sk5ed15_Sky")
+	:i $outer_shell$ = %s(13,"sk5ed15_shell")
+	:i $theme_name$ = %s(6,"School")
+	:i $fence_type$ = $Sk4Ed_Fence_20x20_Invisible$
+	:i $shell_pieces$ = :a{
+		:i :a{
+			:i $Sk3Ed_Shell_Schl_16x16_Build01$
+			:i $Sk3Ed_Shell_Schl_16x16_Build02$
+			:i $Sk3Ed_Shell_Schl_16x16_Build03$
+			:i $Sk3Ed_Shell_Schl_16x16_Build04$
+			:i $Sk3Ed_Shell_Schl_16x16_Facade01$
+			:i $Sk3Ed_Shell_Schl_16x16_Facade02$
+			:i $Sk3Ed_Shell_Schl_16x16_Facade03$
+			:i $Sk3Ed_Shell_Schl_16x16_Facade04$
+			:i $Sk3Ed_Shell_Schl_16x16_Fence01$
+			:i $Sk3Ed_Shell_Schl_16x16_Fence02$
+			:i $Sk3Ed_Shell_Schl_16x16_Fence03$
+			:i $Sk3Ed_Shell_Schl_16x16_Fence04$
+			:i $Sk3Ed_Shell_Schl_16x16_Perip01$
+			:i $Sk3Ed_Shell_Schl_16x16_Perip02$
+			:i $Sk3Ed_Shell_Schl_16x16_Perip03$
+			:i $Sk3Ed_Shell_Schl_16x16_Perip04$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Schl_24x24_Build01$
+			:i $Sk3Ed_Shell_Schl_24x24_Build02$
+			:i $Sk3Ed_Shell_Schl_24x24_Build03$
+			:i $Sk3Ed_Shell_Schl_24x24_Build04$
+			:i $Sk3Ed_Shell_Schl_24x24_Facade01$
+			:i $Sk3Ed_Shell_Schl_24x24_Facade02$
+			:i $Sk3Ed_Shell_Schl_24x24_Facade03$
+			:i $Sk3Ed_Shell_Schl_24x24_Facade04$
+			:i $Sk3Ed_Shell_Schl_24x24_Fence01$
+			:i $Sk3Ed_Shell_Schl_24x24_Fence02$
+			:i $Sk3Ed_Shell_Schl_24x24_Fence03$
+			:i $Sk3Ed_Shell_Schl_24x24_Fence04$
+			:i $Sk3Ed_Shell_Schl_24x24_Perip01$
+			:i $Sk3Ed_Shell_Schl_24x24_Perip02$
+			:i $Sk3Ed_Shell_Schl_24x24_Perip03$
+			:i $Sk3Ed_Shell_Schl_24x24_Perip04$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Schl_30x30_Build01$
+			:i $Sk3Ed_Shell_Schl_30x30_Build02$
+			:i $Sk3Ed_Shell_Schl_30x30_Build03$
+			:i $Sk3Ed_Shell_Schl_30x30_Build04$
+			:i $Sk3Ed_Shell_Schl_30x30_Facade01$
+			:i $Sk3Ed_Shell_Schl_30x30_Facade02$
+			:i $Sk3Ed_Shell_Schl_30x30_Facade03$
+			:i $Sk3Ed_Shell_Schl_30x30_Facade04$
+			:i $Sk3Ed_Shell_Schl_30x30_Fence01$
+			:i $Sk3Ed_Shell_Schl_30x30_Fence02$
+			:i $Sk3Ed_Shell_Schl_30x30_Fence03$
+			:i $Sk3Ed_Shell_Schl_30x30_Fence04$
+			:i $Sk3Ed_Shell_Schl_30x30_Perip01$
+			:i $Sk3Ed_Shell_Schl_30x30_Perip02$
+			:i $Sk3Ed_Shell_Schl_30x30_Perip03$
+			:i $Sk3Ed_Shell_Schl_30x30_Perip04$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Schl_30x18_Build01$
+			:i $Sk3Ed_Shell_Schl_30x18_Build02$
+			:i $Sk3Ed_Shell_Schl_30x18_Build03$
+			:i $Sk3Ed_Shell_Schl_30x18_Build04$
+			:i $Sk3Ed_Shell_Schl_30x18_Facade01$
+			:i $Sk3Ed_Shell_Schl_30x18_Facade02$
+			:i $Sk3Ed_Shell_Schl_30x18_Facade03$
+			:i $Sk3Ed_Shell_Schl_30x18_Facade04$
+			:i $Sk3Ed_Shell_Schl_30x18_Fence01$
+			:i $Sk3Ed_Shell_Schl_30x18_Fence02$
+			:i $Sk3Ed_Shell_Schl_30x18_Fence03$
+			:i $Sk3Ed_Shell_Schl_30x18_Fence04$
+			:i $Sk3Ed_Shell_Schl_30x18_Perip01$
+			:i $Sk3Ed_Shell_Schl_30x18_Perip02$
+			:i $Sk3Ed_Shell_Schl_30x18_Perip03$
+			:i $Sk3Ed_Shell_Schl_30x18_Perip04$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Schl_80x6_Build01$
+			:i $Sk3Ed_Shell_Schl_80x6_Build02$
+			:i $Sk3Ed_Shell_Schl_80x6_Build03$
+			:i $Sk3Ed_Shell_Schl_80x6_Build04$
+			:i $Sk3Ed_Shell_Schl_80x6_Facade01$
+			:i $Sk3Ed_Shell_Schl_80x6_Facade02$
+			:i $Sk3Ed_Shell_Schl_80x6_Facade03$
+			:i $Sk3Ed_Shell_Schl_80x6_Facade04$
+			:i $Sk3Ed_Shell_Schl_80x6_Fence01$
+			:i $Sk3Ed_Shell_Schl_80x6_Fence02$
+			:i $Sk3Ed_Shell_Schl_80x6_Fence03$
+			:i $Sk3Ed_Shell_Schl_80x6_Fence04$
+			:i $Sk3Ed_Shell_Schl_80x6_Perip01$
+			:i $Sk3Ed_Shell_Schl_80x6_Perip02$
+			:i $Sk3Ed_Shell_Schl_80x6_Perip03$
+			:i $Sk3Ed_Shell_Schl_80x6_Perip04$
+			:i :a}
+		:i :a}
+:i :s}
+:i $Level_Sk5Ed16$ = :s{
+	:i $ambient_track$ = %s(5,"tr_bg")
+	:i $Level_sk5ed_defaults$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_Sk5Ed16$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $scnpre$ = %s(20,"sk5ed16_shellscn.pre")
+	:i $outer_shell$ = %s(13,"sk5ed16_shell")
+	:i $theme_name$ = %s(6,"Indoor")
+	:i $indoor$
+	:i $nosun$
+	:i $fence_type$ = $Sk4Ed_Fence_20x20_Wallride$
+	:i $shell_pieces$ = :a{
+		:i :a{
+			:i $Sk3Ed_Shell_Indr_16X16_ExtFloor01$
+			:i $Sk3Ed_Shell_Indr_16x16_Sparks01$
+			:i $Sk3Ed_Shell_Indr_16x16_Sparkler01$
+			:i $Sk3Ed_Shell_Indr_16x16_Wall01$
+			:i $Sk3Ed_Shell_Indr_16x16_Wall02$
+			:i $Sk3Ed_Shell_Indr_16x16_Wall03$
+			:i $Sk3Ed_Shell_Indr_16x16_Wall04$
+			:i $Sk3Ed_Shell_Indr_16x16_Fence01$
+			:i $Sk3Ed_Shell_Indr_16x16_Corridor01$
+			:i $Sk3Ed_Shell_Indr_16x16_Elevator01$
+			:i $Sk3Ed_Shell_Indr_16x16_Lamp01$
+			:i $Sk3Ed_Shell_Indr_16x16_Signs01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Indr_24X24_ExtFloor01$
+			:i $Sk3Ed_Shell_Indr_24x24_Sparks01$
+			:i $Sk3Ed_Shell_Indr_24x24_Sparkler01$
+			:i $Sk3Ed_Shell_Indr_24x24_Wall01$
+			:i $Sk3Ed_Shell_Indr_24x24_Wall02$
+			:i $Sk3Ed_Shell_Indr_24x24_Wall03$
+			:i $Sk3Ed_Shell_Indr_24x24_Wall04$
+			:i $Sk3Ed_Shell_Indr_24x24_Fence01$
+			:i $Sk3Ed_Shell_Indr_24x24_Corridor01$
+			:i $Sk3Ed_Shell_Indr_24x24_Elevator01$
+			:i $Sk3Ed_Shell_Indr_24x24_Sign01$
+			:i $Sk3Ed_Shell_Indr_24x24_Lamp01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Indr_30X30_ExtFloor01$
+			:i $Sk3Ed_Shell_Indr_30x30_Sparks01$
+			:i $Sk3Ed_Shell_Indr_30x30_Sparkler01$
+			:i $Sk3Ed_Shell_Indr_30x30_Wall01$
+			:i $Sk3Ed_Shell_Indr_30x30_Wall02$
+			:i $Sk3Ed_Shell_Indr_30x30_Wall03$
+			:i $Sk3Ed_Shell_Indr_30x30_Wall04$
+			:i $Sk3Ed_Shell_Indr_30x30_Lamp01$
+			:i $Sk3Ed_Shell_Indr_30x30_Fence01$
+			:i $Sk3Ed_Shell_Indr_30x30_Corridor01$
+			:i $Sk3Ed_Shell_Indr_30x30_Elevator01$
+			:i $Sk3Ed_Shell_Indr_30x30_Sign01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Indr_30X18_ExtFloor01$
+			:i $Sk3Ed_Shell_Indr_30x18_Sparks01$
+			:i $Sk3Ed_Shell_Indr_30x18_Sparkler01$
+			:i $Sk3Ed_Shell_Indr_30x18_Wall01$
+			:i $Sk3Ed_Shell_Indr_30x18_Wall02$
+			:i $Sk3Ed_Shell_Indr_30x18_Wall03$
+			:i $Sk3Ed_Shell_Indr_30x18_Wall04$
+			:i $Sk3Ed_Shell_Indr_30x18_Fence01$
+			:i $Sk3Ed_Shell_Indr_30x18_Corridor01$
+			:i $Sk3Ed_Shell_Indr_30x18_Elevator01$
+			:i $Sk3Ed_Shell_Indr_30x18_Sign01$
+			:i $Sk3Ed_Shell_Indr_30x18_Lamp01$
+			:i :a}
+		:i :a{
+			:i $Sk3Ed_Shell_Indr_80X6_ExtFloor01$
+			:i $Sk3Ed_Shell_Indr_80x6_Sparks01$
+			:i $Sk3Ed_Shell_Indr_80x6_Sparkler01$
+			:i $Sk3Ed_Shell_Indr_80x6_Wall01$
+			:i $Sk3Ed_Shell_Indr_80x6_Wall02$
+			:i $Sk3Ed_Shell_Indr_80x6_Wall03$
+			:i $Sk3Ed_Shell_Indr_80x6_Wall04$
+			:i $Sk3Ed_Shell_Indr_80x6_Lamp01$
+			:i $Sk3Ed_Shell_Indr_80x6_Fence01$
+			:i $Sk3Ed_Shell_Indr_80x6_Corridor01$
+			:i $Sk3Ed_Shell_Indr_80x6_Elevator01$
+			:i $Sk3Ed_Shell_Indr_80x6_Sign01$
+			:i :a}
+		:i :a}
+:i :s}
+:i $Level_Sk5Ed17$ = :s{
+	:i $ambient_track$ = %s(5,"se_bg")
+	:i $Level_sk5ed_defaults$
+	:i $load_shell_collision$
+	:i $DisableBackfacePatch$
+	:i $structure_name$ = $Level_Sk5Ed17$
+	:i $loading_time$ = %i(11,0000000b)
+	:i $outer_shell$ = %s(13,"sk5ed17_shell")
+	:i $scnpre$ = %s(20,"sk5ed17_shellscn.pre")
+	:i $theme_name$ = %s(4,"Hell")
+	:i $indoor$
+	:i $nosun$
+	:i $fence_type$ = $none$
+	:i $shell_pieces$ = :a{
+		:i :a{
+			:i $SkProEdHell_Base_16x16$
+			:i $JG_Hell_CaveWalls01$
+			:i $JG_Hell_Lava01$
+			:i $JG_Hell_CaveSmoke01$
+			:i $JG_Hell_DevilBody$
+			:i $JG_Hell_DevilWings$
+			:i $JG_Hell_HeadTop$
+			:i $GEO_PreEvent_Rib_Mouth$
+			:i $JG_Hell_CaveRocks01$
+			:i $JG_Hell_CaveRocks02$
+			:i $JG_Hell_CaveRocks03$
+			:i $JG_Hell_CaveRocks04$
+			:i $JG_Hell_CaveExt01$
+			:i $JG_Hell_CaveExt02$
+			:i $JG_Hell_LavaStream01$
+			:i $JG_Hell_LavaStream02$
+			:i $JG_Hell_LavaStream03$
+			:i $JG_Hell_LavaStream04$
+			:i $JG_Hell_LavaStream05$
+			:i $TRGP_SkProEdHell_Killskater01$
+			:i :a}
+		:i :a{
+			:i $SkProEdHell_Base_24x24$
+			:i $JG_Hell_CaveWalls01$
+			:i $JG_Hell_Lava01$
+			:i $JG_Hell_CaveSmoke01$
+			:i $JG_Hell_DevilBody$
+			:i $JG_Hell_DevilWings$
+			:i $JG_Hell_HeadTop$
+			:i $GEO_PreEvent_Rib_Mouth$
+			:i $JG_Hell_CaveRocks01$
+			:i $JG_Hell_CaveRocks02$
+			:i $JG_Hell_CaveRocks03$
+			:i $JG_Hell_CaveRocks04$
+			:i $JG_Hell_CaveExt01$
+			:i $JG_Hell_CaveExt02$
+			:i $JG_Hell_LavaStream01$
+			:i $JG_Hell_LavaStream02$
+			:i $JG_Hell_LavaStream03$
+			:i $JG_Hell_LavaStream04$
+			:i $JG_Hell_LavaStream05$
+			:i $TRGP_SkProEdHell_Killskater01$
+			:i :a}
+		:i :a{
+			:i $SkProEdHell_Base_30x30$
+			:i $JG_Hell_CaveWalls01$
+			:i $JG_Hell_Lava01$
+			:i $JG_Hell_DevilBody$
+			:i $JG_Hell_DevilWings$
+			:i $JG_Hell_HeadTop$
+			:i $GEO_PreEvent_Rib_Mouth$
+			:i $JG_Hell_CaveRocks01$
+			:i $JG_Hell_CaveRocks02$
+			:i $JG_Hell_CaveRocks03$
+			:i $JG_Hell_CaveRocks04$
+			:i $JG_Hell_CaveExt01$
+			:i $JG_Hell_CaveExt02$
+			:i $JG_Hell_LavaStream01$
+			:i $JG_Hell_LavaStream02$
+			:i $JG_Hell_LavaStream03$
+			:i $JG_Hell_LavaStream04$
+			:i $JG_Hell_LavaStream05$
+			:i $TRGP_SkProEdHell_Killskater01$
+			:i :a}
+		:i :a{
+			:i $SkProEdHell_Base_30x18$
+			:i $JG_Hell_CaveWalls01$
+			:i $JG_Hell_Lava01$
+			:i $JG_Hell_CaveSmoke01$
+			:i $JG_Hell_DevilBody$
+			:i $JG_Hell_DevilWings$
+			:i $JG_Hell_HeadTop$
+			:i $GEO_PreEvent_Rib_Mouth$
+			:i $JG_Hell_CaveRocks01$
+			:i $JG_Hell_CaveRocks02$
+			:i $JG_Hell_CaveRocks03$
+			:i $JG_Hell_CaveRocks04$
+			:i $JG_Hell_CaveExt01$
+			:i $JG_Hell_CaveExt02$
+			:i $JG_Hell_LavaStream01$
+			:i $JG_Hell_LavaStream02$
+			:i $JG_Hell_LavaStream03$
+			:i $JG_Hell_LavaStream04$
+			:i $JG_Hell_LavaStream05$
+			:i $TRGP_SkProEdHell_Killskater01$
+			:i :a}
+		:i :a{
+			:i $JG_Hell_Lava01$
+			:i $TRGP_SkProEdHell_Killskater01$
+			:i :a}
+		:i :a}
+:i :s}
+:i :end

@@ -1,0 +1,50 @@
+//------------------------------------------------
+// THPG / THP8 .skin file
+//------------------------------------------------
+
+#include "../Common.bt"
+#include "Scene.bt"
+#include "../GH3/Material.bt"
+
+typedef struct
+{
+    uint filesize <bgcolor=CL_SINGLEVALUE, comment="Filesize - 48">;
+    uint faba[7] <bgcolor=CL_PADDING, hidden=true>;
+
+    local int starter_offset = FTell();
+
+    ubyte material_version <bgcolor=CL_SINGLEVALUE>;
+    ubyte unknown_byte <bgcolor=CL_FLOATS>;
+
+    short material_count <bgcolor=CL_SINGLEVALUE>;
+
+    RelativeOffset pt_scenestart(starter_offset) <bgcolor=CL_POINTER>;
+
+    int unk <bgcolor=CL_SINGLEVALUE>;
+    int null <bgcolor=CL_PADDING>;
+
+    if (material_version == 4)
+        GH3Material material[material_count] <optimize=false>;
+
+    // Ideally at this point, we should be at the scene start
+    // (This should be BABEFACE)
+    // If not though, we'll skip there ourselves
+
+    FSeek(AbsOffset(pt_scenestart));
+
+    QBKey babeface <bgcolor=0x222222, fgcolor=0x6666FF>;
+
+    local uint babe_off = FTell();
+
+    uint padding_count <bgcolor=CL_SINGLEVALUE>;
+    byte padding[padding_count-4] <hidden=true, bgcolor=CL_PADDING>;
+    int pre_scene_int <bgcolor=CL_SINGLEVALUE, comment="Should be 234">;
+
+    FSeek(babe_off);
+    SkipTo(32);
+
+    THPGScene scene(starter_offset, material_version);
+
+} THPGSkinFile;
+
+THPGSkinFile skin_file;

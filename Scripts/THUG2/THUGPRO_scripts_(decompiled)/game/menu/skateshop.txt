@@ -1,0 +1,2714 @@
+
+:i $MENU_SS_SKATER_INDICATOR_FOCUS_COLOR$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+:i $MENU_SS_SKATER_INDICATOR_UNFOCUS_COLOR$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(128,00000080):a}
+:i $MENU_SS_SKATER_INDICATOR_LOCKED_COLOR$ = :a{%i(40,00000028)%i(40,00000028)%i(40,00000028)%i(128,00000080):a}
+:i $MENU_SS_SKATER_INDICATOR_SPECIAL_COLOR$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+:i $skater_select_light0_heading$ = %i(60,0000003c)
+:i $skater_select_light1_heading$ = %i(4294967106,ffffff42)
+:i $skater_rot_angle$ = %i(0,00000000)
+:i $main_menu_return_to_createamodes$ = %i(0,00000000)
+:i function $wait_and_pause_skater$$time$ = %i(10,0000000a)
+	:i while
+		
+		:i if $ObjectExists$$id$ = $skater$
+			:i $wait$%GLOBAL%$time$$gameframes$
+			:i if NOT $GotParam$$dont_pause_music$
+				:i $PauseMusic$%i(1,00000001)
+			:i endif
+			:i continue
+			
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i $show_custom_level_validation_failed$ = %i(0,00000000)
+:i $show_custom_level_validation_failed_wait$ = %i(0,00000000)
+:i function $show_custom_level_validation_failed_dialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{
+		:i $anchor_id$ = $custom_level_validation_failed_anchor$
+		:i $title$ = %s(20,"FAILED TO LOAD LEVEL")
+		:i $text$ = %s(44,"There was an error loading the last level...")
+		:i $buttons$ = :a{
+			:i :s{$text$ = %s(2,"Ok")$pad_choose_script$ = $hide_custom_level_validation_failed_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $hide_custom_level_validation_failed_dialog$
+	:i if $ScreenElementExists$$id$ = $custom_level_validation_failed_anchor$
+		:i $DestroyScreenElement$$id$ = $custom_level_validation_failed_anchor$
+	:i endif
+	:i $Change$$show_custom_level_validation_failed_wait$ = %i(1,00000001)
+:i endfunction
+:i function $create_main_menu$
+	:i $hide_select_skater_arrows$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $skateshop_startcam$$play_hold$
+	:i $cas_remove_ped_stuff_from_skater$
+	:i $GetSkaterId$
+	:i $Orient_Skateshop_Skater$
+	:i $SetNetworkMode$
+	:i $SetMemThreadSafe$$off$
+	:i $Change$$back_to_local_net_menu$ = %i(0,00000000)
+	:i $Change$$in_server_options$ = %i(0,00000000)
+	:i $change_gamemode_singlesession$
+	:i $UnPauseMusicAndStreams$
+	:i if $IsTrue$$auto_load_thugpro_data$
+		:i $ForEachIn$ ($thugpro_generic_save_info$) $do$ = $thugpro_maybe_read_reg_key$$Params$ = :s{$autoload$ = $autoload$:s}
+		:i $Change$$auto_load_thugpro_data$ = %i(0,00000000)
+	:i endif
+	:i if $ScreenElementExists$$id$ = $loadscreen_container$
+		:i $wait$%f(2.500000)$seconds$
+		:i $loadingscreen_container_hide$
+	:i endif
+	:i if $IsTrue$$autoload_cas_failed$
+		:i $Change$$failed_load_dialog_wait$ = %i(0,00000000)
+		:i $thugpro_autoload_failed_dialog$
+		:i $thugpro_wait$$ReadyVal$ = $failed_load_dialog_wait$
+		:i $Change$$autoload_cas_failed$ = %i(0,00000000)
+	:i endif
+	:i if $IsTrue$$autoload_net_failed$
+		:i $Change$$failed_load_dialog_wait$ = %i(0,00000000)
+		:i $thugpro_autoload_failed_dialog$
+		:i $thugpro_wait$$ReadyVal$ = $failed_load_dialog_wait$
+		:i $Change$$autoload_net_failed$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GetRegKeyValue$$key$ = %s(9,"first_run")$type$ = $Int$
+		:i $SetRegKeyValue$:s{
+			:i $key$ = %s(9,"first_run")
+			:i $type$ = $Int$
+			:i $value$ = %i(0,00000000)
+		:i :s}
+		:i $create_preset_menu$$dialog$
+		:i $thugpro_wait$$ReadyVal$ = $thugpro_wait_test$
+	:i endif
+	:i if $IsTrue$$show_custom_level_validation_failed$
+		:i $Change$$show_custom_level_validation_failed_wait$ = %i(0,00000000)
+		:i $show_custom_level_validation_failed_dialog$
+		:i $maybe_hide_loadscreen_or_fade_in$
+		:i $thugpro_wait$$ReadyVal$ = $show_custom_level_validation_failed_wait$
+		:i $Change$$show_custom_level_validation_failed$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$inputdelay$
+		:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+		:i $SpawnScript$$TemporarilyDisableInput$$Params$ = :s{$time$ = %i(400,00000190):s}
+	:i endif
+	:i $SetMenuPadMappings$:a{$active$$use_as_first$:a}
+	:i $default_skateshop_menu_cleanup$
+	:i $hide_panel_stuff$
+	:i $create_menu_background_title$$title$ = %s(9,"skateshop")$bg_just$ = $right$$no_grain$$skateshop_menu$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(400.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $startup_menu$
+		:i $vmenu_id$ = $startup_vmenu$
+		:i $menu_title$ = %s(0,"")
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $startup_vmenu$
+		:i $event_handlers$ = :a{
+			:i :a}
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_PlayOnline$) 
+		:i $text$ = %s(11,"play online")
+		:i $pad_choose_script$ = $select_network_play_multi$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_Freeskate$) 
+		:i $text$ = %s(9,"freeskate")
+		:i $pad_choose_script$ = $launch_new_select_skater_menu$
+		:i $pad_choose_params$ = :s{
+			:i $callback$ = $create_main_menu$
+			:i $change_gamemode$ = $change_gamemode_singlesession$
+		:i :s}
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_EditSkater$) 
+		:i $text$ = %s(11,"edit skater")
+		:i $pad_choose_script$ = $launch_pre_cas_menu$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_ParkEditor$) 
+		:i $text$ = %s(11,"park editor")
+		:i $pad_choose_script$ = $launch_park_editor$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_Options$) 
+		:i $text$ = %s(7,"options")
+		:i $pad_choose_script$ = $create_setup_options_menu$
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text_desc$ =  ($Desc_SS_Quit$) 
+		:i $text$ = %s(9,"quit game")
+		:i $pad_choose_script$ = $main_menu_exit_game$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text_no_back$
+	:i $FireEvent$$type$ = $focus$$target$ = $startup_vmenu$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $kill_start_key_binding$
+	:i $maybe_hide_loadscreen_or_fade_in$
+:i endfunction
+:i function $maybe_hide_loadscreen_or_fade_in$
+	:i if $ScreenElementExists$$id$ = $loadscreen_container$
+		:i $wait$%f(1.500000)$seconds$
+		:i $loadingscreen_container_destroy$
+	:i else 
+		:i $FadeToBlack$$off$$time$ = %f(0.500000)
+		:i $wait$%f(0.500000)$seconds$
+	:i endif
+:i endfunction
+:i function $SkateshopAI$$stopskateshopstreams$ = %i(1,00000001)
+	:i $no_board$ = $no_board$
+	:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$$no_board$ = %GLOBAL%$no_board$
+	:i $stream_repetition$ = %i(4,00000004)
+	:i $TurnOffSpecialItem$
+	:i if  ( ($LevelIs$$load_boardshop$)  OR  ($LevelIs$$load_cas$) ) 
+		:i $UnpausePhysics$
+	:i else 
+		:i $PausePhysics$
+	:i endif
+	:i $ClearExceptions$
+	:i $SetQueueTricks$$NoTricks$
+	:i $DisablePlayerInput$
+	:i $SetRollingFriction$%i(10000,00002710)
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $skater$.$unhide$
+	:i $skater$.$Obj_MoveToNode$$name$ = $trg_playerrestart$$Orient$
+	:i $skater$.$Rotate$$y$ = %i(190,000000be)
+	:i if $GotParam$$BlendOK$
+		:i $Obj_WaitAnimFinished$
+	:i else 
+		:i $BlendperiodOut$%i(0,00000000)
+	:i endif
+	:i if $GotParam$$CAS_Screen$
+		:i if  (%GLOBAL%$is_male$ = %i(1,00000001)) 
+			:i %GLOBAL%$name$ = $editskater_male$
+			:i $TurnOffSpecialItem$
+		:i else 
+			:i switch %GLOBAL%$name$
+				:i case $steamer$
+					:i $printf$%s(14,"THIS IS ELISSA")
+					:i %GLOBAL%$name$ = $editskater_male$
+					:i endcase
+				default 
+					:i %GLOBAL%$name$ = $editskater_female$
+					:i $printf$%s(15,"THIS IS A CHICK")
+					:i end_switch
+			
+		:i endif
+	:i else 
+	:i endif
+	:i if $GotParam$$Credits$
+		:i %GLOBAL%$name$ = $neversoft$
+	:i endif
+	:i if  (%GLOBAL%$name$ = $custom$) 
+		:i if  (%GLOBAL%$is_male$ = %i(0,00000000)) 
+			:i %GLOBAL%$name$ = $editskater_female$
+		:i endif
+	:i endif
+	:i $printf$%s(32,"------------- THIS SKATER IS: %n")$n$ = %GLOBAL%$name$
+	:i $stream_freq$ = %i(0,00000000)
+	:i $stream_freq$ = random%vec2(0.000000,7.000000)
+	:i if NOT  (%GLOBAL%$stream_repetition$ > %i(3,00000003)) 
+		:i %GLOBAL%$stream_repetition$ =  (%GLOBAL%$stream_repetition$ + %i(1,00000001)) 
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i select(2f,1, 01 00) :OFFSET(0)
+			
+			:i  :POS(0) $PlayAnim$$Anim$ = $Ped_M_Idle1$
+			:i 
+	:i else 
+		:i if $ObjectExists$$id$ = $ss_play_level$
+			:i $Obj_WaitAnimFinished$
+			:i select(2f,1, 01 00) :OFFSET(1)
+				
+				:i  :POS(1) $PlayAnim$$Anim$ = $Ped_M_Idle1$
+				:i 
+		:i else 
+			:i select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(2):OFFSET(3):OFFSET(4):OFFSET(5):OFFSET(6)
+				
+				:i  :POS(2) $PlayAnim$$Anim$ = $Ped_M_Idle1$
+				:i 
+			:BREAKTO(7)
+				 :POS(3) $PlayAnim$$Anim$ = $FrontEnd_1$
+				:i 
+			:BREAKTO(7)
+				 :POS(4) $PlayAnim$$Anim$ = $FrontEnd_2$
+				:i 
+			:BREAKTO(7)
+				 :POS(5) $PlayAnim$$Anim$ = $FrontEnd_3$
+				:i 
+			:BREAKTO(7)
+				 :POS(6) $PlayAnim$$Anim$ = $FrontEnd_4$
+				:i  :POS(7) 
+		:i endif
+	:i endif
+	:i $GetTags$
+	:i if  (%GLOBAL%$stopskateshopstreams$ = %i(0,00000000)) 
+		:i if  (%GLOBAL%$stream_freq$ = %i(1,00000001)) 
+			:i if  (%GLOBAL%$stream_repetition$ > %i(2,00000002)) 
+				:i $StopStream$
+				:i $PlaySkaterStream$$type$ = %s(7,"SSIntro")
+				:i $stream_repetition$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i $Obj_WaitAnimFinished$
+	:i while
+		
+		:i $wait$%i(1,00000001)$frame$
+		:i $PlayAnim$$Anim$ = $Ped_M_Idle1$
+		:i $Obj_WaitAnimFinished$
+	:i loop_to 
+:i endfunction
+:i function $start_internet_game$
+	:i $memcard_menus_cleanup$
+	:i $InitPrefsBeenox$
+	:i $SetNetworkMode$$LAN_MODE$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $SS_MenuCam$$play_hold$
+	:i $MakeSkaterGoto$$SkateshopAI$$Params$ = :s{$NoSFX$:s}
+	:i $SetMemThreadSafe$$off$
+	:i $KillSpawnedScript$$name$ = $Skateshop_Slideshow$
+	:i $SpawnScript$$attract_mode_timer$
+	:i $SpawnSecondControllerCheck$
+	:i $wait$%i(5,00000005)$gameframe$
+	:i $kill_start_key_binding$
+	:i $select_xbox_multiplayer$:s{$change_gamemode$ = $change_gamemode_net$:s}
+:i endfunction
+:i function $make_new_skateshop_menu$
+	:i $SetScreenElementProps$:s{$id$ = $root_window$
+		:i $replace_handlers$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_start$$main_menu_start_pressed$:s}
+			:i :a}
+	:i :s}
+	:i $make_new_menu$ isNull 
+:i endfunction
+:i function $main_menu_start_pressed$
+:i endfunction
+:i function $skateshop_transition$$menu_anim$ = $animate_out$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$%GLOBAL%$menu_anim$$callback$ = $skateshop_transition2$$callback_params$ =  isNull 
+:i endfunction
+:i function $skateshop_transition2$
+	:i if $GotParam$$cam_anim$
+		:i $printf$%s(14,"got a cam_anim")
+		:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$name$ = %GLOBAL%$cam_anim$
+	:i endif
+	:i if $GotParam$$came_from_main_menu$
+		:i %GLOBAL%$new_menu_script$$came_from_main_menu$
+	:i else 
+		:i %GLOBAL%$new_menu_script$
+	:i endif
+:i endfunction
+:i function $main_menu_add_item$:s{$parent$ = $current_menu$
+		:i $font$ = $small$
+		:i $highlight_bar_scale$ = %vec2(2.000000,0.700000)
+		:i $highlight_bar_pos$ = %vec2(97.000000,-7.000000)
+		:i $text_just$ = :a{$center$$center$:a}
+		:i $focus_script$ = $main_menu_focus$
+		:i $unfocus_script$ = $main_menu_unfocus$
+		:i $text_pos$ = %vec2(95.000000,-5.000000)
+		:i $dims$ = %vec2(200.000000,20.000000)
+		:i $pad_choose_script$ = $nullscript$
+	:i :s}
+	:i if $GotParam$$not_focusable$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $id$ = %GLOBAL%$id$
+			:i $dims$ = %GLOBAL%$dims$
+			:i $event_handlers$ = :a{:s{$focus$%GLOBAL%$focus_script$$Params$ = %GLOBAL%$focus_params$:s}
+				:i :s{$unfocus$%GLOBAL%$unfocus_script$$Params$ = %GLOBAL%$unfocus_params$:s}
+				:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :a}
+			:i $replace_handlers$
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $id$ = %GLOBAL%$id$
+			:i $dims$ = %GLOBAL%$dims$
+			:i $event_handlers$ = :a{:s{$focus$%GLOBAL%$focus_script$$Params$ = %GLOBAL%$focus_params$:s}
+				:i :s{$unfocus$%GLOBAL%$unfocus_script$$Params$ = %GLOBAL%$unfocus_params$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i if NOT $GotParam$$no_sound$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$anchor_id$$event_handlers$ = :a{:s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :a}
+	:i else 
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$anchor_id$$event_handlers$ = :a{:s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+			:i :a}
+	:i endif
+	:i if $GotParam$$mark_first_input$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $event_handlers$ = :a{:s{$pad_choose$$mark_first_input_received$:s}
+				:i :s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+				:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :s{$pad_start$$mark_first_input_received$:s}
+				:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+				:i :s{$pad_start$%GLOBAL%$pad_choose_script$$Params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i if $GotParam$$not_focusable$
+		:i $text_rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(75,0000004b):a}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $font$ = %GLOBAL%$font$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $pos$ = %GLOBAL%$text_pos$
+			:i $just$ = %GLOBAL%$text_just$
+			:i $rgba$ = %GLOBAL%$text_rgba$
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $id$ = %GLOBAL%$text_id$
+			:i $font$ = %GLOBAL%$font$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $pos$ = %GLOBAL%$text_pos$
+			:i $just$ = %GLOBAL%$text_just$
+			:i $rgba$ = %GLOBAL%$text_rgba$
+		:i :s}
+	:i endif
+	:i if $GotParam$$max_width$
+		:i $truncate_string$$id$ = %GLOBAL%$id$$max_width$ = %GLOBAL%$max_width$
+	:i endif
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %GLOBAL%$highlight_bar_pos$
+		:i $scale$ = %GLOBAL%$highlight_bar_scale$
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+:i endfunction
+:i function $make_main_menu_item$:s{
+		:i $focus_script$ = $main_menu_item_focus$
+		:i $dims$ = %vec2(300.000000,18.000000)
+	:i :s}
+	:i $make_theme_menu_item$ isNull $no_highlight_bar$
+:i endfunction
+:i function $main_menu_item_focus$
+	:i $GetTags$
+	:i if $GotParam$$attract_timer$
+	:i endif
+	:i $theme_item_focus$ isNull 
+:i endfunction
+:i function $main_menu_focus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i if $ObjectExists$$id$ = $park_menu_up_arrow$
+		:i $generic_menu_update_arrows$:s{
+			:i $up_arrow_id$ = $park_menu_up_arrow$
+			:i $down_arrow_id$ = $park_menu_down_arrow$
+		:i :s}
+	:i endif
+	:i if $GotParam$$attract_timer$
+	:i endif
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $main_menu_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$rgba$ = %GLOBAL%$text_rgba$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $alpha$ = %i(0,00000000)
+	:i :s}
+:i endfunction
+:i $launch_to_createatrick$ = %i(0,00000000)
+:i $main_menu_spinning$ = %i(0,00000000)
+:i function $main_menu_exit$
+	:i if  ( ($main_menu_spinning$ = %i(1,00000001))  OR  ($spin_menu_input_enabled$ = %i(0,00000000)) ) 
+		:i return
+		
+	:i else 
+		:i $Change$$main_menu_spinning$ = %i(1,00000001)
+	:i endif
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i if NOT $GotParam$$hold_camera$
+		:i $skater$.$reset_model_lights$
+		:i $skater$.$PausePhysics$
+		:i $skater$.$CancelRotateDisplay$
+		:i $play_no_skater_cam$
+	:i endif
+	:i $KillSpawnedScript$$name$ = $attract_mode_timer$
+	:i if $GotParam$$change_cas_from_main$
+		:i $Change$$entered_cas_from_main$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$ignore_second_controller$
+		:i $StopSecondControllerCheck$
+	:i endif
+	:i if $GotParam$$kill_clouds$
+		:i if $ObjectExists$$id$ = $cloud_anchor$
+			:i $DestroyScreenElement$$id$ = $cloud_anchor$
+		:i endif
+	:i endif
+	:i if $GotParam$$set_cat_mode_flag$
+		:i $Change$$launch_to_createatrick$ = %i(1,00000001)
+	:i else 
+		:i $Change$$launch_to_createatrick$ = %i(0,00000000)
+	:i endif
+	:i if NOT $GotParam$$no_spin_animation$
+		:i $MakeSkaterGoto$$SpinMenuSkaterAction$$Params$ = :s{$spin$:s}
+		:i $SpawnScript$$Menu_SFX_Wheel_Click_Long$
+		:i %GLOBAL%$time$ = %f(0.250000)
+		:i %GLOBAL%$angle$ =  ($spin_menu_angle$ + %i(179,000000b3)) 
+		:i $DoScreenElementMorph$$id$ = $current_menu$$rot_angle$ = %GLOBAL%$angle$$time$ = %GLOBAL%$time$
+		:i $spin_menu_spin_geometry$$rot_angle$ = %GLOBAL%$angle$$spin_time$ = %GLOBAL%$time$$no_wait$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i %GLOBAL%$angle$ =  (%GLOBAL%$angle$ + %i(179,000000b3)) 
+		:i %GLOBAL%$time$ = %f(0.250000)
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $main_menu_loading_screen$ isNull 
+		:i endif
+		:i $DoScreenElementMorph$$id$ = $current_menu$$rot_angle$ = %GLOBAL%$angle$$time$ = %GLOBAL%$time$
+		:i $spin_menu_spin_geometry$$rot_angle$ = %GLOBAL%$angle$$spin_time$ = %GLOBAL%$time$$no_wait$
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i else 
+		:i $play_no_skater_cam$
+		:i $spin_menu_visible$$on$ = %i(0,00000000)
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $Change$$main_menu_spinning$ = %i(0,00000000)
+	:i $SetButtonEventMappings$$unblock_menu_input$
+	:i if $GotParam$$new_menu_script$
+		:i %GLOBAL%$new_menu_script$ isNull 
+	:i endif
+:i endfunction
+:i function $main_menu_loading_screen$
+	:i $FadeToBlack$$on$$time$ =  (%GLOBAL%$time$ * %f(0.800000)) $alpha$ = %f(1.000000)$parent$ = $current_menu_anchor$$id$ = $screenfader$$z_priority$ = %i(5000,00001388)
+:i endfunction
+:i function $play_no_skater_cam$
+	:i $KillSkaterCamAnim$$all$
+	:i $SetActiveCamera$$id$ = $SkaterCam0$
+	:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+:i endfunction
+:i function $make_mainmenu_3d_plane$$id$ = $bg_plane$$parent$ = $current_menu_anchor$$z_priority$ = %i(4294966796,fffffe0c)$model$ = %s(15,"UI_bg\UI_bg.mdl")$scale$ = %vec3(2.100000,2.200000,2.100000)$pos$ = %vec2(320.000000,225.000000)
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$parent$
+		:i $SetScreenElementLock$$off$$id$ = %GLOBAL%$parent$
+		:i $CreateScreenElement$:s{
+			:i $parent$ = %GLOBAL%$parent$
+			:i $type$ = $Element3d$
+			:i $id$ = %GLOBAL%$id$
+			:i $model$ = %GLOBAL%$model$
+			:i $TexDictOffset$ = %i(20,00000014)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $CameraZ$ = %GLOBAL%$z_priority$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $Tilt$ = %i(0,00000000)
+		:i :s}
+	:i else 
+		:i $printf$%s(47,"make_mainmenu_3d_plane: parent %p doesn't exist")$p$ = %GLOBAL%$parent$
+	:i endif
+:i endfunction
+:i $current_attract_movie$ = %i(0,00000000)
+:i function $attract_mode_timer$
+	:i %GLOBAL%$anim_wait_time$ = %i(10,0000000a)
+	:i %GLOBAL%$attract_wait_time$ = %i(20,00000014)
+	:i while
+		
+		:i $wait$%GLOBAL%$anim_wait_time$$seconds$
+		:i if NOT  ($spin_menu_skater_idling$) 
+			:i $Change$$spin_menu_skater_idling$ = %i(1,00000001)
+			:i $Change$$spin_menu_skater_transitioning$ = %i(1,00000001)
+		:i endif
+		:i $wait$%GLOBAL%$attract_wait_time$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $reset_attract_mode_timer$
+	:i $KillSpawnedScript$$name$ = $attract_mode_timer$
+	:i $SpawnScript$$attract_mode_timer$
+:i endfunction
+:i $in_options_menu$ = %i(0,00000000)
+:i function $check_cheat_from_keyboard$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i if NOT $GotParam$$cancel$
+		:i $TryCheatString$$string$ = %GLOBAL%$string$
+	:i endif
+	:i $destroy_onscreen_keyboard$
+	:i $create_setup_options_menu$
+:i endfunction
+:i function $story_options_change_level$
+	:i $dialog_box_exit$
+	:i $restore_start_key_binding$
+	:i $SetGlobalFlag$$flag$ = $CAREER_STARTED$
+	:i $LoadCurrentChapter$
+:i endfunction
+:i function $create_select_goals_menu$
+	:i $memcard_menus_cleanup$
+	:i $ResetAbortAndDoneScripts$
+	:i $skater$.$unhide$
+	:i if $GotParam$$change_gamemode$
+		:i %GLOBAL%$change_gamemode$
+	:i endif
+	:i $play_no_skater_cam$
+	:i $kill_start_key_binding$
+	:i $make_new_themed_sub_menu$$title$ = %s(12,"SELECT GOALS")
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :s{$text$ = %s(12,"\bm = Accept"):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{$callback$ = $select_goals_menu_exit$$new_menu_script$ = $create_createamodes_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $GoalEditor$.$GetNumEditedGoals$
+	:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+		:i $text$ = %sc(16,"Create New Goals")
+	:i else 
+		:i $text$ = %sc(18,"Play Current Goals")
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %GLOBAL%$text$
+		:i $pad_choose_script$ = $select_goals_menu_exit$
+		:i $pad_choose_params$ = :s{$new_menu_script$ = $launch_select_skater_menu$:s}
+		:i $centered$
+	:i :s}
+	:i if  (%GLOBAL%$NumGoals$ > %i(0,00000000)) 
+		:i $theme_menu_add_item$:s{$text$ = %sc(10,"Load Goals")
+			:i $pad_choose_script$ = $select_goals_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $prompt_launch_cag_menu_load$:s}
+			:i $centered$
+		:i :s}
+		:i $theme_menu_add_item$:s{$text$ = %sc(14,"Nuke All Goals")
+			:i $pad_choose_script$ = $select_goals_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $prompt_nuke_goals$:s}
+			:i $last_menu_item$ = $last_menu_item$
+			:i $centered$
+		:i :s}
+	:i else 
+		:i $theme_menu_add_item$:s{$text$ = %sc(10,"Load Goals")
+			:i $pad_choose_script$ = $select_goals_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $prompt_launch_cag_menu_load$:s}
+			:i $last_menu_item$ = $last_menu_item$
+			:i $centered$
+		:i :s}
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $add_options_menu_sign_element$$icon$ = $goal_icon$
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu_anchor$
+	:i if $GotParam$$from_skater_select$
+		:i $SpawnScript$$shadow_skater_script2$$Params$ = :s{$make_it_safe$:s}
+	:i endif
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $prompt_launch_cag_menu_load$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $skater$.$hide$
+	:i $create_dialog_box$:s{$title$ = %s(10,"Load Goals")
+		:i $text$ = %sc(86,"Warning !\nAny unsaved changes to your current CREATED GOALS will be lost.\nContinue ?")
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+		:i $text_scale$ = %i(1,00000001)
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $launch_load_created_goals_from_select_goals_menu$:s}
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $no_launch_cag_menu_load$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $no_launch_cag_menu_load$
+	:i $dialog_box_exit$
+	:i $skater$.$unhide$
+	:i $create_select_goals_menu$
+:i endfunction
+:i function $prompt_nuke_goals$
+	:i $skater$.$hide$
+	:i $menu_confirm_quit$$back_script$ = $nuke_goals_deny$$no_script$ = $nuke_goals_deny$$yes_script$ = $nuke_goals_confirm$$title$ = %s(12,"CLEAR GOALS?")
+:i endfunction
+:i function $nuke_goals_confirm$
+	:i $dialog_box_exit$
+	:i $select_goals_menu_exit$$new_menu_script$ = $nuke_all_goals$
+:i endfunction
+:i function $nuke_goals_deny$
+	:i $dialog_box_exit$
+	:i $create_select_goals_menu$
+:i endfunction
+:i function $select_goals_menu_exit$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+	:i %GLOBAL%$new_menu_script$ isNull 
+:i endfunction
+:i function $nuke_all_goals$
+	:i $GoalEditor$.$NukeAllGoals$
+	:i $create_select_goals_menu$
+:i endfunction
+:i function $launch_ss_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_ss_menu$ isNull 
+:i endfunction
+:i function $ss_initialization$
+	:i $skater$.$add_skater_to_world$
+	:i $UnPauseSkaters$
+	:i $MakeSkaterGoto$$SkateshopAI$$Params$ = :s{$BlendOK$:s}
+	:i $Change$$cas_cam_angle$ = %i(154,0000009a)
+:i endfunction
+:i function $create_ss_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $ss_initialization$
+	:i $cas_setup_rotating_camera$$cam_anim$ = $careerCam$
+	:i if $GotParam$$change_gamemode$
+		:i %GLOBAL%$change_gamemode$
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetGameMode$
+	:i switch %GLOBAL%$GameMode$
+		:i case $career$
+			:i %GLOBAL%$menu_title$ = %sc(10,"STORY MODE")
+			:i endcase
+		case $freeskate$
+			:i if $InSplitScreenGame$
+				:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(1,00000001)) 
+					:i %GLOBAL%$menu_title$ = %sc(10,"PLAYER TWO")
+				:i else 
+					:i %GLOBAL%$menu_title$ = %sc(10,"PLAYER ONE")
+				:i endif
+			:i else 
+				:i %GLOBAL%$menu_title$ = %sc(10,"FREE SKATE")
+			:i endif
+			:i endcase
+		case $net$
+			:i if $isxbox$
+				:i if  ($network_connection_type$ = $internet$) 
+					:i %GLOBAL%$menu_title$ = %sc(13,"THUG 2 ONLINE")
+				:i else 
+					:i %GLOBAL%$menu_title$ = %sc(12,"NETWORK PLAY")
+				:i endif
+			:i else 
+				:i %GLOBAL%$menu_title$ = %sc(13,"THUG 2 ONLINE")
+			:i endif
+			:i endcase
+		case $singlesession$
+			:i %GLOBAL%$menu_title$ = %sc(14,"SINGLE SESSION")
+			:i endcase
+		case $creategoals$
+			:i %GLOBAL%$menu_title$ = %sc(12,"CREATE GOALS")
+			:i endcase
+		case $classic$
+			:i %GLOBAL%$menu_title$ = %sc(12,"CLASSIC MODE")
+			:i endcase
+		default 
+			:i %GLOBAL%$menu_title$ = %sc(9,"SKATESHOP")
+			:i end_switch
+	
+	:i if $GameModeEquals$$is_net$
+		:i if $isxbox$
+			:i if  ($network_connection_type$ = $internet$) 
+				:i %GLOBAL%$menu_title$ = %sc(13,"THUG 2 ONLINE")
+			:i else 
+				:i %GLOBAL%$menu_title$ = %sc(12,"NETWORK PLAY")
+			:i endif
+		:i else 
+			:i %GLOBAL%$menu_title$ = %sc(13,"THUG 2 ONLINE")
+		:i endif
+	:i endif
+	:i if  ($launch_to_createatrick$ = %i(1,00000001)) 
+		:i %GLOBAL%$menu_title$ = %sc(13,"CREATE TRICKS")
+	:i endif
+	:i $make_new_roundbar_menu$:s{
+		:i $title$ = %GLOBAL%$menu_title$
+		:i $pad_back_script$ = $generic_menu_pad_back$
+		:i $pad_back_params$ = :s{$callback$ = $ss_menu_exit$$new_menu_script$ = $launch_select_skater_menu$$reset_skater$ = %i(0,00000000):s}
+	:i :s}
+	:i $create_helper_text$ = $generic_helper_text$
+	:i $kill_start_key_binding$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $InSplitScreenGame$
+		:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(1,00000001)) 
+			:i $add_roundbar_menu_item$:s{$text$ = %sc(5,"Ready")
+				:i $id$ = $ss_play_level$
+				:i $pad_choose_script$ = $ss_menu_exit$
+				:i $pad_choose_params$ = :s{$new_menu_script$ = $launch_level_select_menu$$player_two$:s}
+			:i :s}
+		:i else 
+			:i $add_roundbar_menu_item$:s{$text$ = %sc(5,"Ready")
+				:i $id$ = $ss_play_level$
+				:i $pad_choose_script$ = $ss_menu_exit$
+				:i $pad_choose_params$ = :s{$new_menu_script$ = $player_1_ready$:s}
+			:i :s}
+		:i endif
+	:i else 
+		:i if $GameModeEquals$$is_net$
+			:i if $IsInternetGameHost$
+				:i $add_roundbar_menu_item$:s{$text$ = %sc(5,"Ready")
+					:i $id$ = $ss_play_level$
+					:i $pad_choose_script$ = $ss_menu_exit$
+					:i $pad_choose_params$ = :s{$new_menu_script$ = $create_network_select_games_menu$$play_cam$:s}
+				:i :s}
+			:i else 
+				:i if  ($network_connection_type$ = $internet$) 
+					:i $add_roundbar_menu_item$:s{$text$ = %sc(5,"Ready")
+						:i $id$ = $ss_play_level$
+						:i $pad_choose_script$ = $ss_menu_exit$
+						:i $pad_choose_params$ = :s{$new_menu_script$ = $select_internet_play$:s}
+					:i :s}
+				:i else 
+					:i $add_roundbar_menu_item$:s{$text$ = %sc(5,"Ready")
+						:i $id$ = $ss_play_level$
+						:i $pad_choose_script$ = $ss_menu_exit$
+						:i $pad_choose_params$ = :s{$new_menu_script$ = $select_lan_play$:s}
+					:i :s}
+				:i endif
+			:i endif
+		:i else 
+			:i $RemoveParameter$$callback$
+			:i $add_roundbar_menu_item$:s{$text$ = %sc(10,"Play Level")
+				:i $id$ = $ss_play_level$
+				:i $pad_choose_script$ = $ss_menu_exit$
+				:i $pad_choose_params$ = :s{$new_menu_script$ = $launch_level_select_menu$ isNull :s}
+			:i :s}
+		:i endif
+	:i endif
+	:i $add_roundbar_menu_item$:s{$text$ = %sc(11,"Edit Tricks")
+		:i $pad_choose_script$ = $ss_menu_exit$
+		:i $pad_choose_params$ = :s{$new_menu_script$ = $create_edit_tricks_menu$$from_ss_menu$$hide_bg$ = %i(1,00000001):s}
+	:i :s}
+	:i if  ( ($GameModeEquals$$is_creategoals$)  OR  ($GameModeEquals$$is_singlesession$) ) 
+		:i $add_roundbar_menu_item$:s{$text$ = %sc(10,"Difficulty")
+			:i $pad_choose_script$ = $ss_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $create_gamemode_difficulty_menu$$from_ss_menu$ = %i(1,00000001):s}
+		:i :s}
+	:i endif
+	:i if $InSplitScreenGame$
+		:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+			:i $add_roundbar_menu_item$:s{$text$ = %sc(10,"Difficulty")
+				:i $pad_choose_script$ = $ss_menu_exit$
+				:i $pad_choose_params$ = :s{$new_menu_script$ = $create_gamemode_difficulty_menu$$from_ss_menu$ = %i(1,00000001):s}
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $GetInitialsString$
+		:i $FormatText$$textname$ = $initials_string$%s(19,"Update Initials: %i")$i$ = %GLOBAL%$string$
+		:i $add_roundbar_menu_item$:s{$text$ = %GLOBAL%$initials_string$
+			:i $pad_choose_script$ = $ss_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $high_scores_menu_enter_initials$$from_ss_menu$ = %i(1,00000001):s}
+		:i :s}
+	:i endif
+	:i if $GameModeEquals$$is_net$
+		:i if $isps2$
+			:i if $IsTrue$$AllowLanPlay$
+				:i if  ($network_connection_type$ = $internet$) 
+					:i $ui_string$ = %s(8,"internet")
+				:i else 
+					:i $ui_string$ = %s(3,"lan")
+				:i endif
+				:i $add_roundbar_menu_item$:s{$text$ = %s(11,"Connection:")
+					:i $id$ = $menu_connection$
+					:i $pad_choose_script$ = $toggle_net_connection_type$
+					:i $pad_choose_params$ = :s{$new_menu_script$ = %GLOBAL%$new_menu_script$:s}
+				:i :s}
+				:i $CreateScreenElement$:s{
+					:i $type$ = $ContainerElement$
+					:i $parent$ = $menu_connection$
+				:i :s}
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = $menu_connection$
+					:i $id$ = $connection_type_string$
+					:i $text$ = %GLOBAL%$ui_string$
+					:i $font$ = $small$
+					:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(100,00000064):a}
+					:i $scale$ = %i(1,00000001)
+					:i $pos$ = %vec2(200.000000,-3.000000)
+					:i $just$ = :a{$left$$top$:a}
+					:i $z_priority$ = %i(5,00000005)
+				:i :s}
+			:i endif
+			:i if $IsOnline$
+				:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+				:i switch %GLOBAL%$checksum$
+					:i case $device_sony_modem$
+						:i endcase
+					case $device_usb_modem$
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(13,"Hang Up Modem")
+							:i $id$ = $menu_network_select_hang_up$
+							:i $pad_choose_script$ = $disconnect_from_internet$
+						:i :s}
+						:i end_switch
+				
+			:i endif
+		:i endif
+		:i $add_roundbar_menu_item$:s{
+			:i $text$ = %s(18,"Online Preferences")
+			:i $id$ = $menu_network_options$
+			:i $pad_choose_script$ = $ss_menu_exit$
+			:i $pad_choose_params$ = :s{$new_menu_script$ = $create_network_options_menu$:s}
+		:i :s}
+	:i endif
+	:i $roundbar_menu_finish$
+:i endfunction
+:i $network_connection_type$ = $internet$
+:i function $toggle_net_connection_type$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetGameMode$
+	:i switch $network_connection_type$
+		:i case $lan$
+			:i $SetNetworkMode$$INTERNET_MODE$
+			:i $Change$$network_connection_type$ = $internet$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_connection$$child$ = $extra_text$:s}$text$ = %s(8,"Internet"):s}
+			:i endcase
+		case $internet$
+			:i $SetNetworkMode$$LAN_MODE$
+			:i $Change$$network_connection_type$ = $lan$
+			:i $SetScreenElementProps$:s{$id$ = :s{$menu_connection$$child$ = $extra_text$:s}$text$ = %s(3,"LAN"):s}
+			:i end_switch
+	
+	:i if $InSplitScreenGame$
+		:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $ss_play_level$
+				:i $event_handlers$ = :a{:s{$pad_choose$$ss_menu_exit$$Params$ = :s{$new_menu_script$ = $launch_level_select_menu$$player_two$:s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $ss_play_level$
+				:i $event_handlers$ = :a{:s{$pad_choose$$ss_menu_exit$$Params$ = :s{$new_menu_script$ = $player_1_ready$:s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+	:i else 
+		:i if $GameModeEquals$$is_net$
+			:i if  ($network_connection_type$ = $internet$) 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $ss_play_level$
+					:i $event_handlers$ = :a{:s{$pad_choose$$spawn_lobby_list$:s}:a}
+					:i $replace_handlers$
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $ss_play_level$
+					:i $event_handlers$ = :a{:s{$pad_choose$$ss_menu_exit$$Params$ = :s{$new_menu_script$ = $select_lan_play$:s}:s}:a}
+					:i $replace_handlers$
+				:i :s}
+			:i endif
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $ss_play_level$
+				:i $event_handlers$ = :a{:s{$pad_choose$$ss_menu_exit$$Params$ = :s{$new_menu_script$ = $launch_level_select_menu$ isNull :s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $player_1_ready$
+	:i $load_second_skater_profile$
+	:i $launch_select_skater_menu$$second_player$
+:i endfunction
+:i function $ss_menu_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GotParam$$hide_bg$
+		:i $play_no_skater_cam$
+	:i endif
+	:i if $GotParam$$new_menu_script$
+		:i %GLOBAL%$new_menu_script$ isNull $animate_in$ = %i(1,00000001)
+	:i endif
+	:i if $OnXbox$
+		:i if $GameModeEquals$$is_net$
+			:i if  (%GLOBAL%$new_menu_script$ = $launch_select_skater_menu$) 
+				:i $SetNetworkMode$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $launch_select_skater_menu$
+	:i $pulse_blur$$speed$ = %i(2,00000002)$start$ = %i(255,000000ff)
+	:i $spin_menu_visible$$on$ = %i(0,00000000)
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i if  ($goto_secret_shop$ = %i(2,00000002)) 
+			:i $wait$%i(1,00000001)$gameframe$
+			:i $Change$$goto_secret_shop$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $SetMenuPadMappings$:a{$active$$use_as_first$:a}
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $create_select_skater_menu$ isNull 
+:i endfunction
+:i function $create_select_skater_menu$$reset_skater$ = %i(1,00000001)$cam_anim$ = $selectSkater$
+	:i $ss_initialization$
+	:i $cas_setup_rotating_camera$$cam_anim$ = %GLOBAL%$cam_anim$
+	:i $ResetComboRecords$
+	:i if $GotParam$$change_gamemode$
+		:i %GLOBAL%$change_gamemode$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $select_skater_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $select_skater_anchor$$alias$ = $current_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $menu_bar$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(0.000000,24.000000)
+		:i $rgba$ = %GLOBAL%$bg_color$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %vec2(5.000000,2.900000)
+		:i $alpha$ = %f(0.600000)
+		:i $z_priority$ = %i(4294967294,fffffffe)
+	:i :s}
+	:i $create_select_skater_hmenu$
+	:i $kill_start_key_binding$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $star$
+		:i $pos$ = %vec2(5.000000,52.000000)
+		:i $scale$ = %f(0.500000)
+		:i $alpha$ = %f(0.400000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $star$
+		:i $pos$ = %vec2(590.000000,52.000000)
+		:i $scale$ = %f(0.500000)
+		:i $alpha$ = %f(0.400000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_1$
+		:i $pos$ = %vec2(0.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_2$
+		:i $pos$ = %vec2(80.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_3$
+		:i $pos$ = %vec2(164.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_4$
+		:i $pos$ = %vec2(248.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_5$
+		:i $pos$ = %vec2(330.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_6$
+		:i $pos$ = %vec2(414.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_7$
+		:i $pos$ = %vec2(500.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $strip_8$
+		:i $pos$ = %vec2(584.000000,30.000000)
+		:i $scale$ = %f(1.300000)
+		:i $rgba$ = :a{%i(10,0000000a)%i(56,00000038)%i(112,00000070)%i(60,0000003c):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $tab_anchor$
+		:i $pos$ = %vec2(310.000000,88.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %vec2(2.750000,1.800000)
+		:i $pos$ = %vec2(340.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $scale$ = %vec2(2.750000,1.800000)
+		:i $pos$ = %vec2(330.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(38,00000026):a}
+		:i $scale$ = %vec2(9.500000,12.200000)
+		:i $pos$ = %vec2(370.000000,75.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(28,0000001c):a}
+		:i $scale$ = %vec2(12.500000,0.500000)
+		:i $pos$ = %vec2(450.000000,77.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(48,00000030):a}
+		:i $scale$ = %vec2(12.500000,0.500000)
+		:i $pos$ = %vec2(430.000000,28.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $select_skater_name$
+		:i $text$ = %s(0,"")
+		:i $font$ = $testtitle$
+		:i $pos$ = %vec2(350.000000,120.000000)
+		:i $scale$ = %f(1.630000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(85,00000055);%i(30,0000001e);%i(0,00000000);%i(128,00000080):a}
+	:i :s}
+	:i if $ScreenElementExists$$id$ = $stats_block_anchor_parent$
+		:i $DestroyScreenElement$$id$ = $stats_block_anchor_parent$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $stats_block_anchor_parent$
+		:i $pos$ = %vec2(245.000000,190.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $stats_menu_create_stats_block$$parent$ = $stats_block_anchor_parent$$not_focusable$$on$ = $on$$pos$ = %vec2(0.000000,0.000000)$scale$ = %f(0.850000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $select_skater_anchor$
+		:i $texture$ = $thug_2$
+		:i $pos$ = %vec2(490.000000,170.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(2.100000)
+		:i $alpha$ = %f(0.500000)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $build_big_level_select_arrows$$pos$ = %vec2(150.000000,250.000000)$scale$ = %i(1,00000001)$z_priority$ = %i(0,00000000)$arrow_position_shift$ = %vec2(185.000000,0.000000)$parent$ = $select_skater_anchor$
+	:i if $GotParam$$second_player$
+		:i %GLOBAL%$current_skater$ = $hawk$
+	:i else 
+		:i $select_skater_get_current_skater_name$
+		:i if $ChecksumEquals$$a$ = %GLOBAL%$current_skater$$b$ = $custom$
+			:i $Change$$select_skater_needs_refresh$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $select_skater_hmenu$$data$ = :s{$child_id$ = %GLOBAL%$current_skater$:s}
+	:i $skater$.$SetTags$$stopskateshopstreams$ = %i(0,00000000)
+:i endfunction
+:i function $SkaterSelectAI$$stopskateshopstreams$ = %i(1,00000001)
+	:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$
+	:i $Obj_SetLightAmbientColor$$r$ = %i(53,00000035)$g$ = %i(50,00000032)$b$ = %i(60,0000003c)
+	:i $Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(100,00000064)$g$ = %i(115,00000073)$b$ = %i(145,00000091)
+	:i $Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(5,00000005)$g$ = %i(3,00000003)$b$ = %i(5,00000005)
+	:i $Obj_SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+	:i $Obj_SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+	:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+	:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+	:i $stream_repetition$ = %i(4,00000004)
+	:i $TurnOffSpecialItem$
+	:i $SwitchOffBoard$
+	:i $ClearExceptions$
+	:i $SetQueueTricks$$NoTricks$
+	:i $DisablePlayerInput$
+	:i $SetRollingFriction$%i(10000,00002710)
+	:i $Obj_MoveToNode$$name$ = $SS_player_restart$$Orient$$NoReset$
+	:i $PausePhysics$
+:i endfunction
+:i function $reset_model_lights$
+	:i if $Obj_HasModelLights$
+		:i $Obj_DisableAmbientLight$
+		:i $Obj_DisableDiffuseLight$$index$ = %i(0,00000000)
+		:i $Obj_DisableDiffuseLight$$index$ = %i(1,00000001)
+	:i else 
+		:i $printf$%s(24,"No model lights to reset")
+	:i endif
+:i endfunction
+:i function $create_select_skater_hmenu$$scale$ = %vec2(1.140000,1.000000)$text$ = %s(0,"")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $select_skater_hmenu_anchor$
+		:i $pos$ = %vec2(30.000000,34.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = $select_skater_hmenu_anchor$
+		:i $id$ = $select_skater_hmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $padding_scale$ = %i(1,00000001)
+	:i :s}
+	:i $AssignAlias$$id$ = $select_skater_hmenu$$alias$ = $current_menu$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_MainMenu$
+		:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(1,00000001)) 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $select_skater_hmenu$
+				:i $event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+					:i :s{$pad_back$$select_skater_menu_back$$Params$ = :s{$callback$ = $back_from_player_two_select$:s}:s}
+					:i :s{$pad_option$$ss_overwrite_warning$$Params$ = :s{:s}:s}
+					:i :s{$pad_option$$generic_menu_pad_choose_sound$:s}
+					:i :a}
+				:i $replace_handlers$
+			:i :s}
+		:i else 
+			:i $GetGameMode$
+			:i switch %GLOBAL%$GameMode$
+				:i case $classic$
+					:i endcase
+				case $career$
+					:i $SetScreenElementProps$:s{
+						:i $id$ = $select_skater_hmenu$
+						:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}
+							:i :s{$pad_back$$select_skater_menu_back$$Params$ = :s{$callback$ = $create_gamemode_options_menu$:s}:s}
+							:i :s{$pad_option$$ss_overwrite_warning$$Params$ = :s{:s}:s}
+							:i :s{$pad_option$$generic_menu_pad_choose_sound$:s}
+							:i :a}
+						:i $replace_handlers$
+					:i :s}
+					:i endcase
+				default 
+					:i $SetScreenElementProps$:s{
+						:i $id$ = $select_skater_hmenu$
+						:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}
+							:i :s{$pad_back$$select_skater_menu_back$$Params$ = :s{$callback$ = $create_main_menu$:s}:s}
+							:i :s{$pad_option$$ss_overwrite_warning$$Params$ = :s{:s}:s}
+							:i :s{$pad_option$$generic_menu_pad_choose_sound$:s}
+							:i :a}
+						:i $replace_handlers$
+					:i :s}
+					:i end_switch
+			
+			:i if  ($InSplitScreenGame$) 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = $select_skater_hmenu$
+					:i $event_handlers$ = :a{:s{$pad_back$$change_gamemode_career$:s}:a}
+				:i :s}
+			:i endif
+		:i endif
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $select_skater_hmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$select_skater_menu_back$$Params$ = :s{$callback$ = $create_options_menu$:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $select_skater_hmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_left$$level_select_arrow_blink_left$$Params$ = :s{$wait_first$:s}:s}
+			:i :s{$pad_left$$generic_menu_scroll_sideways_sound$:s}
+			:i :s{$pad_right$$level_select_arrow_blink_right$$Params$ = :s{$wait_first$:s}:s}
+			:i :s{$pad_right$$generic_menu_scroll_sideways_sound$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ss_overwrite_warning$$callback$ = $cas_reset_skater_and_goto_menu$
+	:i $hide_select_skater_arrows$
+	:i if $ObjectExists$$id$ = $select_skater_hmenu$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu$
+	:i endif
+	:i if $ObjectExists$$id$ = $select_skater_hmenu_new$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu_new$
+	:i endif
+	:i if $ObjectExists$$id$ = $stats_block_anchor$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $stats_block_anchor$
+			:i $alpha$ = %f(0.000000)
+			:i $time$ = %f(0.200000)
+		:i :s}
+	:i endif
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %sc(11,"Load Skater")
+		:i $text$ = %sc(86,"Warning !\nAny unsaved changes to your current Game Progress will be lost.\nContinue ?")
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $no_bg$
+		:i $pad_back_script$ = $generic_menu_pad_back$
+		:i $pad_back_params$ = :s{$callback$ = $ss_cancel_load_skater$:s}
+		:i $buttons$ = :a{
+			:i :s{
+				:i $font$ = $small$$text$ = %sc(3,"Yes")
+				:i $pad_choose_script$ = $ss_yes_load_skater$
+			:i :s}
+			:i :s{
+				:i $font$ = $small$$text$ = %sc(2,"No")
+				:i $pad_choose_script$ = $ss_cancel_load_skater$
+			:i :s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ss_yes_load_skater$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(1,00000001)) 
+		:i $Change$$layer_infos_need_resetting$ = %i(1,00000001)
+		:i $edit_graphic_copy_layer_infos$
+	:i endif
+	:i $launch_load_cas_from_select_sequence$
+:i endfunction
+:i function $ss_cancel_load_skater$
+	:i $dialog_box_exit$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+	:i $launch_new_select_skater_menu$
+:i endfunction
+:i function $menu_horiz_blink_arrow$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$arrow_id$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$arrow_id$$menu_blink_arrow$
+:i endfunction
+:i function $back_from_player_two_select$
+	:i if  ($layer_infos_need_resetting$ = %i(1,00000001)) 
+		:i $edit_graphic_reset_layer_infos$
+		:i $edit_graphic_apply_graphic_from_save$
+		:i $Change$$layer_infos_need_resetting$ = %i(0,00000000)
+	:i endif
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+	:i $RefreshSkaterModel$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+	:i $launch_select_skater_menu$$from2p$
+:i endfunction
+:i function $select_skater_menu_add_hmenu_items$
+:i endfunction
+:i function $get_current_skater_display_name$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	$display_name$ = %GLOBAL%$display_name$
+:i endfunction
+:i function $get_custom_skater_display_name$
+	:i $GetSkaterProfileInfoByName$$name$ = $custom$
+	:i return
+	$display_name$ = %GLOBAL%$display_name$
+:i endfunction
+:i function $select_skater_relight_skater$
+	:i $FakeLights$$percent$ = %i(100,00000064)$prefix$ = $TRG_TR_Level_Light$
+	:i $skater$.$Obj_SetLightAmbientColor$$r$ =  ($skater_ambient_color$:a{%i(0,00000000):a}) $g$ =  ($skater_ambient_color$:a{%i(1,00000001):a}) $b$ =  ($skater_ambient_color$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ =  ($skater_diffuse_color1$:a{%i(0,00000000):a}) $g$ =  ($skater_diffuse_color1$:a{%i(1,00000001):a}) $b$ =  ($skater_diffuse_color1$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ =  ($skater_diffuse_color2$:a{%i(0,00000000):a}) $g$ =  ($skater_diffuse_color2$:a{%i(1,00000001):a}) $b$ =  ($skater_diffuse_color2$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightAmbientColor$$r$ =  ($skater_ambient_color$:a{%i(0,00000000):a}) $g$ =  ($skater_ambient_color$:a{%i(1,00000001):a}) $b$ =  ($skater_ambient_color$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ =  ($skater_diffuse_color1$:a{%i(0,00000000):a}) $g$ =  ($skater_diffuse_color1$:a{%i(1,00000001):a}) $b$ =  ($skater_diffuse_color1$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ =  ($skater_diffuse_color2$:a{%i(0,00000000):a}) $g$ =  ($skater_diffuse_color2$:a{%i(1,00000001):a}) $b$ =  ($skater_diffuse_color2$:a{%i(2,00000002):a}) 
+	:i $skater$.$Obj_SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+	:i $skater$.$Obj_SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+	:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+	:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+:i endfunction
+:i $select_skater_needs_refresh$ = %i(1,00000001)
+:i function $select_skater_hmenu_focus$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $rgba$ = :a{%i(64,00000040)%i(92,0000005c)%i(126,0000007e)%i(128,00000080):a}
+	:i :s}
+	:i if $LevelIs$$Load_MainMenu$
+		:i $select_skater_get_current_skater_name$
+		:i $GetCurrentSkaterProfileIndex$
+		:i if  ($select_skater_needs_refresh$ = %i(1,00000001)) 
+			:i if  ($layer_infos_need_resetting$ = %i(1,00000001)) 
+				:i $edit_graphic_reset_layer_infos$
+				:i $edit_graphic_apply_graphic_from_save$
+				:i $Change$$layer_infos_need_resetting$ = %i(0,00000000)
+			:i endif
+			:i $load_pro_skater$:s{$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000) isNull :s}
+		:i else 
+			:i $Change$$select_skater_needs_refresh$ = %i(1,00000001)
+		:i endif
+		:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i if  (%GLOBAL%$name$ = $ped$) 
+			:i $skater$.$Obj_SetLightAmbientColor$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $skater$.$Obj_SetLightAmbientColor$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $FakeLights$$percent$ = %i(0,00000000)$prefix$ = $TRG_TR_Level_Light$
+		:i else 
+			:i $select_skater_relight_skater$
+		:i endif
+		:i $StopStream$
+		:i $MakeSkaterGoto$$SkateshopAI$$Params$ = :s{:s}
+		:i $skater$.$SwitchOffBoard$
+		:i $get_current_skater_display_name$
+		:i $GetUpperCaseString$%GLOBAL%$display_name$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $select_skater_name$
+			:i $text$ = %GLOBAL%$UpperCaseString$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = $stats_block_anchor$
+		:i $DestroyScreenElement$$id$ = $stats_block_anchor$
+	:i endif
+	:i if NOT  (%GLOBAL%$name$ = $ped$) 
+		:i $GetCurrentSkaterProfileIndex$
+		:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i $SetScreenElementLock$$id$ = $stats_block_anchor_parent$$off$
+		:i $stats_menu_create_stats_block$:s{
+			:i $parent$ = $stats_block_anchor_parent$
+			:i $id$ = $stats_block_anchor$
+			:i $not_focusable$
+			:i $on$ = $on$
+			:i $scale$ = %f(0.850000)
+			:i $pos$ = %vec2(0.000000,0.000000)
+		:i :s}
+	:i endif
+	:i if $isxbox$
+		:i $SpawnScript$$TemporarilyDisableInput$$Params$ = :s{$time$ = %i(100,00000064):s}
+	:i endif
+:i endfunction
+:i function $highlight_box_pulse$
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.030000)$scale$ = %vec2(1.070000,1.050000)
+		:i $wait$%f(0.200000)$second$
+		:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.030000)$scale$ = %vec2(1.100000,1.070000)
+		:i $wait$%f(0.200000)$second$
+	:i loop_to 
+:i endfunction
+:i function $select_skater_get_current_skater_name$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	$current_skater$ = %GLOBAL%$name$
+:i endfunction
+:i function $select_skater_hmenu_unfocus$
+	:i $GetTags$
+	:i $generic_menu_pad_up_down_sound$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(108,0000006c):a}
+	:i :s}
+	:i $skater$.$reset_model_lights$
+:i endfunction
+:i function $select_skater_hmenu_choose$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $ControllerBoundToDifferentSkater$$controller$ = %GLOBAL%$device_num$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i return
+		
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i if $GotParam$$name$
+			:i if  (%GLOBAL%$name$ = $ped$) 
+				:i if NOT $GotParam$$choose_ped$
+					:i $goto$$MakeSelectPedMenu$$Params$ = :s{$ped_info$ =  isNull :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $cas_setup_rotating_camera$$cam_anim$ = $careerCam$
+	:i if $ObjectExists$$id$ = $select_skater_anchor$
+		:i $DestroyScreenElement$$id$ = $select_skater_anchor$
+		:i $restore_start_key_binding$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $GetSkaterId$
+		:i if $GotParam$$device_num$
+			:i %GLOBAL%$controller_index$ = %GLOBAL%$device_num$
+		:i else 
+			:i %GLOBAL%$controller_index$ = %GLOBAL%$controller$
+		:i endif
+		:i $BindControllerToSkater$$skater_heap_index$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$controller_index$
+		:i $BindFrontEndToController$$front_end_pad$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$controller_index$
+		:i $StopStream$
+		:i $GetCurrentSkaterProfileIndex$
+		:i $skater$.$Obj_SpawnScript$$SkateshopGO$
+		:i if $InSplitScreenGame$
+			:i $launch_ss_menu$ isNull 
+		:i else 
+			:i $launch_ss_menu$
+		:i endif
+	:i else 
+		:i if NOT $GoalManager_HasActiveGoals$
+			:i $GoalManager_ShowGoalPoints$
+		:i endif
+		:i $select_skater_get_current_skater_name$
+		:i if NOT  (%GLOBAL%$current_skater$ = %GLOBAL%$name$) 
+			:i $GetCurrentSkaterProfileIndex$
+			:i $load_pro_skater$:s{$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000) isNull :s}
+		:i endif
+		:i $GoalManager_ShowPoints$
+		:i $GoalManager_ReplaceTrickText$$all$
+		:i $exit_pause_menu$
+	:i endif
+	:i $skater$.$SetTags$$stopskateshopstreams$ = %i(1,00000001)
+:i endfunction
+:i function $select_skater_get_profile_info$
+	:i $GetArraySize$$master_skater_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $ChecksumEquals$$a$ =  ( ($master_skater_list$:a{%GLOBAL%$index$:a}) ->$name$) $b$ = %GLOBAL%$skater_profile$
+			:i return
+			$profile_info$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $MakeSelectPedMenu$$dims$ = %vec2(300.000000,150.000000)$pos$ = %vec2(322.000000,-2.000000)$menu_id$ = $sub_menu$$vmenu_id$ = $sub_vmenu$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $Change$$widest_menu_item_width$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $ped_menu_parts_anchor$
+		:i $dims$ = %vec2(640.000000,150.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $type$ = $VScrollingMenu$
+	:i $scrolling_menu_id$ = $sub_scrolling_menu$
+	:i $make_new_menu$:s{
+		:i $pos$ = %GLOBAL%$pos$
+		:i $parent$ = $ped_menu_parts_anchor$
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $menu_id$ = %GLOBAL%$menu_id$
+		:i $vmenu_id$ = %GLOBAL%$vmenu_id$
+		:i $scrolling_menu_id$ = %GLOBAL%$scrolling_menu_id$
+		:i $type$ = %GLOBAL%$type$
+		:i $dims$ = %GLOBAL%$dims$
+		:i $dont_allow_wrap$ = %GLOBAL%$dont_allow_wrap$
+		:i %GLOBAL%$no_menu_title$
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$menu_id$$time$ = %i(0,00000000)$pos$ = %vec2(310.000000,620.000000)
+	:i $AssignAlias$$id$ = $ped_menu_parts_anchor$$alias$ = $current_menu_anchor$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$BackFromPedMenu$:s}
+			:i :s{$pad_up$$set_which_arrow$$Params$ = :s{$arrow$ = $scrolling_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$Params$ = :s{$arrow$ = $scrolling_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$Params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$Params$ = :s{$down$:s}:s}
+			:i :a}
+	:i :s}
+	:i %GLOBAL%$num_added$ = %i(0,00000000)
+	:i $GetArraySize$$ped_profile_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$add_item$ = %i(0,00000000)
+		:i if $GetGlobalFlag$$flag$ =  ( ($ped_profile_list$:a{%GLOBAL%$index$:a}) ->$ped_group_flag$) 
+			:i %GLOBAL%$add_item$ = %i(1,00000001)
+		:i endif
+		:i if  (%GLOBAL%$add_item$) 
+			:i if $StructureContains$$structure$ =  ($ped_profile_list$:a{%GLOBAL%$index$:a}) $skater_profile$
+				:i $select_skater_get_profile_info$$profile$ =  ( ($ped_profile_list$:a{%GLOBAL%$index$:a}) ->$skater_profile$) 
+				:i %GLOBAL%$info$ = %GLOBAL%$profile_info$
+			:i else 
+				:i %GLOBAL%$info$ = %GLOBAL%$ped_info$
+			:i endif
+			:i $theme_menu_add_item$:s{
+				:i $text$ =  ( ($ped_profile_list$:a{%GLOBAL%$index$:a}) ->$display_name$) 
+				:i $focus_script$ = $PedFocus$
+				:i $focus_params$ = :s{
+					:i $appearance$ =  ( ($ped_profile_list$:a{%GLOBAL%$index$:a}) ->$ped_appearance_structure$) 
+					:i $tag_texture$ =  ( ($ped_profile_list$:a{%GLOBAL%$index$:a}) ->$tag_texture$) 
+				:i :s}
+				:i $pad_choose_script$ = $PedChoose$
+				:i $pad_choose_params$ = :s{$info$ = %GLOBAL%$info$$controller$ = %GLOBAL%$controller$$device_num$ = %GLOBAL%$device_num$:s}
+				:i $centered$
+				:i $highlight_bar_scale$ = %vec2(1.700000,0.700000)
+				:i $no_bg$
+			:i :s}
+			:i %GLOBAL%$num_added$ =  (%GLOBAL%$num_added$ + %i(1,00000001)) 
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if  (%GLOBAL%$num_added$) 
+		:i $FakeLights$$percent$ = %i(100,00000064)$prefix$ = $TRG_TR_Level_Light$
+		:i $skater$.$Obj_SetLightAmbientColor$$r$ = %i(73,00000049)$g$ = %i(70,00000046)$b$ = %i(80,00000050)
+		:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(110,0000006e)$g$ = %i(125,0000007d)$b$ = %i(155,0000009b)
+		:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(10,0000000a)$g$ = %i(3,00000003)$b$ = %i(5,00000005)
+		:i $skater$.$Obj_SetLightAmbientColor$$r$ = %i(73,00000049)$g$ = %i(70,00000046)$b$ = %i(80,00000050)
+		:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(110,0000006e)$g$ = %i(125,0000007d)$b$ = %i(155,0000009b)
+		:i $skater$.$Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(10,0000000a)$g$ = %i(3,00000003)$b$ = %i(5,00000005)
+		:i $skater$.$Obj_SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+		:i $skater$.$Obj_SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+		:i $SetLightDirection$$index$ = %i(0,00000000)$heading$ = $skater_select_light0_heading$$pitch$ = %i(350,0000015e)
+		:i $SetLightDirection$$index$ = %i(1,00000001)$heading$ = $skater_select_light1_heading$$pitch$ = %i(270,0000010e)
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %s(4,"Done")
+		:i $pad_choose_script$ = $BackFromPedMenu$
+		:i $centered$
+		:i $highlight_bar_scale$ = %vec2(1.700000,0.700000)
+		:i $no_bg$
+	:i :s}
+	:i $finish_themed_scrolling_menu$$pos$ = %vec2(360.000000,8.000000)$bg_width$ = %f(1.400000)
+	:i $DoScreenElementMorph$$id$ = $bg_box_vmenu$$pos$ = %vec2(412.000000,8.000000)
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $DoScreenElementMorph$$id$ = $scrolling_menu_up_arrow$$time$ = %i(0,00000000)$rgba$ = %GLOBAL%$on_rgba$
+	:i $DoScreenElementMorph$$id$ = $scrolling_menu_down_arrow$$time$ = %i(0,00000000)$rgba$ = %GLOBAL%$on_rgba$
+	:i $SetScreenElementLock$$id$ = $ped_menu_parts_anchor$$off$
+	:i $create_helper_text$$generic_helper_text$$parent$ = $ped_menu_parts_anchor$$helper_pos$ = %vec2(320.000000,261.000000)
+	:i $SetScreenElementLock$$id$ = $ped_menu_parts_anchor$$on$
+:i endfunction
+:i function $PedChoose$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $ControllerBoundToDifferentSkater$$controller$ = %GLOBAL%$device_num$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $ped_menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $ped_menu_parts_anchor$
+	:i endif
+	:i $select_skater_hmenu_choose$%GLOBAL%$info$$choose_ped$$controller$ = %GLOBAL%$controller$$device_num$ = %GLOBAL%$device_num$
+:i endfunction
+:i function $PedFocus$
+:i endfunction
+:i function $BackFromPedMenu$
+	:i if $ObjectExists$$id$ = $ped_menu_parts_anchor$
+		:i $DestroyScreenElement$$id$ = $ped_menu_parts_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $select_skater_anchor$$off$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(14,"\b6/\b5=Select"):s}
+			:i :s{$text$ = %s(10,"\bm=Accept"):s}
+			:i :s{$text$ = %s(8,"\bn=Back"):s}
+			:i :s{$text$ = %s(15,"\bo=Load Skater"):s}
+			:i :a}
+		:i $parent$ = $select_skater_anchor$
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $select_skater_anchor$$on$
+	:i $Debounce$$X$$time$ = %f(0.500000)
+	:i $FireEvent$$type$ = $focus$$target$ = $select_skater_hmenu$$data$ = :s{$child_id$ = %i(19,00000013):s}
+	:i $AssignAlias$$id$ = $select_skater_anchor$$alias$ = $current_menu_anchor$
+:i endfunction
+:i function $SkateshopGO$
+	:i $wait$%f(0.180000)$seconds$
+	:i $PlaySkaterStream$$type$ = %s(4,"SSGo")
+:i endfunction
+:i function $load_second_skater_profile$
+	:i $printf$%s(23,"REFRESHING SKATER MODEL")
+	:i $SetCurrentSkaterProfile$%i(1,00000001)
+	:i $RefreshSkaterModel$$profile$ = %i(1,00000001)$skater$ = %i(0,00000000)
+	:i $SyncPlayer2Profile$
+:i endfunction
+:i function $select_skater_menu_back$
+	:i if $IsInternetGameHost$
+		:i $QuitGame$
+		:i return
+		
+	:i endif
+	:i if $IsJoiningInternetGame$
+		:i $QuitGame$
+		:i return
+		
+	:i endif
+	:i $KillSpawnedScript$$name$ = $highlight_box_pulse$
+	:i if $ObjectExists$$id$ = $select_skater_anchor$
+		:i $DestroyScreenElement$$id$ = $select_skater_anchor$
+		:i $restore_start_key_binding$
+	:i endif
+	:i $Orient_Skateshop_Skater$
+	:i $skater$.$CancelRotateDisplay$
+	:i $FakeLights$$percent$ = %i(100,00000064)$prefix$ = $TRG_TR_Level_Light$
+	:i $skater$.$SetTags$$stopskateshopstreams$ = %i(1,00000001)
+	:i %GLOBAL%$callback$$from_skater_select$
+:i endfunction
+:i function $select_skater_menu_animate_top$
+	:i $DoMorph$$pos$ = :s{%vec2(0.000000,-120.000000)$relative$:s}$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$pos$ = :s{%vec2(0.000000,120.000000)$relative$:s}$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $select_skater_menu_animate_stats$
+	:i $FireEvent$$type$ = $select_skater_menu_animate_stats_done$
+:i endfunction
+:i function $menu_blink_arrow$
+	:i $DoMorph$$alpha$ = %i(0,00000000)
+	:i $wait$%i(100,00000064)
+	:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $blink_arrow$
+	:i if NOT $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i return
+		
+	:i endif
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(0,00000000)
+	:i $wait$%i(100,00000064)
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$time$ = %f(0.300000)$alpha$ = %i(1,00000001)
+:i endfunction
+:i function $set_which_arrow$
+	:i $SetTags$$arrow_id$ = %GLOBAL%$arrow$
+:i endfunction
+:i function $menu_vert_blink_arrow$$menu_id$ = $current_menu$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$id$
+		:i $printf$%s(12,"bad arrow id")
+		:i return
+		
+	:i endif
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$id$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $wait$%i(1,00000001)$gameframe$
+	:i if NOT  ( ($MenuSelectedIndexIs$$id$ = %GLOBAL%$menu_id$$first$)  OR  ($MenuSelectedIndexIs$$id$ = %GLOBAL%$menu_id$$last$) ) 
+		:i $SetScreenElementProps$:s{$id$ = %GLOBAL%$id$$rgba$ = %GLOBAL%$rgba$:s}
+		:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$menu_blink_arrow$
+	:i endif
+:i endfunction
+:i function $launch_park_editor$
+	:i $SetGameType$$creategoals$
+	:i $SetCurrentGameType$
+	:i $SetParkName$%s(0,"")
+	:i $BindParkEditorToController$%GLOBAL%$device_num$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $BindControllerToSkater$$skater_heap_index$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$device_num$
+	:i $BindFrontEndToController$$front_end_pad$ = %GLOBAL%$currentSkaterProfileIndex$$controller$ = %GLOBAL%$device_num$
+	:i $main_menu_play_level2$$level$ = $load_Sk5Ed$
+:i endfunction
+:i function $main_menu_play_level$
+	:i $main_menu_exit$$new_menu_script$ = $main_menu_play_level2$$kill_clouds$ isNull 
+:i endfunction
+:i function $main_menu_play_level2$
+	:i $restore_start_key_binding$
+	:i $skater$.$reset_model_lights$
+	:i $change_level$$level$ = %GLOBAL%$level$
+:i endfunction
+:i function $leave_front_end$
+	:i $restore_start_key_binding$
+	:i $load_cas_textures_to_main_memory$$unload$
+:i endfunction
+:i function $spawn_two_player$
+	:i $Cleanup$$preserve_skaters$
+	:i $LeaveServer$
+	:i $FlushDeadObjects$
+	:i $InitSkaterHeaps$
+	:i $SetServerMode$
+	:i $StartServer$
+	:i $SetJoinMode$$JOIN_MODE_PLAY$
+	:i $JoinServer$
+	:i while
+		
+		:i if $JoinServerComplete$
+			:i continue
+			
+		:i else 
+			:i $wait$%i(1,00000001)
+		:i endif
+	:i loop_to 
+	:i $ScreenElementSystemCleanup$
+:i endfunction
+:i function $launch_two_player$
+	:i $SetCurrentSkaterProfile$%i(0,00000000)
+	:i $RefreshSkaterModel$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+	:i $SetMenuPadMappings$:a{$active$
+		:i $use_as_first$
+		:i :a}
+	:i $SpawnScript$$spawn_two_player$$NotSessionSpecific$ = %i(1,00000001)
+:i endfunction
+:i function $enable_two_player_option$
+	:i if $ObjectExists$$id$ = $main_menu_2_player_option$
+		:i $handle_enable_two_player_option$$item$ = $main_menu_2_player_option$
+	:i endif
+	:i if $ObjectExists$$id$ = $main_menu_2_player_option2$
+		:i $handle_enable_two_player_option$$item$ = $main_menu_2_player_option2$
+	:i endif
+:i endfunction
+:i function $handle_enable_two_player_option$
+	:i if $IsTrue$$DEMO_BUILD$
+		:i return
+		
+	:i endif
+	:i %GLOBAL%$item$.$GetTags$
+	:i if  (%GLOBAL%$active$ = %i(0,00000000)) 
+		:i $main_vmenu$.$GetTags$
+		:i if $GotParam$$tag_selected_id$
+			:i if  (%GLOBAL%$tag_selected_id$ = %GLOBAL%$item$) 
+				:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+					:i $rgba$ = %GLOBAL%$rgba$
+					:i $z_priority$ = %i(4,00000004)
+				:i :s}
+				:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+					:i $SetScreenElementProps$:s{
+						:i $id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+						:i $rgba$ = %GLOBAL%$rgba$
+						:i $z_priority$ = %i(4,00000004)
+					:i :s}
+				:i endif
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+					:i $rgba$ = $spin_menu_unhighlighted_text$
+				:i :s}
+				:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+					:i $SetScreenElementProps$:s{
+						:i $id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+						:i $rgba$ = $spin_menu_unhighlighted_text$
+						:i $z_priority$ = %i(4,00000004)
+					:i :s}
+				:i endif
+			:i endif
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$item$
+				:i $tags$ = :s{$active$ = %i(1,00000001):s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $disable_two_player_option$
+	:i if $ObjectExists$$id$ = $main_menu_2_player_option$
+		:i $handle_disable_two_player_option$$item$ = $main_menu_2_player_option$
+	:i endif
+	:i if $ObjectExists$$id$ = $main_menu_2_player_option2$
+		:i $handle_disable_two_player_option$$item$ = $main_menu_2_player_option2$
+	:i endif
+:i endfunction
+:i function $handle_disable_two_player_option$
+	:i %GLOBAL%$item$.$GetTags$
+	:i if  (%GLOBAL%$active$ = %i(1,00000001)) 
+		:i $main_vmenu$.$GetTags$
+		:i if $GotParam$$tag_selected_id$
+			:i if  (%GLOBAL%$tag_selected_id$ = %GLOBAL%$item$) 
+				:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+			:i endif
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+			:i $rgba$ = $spin_menu_disabled_text$
+		:i :s}
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+				:i $rgba$ = $spin_menu_disabled_text$
+			:i :s}
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$item$
+			:i $tags$ = :s{$active$ = %i(0,00000000):s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $enable_system_link_option$
+	:i if $ObjectExists$$id$ = $mm_multi_play$
+		:i $handle_enable_system_link_option$$item$ = $mm_multi_play$
+	:i endif
+	:i if $ObjectExists$$id$ = $mm_multi_play2$
+		:i $handle_enable_system_link_option$$item$ = $mm_multi_play2$
+	:i endif
+:i endfunction
+:i function $handle_enable_system_link_option$
+	:i %GLOBAL%$item$.$GetTags$
+	:i if  (%GLOBAL%$active$ = %i(0,00000000)) 
+		:i $main_vmenu$.$GetTags$
+		:i if $GotParam$$tag_selected_id$
+			:i if  (%GLOBAL%$tag_selected_id$ = %GLOBAL%$item$) 
+				:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+				:i $SetScreenElementProps$:s{
+					:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+					:i $rgba$ = %GLOBAL%$rgba$
+					:i $z_priority$ = %i(4,00000004)
+				:i :s}
+				:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+					:i $SetScreenElementProps$:s{
+						:i $id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+						:i $rgba$ = %GLOBAL%$rgba$
+						:i $z_priority$ = %i(4,00000004)
+					:i :s}
+				:i endif
+			:i else 
+				:i $SetScreenElementProps$:s{
+					:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+					:i $rgba$ = $spin_menu_unhighlighted_text$
+				:i :s}
+				:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+					:i $SetScreenElementProps$:s{
+						:i $id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+						:i $rgba$ = $spin_menu_unhighlighted_text$
+						:i $z_priority$ = %i(4,00000004)
+					:i :s}
+				:i endif
+			:i endif
+			:i $SetScreenElementProps$:s{
+				:i $id$ = %GLOBAL%$item$
+				:i $tags$ = :s{$active$ = %i(1,00000001):s}
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $disable_system_link_option$
+	:i if $ObjectExists$$id$ = $mm_multi_play$
+		:i $handle_disable_system_link_option$$item$ = $mm_multi_play$
+	:i endif
+	:i if $ObjectExists$$id$ = $mm_multi_play2$
+		:i $handle_disable_system_link_option$$item$ = $mm_multi_play2$
+	:i endif
+:i endfunction
+:i function $handle_disable_system_link_option$
+	:i %GLOBAL%$item$.$GetTags$
+	:i if  (%GLOBAL%$active$ = %i(1,00000001)) 
+		:i $main_vmenu$.$GetTags$
+		:i if $GotParam$$tag_selected_id$
+			:i if  (%GLOBAL%$tag_selected_id$ = %GLOBAL%$item$) 
+				:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+			:i endif
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$item$$child$ = %i(0,00000000):s}
+			:i $rgba$ = $spin_menu_disabled_text$
+		:i :s}
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = :s{%GLOBAL%$item$$child$ = %i(1,00000001):s}
+				:i $rgba$ = $spin_menu_disabled_text$
+			:i :s}
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$item$
+			:i $tags$ = :s{$active$ = %i(0,00000000):s}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $make_mainmenu_clouds$
+	:i $printf$%s(43,"!! make_mainmenu_clouds no longer in use !!")
+:i endfunction
+:i $attract_mode_movies$ = :a{
+	:i :a}
+:i function $launch_new_select_skater_menu$
+	:i %GLOBAL%$callback$ = $create_main_menu$
+	:i %GLOBAL%$from_skaterselect$ = $from_skaterselect$
+	:i $dialog_box_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $GameModeEquals$$is_net$
+		:i %GLOBAL%$callback$ = $select_network_play_multi$
+		:i %GLOBAL%$from_skaterselect$ = $from_skaterselect$
+	:i else 
+		:i %GLOBAL%$callback$ = $create_main_menu$
+		:i %GLOBAL%$from_skaterselect$ = $from_skaterselect$
+	:i endif
+	:i if $GotParam$$change_gamemode$
+		:i $SpawnScript$%GLOBAL%$change_gamemode$
+	:i endif
+	:i $SetMenuPadMappings$:a{$active$$use_as_first$:a}
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $create_new_select_skater_menu$ isNull 
+:i endfunction
+:i $LAST_SELECTED_SKATER_MENU_ID$ = $custom$
+:i $LAST_SELECTED_SKATER_SKIN_INDEX$ = %i(0,00000000)
+:i $LAST_SELECTED_SKATER_LIST_INDEX$ = %i(0,00000000)
+:i $LAST_SELECTED_SKATER_BEHAVIOUR$ = $SkateshopBehavior$
+:i $LAST_SELECTED_SKATER_HIDE_BOARD$ = %i(0,00000000)
+:i function $new_select_skater_hmenu_focus$
+	:i $Orient_Skateshop_Skater$
+	:i if  ($LAST_SELECTED_SKATER_MENU_ID$ = %GLOBAL%$new_name$) 
+		:i $first_time_in_focus$ = %i(1,00000001)
+	:i endif
+	:i $Change$$LAST_SELECTED_SKATER_MENU_ID$ = %GLOBAL%$new_name$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $rgba$ =  ($MENU_SS_SKATER_INDICATOR_FOCUS_COLOR$) 
+		:i $time$ = %f(0.200000)
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $menu_title_text$
+		:i $text$ = %GLOBAL%$display_name$
+	:i :s}
+	:i if $GotParam$$no_board$
+		:i $Change$$LAST_SELECTED_SKATER_HIDE_BOARD$ = %i(1,00000001)
+	:i else 
+		:i $Change$$LAST_SELECTED_SKATER_HIDE_BOARD$ = %i(0,00000000)
+	:i endif
+	:i if $GotParam$$skater_behavior_script$
+		:i if NOT $GotParam$$first_time_in_focus$
+			:i $SpawnSkaterScript$$SkateshopBehaviorSpawner$$Params$ = :s{$script_name$ = %GLOBAL%$skater_behavior_script$:s}
+		:i endif
+	:i else 
+		:i if NOT $GotParam$$first_time_in_focus$
+			:i $ResetLastSkaterBehaviorStuff$
+			:i $SpawnSkaterScript$$SkateshopBehavior$
+		:i endif
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i switch %GLOBAL%$name$
+		:i case $ped$
+			:i $load_other_skater$:s{$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000) isNull :s}
+			:i endcase
+		default 
+			:i $load_pro_skater$:s{$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000) isNull :s}
+			:i end_switch
+	
+	:i if $ScreenElementExists$$id$ = $stats_block_anchor$
+		:i $DestroyScreenElement$$id$ = $stats_block_anchor$
+	:i endif
+	:i if NOT $GameModeEquals$$is_net$
+		:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i $SetScreenElementLock$$id$ = $stats_block_anchor_parent$$off$
+		:i $stats_menu_create_stats_block$:s{
+			:i $parent$ = $stats_block_anchor_parent$
+			:i $id$ = $stats_block_anchor$
+			:i $not_focusable$
+			:i $on$ = $on$
+			:i $scale$ = %f(0.850000)
+			:i $pos$ = %vec2(0.000000,0.000000)
+		:i :s}
+	:i endif
+	:i %GLOBAL%$id$.$GetSingleTag$$selected_skin_index$
+	:i if $GotParam$$selected_skin_index$
+		:i if NOT $GotParam$$first_time_in_focus$
+			:i $Change$$LAST_SELECTED_SKATER_SKIN_INDEX$ = %GLOBAL%$selected_skin_index$
+		:i endif
+	:i endif
+	:i %GLOBAL%$id$.$GetSingleTag$$has_multiple_skins$
+	:i if $GotParam$$has_multiple_skins$
+		:i if $GotParam$$first_time_in_focus$
+			:i %GLOBAL%$id$.$SetTags$$selected_skin_index$ =  ($LAST_SELECTED_SKATER_SKIN_INDEX$) 
+		:i endif
+		:i %GLOBAL%$id$.$skaterselect_skater_update_skin$$skins$ = %GLOBAL%$sub_menu$ isNull 
+	:i else 
+		:i if $ScreenElementExists$$id$ = $skaterselect_sub_menu_text$
+			:i $DoScreenElementMorph$:s{
+				:i $id$ = $skaterselect_sub_menu_text$
+				:i $alpha$ = %f(0.000000)
+				:i $time$ = %f(0.200000)
+			:i :s}
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $debug_text_skaterselect_skin$
+		:i $FormatText$$textname$ = $skin_index_text$%s(2,"%a")$a$ =  ($LAST_SELECTED_SKATER_SKIN_INDEX$) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $debug_text_skaterselect_skin$
+			:i $text$ = %GLOBAL%$skin_index_text$
+		:i :s}
+	:i endif
+	:i $SpawnScript$$TemporarilyDisableInput$$Params$ = :s{$time$ = %i(100,00000064):s}
+:i endfunction
+:i function $SkateshopBehaviorSpawner$
+	:i $Change$$LAST_SELECTED_SKATER_BEHAVIOUR$ = %GLOBAL%$script_name$
+	:i $MakeSkaterGoto$%GLOBAL%$script_name$
+:i endfunction
+:i function $ResetLastSkaterBehaviorStuff$
+	:i $Change$$LAST_SELECTED_SKATER_BEHAVIOUR$ = $SkateshopBehavior$
+	:i $Change$$LAST_SELECTED_SKATER_HIDE_BOARD$ = %i(0,00000000)
+:i endfunction
+:i function $load_other_skater$
+	:i $SelectCurrentSkater$$name$ = $ped$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if NOT $GotParam$$new_default_appearance$
+		:i if $GotParam$$default_appearance$
+			:i %GLOBAL%$new_default_appearance$ = %GLOBAL%$default_appearance$
+		:i else 
+			:i %GLOBAL%$new_default_appearance$ = $appearance_hawk$
+		:i endif
+	:i endif
+	:i $SetPlayerAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$appearance_structure$ = %GLOBAL%$new_default_appearance$
+	:i $skaterselect_handle_skater_profile_stuff$ isNull 
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = %GLOBAL%$no_board$
+	:i $UpdateTrickMappings$$skater$ = %i(0,00000000)
+:i endfunction
+:i function $skaterselect_handle_skater_profile_stuff$
+	:i if $GotParam$$name$
+		:i if NOT  (%GLOBAL%$name$ = $custom$) 
+			:i if $GotParam$$is_female$
+				:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+			:i else 
+				:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+			:i endif
+		:i endif
+	:i else 
+		:i if $GotParam$$is_female$
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+		:i else 
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+		:i endif
+	:i endif
+	:i if $GotParam$$new_deck_graphic$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_graphic$$desc_id$ = %GLOBAL%$new_deck_graphic$:s}
+		:i :s}
+	:i endif
+	:i if $GotParam$$new_board_type$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$$targetParams$ = :s{$part$ = $board$$desc_id$ = %GLOBAL%$new_board_type$:s}
+		:i :s}
+	:i endif
+	:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = $board$
+		:i $Change$$g_current_skater_board_type$ =  (%GLOBAL%$desc_id$) 
+	:i endif
+	:i if $GotParam$$tag_texture$
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$tag_texture$%GLOBAL%$tag_texture$
+		:i $set_correct_graffiti_textures$$name$ = $ped$$tag_texture$ = %GLOBAL%$tag_texture$
+	:i endif
+:i endfunction
+:i function $skaterselect_skater_update_skin$
+	:i $GetTags$
+	:i %GLOBAL%$id$.$GetSingleTag$$selected_skin_index$
+	:i %GLOBAL%$id$.$GetSingleTag$$number_of_skins$
+	:i if $ScreenElementExists$$id$ = $skaterselect_sub_menu_text$
+		:i $FormatText$$textname$ = $skinsMenuText$%s(7,"%a / %b")$a$ =  (%GLOBAL%$selected_skin_index$ + %i(1,00000001)) $b$ = %GLOBAL%$number_of_skins$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $skaterselect_sub_menu_text$
+			:i $text$ = %GLOBAL%$skinsMenuText$
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $skaterselect_sub_menu_text$
+			:i $alpha$ = %f(0.900000)
+			:i $time$ = %f(0.200000)
+		:i :s}
+	:i endif
+	:i if $GotParam$$selected_skin_index$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $menu_title_text$
+			:i $text$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$display_name$) 
+		:i :s}
+		:i $GetCurrentSkaterProfileIndex$
+		:i $SetPlayerAppearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$$appearance_structure$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$default_appearance$) 
+		:i if $GotParam$$is_female$
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+		:i else 
+			:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+		:i endif
+		:i $skaterselect_handle_skater_profile_stuff$$currentSkaterProfileIndex$ = %GLOBAL%$currentSkaterProfileIndex$ ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}) 
+		:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = %GLOBAL%$no_board$
+	:i endif
+:i endfunction
+:i function $skaterselect_skater_change_skin$
+	:i $GetTags$
+	:i %GLOBAL%$id$.$GetSingleTag$$selected_skin_index$
+	:i %GLOBAL%$id$.$GetSingleTag$$number_of_skins$
+	:i if $GotParam$$down$
+		:i $index_next_wraparound$$index$ = %GLOBAL%$selected_skin_index$$max$ = %GLOBAL%$number_of_skins$
+	:i else 
+		:i if $GotParam$$up$
+			:i $index_previous_wraparound$$index$ = %GLOBAL%$selected_skin_index$$max$ = %GLOBAL%$number_of_skins$
+		:i endif
+	:i endif
+	:i $Change$$LAST_SELECTED_SKATER_SKIN_INDEX$ = %GLOBAL%$index$
+	:i if $ScreenElementExists$$id$ = $debug_text_skaterselect_skin$
+		:i $FormatText$$textname$ = $skin_index_text$%s(2,"%a")$a$ =  ($LAST_SELECTED_SKATER_SKIN_INDEX$) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $debug_text_skaterselect_skin$
+			:i $text$ = %GLOBAL%$skin_index_text$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$id$.$SetTags$$selected_skin_index$ = %GLOBAL%$index$
+	:i %GLOBAL%$id$.$skaterselect_skater_update_skin$$skins$ = %GLOBAL%$skins$ isNull 
+:i endfunction
+:i function $new_select_skater_hmenu_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $rgba$ =  ($MENU_SS_SKATER_INDICATOR_UNFOCUS_COLOR$) 
+		:i $time$ = %f(0.000000)
+	:i :s}
+:i endfunction
+:i function $skater_select_menu_add_item$
+	:i if $GotParam$$skater_index$
+		:i $skater_select_menu_add_item_2$ ($master_skater_list$:a{%GLOBAL%$skater_index$:a})  isNull 
+	:i else 
+		:i $skater_select_menu_add_item_2$ isNull 
+	:i endif
+:i endfunction
+:i function $skater_select_menu_add_item_2$
+	:i if $GotParam$$new_display_name$
+		:i $RemoveParameter$$display_name$
+		:i $display_name$ = %GLOBAL%$new_display_name$
+	:i endif
+	:i if $GotParam$$is_separator$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $select_skater_hmenu_new$
+			:i $texture$ = $circle$
+			:i $scale$ = %f(0.400000)
+			:i $alpha$ = %f(0.000000)
+			:i $rgba$ =  ($MENU_SS_SKATER_INDICATOR_LOCKED_COLOR$) 
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i if NOT $GotParam$$new_name$
+			:i %GLOBAL%$new_name$ = %GLOBAL%$name$
+		:i endif
+		:i if $GotParam$$no_board$
+			:i $no_board$ = $no_board$
+		:i endif
+		:i if  (%GLOBAL%$new_name$ = $custom$) 
+			:i $RemoveParameter$$display_name$
+			:i $get_custom_skater_display_name$
+			:i $pad_expand_event$ = :s{$pad_expand$$nullscript$$Params$ = :s{:s}:s}
+		:i else 
+			:i if $GotParam$$new_default_appearance$
+				:i $current_appearance_struct$ = %GLOBAL%$new_default_appearance$
+			:i else 
+				:i if $GotParam$$default_appearance$
+					:i $current_appearance_struct$ = %GLOBAL%$default_appearance$
+				:i else 
+					:i $current_appearance_struct$ = $appearance_hawk$
+				:i endif
+			:i endif
+			:i $pad_expand_event$ = :s{
+				:i $pad_expand$$ss_send_to_cas$
+				:i $Params$ = :s{
+					:i $appearance_structure$ = %GLOBAL%$current_appearance_struct$
+					:i $new_deck_graphic$ = %GLOBAL%$new_deck_graphic$
+					:i $new_board_type$ = %GLOBAL%$new_board_type$
+					:i $is_female$ = %GLOBAL%$is_female$
+					:i $skins$ = %GLOBAL%$sub_menu$
+				:i :s}
+			:i :s}
+		:i endif
+		:i %GLOBAL%$pad_up_down_event_script$ = $nullscript$
+		:i %GLOBAL%$pad_up_event_params$ = :s{:s}
+		:i %GLOBAL%$pad_down_event_params$ = :s{:s}
+		:i if $GotParam$$sub_menu$
+			:i %GLOBAL%$pad_up_down_event_script$ = $skaterselect_skater_change_skin$
+			:i %GLOBAL%$pad_up_event_params$ = :s{$up$$skins$ = %GLOBAL%$sub_menu$ isNull :s}
+			:i %GLOBAL%$pad_down_event_params$ = :s{$down$$skins$ = %GLOBAL%$sub_menu$ isNull :s}
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $select_skater_hmenu_new$
+			:i $id$ = %GLOBAL%$new_name$
+			:i $texture$ = $circle$
+			:i $scale$ = %f(0.800000)
+			:i $alpha$ = %f(0.900000)
+			:i $rgba$ =  ($MENU_SS_SKATER_INDICATOR_UNFOCUS_COLOR$) 
+			:i $just$ = :a{$center$$center$:a}
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$new_select_skater_hmenu_focus$$Params$ =  isNull :s}
+				:i :s{$unfocus$$new_select_skater_hmenu_unfocus$:s}
+				:i :s{$pad_choose$$select_skater_hmenu_choose_real$$Params$ =  isNull :s}
+				:i :s{$pad_up$%GLOBAL%$pad_up_down_event_script$$Params$ = %GLOBAL%$pad_up_event_params$:s}
+				:i :s{$pad_down$%GLOBAL%$pad_up_down_event_script$$Params$ = %GLOBAL%$pad_down_event_params$:s}
+				:i :s{%GLOBAL%$pad_expand_event$:s}
+				:i :a}
+		:i :s}
+		:i if $GotParam$$sub_menu$
+			:i $GetArraySize$ (%GLOBAL%$sub_menu$) 
+			:i %GLOBAL%$new_name$.$SetTags$$number_of_skins$ = %GLOBAL%$array_size$
+			:i %GLOBAL%$new_name$.$SetTags$$selected_skin_index$ = %i(0,00000000)
+			:i %GLOBAL%$new_name$.$SetTags$$has_multiple_skins$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i function $skater_select_temp_hide$
+	:i $skater$.$hide$
+	:i $wait$%i(99,00000063)
+	:i $skater$.$unhide$
+:i endfunction
+:i function $select_skater_hmenu_choose_real$
+	:i $Change$$LAST_SELECTED_SKATER_MENU_ID$ = %GLOBAL%$new_name$
+	:i $generic_menu_pad_choose_sound$
+	:i $launch_new_ss_menu$ isNull 
+	:i $printf$%s(34,"select_skater_hmenu_choose_real %i")$i$ =  ($LAST_SELECTED_SKATER_LIST_INDEX$) 
+:i endfunction
+:i function $create_skater_select_menu_items$
+	:i if $ScreenElementExists$$id$ = $skaterselect_category_text$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $skaterselect_category_text$
+			:i $text$ =  ( ( ($SKATER_SELECT_MENUS$) :a{ ($LAST_SELECTED_SKATER_LIST_INDEX$) :a}) ->$menu_title$) 
+		:i :s}
+	:i endif
+	:i $printf$%s(34,"create_skater_select_menu_items %i")$i$ =  ($LAST_SELECTED_SKATER_LIST_INDEX$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $select_skater_hmenu_new$
+		:i $id$ = $select_skater_list_scroll_left$
+		:i $texture$ = $left_arrow$
+		:i $scale$ = %f(0.400000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$select_skater_list_scroll_focus$$Params$ = :s{$left$:s}:s}
+			:i :a}
+	:i :s}
+	:i $ForEachIn$ ( ( ($SKATER_SELECT_MENUS$) :a{ ($LAST_SELECTED_SKATER_LIST_INDEX$) :a}) ->$menu_array$) $do$ = $skater_select_menu_add_item$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $select_skater_hmenu_new$
+		:i $id$ = $select_skater_list_scroll_right$
+		:i $texture$ = $right_arrow$
+		:i $scale$ = %f(0.400000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$select_skater_list_scroll_focus$$Params$ = :s{$right$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ss_send_to_cas$
+	:i $hide_select_skater_arrows$
+	:i $GetTags$
+	:i %GLOBAL%$id$.$GetSingleTag$$selected_skin_index$
+	:i if $GotParam$$is_female$
+		:i $printf$%s(26,"ss_send_to_cas - is_female")
+	:i endif
+	:i if $GotParam$$skins$
+		:i if $GotParam$$selected_skin_index$
+			:i $RemoveParameter$$appearance_structure$
+			:i %GLOBAL%$appearance_structure$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$default_appearance$) 
+			:i $RemoveParameter$$is_female$
+			:i if $StructureContains$$structure$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}) $is_female$
+				:i %GLOBAL%$is_female$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$is_female$) 
+			:i endif
+			:i $RemoveParameter$$new_board_type$
+			:i %GLOBAL%$new_board_type$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$new_board_type$) 
+			:i $RemoveParameter$$new_deck_graphic$
+			:i %GLOBAL%$new_deck_graphic$ =  ( (%GLOBAL%$skins$) :a{%GLOBAL%$selected_skin_index$:a}->$new_deck_graphic$) 
+		:i endif
+	:i endif
+	:i if $ObjectExists$$id$ = $select_skater_hmenu$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu$
+	:i endif
+	:i if $ObjectExists$$id$ = $select_skater_hmenu_new$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu_new$
+	:i endif
+	:i if $ObjectExists$$id$ = $stats_block_anchor$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $stats_block_anchor$
+			:i $alpha$ = %f(0.000000)
+			:i $time$ = %f(0.200000)
+		:i :s}
+	:i endif
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %sc(18,"Make Custom Skater")
+		:i $text$ = %sc(86,"Warning !\nAny unsaved changes to your current Game Progress will be lost.\nContinue ?")
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $no_bg$
+		:i $pad_back_script$ = $generic_menu_pad_back$
+		:i $pad_back_params$ = :s{$callback$ = $ss_send_to_cas_no$:s}
+		:i $buttons$ = :a{
+			:i :s{
+				:i $font$ = $small$$text$ = %sc(3,"Yes")
+				:i $pad_choose_script$ = $ss_send_to_cas_yes$
+				:i $pad_choose_params$ =  isNull 
+			:i :s}
+			:i :s{
+				:i $font$ = $small$$text$ = %sc(2,"No")
+				:i $pad_choose_script$ = $ss_send_to_cas_no$
+			:i :s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $ss_send_to_cas_yes$
+	:i $dialog_box_exit$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+	:i $ResetToDefaultProfile$$name$ = $custom$$partial$ = $appearance$
+	:i $load_pro_skater$$name$ = $custom$
+	:i $Change$$LAST_SELECTED_SKATER_MENU_ID$ = $custom$
+	:i $Change$$LAST_SELECTED_SKATER_LIST_INDEX$ = %i(0,00000000)
+	:i $Change$$LAST_SELECTED_SKATER_SKIN_INDEX$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $debug_text_skaterselect_skin$
+		:i $FormatText$$textname$ = $skin_index_text$%s(2,"%a")$a$ =  ($LAST_SELECTED_SKATER_SKIN_INDEX$) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $debug_text_skaterselect_skin$
+			:i $text$ = %GLOBAL%$skin_index_text$
+		:i :s}
+	:i endif
+	:i $skater$.$SwitchOffBoard$
+	:i $edit_skater_premade_skater_choose$:s{
+		:i $appearance$ = %GLOBAL%$appearance_structure$
+	:i :s}
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $GotParam$$is_female$
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+		:i $SetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$$Params$ = :s{$voice$ = $female1$:s}
+	:i else 
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+		:i $SetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$$Params$ = :s{$voice$ = $male1$:s}
+	:i endif
+	:i if $GotParam$$new_deck_graphic$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$$targetParams$ = :s{$part$ = $deck_graphic$$desc_id$ = %GLOBAL%$new_deck_graphic$:s}
+		:i :s}
+	:i endif
+	:i if $GotParam$$new_board_type$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$$targetParams$ = :s{$part$ = $board$$desc_id$ = %GLOBAL%$new_board_type$:s}
+		:i :s}
+	:i endif
+	:i $skater$.$SwitchOnBoard$
+	:i $launch_new_select_skater_menu$
+:i endfunction
+:i function $ss_send_to_cas_no$
+	:i $dialog_box_exit$
+	:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+	:i $launch_new_select_skater_menu$
+:i endfunction
+:i function $show_select_skater_arrows$
+	:i $skater_select_arrow_L$.$unhide$
+	:i $skater_select_arrow_R$.$unhide$
+:i endfunction
+:i function $hide_select_skater_arrows$
+	:i $skater_select_arrow_L$.$hide$
+	:i $skater_select_arrow_R$.$hide$
+:i endfunction
+:i $SkaterSelectArrow_focus_scale$ = %f(1.000000)
+:i $SkaterSelectArrow_unfocus_scale$ = %f(0.800000)
+:i function $SkaterSelectArrow_Script$
+	:i $Obj_GetID$
+	:i %GLOBAL%$objId$.$hide$
+	:i %GLOBAL%$objId$.$Obj_Hover$$Amp$ = %f(0.300000)$Freq$ = %f(0.500000)
+	:i %GLOBAL%$objId$.$Obj_EnableScaling$
+	:i %GLOBAL%$objId$.$Obj_EnableAmbientLight$
+	:i %GLOBAL%$objId$.$Obj_ApplyScaling$$X$ =  ($SkaterSelectArrow_unfocus_scale$) $y$ =  ($SkaterSelectArrow_unfocus_scale$) $z$ =  ($SkaterSelectArrow_unfocus_scale$) 
+	:i %GLOBAL%$objId$.$Obj_SetLightAmbientColor$:s{
+		:i $r$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(0,00000000):a}) 
+		:i $g$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(1,00000001):a}) 
+		:i $b$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(2,00000002):a}) 
+	:i :s}
+:i endfunction
+:i function $menu_skaterselect_blink_arrow_left$
+	:i if $ObjectExists$$id$ = $skater_select_arrow_L$
+		:i $skater_select_arrow_L$.$Obj_ApplyScaling$$X$ =  ($SkaterSelectArrow_focus_scale$) $y$ =  ($SkaterSelectArrow_focus_scale$) $z$ =  ($SkaterSelectArrow_focus_scale$) 
+		:i $skater_select_arrow_L$.$Obj_SetLightAmbientColor$:s{
+			:i $r$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(0,00000000):a}) 
+			:i $g$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(1,00000001):a}) 
+			:i $b$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(2,00000002):a}) 
+		:i :s}
+		:i $wait$%f(0.250000)$seconds$
+		:i $skater_select_arrow_L$.$Obj_ApplyScaling$$X$ =  ($SkaterSelectArrow_unfocus_scale$) $y$ =  ($SkaterSelectArrow_unfocus_scale$) $z$ =  ($SkaterSelectArrow_unfocus_scale$) 
+		:i $skater_select_arrow_L$.$Obj_SetLightAmbientColor$:s{
+			:i $r$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(0,00000000):a}) 
+			:i $g$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(1,00000001):a}) 
+			:i $b$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(2,00000002):a}) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $menu_skaterselect_blink_arrow_right$
+	:i if $ObjectExists$$id$ = $skater_select_arrow_R$
+		:i $skater_select_arrow_R$.$Obj_ApplyScaling$$X$ =  ($SkaterSelectArrow_focus_scale$) $y$ =  ($SkaterSelectArrow_focus_scale$) $z$ =  ($SkaterSelectArrow_focus_scale$) 
+		:i $skater_select_arrow_R$.$Obj_SetLightAmbientColor$:s{
+			:i $r$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(0,00000000):a}) 
+			:i $g$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(1,00000001):a}) 
+			:i $b$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$HIGHLIGHTED_TEXT_COLOR$) :a{%i(2,00000002):a}) 
+		:i :s}
+		:i $wait$%f(0.250000)$seconds$
+		:i $skater_select_arrow_R$.$Obj_ApplyScaling$$X$ =  ($SkaterSelectArrow_unfocus_scale$) $y$ =  ($SkaterSelectArrow_unfocus_scale$) $z$ =  ($SkaterSelectArrow_unfocus_scale$) 
+		:i $skater_select_arrow_R$.$Obj_SetLightAmbientColor$:s{
+			:i $r$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(0,00000000):a}) 
+			:i $g$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(1,00000001):a}) 
+			:i $b$ =  ( ( ($THUGPRO_GlobalThemeInfo$) ->$UNHIGHLIGHTED_TEXT_COLOR$) :a{%i(2,00000002):a}) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_new_select_skater_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $show_select_skater_arrows$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $select_skater_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $select_skater_anchor$$alias$ = $current_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $top_gradient$
+		:i $id$ = $skaterselect_indicator_gradient$
+		:i $alpha$ = %f(0.800000)
+		:i $scale$ = %vec2(90.000000,10.000000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967196,ffffff9c)
+	:i :s}
+	:i if $GameModeEquals$$is_net$
+		:i $SetAllStats$$value$ = %i(10,0000000a)
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$:s{
+			:i $skater$ = %i(0,00000000)
+			:i $name$ = $SkaterSelect_CAM$
+			:i $targetID$ = $TRG_DummySkater$
+			:i $targetOffset$ = %vec3(0.000000,60.000000,50.000000)
+			:i $positionOffset$ = %vec3(0.000000,10.000000,50.000000)
+			:i $play_hold$
+			:i $frames$ = %i(1,00000001)
+			:i $virtual_cam$
+		:i :s}
+		:i $SetActiveCamera$$id$ = $SkaterSelect_CAM$
+		:i $create_menu_background_title$$title$ = %s(0,"")$bg_just$ = $right_nobg$$no_grain$$title_pos$ = %vec2(320.000000,370.000000)$title_text_just$ = :a{$center$;$center$:a}
+		:i $select_skater_hmenu_anchor_just$ = :a{$center$$center$:a}
+		:i $current_menu_anchor_pos$ = %vec2(320.000000,34.000000)
+	:i else 
+		:i $SetAllStats$$value$ = %i(0,00000000)
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$$name$ = $skateshop_startcam$$play_hold$
+		:i $create_menu_background_title$$title$ = %s(0,"")$bg_just$ = $right_scroll$$no_grain$
+		:i $select_skater_hmenu_anchor_just$ = :a{$left$$center$:a}
+		:i $current_menu_anchor_pos$ = %vec2(-50.000000,34.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $select_skater_hmenu_anchor$
+		:i $pos$ = %GLOBAL%$current_menu_anchor_pos$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $select_skater_hmenu_anchor$
+		:i $id$ = $skaterselect_category_text$
+		:i $pos$ = %vec2(0.000000,-16.000000)
+		:i $scale$ = %f(0.600000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$ALT_COLOR$) 
+		:i $just$ = %GLOBAL%$select_skater_hmenu_anchor_just$
+		:i $font$ = $dialog$
+		:i $text$ = %s(11,"PRO SKATERS")
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $select_skater_hmenu_anchor$
+		:i $id$ = $skaterselect_sub_menu_text$
+		:i $pos$ = %vec2(0.000000,20.000000)
+		:i $scale$ = %f(0.400000)
+		:i $alpha$ = %f(0.000000)
+		:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+		:i $just$ = %GLOBAL%$select_skater_hmenu_anchor_just$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"0 / 0")
+	:i :s}
+	:i if NOT $GameModeEquals$$is_net$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $select_skater_hmenu_anchor$
+			:i $id$ = $skaterselect_snaz_icon$
+			:i $texture$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$SNAZ_ICON_TEXTURE$) 
+			:i $rgba$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$ALT_COLOR$) 
+			:i $pos$ = %vec2(-20.000000,-10.000000)
+			:i $just$ = %GLOBAL%$select_skater_hmenu_anchor_just$
+			:i $scale$ = %f(0.400000)
+			:i $alpha$ = %f(0.400000)
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = $select_skater_hmenu_anchor$
+		:i $id$ = $select_skater_hmenu_new$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = %GLOBAL%$select_skater_hmenu_anchor_just$
+		:i $internal_just$ = %GLOBAL%$select_skater_hmenu_anchor_just$
+		:i $padding_scale$ = %i(1,00000001)
+	:i :s}
+	:i $bg_color$ =  ( ($THUGPRO_GlobalThemeInfo$) ->$BG_PARTS_COLOR$) 
+	:i $AssignAlias$$id$ = $select_skater_hmenu_new$$alias$ = $current_menu$
+	:i $create_skater_select_menu_items$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $select_skater_hmenu_new$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_left$$menu_skaterselect_blink_arrow_left$$Params$ = :s{:s}:s}
+			:i :s{$pad_right$$menu_skaterselect_blink_arrow_right$$Params$ = :s{:s}:s}
+			:i :s{$pad_left$$generic_menu_up_or_down_sound$:s}
+			:i :s{$pad_right$$generic_menu_up_or_down_sound$:s}
+			:i :s{$pad_back$%GLOBAL%$callback$$Params$ = :s{ isNull :s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back$$Params$ = :s{:s}:s}
+			:i :s{$pad_option$$ss_overwrite_warning$$Params$ = :s{:s}:s}
+			:i :s{$pad_option$$generic_menu_pad_choose_sound$:s}
+			:i :s{$pad_alt$$cas_skater_left$$Params$ = :s{:s}:s}
+			:i :s{$pad_alt2$$cas_skater_right$$Params$ = :s{:s}:s}
+			:i :s{$pad_l2$$select_skater_list_scroll_focus$$Params$ = :s{$left$:s}:s}
+			:i :s{$pad_r2$$select_skater_list_scroll_focus$$Params$ = :s{$right$:s}:s}
+			:i :s{$pad_l2$$generic_menu_scroll_sideways_sound$:s}
+			:i :s{$pad_r2$$generic_menu_scroll_sideways_sound$:s}
+			:i :a}
+	:i :s}
+	:i $RemoveParameter$$display_name$
+	:i $get_current_skater_display_name$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $menu_title_text$
+		:i $text$ = %GLOBAL%$display_name$
+	:i :s}
+	:i $create_helper_text$$helper_text_skater_select$$helper_text_pos$ = %vec2(320.000000,458.000000)
+	:i if $ObjectExists$$id$ = $stats_block_anchor_parent$
+		:i $DestroyScreenElement$$id$ = $stats_block_anchor_parent$
+	:i endif
+	:i if NOT $GameModeEquals$$is_net$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $current_menu_anchor$
+			:i $id$ = $stats_block_anchor_parent$
+			:i $pos$ = %vec2(300.000000,150.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %f(1.000000)
+		:i :s}
+		:i $stats_menu_create_stats_block$$parent$ = $stats_block_anchor_parent$$not_focusable$$on$ = $on$$pos$ = %vec2(0.000000,0.000000)$scale$ = %f(0.800000)
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $select_skater_hmenu_new$$data$ = :s{$child_id$ =  ($LAST_SELECTED_SKATER_MENU_ID$) :s}
+:i endfunction
+:i function $select_skater_list_scroll_spawned$
+	:i if $GotParam$$left$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu_new$
+		:i $destroy_current_skater_select_list$
+		:i $array_previous_wraparound$$index$ =  ($LAST_SELECTED_SKATER_LIST_INDEX$) $array$ =  ($SKATER_SELECT_MENUS$) 
+		:i $Change$$LAST_SELECTED_SKATER_LIST_INDEX$ = %GLOBAL%$index$
+		:i $printf$%s(19,"new list index = %i")$i$ =  (%GLOBAL%$index$) 
+		:i $create_skater_select_menu_items$
+		:i $wait$%f(0.100000)$seconds$
+		:i $skater_select_menu_focus_first_or_last$$last$
+	:i else 
+		:i if $GotParam$$right$
+			:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu_new$
+			:i $destroy_current_skater_select_list$
+			:i $array_next_wraparound$$index$ =  ($LAST_SELECTED_SKATER_LIST_INDEX$) $array$ =  ($SKATER_SELECT_MENUS$) 
+			:i $Change$$LAST_SELECTED_SKATER_LIST_INDEX$ = %GLOBAL%$index$
+			:i $printf$%s(19,"new list index = %i")$i$ =  (%GLOBAL%$index$) 
+			:i $create_skater_select_menu_items$
+			:i $wait$%f(0.100000)$seconds$
+			:i $skater_select_menu_focus_first_or_last$$first$
+		:i endif
+	:i endif
+:i endfunction
+:i function $select_skater_list_scroll_focus$
+	:i $skater$.$hide$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $select_skater_hmenu_new$
+	:i $SpawnScript$$select_skater_list_scroll_spawned$$Params$ =  isNull 
+:i endfunction
+:i function $skater_select_menu_focus_first_or_last$
+	:i if $ScreenElementExists$$id$ = $select_skater_hmenu_new$
+		:i if $GetScreenElementChildren$$id$ = $select_skater_hmenu_new$
+			:i if $GotParam$$first$
+				:i $FireEvent$$type$ = $focus$$target$ = $select_skater_hmenu_new$$data$ = :s{$child_id$ =  (%GLOBAL%$children$:a{%i(1,00000001):a}) :s}
+				:i $printf$%s(21,"focus first skater %s")$s$ =  (%GLOBAL%$children$:a{%i(1,00000001):a}) 
+			:i else 
+				:i if $GotParam$$last$
+					:i $GetArraySize$%GLOBAL%$children$
+					:i $last_index$ =  ( (%GLOBAL%$array_size$)  - %i(2,00000002)) 
+					:i $FireEvent$$type$ = $focus$$target$ = $select_skater_hmenu_new$$data$ = :s{$child_id$ =  (%GLOBAL%$children$:a{%GLOBAL%$last_index$:a}) :s}
+					:i $printf$%s(20,"focus last skater %s")$s$ =  (%GLOBAL%$children$:a{%GLOBAL%$last_index$:a}) 
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $destroy_current_skater_select_list$
+	:i if $ScreenElementExists$$id$ = $select_skater_hmenu_new$
+		:i if $GetScreenElementChildren$$id$ = $select_skater_hmenu_new$
+			:i $GetArraySize$%GLOBAL%$children$
+			:i $index$ = %i(0,00000000)
+			:i while
+				
+				:i if $ScreenElementExists$$id$ =  (%GLOBAL%$children$:a{%GLOBAL%$index$:a}) 
+					:i $DestroyScreenElement$$id$ =  (%GLOBAL%$children$:a{%GLOBAL%$index$:a}) 
+				:i endif
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+:i endfunction
+:i function $do_arrow_effect2$
+	:i $DoMorph$$scale$ = %f(0.800000)$alpha$ = %f(0.900000)$time$ = %f(0.100000)
+	:i $DoMorph$$scale$ = %f(0.600000)$alpha$ = %f(0.600000)$time$ = %f(0.100000)
+:i endfunction
+:i :end

@@ -1,0 +1,405 @@
+
+:i $hash$ = %s(1,"#")
+:i $comment$ = %s(3,"#//")
+:i $QB_STRING$ = %s(2,"%s")
+:i $QB_INT$ = %s(2,"%i")
+:i $QB_FLOAT$ = %s(2,"%f")
+:i $QB_VEC2$ = %s(5,"%vec2")
+:i $QB_VEC3$ = %s(5,"%vec3")
+:i function $edmsg2$
+:i endfunction
+:i function $EDITOR_ADD_TEST_VEHICLE_NODE$
+	:i $edmsg2$%s(28,"EDITOR_ADD_TEST_VEHICLE_NODE")
+	:i $_structure_params$ =  ($EDITOR_PIECES$:a{$EDITOR_PEICE_INDEX$:a}) 
+	:i if NOT $GotParam$$pos$
+		:i $LevelEditor_Cursor$.$Obj_GetPosition$
+		:i $_pos$ = %GLOBAL%$pos$
+	:i else 
+		:i $_pos$ = %GLOBAL%$pos$
+	:i endif
+	:i if NOT $GotParam$$dir$
+		:i $RemoveParameter$$x$
+		:i $RemoveParameter$$y$
+		:i $RemoveParameter$$z$
+		:i $LevelEditor_Cursor$.$Obj_GetOrientation$
+		:i $_dir$ =  (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$x$ + %vec3(0.000000,1.000000,0.000000) * %GLOBAL%$y$ + %vec3(0.000000,0.000000,1.000000) * %GLOBAL%$z$) 
+	:i else 
+		:i $_dir$ = %GLOBAL%$dir$
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $_name$
+		:i $_name$ =  (%GLOBAL%$_structure_params$->$_name$) 
+	:i else 
+		:i return
+		
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$_name$
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $model$
+			:i $model$ =  (%GLOBAL%$_structure_params$->$model$) 
+		:i else 
+			:i $model$ = %s(39,"gameobjects\skate\letter_e\letter_e.mdl")
+		:i endif
+		:i $CreateFromStructure$:s{
+			:i $name$ = %GLOBAL%$_name$
+			:i $pos$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Class$ = $Vehicle$
+			:i $skeletonName$ = $car$
+			:i $CollisionMode$ = $none$
+			:i $CreatedAtStart$
+			:i $model$ = %GLOBAL%$model$
+		:i :s}
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+		:i $change$$ED_RAIL_TOTAL_NODES$ = %i(0,00000000)
+		:i $change$$ED_RAIL_INDEX$ = %i(0,00000000)
+		:i $change$$ED_RAILCLUSTER_INDEX$ = %i(0,00000000)
+		:i $change$$ED_RAIL_INDEX_ZERO$ = %i(1,00000001)
+	:i else 
+		:i %GLOBAL%$_name$.$Obj_SetPosition$$Position$ = %GLOBAL%$_pos$
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+		:i return
+		
+	:i endif
+:i endfunction
+:i $_GEN_RESTART_INDEX$ = %i(0,00000000)
+:i $_GEN_CROW_INDEX$ = %i(0,00000000)
+:i $_GEN_GEN_INDEX$ = %i(0,00000000)
+:i function $EDITOR_ADD_MULTIPLAYER_NODE$
+	:i $edmsg2$%s(27,"EDITOR_ADD_MULTIPLAYER_NODE")
+	:i if $GotParam$$extra_object$
+		:i $edmsg2$%s(12,"extra_object")
+		:i $_structure_params$ =  ($EDITOR_PIECES$:a{$EDITOR_PEICE_INDEX$:a}->$extra_object$) 
+	:i else 
+		:i $_structure_params$ =  ($EDITOR_PIECES$:a{$EDITOR_PEICE_INDEX$:a}) 
+	:i endif
+	:i if NOT $GotParam$$pos$
+		:i $LevelEditor_Cursor$.$Obj_GetPosition$
+		:i $_pos$ = %GLOBAL%$pos$
+	:i else 
+		:i $_pos$ = %GLOBAL%$pos$
+	:i endif
+	:i if NOT $GotParam$$dir$
+		:i $RemoveParameter$$x$
+		:i $RemoveParameter$$y$
+		:i $RemoveParameter$$z$
+		:i $LevelEditor_Cursor$.$Obj_GetOrientation$
+		:i $_dir$ =  (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$x$ + %vec3(0.000000,1.000000,0.000000) * %GLOBAL%$y$ + %vec3(0.000000,0.000000,1.000000) * %GLOBAL%$z$) 
+	:i else 
+		:i $_dir$ = %GLOBAL%$dir$
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $node_type$
+		:i $node_type$ =  (%GLOBAL%$_structure_params$->$node_type$) 
+	:i endif
+	:i $edmsg2$%s(14,"node_type = %a")$a$ = %GLOBAL%$node_type$
+	:i switch %GLOBAL%$node_type$
+		:i case $restart$
+			:i $MAYBE_ADD_RESTART_NODE$$_structure_params$ = %GLOBAL%$_structure_params$ isNull 
+			:i endcase
+		case $pickup$
+			:i $MAYBE_ADD_PICKUP_NODE$$_structure_params$ = %GLOBAL%$_structure_params$ isNull 
+			:i endcase
+		case $output_node_data$
+			:i $MAYBE_OUTPUT_NODE_DATA$ isNull 
+			:i endcase
+		case $dump_trigger_scripts$
+			:i $edmsg2$%s(4,"test")
+			:i endcase
+		default 
+			:i end_switch
+	
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $extra_object$
+		:i $EDITOR_ADD_MULTIPLAYER_NODE$$extra_object$
+	:i endif
+:i endfunction
+:i function $MAYBE_ADD_PICKUP_NODE$
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $_name$
+		:i $_name$ =  (%GLOBAL%$_structure_params$->$_name$) 
+	:i else 
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $crown$
+			:i $FormatText$$ChecksumName$ = $_name$%s(11,"ED_Crown_%a")$a$ =  ($_GEN_CROW_INDEX$) 
+			:i $FormatText$$TextName$ = $_nodeName$%s(12,"TRG_Crown_%a")$a$ =  ($_GEN_CROW_INDEX$) 
+			:i $change$$_GEN_CROW_INDEX$ =  ( ($_GEN_CROW_INDEX$)  + %i(1,00000001)) 
+		:i else 
+			:i $FormatText$$ChecksumName$ = $_name$%s(16,"ED_GameObject_%a")$a$ =  ($_GEN_GEN_INDEX$) 
+			:i $FormatText$$TextName$ = $_nodeName$%s(17,"TRG_GameObject_%a")$a$ =  ($_GEN_GEN_INDEX$) 
+			:i $change$$_GEN_GEN_INDEX$ =  ( ($_GEN_GEN_INDEX$)  + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$_name$
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $model$
+			:i $model$ =  (%GLOBAL%$_structure_params$->$model$) 
+		:i else 
+			:i $model$ = %s(39,"gameobjects\skate\letter_e\letter_e.mdl")
+		:i endif
+		:i $CreateFromStructure$:s{
+			:i $name$ = %GLOBAL%$_name$
+			:i $pos$ = %GLOBAL%$_pos$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $model$ = %GLOBAL%$model$
+		:i :s}
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+	:i else 
+		:i %GLOBAL%$_name$.$Obj_SetPosition$$Position$ = %GLOBAL%$_pos$
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+		:i return
+		
+	:i endif
+	:i if NOT $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $no_model$
+		:i if $GotParam$$model$
+			:i $edmsg2$%s(12,"\c6has model")
+			:i %GLOBAL%$_name$.$SetTags$$_nodeModel$ = %GLOBAL%$model$
+		:i endif
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $tags$
+		:i $edmsg2$%s(8,"has tags")
+		:i %GLOBAL%$tags$ =  (%GLOBAL%$_structure_params$->$tags$) 
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeName$
+			:i $_nodeName$ =  (%GLOBAL%$tags$->$_nodeName$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeClass$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeClass$ =  (%GLOBAL%$tags$->$_nodeClass$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeType$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeType$ =  (%GLOBAL%$tags$->$_nodeType$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeTriggerScript$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeTriggerScript$ =  (%GLOBAL%$tags$->$_nodeTriggerScript$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_CreatedAtStart$
+			:i %GLOBAL%$_name$.$SetTags$$_CreatedAtStart$ =  (%GLOBAL%$tags$->$_CreatedAtStart$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_SuspendDistance$
+			:i %GLOBAL%$_name$.$SetTags$$_SuspendDistance$ =  (%GLOBAL%$tags$->$_SuspendDistance$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_lod_dist1$
+			:i %GLOBAL%$_name$.$SetTags$$_lod_dist1$ =  (%GLOBAL%$tags$->$_lod_dist1$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_lod_dist2$
+			:i %GLOBAL%$_name$.$SetTags$$_lod_dist2$ =  (%GLOBAL%$tags$->$_lod_dist2$) 
+		:i endif
+	:i endif
+	:i %GLOBAL%$_name$.$SetTags$$_nodeName$ = %GLOBAL%$_nodeName$
+:i endfunction
+:i function $MAYBE_ADD_RESTART_NODE$
+	:i $edmsg2$%s(22,"MAYBE_ADD_RESTART_NODE")
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $_name$
+		:i $edmsg2$%s(9,"has _name")
+		:i $_name$ =  (%GLOBAL%$_structure_params$->$_name$) 
+	:i else 
+		:i $FormatText$$ChecksumName$ = $_name$%s(12,"ED_Restart%a")$a$ =  ($_GEN_RESTART_INDEX$) 
+		:i $change$$_GEN_RESTART_INDEX$ =  ($_GEN_RESTART_INDEX$ + %i(1,00000001)) 
+		:i $edmsg2$%s(19,"generate _name '%a'")$a$ = %GLOBAL%$_name$
+	:i endif
+	:i if NOT $ObjectExists$$id$ = %GLOBAL%$_name$
+		:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $model$
+			:i $model$ =  (%GLOBAL%$_structure_params$->$model$) 
+		:i else 
+			:i $model$ = %s(39,"gameobjects\skate\letter_e\letter_e.mdl")
+		:i endif
+		:i $CreateFromStructure$:s{
+			:i $name$ = %GLOBAL%$_name$
+			:i $pos$ = %GLOBAL%$_pos$
+			:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+			:i $Class$ = $GameObject$
+			:i $CreatedAtStart$
+			:i $model$ = %GLOBAL%$model$
+		:i :s}
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+	:i else 
+		:i %GLOBAL%$_name$.$Obj_SetPosition$$Position$ = %GLOBAL%$_pos$
+		:i %GLOBAL%$_name$.$Obj_SetOrientation$$dir$ = %GLOBAL%$_dir$
+		:i return
+		
+	:i endif
+	:i if $StructureContains$$structure$ =  (%GLOBAL%$_structure_params$) $tags$
+		:i $edmsg2$%s(8,"has tags")
+		:i %GLOBAL%$tags$ =  (%GLOBAL%$_structure_params$->$tags$) 
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeName$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeName$ =  (%GLOBAL%$tags$->$_nodeName$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeClass$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeClass$ =  (%GLOBAL%$tags$->$_nodeClass$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeType$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeType$ =  (%GLOBAL%$tags$->$_nodeType$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeRestartName$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeRestartName$ =  (%GLOBAL%$tags$->$_nodeRestartName$) 
+		:i endif
+		:i if $StructureContains$$structure$ = %GLOBAL%$tags$$_nodeRestart_Types$
+			:i %GLOBAL%$_name$.$SetTags$$_nodeRestart_Types$ =  (%GLOBAL%$tags$->$_nodeRestart_Types$) 
+		:i endif
+	:i endif
+:i endfunction
+:i function $ForEachObject$
+	:i $GetArraySize$%GLOBAL%$objects$
+	:i $index$ = %i(4294967295,ffffffff)
+	:i while
+		
+		:i if $GetNextArrayElement$%GLOBAL%$objects$$index$ = %GLOBAL%$index$
+			:i if $ObjectExists$$id$ = %GLOBAL%$element$
+				:i %GLOBAL%$element$.$Obj_SpawnScript$ (%GLOBAL%$Do$) 
+				:i $wait$%i(2,00000002)$gameframe$
+				:i $edmsg2$%s(11,"\c4found %a")$a$ = %GLOBAL%$element$
+			:i else 
+				:i $edmsg2$%s(19,"cant find object %a")$a$ = %GLOBAL%$element$
+			:i endif
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $FindEachObject$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $_name$%GLOBAL%$prefix$$i$ = %GLOBAL%$index$
+		:i if $ObjectExists$$id$ = %GLOBAL%$_name$
+			:i %GLOBAL%$_name$.$Obj_SpawnScript$ (%GLOBAL%$Do$) 
+			:i $wait$%i(2,00000002)$gameframe$
+		:i else 
+			:i $edmsg2$%s(19,"cant find object %a")$a$ = %GLOBAL%$_name$
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(32,00000020)
+:i endfunction
+:i function $MAYBE_OUTPUT_NODE_DATA$
+	:i $edmsg2$%s(22,"MAYBE_OUTPUT_NODE_DATA")
+	:i $_PICKUP_NODES$ = :a{$ED_Flag_Red$$ED_Flag_Green$$ED_Flag_Blue$$ED_Flag_Yellow$$ED_CTF_Red$$ED_CTF_Green$$ED_CTF_Blue$$ED_CTF_Yellow$$ED_CTF_Red_Base$$ED_CTF_Green_Base$$ED_CTF_Blue_Base$$ED_CTF_Yellow_Base$:a}
+	:i $_RESTART_NODES$ = :a{$ED_Flag_Restart$$ED_CTF_Restart_Red$$ED_CTF_Restart_Green$$ED_CTF_Restart_Blue$$ED_CTF_Restart_Yellow$:a}
+	:i $Output$%s(6,":i :a{")
+	:i $Output$%s(6,"%c ...")$c$ =  ($comment$) 
+	:i $ForEachObject$$objects$ = %GLOBAL%$_RESTART_NODES$$Do$ = $DUMP_DEFAULT_NODE_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+	:i $ForEachObject$$objects$ = %GLOBAL%$_PICKUP_NODES$$Do$ = $DUMP_DEFAULT_NODE_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+	:i $FindEachObject$$prefix$ = %s(11,"ED_Crown_%i")$Do$ = $DUMP_DEFAULT_NODE_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+	:i $FindEachObject$$prefix$ = %s(16,"ED_GameObject_%i")$Do$ = $DUMP_DEFAULT_NODE_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+	:i $Output$%s(6,":i :a}")
+	:i $ForEachObject$$objects$ = %GLOBAL%$_RESTART_NODES$$Do$ = $DUMP_DEFAULT_TRIGGER_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+	:i $ForEachObject$$objects$ = %GLOBAL%$_PICKUP_NODES$$Do$ = $DUMP_DEFAULT_TRIGGER_DATA$$params$ = :s{:s}
+	:i $wait$%i(6,00000006)$gameframe$
+:i endfunction
+:i function $DUMP_DEFAULT_NODE_DATA$
+	:i $Obj_GetId$
+	:i $wait$%i(2,00000002)$gameframe$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeName$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeClass$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeRestartName$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeType$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeRestart_Types$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeTriggerScript$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeModel$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_lod_dist1$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_lod_dist2$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_CreatedAtStart$
+	:i %GLOBAL%$objID$.$Obj_GetPosition$
+	:i $_pos$ = %GLOBAL%$pos$
+	:i $RemoveParameter$$x$
+	:i $RemoveParameter$$y$
+	:i $RemoveParameter$$z$
+	:i %GLOBAL%$objID$.$Obj_GetOrientation$
+	:i $_dir$ =  (%vec3(1.000000,0.000000,0.000000) * %GLOBAL%$x$ + %vec3(0.000000,1.000000,0.000000) * %GLOBAL%$y$ + %vec3(0.000000,0.000000,1.000000) * %GLOBAL%$z$) 
+	:i $Output$%s(7,"	:i :s{")
+	:i $Output$%s(17,"		:i $Pos$ = %v%p")$p$ = %GLOBAL%$_pos$$v$ =  ($QB_VEC3$) 
+	:i $Output$%s(34,"		:i $Angles$ = %v(0.000,%a,0.000)")$a$ = %GLOBAL%$x$$v$ =  ($QB_VEC3$) 
+	:i if $GotParam$$_nodeName$
+		:i $edmsg2$%s(14,"\c3nodename=%a")$a$ = %GLOBAL%$_nodeName$
+		:i $Output$%s(18,"		:i $Name$ = $%a$")$a$ = %GLOBAL%$_nodeName$
+	:i endif
+	:i if $GotParam$$_nodeClass$
+		:i $Output$%s(19,"		:i $Class$ = $%a$")$a$ = %GLOBAL%$_nodeClass$
+	:i endif
+	:i if $GotParam$$_nodeType$
+		:i $Output$%s(18,"		:i $Type$ = $%a$")$a$ = %GLOBAL%$_nodeType$
+	:i endif
+	:i if $GotParam$$_nodeModel$
+		:i $Output$%s(24,"		%c:i $Model$ = %s(,%a)")$a$ = %GLOBAL%$_nodeModel$$c$ =  ($comment$) $s$ =  ($QB_STRING$) 
+	:i endif
+	:i if $GotParam$$_nodeRestartName$
+		:i $Output$%s(30,"		%c:i $RestartName$ = %s(,%a)")$a$ = %GLOBAL%$_nodeRestartName$$c$ =  ($comment$) $s$ =  ($QB_STRING$) 
+	:i endif
+	:i if $GotParam$$_nodeRestart_Types$
+		:i $Output$%s(26,"		:i $Restart_Types$ = :a{")
+		:i $GetArraySize$%GLOBAL%$_nodeRestart_Types$
+		:i $index$ = %i(4294967295,ffffffff)
+		:i while
+			
+			:i if $GetNextArrayElement$%GLOBAL%$_nodeRestart_Types$$index$ = %GLOBAL%$index$
+				:i $Output$%s(10,"			:i $%a$")$a$ = %GLOBAL%$element$
+			:i endif
+		:i loop_to %GLOBAL%$array_size$
+		:i $Output$%s(8,"		:i :a}")
+	:i endif
+	:i if $GotParam$$_CreatedAtStart$
+		:i $Output$%s(21,"		:i $CreatedAtStart$")
+	:i endif
+	:i if $GotParam$$_SuspendDistance$
+		:i $Output$%s(33,"		:i $SuspendDistance$ = %i(%a,0)")$a$ = %GLOBAL%$_SuspendDistance$$i$ =  ($QB_INT$) 
+	:i endif
+	:i if $GotParam$$_lod_dist1$
+		:i $Output$%s(27,"		:i $lod_dist1$ = %i(%a,0)")$a$ = %GLOBAL%$_lod_dist1$$i$ =  ($QB_INT$) 
+	:i endif
+	:i if $GotParam$$_lod_dist2$
+		:i $Output$%s(27,"		:i $lod_dist2$ = %i(%a,0)")$a$ = %GLOBAL%$_lod_dist2$$i$ =  ($QB_INT$) 
+	:i endif
+	:i if $GotParam$$_nodeTriggerScript$
+		:i $Output$%s(27,"		:i $TriggerScript$ = $%a$")$a$ = %GLOBAL%$_nodeTriggerScript$
+	:i endif
+	:i $Output$%s(7,"	:i :s}")
+:i endfunction
+:i function $DUMP_DEFAULT_TRIGGER_DATA$
+	:i $Obj_GetId$
+	:i %GLOBAL%$objID$.$GetSingleTag$$_nodeTriggerScript$
+	:i if $GotParam$$_nodeTriggerScript$
+		:i switch %GLOBAL%$_nodeTriggerScript$
+			:i case $TRG_Flag_RedScript$
+				:i $Output$%s(32,":i function $TRG_Flag_RedScript$")
+				:i $Output$%s(20,"	:i $Team_Flag$$red$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_Flag_GreenScript$
+				:i $Output$%s(34,":i function $TRG_Flag_GreenScript$")
+				:i $Output$%s(22,"	:i $Team_Flag$$green$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_Flag_BlueScript$
+				:i $Output$%s(33,":i function $TRG_Flag_BlueScript$")
+				:i $Output$%s(21,"	:i $Team_Flag$$blue$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_Flag_YellowScript$
+				:i $Output$%s(35,":i function $TRG_Flag_YellowScript$")
+				:i $Output$%s(23,"	:i $Team_Flag$$yellow$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_CTF_RedScript$
+				:i $Output$%s(31,":i function $TRG_CTF_RedScript$")
+				:i $Output$%s(20,"	:i $Team_Flag$$red$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_CTF_GreenScript$
+				:i $Output$%s(33,":i function $TRG_CTF_GreenScript$")
+				:i $Output$%s(22,"	:i $Team_Flag$$green$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_CTF_BlueScript$
+				:i $Output$%s(32,":i function $TRG_CTF_BlueScript$")
+				:i $Output$%s(21,"	:i $Team_Flag$$blue$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			case $TRG_CTF_YellowScript$
+				:i $Output$%s(34,":i function $TRG_CTF_YellowScript$")
+				:i $Output$%s(23,"	:i $Team_Flag$$yellow$")
+				:i $Output$%s(14,":i endfunction")
+				:i endcase
+			default 
+				:i $Output$%s(22,":i function $%aScript$")$a$ = %GLOBAL%$_nodeName$
+				:i $Output$%s(14,":i endfunction")
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i :end

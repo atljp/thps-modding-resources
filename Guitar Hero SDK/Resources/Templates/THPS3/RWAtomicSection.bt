@@ -1,0 +1,42 @@
+//------------------------------------------------
+// AtomicSection data.
+//------------------------------------------------
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+} AtomicVertex <read=Str("%f, %f, %f", x, y, z)>;
+
+typedef struct
+{
+    ubyte r;
+    ubyte g;
+    ubyte b;
+    ubyte a;
+} AtomicVertexColor <read=Str("%d, %d, %d, %d", r, g, b, a)>;
+
+typedef struct
+{
+    float u;
+    float v;
+} AtomicTexCoord <read=Str("%f, %f", u, v)>;
+
+typedef struct
+{
+    uint a;
+    uint triangle_count;
+    uint vertex_count;
+    float min_x;
+    float min_y;
+    float min_z;
+    float max_x;
+    float max_y;
+    float max_z;
+    uint zeroA;
+    uint zeroB;
+    AtomicVertex vertices[vertex_count] <bgcolor=0xFFAAAA>;
+    AtomicVertexColor colors[vertex_count] <bgcolor=0xFFAAAA>;
+    AtomicTexCoord coords[vertex_count] <bgcolor=0xFFAAAA>;
+} RWAtomicSection;

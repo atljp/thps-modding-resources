@@ -1,0 +1,31 @@
+//------------------------------------------------
+// Shader properties, for materials
+//------------------------------------------------
+
+typedef struct
+{
+    Vec4 vec;
+} MaterialProperty <read=ReadMaterialProperty>;
+
+string ReadMaterialProperty(MaterialProperty &prop)
+{
+    local string s;
+
+    // Check to see if only first value is set, if so then this is likely a float
+    if (prop.vec.values[1] == 0.0 && prop.vec.values[2] == 0.0 && prop.vec.values[3] == 0.0)
+        return SPrintf(s, "%f", prop.vec.values[0]);
+
+    return ReadVec4(prop.vec);
+}
+
+//------------------------------------------------
+
+typedef struct (uint count)
+{
+    MaterialProperty properties[count] <bgcolor=CL_MATPROPERTY_VS, optimize=false>;
+} VertexShaderProperties;
+
+typedef struct (uint preCount)
+{
+    MaterialProperty properties[count] <bgcolor=CL_MATPROPERTY_PS, optimize=false>;
+} PixelShaderProperties;

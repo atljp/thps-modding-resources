@@ -1,0 +1,561 @@
+
+:i function $create_options_menu$
+	:i if NOT $IsTrue$$MUSIC_IN_PAUSE_MENU$
+		:i $PauseMusicAndStreams$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $hide_all_hud_items$
+	:i $unhide_current_goal$
+	:i if $inNetGame$
+		:i if NOT $isObserving$
+			:i $skater$.$NetDisablePlayerInput$
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$no_exit$
+		:i $helper$ = $generic_helper_text$
+	:i else 
+		:i $helper$ = $generic_helper_text_no_back$
+	:i endif
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $game_options_menu$
+		:i $vmenu_id$ = $game_options_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $game_options_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$create_pause_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $AssignAlias$$id$ = $game_options_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(7,"options")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $make_thpg_menu_item$$text$ = %s(15,"general options")$id$ = $menu_general_options$$pad_choose_script$ = $create_general_options_menu$$child_texture$ = $icon_general$
+	:i if NOT $InSplitScreenGame$
+		:i $make_thpg_menu_item$:s{$text$ = %sc(15,"control options")$child_texture$ = $icon_gamepad$
+			:i $id$ = $gameoptions_control_setup_menu_item$
+			:i $pad_choose_script$ = $create_control_setup_menu$
+			:i $pad_choose_params$ = :s{$controller_number$ = %i(1,00000001)$from_options$:s}
+		:i :s}
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(15,"display options")$child_texture$ = $icon_screen$$id$ = $menu_display_options$$pad_choose_script$ = $create_predisplay_options_menu$
+	:i $make_thpg_menu_item$$text$ = %s(13,"sound options")$child_texture$ = $icon_audio$$id$ = $menu_sound_options$$pad_choose_script$ = $launch_sound_options_menu$$pad_choose_params$ = :s{$from_options$:s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"music options")
+		:i $id$ = $menu_music_optons$
+		:i $pad_choose_script$ = $create_music_options_menu$$child_texture$ = $icon_audio$
+	:i :s}
+	:i $make_thpg_menu_item$$text$ = %s(0,"")$id$ = $menuspacer$$not_focusable$
+	:i if NOT $InMultiPlayerGame$
+		:i if $GameModeEquals$$is_singlesession$
+			:i if NOT $InSplitScreenGame$
+				:i if NOT $inNetGame$
+					:i $make_thpg_menu_item$$text$ = %s(11,"high scores")$child_texture$ = $icon_clipboard$$id$ = $menu_high_scores$$pad_choose_script$ = $high_scores_menu_create$$pad_choose_params$ = :s{$from_pause$ = $from_pause$:s}
+				:i endif
+			:i endif
+		:i endif
+		:i if NOT $GameModeEquals$$is_creategoals$
+			:i $make_thpg_menu_item$$text$ = %s(9,"save game")$child_texture$ = $icon_save$$id$ = $menu_save_game$$pad_choose_script$ = $launch_pause_menu_save_game_sequence$
+		:i endif
+		:i $make_thpg_menu_item$$text$ = %s(6,"cheats")$id$ = $menu_real_cheats$$pad_choose_script$ = $create_real_cheats_menu$
+	:i endif
+	:i if  ($view_mode$ = %i(0,00000000)) 
+		:i if NOT $GameModeEquals$$is_career$
+			:i if NOT $isObserving$
+				:i if NOT $IsTrue$$THUGPRO_ObserveOn$
+					:i if $skater$.$Skating$
+						:i if $skater$.$OnLip$
+							:i if $IsTrue$$THUGPRO_ObserveOn$
+								:i $set_restart_not_focusable$ = $not_focusable$
+							:i endif
+						:i endif
+					:i endif
+					:i if NOT $CustomParkMode$$testing$
+						:i if NOT  ( ($GameModeEquals$$is_lobby$)  OR  ($GameModeEquals$$is_singlesession$) ) 
+							:i $set_restart_not_focusable$ = $not_focusable$
+						:i endif
+					:i endif
+					:i $make_thpg_menu_item$:s{$text$ = %s(11,"set restart")$id$ = $menu_set_custom$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $set_custom_restart$:s}$not_focusable$ = %GLOBAL%$set_restart_not_focusable$:s}
+					:i if $skater$.$SetCustomRestart$
+						:i $make_thpg_menu_item$:s{$text$ = %s(12,"goto restart")$id$ = $menu_skip_to_custom$$pad_choose_script$ = $menu_select$$pad_choose_params$ = :s{$menu_select_script$ = $skip_to_custom_restart$:s}$not_focusable$ = %GLOBAL%$set_restart_not_focusable$
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $create_camera_options_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$center$$center$:a}
+		:i $menu_id$ = $camera_options_menu$
+		:i $vmenu_id$ = $camera_options_vmenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $camera_options_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{:s}:s}
+			:i :s{$pad_back$$create_predisplay_options_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(14,"camera options")$bg_just$ = $left$$no_grain$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i $FormatText$$TextName$ = $angle_text$%s(2,"%s")$s$ =  ($skater_cam_0_mode$) 
+		:i $make_thpg_menu_item$:s{
+			:i $text$ = %s(13,"camera angle ")
+			:i $id$ = $menu_camera$
+			:i $extra_text$ = %GLOBAL%$angle_text$
+			:i $option_arrows$$pad_choose$
+			:i $option_arrows_callback$ = $toggle_camera_angle$
+		:i :s}
+	:i endif
+	:i $RemoveParameter$$text$
+	:i $menu_camera_aspect_get_string$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(13,"aspect ratio ")
+		:i $id$ = $menu_camera_aspect$
+		:i $extra_text$ = %GLOBAL%$text$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $toggle_camera_aspect$
+	:i :s}
+	:i $RemoveParameter$$text$
+	:i $menu_camera_fov_get_string$
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(14,"field of view ")
+		:i $id$ = $menu_camera_fov$
+		:i $extra_text$ = %GLOBAL%$text$
+		:i $option_arrows$$pad_choose$
+		:i $option_arrows_callback$ = $toggle_camera_fov$
+	:i :s}
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $camera_options_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i $camera_angle$ = %i(0,00000000)
+:i function $toggle_camera_angle$
+	:i if $GotParam$$left$
+		:i $index_previous_wraparound_2$$index$ =  ($skater_cam_0_mode$) $max$ = %i(4,00000004)$min$ = %i(1,00000001)
+		:i $change$$skater_cam_0_mode$ = %GLOBAL%$new_index$
+	:i else 
+		:i $index_next_wraparound_2$$index$ =  ($skater_cam_0_mode$) $max$ = %i(4,00000004)$min$ = %i(1,00000001)
+		:i $change$$skater_cam_0_mode$ = %GLOBAL%$new_index$
+	:i endif
+	:i $FormatText$$TextName$ = $angle_text$%s(2,"%s")$s$ =  ($skater_cam_0_mode$) 
+	:i $SetScreenElementProps$:s{$id$ = :s{$menu_camera$$child$ = $extra_text$:s}$text$ = %GLOBAL%$angle_text$:s}
+	:i if $ObjectExists$$id$ = $skatercam0$
+		:i $skatercam0$.$sc_setmode$$mode$ = $skater_cam_0_mode$
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(12,"camera_angle")$value$ =  ($skater_cam_0_mode$) 
+:i endfunction
+:i $camera_aspect_mode$ = %i(0,00000000)
+:i function $menu_camera_aspect_get_string$
+	:i switch  ($camera_aspect_mode$) 
+		:i case %i(0,00000000)
+			:i return
+			$text$ = %s(4,"auto")
+			:i endcase
+		case %i(1,00000001)
+			:i return
+			$text$ = %s(3,"4:3")
+			:i endcase
+		case %i(2,00000002)
+			:i return
+			$text$ = %s(4,"16:9")
+			:i endcase
+		case %i(3,00000003)
+			:i return
+			$text$ = %s(5,"16:10")
+			:i endcase
+		default 
+			:i return
+			$text$ = %s(10,"\c2error!!")
+			:i end_switch
+	
+:i endfunction
+:i function $toggle_camera_aspect$
+	:i $GetTags$
+	:i if $GotParam$$left$
+		:i $index_previous_wraparound_2$$index$ =  ($camera_aspect_mode$) $max$ = %i(3,00000003)$min$ = %i(0,00000000)
+		:i $change$$camera_aspect_mode$ = %GLOBAL%$new_index$
+	:i else 
+		:i $index_next_wraparound_2$$index$ =  ($camera_aspect_mode$) $max$ = %i(3,00000003)$min$ = %i(0,00000000)
+		:i $change$$camera_aspect_mode$ = %GLOBAL%$new_index$
+	:i endif
+	:i $menu_camera_aspect_get_string$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$text$
+	:i :s}
+	:i $thugpro_save_key_value$$Key$ = %s(18,"camera_aspect_mode")$value$ =  ($camera_aspect_mode$) $apply_changes$
+:i endfunction
+:i $camera_fov_value$ = %f(72.000000)
+:i $camera_fov_def$ = %f(72.000000)
+:i $camera_fov_min$ = %f(22.000000)
+:i $camera_fov_max$ = %f(132.000000)
+:i function $menu_camera_fov_get_string$
+	:i $FormatText$$TextName$ = $fov_text$%s(2,"%a")$a$ =  ($camera_fov_value$) 
+	:i return
+	$text$ = %GLOBAL%$fov_text$
+:i endfunction
+:i function $toggle_camera_fov$
+	:i if $GotParam$$left$
+		:i if  ( ( ($camera_fov_value$)  - %f(2.000000))  >  ($camera_fov_min$) ) 
+			:i $change$$camera_fov_value$ =  ( ($camera_fov_value$)  - %f(2.000000)) 
+		:i endif
+	:i else 
+		:i if  ( ( ($camera_fov_value$)  + %f(2.000000))  <  ($camera_fov_max$) ) 
+			:i $change$$camera_fov_value$ =  ( ($camera_fov_value$)  + %f(2.000000)) 
+		:i endif
+	:i endif
+	:i if NOT $GotParam$$no_menu$
+		:i $GetTags$
+		:i $menu_camera_fov_get_string$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}
+			:i $text$ = %GLOBAL%$text$
+		:i :s}
+	:i endif
+	:i $thugpro_save_key_value$$Key$ = %s(16,"camera_fov_value")$value$ =  ($camera_fov_value$) $apply_changes$
+:i endfunction
+:i function $create_real_cheats_menu$$back_script$ = $create_options_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i if $InSplitScreenGame$
+		:i $GoalManager_HidePoints$
+	:i endif
+	:i $make_new_themed_scrolling_menu$$title$ = %s(6,"CHEATS")$dims$ = %vec2(600.000000,237.000000)$pos$ = %vec2(229.000000,80.000000)$right_bracket_z$ = %i(1,00000001)
+	:i $SetScreenElementProps$:s{$id$ = $sub_vmenu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = %GLOBAL%$back_script$:s}:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$generic_helper_text_toggle$
+	:i $kill_start_key_binding$
+	:i $make_cheats_menu_item$$text$ = %s(13,"Cool Specials")$cheat_flag$ = $CHEAT_COOL_SPECIAL_TRICKS$$pad_choose_script$ = $toggle_cheat$
+	:i $make_cheats_menu_item$$text$ = %s(11,"Super Blood")$cheat_flag$ = $CHEAT_SUPER_BLOOD$$pad_choose_script$ = $toggle_cheat$
+	:i $make_cheats_menu_item$$text$ = %s(8,"Kid Mode")$cheat_flag$ = $CHEAT_KID$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $refresh_skater_model_for_cheats$$off_callback$ = $refresh_skater_model_for_cheats$:s}
+	:i $make_cheats_menu_item$$text$ = %s(9,"Invisible")$cheat_flag$ = $CHEAT_INVISIBLE$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $refresh_skater_model_for_cheats$$off_callback$ = $refresh_skater_model_for_cheats$:s}
+	:i $make_cheats_menu_item$$text$ = %s(10,"Hoverboard")$cheat_flag$ = $CHEAT_HOVERBOARD$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $refresh_skater_model_for_cheats$$off_callback$ = $refresh_skater_model_for_cheats$:s}
+	:i $make_cheats_menu_item$$text$ = %s(14,"Always Special")$cheat_flag$ = $CHEAT_ALWAYS_SPECIAL$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $make_cheats_menu_item$$text$ = %s(12,"Perfect Rail")$cheat_flag$ = $CHEAT_PERFECT_RAIL$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $make_cheats_menu_item$$text$ = %s(14,"Perfect Skitch")$cheat_flag$ = $CHEAT_PERFECT_SKITCH$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $make_cheats_menu_item$$text$ = %s(14,"Perfect Manual")$cheat_flag$ = $CHEAT_PERFECT_MANUAL$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $make_cheats_menu_item$$text$ = %s(12,"Moon Gravity")$cheat_flag$ = $CHEAT_MOON$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $theme_menu_add_item$$text$ = %s(4,"Done")$id$ = $menu_done$$scale$ = %f(1.000000)$pad_choose_script$ = %GLOBAL%$back_script$$no_bg$$highlight_bar_scale$ = %vec2(2.800000,0.800000)
+	:i $finish_themed_scrolling_menu$$bg_width$ = %f(4.000000)$time$ = %f(0.200000)
+:i endfunction
+:i function $make_cheats_menu_item$:s{$focus_script$ = $do_scale_up$
+		:i $unfocus_script$ = $do_scale_down$
+		:i $pad_choose_script$ = $nullscript$
+		:i $font_face$ = $small$
+		:i $parent_menu_id$ = $current_menu$
+		:i $scale$ = %f(0.800000)
+		:i $dims$ = %vec2(350.000000,14.000000)
+		:i $rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+	:i :s}
+	:i $pad_choose_params$ = :s{$cheat_flag$ = %GLOBAL%$cheat_flag$%GLOBAL%$pad_choose_params$:s}
+	:i if $GotParam$$not_focusable$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $textelement$
+			:i $parent$ = %GLOBAL%$parent_menu_id$
+			:i $id$ = %GLOBAL%$id$
+			:i $text$ = %GLOBAL%$text$
+			:i $font$ = %GLOBAL%$font_face$
+			:i $rgba$ = :a{%i(30,0000001e)%i(30,0000001e)%i(30,0000001e)%i(128,00000080):a}
+			:i $scale$ = %GLOBAL%$scale$
+			:i $dims$ = %GLOBAL%$dims$
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$) 
+			:i $on_off_text$ = %s(2,"On")
+		:i else 
+			:i $on_off_text$ = %s(3,"Off")
+		:i endif
+		:i $theme_menu_add_item$$text$ = %GLOBAL%$text$$id$ = %GLOBAL%$checksum$$highlight_bar_scale$ = %vec2(2.800000,0.800000)$extra_text$ = %GLOBAL%$on_off_text$$no_bg$$pad_choose_script$ = %GLOBAL%$pad_choose_script$$pad_choose_params$ = %GLOBAL%$pad_choose_params$
+	:i endif
+:i endfunction
+:i function $create_controller_config_menu$
+:i endfunction
+:i function $controller_config_exit$
+:i endfunction
+:i function $control_change_values$
+:i endfunction
+:i function $control_menu_vibrate_controller$
+:i endfunction
+:i $joystick_pushed$ = %i(0,00000000)
+:i function $control_config_show_values$
+:i endfunction
+:i function $controller_config_focus$
+:i endfunction
+:i function $controller_config_unfocus$
+:i endfunction
+:i function $GammaOptions_Create_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{$pos$ = %vec2(40.000000,115.000000)$internal_just$ = :a{$center$$center$:a}$menu_id$ = $GammaOptions_menu$$vmenu_id$ = $GammaOptions_vmenu$:s}
+	:i $SetScreenElementProps$:s{$id$ = $GammaOptions_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back_sound$:s}:s{$pad_back$$create_predisplay_options_menu$$params$ = :s{:s}:s}:a}$replace_handlers$:s}
+	:i $AssignAlias$$id$ = $GammaOptions_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(13,"gamma options")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $create_helper_text$$generic_helper_text_toggle$
+	:i $GetGammaValues$
+	:i $FormatText$$TextName$ = $red_text$%s(2,"%i")$i$ = %GLOBAL%$red$
+	:i $make_thpg_menu_item$:s{$text$ = %s(4,"Red ")$extra_text$ = %GLOBAL%$red_text$$id$ = $gamma_menu_red$$option_arrows$$pad_left_script$ = $GammaOptions_turn_down$$pad_left_params$ = :s{$color$ = $red$:s}$pad_right_script$ = $GammaOptions_turn_up$$pad_right_params$ = :s{$color$ = $red$:s}:s}
+	:i $FormatText$$TextName$ = $green_text$%s(2,"%i")$i$ = %GLOBAL%$green$
+	:i $make_thpg_menu_item$:s{$text$ = %s(6,"Green ")$extra_text$ = %GLOBAL%$green_text$$id$ = $gamma_menu_green$$option_arrows$$pad_left_script$ = $GammaOptions_turn_down$$pad_left_params$ = :s{$color$ = $green$:s}$pad_right_script$ = $GammaOptions_turn_up$$pad_right_params$ = :s{$color$ = $green$:s}:s}
+	:i $FormatText$$TextName$ = $blue_text$%s(2,"%i")$i$ = %GLOBAL%$blue$
+	:i $make_thpg_menu_item$:s{$text$ = %s(5,"Blue ")$extra_text$ = %GLOBAL%$blue_text$$id$ = $gamma_menu_blue$$option_arrows$$pad_left_script$ = $GammaOptions_turn_down$$pad_left_params$ = :s{$color$ = $blue$:s}$pad_right_script$ = $GammaOptions_turn_up$$pad_right_params$ = :s{$color$ = $blue$:s}:s}
+	:i $make_thpg_menu_item$:s{$text$ = %s(4,"Done")$id$ = $gamma_menu_done$
+		:i $pad_choose_script$ = $create_predisplay_options_menu$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $GammaOptions_turn_up$
+	:i $GetGammaValues$
+	:i $ApplyChangeGamma$ isNull $change$ = %f(0.010000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $GammaOptions_check_levels$
+:i endfunction
+:i function $GammaOptions_turn_down$
+	:i $GetGammaValues$
+	:i $ApplyChangeGamma$ isNull $change$ = %f(-0.010000)
+	:i $wait$%i(1,00000001)$frame$
+	:i $GammaOptions_check_levels$
+:i endfunction
+:i function $GammaOptions_check_levels$
+	:i $GetGammaValues$
+	:i $FormatText$$TextName$ = $red_text$%s(2,"%i")$i$ = %GLOBAL%$red$
+	:i $FormatText$$TextName$ = $green_text$%s(2,"%i")$i$ = %GLOBAL%$green$
+	:i $FormatText$$TextName$ = $blue_text$%s(2,"%i")$i$ = %GLOBAL%$blue$
+	:i $SetScreenElementLock$$id$ = $gamma_menu_red$$off$
+	:i $SetScreenElementLock$$id$ = $gamma_menu_green$$off$
+	:i $SetScreenElementLock$$id$ = $gamma_menu_blue$$off$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{$gamma_menu_red$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$red_text$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{$gamma_menu_green$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$green_text$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{$gamma_menu_blue$$child$ = $extra_text$:s}
+		:i $text$ = %GLOBAL%$blue_text$
+	:i :s}
+:i endfunction
+:i function $theme_menu_add_flag_item_confirm$$callback$ = $create_screen_menu$
+	:i if NOT $GotParam$$flag$
+		:i $printf$%s(46,"theme_menu_add_flag_item requires a flag param")
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$id$
+		:i $printf$%s(45,"theme_menu_add_flag_item requires an id param")
+		:i return
+		
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i if $GotParam$$reverse$
+			:i $extra_text$ = %s(3,"Off")
+			:i $reverse$ = $reverse$
+		:i else 
+			:i $extra_text$ = %s(2,"On")
+		:i endif
+	:i else 
+		:i if $GotParam$$reverse$
+			:i $extra_text$ = %s(2,"On")
+			:i $reverse$ = $reverse$
+		:i else 
+			:i $extra_text$ = %s(3,"Off")
+		:i endif
+	:i endif
+	:i $theme_menu_add_item$ isNull $pad_choose_script$ = $theme_toggle_flag_confirm$$pad_choose_params$ = :s{$flag$ = %GLOBAL%$flag$$id$ = %GLOBAL%$id$$reverse$ = %GLOBAL%$reverse$:s}
+:i endfunction
+:i function $theme_toggle_flag_confirm$
+	:i if NOT $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $create_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+			:i $text$ = %sc(143,"You are changing Progressive Scan mode to On. Your television must be capable of displaying a Progressive Scan signal. Do you wish to continue?")
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $box_animate$
+			:i $text_scale$ = %i(1,00000001)
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $yes_progressive_scan$$pad_choose_params$ = :s{$flag$ = %GLOBAL%$flag$$id$ = %GLOBAL%$id$$reverse$ = %GLOBAL%$reverse$:s}:s}
+				:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $no_progressive_scan$:s}
+				:i :a}
+		:i :s}
+	:i else 
+		:i $theme_toggle_flag$$flag$ = %GLOBAL%$flag$$id$ = %GLOBAL%$id$$reverse$ = %GLOBAL%$reverse$
+		:i $SetProgressive$$on$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $confirm_no_progressive$
+	:i $UnsetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i $dialog_box_exit$
+	:i $SetProgressive$$on$ = %i(0,00000000)
+	:i $create_snazzy_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+		:i $text$ = %s(40,"Interlaced video mode has been restored.")
+		:i $no_animate$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(8,"Continue")$pad_choose_script$ = $progressive_done$$pad_choose_params$ = :s{ isNull :s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $no_progressive_scan$
+	:i $dialog_box_exit$
+	:i $create_screen_menu$
+:i endfunction
+:i function $yes_progressive_scan$
+	:i $dialog_box_exit$
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $UnsetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $SetProgressive$$on$ = %i(0,00000000)
+	:i else 
+		:i $SetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $SetProgressive$$on$ = %i(1,00000001)
+	:i endif
+	:i %GLOBAL%$callback_script$ = $create_screen_menu$
+	:i $create_snazzy_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+		:i $text$ = %s(167,"Progressive Scan (480p) video mode selected. Select YES if you would like to continue playing in Progressive Scan mode or NO to return to normal Interlaced video mode.")
+		:i $no_animate$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $progressive_done$$pad_choose_params$ = :s{ isNull :s}:s}
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $confirm_no_progressive$$pad_choose_params$ = :s{$callback_script$ = %GLOBAL%$callback_script$:s}:s}
+			:i :a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $dialog_box_anchor$$progressive_timeout$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $onload_progressive_scan_check$$callback_script$ = $create_options_menu$
+	:i $create_snazzy_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+		:i $text$ = %s(208,"You had previously chosen to display the game in Progressive Scan mode. Your television must be capable of displaying a Progressive Scan signal. Do you want to display the game in Progressive Scan mode again?")
+		:i $no_animate$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $set_progressive_mode_onload$$pad_choose_params$ = :s{$callback_script$ = %GLOBAL%$callback_script$:s}:s}
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $unset_progressive_mode_onload$$pad_choose_params$ = :s{$callback_script$ = %GLOBAL%$callback_script$:s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $progressive_timeout$
+	:i $wait$%i(10,0000000a)$seconds$
+	:i $UnsetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i $SetProgressive$$on$ = %i(0,00000000)
+	:i $dialog_box_exit$
+	:i $create_snazzy_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+		:i $text$ = %s(40,"Interlaced video mode has been restored.")
+		:i $no_animate$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(8,"Continue")$pad_choose_script$ = $progressive_done$$pad_choose_params$ = :s{ isNull :s}:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $set_progressive_mode_onload$
+	:i $SetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i $dialog_box_exit$
+	:i $SetProgressive$$on$ = %i(1,00000001)
+	:i $create_snazzy_dialog_box$:s{$title$ = %s(16,"Progressive Scan")
+		:i $text$ = %s(167,"Progressive Scan (480p) video mode selected. Select YES if you would like to continue playing in Progressive Scan mode or NO to return to normal Interlaced video mode.")
+		:i $no_animate$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $progressive_done$$pad_choose_params$ = :s{ isNull :s}:s}
+			:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $confirm_no_progressive$$pad_choose_params$ = :s{$callback_script$ = %GLOBAL%$callback_script$:s}:s}
+			:i :a}
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $dialog_box_anchor$$progressive_timeout$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $progressive_done$
+	:i $dialog_box_exit$
+	:i %GLOBAL%$callback_script$ isNull 
+:i endfunction
+:i function $unset_progressive_mode_onload$
+	:i $UnsetGlobalFlag$$flag$ = $SCREEN_MODE_PROGRESSIVE$
+	:i $dialog_box_exit$
+	:i $SetProgressive$$on$ = %i(0,00000000)
+	:i %GLOBAL%$callback_script$ isNull 
+:i endfunction
+:i function $change_screen_mode$
+	:i if $LevelIs$$Load_MainMenu$
+		:i if $GotParam$$standard$
+			:i $change$$ingame_screen_mode$ = $standard_screen_mode$
+		:i endif
+		:i if $GotParam$$wide$
+			:i $change$$ingame_screen_mode$ = $widescreen_screen_mode$
+		:i endif
+		:i if $GotParam$$letter$
+			:i $change$$ingame_screen_mode$ = $letterbox_screen_mode$
+		:i endif
+		:i if $GotParam$$16_10$
+			:i $change$$ingame_screen_mode$ = $16_10_screen_mode$
+		:i endif
+	:i else 
+		:i %GLOBAL%$callback$ isNull 
+		:i $change$$ingame_screen_mode$ =  ($current_screen_mode$) 
+	:i endif
+:i endfunction
+:i function $build_screen_menu_graphic$$logo_scale$ = %vec2(1.000000,1.000000)$alpha$ = %i(0,00000000)$tv_scale$ = %vec2(1.000000,0.800000)
+	:i $printf$%s(39,"build_screen_menu_graphic not available")
+:i endfunction
+:i function $morph_tv_scan_line$$scale$ = %vec2(21.000000,0.250000)$scale2$ = %vec2(22.799999,0.250000)$pos$ = %vec2(28.000000,-55.000000)$pos2$ = %vec2(-6.000000,38.000000)
+	:i $printf$%s(32,"morph_tv_scan_line not available")
+:i endfunction
+:i function $tv_logo_twitch$$id$ = $tv_thug_logo$$time$ = %f(0.750000)
+	:i $printf$%s(28,"tv_logo_twitch not available")
+:i endfunction
+:i function $split_setup_horizontal$
+	:i $printf$%s(33,"changing split mode to horizontal")
+	:i $SetScreenMode$$split_horizontal$
+	:i $ScreenElementSystemCleanup$
+	:i if $GotParam$$end_run$
+		:i $create_end_run_menu$
+	:i else 
+		:i $create_pause_menu$
+	:i endif
+	:i $UpdateScore$
+	:i $SetActivecamera$$id$ = $skatercam0$$viewport$ = %i(0,00000000)
+	:i $SetActivecamera$$id$ = $skatercam1$$viewport$ = %i(1,00000001)
+:i endfunction
+:i function $split_setup_vertical$
+	:i $printf$%s(31,"changing split mode to vertical")
+	:i $SetScreenMode$$split_vertical$
+	:i $ScreenElementSystemCleanup$
+	:i if $GotParam$$end_run$
+		:i $create_end_run_menu$
+	:i else 
+		:i $create_pause_menu$
+	:i endif
+	:i $UpdateScore$
+	:i $SetActivecamera$$id$ = $skatercam0$$viewport$ = %i(0,00000000)
+	:i $SetActivecamera$$id$ = $skatercam1$$viewport$ = %i(1,00000001)
+:i endfunction
+:i function $toggle_auto_brake_option$
+	:i $GetTags$
+	:i $GetPreferenceString$$pref_type$ = $network$$auto_brake$
+	:i if  (%GLOBAL%$ui_string$ = %s(3,"off")) 
+		:i $text$ = %s(2,"on")
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"auto_brake")$checksum$ = $boolean_true$$string$ = %s(2,"on")
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(2,"on")
+	:i else 
+		:i $text$ = %s(3,"off")
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(10,"auto_brake")$checksum$ = $boolean_false$$string$ = %s(3,"off")
+		:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $extra_text$:s}$text$ = %s(3,"off")
+	:i endif
+:i endfunction
+:i :end

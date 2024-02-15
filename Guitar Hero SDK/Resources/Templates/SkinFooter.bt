@@ -1,0 +1,39 @@
+// Footer that contains blocks of polygons (or something) to disqualify
+
+#define CL_DQNUM                0xFFCC88
+#define CL_DQJUNK               0xCC9977
+#define CL_DQINDEX              0xFFBB77
+#define CL_DQPOLYS              0xFFAA66
+#define CL_DQSING               0xBB8866
+
+typedef struct
+{
+    uint acc_flags <bgcolor=CL_DQNUM>;
+    uint char_flags <bgcolor=CL_DQJUNK>;
+    ushort mesh_index_maybe <bgcolor=CL_DQINDEX>;
+    ushort indices[3] <bgcolor=CL_DQPOLYS>;
+    uint num_b <bgcolor=CL_DQSING>;
+} Disqualifier <read=ReadDisqualifier>;
+
+string ReadDisqualifier(Disqualifier &dq)
+{
+    local string s;
+
+    return SPrintf(s, "[%x, %x] %d - (%d, %d, %d)", dq.acc_flags, dq.char_flags, dq.mesh_index_maybe, dq.indices[0], dq.indices[1], dq.indices[2]);
+}
+
+typedef struct
+{
+    local uint dq_start = FTell();
+
+    ubyte version_maybe <bgcolor=CL_SINGLEVALUE>;
+    ubyte hdr_length <bgcolor=CL_SINGLEVALUE, comment="Length of DQ header">;
+    ushort unk_b <bgcolor=CL_SINGLEVALUE>;
+    uint disq_count <bgcolor=CL_SINGLEVALUE>;
+    RelativeOffset pt_disqs(dq_start) <bgcolor=CL_POINTER, comment="Offset to DQ's?">;
+    uint acc_hide <bgcolor=CL_SINGLEVALUE>;
+    uint char_hide <bgcolor=CL_SINGLEVALUE>;
+
+    if (disq_count > 0)
+        Disqualifier disqualifiers[disq_count];
+} SkinFooter;

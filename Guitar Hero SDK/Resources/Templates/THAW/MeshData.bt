@@ -1,0 +1,365 @@
+//------------------------------------------------
+// THAW mesh data
+//------------------------------------------------
+
+#define CL_FACECOUNT            0x66ffff
+#define CL_FACEINDEX            0x44dddd
+
+#define CL_VERTCOUNT            0xffff66
+#define CL_VERTPOS              0xdddd44
+#define CL_VERTVALUE            0xbbbb22
+
+#define CL_MD_BEGIN             0xccddff
+#define CL_MD_VECTOR            0x8899bb
+#define CL_MD_PADDING           0x667799
+#define CL_MD_MATERIAL          0x88ffbb
+#define CL_MD_POINTER           0x99cccc
+#define CL_MD_VALUE             0x99aacc
+#define CL_MD_UNIMPORTANT       0x7788aa
+
+#define SIZEOF_SMESH            224
+#define SIZEOF_SMESH_XBOX       172
+
+enum THAWFaceType
+{
+    FT_QUAD = 0x05,
+    FT_TRISTRIP = 0x06,
+};
+
+typedef struct (uint face_count)
+{
+    if (!IsXboxFile)
+        uint block_bytes <bgcolor=CL_FACECOUNT>;
+
+    if (face_count > 0)
+        ushort face_indices[face_count] <bgcolor=CL_FACEINDEX>;
+} FaceBlock;
+
+typedef struct
+{
+    float u <bgcolor=CL_VERTVALUE>;
+    float v <bgcolor=CL_VERTVALUE>;
+} UV <read=Str("%f, %f", u, v)>;
+
+// Vertex always starts with X, Y, Z!
+typedef struct(uint vert_len)
+{
+    local uint vert_end = FTell() + vert_len;
+    
+    Vec3 pos <bgcolor=CL_VERTPOS>;
+    uint packedWeights <bgcolor=CL_VERTVALUE>;
+    ushort weight_indices[4] <bgcolor=CL_VERTVALUE>;
+    
+    if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_NORMALS)
+        uint packedNormals <bgcolor=CL_VERTVALUE>;
+        
+    if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_COLORS)
+    {
+        ubyte colR <bgcolor=CL_VERTVALUE>;
+        ubyte colG <bgcolor=CL_VERTVALUE>;
+        ubyte colB <bgcolor=CL_VERTVALUE>;
+        ubyte colA <bgcolor=CL_VERTVALUE>;
+    }
+    
+    if (CurrentSectorFlags & SECFLAGS_HAS_TEXCOORDS)
+    {
+        // At this point, we have our UV's. They're uncompressed.
+        // This depends on pass count of the material.
+        local uint uv_count = (uint) ((vert_end - FTell()) / 8);
+        
+        if (uv_count)
+            UV uvs[uv_count];
+    }
+} CompressedVertex;
+
+typedef struct(uint vert_len)
+{
+    local uint vert_end = FTell() + vert_len;
+    
+    Vec3 pos <bgcolor=CL_VERTPOS>;
+    
+    if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_NORMALS)
+        Vec3 normals <bgcolor=CL_VERTPOS>;
+        
+    if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_COLORS)
+    {
+        ubyte colR <bgcolor=CL_VERTVALUE>;
+        ubyte colG <bgcolor=CL_VERTVALUE>;
+        ubyte colB <bgcolor=CL_VERTVALUE>;
+        ubyte colA <bgcolor=CL_VERTVALUE>;
+    }
+    
+    if (CurrentSectorFlags & SECFLAGS_HAS_TEXCOORDS)
+    {
+        // At this point, we have our UV's. They're uncompressed.
+        // This depends on pass count of the material.
+        local uint uv_count = (uint) ((vert_end - FTell()) / 8);
+        
+        if (uv_count)
+            UV uvs[uv_count];
+    }
+} UncompressedVertex;
+
+typedef struct (uint vtx_count, uint vtx_stride, uint vtx_switch)
+{
+    local int i;
+    
+    if (!IsXboxFile)
+        uint block_bytes <bgcolor=CL_VERTCOUNT>;
+    else
+        uint skip_me[3] <bgcolor=CL_VERTCOUNT>;
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        for (i=0; i<vtx_count; i++)
+        {
+            //if (vtx_switch == 0)
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_WEIGHTS)
+                CompressedVertex vert(vtx_stride) <optimize=false>;
+            else
+                UncompressedVertex vert(vtx_stride) <optimize=false>;
+        }
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        for (i=0; i<vtx_count; i++)
+        {
+            if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_WEIGHTS)
+                CompressedVertex vert(vtx_stride) <optimize=false>;
+            else
+                UncompressedVertex vert(vtx_stride) <optimize=false>;
+        }
+    }
+} VertexBlock;
+
+typedef struct
+{
+    uint vertex_indices_count <bgcolor=CL_MD_VALUE>;
+    ushort indices[vertex_indices_count] <bgcolor=CL_MD_UNIMPORTANT>;
+} THUG1LOD <read=Str("%d vertices", vertex_indices_count)>;
+
+typedef struct
+{
+    uint num_indices <bgcolor=CL_MD_VALUE>;
+    ushort vert_indices[num_indices] <bgcolor=CL_MD_VALUE>;
+    ushort num_indices_b <bgcolor=CL_MD_VALUE>;
+    ushort vert_indices_b[num_indices] <bgcolor=CL_MD_VALUE>;
+    
+    ubyte padding[14] <bgcolor=CL_MD_PADDING, hidden=true>;
+    
+    ubyte vertex_stride <bgcolor=CL_MD_VALUE>;
+    ushort vertex_count <bgcolor=CL_MD_VALUE>;
+    ushort vertex_buf_count <bgcolor=CL_MD_VALUE>;
+    
+    local int i;
+    
+    for (i=0; i<vertex_buf_count; i++)
+    {
+        // ????????
+        if (i > 0)
+            FSeek(FTell() + 1);
+            
+        VertexBlock vertex_buffer(vertex_count, vertex_stride, 0);
+    }
+        
+    // io_thps_scene claims this is a vertex shader value.
+    // **INCORRECT ERROR BUZZER**
+    uint mesh_flags <bgcolor=CL_MD_VALUE>;
+    uint mesh_flags_unk <bgcolor=CL_MD_VALUE>;
+    
+    ubyte stuff[3] <bgcolor=CL_MD_PADDING, hidden=true>;
+    ubyte has_vc_wibble_data <bgcolor=CL_MD_VALUE>;
+    
+    if (has_vc_wibble_data)
+        ubyte vc_wibble_data[vertex_count] <bgcolor=CL_MD_VALUE>;
+        
+    int num_index_sets <bgcolor=CL_MD_VALUE, comment="???">;
+    int pixel_shader <bgcolor=CL_MD_VALUE, comment="Pixel shader to use">;
+    
+    if (pixel_shader == 1)
+    {
+        int pixel_shader_thing <bgcolor=CL_MD_VALUE>;
+        int pixel_shader_unk_count <bgcolor=CL_MD_VALUE>;
+        
+        if (pixel_shader_unk_count)
+            ubyte pixel_shader_unk[pixel_shader_unk_count] <bgcolor=CL_MD_VALUE>;
+    }
+} THUG2LOD <read=Str("%d indices (%d indices)", num_indices, num_indices_b)>;
+
+typedef struct
+{
+    local uint i;
+    
+    if (SkinFileVersion == SKIN_VERSION_THAW)
+    {
+        uint some_flags <bgcolor=CL_MD_BEGIN, comment="Used internally?">;
+    
+        Sphere bounding_sphere <bgcolor=CL_MD_VECTOR>;
+        QBKey material_sum <bgcolor=CL_MD_MATERIAL>;
+        
+        ubyte vertex_stride <bgcolor=CL_MD_VALUE>;
+        ubyte m_current_write_vertex_buffer <bgcolor=CL_MD_VALUE>;
+        ubyte m_num_vertex_buffers <bgcolor=CL_MD_UNIMPORTANT>;
+        ubyte m_visibility_mask <bgcolor=CL_MD_UNIMPORTANT>;
+        
+        ubyte m_diffuse_offset <bgcolor=CL_MD_VALUE>;
+        ubyte m_normal_offset <bgcolor=CL_MD_VALUE>;
+        ubyte oddbyte_a <bgcolor=CL_MD_VALUE>;
+        ubyte oddbyte_b <bgcolor=CL_MD_VALUE>;
+        
+        ubyte odd_constant_a <bgcolor=CL_MD_UNIMPORTANT>;
+        ubyte lod_count <bgcolor=CL_MD_UNIMPORTANT, comment="Number of LOD's">;
+        ubyte face_type_maybe <bgcolor=CL_MD_UNIMPORTANT>;
+        ubyte odd_constant_d <bgcolor=CL_MD_UNIMPORTANT>;
+        
+        ushort m_load_order <bgcolor=CL_MD_PADDING, comment="Used internally">;
+        ushort vertex_count <bgcolor=CL_MD_VALUE>;
+        ushort face_counts[8] <bgcolor=CL_MD_VALUE>;
+    
+        // Skinned meshes ONLY!
+        // Non-skinned meshes have the same value as faces
+        uint face_count_modified <bgcolor=CL_MD_VALUE, comment="(face block size + 128) / 2">;
+    
+        QBKey Checksum <bgcolor=CL_MD_VALUE>;
+    
+        uint mesh_flags <bgcolor=CL_MD_VALUE, comment="If 0, this is a weighted mesh!">;
+        ubyte junk_c[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+        if (!IsXboxFile)
+        {
+            QBKey weird_thing <bgcolor=CL_MD_VALUE>;
+        
+            uint pixel_shader <bgcolor=CL_MD_VALUE, comment="Generate from material if 1">;
+        
+            ubyte ff_a[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+            RelativeOffset billboard_data_offset(Off_Billboards) <bgcolor=CL_MD_POINTER>;
+            THAWFaceType m_primitive_type <bgcolor=CL_MD_VALUE, comment="Face type">;
+            
+            for (i=0; i<8; i++)
+                RelativeOffset face_offsets(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+        
+            RelativeOffset vertex_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER, comment="Real offset + 4">;
+            RelativeOffset vertex_unk_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+            ubyte ff_c[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+            
+            uint some_internal_flags <bgcolor=CL_MD_UNIMPORTANT, comment="Set to 512 if vertex_switch_if_zero == 0">;
+            
+            ubyte junk_d[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+            ushort a_nums[2] <bgcolor=CL_MD_VALUE>;
+        
+            ubyte junk_ea[12] <hidden=true, bgcolor=CL_MD_PADDING>;
+            
+            RelativeOffset vertex_wibblebyte_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+            
+            ubyte junk_eb[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+            ushort b_nums[2] <bgcolor=CL_MD_VALUE>;
+        
+            ubyte ff_d[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+            ubyte junk_f[8] <hidden=true, bgcolor=CL_MD_PADDING>;
+        
+            uint material_pass_count <bgcolor=CL_MD_UNIMPORTANT, comment="Set internally">;
+            uint num_index_sets <bgcolor=CL_MD_UNIMPORTANT, comment="Number of weights?">;
+        
+            ubyte junk_final[32] <hidden=true, bgcolor=CL_MD_PADDING>;
+        }
+        else
+        {
+            ubyte skip[8] <hidden=true, bgcolor=CL_MD_PADDING>;
+            RelativeOffset billboard_data_offset(Off_Billboards) <bgcolor=CL_MD_POINTER>;
+            THAWFaceType real_face_type <bgcolor=CL_MD_VALUE, comment="Face type?">;
+            
+            for (i=0; i<8; i++)
+                RelativeOffset face_offsets(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+                
+            RelativeOffset vertex_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER, comment="Real offset + 4">;
+            RelativeOffset vertex_unk_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+            ubyte ff_c[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+            
+            uint vertex_unk_size_a <bgcolor=CL_MD_UNIMPORTANT>;
+            uint vertex_unk_size_b <bgcolor=CL_MD_UNIMPORTANT>;
+            
+            ubyte skip_this_a[24] <hidden=true, bgcolor=CL_MD_PADDING>;
+            
+            RelativeOffset vertex_wibblebyte_offset(Off_SceneStart) <bgcolor=CL_MD_POINTER>;
+            
+            ubyte skip_this_b[4] <hidden=true, bgcolor=CL_MD_PADDING>;
+        }
+    
+        // ---------------------------------
+    
+        local uint old_off = FTell();
+    
+        if (face_offsets[0].offset >= 0)
+        {
+            FSeek(AbsOffset(face_offsets[0]));
+            FaceBlock face_block(face_counts[0]);
+        }
+        
+        if (vertex_unk_offset.offset > 0)
+        {
+            if (!IsXboxFile)
+                FSeek(AbsOffset(vertex_unk_offset) - 4);
+            else
+                FSeek(AbsOffset(vertex_unk_offset));
+            
+            VertexBlock vertex_block(vertex_count, vertex_stride, mesh_flags);
+        }
+    
+        if (vertex_offset.offset >= 0)
+        {
+            if (!IsXboxFile)
+                FSeek(AbsOffset(vertex_offset) - 4);
+            else
+                FSeek(AbsOffset(vertex_offset));
+                
+            VertexBlock vertex_block(vertex_count, vertex_stride, mesh_flags);
+        }
+        
+        if (CurrentSectorFlags & SECFLAGS_HAS_VERTEX_COLOR_WIBBLES)
+        {
+            if (vertex_wibblebyte_offset.offset > 0)
+            {
+                FSeek(AbsOffset(vertex_wibblebyte_offset));
+                ubyte vc_wibble_bank_index[vertex_count] <bgcolor=0xFFBB00, comment="Bank to retrieve VC wibble from (0-8)">;
+            }
+            else
+                Printf("Had VC wibbles flag, but no offset.\n");
+        }
+        
+        if (CurrentSectorFlags & SECFLAGS_BILLBOARD_PRESENT)
+        {
+            FSeek(AbsOffset(billboard_data_offset));
+            uint billboard_type <bgcolor=0xFFDDFF>;
+            Vec4 billboard_pivot <bgcolor=0xEECCEE, comment="Billboard center">;
+            Vec4 billboard_b <bgcolor=0xDDBBDD>;
+        }
+    
+        FSeek(old_off);
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG2)
+    {
+        Sphere bounding_sphere <bgcolor=CL_MD_VECTOR>;
+        CBBox_Small bounding_box <bgcolor=CL_MD_VECTOR, comment="Bounding box">;
+        
+        uint some_flags <bgcolor=CL_MD_BEGIN, comment="Used internally?">;
+        QBKey material_sum <bgcolor=CL_MD_MATERIAL>;
+        
+        uint lod_count <bgcolor=CL_MD_UNIMPORTANT, comment="Number of LOD's">;
+        THUG2LOD mesh_lods[lod_count] <optimize=false>;
+    }
+    else if (SkinFileVersion == SKIN_VERSION_THUG1)
+    {
+        Sphere bounding_sphere <bgcolor=CL_MD_VECTOR>;
+        CBBox_Small bounding_box <bgcolor=CL_MD_VECTOR, comment="Bounding box">;
+        
+        uint some_flags <bgcolor=CL_MD_BEGIN, comment="Used internally?">;
+        QBKey material_sum <bgcolor=CL_MD_MATERIAL>;
+        
+        uint lod_count <bgcolor=CL_MD_UNIMPORTANT, comment="Number of LOD's">;
+        THUG1LOD mesh_lods[lod_count] <optimize=false>;
+    }
+} MeshData;

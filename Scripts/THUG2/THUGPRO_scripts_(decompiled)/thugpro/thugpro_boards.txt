@@ -1,0 +1,554 @@
+
+:i $g_current_skater_board_type$ = $default$
+:i function $GetBoardTypeAndRevert$
+	:i switch  ($g_current_skater_board_type$) 
+		:i case $hover$
+			:i endcase
+		case $board_hoverboard02$
+			:i endcase
+		case $board_ironman$
+			:i endcase
+		case $jango$
+			:i if NOT $GotParam$$no_sound$
+				:i $play_hoverboard_sfx$
+			:i endif
+			:i return
+			$is_using_hoverboard$ = %i(1,00000001)
+			:i endcase
+		default 
+			:i if NOT $GotParam$$no_sound$
+				:i $Default_PlayRevertSound$ isNull 
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i function $Default_PlayRevertSound$
+	:i if NOT $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+		:i switch %GLOBAL%$type$
+			:i case $revert$
+				:i $Obj_SpawnScript$$CessTrail$$Params$ = :s{$repeat_times$ = %i(10,0000000a):s}
+				:i $PlayCessSound$
+				:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$duration$ = %f(0.500000)
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i endcase
+			case $manuallink$
+				:i $PlaySound$$foleymove01$$pitch$ = %i(110,0000006e)$vol$ = %i(100,00000064)
+				:i $Obj_SpawnScript$$CessTrail$$Params$ = :s{$repeat_times$ = %i(10,0000000a):s}
+				:i $PlayCessSound$
+				:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$duration$ = %f(0.500000)
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i endcase
+			case $brake$
+				:i $PlayCessSound$
+				:i endcase
+			case $Wallride$
+				:i if  ( ($GLOBAL_TP_GroundTerrainSFX$)  = $Classic$) 
+					:i $Obj_PlaySound$$revertconc$
+				:i else 
+					:i $Obj_PlaySound$$revertconc_thaw$
+				:i endif
+				:i endcase
+			case $toggleswitchregular$
+				:i $PlayCessSound$
+				:i $Obj_SpawnScript$$CessTrail$$Params$ = :s{$delay$ = %i(3,00000003):s}
+				:i $Vibrate$$Actuator$ = %i(0,00000000)$Percent$ = %i(80,00000050)$duration$ = %f(0.500000)
+				:i $Vibrate$$Actuator$ = %i(1,00000001)$Percent$ = %i(80,00000050)$duration$ = %f(0.100000)
+				:i endcase
+			default 
+				:i $PlayCessSound$
+				:i end_switch
+		
+	:i endif
+:i endfunction
+:i $SKATER_BOARD_IS_SPINNING$ = %i(0,00000000)
+:i function $skater_rotate_wheel_test$
+	:i $Change$$SKATER_BOARD_IS_SPINNING$ = %i(0,00000000)
+	:i $wait$%i(10,0000000a)$frames$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $get_skater_number$
+	:i %GLOBAL%$uv_rot$ = %f(0.000000)
+	:i %GLOBAL%$enter_air_speed$ = %f(0.000000)
+	:i $Change$$SKATER_BOARD_IS_SPINNING$ = %i(1,00000001)
+	:i $real_skater_number$ = %GLOBAL%$skater_number$
+	:i $real_profile_index$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i while
+		
+		:i if NOT $IsLocalSkater$
+			:i $edmsg2$%s(43,"WARNING: \c2dafuq? IsLocalSkater is false!!")
+			:i continue
+			
+		:i endif
+		:i if NOT $IsTrue$$SKATER_BOARD_IS_SPINNING$
+			:i continue
+			
+		:i endif
+		:i if NOT  ( ($NET_PLAYER_IDS$) :a{%GLOBAL%$real_skater_number$:a}) .$IsLocalSkater$
+			:i $RemoveParameter$$skater_number$
+			:i $RemoveParameter$$currentSkaterProfileIndex$
+			:i $GetCurrentSkaterProfileIndex$
+			:i $get_skater_number$
+			:i $real_skater_number$ = %GLOBAL%$skater_number$
+			:i $real_profile_index$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $wait$%f(0.500000)$seconds$
+			:i if NOT  ( ($NET_PLAYER_IDS$) :a{%GLOBAL%$real_skater_number$:a}) .$IsLocalSkater$
+				:i $edmsg2$%s(10,"DAFUQ?! %a")$a$ = %GLOBAL%$real_skater_number$
+				:i continue
+				
+			:i endif
+		:i endif
+		:i if NOT $SkaterExists$$skater$ = %GLOBAL%$real_skater_number$
+			:i $RemoveParameter$$skater_number$
+			:i $RemoveParameter$$currentSkaterProfileIndex$
+			:i $GetCurrentSkaterProfileIndex$
+			:i $get_skater_number$
+			:i $real_skater_number$ = %GLOBAL%$skater_number$
+			:i $real_profile_index$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $wait$%f(0.500000)$seconds$
+			:i if NOT $SkaterExists$$skater$ = %GLOBAL%$real_skater_number$
+				:i $edmsg2$%s(10,"DAFUQ?! %a")$a$ = %GLOBAL%$real_skater_number$
+				:i continue
+				
+			:i endif
+		:i endif
+		:i if NOT $Walking$
+			:i if NOT $OnRail$
+				:i $GetSpeed$
+				:i if $InAir$
+					:i $GetAirtime$
+					:i if  (%GLOBAL%$airtime$ < %f(1.000000)) 
+						:i %GLOBAL%$enter_air_speed$ = %GLOBAL%$speed$
+					:i endif
+					:i %GLOBAL%$speed$ = %GLOBAL%$enter_air_speed$
+					:i $Clamp$%GLOBAL%$airtime$$min$ = %f(1.000000)$max$ = %f(1000.000000)
+					:i %GLOBAL%$airtime$ = %GLOBAL%$Clamped$
+					:i %GLOBAL%$speed$ =  (%GLOBAL%$speed$ / %GLOBAL%$airtime$) 
+				:i endif
+				:i %GLOBAL%$rot_speed$ =  ( (%GLOBAL%$speed$ / %f(360.000000))  * %f(9.000000)) 
+				:i if NOT $BoardIsRotated$
+					:i if  (%GLOBAL%$uv_rot$ > %f(360.000000)) 
+						:i %GLOBAL%$uv_rot$ = %f(0.000000)
+					:i endif
+				:i else 
+					:i if  (%GLOBAL%$uv_rot$ < %f(0.000000)) 
+						:i %GLOBAL%$uv_rot$ = %f(360.000000)
+					:i endif
+				:i endif
+				:i $SetPlayerAppearanceUV$:s{
+					:i $player$ = %GLOBAL%$real_profile_index$
+					:i $part$ = $board$
+					:i $uv_rot$ = %GLOBAL%$uv_rot$
+					:i $uv_u$ = %i(0,00000000)
+					:i $uv_v$ = %i(0,00000000)
+					:i $uv_scale$ = %i(100,00000064)
+					:i $use_default_uv$ = %i(0,00000000)
+				:i :s}
+				:i $RefreshSkaterUV$$skater$ = %GLOBAL%$real_skater_number$$profile$ = %GLOBAL%$real_profile_index$
+				:i if NOT $BoardIsRotated$
+					:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ + %GLOBAL%$rot_speed$) 
+				:i else 
+					:i %GLOBAL%$uv_rot$ =  (%GLOBAL%$uv_rot$ - %GLOBAL%$rot_speed$) 
+				:i endif
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$frames$
+	:i loop_to 
+	:i $Change$$SKATER_BOARD_IS_SPINNING$ = %i(0,00000000)
+:i endfunction
+:i $board_allow_break$ = :a{
+	:i $default$
+	:i $board_gold$
+	:i :a}
+:i $board_allow_griptape$ = :a{
+	:i $default$
+	:i $oldschool$
+	:i $board_ollie$
+	:i $board_joleHD$
+	:i $board_xray$
+	:i :a}
+:i $board_allow_griptape_color$ = :a{
+	:i $default$
+	:i :a}
+:i $board_allow_graphic$ = :a{
+	:i $default$
+	:i $oldschool$
+	:i $hover$
+	:i $jango$
+	:i $board_gold$
+	:i $board_joleHD$
+	:i $board_slater$
+	:i $board_xray$
+	:i :a}
+:i $board_allow_truck_texture$ = :a{
+	:i $default$
+	:i $board_joleHD$
+	:i :a}
+:i $board_allow_truck_color$ = :a{
+	:i $default$
+	:i :a}
+:i $board_allow_wheel_texture$ = :a{
+	:i $default$
+	:i $oldschool$
+	:i $banana$
+	:i $board_ollie$
+	:i $Shrek_board$
+	:i $board_Creature$
+	:i $board_joleHD$
+	:i :a}
+:i $board_allow_wheel_color$ = :a{
+	:i $default$
+	:i $oldschool$
+	:i :a}
+:i $board_allow_wheel_scale$ = :a{
+	:i $default$
+	:i $board_gold$
+	:i $oldschool$
+	:i $chainsaw$
+	:i $Board_THPS_Hawk$
+	:i $banana$
+	:i :a}
+:i $board_allow_wheel_rotation$ = :a{
+	:i $default$
+	:i $oldschool$
+	:i $banana$
+	:i $board_ollie$
+	:i $board_Creature$
+	:i :a}
+:i function $cas_handle_board_stuff$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %i(0,00000000)$part$ = $board$
+	:i $board_array$ = :a{
+		:i $segway$
+		:i $Jackhammer$
+		:i $Tuba$
+		:i $metaldetectorobj$
+		:i $baton$
+		:i $clipboard$
+		:i $lifesaver$
+		:i $witchdoctorcane$
+		:i $flute$
+		:i $guitar$
+		:i $banjo$
+		:i $tricycle$
+		:i $minikart$
+		:i $mechbull$
+		:i $long$
+		:i $tennis_racket$
+		:i $spraycan$
+		:i $stroller$
+		:i $stroller_zure$:a}
+	:i if $ArrayContains$$array$ = %GLOBAL%$board_array$$contains$ = %GLOBAL%$desc_id$
+		:i $EditPlayerAppearance$:s{
+			:i $profile$ = %GLOBAL%$currentSkaterProfileIndex$
+			:i $target$ = $SetPart$$targetParams$ = :s{$part$ = $board$$desc_id$ = $default$:s}
+		:i :s}
+		:i %GLOBAL%$desc_id$ = $default$
+	:i endif
+	:i if $GotParam$$RefreshSkaterModel$
+		:i if $IsTrue$$LAST_SELECTED_SKATER_HIDE_BOARD$
+			:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = $no_board$
+		:i else 
+			:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i $Change$$g_current_skater_board_type$ = %GLOBAL%$desc_id$
+:i endfunction
+:i $board$ = :a{
+	:i :s{
+		:i $desc_id$ = $default$
+		:i $frontend_desc$ = %sc(7,"Default")
+		:i $mesh$ = %s(32,"models/boards/board_default.skin")
+		:i $multicolor$ = %i(1,00000001)
+		:i $part$ = $board$
+		:i $material$ = $skateboard_wheels$
+		:i $pass$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_joleHD$
+		:i $frontend_desc$ = %sc(8,"High Res")
+		:i $mesh$ = %s(31,"models/boards/board_JoleHD.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_gold$
+		:i $frontend_desc$ = %sc(12,"Golden Board")
+		:i $mesh$ = %s(29,"models/boards/board_gold.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Board_THPS_Hawk$
+		:i $frontend_desc$ = %sc(11,"Low Res '99")
+		:i $mesh$ = %s(41,"models/skater_secret/Board_THPS_Hawk.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $segway$
+		:i $frontend_desc$ = %sc(6,"Segway")
+		:i $mesh$ = %s(37,"models/veh/veh_segmotor/segmotor.skin")
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $None$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Skateboard$
+		:i $mesh$ = %s(35,"models/ped_male/Ped_Skateboard.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Hawk_board$
+		:i $mesh$ = %s(35,"models/ped_male/Ped_hawk_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Burnquist_board$
+		:i $mesh$ = %s(40,"models/ped_male/Ped_burnquist_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Koston_board$
+		:i $mesh$ = %s(37,"models/ped_male/Ped_koston_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Margera_board$
+		:i $mesh$ = %s(38,"models/ped_male/Ped_Margera_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Mullen_board$
+		:i $mesh$ = %s(37,"models/ped_male/Ped_mullen_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Muska_board$
+		:i $mesh$ = %s(36,"models/ped_male/Ped_Muska_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Wee_man_board$
+		:i $mesh$ = %s(37,"models/ped_male/Ped_Weeman_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Vallely_board$
+		:i $mesh$ = %s(38,"models/ped_male/Ped_Vallely_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Sheckler_board$
+		:i $mesh$ = %s(39,"models/ped_male/Ped_Sheckler_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Jester_board$
+		:i $mesh$ = %s(37,"models/ped_male/Ped_jester_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Ben_Franklin_board$
+		:i $mesh$ = %s(42,"models/ped_male/Ped_Benfranklin_Board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Graffiti_board$
+		:i $mesh$ = %s(43,"models/ped_male/Ped_graffitipunk_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Bull_Fighter_board$
+		:i $mesh$ = %s(42,"models/ped_male/Ped_bullfighter_board.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Skateboard_Character$
+		:i $mesh$ = %s(32,"models/boards/board_default.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Jackhammer$
+		:i $mesh$ = %s(59,"models/peds/Ped_ConstructionWorkers/Ped_Worker_Jhammer.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Tuba$
+		:i $mesh$ = %s(38,"models/peds/ped_jazzman1/ped_tuba.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $spraycan$
+		:i $mesh$ = %s(44,"models/peds/ped_graffiti02/ped_spraycan.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $metaldetectorobj$
+		:i $mesh$ = %s(58,"models/peds/ped_metaldetectorguy/ped_metaldetectorobj.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $baton$
+		:i $mesh$ = %s(40,"models/peds/ped_germancop/ped_baton.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $clipboard$
+		:i $mesh$ = %s(34,"models/ped_male/Ped_Clipboard.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $lifesaver$
+		:i $mesh$ = %s(44,"models/peds/ped_lifeguard/ped_lifesaver.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $witchdoctorcane$
+		:i $mesh$ = %s(47,"models/peds/ped_voodoo/ped_witchdoctorcane.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $flute$
+		:i $mesh$ = %s(39,"models/peds/ped_fluteguy/ped_flute.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Wheelchair$
+		:i $mesh$ = %s(45,"models/veh/veh_wheelchair/veh_wheelchair.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $guitar$
+		:i $mesh$ = %s(41,"models/peds/ped_guitarist/ped_guitar.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $banjo$
+		:i $mesh$ = %s(40,"models/peds/ped_guitarist/ped_banjo.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $tricycle$
+		:i $mesh$ = %s(46,"models/veh/veh_tricycle/veh_tricycle_skin.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $minikart$
+		:i $mesh$ = %s(41,"models/veh/veh_minikart/veh_minikart.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $mechbull$
+		:i $mesh$ = %s(33,"models/veh/veh_bull/veh_bull.skin")
+		:i $no_random$
+		:i $hidden$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $chainsaw$
+		:i $frontend_desc$ = %sc(7,"Bigfoot")
+		:i $mesh$ = %s(53,"models/veh/Veh_MotoSkateboard/Veh_motoSkateboard.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $banana$
+		:i $frontend_desc$ = %sc(12,"Banana Board")
+		:i $mesh$ = %s(31,"models/boards/board_banana.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $hover$
+		:i $frontend_desc$ = %sc(10,"Hoverboard")
+		:i $mesh$ = %s(30,"models/boards/board_hover.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $jango$
+		:i $frontend_desc$ = %sc(5,"Jango")
+		:i $mesh$ = %s(30,"models/boards/board_jango.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $oldschool$
+		:i $frontend_desc$ = %sc(9,"Old Skool")
+		:i $mesh$ = %s(34,"models/boards/board_oldschool.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_ollie$
+		:i $frontend_desc$ = %sc(19,"Ollie The Magic Bum")
+		:i $mesh$ = %s(30,"models/boards/board_ollie.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $Shrek_board$
+		:i $frontend_desc$ = %sc(5,"Shrek")
+		:i $mesh$ = %s(37,"models\Skater_Secret\board_Shrek.skin")
+		:i $no_random$
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_Creature$
+		:i $frontend_desc$ = %sc(8,"T.H.U.D.")
+		:i $mesh$ = %s(33,"models/boards/board_Creature.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_Gene$
+		:i $frontend_desc$ = %sc(4,"KISS")
+		:i $mesh$ = %s(29,"models/boards/board_Gene.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_ironman$
+		:i $frontend_desc$ = %sc(7,"Ironman")
+		:i $mesh$ = %s(32,"models/boards/board_Ironman.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_surf$
+		:i $frontend_desc$ = %sc(9,"Surfboard")
+		:i $mesh$ = %s(29,"models/boards/board_surf.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_xray$
+		:i $frontend_desc$ = %sc(5,"X-Ray")
+		:i $mesh$ = %s(29,"models/boards/board_xray.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_slater$
+		:i $frontend_desc$ = %sc(17,"Surfboard (THPS3)")
+		:i $mesh$ = %s(31,"models/boards/board_slater.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_hoverboard02$
+		:i $frontend_desc$ = %sc(18,"Anti-Gravity Board")
+		:i $mesh$ = %s(37,"models/boards/board_hoverboard02.skin")
+	:i :s}
+	:i :s{
+		:i $desc_id$ = $board_skaboto$
+		:i $frontend_desc$ = %sc(7,"Skaboto")
+		:i $mesh$ = %s(39,"models/skater_secret/board_skaboto.skin")
+	:i :s}
+	:i :a}
+:i :end

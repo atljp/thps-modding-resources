@@ -1,0 +1,393 @@
+Unknown [GHWT_HEADER]SectionStruct GH4_Download_Songs_Guitar{	StructHeader	{		StructString prefix = "download_guitar"		StructInt num_tiers = 1		StructStruct tier1		{			StructHeader			{				StructQBStringQs Title = 0xe2838441				StructArray songs				{					Floats [0.00000, 0.00000]				}				StructInt defaultunlocked = 4				StructQBKey level = load_z_frathouse			}		}	}}SectionArray GH4_download_songlist{	ArrayQBKey	[		placeholdersong		Inject (CUSTOMSONG_LIST)	]}SectionStruct GH4_Download_Songs_Bass{	StructHeader	{		StructString prefix = "download_bass"		StructInt num_tiers = 1		StructStruct tier1		{			StructHeader			{				StructQBStringQs Title = 0xe2838441				StructArray songs				{					Floats [0.00000, 0.00000]				}				StructInt defaultunlocked = 4				StructQBKey level = load_z_frathouse			}		}	}}SectionStruct GH4_Download_Songs_Drums{	StructHeader	{		StructString prefix = "download_drums"		StructInt num_tiers = 1		StructStruct tier1		{			StructHeader			{				StructQBStringQs Title = 0xe2838441				StructArray songs				{					Floats [0.00000, 0.00000]				}				StructInt defaultunlocked = 4				StructQBKey level = load_z_frathouse			}		}	}}SectionStruct GH4_Download_Songs_Vocals{	StructHeader	{		StructString prefix = "download_vocals"		StructInt num_tiers = 1		StructStruct tier1		{			StructHeader			{				StructQBStringQs Title = 0xe2838441				StructArray songs				{					Floats [0.00000, 0.00000]				}				StructInt defaultunlocked = 4				StructQBKey level = load_z_frathouse			}		}	}}SectionStruct GH4_Download_Songs_Band{	StructHeader	{		StructString prefix = "download_band"		StructInt num_tiers = 1		StructStruct tier1		{			StructHeader			{				StructQBStringQs Title = 0xe2838441				StructArray songs				{					Floats [0.00000, 0.00000]				}				StructInt defaultunlocked = 4				StructQBKey level = load_z_frathouse			}		}	}}Script scan_globaltag_downloads 0xa7a24fb2 [	:i $printf$${StructQBStringQs 0xd96ce4ee}$
+	:i $LockGlobalTags$${StructQBKey Off}$
+	:i $printstruct$(~$GH4_download_songlist$)
+	:i $get_num_globaltag_sets$
+	:i if (%GLOBAL%$num_globaltag_sets$ > %i(0))
+		:i $savegame$ = %i(0)
+		:i while 
+		:i $setup_setlisttags$$savegame$ = %GLOBAL%$savegame$$SetList_Songs$ = $GH4_Download_Songs_Guitar$$part$ = $guitar$$songlist$ = $GH4_download_songlist$$download$ = %i(1)
+		:i $setup_setlisttags$$savegame$ = %GLOBAL%$savegame$$SetList_Songs$ = $GH4_Download_Songs_Bass$$part$ = $Bass$$songlist$ = $GH4_download_songlist$$download$ = %i(1)
+		:i $setup_setlisttags$$savegame$ = %GLOBAL%$savegame$$SetList_Songs$ = $GH4_Download_Songs_Drums$$part$ = $drum$$songlist$ = $GH4_download_songlist$$download$ = %i(1)
+		:i $setup_setlisttags$$savegame$ = %GLOBAL%$savegame$$SetList_Songs$ = $GH4_Download_Songs_Vocals$$part$ = $Vocals$$songlist$ = $GH4_download_songlist$$download$ = %i(1)
+		:i $setup_setlisttags$$savegame$ = %GLOBAL%$savegame$$SetList_Songs$ = $GH4_Download_Songs_Band$$part$ = $band$$songlist$ = $GH4_download_songlist$$download$ = %i(1)
+		:i $setupsongtags$$savegame$ = %GLOBAL%$savegame$$globaltag_checksum$ = %GLOBAL%$globaltag_checksum$$part$ = %s("guitar")
+		:i $setupsongtags$$savegame$ = %GLOBAL%$savegame$$globaltag_checksum$ = %GLOBAL%$globaltag_checksum$$part$ = %s("bass")
+		:i $setupsongtags$$savegame$ = %GLOBAL%$savegame$$globaltag_checksum$ = %GLOBAL%$globaltag_checksum$$part$ = %s("drum")
+		:i $setupsongtags$$savegame$ = %GLOBAL%$savegame$$globaltag_checksum$ = %GLOBAL%$globaltag_checksum$$part$ = %s("vocals")
+		:i $setupsongtags$$savegame$ = %GLOBAL%$savegame$$globaltag_checksum$ = %GLOBAL%$globaltag_checksum$$part$ = %s("band")
+		:i %GLOBAL%$savegame$ = (%GLOBAL%$savegame$ + %i(1))
+		:i loop_to (%GLOBAL%$num_globaltag_sets$)
+	:i endif
+	:i $LockGlobalTags$
+	:i endfunction]SectionString global_content_index_pak "none"SectionString global_content_index_pak_language "none"Script Downloads_EnumContent 0x659e1468 [	$controller$ = (~$primary_controller$)
+	:i $RemoveContentFiles$$playerid$ = %GLOBAL%$controller$
+	:i $Downloads_UnloadContent$
+	:i $mark_unsafe_for_shutdown$
+	:i if $EnumContentFiles$$download$$dofiles$$playerid$ = %GLOBAL%$controller$
+		:i while 
+		:i if $EnumContentFilesFinished$
+			:i continue
+		:i else 
+			:i $printf$${StructQBStringQs 0xd10f5883}$
+			:i $wait$${StructInt 1StructQBKey gameframe}$
+		:i endif
+		:i loop_to 
+	:i endif
+	:i $mark_safe_for_shutdown$
+	:i if $IsEnumContentFilesDamaged$
+		:i $destroy_popup_warning_menu$
+		:i $create_popup_warning_menu$${StructQBKey create_popup_warning_menuStructStruct textblock{	StructHeader	{		StructQBStringQs text = 0xa08469f7		StructQBKey wait		StructInt 3		StructQBKey seconds	}}StructFloatX2 menu_pos{	Floats [640.000, 490.000]}StructArray options{	ArrayStruct	[		StructHeader		{			StructStruct func			{				StructHeader				{					StructQBKey Downloads_Enumcontentfiles_Continue				}			}			StructQBStringQs text = 0x182f0173			StructFloatX2 Scale			{				Floats [1.00000, 1.00000]			}		}		]}}$
+		:i $change$${StructInt Downloads_Enumcontentfiles_Continue_Flag = 0}$
+		:i while 
+		:i if (~$Downloads_Enumcontentfiles_Continue_Flag$ = %i(1))
+			:i continue
+		:i endif
+		:i $wait$${StructInt 1StructQBKey gameframe}$
+		:i loop_to 
+	:i endif
+	:i if (~$shutdown_game_for_signin_change_flag$ = %i(1))
+		:i return
+	:i endif
+	:i $SetSearchAllContentFolders$
+	:i if $GetLatestContentIndexFile$
+		:i $printf$${StructQBStringQs 0xf1fa201d}$
+		:i $printstruct$ isNull 
+		:i $mark_unsafe_for_shutdown$
+		:i $EnableDuplicateSymbolWarning$${StructQBKey Off}$
+		:i if NOT $LoadPakAsync$$pak_name$ = %GLOBAL%$filename$$heap$ = $heap_downloads$$async$ = %i(1)
+			:i $EnableDuplicateSymbolWarning$
+			:i $mark_safe_for_shutdown$
+			:i $downloadcontentlost$
+			:i $SetSearchAllContentFolders$${StructQBKey Off}$
+			:i return
+		:i endif
+		:i $EnableDuplicateSymbolWarning$
+		:i $change$$global_content_index_pak$ = %GLOBAL%$filename$
+		:i $Downloads_LoadLanguageContent$ isNull 
+		:i $mark_safe_for_shutdown$
+	:i else 
+		:i $printf$${StructQBStringQs 0x62e8594a}$
+	:i endif
+	:i $SetSearchAllContentFolders$${StructQBKey Off}$
+	:i if $ScriptExists$${StructQBKey Downloads_Startup}$
+		:i $Downloads_Startup$
+	:i endif
+	:i $Downloads_PostEnumContent$
+	:i endfunction]Script destroy_downloads_EnumContent 0xe02830be [	:i $KillSpawnedScript$${StructQBKey name = Downloads_EnumContent}$
+	:i $KillSpawnedScript$${StructQBKey name = boot_download_scan}$
+	:i $Downloads_CloseContentFolder$${StructInt force = 1}$
+	:i endfunction]Script Downloads_LoadLanguageContent 0xa6b0d58a [	:i $FormatText$$textname$ = $pakname$%s("%s_text.pak")$s$ = %GLOBAL%$stem$
+	:i if $English$
+		:i $FormatText$$textname$ = $pakname$%s("%s_text.pak")$s$ = %GLOBAL%$stem$
+	:i elseif $French$
+		:i $FormatText$$textname$ = $pakname$%s("%s_text_f.pak")$s$ = %GLOBAL%$stem$
+	:i elseif $Italian$
+		:i $FormatText$$textname$ = $pakname$%s("%s_text_i.pak")$s$ = %GLOBAL%$stem$
+	:i elseif $German$
+		:i $FormatText$$textname$ = $pakname$%s("%s_text_g.pak")$s$ = %GLOBAL%$stem$
+	:i elseif $Spanish$
+		:i $FormatText$$textname$ = $pakname$%s("%s_text_s.pak")$s$ = %GLOBAL%$stem$
+	:i endif
+	:i $GetContentFolderIndexFromFile$%GLOBAL%$pakname$
+	:i if (%GLOBAL%$device$ = $content$)
+		:i $printf$^[6af97d82]^$s$ = %GLOBAL%$pakname$
+		:i $mark_unsafe_for_shutdown$
+		:i $EnableDuplicateSymbolWarning$${StructQBKey Off}$
+		:i if NOT $LoadPakAsync$$pak_name$ = %GLOBAL%$pakname$$heap$ = $heap_downloads$$async$ = %i(1)
+			:i $EnableDuplicateSymbolWarning$
+			:i $mark_safe_for_shutdown$
+			:i $downloadcontentlost$
+			:i return
+		:i endif
+		:i $EnableDuplicateSymbolWarning$
+		:i $change$$global_content_index_pak_language$ = %GLOBAL%$pakname$
+		:i $mark_safe_for_shutdown$
+	:i else 
+		:i $printf$^[3906d03d]^$s$ = %GLOBAL%$pakname$
+	:i endif
+	:i endfunction]Script Downloads_PostEnumContent 0x50c536f8 [	:i $scan_globaltag_downloads$
+	:i endfunction]SectionInteger Downloads_Enumcontentfiles_Continue_Flag 0Script Downloads_Enumcontentfiles_Continue 0xc8272f7b [	:i $change$${StructInt Downloads_Enumcontentfiles_Continue_Flag = 1}$
+	:i endfunction]Script Downloads_UnloadContent 0x67f8d6f5 [	:i $SetSearchAllContentFolders$${StructQBKey Off}$
+	:i $KillSpawnedScript$${StructQBKey name = Downloads_OpenContentFolder}$
+	:i $change$${StructInt downloadcontentfolder_lock = 0}$
+	:i if $ScriptExists$${StructQBKey Downloads_Shutdown}$
+		:i $Downloads_Shutdown$
+	:i endif
+	:i if NOT (~$global_content_index_pak$ = %s("none"))
+		:i $UnloadPak$(~$global_content_index_pak$)
+		:i $change$${StructString global_content_index_pak = "none"}$
+	:i endif
+	:i if NOT (~$global_content_index_pak_language$ = %s("none"))
+		:i $UnloadPak$(~$global_content_index_pak_language$)
+		:i $change$${StructString global_content_index_pak_language = "none"}$
+	:i endif
+	:i endfunction]SectionInteger downloadcontentfolder_lock 0SectionInteger downloadcontentfolder_index -1SectionInteger downloadcontentfolder_count 0Script Downloads_OpenContentFolder 0xd2f17cc9 [	:i $unpausespawnedscript$${StructQBKey Downloads_CloseContentFolder}$
+	:i $mark_unsafe_for_shutdown$
+	:i while 
+	:i if (~$downloadcontentfolder_lock$ = %i(0))
+		:i continue
+	:i endif
+	:i if (~$downloadcontentfolder_index$ = %GLOBAL%$content_index$)
+		:i $change$$downloadcontentfolder_count$ = (~$downloadcontentfolder_count$ + %i(1))
+		:i $mark_safe_for_shutdown$
+		:i return${StructQBKey true}$
+	:i endif
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i loop_to 
+	:i $change$${StructInt downloadcontentfolder_lock = 1}$
+	:i if NOT $OpenContentFolder$$content_index$ = %GLOBAL%$content_index$
+		:i $mark_safe_for_shutdown$
+		:i return${StructQBKey false}$
+	:i endif
+	:i while 
+	:i $GetContentFolderState$
+	:i if (%GLOBAL%$contentfolderstate$ = $failed$)
+		:i $change$${StructInt downloadcontentfolder_lock = 0}$
+		:i $mark_safe_for_shutdown$
+		:i return${StructQBKey false}$
+	:i endif
+	:i if (%GLOBAL%$contentfolderstate$ = $opened$)
+		:i continue
+	:i endif
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i loop_to 
+	:i $change$$downloadcontentfolder_count$ = (~$downloadcontentfolder_count$ + %i(1))
+	:i $change$$downloadcontentfolder_index$ = %GLOBAL%$content_index$
+	:i $mark_safe_for_shutdown$
+	:i return${StructQBKey true}$
+	:i endfunction]Script Downloads_CloseContentFolder 0xf2661e39 [	${StructInt force = 0}$
+	:i $mark_unsafe_for_shutdown$
+	:i if (%GLOBAL%$force$ = %i(1))
+		:i if (~$downloadcontentfolder_index$ = %i(4294967295))
+			:i $mark_safe_for_shutdown$
+			:i return
+		:i endif
+	:i endif
+	:i if (%GLOBAL%$force$ = %i(1))
+		:i $change$${StructInt downloadcontentfolder_count = 0}$
+	:i else 
+		:i $change$$downloadcontentfolder_count$ = (~$downloadcontentfolder_count$ - %i(1))
+		:i if (~$downloadcontentfolder_count$ > %i(0))
+			:i $mark_safe_for_shutdown$
+			:i return${StructQBKey true}$
+		:i endif
+	:i endif
+	:i if (%GLOBAL%$force$ = %i(1))
+		:i $content_index$ = (~$downloadcontentfolder_index$)
+	:i else 
+		:i $change$${StructInt downloadcontentfolder_index = -1}$
+	:i endif
+	:i if NOT $CloseContentFolder$$content_index$ = %GLOBAL%$content_index$
+		:i $change$${StructInt downloadcontentfolder_lock = 0}$
+		:i $mark_safe_for_shutdown$
+		:i return${StructQBKey false}$
+	:i endif
+	:i while 
+	:i $GetContentFolderState$
+	:i if (%GLOBAL%$contentfolderstate$ = $free$)
+		:i continue
+	:i endif
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i loop_to 
+	:i $change$${StructInt downloadcontentfolder_lock = 0}$
+	:i $mark_safe_for_shutdown$
+	:i return${StructQBKey true}$
+	:i endfunction]Script find_instrument_index 0xa622fea0 [	:i return${StructInt index = 0StructQBKey false}$
+	:i endfunction]Script store_select_downloads 0xaea14b2e [	:i $NetSessionFunc$${StructQBKey func = showmarketplaceui}$
+	:i $wait_for_blade_complete$
+	:i $Downloads_UnloadContent$
+	:i endfunction]Script fmod_diskejected_event 0xd4f39c72 [	:i $printf$${StructQBStringQs 0x71a1ceda}$
+	:i $downloadcontentlost$
+	:i endfunction]Script downloadcontentlost 0x7e866bba [	:i $change$${StructInt is_changing_levels = 0}$
+	:i $change$${StructInt practice_songpreview_changing = 0}$
+	:i $printscriptinfo$${StructQBStringQs 0xca95b489}$
+	:i $spawnscriptnow$${StructQBKey noqbidStructQBKey DownloadContentLost_Spawned}$
+	:i $KillSpawnedScript$${StructQBKey name = setlist_choose_song}$
+	:i $KillSpawnedScript$${StructQBKey name = downloadcontentlost}$
+	:i endfunction]Script DownloadContentLost_Spawned 0xb72e6e71 [	:i if NOT (~$shutdown_game_for_signin_change_flag$ = %i(0))
+		:i return
+	:i endif
+	:i if (~$respond_to_signin_changed$ = %i(0))
+		:i return
+	:i endif
+	:i $change$${StructInt respond_to_signin_changed = 0}$
+	:i $printf$${StructQBStringQs 0x8a0f6c71}$
+	:i $disable_pause$
+	:i $create_loading_screen$${StructQBKey no_bink}$
+	:i $ui_event_block$${StructQBKey event = menu_backStructStruct Data{	StructHeader	{		StructQBKey state = uistate_null	}}}$
+	:i $shutdown_game_for_signin_change$
+	:i $RemoveContentFiles$${StructInt playerid = -1StructQBKey clear_cache}$
+	:i $ui_event_block$${StructQBKey event = menu_changeStructStruct Data{	StructHeader	{		StructQBKey state = uistate_signin_changed		StructQBKey clear_previous_stack	}}}$
+	:i $destroy_loading_screen$${StructInt force = 1}$
+	:i $LaunchEvent$${StructQBKey type = unfocusStructQBKey target = root_window}$
+	:i $create_downloadcontentlost_menu$
+	:i $startrendering$
+	:i $SetButtonEventMappings$${StructQBKey unblock_menu_input}$
+	:i $printf$${StructQBStringQs 0xc68e2781}$
+	:i endfunction]Script create_downloadcontentlost_menu 0x9c4efe4d [	:i $destroy_popup_warning_menu$
+	:i $create_popup_warning_menu$${StructQBStringQs Title = 0x10facad3StructStruct title_props{	StructHeader	{		StructFloat Scale = 1.00	}}StructStruct textblock{	StructHeader	{		StructQBStringQs text = 0x75e38f5b		StructFloatX2 Pos		{			Floats [640.000, 380.000]		}	}}StructFloatX2 menu_pos{	Floats [640.000, 490.000]}StructArray options{	ArrayStruct	[		StructHeader		{			StructStruct func			{				StructHeader				{					StructQBKey downloadcontentlost_reboot				}			}			StructQBStringQs text = 0x182f0173			StructFloatX2 Scale			{				Floats [1.00000, 1.00000]			}		}		]}}$
+	:i endfunction]Script downloadcontentlost_reboot 0x8d528c9d [	:i $printf$${StructQBStringQs 0x1858183e}$
+	:i $destroy_downloadcontentlost_menu$
+	:i $wait$${StructInt 5StructQBKey gameframes}$
+	:i $ui_event$${StructQBKey event = menu_changeStructStruct Data{	StructHeader	{		StructQBKey state = UIstate_boot_iis		StructQBKey clear_previous_stack	}}}$
+	:i $printf$${StructQBStringQs 0x0f1c1713}$
+	:i endfunction]Script destroy_downloadcontentlost_menu 0xdbaecd21 [	:i $destroy_popup_warning_menu$
+	:i endfunction]Script recreate_downloadcontentlost_menu 0x1d0b3803 [	:i $destroy_downloadcontentlost_menu$
+	:i $create_downloadcontentlost_menu$
+	:i endfunction]SectionArray net_checksum_packet{	ArrayQBKey	[		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None		None	]}SectionInteger num_net_checksum_packet 0SectionInteger total_num_net_checksum_packet 0SectionInteger net_checksum_packet_for_host 0SectionInteger net_match_available_items_request_finished 0SectionInteger net_match_dlc_sync_finished 0Script net_match_send_available_items 0x9450a155 [	:i $printf$${StructQBStringQs 0xdf3f3534}$
+	:i $disable_pause$
+	:i $change$${StructInt net_match_dlc_sync_finished = 0}$
+	:i if $ishost$
+		:i $net_match_send_available_items_host$
+	:i else 
+		:i $net_match_send_available_items_client$
+	:i endif
+	:i $change$${StructInt net_match_dlc_sync_finished = 1}$
+	:i $printf$${StructQBStringQs 0x7e7258ae}$
+	:i endfunction]Script net_match_send_available_items_host 0x64f446a6 [	:i $net_match_clear_available_items$${StructInt for_host = 1}$
+	:i $SendStructure$${StructQBKey callback = net_match_download_items_sendStructStruct data_to_send{	StructHeader	{		StructInt for_host = 0	}}}$
+	:i $GetNumRemoteConnections$
+	:i $wait_for_net_match_available_items$$num_finished$ = %GLOBAL%$num_connections$
+	:i $net_match_calc_available_items$
+	:i $net_match_download_items_send$${StructInt for_host = 1}$
+	:i endfunction]Script net_match_send_available_items_client 0x243e3ba5 [	:i $wait_for_net_match_available_items$
+	:i endfunction]Script net_match_clear_available_items 0xa6be69f0 [	:i if NOT $net_match_verify_host$$for_host$ = %GLOBAL%$for_host$
+		:i return
+	:i endif
+	:i $get_songlist_size$
+	:i $song_count$ = %i(0)
+	:i while 
+	:i $get_songlist_checksum$$index$ = %GLOBAL%$song_count$
+	:i if $GlobalTagExists$%GLOBAL%$song_checksum$$noassert$ = %i(1)
+		:i $SetGlobalTags$%GLOBAL%$song_checksum$$params$ = :s{$available_on_other_client$ = %i(0):s}
+	:i endif
+	:i $song_count$ = (%GLOBAL%$song_count$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i $printf$^[b1f247c3]^$i$ = %GLOBAL%$array_size$
+	:i return${StructQBKey true}$
+	:i endfunction]Script net_match_set_available_items 0x767ac09d [	:i $get_songlist_size$
+	:i $song_count$ = %i(0)
+	:i while 
+	:i $get_songlist_checksum$$index$ = %GLOBAL%$song_count$
+	:i if $GlobalTagExists$%GLOBAL%$song_checksum$$noassert$ = %i(1)
+		:i $SetGlobalTags$%GLOBAL%$song_checksum$$params$ = :s{$available_on_other_client$ = %i(1):s}
+	:i endif
+	:i $song_count$ = (%GLOBAL%$song_count$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i $printf$^[b1f247c3]^$i$ = %GLOBAL%$array_size$
+	:i return${StructQBKey true}$
+	:i endfunction]Script net_match_calc_available_items 0x2a6b5c0d [	:i $printf$${StructQBStringQs 0x7e77d368}$
+	:i $GetNumRemoteConnections$
+	:i $get_songlist_size$
+	:i $song_count$ = %i(0)
+	:i while 
+	:i $get_songlist_checksum$$index$ = %GLOBAL%$song_count$
+	:i if $GlobalTagExists$%GLOBAL%$song_checksum$$noassert$ = %i(1)
+		:i if $is_song_downloaded$$song_checksum$ = %GLOBAL%$song_checksum$
+			:i $GetGlobalTags$%GLOBAL%$song_checksum$
+			:i if (%GLOBAL%$available_on_other_client$ >= %GLOBAL%$num_connections$)
+				:i $SetGlobalTags$%GLOBAL%$song_checksum$$params$ = :s{$available_on_other_client$ = %i(1):s}
+			:i else 
+				:i $SetGlobalTags$%GLOBAL%$song_checksum$$params$ = :s{$available_on_other_client$ = %i(0):s}
+			:i endif
+		:i else 
+			:i $SetGlobalTags$%GLOBAL%$song_checksum$$params$ = :s{$available_on_other_client$ = %i(0):s}
+		:i endif
+	:i endif
+	:i $song_count$ = (%GLOBAL%$song_count$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i $printf$${StructQBStringQs 0xb2c7132d}$
+	:i return${StructQBKey true}$
+	:i endfunction]Script clear_wait_for_net_match_available_items 0x7651c4cb [	:i $change$${StructInt net_match_available_items_request_finished = 0}$
+	:i endfunction]Script wait_for_net_match_available_items 0x01e78ada [	${StructInt num_finished = 1}$
+	:i while 
+	:i if (~$net_match_available_items_request_finished$ = %GLOBAL%$num_finished$)
+		:i continue
+	:i endif
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i loop_to 
+	:i $clear_wait_for_net_match_available_items$
+	:i endfunction]Script net_match_verify_host 0x6766ea9e [	:i if $ishost$
+		:i $is_host$ = %i(1)
+	:i else 
+		:i $is_host$ = %i(0)
+	:i endif
+	:i if NOT (%GLOBAL%$is_host$ = %GLOBAL%$for_host$)
+		:i $printf$${StructQBStringQs 0xe518c972}$
+		:i $printstruct$ isNull 
+		:i return${StructQBKey false}$
+	:i else 
+		:i return${StructQBKey true}$
+	:i endif
+	:i endfunction]Script net_match_download_items_send 0xa56a7a8d [	:i $printf$${StructQBStringQs 0x8dbce89d}$
+	:i if NOT $net_match_verify_host$$for_host$ = %GLOBAL%$for_host$
+		:i return
+	:i endif
+	:i if NOT $ishost$
+		:i $net_match_clear_available_items$${StructInt for_host = 0}$
+	:i endif
+	:i $net_match_init_items$$for_host$ = (%i(1) - %GLOBAL%$for_host$)
+	:i $get_songlist_size$
+	:i $song_count$ = %i(0)
+	:i while 
+	:i $get_songlist_checksum$$index$ = %GLOBAL%$song_count$
+	:i if $GlobalTagExists$%GLOBAL%$song_checksum$$noassert$ = %i(1)
+		:i if $ishost$
+			:i $GetGlobalTags$%GLOBAL%$song_checksum$
+			:i if (%GLOBAL%$available_on_other_client$ = %i(1))
+				:i $net_match_add_item$$item$ = %GLOBAL%$song_checksum$
+			:i endif
+		:i else 
+			:i if $is_song_downloaded$$song_checksum$ = %GLOBAL%$song_checksum$
+				:i $net_match_add_item$$item$ = %GLOBAL%$song_checksum$
+			:i endif
+		:i endif
+	:i endif
+	:i $song_count$ = (%GLOBAL%$song_count$ + %i(1))
+	:i loop_to %GLOBAL%$array_size$
+	:i $net_match_send_items$
+	:i $wait$${StructInt 1StructQBKey gameframe}$
+	:i $net_match_init_items$$for_host$ = (%i(1) - %GLOBAL%$for_host$)
+	:i $net_match_send_items$${StructInt final = 1}$
+	:i $printf$${StructQBStringQs 0xdb933c51}$
+	:i endfunction]Script net_match_init_items 0x09e71565 [	:i $change$${StructInt num_net_checksum_packet = 0}$
+	:i $change$${StructInt total_num_net_checksum_packet = 0}$
+	:i $change$$net_checksum_packet_for_host$ = %GLOBAL%$for_host$
+	:i endfunction]Script net_match_add_item 0xe670428b [	:i $SetArrayElement$$arrayName$ = $net_checksum_packet$$globalarray$$index$ = (~$num_net_checksum_packet$)$newValue$ = %GLOBAL%$item$
+	:i $change$$num_net_checksum_packet$ = (~$num_net_checksum_packet$ + %i(1))
+	:i if (~$num_net_checksum_packet$ = %i(20))
+		:i $change$$total_num_net_checksum_packet$ = (~$total_num_net_checksum_packet$ + %i(1))
+		:i $net_match_send_items$
+		:i $change$${StructInt num_net_checksum_packet = 0}$
+	:i else 
+		:i return$message_struct$ = %GLOBAL%$message_struct$
+	:i endif
+	:i endfunction]Script net_match_send_items 0xb6c6092a [	${StructInt final = 0StructStruct additional_info{	StructHeader {}}}$
+	:i $SendStructure$$callback$ = $net_match_download_items_send_callback$$data_to_send$ = :s{$net_items$ = (~$net_checksum_packet$)
+		:i $num_valid$ = (~$num_net_checksum_packet$)
+		:i $packet$ = (~$total_num_net_checksum_packet$)
+		:i $final$ = %GLOBAL%$final$
+		:i $for_host$ = (~$net_checksum_packet_for_host$)
+		:i %GLOBAL%$additional_info$
+	:i $spawn_script_now$:s}
+	:i endfunction]Script net_match_download_items_send_callback 0xde91a32d [	:i $printf$${StructQBStringQs 0x9f21d497}$
+	:i $printstruct$ isNull 
+	:i if NOT $net_match_verify_host$$for_host$ = %GLOBAL%$for_host$
+		:i return
+	:i endif
+	:i if (%GLOBAL%$num_valid$ > %i(0))
+		:i $index$ = %i(0)
+		:i while 
+		:i if $GlobalTagExists$(%GLOBAL%$net_items$:a{%GLOBAL%$index$:a})$noassert$ = %i(1)
+			:i $available_on_other_client$ = %i(0)
+			:i $GetGlobalTags$(%GLOBAL%$net_items$:a{%GLOBAL%$index$:a})
+			:i $available_on_other_client$ = (%GLOBAL%$available_on_other_client$ + %i(1))
+			:i $SetGlobalTags$(%GLOBAL%$net_items$:a{%GLOBAL%$index$:a})$params$ = :s{$available_on_other_client$ = %GLOBAL%$available_on_other_client$:s}
+		:i endif
+		:i $index$ = (%GLOBAL%$index$ + %i(1))
+		:i loop_to %GLOBAL%$num_valid$
+	:i endif
+	:i if (%GLOBAL%$final$ = %i(1))
+		:i $change$$net_match_available_items_request_finished$ = ((~$net_match_available_items_request_finished$) + %i(1))
+	:i endif
+	:i endfunction]

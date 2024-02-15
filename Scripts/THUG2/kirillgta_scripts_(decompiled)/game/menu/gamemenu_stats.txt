@@ -1,0 +1,1138 @@
+
+:i $stats_menu_bar_highlight$ = :a{%i(55,00000037);%i(55,00000037);%i(110,0000006e);%i(128,00000080):a}
+:i $stats_menu_bar_lowlight$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(128,00000080):a}
+:i $stats_menu_star_highlight$ = :a{%i(85,00000055);%i(85,00000055);%i(0,00000000);%i(110,0000006e):a}
+:i $stats_menu_star_lowlight$ = :a{%i(10,0000000a);%i(10,0000000a);%i(10,0000000a);%i(128,00000080):a}
+:i $helper_text_change_elements$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Change"):s}
+	:i :s{$text$ = %s(14,"\bn/\bm = Done"):s}
+	:i :a}
+:i $helper_text_select_elements$ = :a{:s{$text$ = %s(24,"\b7/\b4/\b6/\b5 = Select"):s}
+	:i :s{$text$ = %s(10,"\bn = Back"):s}
+	:i :s{$text$ = %s(12,"\bm = Change"):s}
+	:i :a}
+:i $helper_text_select_elements_no_change$ = :a{
+	:i :s{$text$ = %s(24,"\b7/\b4/\b6/\b5 = Select"):s}
+	:i :s{$text$ = %s(10,"\bn = Back"):s}
+	:i :a}
+:i $helper_text_classic_elements$ = :a{
+	:i :s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+	:i :s{$text$ = %s(16,"\b6/\b5 = Change"):s}
+	:i :s{$text$ = %s(10,"\bn = Back"):s}
+	:i :a}
+:i function $create_classic_stats_menu$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $classic_stats_menu$
+	:i :s}
+	:i $AssignAlias$$id$ = $classic_stats_menu$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $classic_stats_menu$$alias$ = $sub_menu$
+	:i $create_helper_text$$helper_text_elements$ = $helper_text_classic_elements$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $classic_stats_menu$
+		:i $id$ = $classic_stats_block_anchor$
+		:i $pos$ = %vec2(120.000000,110.000000)
+		:i $just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $Theme_GetPauseBarColor$$return_value$ = $font_color$
+	:i $Theme_GetAltColor$$return_value$ = $alt_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %f(1.200000)
+		:i $pos$ = %vec2(108.000000,-35.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %f(1.200000)
+		:i $pos$ = %vec2(290.000000,-35.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $white2$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %vec2(10.000000,4.250000)
+		:i $pos$ = %vec2(200.000000,-35.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $white2$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(10.000000,0.380000)
+		:i $pos$ = %vec2(200.000000,-53.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $id$ = $bg$
+		:i $texture$ = $white2$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}
+		:i $scale$ = %vec2(42.000000,31.000000)
+		:i $pos$ = %vec2(200.000000,103.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(4294967286,fffffff6)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$alt_color$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(95.000000,239.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(1,00000001)
+		:i $flip_h$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$alt_color$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(305.000000,239.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(1,00000001)
+		:i $flip_h$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $white2$
+		:i $rgba$ = %GLOBAL%$alt_color$
+		:i $scale$ = %vec2(20.000000,3.500000)
+		:i $pos$ = %vec2(200.000000,239.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $texture$ = $white2$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(20.000000,0.200000)
+		:i $pos$ = %vec2(200.000000,254.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $text$ = %s(10,"EDIT STATS")
+		:i $font$ = $small$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $scale$ = %f(1.900000)
+		:i $pos$ = %vec2(207.000000,-32.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $shadow$
+		:i $shadow_rgba$ = $UI_text_shadow_color$
+		:i $shadow_offs$ = $UI_text_shadow_offset$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $id$ = $stat_count$
+		:i $text$ = %s(0,"")
+		:i $font$ = $small$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $scale$ = %f(1.300000)
+		:i $pos$ = %vec2(95.000000,240.000000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $classic_stats_block_anchor$
+		:i $id$ = $classic_stats_vmenu$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(76.000000,0.000000)
+		:i $padding_scale$ = %f(1.150000)
+		:i $internal_scale$ = %i(1,00000001)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$classic_stats_pad_choose$$params$ = :s{ isNull $back$:s}:s}
+			:i :s{$pad_choose$$classic_stats_pad_choose$$params$ =  isNull :s}
+			:i :s{$pad_start$$nullscript$:s}
+			:i :a}
+	:i :s}
+	:i $parent$ = $classic_stats_vmenu$
+	:i $GetArraySize$$stat_names$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $stats_menu_add_item$:s{ ($stat_names$:a{%GLOBAL%$index$:a}) 
+			:i $index$ = %GLOBAL%$index$
+			:i $stats_parent$ = %GLOBAL%$parent$
+			:i $pad_left_script$ = $stats_change_menu_left$
+			:i $pad_right_script$ = $stats_change_menu_right$
+			:i $StatMenu$
+			:i $can_edit$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $FireEvent$$type$ = $focus$$target$ = $classic_stats_vmenu$
+:i endfunction
+:i function $classic_stats_pad_choose$
+	:i $UpdateSkaterStats$$player$ = %i(0,00000000)
+	:i if $GotParam$$end_run$
+		:i $generic_menu_pad_choose_sound$
+		:i $gamemode_end_run_maybe_save$
+	:i else 
+		:i if $GotParam$$back$
+			:i $generic_menu_pad_back_sound$
+		:i else 
+			:i $generic_menu_pad_choose_sound$
+		:i endif
+		:i $GetStatValue$$air$
+		:i if $GotParam$$overridden$
+			:i if NOT $GotParam$$back$
+				:i $SetAllStats$$value$ = %i(0,00000000)
+				:i $index$ = %i(0,00000000)
+				:i $GetArraySize$$stat_names$
+				:i while
+					
+					:i $FireEvent$$type$ = $unfocus$$target$ = :s{$classic_stats_vmenu$$child$ = %GLOBAL%$index$:s}
+					:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+				:i $FireEvent$$type$ = $unfocus$$target$ = $classic_stats_vmenu$
+				:i $FireEvent$$type$ = $focus$$target$ = $classic_stats_vmenu$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $stats_menu_exit$
+	:i endif
+:i endfunction
+:i function $create_stats_menu$
+	:i if $GameModeEquals$$is_classic$
+		:i $create_classic_stats_menu$
+		:i return
+		
+	:i endif
+	:i $hide_current_goal$
+	:i $stats_menu_get_skater_name_and_family$
+	:i if NOT  (%GLOBAL%$skater_family$ = $family_custom$) 
+		:i $helpers$ =  ($helper_text_select_elements_no_change$) 
+		:i $height$ = %i(254,000000fe)
+		:i $scale$ = %vec2(65.000000,8.500000)
+		:i $num_parts$ = %i(6,00000006)
+	:i else 
+		:i $helpers$ =  ($helper_text_select_elements$) 
+		:i $height$ = %i(362,0000016a)
+		:i $scale$ = %vec2(65.000000,21.500000)
+		:i $num_parts$ = %f(10.500000)
+	:i endif
+	:i $make_new_themed_sub_menu$:s{
+		:i $title$ = %s(5,"STATS")
+		:i $pos$ = %vec2(70.000000,94.000000)
+		:i $skateshop_pos$ = %vec2(60.000000,97.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $no_menu_title$ = $no_menu_title$
+	:i :s}
+	:i $create_helper_text$$helper_text_elements$ = %GLOBAL%$helpers$
+	:i if  (%GLOBAL%$skater_family$ = $family_custom$) 
+		:i $sub_menu$.$SetTags$$can_edit$
+	:i endif
+	:i $sub_menu$.$SetTags$$skater_name$ = %GLOBAL%$skater_name$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_color$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $sub_vmenu2$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(325.000000,106.000000)
+		:i $padding_scale$ = %f(1.150000)
+		:i $internal_scale$ = %i(1,00000001)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $stats_menu_exit$:s}:s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $sub_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $stats_menu_exit$:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $FormatText$$textname$ = $stat_title$%s(3,"%i:")$i$ =  ( ($stat_names$:a{%i(0,00000000):a}) ->$string$) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $stat_title$
+		:i $pos$ = %vec2(240.000000,215.000000)
+		:i $font$ = $small$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %f(1.500000)
+		:i $text$ = %GLOBAL%$stat_title$
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $stat_count$
+		:i $pos$ = %vec2(270.000000,215.000000)
+		:i $font$ = $small$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %f(1.500000)
+		:i $text$ = %s(0,"")
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextBlockElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $stat_count2$
+		:i $pos$ = %vec2(350.000000,203.000000)
+		:i $dims$ = %vec2(250.000000,60.000000)
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $line_spacing$ = %f(0.800000)
+		:i $scale$ = %f(0.900000)
+		:i $text$ = %s(0,"")
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $pos$ = %vec2(270.000000,215.000000)
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(1.500000)
+		:i $text$ = %s(3,"/10")
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $alt_color$
+	:i if $sub_menu$.$GetSingleTag$$can_edit$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $sub_menu$
+			:i $texture$ = $white2$
+			:i $pos$ = %vec2(320.000000,362.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $scale$ = %vec2(63.500000,0.250000)
+			:i $rgba$ = %GLOBAL%$alt_color$
+			:i $alpha$ = %f(0.700000)
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $stat_point_description$
+		:i $pos$ =  (%vec2(320.000000,2.000000) + %GLOBAL%$height$ * %vec2(0.000000,1.000000)) 
+		:i $font$ = $small$
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %vec2(1.000000,0.900000)
+		:i $text$ =  ( ($stat_names$:a{%i(0,00000000):a}) ->$description$) 
+		:i $rgba$ = %GLOBAL%$alt_color$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $build_stat_goals_menu$
+	:i $theme_background$$width$ = %f(6.400000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %GLOBAL%$num_parts$$parent$ = $sub_menu$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(320.000000,250.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %vec2(63.500000,0.250000)
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(322.000000,212.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %vec2(63.500000,0.250000)
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(322.000000,214.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %vec2(0.350000,4.500000)
+		:i $rgba$ = %GLOBAL%$on_color$
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(320.000000,214.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(88,00000058):a}
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sub_menu$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(320.000000,212.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %vec2(65.000000,4.500000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(118,00000076):a}
+		:i $alpha$ = %f(0.700000)
+	:i :s}
+	:i $GetArraySize$$stat_names$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $RemoveParameter$$pad_right_script$
+		:i $RemoveParameter$$pad_left_script$
+		:i if  (%GLOBAL%$index$ >  ( (%GLOBAL%$array_size$ / %i(2,00000002))  - %i(1,00000001)) ) 
+			:i $parent$ = $sub_vmenu2$
+			:i $pad_left_script$ = $focus_stats_vmenu$
+			:i $child$ =  (%GLOBAL%$index$ -  (%GLOBAL%$array_size$ / %i(2,00000002)) ) 
+		:i else 
+			:i $parent$ = $sub_vmenu$
+			:i $pad_right_script$ = $focus_stats_vmenu2$
+			:i $child$ = %GLOBAL%$index$
+		:i endif
+		:i $stats_menu_add_item$:s{ ($stat_names$:a{%GLOBAL%$index$:a}) 
+			:i $index$ = %GLOBAL%$index$
+			:i $stats_parent$ = %GLOBAL%$parent$
+			:i $pad_right_script$ = %GLOBAL%$pad_right_script$
+			:i $pad_left_script$ = %GLOBAL%$pad_left_script$
+			:i $pad_right_params$ = :s{$grid_index$ =  (%GLOBAL%$child$) :s}
+			:i $pad_left_params$ = :s{$grid_index$ =  (%GLOBAL%$child$) :s}
+			:i $StatMenu$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$parent$$child$ = %GLOBAL%$child$:s}
+			:i $tags$ = :s{$tag_grid_x$ = %GLOBAL%$child$:s}
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i $finish_themed_sub_menu$
+	:i else 
+		:i $skater$.$remove_skater_from_world$
+		:i $DoScreenElementMorph$$id$ = $sub_menu$$time$ = %f(0.000000)$pos$ = %vec2(320.000000,720.000000)
+		:i $DoScreenElementMorph$$id$ = $sub_menu$$time$ = %f(0.500000)$pos$ = %vec2(320.000000,218.000000)
+		:i $FireEvent$$type$ = $focus$$target$ = $sub_menu$
+	:i endif
+	:i if NOT $sub_menu$.$GetSingleTag$$can_edit$
+		:i $update_stats_menu_count$$name$ = $air$
+	:i endif
+:i endfunction
+:i function $get_stats_menu_goal_count$
+	:i $GetArraySize$$stats_goals$
+	:i $index$ = %i(0,00000000)
+	:i $count$ = %i(3,00000003)
+	:i while
+		
+		:i if  ( ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$stattype$)  = %GLOBAL%$name$) 
+			:i $skater$.$StatsManager_GetGoalStatus$%GLOBAL%$index$
+			:i if  (%GLOBAL%$status$ = %i(1,00000001)) 
+				:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i return
+	$count$ = %GLOBAL%$count$
+:i endfunction
+:i function $update_stats_menu_count$
+	:i if NOT $ScreenElementExists$$id$ = $stat_count$
+		:i return
+		
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $GetStatValue$%GLOBAL%$name$
+		:i if $GotParam$$overridden$
+			:i $text$ = %s(17,"OVERRIDES ARE ON!")
+		:i else 
+			:i $GetStatValue$$points_available$
+			:i $FormatText$$textname$ = $text$%s(20,"Points Available: %i")$i$ = %GLOBAL%$stat_value$
+		:i endif
+		:i $SetScreenElementProps$$id$ = $stat_count$$text$ = %GLOBAL%$text$
+		:i return
+		
+	:i endif
+	:i $GetStatValue$%GLOBAL%$name$
+	:i if  (%GLOBAL%$stat_value$ > %i(10,0000000a)) 
+		:i $stat_value$ = %i(10,0000000a)
+	:i endif
+	:i $FormatText$$textname$ = $text$%s(2,"%i")$i$ = %GLOBAL%$stat_value$
+	:i $SetScreenElementProps$$id$ = $stat_count$$text$ = %GLOBAL%$text$
+	:i if $GotParam$$overridden$
+		:i $text$ = %s(40,"THESE VALUES CURRENTLY BEING OVERRIDDEN!")
+	:i else 
+		:i if $sub_menu$.$GetSingleTag$$can_edit$
+			:i $get_stats_menu_goal_count$$name$ = %GLOBAL%$name$
+			:i $left$ =  (%GLOBAL%$count$ - %GLOBAL%$stat_value$) 
+			:i %GLOBAL%$row_id$.$GetSingleTag$$display_string$
+			:i $FormatText$$textname$ = $text$%s(22,"%i %a points available")$i$ = %GLOBAL%$left$$a$ = %GLOBAL%$display_string$
+		:i else 
+			:i $FormatText$$textname$ = $text$%s(39,"You can't change your Teammate's stats!")$i$ = %GLOBAL%$left$$a$ = %GLOBAL%$display_string$
+		:i endif
+	:i endif
+	:i $SetScreenElementProps$$id$ = $stat_count2$$text$ = %GLOBAL%$text$
+:i endfunction
+:i function $build_stat_goals_menu$$stat_type$ = $air$
+	:i if NOT $sub_menu$.$GetSingleTag$$can_edit$
+		:i return
+		
+	:i endif
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $on_rgba$
+	:i if $ScreenElementExists$$id$ = $stat_goal_menu$
+		:i $DestroyScreenElement$$id$ = $stat_goal_menu$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $sub_menu$
+		:i $id$ = $stat_goal_menu$
+		:i $font$ = $dialog$
+		:i $just$ = :a{$center$$top$:a}
+		:i $pos$ = %vec2(320.000000,255.000000)
+		:i $padding_scale$ = %f(0.750000)
+		:i $internal_scale$ = %i(1,00000001)
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $GetArraySize$$stats_goals$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i $skater$.$StatsManager_GetGoalStatus$%GLOBAL%$index$
+		:i if  ( ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$stattype$)  = %GLOBAL%$stat_type$) 
+			:i switch %GLOBAL%$status$
+				:i case %i(2,00000002)
+					:i $text$ = %s(17,"Turn Am to Unlock")
+					:i $alpha$ = %f(0.500000)
+					:i endcase
+				case %i(3,00000003)
+					:i $text$ = %s(18,"Turn Pro to Unlock")
+					:i $alpha$ = %f(0.500000)
+					:i endcase
+				default 
+					:i $GoalManager_GetDifficultyLevel$
+					:i $string$ =  ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$text$) 
+					:i $value$ =  ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$value$:a{%GLOBAL%$difficulty_level$:a}) 
+					:i if  (%GLOBAL%$value$ = %i(1,00000001)) 
+						:i $string$ =  ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$alt_text$) 
+					:i endif
+					:i if $StructureContains$$structure$ =  ($stats_goals$:a{%GLOBAL%$index$:a}) $value_string$
+						:i $vstring$ =  ( ($stats_goals$:a{%GLOBAL%$index$:a}) ->$value_string$:a{%GLOBAL%$difficulty_level$:a}) 
+					:i endif
+					:i if NOT $StructureContains$$structure$ =  ($stats_goals$:a{%GLOBAL%$index$:a}) $no_commas$
+						:i $FormatText$$textname$ = $text$%GLOBAL%$string$$i$ = %GLOBAL%$value$$s$ = %GLOBAL%$vstring$$UseCommas$
+					:i else 
+						:i $FormatText$$textname$ = $text$%GLOBAL%$string$$i$ = %GLOBAL%$value$$s$ = %GLOBAL%$vstring$
+					:i endif
+					:i $alpha$ = %f(1.000000)
+					:i end_switch
+			
+			:i if  (%GLOBAL%$status$ = %i(1,00000001)) 
+				:i $rgba$ = :a{%i(30,0000001e)%i(30,0000001e)%i(30,0000001e)%i(80,00000050):a}
+			:i else 
+				:i $rgba$ = %GLOBAL%$on_rgba$
+			:i endif
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = $stat_goal_menu$
+				:i $just$ = :a{$center$$top$:a}
+				:i $internal_just$ = :a{$center$$center$:a}
+				:i $dims$ = %vec2(0.000000,20.000000)
+				:i $alpha$ = %GLOBAL%$info_panel_alpha$
+			:i :s}
+			:i $anchor_id$ = %GLOBAL%$id$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $font$ = $dialog$
+				:i $just$ = :a{$center$$top$:a}
+				:i $scale$ = %f(0.800000)
+				:i $text$ = %GLOBAL%$text$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $z_priority$ = %i(4,00000004)
+				:i $alpha$ = %GLOBAL%$alpha$
+			:i :s}
+			:i $GetScreenElementDims$$id$ = %GLOBAL%$id$
+			:i $scale$ = %vec2(61.000000,0.300000)
+			:i if  (%GLOBAL%$status$ = %i(1,00000001)) 
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = %GLOBAL%$anchor_id$
+					:i $texture$ = $white2$
+					:i $just$ = :a{$center$$center$:a}
+					:i $scale$ = %GLOBAL%$scale$
+					:i $pos$ = %vec2(0.000000,9.000000)
+					:i $rgba$ = %GLOBAL%$rgba$
+					:i $z_priority$ = %i(5,00000005)
+					:i $alpha$ = %GLOBAL%$alpha$
+				:i :s}
+			:i endif
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $focus_stats_vmenu$
+	:i if $ScreenElementExists$$id$ = $change_stat_sub_anchor$
+		:i $stats_change_menu_left$ isNull 
+		:i return
+		
+	:i endif
+	:i $PlaySound$$MenuUp$$vol$ = %i(100,00000064)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $sub_vmenu2$
+	:i $FireEvent$$type$ = $focus$$target$ = $sub_vmenu$$data$ = :s{$grid_index$ = %GLOBAL%$grid_index$:s}
+:i endfunction
+:i function $focus_stats_vmenu2$
+	:i if $ScreenElementExists$$id$ = $change_stat_sub_anchor$
+		:i $stats_change_menu_right$ isNull 
+		:i return
+		
+	:i endif
+	:i $PlaySound$$MenuUp$$vol$ = %i(100,00000064)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $sub_vmenu$
+	:i $FireEvent$$type$ = $focus$$target$ = $sub_vmenu2$$data$ = :s{$grid_index$ = %GLOBAL%$grid_index$:s}
+:i endfunction
+:i function $stats_menu_create_stats_block$$parent$ = $current_menu$$scale$ = %i(1,00000001)$pos$ = %vec2(180.000000,147.000000)
+	:i if $isNGC$
+		:i $MemPushContext$$TopDownHeap$
+		:i $heap$ = $TopDown$
+	:i else 
+		:i $heap$ = $FrontEnd$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $stats_block_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $scale$ = %GLOBAL%$scale$
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i %GLOBAL%$stats_parent$ = %GLOBAL%$id$
+	:i $GetArraySize$$stat_names$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $stats_menu_add_item$:s{
+			:i  ($stat_names$:a{%GLOBAL%$index$:a}) 
+			:i $stats_parent$ = %GLOBAL%$stats_parent$
+			:i $pro_name$ = %GLOBAL%$pro_name$
+			:i $index$ = %GLOBAL%$index$
+			:i $on$ = %GLOBAL%$on$
+			:i $heap$ = %GLOBAL%$heap$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i %GLOBAL%$pos$ =  (%vec2(0.000000,1.000000) *  (%i(23,00000017) *  (%GLOBAL%$index$ + %i(1,00000001)) ) ) 
+	:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ + %vec2(150.000000,-12.000000)) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $stats_block_anchor$
+		:i $id$ = $stats_bottom_anchor$
+		:i $dims$ = %vec2(200.000000,20.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $z_priority$ = %i(10,0000000a)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if $isNGC$
+		:i $MemPopContext$
+	:i endif
+:i endfunction
+:i function $stats_menu_add_item$$z_priority$ = %i(2,00000002)$highlight_bar_scale$ = %vec2(3.100000,0.700000)$highlight_bar_pos$ = %vec2(90.000000,-7.000000)$pad_right_script$ = $null_script$$pad_left_script$ = $null_script$
+	:i $FormatText$$ChecksumName$ = $row_id$%s(19,"stats_menu_names_%n")$n$ = %GLOBAL%$index$
+	:i %GLOBAL%$pos$ =  (%vec2(0.000000,1.000000) *  (%i(23,00000017) *  (%GLOBAL%$index$ + %i(1,00000001)) ) ) 
+	:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ + %vec2(150.000000,-12.000000)) 
+	:i if $ScreenElementExists$$id$ = $sub_menu$
+		:i $sub_menu$.$GetSingleTag$$can_edit$
+	:i endif
+	:i if $GotParam$$can_edit$
+		:i $choose_script1$ = $stats_menu_build_change_menu$
+		:i $choose_script2$ = $generic_menu_pad_choose_sound$
+		:i $choose_params$ = :s{$parent$ = %GLOBAL%$stats_parent$$row_id$ = %GLOBAL%$row_id$$name$ = %GLOBAL%$name$:s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$stats_parent$
+			:i $id$ = %GLOBAL%$row_id$
+			:i $local_id$ = %GLOBAL%$name$
+			:i $dims$ = %vec2(200.000000,20.000000)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$center$$center$:a}
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$stats_menu_focus$$params$ = :s{$name$ = %GLOBAL%$name$$row_id$ = %GLOBAL%$row_id$$string$ = %GLOBAL%$string$$description$ = %GLOBAL%$description$:s}:s}
+				:i :s{$unfocus$$stats_menu_unfocus$$params$ = :s{$name$ = %GLOBAL%$name$$row_id$ = %GLOBAL%$row_id$:s}:s}
+				:i :s{$pad_right$%GLOBAL%$pad_right_script$$params$ = :s{%GLOBAL%$pad_right_params$$row_id$ = %GLOBAL%$row_id$$name$ = %GLOBAL%$name$:s}:s}
+				:i :s{$pad_left$%GLOBAL%$pad_left_script$$params$ = :s{%GLOBAL%$pad_left_params$$row_id$ = %GLOBAL%$row_id$$name$ = %GLOBAL%$name$:s}:s}
+				:i :s{$pad_choose$%GLOBAL%$choose_script1$$params$ = %GLOBAL%$choose_params$:s}
+				:i :s{$pad_start$%GLOBAL%$choose_script1$$params$ = %GLOBAL%$choose_params$:s}
+				:i :s{$pad_choose$%GLOBAL%$choose_script2$:s}
+				:i :s{$pad_start$%GLOBAL%$choose_script2$:s}
+				:i :a}
+			:i $heap$ = %GLOBAL%$heap$
+		:i :s}
+	:i else 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$stats_parent$
+			:i $id$ = %GLOBAL%$row_id$
+			:i $local_id$ = %GLOBAL%$name$
+			:i $dims$ = %vec2(200.000000,20.000000)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$center$$center$:a}
+			:i $heap$ = %GLOBAL%$heap$
+		:i :s}
+	:i endif
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i if $GotParam$$not_focusable$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = %GLOBAL%$anchor_id$
+			:i $not_focusable$
+		:i :s}
+	:i endif
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i if $GotParam$$short_string$
+		:i %GLOBAL%$string$ = %GLOBAL%$short_string$
+	:i endif
+	:i %GLOBAL%$anchor_id$.$SetTags$$display_string$ = %GLOBAL%$string$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $font$ = $dialog$
+		:i $size$ = %vec2(1.200000,0.900000)
+	:i else 
+		:i $font$ = $small$
+		:i $size$ = %f(1.250000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $font$ = %GLOBAL%$font$
+		:i $scale$ = %GLOBAL%$size$
+		:i $text$ = %GLOBAL%$string$
+		:i $z_priority$ = %GLOBAL%$z_priority$
+		:i $just$ = :a{$right$$center$:a}
+		:i $pos$ = %vec2(90.000000,-5.000000)
+		:i $z_priority$ = %i(5,00000005)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if $GotParam$$on$
+		:i $highlight_rgba$ =  ($stats_menu_bar_highlight$) 
+	:i else 
+		:i $highlight_rgba$ =  ($stats_menu_bar_lowlight$) 
+	:i endif
+	:i $build_stat_slider$$parent$ = %GLOBAL%$row_id$$pos$ = %vec2(95.000000,-5.000000)
+	:i $stats_menu_update_row$:s{
+		:i $name$ = %GLOBAL%$name$
+		:i $pro_name$ = %GLOBAL%$pro_name$
+		:i $row_id$ = %GLOBAL%$row_id$
+		:i $highlight_rgba$ = %GLOBAL%$highlight_rgba$
+	:i :s}
+	:i if $GotParam$$StatMenu$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = %GLOBAL%$row_id$
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $Theme_GetPauseBarColor$$return_value$ = $bar_color$
+		:i if $GameModeEquals$$is_classic$
+			:i $scale$ = %vec2(52.000000,3.500000)
+		:i else 
+			:i $scale$ = %vec2(36.000000,3.500000)
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$row_id$
+			:i $local_id$ = $bg_bar$
+			:i $rgba$ = %GLOBAL%$bar_color$
+			:i $alpha$ = %i(0,00000000)
+			:i $texture$ = $white2$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $z_priority$ = %i(3,00000003)
+			:i $just$ = :a{$center$$center$:a}
+			:i $pos$ = %vec2(154.000000,-5.500000)
+			:i $heap$ = %GLOBAL%$heap$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $stats_menu_classic_focus$
+	:i $build_stat_arrows$$parent$ = :s{$classic_stats_vmenu$$child$ = %GLOBAL%$name$:s}
+:i endfunction
+:i function $stats_menu_classic_unfocus$
+	:i if $ScreenElementExists$$id$ = $right_arrow$
+		:i $DestroyScreenElement$$id$ = $right_arrow$
+		:i $DestroyScreenElement$$id$ = $left_arrow$
+	:i endif
+:i endfunction
+:i function $stats_menu_build_change_menu$
+	:i if $ScreenElementExists$$id$ = $change_stat_sub_anchor$
+		:i $kill_stats_change_menu$ isNull 
+		:i return
+		
+	:i endif
+	:i $GetStatValue$%GLOBAL%$name$
+	:i if $GotParam$$overridden$
+		:i $SetAllStats$$value$ = %i(0,00000000)
+		:i $GetArraySize$$stat_names$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $row_id2$%s(19,"stats_menu_names_%n")$n$ = %GLOBAL%$index$
+			:i $stats_menu_unfocus$$name$ =  ( ($stat_names$:a{%GLOBAL%$index$:a}) ->$name$) $row_id$ = %GLOBAL%$row_id2$$highlight_rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(100,00000064):a}$bar_bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i endif
+	:i $SetScreenElementLock$$id$ = :s{%GLOBAL%$parent$$child$ = %GLOBAL%$name$:s}$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = :s{%GLOBAL%$parent$$child$ = %GLOBAL%$name$:s}
+		:i $id$ = $change_stat_sub_anchor$
+		:i $event_handlers$ = :a{:s{$pad_back$$kill_stats_change_menu$$params$ =  isNull :s}
+			:i :s{$pad_left$$stats_change_menu_left$$params$ = :s{$row_id$ = %GLOBAL%$row_id$$name$ = %GLOBAL%$name$:s}:s}
+			:i :s{$pad_right$$stats_change_menu_right$$params$ = :s{$row_id$ = %GLOBAL%$row_id$$name$ = %GLOBAL%$name$:s}:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$helper_text_elements$ = $helper_text_change_elements$
+	:i $build_stat_arrows$$parent$ = $change_stat_sub_anchor$
+	:i $id$ = :s{%GLOBAL%$parent$$child$ = :s{%GLOBAL%$name$$child$ = $bg_bar$:s}:s}
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$id$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $local_id$ = $stat_roundbar_highlight$
+		:i $texture$ = $roundbar_highlight$
+		:i $pos$ = %vec2(0.000000,4.000000)
+		:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %i(5,00000005)
+		:i $scale$ = %vec2(0.100000,0.385000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$stats_menu_bar_do_highlight$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $sub_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = :s{%GLOBAL%$parent$$child$ = %GLOBAL%$name$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $change_stat_sub_anchor$
+:i endfunction
+:i function $build_stat_arrows$
+	:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$off$
+	:i $Theme_GetMenuTitleColor$$return_value$ = $arrow_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $rgba$ = %GLOBAL%$arrow_color$
+		:i $scale$ = %vec2(1.300000,1.100000)
+		:i $pos$ = %vec2(-11.000000,-5.500000)
+		:i $just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $rgba$ = %GLOBAL%$arrow_color$
+		:i $scale$ = %vec2(1.300000,1.100000)
+		:i $pos$ = %vec2(319.000000,-5.500000)
+		:i $just$ = :a{$right$$center$:a}
+	:i :s}
+:i endfunction
+:i function $stats_menu_bar_do_highlight$
+	:i $Theme_GetPauseBarColor$$return_value$ = $bar_color$
+	:i $SetProps$$rgba$ = %GLOBAL%$bar_color$
+	:i $DoMorph$$alpha$ = %f(0.900000)
+	:i while
+		
+		:i $DoMorph$$pos$ = %vec2(6.500000,4.000000)$time$ = %f(0.500000)$anim$ = $gentle$
+		:i $DoMorph$$pos$ = %vec2(-0.200000,4.000000)$time$ = %f(0.500000)$anim$ = $gentle$
+	:i loop_to 
+:i endfunction
+:i function $kill_stats_change_menu$
+	:i $DestroyScreenElement$$id$ = $change_stat_sub_anchor$
+	:i $highlight_bar_id$ = :s{%GLOBAL%$parent$$child$ = :s{%GLOBAL%$name$$child$ = :s{$bg_bar$$child$ = $stat_roundbar_highlight$:s}:s}:s}
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$highlight_bar_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$highlight_bar_id$
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = %GLOBAL%$parent$
+	:i $create_helper_text$$helper_text_elements$ = $helper_text_select_elements$
+:i endfunction
+:i function $stats_change_menu_right$
+	:i $DoScreenElementMorph$$id$ = $right_arrow$$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $right_arrow$$alpha$ = %i(1,00000001)$time$ = %f(0.200000)
+	:i if $GameModeEquals$$is_classic$
+		:i $GetStatValue$$points_available$
+		:i $available$ = %GLOBAL%$stat_value$
+		:i if  (%GLOBAL%$available$ > %i(0,00000000)) 
+			:i $GetStatValue$%GLOBAL%$name$
+			:i if $GotParam$$overridden$
+				:i return
+				
+			:i endif
+			:i if  (%GLOBAL%$stat_value$ < %i(10,0000000a)) 
+				:i $stat_menu_change_stat$$name$ = %GLOBAL%$name$$value$ =  (%GLOBAL%$stat_value$ + %i(1,00000001)) 
+				:i $stat_menu_change_stat$$name$ = $points_available$$value$ =  (%GLOBAL%$available$%i(4294967295,ffffffff)) 
+			:i endif
+		:i endif
+	:i else 
+		:i $get_stats_menu_goal_count$$name$ = %GLOBAL%$name$
+		:i $GetStatValue$%GLOBAL%$name$
+		:i if  (%GLOBAL%$count$ > %GLOBAL%$stat_value$) 
+			:i $stat_menu_change_stat$$name$ = %GLOBAL%$name$$value$ =  (%GLOBAL%$stat_value$ + %i(1,00000001)) 
+		:i endif
+	:i endif
+	:i $stats_menu_update_row$$name$ = %GLOBAL%$name$$row_id$ = %GLOBAL%$row_id$$highlight_rgba$ = $stats_menu_bar_highlight$
+:i endfunction
+:i function $stats_change_menu_left$
+	:i $DoScreenElementMorph$$id$ = $left_arrow$$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $left_arrow$$alpha$ = %i(1,00000001)$time$ = %f(0.200000)
+	:i $GetStatValue$%GLOBAL%$name$
+	:i $value$ = %GLOBAL%$stat_value$
+	:i if  (%GLOBAL%$value$ > %i(0,00000000)) 
+		:i if $GameModeEquals$$is_classic$
+			:i if $GotParam$$overridden$
+				:i return
+				
+			:i endif
+			:i $GetStatValue$$points_available$
+			:i $stat_menu_change_stat$$name$ = $points_available$$value$ =  (%GLOBAL%$stat_value$ + %i(1,00000001)) 
+		:i endif
+		:i $stat_menu_change_stat$$name$ = %GLOBAL%$name$$value$ =  (%GLOBAL%$value$%i(4294967295,ffffffff)) 
+		:i $stats_menu_update_row$$name$ = %GLOBAL%$name$$row_id$ = %GLOBAL%$row_id$$highlight_rgba$ = $stats_menu_bar_highlight$
+	:i endif
+:i endfunction
+:i function $build_stat_slider$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $roundbar_tip_left$
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = $stats_menu_bar_lowlight$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$center$:a}
+		:i $local_id$ = $roundbar_left$
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $roundbar_middle$
+		:i $scale$ = %vec2(4.700000,0.750000)
+		:i $rgba$ = $stats_menu_bar_lowlight$
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(24.000000,0.000000)) 
+		:i $just$ = :a{$left$$center$:a}
+		:i $local_id$ = $roundbar_middle$
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $texture$ = $roundbar_tip_right$
+		:i $scale$ = %f(0.750000)
+		:i $rgba$ = $stats_menu_bar_lowlight$
+		:i $pos$ =  (%GLOBAL%$pos$ + %vec2(174.000000,0.000000)) 
+		:i $just$ = :a{$left$$center$:a}
+		:i $local_id$ = $roundbar_right$
+		:i $z_priority$ = %i(5,00000005)
+	:i :s}
+	:i if $GameModeEquals$$is_classic$
+		:i $texture$ = $circle$
+		:i $scale$ = %f(1.420000)
+	:i else 
+		:i $texture$ = $star$
+		:i $scale$ = %f(0.300000)
+	:i endif
+	:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ + %vec2(4.000000,-10.500000)) 
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $local_id$%s(7,"star_%i")$i$ = %GLOBAL%$index$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $scale$ = %GLOBAL%$scale$
+			:i $rgba$ = $stats_menu_star_lowlight$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$left$$top$:a}
+			:i $local_id$ = %GLOBAL%$local_id$
+			:i $z_priority$ = %i(6,00000006)
+		:i :s}
+		:i $GetStackedScreenElementPos$$id$ = %GLOBAL%$id$$X$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(10,0000000a)
+:i endfunction
+:i $stats_color_1$ = :a{%i(40,00000028)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+:i $stats_color_2$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+:i function $stat_menu_change_stat$
+	:i if $GameModeEquals$$is_classic$
+		:i $SetClassicStat$%GLOBAL%$name$%GLOBAL%$value$
+	:i else 
+		:i $GetCurrentSkaterProfileIndex$
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$%GLOBAL%$name$%GLOBAL%$value$
+	:i endif
+:i endfunction
+:i function $stats_menu_get_skater_name_and_family$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i return
+	:s{$skater_name$ = %GLOBAL%$name$$skater_family$ = %GLOBAL%$skater_family$:s}
+:i endfunction
+:i function $stats_menu_update_row$$highlight_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(80,00000050):a}$locked_highlight_rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(80,00000050):a}$slider_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+	:i if $IsTrue$$gary_debug$
+		:i if $GotParam$$skater_name$
+			:i $script_assert$%s(22,"Get rid of skater name")
+		:i endif
+	:i endif
+	:i if $ScreenElementExists$$id$ = $sub_menu$
+		:i $sub_menu$.$GetSingleTag$$skater_name$
+		:i $GetStatValue$%GLOBAL%$name$$skater$ = %GLOBAL%$skater_name$
+	:i else 
+		:i if $GotParam$$pro_name$
+			:i $GetStatValue$%GLOBAL%$name$$skater$ = %GLOBAL%$pro_name$
+		:i else 
+			:i $GetStatValue$%GLOBAL%$name$
+		:i endif
+	:i endif
+	:i $need_count$ = %i(0,00000000)
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i if NOT $GameModeEquals$$is_classic$
+			:i if $ScreenElementExists$$id$ = $sub_menu$
+				:i if $sub_menu$.$GetSingleTag$$can_edit$
+					:i if NOT $GotParam$$overridden$
+						:i $need_count$ = %i(1,00000001)
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$stat_value$ > %i(10,0000000a)) 
+		:i %GLOBAL%$stat_value$ = %i(10,0000000a)
+	:i endif
+	:i if  (%GLOBAL%$need_count$ = %i(1,00000001)) 
+		:i $get_stats_menu_goal_count$$name$ = %GLOBAL%$name$
+	:i else 
+		:i $count$ = %GLOBAL%$stat_value$
+	:i endif
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$row_id$$child$ = $roundbar_left$:s}
+		:i $rgba$ = %GLOBAL%$highlight_rgba$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$row_id$$child$ = $roundbar_middle$:s}
+		:i $rgba$ = %GLOBAL%$highlight_rgba$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$row_id$$child$ = $roundbar_right$:s}
+		:i $rgba$ = %GLOBAL%$highlight_rgba$
+	:i :s}
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $local_id$%s(7,"star_%i")$i$ = %GLOBAL%$index$
+		:i $alpha$ = %i(1,00000001)
+		:i if  (%GLOBAL%$index$ < %GLOBAL%$count$) 
+			:i $color$ = $stats_menu_star_highlight$
+			:i if NOT  (%GLOBAL%$index$ < %GLOBAL%$stat_value$) 
+				:i $alpha$ = %f(0.300000)
+			:i endif
+		:i else 
+			:i $color$ = $stats_menu_star_lowlight$
+		:i endif
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$row_id$$child$ = %GLOBAL%$local_id$:s}
+			:i $rgba$ = %GLOBAL%$color$
+		:i :s}
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$row_id$$child$ = %GLOBAL%$local_id$:s}$alpha$ = %GLOBAL%$alpha$
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(10,0000000a)
+	:i if $ScreenElementExists$$id$ = $stat_count$
+		:i $update_stats_menu_count$ isNull 
+	:i endif
+:i endfunction
+:i function $stats_menu_focus$
+	:i if $GameModeEquals$$is_classic$
+		:i $stats_menu_classic_focus$ isNull 
+	:i endif
+	:i $stats_menu_update_row$:s{
+		:i $name$ = %GLOBAL%$name$
+		:i $row_id$ = %GLOBAL%$row_id$
+		:i $highlight_rgba$ = $stats_menu_bar_highlight$
+	:i :s}
+	:i $stats_menu_done_focus$ isNull 
+:i endfunction
+:i function $stats_menu_unfocus$
+	:i if $GameModeEquals$$is_classic$
+		:i $stats_menu_classic_unfocus$ isNull 
+	:i endif
+	:i $stats_menu_update_row$$name$ = %GLOBAL%$name$$row_id$ = %GLOBAL%$row_id$$highlight_rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(100,00000064):a}$bar_bg_rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+	:i $stats_menu_done_unfocus$ isNull 
+:i endfunction
+:i function $stats_menu_done_focus$$description$ = %s(0,"")
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColorNew$$return_value$ = $text_rgba$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i :s}
+	:i if $ObjectExists$$id$ = $stat_title$
+		:i $FormatText$$textname$ = $stat_title$%s(3,"%i:")$i$ = %GLOBAL%$string$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $stat_title$
+			:i $text$ = %GLOBAL%$stat_title$
+		:i :s}
+	:i endif
+	:i if $ObjectExists$$id$ = $stat_point_description$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $stat_point_description$
+			:i $text$ = %GLOBAL%$description$
+		:i :s}
+	:i endif
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$row_id$$child$ = $bg_bar$:s}
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$row_id$$child$ = $bg_bar$:s}$alpha$ = %f(0.750000)
+	:i endif
+	:i $build_stat_goals_menu$$stat_type$ = %GLOBAL%$name$
+:i endfunction
+:i function $stats_menu_done_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColorNew$$return_value$ = $text_rgba$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i :s}
+	:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$row_id$$child$ = $bg_bar$:s}
+		:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$row_id$$child$ = $bg_bar$:s}$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $stats_menu_exit$
+	:i $UpdateSkaterStats$$player$ = %i(0,00000000)
+	:i if $LevelIs$$Load_MainMenu$
+		:i $skater$.$add_skater_to_world$
+		:i $launch_ss_menu$
+	:i else 
+		:i $create_your_options_menu$
+	:i endif
+:i endfunction
+:i :end

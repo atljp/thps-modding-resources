@@ -1,0 +1,22 @@
+//------------------------------------------------
+// CENT: Mesh
+//------------------------------------------------
+
+typedef struct
+{
+    NumString id;
+    uint unk;
+    NumString path;
+} MeshObject <read=Str("[%s, %d], %s", NumStringStr(id), unk, NumStringStr(path))>;
+
+typedef struct
+{
+    uint subObjectCount <comment="Only applies if we have a subobject path">;
+    NumString path;
+
+    if (Strlen(NumStringStr(path)))
+    {
+        if (subObjectCount > 1)
+            MeshObject subObjects[subObjectCount] <optimize=false>;
+    }
+} Object_Mesh <read=Str("%s", NumStringStr(path))>;

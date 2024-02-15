@@ -1,0 +1,20 @@
+// Root controller of some sort
+
+typedef struct
+{
+    NamePointer object_name <bgcolor=CL_NAME, comment="Pointer to stringtable name">;
+    QBKey id <bgcolor=CL_CHECKSUM, comment="Checksum?">;
+    RelativeOffset pointer_bonelist(0) <bgcolor=CL_POINTER, comment="Pointer to root bone list?">;
+    RelativeOffset pointer_matrix(0) <bgcolor=CL_POINTER, comment="Pointer to matrix">;
+    int position[3] <bgcolor=CL_FLOATS, comment="Pointer to root bone list?">;
+
+    Count bone_count;
+    GCBObject root_bones[bone_count.count] <optimize=false>;
+
+    GCBObject matrix;
+} RootController <read=ReadRootController>;
+
+string ReadRootController(RootController &rt)
+{
+    return ReadNamePointer(rt.object_name);
+}

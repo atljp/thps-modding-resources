@@ -1,0 +1,140 @@
+//------------------------------------------------
+// Array
+//------------------------------------------------
+
+ubyte MultiItemAllowed(QBItemInfo &info)
+{
+    if (info.item_type == ITEMTYPE_FLOATS)
+        return 0;
+
+    return 1;
+}
+
+ubyte IsLinearArray(QBItemInfo &info)
+{
+    switch (info.item_type)
+    {
+        case ITEMTYPE_FLOAT:
+        case ITEMTYPE_LOCALSTRING:
+        case ITEMTYPE_QBKEY:
+        case ITEMTYPE_INTEGER:
+        case ITEMTYPE_POINTER:
+            return 1;
+            break;
+    }
+
+    return 0;
+}
+
+struct QBArrayNode;
+
+typedef struct
+{
+    // Info about first item in the array!
+    QBItemInfo first_item_info;
+
+    if (first_item_info.qb_type > 0)
+        lastQBArrayType = first_item_info.qb_type;
+
+    local uint number_of_items = 1;
+
+    // Is this type allowed to have multiple items?
+    if (MultiItemAllowed(first_item_info))
+    {
+        uint item_count <bgcolor=CL_SINGLEVALUE>;
+        number_of_items = item_count;
+
+        // If the array has more than 1 item, or is a non-linear array, skip to it!
+        if (item_count > 1 || !IsLinearArray(first_item_info))
+        {
+            RelativeOffset list_start(0) <bgcolor=CL_POINTER>;
+            FSeek(AbsOffset(list_start));
+        }
+    }
+
+    local uint i;
+
+    // Sequential arrays don't have pointers, since they're all the same size!
+    // That means we can read them in sequence evenly
+
+    if (IsLinearArray(first_item_info))
+    {
+        for (i=0; i<number_of_items; i++)
+        {
+            switch (first_item_info.item_type)
+            {
+                case ITEMTYPE_FLOAT:
+                    float value <bgcolor=CL_PARSED>;
+                    break;
+    
+                case ITEMTYPE_LOCALSTRING:
+                case ITEMTYPE_QBKEY:
+                case ITEMTYPE_POINTER:
+                    QBKey value <bgcolor=CL_PARSED>;
+                    break;
+    
+                case ITEMTYPE_INTEGER:
+                    int value <bgcolor=CL_PARSED>;
+                    break;
+            }
+        }
+
+        return;
+    }
+
+    // Otherwise, it means the sizes of the array items can differ
+    // Therefore, we have pointers to each item
+
+    else
+    {
+        local uint first_pointer = FTell();
+
+        if (number_of_items > 1)
+        {
+            for (i=0; i<number_of_items; i++)
+                RelativeOffset item_pointers(0) <bgcolor=CL_POINTER>;
+
+            first_pointer = AbsOffset(item_pointers[0]);
+        }
+
+        FSeek(first_pointer);
+        
+        for (i=0; i<number_of_items; i++)
+        {
+            if (number_of_items > 1)
+                FSeek(AbsOffset(item_pointers[i]));
+
+            // This is an array of struct data only, not entire structs
+            if (first_item_info.item_type == ITEMTYPE_STRUCT)
+                QBStructData item;
+
+            // Floats are similar, they're just data!
+            else if (first_item_info.item_type == ITEMTYPE_FLOATS)
+                QBItemData item(first_item_info);
+
+            // Likewise, strings are just data
+            else if (first_item_info.item_type == ITEMTYPE_STRING)
+                TermString item;
+
+            else if (first_item_info.item_type == ITEMTYPE_WIDESTRING)
+                TermWString item;
+
+            // Otherwise, use an array node
+            else
+                QBArrayNode item;
+        }
+    }
+
+    // Align to nearest 4 bytes when finished
+    // (This is mostly for string arrays)
+
+    SkipTo(4);
+
+} QBArrayNode <read=ReadQBArrayNode>;
+
+string ReadQBArrayNode(QBArrayNode &list)
+{
+    local string s;
+
+    return SPrintf(s, "Array Node: %s", TypeToString(list.first_item_info));
+}
