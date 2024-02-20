@@ -79,7 +79,7 @@ Multiline comments can contain nested multiline comments.<br>
 Line-breaks can be performed using backslash \ at the end of a line. Line-break allows a single line to span multiple lines so your bytecode can be a bit smaller when coding structures or arrays while leaving the text representation of the script easier to read.
 
 ```
-//  Token,                // int,byte,          string,             blubs string,
+    //  Token,            // int,byte,          string,             blubs string,
 	Comment = -2,         //Multi-line comment  // or /**/          #/
 	Null = -1,            // -1
 	EndOfFile = 0,        // 0   0x00                               :end
