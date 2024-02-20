@@ -14,7 +14,7 @@ To open a command prompt either press Win+R from the keyboard to bring up the ru
 ```
 qconsole -d "c:\user\me\scripts\game\menu\gamemenu.qb" -dbl
 ```
-<br>
+<br><br>
 ```
 QConsole Usage - v#
  [-?,-help]             Displays this usage.
