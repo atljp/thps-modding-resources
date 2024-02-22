@@ -175,15 +175,15 @@ As of Feb 2024, the SceneConverter doesn't mark the converted skins as *active* 
 
 The file should now be displayed like this:
 ![image](./skinfilehex.png)<br><br>
-Expand the menu where it says `> skin`at the bottom. Then navigate to `skin -> scene -> sectors -> CGeom -> sMesh`<br>
-Some skins have only one mesh, in this case, however, there are six meshes. Expand each one and set the `some_flags` field to 1088 (0x40 0x04 in hex).
+Expand the menu where it says `> skin` at the bottom. Then navigate to `skin -> scene -> sectors -> CGeom -> sMesh`<br>
+Some skins have only one mesh. In this case, however, there are six meshes. Expand each one and set the `some_flags` field to 1088 (0x40 0x04 in hex).
 
 ## Putting it all together: Add the trick to the THAW scripts:
 
 The following changes are meant to be done inside the reTHAWed mod folder.
 
 First, add the trick to `rethawed/Packages/qb/Source/scripts/game/skater/alltricks.q`: Add `Trick_ChompOnThis` anywhere in the array, ideally append new tricks at the bottom.<br><br>
-Take the trick description from the THUG scripts and change the syntax for the NodeQBC compiler (instead of ROQ).<br>
+Then. take the trick description from the THUG scripts and change the syntax for the NodeQBC compiler (instead of ROQ).<br>
 File: `rethawed/Packages/qb/Source/scripts/game/skater/airtricks.q`
 
 ```
@@ -231,5 +231,6 @@ pizzabox_details = {
 
 - I'm not sure yet how to port the audio stream that's why it's not listed here
 - The triggerscript is unused for the other tricks as well, not sure what its purpose is
+- The skeleton name has to be the name of the actual file at `rethawed\Packages\rethawed_anims\Compiled`. The filename and the reference in the THUG script `pizzabox_details` differ.
 - After everything is converted, copied and added to the scripts: Compiled qb, then Pack + Sync via the SDK
 
