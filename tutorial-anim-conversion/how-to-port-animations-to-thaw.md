@@ -85,7 +85,7 @@ This is a two step process, first the items are extracted / copied over and then
 ### 1. Extracting and renaming animations
 
 There are Init-, Idle- and Out animations for the skater (Human_) and the special item (SI_).<br>
-Therefore we will extract and rename six animations in two steps:
+Therefore we will extract and rename six animations, three for each category:
 
 #### Human animations
 
@@ -99,22 +99,24 @@ Save the three files to the `AnimConverter/in` folder:
 - ChompOnThis_Out.ska.xbx
 
 **Renaming**:<br>
-Internally, the skater animations are processes as the addition of the qb key of THPS7_Human + <AnimName>. A convenient way to generate these qb keys is to use a [QB Key Adder](https://ghwt.de/tools/qbkey):
+Internally, the skater animations are processes as the addition of the qb key of THPS7_Human + \<AnimName\>. A convenient way to generate these qb keys is to use a [QB Key Adder](https://ghwt.de/tools/qbkey):
 <br>![image](./qb_key_add.png)
 
-Rename the files to the resulting 8 digit hex value and prepend `0x`. After renaming, your `AnimConverter/in` folder should look like this:
-<br>![image](./renamed_anims.png)
+Rename the extracted files to the resulting 8 digit hex value and prepend `0x`. After renaming, you should have these filenames: 
 
 - THPS7_Human + ChompOnThis_Init => 0x8EA1EBC7.ska.xbx
 - THPS7_Human + ChompOnThis_Idle => 0x88F1BC66.ska.xbx
 - THPS7_Human + ChompOnThis_Out => 0xFF890288.ska.xbx
 
+Place them in the `AnimConverter/in` folder like this:
+<br>![image](./renamed_anims.png)
+
 #### Special item animations
 
-The process is pretty much the same with three key differences:
+The process is pretty much the same as for the human animations, but with three key differences:
 - The animation files still come from `Game/Data/pre/netanims.pre` but the *Full File Name* starts with *anims\SI_Pizza*
 - Don't extract the special item animations to the `AnimConverter/in` folder right away. Make a temp folder to rename them there.
-- Generate the QB Keys as such: SI_Pizza + <AnimName>
+- Generate the QB Keys as such: SI_Pizza + \<AnimName\>
 
 This is how the files shoud look like after renaming:
 - SI_Pizza + ChompOnThis_Init => 0xA719DEF4.ska.xbx
