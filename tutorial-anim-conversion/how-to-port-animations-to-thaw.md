@@ -6,16 +6,15 @@ To load the animations into THAW, set up the Guitar Hero SDK as described here [
 **You need to install Node JS to use the converters!**<br><br>
 An animation consists of multiple parts that need to be converted separately with the following tools:
 
-- .ska.xbx - Human Animation ([AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter))
-- .ska.xbx - Optional: Special Item Animation (also [AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter))
-- .ske - Skeleton ([SkelConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SkelConvert))
-- .skin - Skin ([SceneConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SceneConv))
-- .pre/.prx Extractor: ([PreTool](https://github.com/atljp/thps-modding-resources/blob/main/Tools/PreTool.exe))
+- Extractor: ([PreTool](https://github.com/atljp/thps-modding-resources/blob/main/Tools/PreTool.exe)) - File ending: .pre/.prx
+- Human Animation ([AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
+- Optional: Special Item Animation (also [AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
+- Skeleton ([SkelConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SkelConvert)) - File ending: .ske
+- Skin ([SceneConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SceneConv)) - File ending: .skin
 
 Animations and skeletons can be extracted from netanims.prx and skeletons.prx respectively (the ending may be .pre or .prx).<br>
 For THUG and THUG2 these are at path: `Game/Data/pre`<br><br>
-Only for animations with special items: The skin files are located at: `Game/Data/models/Specialitems/<Itemname>`
-<br><br>
+Only for animations with special items: The skin files are located at: `Game/Data/models/Specialitems/<Itemname>`<br>
 The tricks also have to be described in the scripts. You can find the original scripts from THUG and THUG2 in this repo.
 
 ## General info
@@ -29,7 +28,7 @@ There are three types of animations:
 The trick is a Multi-part **and** SpecialItem trick. The tutorial should therefore be applicable for animations in every category listed above.
 
 This what it looks like in Tony Hawk's Underground:
-<br>![image](/chomp_on_this_thug.png)
+<br>![image](./chomp_on_this_thug.png)
 
 ### 1. Extracting and renaming animations
 
