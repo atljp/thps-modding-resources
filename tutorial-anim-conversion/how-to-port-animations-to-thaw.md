@@ -11,7 +11,7 @@ An animation consists of multiple parts that need to be converted separately wit
 - Optional: Special Item Animation (also [AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
 - Skeleton ([SkelConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SkelConvert)) - File ending: .ske
 - Skin ([SceneConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SceneConv)) - File ending: .skin
-- Feb 2024: To mark skins as active easily use [010 Hex Editor](https://www.sweetscape.com/010editor/). The converter doesn't do it automatically yet.
+- Feb 2024: To easily mark skins as active, use [010 Hex Editor](https://www.sweetscape.com/010editor/). The converter doesn't do it automatically yet.
 
 Animations and skeletons can be extracted from netanims.prx and skeletons.prx respectively (the ending may be .pre or .prx).<br>
 For THUG and THUG2 these are at path: `Game/Data/pre`<br><br>
@@ -74,7 +74,7 @@ Note that `SpecialItem_details` links to `PizzaBox_details` which is another scr
 ```
 
 These scripts can be pretty much copied into the THAW scripts after a few syntax changes. They also tell us right away which files we need.<br>
-The trick is a Multi-part **and** SpecialItem trick. We therefore have two separate animations, one for the skater and one for the special item. A special item also has a skeleton and a skin.<br><br>
+The trick is a Multi-part **and** SpecialItem trick. We therefore have two separate animations, one for the skater and one for the special item. A special item also has a skeleton and a skin.<br>
 
 This what it looks like in the original game - Tony Hawk's Underground:
 <br>![image](./chomp_on_this_thug.png)
@@ -182,8 +182,8 @@ Some skins have only one mesh. In this case, however, there are six meshes. Expa
 
 The following changes are meant to be done inside the reTHAWed mod folder.
 
-First, add the trick to `rethawed/Packages/qb/Source/scripts/game/skater/alltricks.q`: Add `Trick_ChompOnThis` anywhere in the array, ideally append new tricks at the bottom.<br><br>
-Then. take the trick description from the THUG scripts and change the syntax for the NodeQBC compiler (instead of ROQ).<br>
+First, add the trick to `rethawed/Packages/qb/Source/scripts/game/skater/alltricks.q`: Add `Trick_ChompOnThis` anywhere in the array, ideally append new tricks at the bottom.<br>
+Then, take the trick description from the THUG scripts and change the syntax for the NodeQBC compiler (instead of ROQ):<br><br>
 File: `rethawed/Packages/qb/Source/scripts/game/skater/airtricks.q`
 
 ```
@@ -205,7 +205,7 @@ Trick_ChompOnThis = {
 }
 ```
 
-Add the special item description from THUG and change the syntax as well.<br>
+Add the special item description from THUG and change the syntax as well:<br><br>
 File: `rethawed/Packages/qb/Source/scripts/game/skater/specialitems.q`
 
 ```
@@ -229,8 +229,8 @@ pizzabox_details = {
 
 ### Notes:
 
-- I'm not sure yet how to port the audio stream that's why it's not listed here
-- The triggerscript is unused for the other tricks as well, not sure what its purpose is
-- The skeleton name has to be the name of the actual file at `rethawed\Packages\rethawed_anims\Compiled`. The filename and the reference in the THUG script `pizzabox_details` differ.
+- I'm not sure yet how to port the audio stream that's why it's not listed here.
+- The triggerscript is unused for the other tricks as well, not sure what its purpose is.
+- In `pizabox_details`, the skeleton name has to be the name of the actual file at `rethawed\Packages\rethawed_anims\Compiled`. Somehow the filename is different in the THUG script.
 - After everything is converted, copied and added to the scripts: Compiled qb, then Pack + Sync via the SDK
 
