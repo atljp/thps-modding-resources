@@ -8,27 +8,29 @@ An animation consists of multiple parts that need to be converted separately wit
 
 - Extractor: ([PreTool](https://github.com/atljp/thps-modding-resources/blob/main/Tools/PreTool.exe)) - File ending: .pre/.prx
 - Human Animation ([AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
-- Optional: Special Item Animation (also [AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
+- Special Item Animation (also [AnimConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/AnimConverter)) - File ending: .ska.xbx
 - Skeleton ([SkelConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SkelConvert)) - File ending: .ske
 - Skin ([SceneConverter](https://github.com/atljp/thps-modding-resources/tree/main/Tools/SceneConv)) - File ending: .skin
 - Feb 2024: To easily mark skins as active, use [010 Hex Editor](https://www.sweetscape.com/010editor/). The converter doesn't do it automatically yet.
 
 Animations and skeletons can be extracted from netanims.prx and skeletons.prx respectively (the ending may be .pre or .prx).<br>
-For THUG and THUG2 these are at path: `Game/Data/pre`<br><br>
-Only for animations with special items: The skin files are located at: `Game/Data/models/Specialitems/<Itemname>`<br>
-While the data has to be in the right format at the right place, the tricks themselves also have to be described in the scripts. It's a good starting point to know which files are needed and what to name them.
+For THUG and THUG2, these are at path: `Game/Data/pre`<br>
+The skin files are located at: `Game/Data/models/Specialitems/<Itemname>`<br><br>
+**Only trick with special items require the skeleton and skin files!**<br><br>
 
-## General info
-There are three types of animations:
+Generally, there are three types of tricks:
 - Simple tricks with a single animation file (e.g., Kickflip, Pop Shove It, etc.)
 - Multi-part tricks with 3 separate animations: *Init*, *Idle* and *Out* (e.g., holdable Grab tricks)
 - SpecialItem tricks that spawn additional items (e.g., Pizzabox, Tongue, Chainsaw, Kite, etc.)
 
+All tricks have to be described in the scripts. They are a good starting point to determine which files are needed and what to name them.
+
+
 ## Example part 1: Looking at the scripts of THUG SpecialItem trick *Chomp On This*
 
 Since we are porting the trick from Tony Hawk's Underground, we can look at the [original scripts](https://github.com/atljp/thps-modding-resources/tree/main/Scripts/THUG/THUG_vanilla_scripts_(decompiled)) to see how the trick is embedded into the trick system there.
-- Every trick, no matter the category, has to be in the `ConfigurableTricks` array in `game\skater\alltricks.qb`
-- The files that contain the trick descriptions are in `airtricks.qb`, `groundtricks.qb`, `grindscripts.qb`, `manualtricks.qb` or `liptricks.qb` in the same folder.
+- Every trick, no matter the category, has to be in the `ConfigurableTricks` array in `game\skater\alltricks.qb`.
+- The files that contain the trick descriptions can found in either `airtricks.qb`, `groundtricks.qb`, `grindscripts.qb`, `manualtricks.qb` or `liptricks.qb` in the `game\skater\` folder.
 - Special items are described in `specialitems.qb` in the same folder.
 
 ### General trick description
@@ -73,8 +75,8 @@ Note that `SpecialItem_details` links to `PizzaBox_details` which is another scr
 :i :s}
 ```
 
-These scripts can be pretty much copied into the THAW scripts after a few syntax changes. They also tell us right away which files we need.<br>
-The trick is a Multi-part **and** SpecialItem trick. We therefore have two separate animations, one for the skater and one for the special item. A special item also has a skeleton and a skin.<br>
+These scripts can be pretty much copied over to the THAW scripts after a few syntax changes. They also tell us right away which files we need.<br>
+The trick we want to convert is a multi-part **and** SpecialItem trick. We therefore have two separate animation types, one for the skater and one for the special item. Remember that a special item also has a skeleton and a skin.<br>
 
 This what it looks like in the original game - Tony Hawk's Underground:
 <br>![image](./chomp_on_this_thug.png)
@@ -100,10 +102,10 @@ Save the three files to the `AnimConverter/in` folder:
 - ChompOnThis_Out.ska.xbx
 
 **Renaming**:<br>
-Internally, the skater animations are processes as the addition of the qb key of THPS7_Human + \<AnimName\>. A convenient way to generate these qb keys is to use a [QB Key Adder](https://ghwt.de/tools/qbkey):
+Internally, the skater animations are processed as the addition of the qb key of THPS7_Human + \<AnimName\>. A convenient way to generate these qb keys is to use a [QB Key Adder](https://ghwt.de/tools/qbkey):
 <br>![image](./qb_key_add.png)
 
-Rename the extracted files to the resulting 8 digit hex value and prepend `0x`. After renaming, you should have these filenames: 
+Name the extracted files as the resulting 8-digit hex value and prepend `0x`. After renaming, you should have these filenames: 
 
 - THPS7_Human + ChompOnThis_Init => 0x8EA1EBC7.ska.xbx
 - THPS7_Human + ChompOnThis_Idle => 0x88F1BC66.ska.xbx
@@ -114,12 +116,12 @@ Place them in the `AnimConverter/in` folder like this:
 
 #### Special item animations
 
-The process is pretty much the same as for the human animations, but with three key differences:
+The process is pretty much the same as for the human animations but with three key differences:
 - The animation files still come from `Game/Data/pre/netanims.pre` but the *Full File Name* starts with *anims\SI_Pizza*
 - Don't extract the special item animations to the `AnimConverter/in` folder right away. Make a temp folder to rename them there.
 - Generate the QB Keys as such: SI_Pizza + \<AnimName\>
 
-**The AnimConverter converts all files contained in the `AnimConverter\in` folder at once. Since human and special item animations are converted differently, they have to be converted separately. That's why the special item anims should be places somewhere else first (for example a temporary folder)!**
+**The AnimConverter converts all files contained in the `AnimConverter\in` folder at once. Since human and special item animations are converted differently, they have to be converted separately. That's why the special item anims should be placed somewhere else first (for example a temporary folder)!**
 
 This is how the files shoud look like after renaming:
 - SI_Pizza + ChompOnThis_Init => 0xA719DEF4.ska.xbx
@@ -163,7 +165,7 @@ Remove *_thaw* from the resulting file names and rename *.wpc.wpc* to *skin.wpc*
 
 Place these two files in the reTHAWed mod folder: `rethawed\Packages\rethawed_anims\Compiled\models\SpecialItems\Pizzabox`
 
-#### Marking the scin as active
+#### Marking the skin as active
 
 As of Feb 2024, the SceneConverter doesn't mark the converted skins as *active* yet. This has to be manually done, ideally with [010 Hex Editor](https://www.sweetscape.com/010editor/) and the [THAW skin template](https://github.com/atljp/thps-modding-resources/blob/main/Guitar%20Hero%20SDK/Resources/Templates/THAW/Skin_THAW.bt).<br>
 
@@ -232,5 +234,5 @@ pizzabox_details = {
 - I'm not sure yet how to port the audio stream that's why it's not listed here.
 - The triggerscript is unused for the other tricks as well, not sure what its purpose is.
 - In `pizabox_details`, the skeleton name has to be the name of the actual file at `rethawed\Packages\rethawed_anims\Compiled`. Somehow the filename is different in the THUG script.
-- After everything is converted, copied and added to the scripts: Compiled qb, then Pack + Sync via the SDK
+- After everything is converted, copied and added to the scripts: Compiled qb, then Pack + Sync via the SDK. Also Pack + Sync the animations
 
