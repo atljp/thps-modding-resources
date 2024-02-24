@@ -230,7 +230,7 @@ pizzabox_details = {
 ```
 
 Finally, the result should look like this in THAW:
-<br>![image](./img/chomp_on_this_thaw.png)
+<br>![image](./img/chomp_on_this_thaw2.png)
 
 ### Notes:
 
