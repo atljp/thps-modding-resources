@@ -16,7 +16,7 @@ An animation consists of multiple parts that need to be converted separately wit
 Animations and skeletons can be extracted from netanims.prx and skeletons.prx respectively (the ending may be .pre or .prx).<br>
 For THUG and THUG2, these are at path: `Game/Data/pre`<br>
 The skin files are located at: `Game/Data/models/Specialitems/<Itemname>`<br><br>
-**Only trick with special items require the skeleton and skin files!**<br><br>
+**Only tricks with special items require the skeleton and skin files!**<br><br>
 
 Generally, there are three types of tricks:
 - Simple tricks with a single animation file (e.g., Kickflip, Pop Shove It, etc.)
@@ -79,7 +79,7 @@ These scripts can be pretty much copied over to the THAW scripts after a few syn
 The trick we want to convert is a multi-part **and** SpecialItem trick. We therefore have two separate animation types, one for the skater and one for the special item. Remember that a special item also has a skeleton and a skin.<br>
 
 This what it looks like in the original game - Tony Hawk's Underground:
-<br>![image](./img/chomp_on_this_thug.png)
+<br>![image](./../img/chomp_on_this_thug.png)
 
 ## Example part 2: Converting the data to THAW format
 
@@ -94,7 +94,7 @@ Therefore we will extract and rename six animations, three for each category:
 
 **Extraction (PreTool)**:<br>
 Load `Game/Data/pre/netanims.pre`, then right click and extract the following animations. Make sure the *Full File Name* starts with *anims\THPS5_skater_special*:
-<br>![image](./img/extract_human.png)
+<br>![image](./../img/extract_human.png)
 
 Save the three files to the `AnimConverter/in` folder:
 - ChompOnThis_Init.ska.xbx
@@ -103,7 +103,7 @@ Save the three files to the `AnimConverter/in` folder:
 
 **Renaming**:<br>
 Internally, the skater animations are processed as the addition of the qb key of THPS7_Human + \<AnimName\>. A convenient way to generate these qb keys is to use a [QB Key Adder](https://ghwt.de/tools/qbkey):
-<br>![image](./img/qb_key_add.png)
+<br>![image](./../img/qb_key_add.png)
 
 Name the extracted files as the resulting 8-digit hex value and prepend `0x`. After renaming, you should have these filenames: 
 
@@ -112,7 +112,7 @@ Name the extracted files as the resulting 8-digit hex value and prepend `0x`. Af
 - THPS7_Human + ChompOnThis_Out => 0xFF890288.ska.xbx
 
 Place them in the `AnimConverter/in` folder like this:
-<br>![image](./img/renamed_anims.png)
+<br>![image](./../img/renamed_anims.png)
 
 #### Special item animations
 
@@ -139,14 +139,14 @@ Convert the three renamed files with the following command (special item animati
 `node .\AnimConvert.js thug1 thaw`
 <br><br>
 After the animation-conversion, your `AnimConverter\Out` folder should look like this (file ending: .ska.wpc):
-<br>![image](./img/out_folder.png)
+<br>![image](./../img/out_folder.png)
 <br><br>
 Place the six converted files into the reTHAWed mod folder `rethawed\Packages\rethawed_anims\Compiled`
 
 ### 2. Extracting the special item skeleton
 
 Extract the special item skeleton from `Game/Data/pre/skeletons.pre` with PreTool.
-<br>![image](./img/si_skeleton.png)
+<br>![image](./../img/si_skeleton.png)
 
 No renaming is required, just put the *SI_Pizza.ske.xbx* file into the `SkelConvert` folder.<br>
 Convert it with the command:<br><br>
@@ -173,10 +173,10 @@ As of Feb 2024, the SceneConverter doesn't mark the converted skins as *active* 
 - Load the template via Templates -> Open Template...
 - The floating template window has a run button: Run the template on the file
 
-![image](./img/template.png)<br>
+![image](./../img/template.png)<br>
 
 The file should now be displayed like this:
-![image](./img/skinfilehex.png)<br><br>
+![image](./../img/skinfilehex.png)<br><br>
 Expand the menu where it says `> skin` at the bottom. Then navigate to `skin -> scene -> sectors -> CGeom -> sMesh`<br>
 Some skins have only one mesh. In this case, however, there are six meshes. Expand each one and set the `some_flags` field to 1088 (0x40 0x04 in hex).
 
@@ -230,7 +230,7 @@ pizzabox_details = {
 ```
 
 Finally, the result should look like this in THAW:
-<br>![image](./img/chomp_on_this_thaw2.png)
+<br>![image](./../img/chomp_on_this_thaw2.png)
 
 ### Notes:
 
