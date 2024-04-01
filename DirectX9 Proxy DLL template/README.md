@@ -1,6 +1,6 @@
 # DirectX9 Proxy DLL Template
 
-Minimal project that proxies `Direct3DCreate9`. Place the DLL called d3d9.dll in the game folder and it will be loaded automatically.<br>
+Minimal project that proxies `Direct3DCreate9`. For game that run on DirectX9: Place d3d9.dll in the game folder and it will be loaded automatically.<br>
 The code defined in `DllMain` will then be executed as well.<br>
 This project contains the option to include SDL2 (remove the comments in CMakeLists.txt).
 
@@ -19,6 +19,7 @@ Install git via the Installer from the website or directly in Powershell: `winge
 Then install vcpkg via git as described in the Microsoft documentation:
 - `git clone https://github.com/microsoft/vcpkg.git`
 - Run the bootstrap script `cd vcpkg && .\bootstrap-vcpkg.bat`
+
 (Optional: Install SDL2 via vcpkg: `.\vcpkg.exe install SDL2`, for x86: `.\vcpkg.exe install SDL2:x86-windows`
 
 ## Building the project
