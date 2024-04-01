@@ -1,6 +1,6 @@
-# DirectX9 Proxy DLL Template
+# DirectX 9 Proxy DLL Template
 
-Minimal project that proxies `Direct3DCreate9`. For game that run on DirectX9: Place d3d9.dll in the game folder and it will be loaded automatically.<br>
+Minimal project that proxies `Direct3DCreate9`. For games that run on DirectX 9: Place d3d9.dll in the game folder and it will be loaded automatically.<br>
 The code defined in `DllMain` will then be executed as well.<br>
 This project contains the option to include SDL2 (remove the comments in CMakeLists.txt).
 
