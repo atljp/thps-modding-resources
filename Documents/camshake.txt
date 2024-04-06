@@ -1,0 +1,25 @@
+patchDWord((void*) 0x006EE450, (int32_t) &WalkCamComponent_Update_Hook);
+
+
+
+
+typedef void (__thiscall* WalkCamComponent_UpdateNativeCall)(Obj::CWalkCameraComponent* cam);
+WalkCamComponent_UpdateNativeCall WalkCamComponent_UpdateNative = (WalkCamComponent_UpdateNativeCall)(0x005251D0); //thug2
+
+typedef void __thiscall AddShake_NativeCall(Obj::CSkaterCameraComponent* component, Mth::Vector* cam, Mth::Matrix* frame);
+AddShake_NativeCall* AddShake_Native = (AddShake_NativeCall*)(0x004F9F00); //thug2
+
+void __thiscall WalkCamComponent_Update_Hook(Obj::CWalkCameraComponent* cam) {
+    WalkCamComponent_UpdateNative(cam);
+ 
+    // Add shake from the skater cam onto this cam.
+    // This allows shaking even when we're off the board.
+    Obj::CSkaterCameraComponent* skaterCam = (Obj::CSkaterCameraComponent*) GetComponent_Native(cam->mp_object, 0x5E43A604); /* skatercamera */
+    
+    if (skaterCam && (skaterCam->mShakeDuration > 0.0)) {
+        Mth::Vector* pos = (Mth::Vector*) &(cam -> mp_object -> position);
+        Mth::Matrix* mtr = (Mth::Matrix*) &(cam -> mp_object -> orientation);
+        
+        AddShake_Native(skaterCam, pos, mtr);
+    }
+}
