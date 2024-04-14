@@ -1,0 +1,45 @@
+    //patch CAP
+    //Allows objects to be places in the same location as other (merge).
+    //Allows tall objects to be placed higher than normally allowed.
+    //Allows infinite restars to be placed
+    //Allows the ground to be changed without moving pieces (stacking).
+    //Allows the player to skate under floating objects/underground.
+    //Credit: THUG2 CAP modifications by Zmathue 2013 (thug2.ru / thmods.com). A few values copies from thugpro as well
+    patchByte((void*)0x004F3FEF, 0xEB);
+    patchByte((void*)0x0058C7D8, 0xEB);
+    patchByte((void*)0x0058C82D, 0xEB);
+    patchByte((void*)0x0058C852, 0xEB);
+    patchByte((void*)0x0058C871, 0xEB);
+    patchNop((void*)0x0058C89C, 2);
+    patchNop((void*)0x0059D266, 6);
+    patchByte((void*)0x0059D290, 0x55);
+    patchByte((void*)0x0059DC58, 0x55);
+    patchBytesM((void*)0x004F8720, (BYTE*)"\xE9\xF7\x00\x00\x00\x90", 6);
+    patchBytesM((void*)0x0059D35B, (BYTE*)"\xE9\x61\xFF\xFF\xFF\x90", 6);
+    patchByte((void*)0x005977E9, 0xEB); // Floating objects
+    patchNop((void*)0x0064F29C, 30); //Remove CAP player limit
+    patchBytesM((void*)0x0058DDC0, (BYTE*)"\xEB\x17\x90\x90\x90", 5); //Keeps the ability to raise/lower objects when park is full
+
+
+HXD Offsets:
+
+0xF3FEF
+EB 
+
+0x18C7D8
+EB
+
+0x18C82D
+EB
+
+18C852
+EB
+
+18C871
+EB
+
+18C89C
+90 90
+
+19D266
+90 x6
