@@ -7,3 +7,4 @@
 - QueenBee: By IronHawk
 - SceneConv: By Zedek the Plague Doctor ™
 - PreTool: By %.gone.
+- THPS Script Tools: By KSK
