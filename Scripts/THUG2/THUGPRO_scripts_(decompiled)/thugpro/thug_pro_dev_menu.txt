@@ -1,2 +1,1351 @@
 
-:i :end
+:i $THUG_Pro_DevMenu$ = %i(1,00000001)
+:i $THUG_Pro_Developer$ = %i(0,00000000)
+:i function $thugpro_reload_font_test$
+	:i $MemPushContext$$SkProUnloadable$
+	:i $texture$ = %s(25,"Testing/font_test_texture")
+	:i $UnLoadTexture$%GLOBAL%$texture$$dont_assert$
+	:i $wait$%i(1,00000001)$frame$
+	:i $LoadTexture$%GLOBAL%$texture$$dont_assert$$no_vram_alloc$
+	:i $wait$%i(1,00000001)$frame$
+	:i $MemPopContext$
+	:i if $ScreenElementExists$$id$ = $font_test_sprite$
+		:i $DestroyScreenElement$$id$ = $font_test_sprite$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $id$ = $font_test_sprite$
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $player1_panel_container$
+		:i $texture$ = $font_test_texture$
+		:i $scale$ = %f(1.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(400.000000,240.000000)
+	:i :s}
+:i endfunction
+:i function $test_dostuff$
+	:i $DoStuff$$array$ = :a{%s(5,"howdy"):a}
+:i endfunction
+:i function $DoStuff$
+	:i $FormatText$$TextName$ = $String01$%s(6,"01) %a")$a$ = %GLOBAL%$array$:a{%i(0,00000000):a}
+	:i $FormatText$$TextName$ = $String02$%s(6,"02) %a")$a$ =  (%GLOBAL%$array$) :a{%i(0,00000000):a}
+	:i $FormatText$$TextName$ = $String03$%s(6,"03) %a")$a$ =  (%GLOBAL%$array$:a{%i(0,00000000):a}) 
+	:i $FormatText$$TextName$ = $String04$%s(6,"04) %a")$a$ =  ( (%GLOBAL%$array$) :a{%i(0,00000000):a}) 
+	:i $create_console_message$:s{$text$ = %GLOBAL%$String01$:s}
+	:i $create_console_message$:s{$text$ = %GLOBAL%$String02$:s}
+	:i $create_console_message$:s{$text$ = %GLOBAL%$String03$:s}
+	:i $create_console_message$:s{$text$ = %GLOBAL%$String04$:s}
+	:i $create_console_message$:s{$text$ = %s(18,"------------------"):s}
+	:i $create_console_message$:s{$text$ =  (%GLOBAL%$array$:a{%i(0,00000000):a}) :s}
+	:i $create_console_message$:s{$text$ = %s(18,"------------------"):s}
+	:i $create_console_message$:s{$text$ =  ( (%GLOBAL%$array$) :a{%i(0,00000000):a}) :s}
+	:i $create_console_message$:s{$text$ = %s(18,"------------------"):s}
+:i endfunction
+:i function $thugpro_reload_themes_sprites$
+	:i $pre_file$ = %s(18,"thugpro_themes.pre")
+	:i $mem_context$ = $BottomUpHeap$
+	:i $textures$ = :a{
+		:i %s(38,"Themes/THUGPRO_NEW/BALANCE_GLOW_THAW_A")
+		:i %s(38,"Themes/THUGPRO_NEW/BALANCE_GLOW_THAW_B")
+		:i %s(38,"Themes/THUGPRO_NEW/BALANCE_GLOW_THUG_A")
+		:i %s(38,"Themes/THUGPRO_NEW/BALANCE_GLOW_THUG_B")
+		:i %s(39,"Themes/THUGPRO_NEW/BALANCE_GLOW_THUG2_A")
+		:i %s(39,"Themes/THUGPRO_NEW/BALANCE_GLOW_THUG2_B")
+		:i :a}
+	:i $load_array_of_textures$$dont_assert$ isNull 
+:i endfunction
+:i function $thugpro_reload_levels_qb$
+	:i $LoadPreFile$%s(14,"thugpro_qb.pre")
+	:i $UnLoadQb$%s(17,"qb\game\levels.qb")
+	:i $LoadQb$%s(17,"qb\game\levels.qb")
+	:i $UnLoadPreFile$%s(14,"thugpro_qb.pre")$dont_assert$
+:i endfunction
+:i function $thugpro_reload_theme_qb$
+	:i $SetScreenElementProps_IfExists$$id$ = $the_score_sprite$$texture$ = $white$
+	:i $SetScreenElementProps_IfExists$$id$ = $the_special_bar_special$$texture$ = $white$
+	:i $SetScreenElementProps_IfExists$$id$ = $the_special_bar_sprite$$texture$ = $white$
+	:i $SetScreenElementProps_IfExists$$id$ = $the_boardstance_sprite$$texture$ = $white$
+	:i $SetScreenElementProps_IfExists$$id$ = $generic_sponsor_logo$$texture$ = $white$
+	:i $SetScreenElementProps_IfExists$$id$ = $the_balance_meter$$texture$ = $white$
+	:i $THUGPRO_SetSpecialBarUpdateState$$off$
+	:i $destroy_panel_stuff$
+	:i $LoadPreFile$%s(14,"thugpro_qb.pre")
+	:i $UnLoadQb$%s(22,"qb\game\menu\themes.qb")
+	:i $LoadQb$%s(22,"qb\game\menu\themes.qb")
+	:i $UnLoadPreFile$%s(14,"thugpro_qb.pre")$dont_assert$
+	:i $create_panel_stuff$
+	:i $hide_all_hud_items$
+	:i $THUGPRO_SetSpecialBarUpdateState$$on$
+:i endfunction
+:i function $create_thug_pro_dev_menu$
+	:i $printf$%s(24,"create_thug_pro_dev_menu")
+	:i if $ScreenElementExists$$id$ = $menu_header_test_root$
+		:i $DestroyScreenElement$$id$ = $menu_header_test_root$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $thug_pro_menu_container$
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $make_new_menu$:s{
+		:i $parent$ = $thug_pro_menu_container$
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $dims$ = %vec2(640.000000,500.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $menu_id$ = $thug_pro_menu$
+		:i $vmenu_id$ = $thug_pro_vmenu$
+		:i $scrolling_menu_id$ = $thug_pro_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i if NOT $LevelIs$$Load_mainmenu$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $thug_pro_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$create_pause_menu$$params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $thug_pro_vmenu$
+			:i $event_handlers$ = :a{:s{$pad_back$$create_setup_options_menu$$params$ = :s{:s}:s}:a}
+			:i $replace_handlers$
+		:i :s}
+	:i endif
+	:i $AssignAlias$$id$ = $thug_pro_vmenu$$alias$ = $current_menu$
+	:i $AssignAlias$$id$ = $thug_pro_menu_container$$alias$ = $current_menu_anchor$
+	:i $create_menu_background_title$$title$ = %s(18,"thug pro developer")$bg_just$ = $left$$no_grain$
+	:i $make_thpg_menu_item$$text$ = %s(13,"\c5LIGHT TOOL")$pad_choose_script$ = $create_thug_pro_light_menu$
+	:i $make_thpg_menu_item$$text$ = %s(16,"\c3debug options")$pad_choose_script$ = $create_debug_options_menu$
+	:i $make_thpg_menu_item$$text$ = %s(16,"\c3enable viewer")$pad_choose_script$ = $test_enable_viewer$
+	:i %GLOBAL%$menu_params$ = :s{
+		:i $menu_items$ = :a{:s{$text$ = %s(6,"reload")$id$ = $_reload$$pad_choose_script$ = $reload_test_scene$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(7,"cleanup")$id$ = $_cleanup$$pad_choose_script$ = $cleanup_before_loading_level$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(6,"editor")$id$ = $_test_leveleditor$$pad_choose_script$ = $test_leveleditor$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(15,"load test scene")$id$ = $_load_test_scene$$pad_choose_script$ = $load_test_scene$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(13,"load test col")$id$ = $_load_test_col$$pad_choose_script$ = $load_test_col$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(13,"load test sky")$id$ = $_load_test_sky$$pad_choose_script$ = $load_test_sky$$pad_choose_params$ = :s{:s}:s}:s{$text$ = %s(10,"more stuff")$id$ = $__create_new_protrick_menu$$pad_choose_script$ = $create_new_protrick_menu$$pad_choose_params$ = :s{:s}:s}:a}:s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(19,"level stuff testing")
+		:i $id$ = $submenu_testID$
+		:i $pad_choose_script$ = $thugpro_create_item_submenu$
+		:i $pad_choose_params$ = %GLOBAL%$menu_params$
+		:i $pad_right_script$ = $thugpro_create_item_submenu$
+		:i $pad_right_params$ = %GLOBAL%$menu_params$:s}
+	:i $RemoveParameter$$menu_params$
+	:i %GLOBAL%$menu_params$ = :s{
+		:i $menu_items$ = :a{
+			:i :s{$text$ = %s(12,"uglytest new")$id$ = $_uglytest_new$$pad_choose_script$ = $uglytest_new$$pad_choose_params$ = :s{:s}:s}
+			:i :s{$text$ = %s(9,"uglytest1")$id$ = $_uglytest1$$pad_choose_script$ = $uglytest1$$pad_choose_params$ = :s{:s}:s}
+			:i :s{$text$ = %s(9,"uglytest2")$id$ = $_uglytest2$$pad_choose_script$ = $uglytest2$$pad_choose_params$ = :s{:s}:s}
+			:i :s{$text$ = %s(9,"uglytest3")$id$ = $_uglytest3$$pad_choose_script$ = $uglytest3$$pad_choose_params$ = :s{:s}:s}
+			:i :s{$text$ = %s(18,"_skaterdebugthingy")$id$ = $_skaterdebugthingy$$pad_choose_script$ = $MenuCallback_SkaterStateDebugLoop$$pad_choose_params$ = :s{:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_thpg_menu_item$:s{
+		:i $text$ = %s(12,"test scripts")
+		:i $id$ = $submenu_test2ID$
+		:i $pad_choose_script$ = $thugpro_create_item_submenu$
+		:i $pad_choose_params$ = %GLOBAL%$menu_params$
+		:i $pad_right_script$ = $thugpro_create_item_submenu$
+		:i $pad_right_params$ = %GLOBAL%$menu_params$
+	:i :s}
+	:i $make_thpg_menu_item$$text$ = %s(18,"Launch Anim Viewer")$pad_choose_script$ = $launch_animviewer$
+	:i $make_thpg_menu_item$$text$ = %s(17,"observe test menu")$pad_choose_script$ = $create_observe_menu$
+	:i $make_thpg_menu_item$$text$ = %s(15,"procrastination")$pad_choose_script$ = $ProCrastination_Create_Menu$
+	:i $make_thpg_menu_item$$text$ = %s(9,"ksk test2")$pad_choose_script$ = $Ksk_ShowPos$
+	:i $make_thpg_menu_item$$text$ = %s(16,"reload levels qb")$pad_choose_script$ = $thugpro_reload_levels_qb$
+	:i $create_helper_text$$generic_helper_text$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $Ksk_ShowPos$
+	:i $GetSkaterPosition$
+	:i $FormatText$$TextName$ = $MessageText$%s(17,"x: %s y: %i z: %j")$s$ = %GLOBAL%$x$$i$ = %GLOBAL%$y$$j$ = %GLOBAL%$z$
+	:i $create_console_message$$text$ = %GLOBAL%$MessageText$
+:i endfunction
+:i function $_cleanup$
+	:i $Cleanup$
+:i endfunction
+:i $is_my_scene_loaded$ = %i(0,00000000)
+:i $is_my_scene_init$ = %i(0,00000000)
+:i function $__morten_reload_scene$
+	:i if NOT $IsTrue$$is_my_scene_init$
+		:i $Cleanup$
+		:i $Change$$is_my_scene_init$ = %i(1,00000001)
+		:i return
+		
+	:i endif
+	:i $printf$%s(22,"engine_link_load_scene")
+	:i if NOT $IsTrue$$is_my_scene_loaded$
+		:i $LoadScene$$scene$ = %s(11,"default_sky")
+		:i $Change$$is_test_sky_loaded$ = %i(1,00000001)
+	:i endif
+	:i if $IsTrue$$is_my_scene_loaded$
+		:i $UnloadScene$$scene$ = %s(4,"oslo")
+		:i $UnloadCollision$$scene$ = %s(4,"oslo")
+		:i $wait$%i(5,00000005)$frames$
+	:i endif
+	:i $LoadScene$$scene$ = %s(4,"oslo")
+	:i $LoadCollision$$scene$ = %s(4,"oslo")
+	:i $Change$$is_my_scene_loaded$ = %i(1,00000001)
+:i endfunction
+:i $SkProSandbox_tod_afternoon_params$ = :s{
+	:i $state_length$ = %i(90000,00015f90)
+	:i $entry_script$ = $nullscript$
+	:i $lev_red$ = %i(128,00000080)
+	:i $lev_green$ = %i(128,00000080)
+	:i $lev_blue$ = %i(128,00000080)
+	:i $sky_red$ = %i(128,00000080)
+	:i $sky_green$ = %i(128,00000080)
+	:i $sky_blue$ = %i(128,00000080)
+	:i $ambient_mod_factor_lo$ = %f(0.300000)
+	:i $ambient_mod_factor_hi$ = %f(0.050000)
+	:i $ambient_red$ = %i(32,00000020)
+	:i $ambient_green$ = %i(34,00000022)
+	:i $ambient_blue$ = %i(46,0000002e)
+	:i $heading_0$ = %f(60.000000)
+	:i $pitch_0$ = %f(330.000000)
+	:i $red_0$ = %i(102,00000066)
+	:i $green_0$ = %i(104,00000068)
+	:i $blue_0$ = %i(107,0000006b)
+	:i $mod_factor_0_lo$ = %f(0.000000)
+	:i $mod_factor_0_hi$ = %f(0.000000)
+	:i $heading_1$ = %f(245.000000)
+	:i $pitch_1$ = %f(330.000000)
+	:i $red_1$ = %i(59,0000003b)
+	:i $green_1$ = %i(56,00000038)
+	:i $blue_1$ = %i(55,00000037)
+	:i $mod_factor_1_lo$ = %f(0.000000)
+	:i $mod_factor_1_hi$ = %f(0.000000)
+	:i $fog_on$ = %i(0,00000000)
+	:i $fog_red$ = %i(68,00000044)
+	:i $fog_green$ = %i(88,00000058)
+	:i $fog_blue$ = %i(128,00000080)
+	:i $fog_alpha$ = %i(0,00000000)
+	:i $fog_dist$ = %i(200000,00030d40)
+	:i $sun_theta$ = %f(0.000000)
+	:i $sun_phi$ = %f(20.000000)
+	:i $sun_red$ = %f(255.000000)
+	:i $sun_green$ = %f(255.000000)
+	:i $sun_blue$ = %f(255.000000)
+	:i $bloom_on$ = %i(1,00000001)
+	:i $bloom1$ = %i(25,00000019)
+	:i $bloom2$ = %i(50,00000032)
+	:i $bloom_color$ = :a{%i(110,0000006e);%i(116,00000074);%i(126,0000007e):a}
+:i :s}
+:i function $uglytest_crash$
+	:i $printf$%s(16,"--- crash me ---")
+	:i $wait$%i(1,00000001)$seconds$
+	:i $printf$%s(9,"128 chars")
+	:i $wait$%i(1,00000001)$seconds$
+	:i $create_console_message$$text$ = %s(128,"P68vpsqPMPnCwDG9xCAlTO94ZfqBqW13M1qO9ZJL5BmU2AoLOvlHJ4OT2BLxMXoFpflEo5Y99OTwvfFcwBvFfvz4TnyaIQ7WD1x1ezssqs09QkxBz05mg39TL5lWOdIz")
+	:i $printf$%s(9,"255 chars")
+	:i $wait$%i(1,00000001)$seconds$
+	:i $create_console_message$$text$ = %s(255,"P68vpsqPMPnCwDG9xCAlTO94ZfqBqW13M1qO9ZJL5BmU2AoLOvlHJ4OT2BLxMXoFpflEo5Y99OTwvfFcwBvFfvz4TnyaIQ7WD1x1ezssqs09QkxBz05mg39TL5lWOdIzoXOylPUQDvSWWWRHk7A190gWl8qnSBRZfOxV8eCOSwVM2AJlRcNNrNrKd4q3iUAw4ENzgUBac4d9SOXYqZAuyXTFiRYpG8tLLwyFiEoHX0SZJPuUOodIeOJkwmL5lWO")
+:i endfunction
+:i function $uglytest_new$
+	:i $goal_initialize_skater$$control_type$ = $MiniBajaCar$$restart_node$ = $TRG_Restart$
+:i endfunction
+:i function $sandbox_test_land_exception$
+	:i $Obj_PlaySound$$HUDtrickslopC$
+	:i $ResetScorePot$$UseBailStyle$
+	:i $ClearEventHandlerGroup$$sandbox_skater_exeption_group$
+	:i $create_panel_message$:s{
+		:i $text$ = %s(7,"Failed!")
+		:i $id$ = $sandbox_message_landed$
+		:i $style$ = $panel_message_generic_loss$
+	:i :s}
+	:i $FormatText$$TextName$ = $state_name$%s(2,"%a")$a$ = %GLOBAL%$EventName$
+	:i $create_panel_message$:s{
+		:i $text$ = %GLOBAL%$state_name$
+		:i $id$ = $sandbox_message_state$
+		:i $style$ = $focustimelimit_style$
+	:i :s}
+	:i $wait$%i(100,00000064)$gameframes$
+	:i $SpawnScript$$sandbox_restart_challenge$
+:i endfunction
+:i function $sandbox_test_events$
+:i endfunction
+:i function $sandbox_highlight_object$
+	:i $SetLightGroup$$name$ = %GLOBAL%$name$$light_group$ = $sandbox_light_group$
+	:i $SetObjectColor$$name$ = %GLOBAL%$name$$Color$ = %GLOBAL%$Color$
+:i endfunction
+:i function $SandboxReportEvent$
+	:i $FormatText$$TextName$ = $state_name$%s(2,"%a")$a$ = %GLOBAL%$EventName$
+	:i $create_panel_message$:s{
+		:i $text$ = %GLOBAL%$state_name$
+		:i $id$ = $sandbox_message_landed$
+	:i :s}
+:i endfunction
+:i function $sandbox_test_event_listener$
+	:i $wait$%i(120,00000078)$gameframes$
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterLanded$
+		:i $params$ = :s{$EventName$ = $SkaterLanded$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterBail$
+		:i $params$ = :s{$EventName$ = $SkaterEnterBail$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterExitBail$
+		:i $params$ = :s{$EventName$ = $SkaterExitBail$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterManual$
+		:i $params$ = :s{$EventName$ = $SkaterEnterManual$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterSkitch$
+		:i $params$ = :s{$EventName$ = $SkaterEnterSkitch$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterExitRevert$
+		:i $params$ = :s{$EventName$ = $SkaterExitRevert$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterHang$
+		:i $params$ = :s{$EventName$ = $SkaterEnterHang$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterWalking$
+		:i $params$ = :s{$EventName$ = $SkaterEnterWalking$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterEnterLadder$
+		:i $params$ = :s{$EventName$ = $SkaterEnterLadder$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterBailed$
+		:i $params$ = :s{$EventName$ = $SkaterBailed$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $SetEventHandler$:s{
+		:i $Ex$ = $SkaterExitCombo$
+		:i $params$ = :s{$EventName$ = $SkaterExitCombo$:s}
+		:i $Scr$ = $sandbox_test_land_exception$
+		:i $Group$ = $sandbox_skater_exeption_group$
+	:i :s}
+	:i $Block$
+:i endfunction
+:i function $sandbox_test_events$
+	:i $KillSpawnedScript$$name$ = $sandbox_test_event_listener$
+	:i $SpawnScript$$sandbox_test_event_listener$
+:i endfunction
+:i function $sandbox_restart_challenge$
+	:i $ClearEventHandlerGroup$$sandbox_skater_exeption_group$
+	:i $Debounce$$x$$time$ = %f(0.500000)$clear$ = %i(1,00000001)
+	:i $KillSpawnedScript$$name$ = $sandbox_test_event_listener$
+	:i $GetSkaterId$
+	:i $ResetSkaters$$RestartWalking$
+	:i %GLOBAL%$objID$.$PausePhysics$
+	:i if $LevelIs$$load_nj$
+		:i %GLOBAL%$objID$.$Obj_SetPosition$$Position$ = %vec3(-14900.000000,334.350006,-1560.000000)
+	:i endif
+	:i %GLOBAL%$objID$.$Obj_SpawnScript$$sandbox_test_event_listener$
+	:i $MakeSkaterGoto$$SkaterInit$
+	:i $wait$%i(10,0000000a)$gameframes$
+	:i $MakeSkaterGoto$$HandBrake$
+:i endfunction
+:i function $component_test_script$
+	:i $printf$%s(23,"component_test_script..")
+	:i $GetSkaterId$
+	:i %GLOBAL%$objID$.$Obj_SpawnScript$$sandbox_restart_challenge$
+	:i if $LevelIs$$load_nj$
+		:i $objects$ = :a{
+			:i :s{
+				:i $name$ = $NJ_NewHospital$
+				:i $Color$ = %i(4278222848,ff008000)
+			:i :s}
+			:i :s{
+				:i $name$ = $Hospital_High$
+				:i $Color$ = %i(4278222848,ff008000)
+			:i :s}
+			:i :s{
+				:i $name$ = $Hospital_Med$
+				:i $Color$ = %i(4278222848,ff008000)
+			:i :s}
+			:i :s{
+				:i $name$ = $HousePorch08$
+				:i $Color$ = %i(4278255615,ff00ffff)
+			:i :s}
+			:i :s{
+				:i $name$ = $HousePorch02$
+				:i $Color$ = %i(4278255615,ff00ffff)
+			:i :s}
+			:i :s{
+				:i $name$ = $Clinic_01$
+				:i $Color$ = %i(4278255615,ff00ffff)
+			:i :s}
+			:i :a}
+		:i $ForEachIn$%GLOBAL%$objects$$Do$ = $sandbox_highlight_object$
+	:i endif
+	:i if $ObjectExists$$id$ = $coll_sphere_test01$
+		:i $coll_sphere_test01$.$Die$
+	:i endif
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = :a{
+			:i :s{
+				:i $Component$ = $Model$
+				:i $Model$ = %s(39,"GameObjects\Secret_Tape\Secret_Tape.mdl")
+			:i :s}
+			:i :s{
+				:i $Component$ = $Collision$
+				:i $CollisionMode$ = $Geometry$
+			:i :s}
+			:i :s{
+				:i $Component$ = $Motion$
+			:i :s}
+			:i :a}
+		:i $params$ = :s{
+			:i $name$ = $coll_sphere_test01$
+			:i $pos$ = %vec3(-14900.000000,343.350006,-1560.000000)
+		:i :s}
+	:i :s}
+:i endfunction
+:i $current_team_color_index$ = %i(0,00000000)
+:i function $destroy_test_vehicle$
+	:i if $ObjectExists$$id$ = $StaticVehicleTest$
+		:i $StaticVehicleTest$.$Die$
+	:i endif
+:i endfunction
+:i function $create_test_vehicle$$control_type$ = $MiniBajaCar$
+	:i $Skater$.$GetLastGroundPos$
+	:i if NOT $ObjectExists$$id$ = $StaticVehicleTest$
+		:i $GetVehicleSetup$$control_type$ = %GLOBAL%$control_type$
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = :a{
+				:i :s{
+					:i $Component$ = $setdisplaymatrix$
+				:i :s}
+				:i :s{
+					:i $Component$ = $Motion$
+				:i :s}
+				:i :s{
+					:i $Component$ = $Model$
+					:i $Model$ = %s(45,"GameObjects\scavenger_coin\scavenger_coin.mdl")
+					:i $UseModelLights$
+				:i :s}
+				:i :s{
+					:i $Component$ = $modellightupdate$
+				:i :s}
+				:i :a}
+			:i $params$ = :s{
+				:i $name$ = $StaticVehicleTest$
+				:i $pos$ = %GLOBAL%$pos$
+			:i :s}
+		:i :s}
+	:i else 
+		:i $StaticVehicleTest$.$Obj_SetPosition$$Position$ = %GLOBAL%$pos$
+		:i switch  ($current_team_color_index$) 
+			:i case %i(0,00000000)
+				:i $StaticVehicleTest$.$Obj_SetColorRGB$$r$ = %i(102,00000066)$g$ = %i(26,0000001a)$b$ = %i(8,00000008)
+				:i endcase
+			case %i(1,00000001)
+				:i $StaticVehicleTest$.$Obj_SetColorRGB$$r$ = %i(17,00000011)$g$ = %i(64,00000040)$b$ = %i(116,00000074)
+				:i endcase
+			case %i(2,00000002)
+				:i $StaticVehicleTest$.$Obj_SetColorRGB$$r$ = %i(9,00000009)$g$ = %i(107,0000006b)$b$ = %i(36,00000024)
+				:i endcase
+			case %i(3,00000003)
+				:i $StaticVehicleTest$.$Obj_SetColorRGB$$r$ = %i(123,0000007b)$g$ = %i(99,00000063)$b$ = %i(3,00000003)
+				:i end_switch
+		
+		:i $index_next_wraparound$$index$ =  ($current_team_color_index$) $max$ = %i(4,00000004)
+		:i $Change$$current_team_color_index$ = %GLOBAL%$index$
+	:i endif
+:i endfunction
+:i function $skater_look_at_test$
+	:i $Skater$.$GetLastGroundPos$
+	:i $look_at_params$ = :s{
+		:i $id$ = $SkaterLookAtTest$
+		:i $focus_point$ = %GLOBAL%$pos$
+		:i $focus_offset$ = %vec3(0.000000,0.000000,0.000000)
+		:i $max_angles$ = %vec3(360.000000,360.000000,360.000000)
+		:i $min_angles$ = %vec3(-360.000000,-360.000000,-360.000000)
+		:i $bone$ = $Bone_Head$
+		:i $weight$ = %f(100.000000)
+		:i $axis$ = %i(2,00000002)
+		:i $do_not_clamp_angles$
+		:i $Enable$
+	:i :s}
+	:i $Skater$.$PlaySequence$:s{
+		:i $type$ = $LookAt$
+		:i $id$ = $SkaterLookAtTest$
+		:i $lookatparams$ = %GLOBAL%$look_at_params$
+		:i $AnimName$ = $Idle$
+		:i $StartTime$ = %i(0,00000000)
+		:i $blendperiod$ = %i(0,00000000)
+		:i $speed$ = %i(100,00000064)
+	:i :s}
+	:i $wait$%i(2,00000002)$seconds$
+:i endfunction
+:i function $skater_look_at_init$
+:i endfunction
+:i function $uglytest1$
+	:i if $ObjectExists$$id$ = $PlayerVehicle$
+		:i $Skater$.$Hide$
+		:i $PlayerVehicle$.$Vehicle_PlaceBeforeCamera$
+	:i endif
+:i endfunction
+:i $current_vehicle_skin$ = %i(0,00000000)
+:i $vehicle_skins$ = :a{
+	:i :s{
+		:i $front_texture$ = %s(41,"textures/cars/veh_minibaja/dt_frontplateb")
+		:i $back_texture$ = %s(41,"textures/cars/veh_minibaja/dt_bajaside02b")
+		:i $side_texture$ = %s(40,"textures/cars/veh_minibaja/dt_bajaside0b")
+		:i $logo_texture$ = %s(32,"textures/cars/veh_minibaja/dt_69")
+		:i $flag_texture$ = %s(34,"textures/cars/veh_minibaja/dt_flag")
+	:i :s}
+	:i :s{
+		:i $front_texture$ = %s(47,"textures/cars/veh_minibaja/dt_frontplateb_green")
+		:i $back_texture$ = %s(47,"textures/cars/veh_minibaja/dt_bajaside02b_green")
+		:i $side_texture$ = %s(46,"textures/cars/veh_minibaja/dt_bajaside0b_green")
+		:i $logo_texture$ = %s(41,"textures/cars/JKU_LightCircle_Transparent")
+		:i $flag_texture$ = %s(40,"textures/cars/veh_minibaja/dt_flag_green")
+	:i :s}
+	:i :s{
+		:i $front_texture$ = %s(46,"textures/cars/veh_minibaja/dt_frontplateb_blue")
+		:i $back_texture$ = %s(46,"textures/cars/veh_minibaja/dt_bajaside02b_blue")
+		:i $side_texture$ = %s(45,"textures/cars/veh_minibaja/dt_bajaside0b_blue")
+		:i $logo_texture$ = %s(41,"textures/cars/JKU_LightCircle_Transparent")
+		:i $flag_texture$ = %s(39,"textures/cars/veh_minibaja/dt_flag_blue")
+	:i :s}
+	:i :s{
+		:i $front_texture$ = %s(26,"images/CAGR/base_deck_wood")
+		:i $back_texture$ = %s(26,"images/CAGR/base_deck_wood")
+		:i $side_texture$ = %s(26,"images/CAGR/base_deck_wood")
+		:i $logo_texture$ = %s(29,"images/CAGR/Corporate/corp_15")
+		:i $flag_texture$ = %s(26,"images/CAGR/base_deck_wood")
+	:i :s}
+	:i :s{
+		:i $front_texture$ = %s(41,"textures/cars/veh_minibaja/dt_frontplateb")
+		:i $back_texture$ = %s(41,"textures/cars/veh_minibaja/dt_bajaside02b")
+		:i $side_texture$ = %s(40,"textures/cars/veh_minibaja/dt_bajaside0b")
+		:i $logo_texture$ = %s(31,"images/thugpro/tags/tag_thugpro")
+		:i $flag_texture$ = %s(34,"textures/cars/veh_minibaja/dt_flag")
+	:i :s}
+	:i :s{
+		:i $front_texture$ = %s(25,"textures/boards/al_team01")
+		:i $back_texture$ = %s(25,"textures/boards/al_team01")
+		:i $side_texture$ = %s(25,"textures/boards/al_team01")
+		:i $logo_texture$ = %s(28,"textures/logos/hat_68skate01")
+		:i $flag_texture$ = %s(34,"textures/cars/veh_minibaja/dt_flag")
+	:i :s}
+	:i :a}
+:i function $uglytest2$
+	:i if $ObjectExists$$id$ = $PlayerVehicle$
+		:i $array_next_wraparound$$index$ =  ($current_vehicle_skin$) $array$ =  ($vehicle_skins$) 
+		:i $Change$$current_vehicle_skin$ = %GLOBAL%$index$
+		:i $PlayerVehicle$.$Obj_ReplaceTexture$:s{
+			:i $array$ = :a{
+				:i :s{$src$ = %s(18,"dt_frontplateb.png")$dest$ =  ( ( ($vehicle_skins$) :a{%GLOBAL%$index$:a}) ->$front_texture$) :s}
+				:i :s{$src$ = %s(18,"dt_bajaside02b.png")$dest$ =  ( ( ($vehicle_skins$) :a{%GLOBAL%$index$:a}) ->$back_texture$) :s}
+				:i :s{$src$ = %s(17,"dt_bajaside0b.png")$dest$ =  ( ( ($vehicle_skins$) :a{%GLOBAL%$index$:a}) ->$side_texture$) :s}
+				:i :s{$src$ = %s(9,"dt_69.png")$dest$ =  ( ( ($vehicle_skins$) :a{%GLOBAL%$index$:a}) ->$logo_texture$) :s}
+				:i :s{$src$ = %s(11,"dt_flag.png")$dest$ =  ( ( ($vehicle_skins$) :a{%GLOBAL%$index$:a}) ->$flag_texture$) :s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $create_level_driveable_vehicles$
+	:i if NOT $IsAlive$$name$ = $TRG_Driveable_Car$
+		:i $Create$$name$ = $TRG_Driveable_Car$
+	:i endif
+	:i if NOT $IsAlive$$name$ = $TRG_Car_Drivable01$
+		:i $Create$$name$ = $TRG_Car_Drivable01$
+	:i endif
+	:i if NOT $IsAlive$$name$ = $TRG_Veh_Baja$
+		:i $Create$$name$ = $TRG_Veh_Baja$
+	:i endif
+	:i if NOT $IsAlive$$name$ = $TRG_G_parkedcar$
+		:i $Create$$name$ = $TRG_G_parkedcar$
+	:i endif
+	:i if NOT $IsAlive$$name$ = $TRG_NY_DriveableCar_Impala01$
+		:i $Create$$name$ = $TRG_NY_DriveableCar_Impala01$
+	:i endif
+	:i if NOT $IsAlive$$name$ = $TRG_Driveable_GardKart$
+		:i $Create$$name$ = $TRG_Driveable_GardKart$
+	:i endif
+:i endfunction
+:i function $uglytest3$
+	:i if $ObjectExists$$id$ = $PlayerVehicle$
+		:i $PlayerVehicle$.$Obj_ReplaceTexture$$src$ = %s(9,"dt_69.png")$dest$ = %s(32,"images/CAGR/illustrations/ill_32")
+	:i endif
+:i endfunction
+:i function $uglytest_ui$
+	:i if $ObjectExists$$id$ = $net_ui_calibration_container$
+		:i $DestroyScreenElement$$id$ = $net_ui_calibration_container$
+	:i endif
+	:i $LoadTexture$$no_vram_alloc$%s(18,"CAGR/Logos/logo_13")$dont_assert$
+	:i $CopyTexture$$src$ = $logo_13$$new$ = $sprite_circle_hq$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $net_ui_calibration_container$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $cross_line1$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,224.500000)
+		:i $scale$ = %vec2(20.000000,0.500000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2404,00000964)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $cross_line2$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,224.500000)
+		:i $scale$ = %vec2(0.500000,20.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2404,00000964)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $cross_line1_bg$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,224.500000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $cross_line2_bg$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,224.500000)
+		:i $scale$ = %vec2(0.300000,150.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line1$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,15.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line2$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,30.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line3$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,45.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line_vertical_1$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(-20.000000,224.000000)
+		:i $scale$ = %vec2(0.300000,150.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line_vertical_2$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(-40.000000,224.000000)
+		:i $scale$ = %vec2(0.300000,150.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line_vertical_3$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(660.000000,224.000000)
+		:i $scale$ = %vec2(0.300000,150.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_bounds_line_vertical_4$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(680.000000,224.000000)
+		:i $scale$ = %vec2(0.300000,150.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_skater_names_line_top$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,80.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_skater_names_line_bottom$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,200.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_chat_line_top$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,250.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_panel_msg_perfect_line_top$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,330.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_panel_msg_perfect_line_mid$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,350.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_base_score_line_top$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,370.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_base_score_line_bottom$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,390.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_trick_string_line_separator_1$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,405.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.700000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_trick_string_line_separator_2$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,420.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.700000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $net_ui_calibration_container$
+		:i $id$ = $hud_trick_string_line_bottom$
+		:i $texture$ = $white$
+		:i $pos$ = %vec2(320.000000,435.000000)
+		:i $scale$ = %vec2(180.000000,0.300000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $z_priority$ = %i(2403,00000963)
+		:i $alpha$ = %f(0.800000)
+		:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+:i endfunction
+:i $is_test_sky_loaded$ = %i(0,00000000)
+:i $is_test_scene_loaded$ = %i(0,00000000)
+:i function $engine_link_create_camera$
+	:i $printf$%s(25,"engine_link_create_camera")
+	:i if NOT $ObjectExists$$id$ = $engine_link_cam$
+		:i $MemPushContext$$FrontEndHeap$
+		:i $printf$%s(33,"Creating camera on front end heap")
+		:i $CreateCompositeObject$:s{
+			:i $Components$ = $menucam_composite_structure$
+			:i $params$ = :s{$name$ = $engine_link_cam$:s}
+		:i :s}
+		:i $MemPopContext$
+	:i endif
+:i endfunction
+:i function $engine_link_look_at$
+	:i $printf$%s(19,"engine_link_look_at")
+	:i $camera_pos$ = %vec3(51.639000,540.057983,-364.644012)
+	:i $camera_dir$ = %vec3(0.047000,0.744000,-0.667000)
+	:i if NOT $ObjectExists$$id$ = $engine_link_cam$
+		:i $engine_link_create_camera$
+	:i endif
+	:i $engine_link_cam$.$unpause$
+	:i $engine_link_cam$.$Obj_SetPosition$$Position$ = %GLOBAL%$camera_pos$
+	:i $engine_link_cam$.$Obj_SetOrientation$$dir$ = %GLOBAL%$camera_dir$
+	:i $SetActiveCamera$$id$ = $engine_link_cam$
+:i endfunction
+:i function $engine_link_cleanup$
+	:i $Change$$is_test_sky_loaded$ = %i(0,00000000)
+	:i $Change$$is_test_scene_loaded$ = %i(0,00000000)
+	:i $restore_skater_camera$
+	:i $cleanup_before_loading_level$
+:i endfunction
+:i function $engine_link_reload_scene$
+	:i $printf$%s(22,"engine_link_load_scene")
+	:i if NOT $IsTrue$$is_test_scene_loaded$
+		:i $LoadScene$$scene$ = %s(11,"default_sky")
+		:i $Change$$is_test_sky_loaded$ = %i(1,00000001)
+	:i endif
+	:i if $IsTrue$$is_test_scene_loaded$
+		:i $UnloadScene$$scene$ = %s(4,"test")
+		:i $wait$%i(5,00000005)$frames$
+	:i endif
+	:i $LoadScene$$scene$ = %s(4,"test")
+	:i $Change$$is_test_scene_loaded$ = %i(1,00000001)
+:i endfunction
+:i function $launch_animviewer$
+	:i $change_level$$level$ = $load_animviewer$
+:i endfunction
+:i function $load_animviewer$
+	:i $load_level$$level_animviewer$
+:i endfunction
+:i $level_animviewer$ = :s{
+	:i $structure_name$ = $level_animviewer$
+	:i $load_script$ = $load_animviewer$
+	:i $name$ = %s(10,"animviewer")
+	:i $level$ = %s(12,"SkProDefault")
+	:i $NoScene$
+	:i $Default_Sky$
+	:i $pre$ = %s(24,"SkProDefault_Scripts.pre")
+	:i $qb$ = %s(35,"levels\SkProDefault\SkProDefault.qb")
+	:i $level_qb$ = %s(43,"levels\SkProDefault\SkProDefault_scripts.qb")
+	:i $startup_script$ = $animviewer_Startup$
+	:i $goals_script$ = $SkProDefault_goals$
+	:i $setup_script$ = $SkProDefault_setup$
+	:i $viewer_mode$ = %i(1,00000001)
+	:i $loading_time$ = %f(9.500000)
+	:i $level_number$ = $LevelNum_Default$
+:i :s}
+:i function $animviewer_reload_anims$
+	:i $THUGPRO_ReloadViewerAnims$
+:i endfunction
+:i function $animviewer_update_viewer_text$
+	:i if $ObjectExists$$id$ = $vo_line1$
+		:i $SetScreenElementProps$:s{$id$ = $vo_line1$$text$ = %GLOBAL%$line1$:s}
+	:i else 
+		:i $create_panel_message$$id$ = $vo_line1$$text$ = %GLOBAL%$line1$$style$ = $panel_message_viewobj_line$$params$ = :s{$xy$ = %vec2(40.000000,380.000000):s}
+	:i endif
+:i endfunction
+:i function $animviewer_load_anim$
+	:i $SetReferenceChecksum$$THPS6_human$
+	:i $UnloadAnim$$name$ = %GLOBAL%$AnimFilename$$descChecksum$ = %GLOBAL%$descChecksum$
+	:i if NOT $LoadAnim$$name$ = %GLOBAL%$AnimFilename$$descChecksum$ = %GLOBAL%$descChecksum$
+		:i $edmsg2$%s(25,"\c2FAILED TO LOAD ANIM %a")$a$ = %GLOBAL%$descChecksum$
+	:i endif
+	:i $SetReferenceChecksum$%i(0,00000000)
+:i endfunction
+:i function $animviewer_change_anim$
+	:i if $THUGPRO_GetViewerAnim$ isNull 
+		:i $view_model$:s{$skater_profile_index$ = %i(0,00000000)$animLoadScript$ = $animload_thps6_human$$skeletonName$ = $THPS6_human$$AnimEventTableName$ = $SkaterAnimEventTable$$defaultAnim$ = %GLOBAL%$anim$
+		:i :s}
+		:i $FormatText$$TextName$ = $line1_text$%s(17,"name %s (%i / %a)")$s$ = %GLOBAL%$AnimName$$i$ =  (%GLOBAL%$animIndex$ + %i(1,00000001)) $a$ = %GLOBAL%$animCount$
+		:i $animviewer_update_viewer_text$$line1$ = %GLOBAL%$line1_text$
+	:i endif
+	:i $Skater$.$Hide$
+:i endfunction
+:i function $animviewer_exit$
+	:i $THUGPROResetViewer$
+	:i $Change$$disable_user_button_scripts$ = %i(0,00000000)
+	:i $Change$$UsePlayerPosForViewerObjPos$ = %i(1,00000001)
+	:i $SetAnalogStickActiveForMenus$%i(1,00000001)
+	:i $SetPositionalSoundSilenceOverrideMode$%i(0,00000000)
+	:i $Skater$.$unhide$
+	:i $destroy_menu_background_title$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $dialog_box_exit$
+	:i $change_level$$level$ = $Load_mainmenu$
+:i endfunction
+:i function $animviewer_Startup$
+	:i $Change$$view_mode$ = %i(1,00000001)
+	:i $SetViewMode$%i(1,00000001)
+	:i $Change$$UsePlayerPosForViewerObjPos$ = %i(0,00000000)
+	:i $Change$$disable_user_button_scripts$ = %i(1,00000001)
+	:i $destroy_menu_background_title$
+	:i $SetAnalogStickActiveForMenus$%i(0,00000000)
+	:i $SetPositionalSoundSilenceOverrideMode$%i(1,00000001)
+	:i $make_new_menu$$menu_id$ = $view_models_menu$$vmenu_id$ = $view_models_vmenu$$menu_title$ = %s(6,"MODELS")$type$ = $VScrollingMenu$$dims$ = %vec2(320.000000,200.000000)$pos$ = %vec2(30.000000,20.000000)
+	:i $SetScreenElementProps$:s{$id$ = $view_models_menu$$event_handlers$ = :a{
+			:i :a}
+	:i :s}
+	:i $make_select_view_model_line$$text$ = %s(4,"Init")$skater_profile_index$ = %i(0,00000000)$animLoadScript$ = $animload_thps6_human$$skeletonName$ = $THPS6_human$$AnimEventTableName$ = $SkaterAnimEventTable$
+	:i $make_simple_line$$text$ = %s(10,"Load Anims")$pad_choose_script$ = $animviewer_reload_anims$
+	:i $make_simple_line$$text$ = %s(9,"Next Anim")$pad_choose_script$ = $animviewer_change_anim$$pad_choose_params$ = :s{$next$:s}
+	:i $make_simple_line$$text$ = %s(10,"Prev. Anim")$pad_choose_script$ = $animviewer_change_anim$$pad_choose_params$ = :s{$prev$:s}
+	:i $make_simple_line$$text$ = %s(4,"Exit")$pad_choose_script$ = $animviewer_exit$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$
+	:i $Skater$.$Hide$
+:i endfunction
+:i function $3d_text_wait_and_die$$time$ = %i(1500,000005dc)
+	:i $wait$%GLOBAL%$time$
+	:i $Change$$NUM_3D_TEXT_ITEMS$ =  ( ($NUM_3D_TEXT_ITEMS$)  - %i(1,00000001)) 
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $3d_box_wait_and_die$$time$ = %i(120000,0001d4c0)
+	:i $wait$%GLOBAL%$time$
+	:i $Die$
+:i endfunction
+:i $NUM_3D_TEXT_ITEMS$ = %i(0,00000000)
+:i function $thugpro_test_show_feeler_collision$
+	:i return
+	
+	:i $FormatText$$ChecksumName$ = $feeler_name$%s(14,"feeler_test_%a")$a$ = %GLOBAL%$dist$
+	:i if $ObjectExists$$id$ = %GLOBAL%$feeler_name$
+		:i %GLOBAL%$feeler_name$.$Die$
+	:i endif
+	:i $FormatText$$ChecksumName$ = $feeler_text_name$%s(14,"feeler_%a_text")$a$ =  ($NUM_3D_TEXT_ITEMS$) 
+	:i $x$ = %f(0.020000)
+	:i $y$ = %f(0.020000)
+	:i $z$ = %f(0.020000)
+	:i switch %GLOBAL%$type$
+		:i case %i(0,00000000)
+			:i $Model$ = %s(39,"leveleditor\wireframe\node\node_red.mdl")
+			:i $FormatText$$TextName$ = $feeler_text$%s(11,"\c2%n    %a")$n$ = %GLOBAL%$normal$$a$ = %GLOBAL%$last_y$
+			:i $FormatText$$ChecksumName$ = $feeler_text_name$%s(18,"feeler_%a_text_red")$a$ =  ($NUM_3D_TEXT_ITEMS$) 
+			:i endcase
+		case %i(1,00000001)
+			:i $Model$ = %s(42,"leveleditor\wireframe\node\node_yellow.mdl")
+			:i $FormatText$$TextName$ = $feeler_text$%s(11,"\c5%n    %a")$n$ = %GLOBAL%$normal$$a$ = %GLOBAL%$last_y$
+			:i endcase
+		case %i(2,00000002)
+			:i $FormatText$$TextName$ = $feeler_text$%s(11,"\c3%n    %a")$n$ = %GLOBAL%$normal$$a$ = %GLOBAL%$last_y$
+			:i $Model$ = %s(40,"leveleditor\wireframe\node\node_blue.mdl")
+			:i endcase
+		case %i(5,00000005)
+			:i $FormatText$$TextName$ = $feeler_text$%s(11,"\c3%n    %a")$n$ = %GLOBAL%$normal$$a$ = %GLOBAL%$last_y$
+			:i $Model$ = %s(40,"leveleditor\wireframe\node\node_pink.mdl")
+			:i endcase
+		case %i(3,00000003)
+			:i $FormatText$$TextName$ = $feeler_text$%s(11,"\c4%n    %a")$n$ = %GLOBAL%$normal$$a$ = %GLOBAL%$last_y$
+			:i $Model$ = %s(41,"leveleditor\wireframe\node\node_green.mdl")
+			:i $x$ = %f(0.010000)
+			:i $y$ = %f(1.000000)
+			:i $z$ = %f(0.010000)
+			:i end_switch
+	
+	:i if $ObjectExists$$id$ = %GLOBAL%$feeler_text_name$
+		:i %GLOBAL%$feeler_text_name$.$Die$
+	:i endif
+	:i $wait$%i(2,00000002)$frames$
+	:i $CreateScreenElement$:s{
+		:i $id$ = %GLOBAL%$feeler_text_name$
+		:i $type$ = $TextElement$
+		:i $font$ = $testtitle$
+		:i $parent$ = $root_window$
+		:i $text$ = %GLOBAL%$feeler_text$
+		:i $scale$ = %f(0.200000)
+		:i $pos3D$ =  (%GLOBAL%$pos$ + %vec3(0.000000,10.000000,0.000000)) 
+	:i :s}
+	:i $Change$$NUM_3D_TEXT_ITEMS$ =  ( ($NUM_3D_TEXT_ITEMS$)  + %i(1,00000001)) 
+	:i if  ( ($NUM_3D_TEXT_ITEMS$)  > %i(19,00000013)) 
+		:i $Change$$NUM_3D_TEXT_ITEMS$ = %i(0,00000000)
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$feeler_text_name$$3d_text_wait_and_die$$params$ = :s{$id$ = %GLOBAL%$feeler_text_name$$time$ = %i(120000,0001d4c0):s}
+	:i $CreateFromStructure$:s{
+		:i $name$ = %GLOBAL%$feeler_name$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $Angles$ = %vec3(0.000000,0.000000,0.000000)
+		:i $Class$ = $GameObject$
+		:i $CreatedAtStart$
+		:i $Model$ = %GLOBAL%$Model$
+		:i $x$ = %GLOBAL%$x$
+		:i $y$ = %GLOBAL%$y$
+		:i $z$ = %GLOBAL%$z$
+		:i $triggerscript$ = $3d_box_wait_and_die$
+	:i :s}
+:i endfunction
+:i function $create_new_protrick_menu$
+	:i $printf$%s(24,"create_new_protrick_menu")
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_menu$:s{
+		:i $pos$ = %vec2(40.000000,115.000000)
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(640.000000,500.000000)
+		:i $menu_id$ = $thug_protrick_menu$
+		:i $vmenu_id$ = $thug_protrick_vmenu$
+		:i $scrolling_menu_id$ = $thug_protrick_scrollingmenu$
+		:i $type$ = $VScrollingMenu$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $thug_protrick_vmenu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_thug_pro_dev_menu$$params$ = :s{:s}:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $create_menu_background_title$$title$ = %s(15,"level mods test")$bg_just$ = $left$$no_grain$
+	:i if $LevelIs$$load_ny$
+		:i $make_thpg_menu_item$$text$ = %s(27,"show railnodes with no link")$pad_choose_script$ = $levelEditor_GetNodesWithNoLinks$$not_focusable$
+	:i else 
+		:i $make_thpg_menu_item$$text$ = %s(27,"show railnodes with no link")$pad_choose_script$ = $levelEditor_GetNodesWithNoLinks$
+	:i endif
+	:i $make_thpg_menu_item$$text$ = %s(19,"show waypoint nodes")$pad_choose_script$ = $levelEditor_ShowWaypointNodes$
+	:i $make_thpg_menu_item$$text$ = %s(1," ")$id$ = $space$$not_focusable$
+	:i $make_thpg_menu_item$$text$ = %s(13,"load scene KB")$pad_choose_script$ = $load_scene_keyboard$
+	:i $make_thpg_menu_item$$text$ = %s(11,"load col KB")$pad_choose_script$ = $load_col_keyboard$
+	:i $create_helper_text$$generic_helper_text$
+	:i $AssignAlias$$id$ = $thug_protrick_vmenu$$alias$ = $current_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $levelEditor_ShowWaypointNodes$
+	:i $Leveleditor_GetLevelNodeArray$
+	:i $GetArraySize$%GLOBAL%$nodearray$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i if $ChecksumEquals$$a$ =  ( (%GLOBAL%$nodearray$:a{%GLOBAL%$index$:a}) ->$Class$) $b$ = $Waypoint$
+			:i $FormatText$$TextName$ = $text$%s(7,"%a : %i")$i$ = %GLOBAL%$index$$a$ =  ( (%GLOBAL%$nodearray$:a{%GLOBAL%$index$:a}) ->$name$) 
+			:i $FormatText$$ChecksumName$ = $checksum$%s(12,"%i_node_text")$i$ = %GLOBAL%$index$
+			:i $CreateScreenElement$:s{
+				:i $id$ = %GLOBAL%$checksum$
+				:i $type$ = $TextElement$
+				:i $parent$ = $root_window$
+				:i $font$ = $small$
+				:i $text$ =  (%GLOBAL%$text$) 
+				:i $scale$ = %f(1.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $pos3D$ =  ( ( (%GLOBAL%$nodearray$:a{%GLOBAL%$index$:a}) ->$pos$)  + %vec3(0.000000,20.000000,0.000000)) 
+				:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i :s}
+			:i $CreateScreenElement$:s{
+				:i $id$ = %GLOBAL%$checksum$
+				:i $type$ = $TextElement$
+				:i $parent$ = $root_window$
+				:i $font$ = $testtitle$
+				:i $text$ = %s(1,"x")
+				:i $scale$ = %f(1.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $pos3D$ =  ( ( (%GLOBAL%$nodearray$:a{%GLOBAL%$index$:a}) ->$pos$)  + %vec3(0.000000,1.000000,0.000000)) 
+				:i $rgba$ = :a{%i(0,00000000)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+			:i :s}
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $tptoggledebug$
+	:i $printf$%s(13,"tptoggledebug")
+	:i if NOT $IsTrue$$THUG_Pro_Debug$
+		:i $Change$$THUG_Pro_Debug$ = %i(1,00000001)
+	:i else 
+		:i $Change$$THUG_Pro_Debug$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $tptoggledev$
+	:i $printf$%s(11,"tptoggledev")
+	:i if NOT $IsTrue$$THUG_Pro_Developer$
+		:i $Change$$THUG_Pro_Developer$ = %i(1,00000001)
+	:i else 
+		:i $Change$$THUG_Pro_Developer$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $load_test_scene$
+	:i $printf$%s(15,"load_test_scene")
+	:i if $ObjectExists$$id$ = $keyboard_current_string$
+		:i $GetTextElementString$$id$ = $keyboard_current_string$
+		:i $FormatText$$TextName$ = $scene$%s(2,"%s")$s$ = %GLOBAL%$string$
+		:i $destroy_onscreen_keyboard$
+	:i else 
+		:i $test_enable_viewer$
+		:i %GLOBAL%$scene$ = %s(4,"test")
+	:i endif
+	:i $LoadScene$$scene$ = %GLOBAL%$scene$
+:i endfunction
+:i function $reload_test_scene$
+	:i $printf$%s(17,"reload_test_scene")
+	:i $UnloadScene$$scene$ = %s(4,"test")
+	:i $wait$%i(1,00000001)$frames$
+	:i $wait$%i(1,00000001)$frames$
+	:i $wait$%i(1,00000001)$frames$
+	:i $LoadScene$$scene$ = %s(4,"test")
+:i endfunction
+:i function $load_test_col$
+	:i $printf$%s(13,"load_test_col")
+	:i if $ObjectExists$$id$ = $keyboard_current_string$
+		:i $GetTextElementString$$id$ = $keyboard_current_string$
+		:i $FormatText$$TextName$ = $scene$%s(2,"%s")$s$ = %GLOBAL%$string$
+		:i $destroy_onscreen_keyboard$
+	:i else 
+		:i %GLOBAL%$scene$ = %s(4,"test")
+	:i endif
+	:i $LoadCollision$$scene$ = %GLOBAL%$scene$
+:i endfunction
+:i function $load_test_sky$
+	:i $printf$%s(13,"load_test_sky")
+	:i $LoadScene$$scene$ = %s(11,"default_Sky")
+:i endfunction
+:i function $test_enable_viewer$
+	:i $printf$%s(18,"test_enable_viewer")
+	:i $cheat_select_shift$
+	:i $auto_launch_viewer$
+:i endfunction
+:i function $load_scene_keyboard$
+	:i $printf$%s(19,"load_scene_keyboard")
+	:i $exit_pause_menu$
+	:i $create_onscreen_keyboard$$keyboard_done_script$ = $load_test_scene$$keyboard_title$ = %s(12,"scene prefix")$min_length$ = %i(2,00000002)$max_length$ = %i(127,0000007f)$text$ = %s(0,"")
+	:i $pause_menu_gradient$$off$
+:i endfunction
+:i function $load_col_keyboard$
+	:i $printf$%s(17,"load_col_keyboard")
+	:i $exit_pause_menu$
+	:i $create_onscreen_keyboard$$keyboard_done_script$ = $load_test_col$$keyboard_title$ = %s(12,"scene prefix")$min_length$ = %i(2,00000002)$max_length$ = %i(127,0000007f)$text$ = %s(0,"")
+	:i $pause_menu_gradient$$off$
+:i endfunction
+:i function $test_leveleditor$
+	:i $printf$%s(16,"test_leveleditor")
+	:i $exit_pause_menu$
+	:i $pause_menu_gradient$$off$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $LevelEditor_main_setup$
+:i endfunction
+:i function $MenuCallback_SkaterStateDebugLoop$
+	:i $exit_pause_menu$
+	:i $SpawnSkaterScript$$SkaterStateDebugLoop$
+:i endfunction
+:i function $SkaterStateDebugLoop$
+	:i if $ScreenElementExists$$id$ = $skater_state_debug_container$
+		:i $DestroyScreenElement$$id$ = $skater_state_debug_container$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $skater_state_debug_container$
+		:i $pos$ = %vec2(350.000000,200.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$center$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $skater_state_debug_container$
+		:i $id$ = $skater_state_debug_text_1$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $scale$ = %f(0.500000)
+		:i $font$ = $dialog$
+		:i $text$ = %s(0,"")
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1700,000006a4)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $skater_state_debug_container$
+		:i $id$ = $skater_state_debug_text_2$
+		:i $pos$ = %vec2(0.000000,20.000000)
+		:i $scale$ = %f(0.500000)
+		:i $font$ = $dialog$
+		:i $text$ = %s(0,"")
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1700,000006a4)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $skater_state_debug_container$
+		:i $id$ = $skater_state_debug_text_3$
+		:i $pos$ = %vec2(0.000000,40.000000)
+		:i $scale$ = %f(0.500000)
+		:i $font$ = $dialog$
+		:i $text$ = %s(9,"BailIsOn:")
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1700,000006a4)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $skater_state_debug_container$
+		:i $id$ = $skater_state_debug_text_4$
+		:i $pos$ = %vec2(0.000000,60.000000)
+		:i $scale$ = %f(0.500000)
+		:i $font$ = $dialog$
+		:i $text$ = %s(6,"State:")
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1700,000006a4)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $skater_state_debug_container$
+		:i $id$ = $skater_state_debug_text_5$
+		:i $pos$ = %vec2(0.000000,80.000000)
+		:i $scale$ = %f(0.500000)
+		:i $font$ = $dialog$
+		:i $text$ = %s(15,"IsBoardMissing:")
+		:i $just$ = :a{$left$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1700,000006a4)
+	:i :s}
+	:i $wait$%i(15,0000000f)$gameframe$
+	:i while
+		
+		:i if $DoingTrick$
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_1$$text$ = %s(16,"DoingTrick: true")
+		:i else 
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_1$$text$ = %s(17,"DoingTrick: false")
+		:i endif
+		:i if $InAir$
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_2$$text$ = %s(11,"InAir: true")
+		:i else 
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_2$$text$ = %s(12,"InAir: false")
+		:i endif
+		:i if $BailIsOn$
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_3$$text$ = %s(14,"BailIsOn: true")
+		:i else 
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_3$$text$ = %s(15,"BailIsOn: false")
+		:i endif
+		:i if $IsBoardMissing$
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_5$$text$ = %s(20,"IsBoardMissing: true")
+		:i else 
+			:i $SetScreenElementProps$$id$ = $skater_state_debug_text_5$$text$ = %s(21,"IsBoardMissing: false")
+		:i endif
+		:i $GetSingleTag$$State$
+		:i $FormatText$$TextName$ = $skater_state_text$%s(9,"State: %a")$a$ = %GLOBAL%$State$
+		:i $SetScreenElementProps$$id$ = $skater_state_debug_text_4$$text$ = %GLOBAL%$skater_state_text$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $walking_control_q_restore_globals$
+	:i $thugpro_restore_key_value$$Key$ = %s(17,"Walking_180FlipOn")$apply_changes$
+:i endfunction
+:i $DoingTrickState$ = %i(0,00000000)
+:i function $test_toggledoingtrick$
+	:i $SpawnSkaterScript$$toggledoingtrick$
+:i endfunction
+:i function $toggledoingtrick$
+	:i if $IsStrue$$DoingTrickState$
+		:i $Change$$DoingTrickState$ = %i(0,00000000)
+	:i else 
+		:i $Change$$DoingTrickState$ = %i(1,00000001)
+	:i endif
+	:i $SetDoingTrick$ ($DoingTrickState$) 
+:i endfunction:end

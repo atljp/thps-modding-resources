@@ -1,2 +1,568 @@
 
+:i $gone_thugpro_devteam_build$ = %i(1,00000001)
+:i $use_shrek_graff$ = %i(0,00000000)
+:i $freeskate_graff_mode$ = %i(0,00000000)
+:i $allow_re_spawn$ = %i(0,00000000)
+:i function $ProCrastination_Create_Menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{$pos$ = %vec2(40.000000,100.000000)
+		:i $internal_just$ = :a{$center$$center$:a}$menu_id$ = $ProCrastination_menu$$vmenu_id$ = $ProCrastination_vmenu$:s}
+	:i $SetScreenElementProps$:s{$id$ = $ProCrastination_vmenu$$event_handlers$ = :a{:s{$pad_back$$create_pause_menu$$params$ = :s{:s}:s}:a}$replace_handlers$:s}
+	:i $AssignAlias$$id$ = $ProCrastination_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(24,"pro crastination options")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}:s}
+	:i if NOT $IsHost$
+		:i %GLOBAL%$not_focusable$ = $not_focusable$
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(9,"Turn Offs")$id$ = $ProCrastination_menu_turn_offs$$pad_choose_script$ = $TurnOffs_Create_Menu$:s}
+	:i $make_thpg_menu_item$:s{$text$ = %s(15,"Console Options")$id$ = $ProCrastination_menu_console_options$$pad_choose_script$ = $ConsoleOptions_Create_Menu$:s}
+	:i $make_thpg_menu_item$:s{$text$ = %s(12,"More Garbage")$id$ = $ProCrastination_menu_more_adjustments$$pad_choose_script$ = $More_Adjustments_Create_Menu$:s}
+	:i if  ($allow_re_spawn$ = %i(1,00000001)) 
+		:i $temp_spawn$ = %s(7,"enabled")
+	:i else 
+		:i $temp_spawn$ = %s(8,"disabled")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(34,"re-spawn chat keyboard after event")$extra_text$ = %GLOBAL%$temp_spawn$$id$ = $ProCrastination_menu_re_spawn_keyboard$$option_arrows$$pad_choose$$option_arrows_callback$ = $toggle_re_spawn_keyboard$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $toggle_re_spawn_keyboard$
+	:i if  ($allow_re_spawn$ = %i(1,00000001)) 
+		:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_re_spawn_keyboard$$child$ = $extra_text$:s}$text$ = %s(8,"disabled")
+		:i $Change$$allow_re_spawn$ = %i(0,00000000)
+	:i else 
+		:i if  ($allow_re_spawn$ = %i(0,00000000)) 
+			:i $SetScreenElementProps$$id$ = :s{$ProCrastination_menu_re_spawn_keyboard$$child$ = $extra_text$:s}$text$ = %s(7,"enabled")
+			:i $Change$$allow_re_spawn$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i $cheat_airshuffle$ = %i(1600,00000640)
+:i function $TurnOffs_Create_Menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{$pos$ = %vec2(40.000000,115.000000)$internal_just$ = :a{$left$$top$:a}$dims$ = %vec2(640.000000,360.000000)$menu_id$ = $TurnOffs_menu$$vmenu_id$ = $TurnOffs_vmenu$$scrolling_menu_id$ = $console_options_scrollingmenu$$type$ = $VScrollingMenu$:s}
+	:i $SetScreenElementProps$:s{$id$ = $TurnOffs_vmenu$$event_handlers$ = :a{:s{$pad_back$$create_pause_menu$$params$ = :s{:s}:s}:a}$replace_handlers$:s}
+	:i $AssignAlias$$id$ = $TurnOffs_vmenu$$alias$ = $current_menu$
+	:i $pause_menu_gradient$$on$
+	:i $create_menu_background_title$$title$ = %s(15,"cheat overrides")$bg_just$ = $left$$no_grain$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Toggle"):s}:s{$text$ = %s(10,"\bn = Back"):s}:s{$text$ = %s(12,"\bm = Accept"):s}:a}:s}
+	:i $any_flag$ = %i(4294967295,ffffffff)
+	:i if NOT $IsHost$
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_MOON$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_MOON$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(12,"Moon Gravity")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_moon$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $CHEAT_MOON$$cheat_id$ = $turnoffs_moon$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_ALWAYS_SPECIAL$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_ALWAYS_SPECIAL$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(14,"Always Special")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_always_special$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $CHEAT_ALWAYS_SPECIAL$$cheat_id$ = $turnoffs_always_special$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $cheat_super_blood$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $cheat_super_blood$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(11,"Super Blood")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_super_blood$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $cheat_super_blood$$cheat_id$ = $turnoffs_super_blood$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $cheat_airshuffle$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $cheat_airshuffle$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(17,"Airshuffle Toggle")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_airshuffle$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $cheat_airshuffle$$cheat_id$ = $turnoffs_airshuffle$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_MANUAL$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_MANUAL$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(14,"Perfect Manual")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_perfect_manuals$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $CHEAT_PERFECT_MANUAL$$cheat_id$ = $turnoffs_perfect_manuals$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_RAIL$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_RAIL$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(12,"Perfect Rail")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_perfect_rail$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $CHEAT_PERFECT_RAIL$$cheat_id$ = $turnoffs_perfect_rail$:s}:s}
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_SKITCH$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_PERFECT_SKITCH$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(14,"Perfect Skitch")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_perfect_skitch$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $CHEAT_PERFECT_SKITCH$$cheat_id$ = $turnoffs_perfect_skitch$:s}:s}
+		:i endif
+		:i if NOT $GetGlobalFlag$$flag$ = $SERVER_NO_WHORE$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $SERVER_NO_WHORE$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(15,"No Manual Boost")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_server_no_whore$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $SERVER_NO_WHORE$$cheat_id$ = $turnoffs_server_no_whore$:s}:s}
+		:i endif
+		:i if NOT $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(10,"No Reverts")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_REVERTS$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$$cheat_id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_REVERTS$:s}:s}
+		:i endif
+		:i if NOT $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(10,"No Walking")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_WALKING$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$$cheat_id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_WALKING$:s}:s}
+		:i endif
+		:i if NOT $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(10,"No Manuals")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_MANUALS$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$$cheat_id$ = $turnoffs_FLAG_G_EXPERT_MODE_NO_MANUALS$:s}:s}
+		:i endif
+		:i if NOT $GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$
+			:i %GLOBAL%$any_flag$ =  (%GLOBAL%$any_flag$ + %i(1,00000001)) 
+			:i if $GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$
+				:i %GLOBAL%$temp$ = %s(2,"On")
+			:i else 
+				:i %GLOBAL%$temp$ = %s(3,"Off")
+			:i endif
+			:i $make_thpg_menu_item$:s{$text$ = %s(17,"No Balance Meters")$extra_text$ = %GLOBAL%$temp$$id$ = $turnoffs_NO_G_DISPLAY_BALANCE$$option_arrows$$pad_choose$$option_arrows_callback$ = $override_cheat$$option_arrows_callback_params$ = :s{$cheat_flag$ = $NO_G_DISPLAY_BALANCE$$cheat_id$ = $turnoffs_NO_G_DISPLAY_BALANCE$:s}:s}
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$any_flag$ = %i(4294967295,ffffffff)) 
+		:i $make_thpg_menu_item$:s{$text$ = %s(19,"Nothing to see here")$id$ = $turnoffs_nothing$
+			:i $pad_choose_script$ = $create_pause_menu$:s}
+	:i endif
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $override_cheat$
+	:i if NOT $GotParam$$cheat_flag$
+		:i return
+		
+	:i endif
+	:i if NOT $GotParam$$cheat_id$
+		:i return
+		
+	:i endif
+	:i $temp_s$ = %s(0,"")
+	:i switch %GLOBAL%$cheat_flag$
+		:i case $CHEAT_MOON$
+			:i if  ($GetGlobalFlag$$flag$ = $CHEAT_MOON$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_MOON$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_MOON$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $cheat_super_blood$
+			:i if  ($GetGlobalFlag$$flag$ = $cheat_super_blood$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $cheat_super_blood$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $cheat_super_blood$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $CHEAT_ALWAYS_SPECIAL$
+			:i if  ($GetGlobalFlag$$flag$ = $CHEAT_ALWAYS_SPECIAL$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_ALWAYS_SPECIAL$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_ALWAYS_SPECIAL$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $CHEAT_PERFECT_MANUAL$
+			:i if  ($GetGlobalFlag$$flag$ = $CHEAT_PERFECT_MANUAL$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_MANUAL$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_MANUAL$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $CHEAT_PERFECT_SKITCH$
+			:i if  ($GetGlobalFlag$$flag$ = $CHEAT_PERFECT_SKITCH$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_SKITCH$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_SKITCH$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $CHEAT_PERFECT_RAIL$
+			:i if  ($GetGlobalFlag$$flag$ = $CHEAT_PERFECT_RAIL$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_RAIL$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $CHEAT_PERFECT_RAIL$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $cheat_airshuffle$
+			:i if  ($GetGlobalFlag$$flag$ = $cheat_airshuffle$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $cheat_airshuffle$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $cheat_airshuffle$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_REVERTS$
+			:i if NOT  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_WALKING$
+			:i if NOT  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_MANUALS$
+			:i if NOT  ($GetGlobalFlag$$flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $NO_G_DISPLAY_BALANCE$
+			:i if NOT  ($GetGlobalFlag$$flag$ = $NO_G_DISPLAY_BALANCE$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $NO_G_DISPLAY_BALANCE$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $NO_G_DISPLAY_BALANCE$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i endcase
+		case $SERVER_NO_WHORE$
+			:i if NOT  ($GetGlobalFlag$$flag$ = $SERVER_NO_WHORE$) 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $SERVER_NO_WHORE$$off$
+				:i %GLOBAL%$temp_s$ = %s(3,"Off")
+			:i else 
+				:i $toggle_cheat_flag_no_notify$$cheat_flag$ = $SERVER_NO_WHORE$$on$
+				:i %GLOBAL%$temp_s$ = %s(2,"On")
+			:i endif
+			:i end_switch
+	
+	:i $SetScreenElementProps$:s{$id$ = :s{%GLOBAL%$cheat_id$$child$ = $extra_text$:s}$text$ = %GLOBAL%$temp_s$:s}
+:i endfunction
+:i function $ClientHandleCustomBroadcastMessages$
+	:i $msg1$ =  (%GLOBAL%$pos$->%vec3(1.000000,0.000000,0.000000)) 
+	:i $msg2$ =  (%GLOBAL%$pos$->%vec3(0.000000,1.000000,0.000000)) 
+	:i $msg3$ =  (%GLOBAL%$pos$->%vec3(0.000000,0.000000,1.000000)) 
+	:i $FormatText$$textname$ = $text$%s(17,"*          %q, %r")$q$ = %GLOBAL%$msg1$$r$ = %GLOBAL%$msg3$
+	:i $printf$%GLOBAL%$text$
+	:i switch %GLOBAL%$msg1$
+		:i case %f(3200.000000)
+			:i if $IsHost$
+				:i $set_request_cheat_toggle$
+			:i endif
+			:i endcase
+		case %f(3300.000000)
+			:i if $IsHost$
+				:i $request_cheat_flag_enabled$$flag_index$ = %GLOBAL%$msg3$
+			:i endif
+			:i endcase
+		case %f(3400.000000)
+			:i if  ($requested_flag$ = %i(1,00000001)) 
+				:i $Change$$requested_flag$ = %i(0,00000000)
+				:i $return_cheat_flag_enabled$$boolean$ = %GLOBAL%$msg3$
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i $request_cheat_toggle$ = %i(0,00000000)
+:i function $set_request_cheat_toggle$
+	:i if $IsHost$
+		:i $Change$$request_cheat_toggle$ = %i(1,00000001)
+	:i else 
+		:i $Change$$request_cheat_toggle$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $toggle_cheat_flag_no_notify$
+	:i if NOT $GotParam$$cheat_flag$
+		:i return
+		
+	:i endif
+	:i $GetSkaterId$
+	:i $skaterId$ = %GLOBAL%$ObjId$
+	:i $no_notify_msg$ = %vec3(3200.000000,0.000000,0.000000)
+	:i $BroadcastProjectile$:s{$ObjId$ = %GLOBAL%$skaterId$$type$ = %GLOBAL%$type$$pos$ = %GLOBAL%$no_notify_msg$$scale$ = %GLOBAL%$function$$radius$ = %GLOBAL%$time$$ammo_type$ = $none$:s}
+	:i if $GotParam$$on$
+		:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$) 
+		:i else 
+			:i $SetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+		:i endif
+	:i else 
+		:i if $GotParam$$off$
+			:i $UnSetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+		:i endif
+	:i endif
+:i endfunction
+:i $requested_flag$ = %i(0,00000000)
+:i function $request_cheat_flag_enabled$
+	:i if NOT $GotParam$$flag_index$
+		:i return
+		
+	:i endif
+	:i $cheat_flag$ = $null$
+	:i switch %GLOBAL%$flag_index$
+		:i case %f(0.000000)
+			:i %GLOBAL%$cheat_flag$ = $CHEAT_MOON$
+			:i endcase
+		case %f(1.000000)
+			:i %GLOBAL%$cheat_flag$ = $cheat_super_blood$
+			:i endcase
+		case %f(2.000000)
+			:i %GLOBAL%$cheat_flag$ = $CHEAT_ALWAYS_SPECIAL$
+			:i endcase
+		case %f(3.000000)
+			:i %GLOBAL%$cheat_flag$ = $CHEAT_PERFECT_MANUAL$
+			:i endcase
+		case %f(4.000000)
+			:i %GLOBAL%$cheat_flag$ = $CHEAT_PERFECT_SKITCH$
+			:i endcase
+		case %f(5.000000)
+			:i %GLOBAL%$cheat_flag$ = $CHEAT_PERFECT_RAIL$
+			:i endcase
+		case %f(6.000000)
+			:i %GLOBAL%$cheat_flag$ = $cheat_airshuffle$
+			:i endcase
+		case %f(7.000000)
+			:i %GLOBAL%$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_REVERTS$
+			:i endcase
+		case %f(8.000000)
+			:i %GLOBAL%$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_WALKING$
+			:i endcase
+		case %f(9.000000)
+			:i %GLOBAL%$cheat_flag$ = $FLAG_G_EXPERT_MODE_NO_MANUALS$
+			:i endcase
+		case %f(10.000000)
+			:i %GLOBAL%$cheat_flag$ = $NO_G_DISPLAY_BALANCE$
+			:i endcase
+		case %f(11.000000)
+			:i %GLOBAL%$cheat_flag$ = $SERVER_NO_WHORE$
+			:i end_switch
+	
+	:i $GetSkaterId$
+	:i $skaterId$ = %GLOBAL%$ObjId$
+	:i $request_flag_enabled$ = %vec3(0.000000,0.000000,0.000000)
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$cheat_flag$
+		:i %GLOBAL%$request_flag_enabled$ = %vec3(3400.000000,0.000000,1.000000)
+	:i else 
+		:i %GLOBAL%$request_flag_enabled$ = %vec3(3400.000000,0.000000,0.000000)
+	:i endif
+	:i $BroadcastProjectile$:s{$ObjId$ = %GLOBAL%$skaterId$$type$ = %GLOBAL%$type$$pos$ = %GLOBAL%$request_flag_enabled$$scale$ = %GLOBAL%$function$$radius$ = %GLOBAL%$time$$ammo_type$ = $none$:s}
+:i endfunction
+:i function $GetGlobalHostFlag$
+	:i if NOT $GotParam$$flag$
+		:i return
+		
+	:i endif
+	:i $GetSkaterId$
+	:i $skaterId$ = %GLOBAL%$ObjId$
+	:i $request_flag_enabled$ = %vec3(0.000000,0.000000,0.000000)
+	:i switch %GLOBAL%$flag$
+		:i case $CHEAT_MOON$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,0.000000)
+			:i endcase
+		case $cheat_super_blood$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,1.000000)
+			:i endcase
+		case $CHEAT_ALWAYS_SPECIAL$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,2.000000)
+			:i endcase
+		case $CHEAT_PERFECT_MANUAL$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,3.000000)
+			:i endcase
+		case $CHEAT_PERFECT_SKITCH$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,4.000000)
+			:i endcase
+		case $CHEAT_PERFECT_RAIL$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,5.000000)
+			:i endcase
+		case $cheat_airshuffle$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,6.000000)
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_REVERTS$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,7.000000)
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_WALKING$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,8.000000)
+			:i endcase
+		case $FLAG_G_EXPERT_MODE_NO_MANUALS$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,9.000000)
+			:i endcase
+		case $NO_G_DISPLAY_BALANCE$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,10.000000)
+			:i endcase
+		case $SERVER_NO_WHORE$
+			:i %GLOBAL%$request_flag_enabled$ = %vec3(3300.000000,0.000000,11.000000)
+			:i end_switch
+	
+	:i $temp_$ =  (%GLOBAL%$request_flag_enabled$->%vec3(1.000000,0.000000,0.000000)) 
+	:i if  (%GLOBAL%$temp_$ = %f(3300.000000)) 
+		:i $Change$$requested_flag$ = %i(1,00000001)
+		:i $BroadcastProjectile$:s{$ObjId$ = %GLOBAL%$skaterId$$type$ = %GLOBAL%$type$$pos$ = %GLOBAL%$request_flag_enabled$$scale$ = %GLOBAL%$function$$radius$ = %GLOBAL%$time$$ammo_type$ = $none$:s}
+	:i endif
+	:i $WaitForEvent$$type$ = $return_cheat_flag_enabled_event$
+	:i if  ($HasReturn$ = %i(1,00000001)) 
+		:i if  ($ReturnValue$ = $true$) 
+			:i $Change$$ReturnValue$ = $null$
+			:i $Change$$HasReturn$ = %i(4294967295,ffffffff)
+			:i return
+			$boolean_true$
+		:i else 
+			:i if  ($ReturnValue$ = $false$) 
+				:i $Change$$ReturnValue$ = $null$
+				:i $Change$$HasReturn$ = %i(4294967295,ffffffff)
+				:i return
+				$boolean_false$
+			:i endif
+		:i endif
+	:i endif
+	:i $BroadcastEvent$$type$ = $return_GetGlobalHostFlag_event$
+:i endfunction
+:i $HasReturn$ = %i(4294967295,ffffffff)
+:i $ReturnValue$ = $null$
+:i function $return_cheat_flag_enabled$
+	:i if NOT $GotParam$$boolean$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$boolean$ = %f(0.000000)) 
+		:i $Change$$ReturnValue$ = $false$
+		:i $Change$$HasReturn$ = %i(1,00000001)
+	:i else 
+		:i if  (%GLOBAL%$boolean$ = %f(1.000000)) 
+			:i $Change$$ReturnValue$ = $true$
+			:i $Change$$HasReturn$ = %i(1,00000001)
+		:i endif
+	:i endif
+	:i $BroadcastEvent$$type$ = $return_cheat_flag_enabled_event$
+:i endfunction
+:i $my_global_score$ = %i(100000000,05f5e100)
+:i $global_first$ = %i(0,00000000)
+:i function $More_Adjustments_Create_Menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i if $ObjectExists$$id$ = $current_menu$
+		:i $DestroyScreenElement$$id$ = $current_menu$
+	:i endif
+	:i $destroy_menu_background_title$
+	:i $make_new_skateshop_menu$:s{$pos$ = %vec2(40.000000,100.000000)
+		:i $internal_just$ = :a{$center$$center$:a}$menu_id$ = $MoreOptions_menu$$vmenu_id$ = $MoreOptions_vmenu$:s}
+	:i $SetScreenElementProps$:s{$id$ = $MoreOptions_vmenu$$event_handlers$ = :a{:s{$pad_back$$ProCrastination_Create_Menu$$params$ = :s{:s}:s}:a}$replace_handlers$:s}
+	:i $AssignAlias$$id$ = $MoreOptions_vmenu$$alias$ = $current_menu$
+	:i $create_menu_background_title$$title$ = %s(12,"More options")$bg_just$ = $left$$no_grain$
+	:i $pause_menu_gradient$$on$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}:s{$text$ = %s(16,"\b6/\b5 = Toggle"):s}:s{$text$ = %s(10,"\bn = Back"):s}:a}:s}
+	:i $make_thpg_menu_item$:s{$text$ = %s(15,"Clear Blacklist")$id$ = $MoreOptions_menu_clear_blacklist$$pad_choose_script$ = $clear_blacklist_array$:s}
+	:i $get_points_string_with_commas$$score$ =  ($my_global_score$) 
+	:i $make_thpg_menu_item$:s{$text$ = %s(16,"Set Score Value ")$extra_text$ = %GLOBAL%$points_string$$id$ = $menu_lighting$$option_arrows$$option_arrows_callback$ = $variable_step$$option_arrows_callback_params$ = :s{$value$ =  ($my_global_score$) $array$ = :a{:s{$min$ = %i(100000000,05f5e100)$max$ = %i(1000000000,3b9aca00)$step$ = %i(100000000,05f5e100):s}:a}:s}$pad_choose_script$ = $set_custom_points_value$$pad_choose_params$ = :s{$score$ =  ($my_global_score$) :s}:s}
+	:i if  ($console_ParsingFilter$ = %i(1,00000001)) 
+		:i $temp_parsing$ = %s(2,"On")
+	:i else 
+		:i $temp_parsing$ = %s(3,"Off")
+	:i endif
+	:i $make_thpg_menu_item$:s{$text$ = %s(16,"Command Parsing ")$extra_text$ = %GLOBAL%$temp_parsing$$id$ = $ProCrastination_menu_command_parsing$$option_arrows$$pad_choose$$option_arrows_callback$ = $Toggle_Console_Parsing$:s}
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $change_score_value$
+	:i if  ($GraffMode$ = %i(0,00000000)) 
+		:i $SetScreenElementProps$$id$ = :s{$MoreOptions_menu_score_type$$child$ = $extra_text$:s}$text$ = %s(2,"On")
+		:i $Change$$GraffMode$ = %i(1,00000001)
+	:i else 
+		:i if  ($GraffMode$ = %i(1,00000001)) 
+			:i $SetScreenElementProps$$id$ = :s{$MoreOptions_menu_score_type$$child$ = $extra_text$:s}$text$ = %s(3,"Off")
+			:i $Change$$GraffMode$ = %i(0,00000000)
+		:i endif
+	:i endif
+:i endfunction
+:i function $set_custom_points_value$
+	:i if $GotParam$$score$
+		:i $new_score$ = %GLOBAL%$score$
+	:i else 
+		:i $new_score$ = %i(100000000,05f5e100)
+	:i endif
+	:i $Skater$.$SetTrickName$%s(19,"You cheat like Kurt")
+	:i $Skater$.$SetTrickScore$%GLOBAL%$new_score$
+	:i $Skater$.$display$
+:i endfunction
+:i function $dump_player_blacklist$
+	:i $dump_player_list$$array$ = $blacklist_player_array$
+:i endfunction
+:i function $dump_player_whitelist$
+	:i $dump_player_list$$array$ = $whitelist_player_array$
+:i endfunction
+:i function $dump_player_list$
+	:i if NOT $GotParam$$array$
+		:i return
+		
+	:i endif
+	:i $index$ = %i(0,00000000)
+	:i $GetArraySize$%GLOBAL%$array$
+	:i while
+		
+		:i if NOT  ( (%GLOBAL%$array$:a{%GLOBAL%$index$:a})  = %s(0,"")) 
+			:i $FormatText$$textname$ = $temp$%s(7,"%i, %s,")$i$ = %GLOBAL%$index$$s$ =  (%GLOBAL%$array$:a{%GLOBAL%$index$:a}) 
+			:i $sendchatmessage$$string$ = %GLOBAL%$temp$
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i else 
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i endif
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
 :i :end

@@ -1,1 +1,204 @@
-:end
+function $SkProTest_execute_test_sequence$
+	:i $ClearEventHandlerGroup$$skprotest_start_event_group$
+	:i $printf$%s(28,"--- runing test sequence ---")
+	:i $RunTestInputSequence$%GLOBAL%$sequence$
+	:i $printf$%s(15,"--- waiting ---")
+	:i $Wait$%GLOBAL%$duration$$seconds$
+	:i $printf$%s(38,"--- signal test sequence completed ---")
+	:i $SpawnSkaterScript$$BroadcastEvent$$Params$ = :s{$Type$ = $TestCaseCompleted$:s}
+:i endfunction
+:i function $SkProTest_execute_test$
+	:i if NOT $GotParam$$tests$
+		:i $printf$%s(29,"ERROR: No test data received!")
+		:i return
+		
+	:i endif
+	:i $GetArraySize$%GLOBAL%$tests$
+	:i $test_index$ = %i(0,00000000)
+	:i $KillSpawnedScript$$Id$ = $SkProTest_end_script_id$
+	:i $KillSpawnedScript$$Id$ = $SkProTest_start_script_id$
+	:i $SpawnScript$%GLOBAL%$start_script$$Id$ = $SkProTest_start_script_id$
+	:i while
+		
+		:i $FormatText$$TextName$ = $msg_text$%s(12,"Running '%a'")$a$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$name$) 
+		:i $kill_panel_message_if_it_exists$$Id$ = $SkProTest_test_name_message$
+		:i $create_panel_message$:s{
+			:i $text$ = %GLOBAL%$msg_text$
+			:i $Id$ = $SkProTest_test_name_message$
+			:i $style$ = $skprotest_panel_message_test_name_style$
+		:i :s}
+		:i $kill_panel_message_if_it_exists$$Id$ = $SkProTest_test_desc_message$
+		:i $create_panel_message$:s{
+			:i $text$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$description$) 
+			:i $Id$ = $SkProTest_test_desc_message$
+			:i $style$ = $skprotest_panel_message_test_desc_style$
+		:i :s}
+		:i $KillSpawnedScript$$name$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$start_script$) 
+		:i $SpawnScript$ ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$start_script$) 
+		:i $ClearEventHandlerGroup$$skprotest_start_event_group$
+		:i $SetEventHandler$:s{
+			:i $Ex$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$start_event$) 
+			:i $Params$ =  (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) 
+			:i $Scr$ = $SkProTest_execute_test_sequence$
+			:i $Group$ = $skprotest_start_event_group$
+		:i :s}
+		:i $printf$%s(30,"--- move skater to restart ---")
+		:i $ResetSkaters$$node_name$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$restart_node$) 
+		:i $printf$%s(41,"--- waiting for completed test signal ---")
+		:i $WaitForEvent$$Type$ = $TestCaseCompleted$
+		:i $KillSpawnedScript$$name$ =  ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$end_script$) 
+		:i $SpawnScript$ ( (%GLOBAL%$tests$:a{%GLOBAL%$test_index$:a}) ->$end_script$) 
+		:i $Wait$%i(20,00000014)$gameframes$
+		:i %GLOBAL%$test_index$ =  (%GLOBAL%$test_index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $kill_panel_message_if_it_exists$$Id$ = $SkProTest_test_name_message$
+	:i $kill_panel_message_if_it_exists$$Id$ = $SkProTest_test_desc_message$
+	:i $KillSpawnedScript$$Id$ = $SkProTest_end_script_id$
+	:i $KillSpawnedScript$$Id$ = $SkProTest_start_script_id$
+	:i $SpawnScript$%GLOBAL%$end_script$$Id$ = $SkProTest_end_script_id$
+	:i $Block$
+:i endfunction
+:i function $skprotest_panel_message_test_name_style$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(115,00000073)%i(115,00000073)%i(115,00000073)%i(128,00000080):a}$font$ = $dialog$
+	:i $SetProps$$shadow$$shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}$shadow_offs$ = %vec2(0.500000,0.500000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,80.000000)$scale$ = %i(6,00000006)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,80.000000)$scale$ = %f(0.750000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,80.000000)$scale$ = %f(1.600000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,80.000000)$scale$ = %f(1.300000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+:i endfunction
+:i function $skprotest_panel_message_test_desc_style$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(115,00000073)%i(115,00000073)%i(115,00000073)%i(128,00000080):a}$font$ = $dialog$
+	:i $SetProps$$shadow$$shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}$shadow_offs$ = %vec2(0.500000,0.500000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,100.000000)$scale$ = %i(2,00000002)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,100.000000)$scale$ = %f(0.500000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,100.000000)$scale$ = %f(1.000000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,100.000000)$scale$ = %f(0.800000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+:i endfunction
+:i function $skprotest_panel_message_fail_style$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(115,00000073)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}$font$ = $dialog$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %i(6,00000006)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(0.750000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(1.800000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(1.500000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+:i endfunction
+:i function $skprotest_panel_message_success_style$$time$ = %i(1500,000005dc)
+	:i $SetProps$$just$ = :a{$center$$center$:a}$rgba$ = :a{%i(0,00000000)%i(115,00000073)%i(0,00000000)%i(128,00000080):a}$font$ = $dialog$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %i(6,00000006)$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(0.750000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(1.800000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+	:i $Wait$%i(1,00000001)$frame$
+	:i $DoMorph$$pos$ = %vec2(320.000000,200.000000)$scale$ = %f(1.500000)$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+:i endfunction
+:i $_tech_test_boostplant_01$ = :s{
+	:i $name$ = %sc(24,"_tech_test_boostplant_01")
+	:i $start_script$ = $_tech_test_boostplant_01_setup$
+	:i $end_script$ = $_tech_test_boostplant_01_restore$
+	:i $tests$ = :a{
+		:i :s{
+			:i $name$ = $BOOSTPLANT_TEST_01$
+			:i $description$ = %s(32,"perform x2 thug11bp (double tap)")
+			:i $sequence$ = %s(31,"test_seq_boostplant_ug1_hard_x2")
+			:i $restart_node$ = $TRG_Team_Restart$
+			:i $start_event$ = $SkaterLanded$
+			:i $start_script$ = $nullscript$
+			:i $end_script$ = $nullscript$
+			:i $duration$ = %i(4,00000004)
+		:i :s}
+		:i :s{
+			:i $name$ = $BOOSTPLANT_TEST_02$
+			:i $description$ = %s(32,"perform x3 thug11bp (double tap)")
+			:i $sequence$ = %s(31,"test_seq_boostplant_ug1_hard_x3")
+			:i $restart_node$ = $TRG_Team_Restart$
+			:i $start_event$ = $SkaterLanded$
+			:i $start_script$ = $nullscript$
+			:i $end_script$ = $nullscript$
+			:i $duration$ = %i(5,00000005)
+		:i :s}
+		:i :s{
+			:i $name$ = $BOOSTPLANT_TEST_03$
+			:i $description$ = %s(32,"perform x4 thug11bp (double tap)")
+			:i $sequence$ = %s(31,"test_seq_boostplant_ug1_hard_x4")
+			:i $restart_node$ = $TRG_Team_Restart$
+			:i $start_event$ = $SkaterLanded$
+			:i $start_script$ = $nullscript$
+			:i $end_script$ = $test_seq_message_failed$
+			:i $duration$ = %i(6,00000006)
+		:i :s}
+		:i :s{
+			:i $name$ = $BOOSTPLANT_TEST_04$
+			:i $description$ = %s(32,"perform x5 thug11bp (double tap)")
+			:i $sequence$ = %s(31,"test_seq_boostplant_ug1_hard_x5")
+			:i $restart_node$ = $TRG_Team_Restart$
+			:i $start_event$ = $SkaterLanded$
+			:i $start_script$ = $nullscript$
+			:i $end_script$ = $nullscript$
+			:i $duration$ = %i(7,00000007)
+		:i :s}
+		:i :a}
+:i :s}
+:i function $_tech_test_boostplant_01_setup$
+	:i $THUGPRO_SafeKill$$name$ = $JowGBench04$
+	:i $THUGPRO_SafeKill$$name$ = $Collision_Gym_Benches03$
+	:i $THUGPRO_SafeKill$$name$ = $JowGBenchShadow04$
+	:i $THUGPRO_SafeKill$$name$ = $JowGBench01$
+	:i $THUGPRO_SafeKill$$name$ = $JowGBench03$
+	:i $THUGPRO_SafeKill$$name$ = $Collision_Gym_Benches01$
+	:i $THUGPRO_SafeKill$$name$ = $Collision_Gym_Benches02$
+	:i $THUGPRO_SafeKill$$name$ = $JowGBenchShadow03$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail04$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail05$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail06$
+	:i $THUGPRO_SafeKill$$name$ = $JowGRailShadow01$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail01$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail02$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Banks_Handrail03$
+	:i $THUGPRO_SafeKill$$name$ = $JowGRailShadow02$
+	:i $THUGPRO_SafeKill$$name$ = $JowGGymPillar01$
+	:i $THUGPRO_SafeKill$$name$ = $JowGGymPillar02$
+	:i $THUGPRO_SafeKill$$name$ = $JowGGymPillarShadow02$
+	:i $THUGPRO_SafeKill$$name$ = $JowGGymRoof01$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Doors01$
+	:i $ToggleAlwaysSpecial$$On$
+	:i $thugpro_temp_key_value$$Key$ = %s(20,"WallieplantInputMode")$value$ = %i(1,00000001)$apply_changes$
+	:i $thugpro_temp_key_value$$Key$ = %s(12,"BoostplantOn")$value$ = %i(1,00000001)$apply_changes$
+	:i $nullscript$
+:i endfunction
+:i function $_tech_test_boostplant_01_restore$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGBench04$
+	:i $THUGPRO_ForceCreate$$name$ = $Collision_Gym_Benches03$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGBenchShadow04$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGBench01$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGBench03$
+	:i $THUGPRO_ForceCreate$$name$ = $Collision_Gym_Benches01$
+	:i $THUGPRO_ForceCreate$$name$ = $Collision_Gym_Benches02$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGBenchShadow03$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail04$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail05$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail06$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGRailShadow01$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail01$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail02$
+	:i $THUGPRO_ForceCreate$$name$ = $Gym_Banks_Handrail03$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGRailShadow02$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGGymPillar01$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGGymPillar02$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGGymPillarShadow02$
+	:i $THUGPRO_ForceCreate$$name$ = $JowGGymRoof01$
+	:i $THUGPRO_SafeKill$$name$ = $Gym_Doors01$
+	:i $ToggleAlwaysSpecial$$Off$
+	:i $thugpro_restore_key_value$$Key$ = %s(20,"WallieplantInputMode")$apply_changes$
+	:i $thugpro_restore_key_value$$Key$ = %s(12,"BoostplantOn")$apply_changes$
+	:i $nullscript$
+:i endfunction
+:i function $_tech_test_boostplant_01_run$
+	:i $KillSpawnedScript$$name$ = $SkProTest_execute_test$
+	:i $SpawnScript$$SkProTest_execute_test$$Params$ = $_tech_test_boostplant_01$
+:i endfunction
+:i :end
