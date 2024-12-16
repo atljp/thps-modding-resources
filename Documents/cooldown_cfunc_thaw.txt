@@ -1,0 +1,104 @@
+/*
+
+game\skater\grindscripts.q
+game\skater\airtricks.q
+game\skater\tricks.q
+game\skater\CreateATrick.q
+
+*/
+
+    bool CFunc_OverrideCavemanWallplantCooldownPatch(THAWPlus::LazyStruct* pParams)
+    {
+
+        bool flag_on = pParams->ContainsFlag(0xF649D637); /* on */
+        bool flag_off = pParams->ContainsFlag(0xD443A2BC); /* off */
+
+        if (!flag_on) {	
+	    if flag_off {
+
+	        patchBytesM(0x0050755A, (BYTE*)"\x74\x07", 2);
+
+	        if (getINIValue_WPCoolDown != "Off") {
+	            patchBytesM(0x00508CD8, (BYTE*)"\x75\x35", 2);
+	            return true;
+	        } else {
+	            patchNop(0x00508CD8, 2);
+	            return true;
+	        }
+            } else {
+	        patchBytesM(0x00508CD8, (BYTE*)"\x75\x35", 2);
+                if getINIValue_WPCoolDown == "Off") {
+	    	    patchNop(0x0050755A, 2);
+	    	    return true;
+	        }
+            }
+        return true;
+        }
+    }
+
+
+
+
+
+
+if ContainsFlag(0xF649D637)=0 
+{
+
+  if ContainsFlag(0xD443A2BC)!=0 {
+    patchBytesM(0x0050755A, (BYTE*)"\x74\x07", 2);
+    if (getINIValue_WPCoolDown = "Off",0) { patchNop(0x005DCFEE, 2); } else { patchBytesM(0x005DCFEE, (BYTE*)"\x74\x42", 2);
+  }
+}
+else {
+    patchBytesM(0x005DCFEE, (BYTE*)"\x74\x42", 2);
+    if (getINIValue_WPCoolDown = "Off",0)   { patchNop(0x0050755A, 2); }
+}
+
+return 1;
+
+
+
+______________
+thaw:
+
+
+
+if ContainsFlag(0xF649D637)=0 
+{
+
+  if ContainsFlag(0xD443A2BC)!=0 {
+    patchBytesM(0x005DB0B5, (BYTE*)"\x74\x07", 2);
+    if (getINIValue_WPCoolDown = "Off",0) { patchNop(0x005DCFEE, 2); } else { patchBytesM(0x005DCFEE, (BYTE*)"\x74\x42", 2);
+  }
+}
+else {
+    patchBytesM(0x005DCFEE, (BYTE*)"\x74\x42", 2);
+    if (getINIValue_WPCoolDown = "Off",0)   { patchNop(0x005DB0B5, 2); }
+}
+
+return 1;
+
+
+
+toggle on: 90 90  at 0x00508CD8 (THUG2)
+toggle off: 75 35 at  0x00508CD8 (THUG2)
+
+THAW ADDRESS: 0x005DCFEE (off: 74 42 / on: 90 90)
+
+CFuncs::AddFunction("RT_ToggleWPCooldown", (void*) CFunc_ToggleWPCooldown);
+
+rt_wallplantcooldown_toggle = {
+        section = 'Gameplay'
+        key = 'WallplantCooldown'
+        name = 'Wallplant Cooldown (TEST)'
+        //~ helper_image = 'helper_scorespecial'
+        description = 'Im still testing the cooldown patch'
+        variable = pref_wpcooldown
+        change_script = rt_gameitem_changed
+        options = [
+            { value = 1 value_string = '1' display_string = 'On' }
+            { value = 0 value_string = '0' display_string = 'Off' }
+        ]
+    }
+
+

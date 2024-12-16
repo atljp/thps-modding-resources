@@ -7,6 +7,6 @@
 - NodeQBC: [On GitGud by Fretworks](https://gitgud.io/fretworks/nodeqbc)
 - NodeROQ: [On GitGud by Fretworks](https://gitgud.io/fretworks/noderoq), Main.js with THUG2 decompiler provided by Zedek the Plague Doctor ™
 - QueenBee: By IronHawk
-
+- QScript: [On Github by cuckydev](https://github.com/cuckydev/QScript)
 - PreTool: By %.gone.
 - THPS Script Tools: By KSK
