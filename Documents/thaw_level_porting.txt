@@ -1,0 +1,49 @@
+reTHAWed level port guide
+
+1.  Convert scn/tex using 'scnconverter' tool. (node convert.js dj.scn.xbx thug2 thaw) [thps4 for desa/thps4, thug = thug, thug2 = thug2, thaw = thp8]
+    Note: We want to try to use the stock scn as much as possible, having to import/re-export from Blender can lead to many discrepancies, like broken double sided mesh and animated textures.
+   
+2.  Copy any .qb files from the level into the Assets->QB folder in ghsdk for conversion, make sure the extention reflects that games conversion type (.qb.xbx = thug/thug2, .qb.wpc = thaw/thp8).
+2a. Enter the ghsdk and go into Assets->QB->Decompile (QBC)->Decompile All. This should give us .q files for the .qb files we put in the folder.
+2b. For the time being, open up the node array .q file, and remove the 'CreatedAtStart' flag on any Pedestrian classes, to avoid crashes upon startup. Also add the Z_ prefix to the very start of the file where the node array starts, and replace any instances of ' , ' with just ' '.
+2c. Open up the _scripts .q file as well, and add the Z_ prefix onto the setup and goals scripts (This shouldn't be needed if you are porting a THP8 level that uses Z_ prefixes already).
+2d. Take the node array and _scripts .q files, and run them through the convertQ tool, this will spit out a new node array .q, alongside a pfx file, keep these both for later.
+
+
+3.  Inside the reTHAWed repos, inside packages we want to create a new worldzone package for our map, this won't get pushed officially, but we use this so we can compile the .q code and pak.
+3a. Create a folder under your levels prefix name, for me the original prefix is DJ, so mine will be Z_DJ.
+3b. Inside this folder create 3 folders, Compiled, Content, and Source, alongside a file called 'pak.json' which will contain the following line with your zone in place of mine.
+    {"OutPath": "data/mod/Zones/z_dj", "PAB": false, "ZonePrefix": "z_dj"}
+3c. Inside Compiled create a folder path of the following, worlds->worldzones->z_dj, swap z_dj with your zone name. This is where you will put your scn/tex from step 1, your pfx from step 2d, and our collision later on.
+3d. Inside Content, create a folder path of the following, data->mod->zones->z_dj.
+3e. Inside Source create the same folder path from 3c. worlds->worldzones->z_dj, inside here is where you will put your .q files. Make sure to name them accordingly, node array should be Z_DJ.q, scripts should be Z_DJ_Scripts.q, and any others should be the same just with the Z_ prefix added on.
+
+4.  Before we start the collision, we need a dbg file, open up the ghsdk and go to Scripting and find your zone, then select Compile.
+    Note: You may run into a error about a value ending in e- something, if you run into this, open up the node array .q in your source folder and find and remove any instances of the e-#'s and try again.
+4a. If the last step was sucessful, there should now be a .qb.wpc file for each .q file you had within your zones Compiled folder, alongside a .dbg file for each .qb, we will need the node arrays one for our collision in Blender.
+
+5.  Open up Blender 4.1, make sure you have the NXTools installed. Delete the default objects.
+5a. Navigate to the import tab, and find Import->Neversoft Collision, find your zones .col file from the game you are porting from and import it.
+5b. From here on the right hand side tab, you wanna find the Scene category, and scroll down to the 'Level Properties' section, in here select the Import .DBG File option, and import the node array .dbg file from 4a.
+5c. If done correctly, all the objects should be renamed to have their original names. From here the only thing you need to setup in theory is bank drops and fix any double sided mesh that is single sided due to importing. But feel free to tweak stuff if needbe.
+5d. When you are ready you can goto File->Export->NXTools->Neversoft Collision and export the level collision to THAW gametype, with the name of your zone.
+5e. From here, add your collision file that exported into the Compiled folder for your zone.
+
+6.  Time to compile the pak for a initial test, head back into the ghsdk, but goto the Packing section this time, navigate and find your zone, and select the Pack option.
+6a. After the packing, it should spit out a .pak file in the Content folder path, copy this, then navigate to your game with reTHAWed installed, and head to the following path
+    'Game\data\mod\UserMods\Maps'
+6b. Create a folder under your zone name or level name, in my case Downhill Jam, and paste the pak from 6a. into it.
+6c. Create a .ini file inside the folder called level.ini, inside this you just need the following
+    [ModInfo]
+    Description=Exported with NXTools.
+    Author=Anonymous
+    Version=1.0
+    
+    [LevelInfo]
+    Name=Downhill Jam
+    Description=Exported with NXTools.
+    LevelPrefix=Z_DJ
+
+6c. From here you can boot up reTHAWed and if everything works correctly, the level should be under the reTHAWed level tab, launch it and fingers crossed it loads.
+    Note: If the level loads but there aren't any nodes or restarts, chances are it didn't set the node array to .nqb, can open the pak with queenbee to change the type.
+	
