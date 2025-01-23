@@ -1,0 +1,207 @@
+
+:i $Goal_TrickBeat_GenericParams$ = :s{
+	:i $goal_text$ = %s(18,"Trick to the beat!")
+	:i $view_goals_text$ = %s(30,"Generic trick to the beat text")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_trick_beat_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_trick_beat_activate$
+	:i $deactivate$ = $goal_trick_beat_deactivate$
+	:i $expire$ = $goal_trick_beat_expire$
+	:i $fail$ = $goal_trick_beat_fail$
+	:i $success$ = $goal_trick_beat_success$
+	:i $restart_node$ = $TRG_G_TRICKBEAT_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_TRICKBEAT_Pro$
+	:i $record_type$ = $score$
+	:i $TrickBeat$
+:i :s}
+:i $goal_trick_beat_faded_trick_alpha$ = %f(0.400000)
+:i $goal_trick_beat_unfaded_trick_alpha$ = %f(1.000000)
+:i function $goal_trick_beat_init$
+	:i $goal_init$ isNull 
+:i endfunction
+:i function $goal_trick_beat_activate$
+	:i if NOT $GotParam$$quick_start$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$wait_to_add_tricks$ = %i(1,00000001):s}
+		:i $SpawnScript$$goal_trick_beat_wait_and_add_tricks$$params$ =  isNull 
+	:i endif
+	:i if $GotParam$$no_cam_anim$
+		:i $goal_passive_start$$goal_id$ = %GLOBAL%$goal_id$
+		:i $SpawnScript$$goal_trick_beat_fade_out_music$
+	:i else 
+		:i if $GotParam$$quick_start$
+			:i $SpawnScript$$goal_trick_beat_fade_out_music$
+		:i else 
+			:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+			:i $SpawnScript$$goal_trick_beat_wait_and_fade_music$
+		:i endif
+	:i endif
+	:i $create_trick_beat_menu$
+:i endfunction
+:i function $goal_trick_beat_wait_and_add_tricks$
+	:i $Block$$UntilEvent$ = $goal_cam_anim_post_start_done$
+	:i $GoalManager_ResetTrickBeatTimer$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$wait_to_add_tricks$ = %i(0,00000000):s}
+:i endfunction
+:i function $goal_trick_beat_deactivate$
+	:i $goal_deactivate$ isNull 
+	:i if $ScreenElementExists$$id$ = $trick_beat_menu_anchor$
+		:i $RunScriptOnScreenElement$$id$ = $trick_beat_menu_anchor$$menu_offscreen$$params$ = :s{$menu_id$ = $trick_beat_menu_anchor$:s}
+	:i endif
+	:i if NOT $GotParam$$quick_start$
+		:i $SpawnScript$$goal_trick_beat_fade_in_music$
+	:i endif
+:i endfunction
+:i function $goal_trick_beat_expire$
+	:i $goal_expire$ isNull 
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_trick_beat_fail$
+	:i $goal_fail$ isNull 
+:i endfunction
+:i function $goal_trick_beat_success$
+	:i $goal_success$ isNull 
+:i endfunction
+:i function $goal_trick_beat_wait_and_fade_music$
+	:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i $SpawnScript$$goal_trick_beat_fade_out_music$
+:i endfunction
+:i function $create_trick_beat_menu$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $trick_beat_menu_anchor$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(320.000000,218.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $trick_beat_menu_anchor$
+		:i $id$ = $trick_beat_tricks_menu$
+		:i $font$ = $small$
+		:i $padding_scale$ = %f(0.950000)
+		:i $just$ = :a{$right$$bottom$:a}
+		:i $pos$ = %vec2(615.000000,370.000000)
+		:i $internal_just$ = :a{$right$$center$:a}
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $trick_beat_menu_anchor$
+		:i $local_id$ = $the_stereo$
+		:i $texture$ = $kyron$
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(560.000000,410.000000)
+	:i :s}
+:i endfunction
+:i function $goal_trick_beat_remove_trick$
+	:i $GetTags$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(0.700000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(85,00000055):a}
+	:i :s}
+	:i if NOT $GotParam$$tricktris$
+		:i $DoMorph$$scale$ = %i(0,00000000)$time$ = %f(0.500000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $Die$
+:i endfunction
+:i function $goal_trick_beat_add_trick$
+	:i $GetTags$
+	:i $goal_trick_beat_move_button_text$ isNull 
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.700000)
+	:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+:i endfunction
+:i function $goal_trick_beat_move_button_text$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $just$ = :a{$right$$top$:a}
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $pos$ = %vec2(100.000000,0.000000)
+	:i :s}
+	:i if NOT $GotParam$$no_key_combo$
+		:i $GetScreenElementPosition$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $just$ = :a{$right$$top$:a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ - %vec2(10.000000,0.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_trick_beat_pulse_trick$
+	:i $goal_trick_beat_turn_trick_red$
+	:i $wait$%GLOBAL%$wait_time$
+	:i $goal_trick_beat_turn_trick_white$
+:i endfunction
+:i function $goal_trick_beat_turn_trick_red$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(85,00000055):a}
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{$trick_beat_menu_anchor$$child$ = $the_stereo$:s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(85,00000055):a}
+		:i $scale$ = %f(1.300000)
+	:i :s}
+:i endfunction
+:i function $goal_trick_beat_turn_trick_white$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{$trick_beat_menu_anchor$$child$ = $the_stereo$:s}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(90,0000005a):a}
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $goal_trick_beat_reset_trick_container$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$id$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(0.700000)
+	:i :s}
+:i endfunction
+:i function $goal_trick_beat_play_trick_removed_sound$
+	:i $wait$%f(0.100000)$seconds$
+	:i $PlaySound$$TetrisAway$$vol$ = %i(125,0000007d)$pitch$ = %i(125,0000007d)
+:i endfunction
+:i function $goal_trick_beat_fade_out_music$
+	:i $SpawnScript$$SK6_Music_Fade_Out$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $change$$DontAdjustMusicViaProximNode$ = %i(1,00000001)
+:i endfunction
+:i function $goal_trick_beat_fade_in_music$
+	:i $change$$DontAdjustMusicViaProximNode$ = %i(0,00000000)
+	:i if NOT  ( ($in_create_a_goal$) ) 
+		:i $SpawnScript$$SK6_Music_Fade_In$
+	:i else 
+		:i $KillSpawnedScript$$name$ = $SK6_Music_Fade_Out$
+		:i $change$$music_was_paused$ = %i(0,00000000)
+		:i $SetMusicVolume$$MusicVolOutsideBox$
+	:i endif
+:i endfunction
+:i :end

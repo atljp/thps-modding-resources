@@ -1,0 +1,153 @@
+
+:i function $PauseMusicAndStreams$
+	:i $PauseMusic$%i(1,00000001)
+	:i $PauseStream$%i(1,00000001)
+:i endfunction
+:i function $UnPauseMusicAndStreams$
+	:i $PauseMusic$%i(0,00000000)
+	:i $PauseStream$%i(0,00000000)
+:i endfunction
+:i function $do_backend_retry$
+	:i if NOT $IsObserving$
+		:i $Skater$.$KillSpecial$
+	:i endif
+	:i $GoalManager_UninitializeAllGoals$
+	:i if $InNetGame$
+		:i if NOT $IsObserving$
+			:i $ExitSurveyorMode$
+			:i $Skater$.$add_skater_to_world$
+		:i endif
+		:i $ResetProSetFlags$
+		:i if NOT $IsObserving$
+			:i $Skater$.$RunStarted$
+		:i endif
+		:i $ClearPowerups$
+	:i endif
+	:i $SpawnScript$$do_screen_freeze$
+:i endfunction
+:i function $do_screen_freeze$
+	:i $kill_net_panel_messages$
+	:i $PauseGame$
+	:i if $InNetGame$
+		:i $exit_pause_menu$$menu_id$ = $pause_menu$
+		:i $force_close_rankings$
+		:i $destroy_onscreen_keyboard$
+		:i $StartNetworkLobby$
+	:i else 
+		:i $exit_pause_menu$$menu_id$ = $pause_menu$
+		:i $force_close_rankings$
+		:i $SetGameType$$freeskate2p$
+		:i $SetCurrentGameType$
+	:i endif
+	:i $Wait$%i(2,00000002)$gameframe$
+	:i $unpausegame$
+	:i $retry$
+:i endfunction
+:i function $entered_chat_message$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i if  (%GLOBAL%$string$ = %s(5,".menu")) 
+		:i $create_dks_options_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(16,"!soad!amon!nofx!")) 
+		:i $the_secret_dksmod_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(16,"!SOAD!AMON!NOFX!")) 
+		:i $the_secret_dksmod_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".marcar")) 
+		:i $escolher_restart_dks$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".voltar")) 
+		:i $voltarao_restart_dks$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(4,".obs")) 
+		:i $iniciar_observer_dks$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(9,".obs.sair")) 
+		:i $sair_observer_dks$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".taunts")) 
+		:i $create_dksmod_taunt$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".chat")) 
+		:i $create_mensagens_dks$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(9,".nobounds")) 
+		:i $create_no_bound_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".noclip")) 
+		:i $create_noclip_dksmenu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".tema")) 
+		:i $create_temas_dksmod_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(8,".muni?ao")) 
+		:i $create_blub_mod_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(4,".ban")) 
+		:i $launch_player_list_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".tricks")) 
+		:i $create_edit_tricks_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(7,".carros")) 
+		:i $create_veiuculo_menu_dksmod$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(6,".tempo")) 
+		:i $create_tempo_do_dia$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".spam")) 
+		:i $mensagen_dks_um$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(6,".ajuda")) 
+		:i $create_ajuda_dks_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(6,".onoff")) 
+		:i $create_onoff_dksmod_menu$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(8,".trapa?a")) 
+		:i $mandar_ladrao_chat$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".fuck")) 
+		:i $mensagen_dks_trez$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(3,".go")) 
+		:i $mensagen_dks_dois$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(6,".noobs")) 
+		:i $mensagen_dks_oito$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".cala")) 
+		:i $mensagen_dks_cimco$
+	:i endif
+	:i if  (%GLOBAL%$string$ = %s(5,".game")) 
+		:i $network_game_options_selected$
+	:i endif
+	:i if NOT  ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( (%GLOBAL%$string$ = %s(5,".menu"))  OR  (%GLOBAL%$string$ = %s(6,".onoff"))  OR  (%GLOBAL%$string$ = %s(6,".tempo"))  OR  (%GLOBAL%$string$ = %s(7,".carros"))  OR  (%GLOBAL%$string$ = %s(8,".trapa?a"))  OR  (%GLOBAL%$string$ = %s(5,".fuck"))  OR  (%GLOBAL%$string$ = %s(3,".go"))  OR  (%GLOBAL%$string$ = %s(6,".noobs"))  OR  (%GLOBAL%$string$ = %s(5,".cala"))  OR  (%GLOBAL%$string$ = %s(5,".game"))  OR  (%GLOBAL%$string$ = %s(17,"!dks!rlz!podecre!"))  OR  (%GLOBAL%$string$ = %s(7,".marcar"))  OR  (%GLOBAL%$string$ = %s(7,".voltar"))  OR  (%GLOBAL%$string$ = %s(4,".obs"))  OR  (%GLOBAL%$string$ = %s(9,".obs.sair"))  OR  (%GLOBAL%$string$ = %s(7,".taunts"))  OR  (%GLOBAL%$string$ = %s(5,".chat"))  OR  (%GLOBAL%$string$ = %s(16,"!soad!amon!nofx!"))  OR  (%GLOBAL%$string$ = %s(16,"!SOAD!AMON!NOFX!"))  OR  (%GLOBAL%$string$ = %s(9,".nobounds"))  OR  (%GLOBAL%$string$ = %s(7,".noclip"))  OR  (%GLOBAL%$string$ = %s(5,".tema"))  OR  (%GLOBAL%$string$ = %s(8,".muni?ao"))  OR  (%GLOBAL%$string$ = %s(4,".ban"))  OR  (%GLOBAL%$string$ = %s(6,".teste"))  OR  (%GLOBAL%$string$ = %s(7,".tricks"))  OR  (%GLOBAL%$string$ = %s(5,".spam"))  OR  (%GLOBAL%$string$ = %s(6,".ajuda")) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) 
+		:i $SendChatMessage$$string$ = %GLOBAL%$string$
+	:i endif
+	:i $destroy_onscreen_keyboard$
+:i endfunction
+:i function $menu_entered_chat_message$
+	:i $entered_chat_message$
+	:i $create_pause_menu$
+:i endfunction
+:i function $cancel_chat_menu$
+	:i $destroy_onscreen_keyboard$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_chat_keyboard$
+	:i $hide_current_goal$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_onscreen_keyboard$$allow_cancel$$icon$ = %GLOBAL%$icon$$keyboard_cancel_script$ = $cancel_chat_menu$$keyboard_done_script$ = $menu_entered_chat_message$$keyboard_title$ = %s(19,"DIGITE UMA MENSAGEM")$min_length$ = %i(0,00000000)$max_length$ = %i(127,0000007f)$text$ = %s(0,"")
+:i endfunction
+:i function $enter_kb_chat$
+	:i $create_onscreen_keyboard$$allow_cancel$$no_buttons$$pos$ = %vec2(320.000000,260.000000)$keyboard_done_script$ = $entered_chat_message$$display_text$ = %s(21,"DIGITE UMA MENSAGEM: ")$keyboard_title$ = %s(19,"DIGITE UMA MENSAGEM")$min_length$ = %i(1,00000001)$max_length$ = %i(127,0000007f)$display_text_scale$ = %f(0.500000)
+:i endfunction
+:i function $PreRunQueuedScripts$
+	:i $SetSlomo$%f(100.000000)
+:i endfunction
+:i function $PostRunQueuedScripts$
+	:i $SetSlomo$%i(1,00000001)
+:i endfunction
+:i :end

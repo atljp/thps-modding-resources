@@ -1,0 +1,1465 @@
+
+:i function $create_debug_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $debug_menu$
+		:i $vmenu_id$ = $debug_vmenu$
+		:i $menu_title$ = %s(5,"DEBUG")
+		:i $type$ = $VScrollingMenu$
+		:i $dims$ = %vec2(200.000000,350.000000)
+		:i $padding_scale$ = %f(0.950000)
+		:i $pos$ = %vec2(243.000000,50.000000)
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $debug_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_debug_options_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Auto Rail Level")$id$ = $menu_autoraillevel$$pad_choose_script$ = $autorail_level$
+	:i $make_text_sub_menu_item$$text$ = %s(11,"Time Of Day")$id$ = $menu_timeofday$$pad_choose_script$ = $launch_timeofday_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(13,"Lighting Tool")$id$ = $menu_lighting$$pad_choose_script$ = $launch_lighttool_sub_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(19,"Rail Display Toggle")$pad_choose_script$ = $toggle_rails$
+	:i $make_text_sub_menu_item$$text$ = %s(34,"Bouncy Object Debug Display Toggle")$pad_choose_script$ = $toggle_rigidbody$
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Toggle Profiler")$id$ = $menu_profiler$$pad_choose_script$ = $launch_toggle_profiler$
+	:i $make_text_sub_menu_item$$text$ = %s(18,"Toggle FPS Display")$id$ = $menu_fps$$pad_choose_script$ = $launch_toggle_fps$
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Toggle Anim Times")$id$ = $menu_anim_times$$pad_choose_script$ = $launch_toggle_anim_times$
+	:i $make_text_sub_menu_item$$text$ = %s(21,"Toggle Particle Times")$id$ = $menu_particle_times$$pad_choose_script$ = $launch_toggle_particle_times$
+	:i $make_text_sub_menu_item$$text$ = %s(32,"Toggle Particle Emit Dir Display")$id$ = $menu_emit$$pad_choose_script$ = $launch_toggle_emit_dir$
+	:i $make_text_sub_menu_item$$text$ = %s(32,"Toggle Model Scene Light Display")$id$ = $menu_light_model$$pad_choose_script$ = $launch_toggle_lights$$pad_choose_params$ = :s{$light_type$ = $model$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(31,"Toggle Geom Scene Light Display")$id$ = $menu_light_geom$$pad_choose_script$ = $launch_toggle_lights$$pad_choose_params$ = :s{$light_type$ = $geom$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(33,"Toggle Active Scene Light Display")$id$ = $menu_light_active$$pad_choose_script$ = $launch_toggle_lights$$pad_choose_params$ = :s{$light_type$ = $active$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Toggle Geom Stats")$id$ = $menu_geom_stats$$pad_choose_script$ = $launch_toggle_geom_stats$
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Toggle Poly Count")$id$ = $menu_poly$$pad_choose_script$ = $show_poly_count$
+	:i $make_text_sub_menu_item$$text$ = %s(18,"Toggle Free Memory")$id$ = $menu_mem$$pad_choose_script$ = $show_free_mem$
+	:i $make_text_sub_menu_item$$text$ = %s(22,"Defrag Animation Cache")$id$ = $menu_defrag_anim$$pad_choose_script$ = $show_defrag_anim_cache$
+	:i if $CD$
+		:i $make_text_sub_menu_item$$text$ = %s(14,"Start AutoTest")$id$ = $menu_start_autotest$$pad_choose_script$ = $menu_start_autotest$
+		:i $make_text_sub_menu_item$$text$ = %s(13,"Stop AutoTest")$id$ = $menu_stop_autotest$$pad_choose_script$ = $menu_stop_autotest$
+	:i endif
+	:i $make_text_sub_menu_item$$text$ = %s(16,"Wireframe Toggle")$pad_choose_script$ = $toggle_wireframe$
+	:i $make_text_sub_menu_item$$text$ = %s(22,"Wireframe Skins Toggle")$pad_choose_script$ = $toggle_wireframe_skins$
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Show Vert Polys")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_vert$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(19,"Show Wallride Polys")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_wallride$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(18,"Show Trigger Polys")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_trigger$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Show Camera Polys")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_camera_collide$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(18,"Show Not Skateable")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_not_skatable$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(18,"Show skater shadow")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_skater_shadow$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(21,"Show no skater shadow")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_no_skater_shadow$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(26,"Show no skater shadow wall")$pad_choose_script$ = $toggle_show_polys$$pad_choose_params$ = :s{$showscript$ = $show_no_skater_shadow_wall$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(20,"CheckForHoles (Slow)")$pad_choose_script$ = $hole_check$
+	:i $make_text_sub_menu_item$$text$ = %s(8,"Hide HUD")$pad_choose_script$ = $debug_menu_hide_hud$
+	:i $make_text_sub_menu_item$$text$ = %s(4,"Done")$id$ = $menu_done$$pad_choose_script$ = $create_debug_options_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$$params$ = :s{$final_pos$ = %vec2(320.000000,134.000000):s}
+:i endfunction
+:i function $launch_lighttool_sub_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $debug_menu$
+		:i $vmenu_id$ = $debug_vmenu$
+		:i $menu_title$ = %s(18,"LIGHT TOOL SUBMENU")
+		:i $type$ = $VScrollingMenu$
+		:i $dims$ = %vec2(200.000000,350.000000)
+		:i $padding_scale$ = %f(0.950000)
+		:i $pos$ = %vec2(243.000000,50.000000)
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $debug_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(16,"Character Lights")$id$ = $menu_charlights$$pad_choose_script$ = $launch_lighting_tool$$pad_choose_params$ = :s{$set$ = $character$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(12,"Level Lights")$id$ = $menu_levellights$$pad_choose_script$ = $launch_lighting_tool$$pad_choose_params$ = :s{$set$ = $level$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(4,"Done")$id$ = $menu_done$$pad_choose_script$ = $create_debug_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$$params$ = :s{$final_pos$ = %vec2(320.000000,134.000000):s}
+:i endfunction
+:i function $debug_menu_hide_hud$
+	:i $UnpauseGame$
+	:i $exit_pause_menu$
+	:i $hide_root_window$
+:i endfunction
+:i function $exit_test_menu$
+	:i if  ($IsTrue$$UsePlayerPosForViewerObjPos$) 
+		:i $Skater$.$unhide$
+	:i endif
+	:i $create_debug_options_menu$
+:i endfunction
+:i function $create_test_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $pause_menu_gradient$$off$
+	:i $dialog_box_exit$
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $debug_menu$
+		:i $vmenu_id$ = $debug_vmenu$
+		:i $menu_title$ = %s(4,"TEST")
+		:i $type$ = $VScrollingMenu$
+		:i $dims$ = %vec2(200.000000,350.000000)
+		:i $padding_scale$ = %f(0.950000)
+		:i $pos$ = %vec2(243.000000,50.000000)
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $debug_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$exit_test_menu$:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(11,"View Humans")$id$ = $menu_view_human_models$$pad_choose_script$ = $launch_view_models_menu$$pad_choose_params$ = :s{$model_set$ = $human$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(19,"View Cutscene Heads")$id$ = $menu_view_cutscene_heads$$pad_choose_script$ = $launch_view_models_menu$$pad_choose_params$ = :s{$model_set$ = $cutscene_heads$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(12,"View Animals")$id$ = $menu_view_animal_models$$pad_choose_script$ = $launch_view_models_menu$$pad_choose_params$ = :s{$model_set$ = $animal$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(9,"View Cars")$id$ = $menu_view_car_models$$pad_choose_script$ = $launch_view_models_menu$$pad_choose_params$ = :s{$model_set$ = $car$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(14,"View Cutscenes")$id$ = $menu_view_cutscenes$$pad_choose_script$ = $launch_view_cutscenes_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(14,"Set Pro Skater")$id$ = $menu_set_pro_skater$$pad_choose_script$ = $create_set_pro_skater_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(19,"Set Pre-Made Skater")$id$ = $menu_set_premade_skater$$pad_choose_script$ = $create_set_premade_skater_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Edit Appearance")$id$ = $menu_edit_appearance$$pad_choose_script$ = $pause_launch_level$$pad_choose_params$ = :s{$level$ = $load_cas$:s}
+	:i $make_text_sub_menu_item$$text$ = %s(10,"dialog box")$id$ = $menu_dialog$$pad_choose_script$ = $create_test_dialog$
+	:i $make_text_sub_menu_item$$text$ = %s(14,"Scrolling Menu")$id$ = $menu_scroll$$pad_choose_script$ = $test_scrolling_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(17,"Face Texture Test")$id$ = $menu_face_texture$$pad_choose_script$ = $face_texture_test$
+	:i $make_text_sub_menu_item$$text$ = %s(16,"View High Scores")$id$ = $menu_hs_displaye$$pad_choose_script$ = $high_scores_menu_create$$pad_choose_params$ = :s{$new_initials$ = %s(3,"ABC"):s}
+	:i $make_text_sub_menu_item$$text$ = %s(8,"Keyboard")$pad_choose_script$ = $launch_keyboard$
+	:i $make_text_sub_menu_item$$text$ = %s(4,"Done")$id$ = $menu_done$$pad_choose_script$ = $create_debug_options_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$$params$ = :s{$final_pos$ = %vec2(320.000000,134.000000):s}
+:i endfunction
+:i function $autorail_level$
+	:i $Autorail$
+:i endfunction
+:i function $hole_check$
+	:i $checkforholes$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_profiler$
+	:i $ToggleMetrics$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_fps$
+	:i $ToggleFPS$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_anim_times$
+	:i $ToggleAnimTimes$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_particle_times$
+	:i $ToggleParticleTimes$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_emit_dir$
+	:i $ToggleDrawEmitDir$
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_lights$
+	:i $ToggleDrawLights$ isNull 
+	:i $create_pause_menu$
+:i endfunction
+:i function $launch_toggle_geom_stats$
+	:i $ToggleGeomStats$
+	:i $create_pause_menu$
+:i endfunction
+:i function $toggle_rails$
+	:i $ToggleRails$
+	:i $pulse_item$
+:i endfunction
+:i function $toggle_rigidbody$
+	:i $ToggleRigidBodyDebug$
+	:i $pulse_item$
+:i endfunction
+:i function $toggle_wireframe$
+	:i $togglerendermode$
+	:i $show_all$
+	:i $pulse_item$
+:i endfunction
+:i $toggled_geom_stats_on$ = %i(0,00000000)
+:i function $ToggleGeomStats$
+	:i if  ($toggled_geom_stats_on$ = %i(1,00000001)) 
+		:i $change$$toggled_geom_stats_on$ = %i(0,00000000)
+		:i $KillSpawnedScript$$name$ = $RefreshGeomStatsDisplay$
+		:i $wait$%f(0.200000)$seconds$
+		:i if $ObjectExists$$id$ = $geom_stats_anchor$
+			:i $DestroyScreenElement$$id$ = $geom_stats_anchor$
+		:i endif
+	:i else 
+		:i $change$$toggled_geom_stats_on$ = %i(1,00000001)
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $geom_stats_anchor$
+			:i $DestroyScreenElement$$id$ = $geom_stats_anchor$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $geom_stats_anchor$
+			:i $pos$ = %vec2(430.000000,80.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextBlockElement$
+			:i $parent$ = $geom_stats_anchor$
+			:i $id$ = $geom_stats_text$
+			:i $pos$ = %vec2(0.000000,-47.000000)
+			:i $dims$ = %vec2(300.000000,100.000000)
+			:i $allow_expansion$
+			:i $text$ = %s(4,"blah")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.700000)
+			:i $line_spacing$ = %f(0.800000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $SpawnScript$$RefreshGeomStatsDisplay$
+	:i endif
+:i endfunction
+:i function $RefreshGeomStatsDisplay$$interval$ = %f(0.100000)
+	:i while
+		
+		:i if $ObjectExists$$id$ = $geom_stats_anchor$
+			:i $GetCurrentGeomStats$
+			:i $FormatText$:s{$textname$ = $gstat$
+				:i %s(466,"Total=%a\nInactive=%b\nSky=%c\nTransformed=%d\nInstances=%%instance\nSkeletal=%e\nCameraSphere=%f\nClipCull=%g\nCulled=%h\nLeafCulled=%i\nBoxCheck=%j\nBocCheckCulled=%k\nOccludeCheck=%l\nOccludedObject=%m\nnOccludedLeaf=%%occluded_leaf\nColored=%n\nLeaf=%o\nMinLeaf=%p\nWibbleUV=%q\nWibbleVC=%r\nEnvMapped=%s\nSendContext=%t\nSorted=%u\nShadow=%v\nBillboard=%w\nFastParticles=%x\nFastParticleSys=%%fast_sys\nFlexParticles=%y\nFlexParticleSys=%z\nFlexParticlePrims=%_")
+				:i $a$ = %GLOBAL%$geom_stats_total$
+				:i $b$ = %GLOBAL%$geom_stats_inactive$
+				:i $c$ = %GLOBAL%$geom_stats_sky$
+				:i $d$ = %GLOBAL%$geom_stats_transformed$
+				:i $instance$ = %GLOBAL%$geom_stats_instance$
+				:i $e$ = %GLOBAL%$geom_stats_skeletal$
+				:i $f$ = %GLOBAL%$geom_stats_camera_sphere$
+				:i $g$ = %GLOBAL%$geom_stats_clipcull$
+				:i $h$ = %GLOBAL%$geom_stats_culled$
+				:i $i$ = %GLOBAL%$geom_stats_leaf_culled$
+				:i $j$ = %GLOBAL%$geom_stats_boxcheck$
+				:i $k$ = %GLOBAL%$geom_stats_boxcheck_culled$
+				:i $l$ = %GLOBAL%$geom_stats_occludecheck$
+				:i $m$ = %GLOBAL%$geom_stats_occluded_object$
+				:i $occluded_leaf$ = %GLOBAL%$geom_stats_occluded_leaf$
+				:i $n$ = %GLOBAL%$geom_stats_colored$
+				:i $o$ = %GLOBAL%$geom_stats_leaf$
+				:i $p$ = %GLOBAL%$geom_stats_minimal_leaf$
+				:i $q$ = %GLOBAL%$geom_stats_wibbleUV$
+				:i $r$ = %GLOBAL%$geom_stats_wibbleVC$
+				:i $s$ = %GLOBAL%$geom_stats_envmapped$
+				:i $t$ = %GLOBAL%$geom_stats_sendcontext$
+				:i $u$ = %GLOBAL%$geom_stats_sorted$
+				:i $v$ = %GLOBAL%$geom_stats_shadow$
+				:i $w$ = %GLOBAL%$geom_stats_billboard$
+				:i $x$ = %GLOBAL%$geom_stats_new_particles$
+				:i $fast_sys$ = %GLOBAL%$geom_stats_new_particle_systems$
+				:i $y$ = %GLOBAL%$geom_stats_old_particles$
+				:i $z$ = %GLOBAL%$geom_stats_old_particle_systems$
+				:i $_$ = %GLOBAL%$geom_stats_old_particle_prims$
+			:i :s}
+			:i $SetScreenElementProps$$id$ = $geom_stats_text$$text$ = %GLOBAL%$gstat$
+		:i else 
+			:i $KillSpawnedScript$$id$ = $RefreshGeomStatsDisplay$
+			:i $change$$toggled_geom_stats_on$ = %i(0,00000000)
+		:i endif
+		:i $wait$%GLOBAL%$interval$$seconds$
+	:i loop_to 
+:i endfunction
+:i $DrawEmitLines$ = %i(0,00000000)
+:i function $ToggleDrawEmitDir$
+	:i if  ($DrawEmitLines$ = %i(1,00000001)) 
+		:i $change$$DrawEmitLines$ = %i(0,00000000)
+	:i else 
+		:i $change$$DrawEmitLines$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i $DrawModelLights$ = %i(0,00000000)
+:i $DrawGeomLights$ = %i(0,00000000)
+:i $DrawActiveLights$ = %i(0,00000000)
+:i function $ToggleDrawLights$
+	:i switch %GLOBAL%$light_type$
+		:i case $model$
+			:i if  ( ($DrawModelLights$)  = %i(1,00000001)) 
+				:i $change$$DrawModelLights$ = %i(0,00000000)
+				:i $DestroyLightCountDisplay$ isNull 
+			:i else 
+				:i $change$$DrawModelLights$ = %i(1,00000001)
+				:i $CreateLightCountDisplay$ isNull 
+			:i endif
+			:i endcase
+		case $geom$
+			:i if  ( ($DrawGeomLights$)  = %i(1,00000001)) 
+				:i $change$$DrawGeomLights$ = %i(0,00000000)
+				:i $DestroyLightCountDisplay$ isNull 
+			:i else 
+				:i $change$$DrawGeomLights$ = %i(1,00000001)
+				:i $CreateLightCountDisplay$ isNull 
+			:i endif
+			:i endcase
+		case $active$
+			:i if  ( ($DrawActiveLights$)  = %i(1,00000001)) 
+				:i $change$$DrawActiveLights$ = %i(0,00000000)
+				:i $DestroyLightCountDisplay$ isNull 
+			:i else 
+				:i $change$$DrawActiveLights$ = %i(1,00000001)
+				:i $CreateLightCountDisplay$ isNull 
+			:i endif
+			:i end_switch
+	
+:i endfunction
+:i function $CreateLightCountDisplay$
+	:i switch %GLOBAL%$light_type$
+		:i case $model$
+			:i %GLOBAL%$root_id$ = $mlight_anchor$
+			:i %GLOBAL%$text_id$ = $mlight_text$
+			:i %GLOBAL%$text$ = %s(12,"Model Lights")
+			:i %GLOBAL%$pos$ = %vec2(400.000000,40.000000)
+			:i %GLOBAL%$rgba$ = :a{%i(255,000000ff)%i(255,000000ff)%i(0,00000000)%i(255,000000ff):a}
+			:i endcase
+		case $geom$
+			:i %GLOBAL%$root_id$ = $glight_anchor$
+			:i %GLOBAL%$text_id$ = $glight_text$
+			:i %GLOBAL%$text$ = %s(11,"Geom Lights")
+			:i %GLOBAL%$pos$ = %vec2(400.000000,55.000000)
+			:i %GLOBAL%$rgba$ = :a{%i(255,000000ff)%i(0,00000000)%i(255,000000ff)%i(255,000000ff):a}
+			:i endcase
+		case $active$
+			:i %GLOBAL%$root_id$ = $alight_anchor$
+			:i %GLOBAL%$text_id$ = $alight_text$
+			:i %GLOBAL%$text$ = %s(13,"Active Lights")
+			:i %GLOBAL%$pos$ = %vec2(400.000000,70.000000)
+			:i %GLOBAL%$rgba$ = :a{%i(255,000000ff)%i(0,00000000)%i(0,00000000)%i(255,000000ff):a}
+			:i end_switch
+	
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = %GLOBAL%$root_id$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$root_id$
+		:i $id$ = %GLOBAL%$text_id$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $text$ = %GLOBAL%$text$
+		:i $font$ = $dialog$
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $root_window$$on$
+:i endfunction
+:i function $ModifyLightCountDisplay$
+	:i switch %GLOBAL%$light_type$
+		:i case $model$
+			:i %GLOBAL%$text_id$ = $mlight_text$
+			:i $FormatText$$textname$ = $text$%s(19,"Model Lights: %d/%e")$e$ = %GLOBAL%$count$$d$ = %GLOBAL%$active$
+			:i endcase
+		case $geom$
+			:i %GLOBAL%$text_id$ = $glight_text$
+			:i $FormatText$$textname$ = $text$%s(18,"Geom Lights: %d/%e")$e$ = %GLOBAL%$count$$d$ = %GLOBAL%$active$
+			:i endcase
+		case $active$
+			:i %GLOBAL%$text_id$ = $alight_text$
+			:i $FormatText$$textname$ = $text$%s(13,"Active Lights")
+			:i end_switch
+	
+	:i if $ObjectExists$$id$ = %GLOBAL%$text_id$
+		:i $SetScreenElementProps$$id$ = %GLOBAL%$text_id$$text$ = %GLOBAL%$text$
+	:i endif
+:i endfunction
+:i function $DestroyLightCountDisplay$
+	:i switch %GLOBAL%$light_type$
+		:i case $model$
+			:i %GLOBAL%$root_id$ = $mlight_anchor$
+			:i endcase
+		case $geom$
+			:i %GLOBAL%$root_id$ = $glight_anchor$
+			:i endcase
+		case $active$
+			:i %GLOBAL%$root_id$ = $alight_anchor$
+			:i end_switch
+	
+	:i if $ObjectExists$$id$ = %GLOBAL%$root_id$
+		:i $DestroyScreenElement$$id$ = %GLOBAL%$root_id$
+	:i endif
+:i endfunction
+:i $toggled_fps_on$ = %i(0,00000000)
+:i $framerate_warning$ = %f(60.000000)
+:i function $ToggleFPS$
+	:i if  ($toggled_fps_on$ = %i(1,00000001)) 
+		:i $change$$toggled_fps_on$ = %i(0,00000000)
+		:i $KillSpawnedScript$$name$ = $RefreshFPSDisplay$
+		:i $wait$%f(0.200000)$seconds$
+		:i if $ObjectExists$$id$ = $fps_anchor$
+			:i $DestroyScreenElement$$id$ = $fps_anchor$
+		:i endif
+	:i else 
+		:i $change$$toggled_fps_on$ = %i(1,00000001)
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $fps_anchor$
+			:i $DestroyScreenElement$$id$ = $fps_anchor$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $fps_anchor$
+			:i $pos$ = %vec2(30.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $fps_anchor$
+			:i $id$ = $fps_text$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(3,"FPS")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(1.000000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $SpawnScript$$RefreshFPSDisplay$
+	:i endif
+:i endfunction
+:i $toggled_anim_times_on$ = %i(0,00000000)
+:i function $ToggleAnimTimes$
+	:i if  ($toggled_anim_times_on$ = %i(1,00000001)) 
+		:i $change$$toggled_anim_times_on$ = %i(0,00000000)
+		:i $KillSpawnedScript$$name$ = $RefreshAnimTimesDisplay$
+		:i $wait$%f(0.200000)$seconds$
+		:i if $ObjectExists$$id$ = $anim_times_anchor$
+			:i $DestroyScreenElement$$id$ = $anim_times_anchor$
+		:i endif
+		:i $change$$min_anim_boned_frame_pcnt_1$ = %f(999.000000)
+		:i $change$$min_anim_boned_frame_pcnt_2$ = %f(999.000000)
+		:i $change$$max_anim_boned_frame_pcnt_1$ = %f(0.000000)
+		:i $change$$max_anim_boned_frame_pcnt_2$ = %f(0.000000)
+		:i $change$$min_anim_channel_frame_pcnt_1$ = %f(999.000000)
+		:i $change$$min_anim_channel_frame_pcnt_2$ = %f(999.000000)
+		:i $change$$max_anim_channel_frame_pcnt_1$ = %f(0.000000)
+		:i $change$$max_anim_channel_frame_pcnt_2$ = %f(0.000000)
+		:i $change$$min_anim_subset_frame_pcnt_1$ = %f(999.000000)
+		:i $change$$min_anim_subset_frame_pcnt_2$ = %f(999.000000)
+		:i $change$$max_anim_subset_frame_pcnt_1$ = %f(0.000000)
+		:i $change$$max_anim_subset_frame_pcnt_2$ = %f(0.000000)
+	:i else 
+		:i $change$$toggled_anim_times_on$ = %i(1,00000001)
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $anim_times_anchor$
+			:i $DestroyScreenElement$$id$ = $anim_times_anchor$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $anim_times_anchor$
+			:i $pos$ = %vec2(30.000000,180.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_text$
+			:i $pos$ = %vec2(0.000000,-75.000000)
+			:i $text$ = %s(32,"Animation Blending (pcnt/frame):")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(0,00000000)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_p_text$
+			:i $pos$ = %vec2(0.000000,-60.000000)
+			:i $text$ = %s(21,"Primary (hero+horse):")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(0,00000000)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_boned_text$
+			:i $pos$ = %vec2(0.000000,-45.000000)
+			:i $text$ = %s(12,"Boned Frames")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_channel_text$
+			:i $pos$ = %vec2(0.000000,-30.000000)
+			:i $text$ = %s(8,"Channels")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_subset_text$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(6,"Subset")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_total_text$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %s(5,"Total")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_break_text$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %s(26,"--------------------------")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_s_text$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $text$ = %s(17,"Secondary (peds):")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(0,00000000)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_boned_text_2$
+			:i $pos$ = %vec2(0.000000,45.000000)
+			:i $text$ = %s(12,"Boned Frames")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_channel_text_2$
+			:i $pos$ = %vec2(0.000000,60.000000)
+			:i $text$ = %s(8,"Channels")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_subset_text_2$
+			:i $pos$ = %vec2(0.000000,75.000000)
+			:i $text$ = %s(6,"Subset")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $anim_times_anchor$
+			:i $id$ = $anim_times_total_text_2$
+			:i $pos$ = %vec2(0.000000,90.000000)
+			:i $text$ = %s(5,"Total")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $SpawnScript$$RefreshAnimTimesDisplay$
+	:i endif
+:i endfunction
+:i $min_anim_boned_frame_pcnt_1$ = %f(999.000000)
+:i $min_anim_boned_frame_pcnt_2$ = %f(999.000000)
+:i $max_anim_boned_frame_pcnt_1$ = %f(0.000000)
+:i $max_anim_boned_frame_pcnt_2$ = %f(0.000000)
+:i $min_anim_channel_frame_pcnt_1$ = %f(999.000000)
+:i $min_anim_channel_frame_pcnt_2$ = %f(999.000000)
+:i $max_anim_channel_frame_pcnt_1$ = %f(0.000000)
+:i $max_anim_channel_frame_pcnt_2$ = %f(0.000000)
+:i $min_anim_subset_frame_pcnt_1$ = %f(999.000000)
+:i $min_anim_subset_frame_pcnt_2$ = %f(999.000000)
+:i $max_anim_subset_frame_pcnt_1$ = %f(0.000000)
+:i $max_anim_subset_frame_pcnt_2$ = %f(0.000000)
+:i function $RefreshAnimTimesDisplay$
+	:i while
+		
+		:i if $ObjectExists$$id$ = $anim_times_anchor$
+			:i $GetCurrentAnimTimes$
+			:i if  (%GLOBAL%$primary_boned_time$ >  ($max_anim_boned_frame_pcnt_1$) ) 
+				:i if  (%GLOBAL%$primary_boned_time$ < %f(100.000000)) 
+					:i $change$$max_anim_boned_frame_pcnt_1$ = %GLOBAL%$primary_boned_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$primary_boned_time$ <  ($min_anim_boned_frame_pcnt_1$) ) 
+					:i $change$$min_anim_boned_frame_pcnt_1$ = %GLOBAL%$primary_boned_time$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$secondary_boned_time$ >  ($max_anim_boned_frame_pcnt_2$) ) 
+				:i if  (%GLOBAL%$secondary_boned_time$ < %f(100.000000)) 
+					:i $change$$max_anim_boned_frame_pcnt_2$ = %GLOBAL%$secondary_boned_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$secondary_boned_time$ <  ($min_anim_boned_frame_pcnt_2$) ) 
+					:i $change$$min_anim_boned_frame_pcnt_2$ = %GLOBAL%$secondary_boned_time$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$primary_channel_time$ >  ($max_anim_channel_frame_pcnt_1$) ) 
+				:i if  (%GLOBAL%$primary_channel_time$ < %f(100.000000)) 
+					:i $change$$max_anim_channel_frame_pcnt_1$ = %GLOBAL%$primary_channel_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$primary_channel_time$ <  ($min_anim_channel_frame_pcnt_1$) ) 
+					:i $change$$min_anim_channel_frame_pcnt_1$ = %GLOBAL%$primary_channel_time$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$secondary_channel_time$ >  ($max_anim_channel_frame_pcnt_2$) ) 
+				:i if  (%GLOBAL%$secondary_channel_time$ < %f(100.000000)) 
+					:i $change$$max_anim_channel_frame_pcnt_2$ = %GLOBAL%$secondary_channel_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$secondary_channel_time$ <  ($min_anim_channel_frame_pcnt_2$) ) 
+					:i $change$$min_anim_channel_frame_pcnt_2$ = %GLOBAL%$secondary_channel_time$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$primary_subset_time$ >  ($max_anim_subset_frame_pcnt_1$) ) 
+				:i if  (%GLOBAL%$primary_subset_time$ < %f(100.000000)) 
+					:i $change$$max_anim_subset_frame_pcnt_1$ = %GLOBAL%$primary_subset_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$primary_subset_time$ <  ($min_anim_subset_frame_pcnt_1$) ) 
+					:i $change$$min_anim_subset_frame_pcnt_1$ = %GLOBAL%$primary_subset_time$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$secondary_subset_time$ >  ($max_anim_subset_frame_pcnt_2$) ) 
+				:i if  (%GLOBAL%$secondary_subset_time$ < %f(100.000000)) 
+					:i $change$$max_anim_subset_frame_pcnt_2$ = %GLOBAL%$secondary_subset_time$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$secondary_subset_time$ <  ($min_anim_subset_frame_pcnt_2$) ) 
+					:i $change$$min_anim_subset_frame_pcnt_2$ = %GLOBAL%$secondary_subset_time$
+				:i endif
+			:i endif
+			:i $FormatText$$textname$ = $test1$%s(33,"Boned: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$primary_boned_time$$e$ =  ($min_anim_boned_frame_pcnt_1$) $f$ =  ($max_anim_boned_frame_pcnt_1$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_boned_text$$text$ = %GLOBAL%$test1$
+			:i $FormatText$$textname$ = $test2$%s(35,"Channel: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$primary_channel_time$$e$ =  ($min_anim_channel_frame_pcnt_1$) $f$ =  ($max_anim_channel_frame_pcnt_1$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_channel_text$$text$ = %GLOBAL%$test2$
+			:i $FormatText$$textname$ = $test3$%s(34,"Subset: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$primary_subset_time$$e$ =  ($min_anim_subset_frame_pcnt_1$) $f$ =  ($max_anim_subset_frame_pcnt_1$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_subset_text$$text$ = %GLOBAL%$test3$
+			:i $FormatText$:s{
+				:i $textname$ = $test4$%s(33,"Total: \c5%d \c0(\c4%e, \c2%f\c0)")
+				:i $d$ =  (%GLOBAL%$primary_boned_time$ + %GLOBAL%$primary_channel_time$ + %GLOBAL%$primary_subset_time$) 
+				:i $e$ =  ( ($min_anim_boned_frame_pcnt_1$)  +  ($min_anim_channel_frame_pcnt_1$)  +  ($min_anim_subset_frame_pcnt_1$) ) 
+				:i $f$ =  ( ($max_anim_boned_frame_pcnt_1$)  +  ($max_anim_channel_frame_pcnt_1$)  +  ($max_anim_subset_frame_pcnt_1$) ) 
+			:i :s}
+			:i $SetScreenElementProps$$id$ = $anim_times_total_text$$text$ = %GLOBAL%$test4$
+			:i $FormatText$$textname$ = $test5$%s(33,"Boned: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$secondary_boned_time$$e$ =  ($min_anim_boned_frame_pcnt_2$) $f$ =  ($max_anim_boned_frame_pcnt_2$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_boned_text_2$$text$ = %GLOBAL%$test5$
+			:i $FormatText$$textname$ = $test6$%s(35,"Channel: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$secondary_channel_time$$e$ =  ($min_anim_channel_frame_pcnt_2$) $f$ =  ($max_anim_channel_frame_pcnt_2$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_channel_text_2$$text$ = %GLOBAL%$test6$
+			:i $FormatText$$textname$ = $test7$%s(34,"Subset: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$secondary_subset_time$$e$ =  ($min_anim_subset_frame_pcnt_2$) $f$ =  ($max_anim_subset_frame_pcnt_2$) 
+			:i $SetScreenElementProps$$id$ = $anim_times_subset_text_2$$text$ = %GLOBAL%$test7$
+			:i $FormatText$:s{
+				:i $textname$ = $test8$%s(33,"Total: \c5%d \c0(\c4%e, \c2%f\c0)")
+				:i $d$ =  (%GLOBAL%$secondary_boned_time$ + %GLOBAL%$secondary_channel_time$ + %GLOBAL%$secondary_subset_time$) 
+				:i $e$ =  ( ($min_anim_boned_frame_pcnt_2$)  +  ($min_anim_channel_frame_pcnt_2$)  +  ($min_anim_subset_frame_pcnt_2$) ) 
+				:i $f$ =  ( ($max_anim_boned_frame_pcnt_2$)  +  ($max_anim_channel_frame_pcnt_2$)  +  ($max_anim_subset_frame_pcnt_2$) ) 
+			:i :s}
+			:i $SetScreenElementProps$$id$ = $anim_times_total_text_2$$text$ = %GLOBAL%$test8$
+		:i else 
+			:i $KillSpawnedScript$$id$ = $RefreshAnimTimesDisplay$
+			:i $change$$toggled_anim_times_on$ = %i(0,00000000)
+		:i endif
+		:i $wait$%GLOBAL%$interval$$seconds$
+	:i loop_to 
+:i endfunction
+:i $toggled_particle_times_on$ = %i(0,00000000)
+:i function $ToggleParticleTimes$
+	:i if  ($toggled_particle_times_on$ = %i(1,00000001)) 
+		:i $change$$toggled_particle_times_on$ = %i(0,00000000)
+		:i $KillSpawnedScript$$name$ = $RefreshParticleTimesDisplay$
+		:i $wait$%f(0.200000)$seconds$
+		:i if $ObjectExists$$id$ = $particle_times_anchor$
+			:i $DestroyScreenElement$$id$ = $particle_times_anchor$
+		:i endif
+		:i if $ObjectExists$$id$ = $new_particle_times_anchor$
+			:i $DestroyScreenElement$$id$ = $new_particle_times_anchor$
+		:i endif
+		:i $change$$min_particle_process_frame_pcnt$ = %f(999.000000)
+		:i $change$$max_particle_process_frame_pcnt$ = %f(0.000000)
+		:i $change$$min_particle_render_frame_pcnt$ = %f(999.000000)
+		:i $change$$max_particle_render_frame_pcnt$ = %f(0.000000)
+		:i $change$$min_particle_sys_count$ = %i(99999,0001869f)
+		:i $change$$max_particle_sys_count$ = %i(0,00000000)
+		:i $change$$min_particle_num_count$ = %i(99999,0001869f)
+		:i $change$$max_particle_num_count$ = %i(0,00000000)
+		:i $change$$min_particle_prim_count$ = %i(99999,0001869f)
+		:i $change$$max_particle_prim_count$ = %i(0,00000000)
+		:i $change$$min_new_particle_process_frame_pcnt$ = %f(999.000000)
+		:i $change$$max_new_particle_process_frame_pcnt$ = %f(0.000000)
+		:i $change$$min_new_particle_render_frame_pcnt$ = %f(999.000000)
+		:i $change$$max_new_particle_render_frame_pcnt$ = %f(0.000000)
+		:i $change$$min_new_particle_sys_count$ = %i(99999,0001869f)
+		:i $change$$max_new_particle_sys_count$ = %i(0,00000000)
+		:i $change$$min_new_particle_num_count$ = %i(99999,0001869f)
+		:i $change$$max_new_particle_num_count$ = %i(0,00000000)
+	:i else 
+		:i $change$$toggled_particle_times_on$ = %i(1,00000001)
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $particle_times_anchor$
+			:i $DestroyScreenElement$$id$ = $particle_times_anchor$
+		:i endif
+		:i if $ObjectExists$$id$ = $new_particle_times_anchor$
+			:i $DestroyScreenElement$$id$ = $new_particle_times_anchor$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $particle_times_anchor$
+			:i $pos$ = %vec2(30.000000,150.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_text$
+			:i $pos$ = %vec2(0.000000,-60.000000)
+			:i $text$ = %s(32,"Flexible Particles (pcnt/frame):")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_process_text$
+			:i $pos$ = %vec2(0.000000,-45.000000)
+			:i $text$ = %s(7,"Process")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_render_text$
+			:i $pos$ = %vec2(0.000000,-30.000000)
+			:i $text$ = %s(6,"Render")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_total_text$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(5,"Total")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_break_text$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %s(26,"--------------------------")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_sys_text$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %s(11,"ParticleSys")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_num_text$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $text$ = %s(11,"ParticleNum")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $particle_times_anchor$
+			:i $id$ = $particle_times_prims_text$
+			:i $pos$ = %vec2(0.000000,45.000000)
+			:i $text$ = %s(13,"ParticlePrims")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $new_particle_times_anchor$
+			:i $pos$ = %vec2(30.000000,280.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_text$
+			:i $pos$ = %vec2(0.000000,-60.000000)
+			:i $text$ = %s(28,"Fast Particles (pcnt/frame):")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_process_text$
+			:i $pos$ = %vec2(0.000000,-45.000000)
+			:i $text$ = %s(7,"Process")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_render_text$
+			:i $pos$ = %vec2(0.000000,-30.000000)
+			:i $text$ = %s(6,"Render")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_total_text$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(5,"Total")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_break_text$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %s(26,"--------------------------")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(1000,000003e8):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_sys_text$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %s(11,"ParticleSys")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $new_particle_times_anchor$
+			:i $id$ = $new_particle_times_num_text$
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $text$ = %s(11,"ParticleNum")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(100,00000064)%i(60,0000003c)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $SpawnScript$$RefreshParticleTimesDisplay$
+	:i endif
+:i endfunction
+:i function $FlexParticleWarning$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i if $ObjectExists$$id$ = $particle_warn_anchor$
+		:i $DestroyScreenElement$$id$ = $particle_warn_anchor$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $particle_warn_anchor$
+		:i $pos$ = %vec2(25.000000,80.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $particle_warn_anchor$
+		:i $id$ = $particle_warn_text$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $text$ = %s(33,"Particle failed: Too many at once")
+		:i $font$ = $dialog$
+		:i $rgba$ = :a{%i(255,000000ff)%i(0,00000000)%i(0,00000000)%i(255,000000ff):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $SetScreenElementLock$$id$ = $root_window$$on$
+	:i $wait$%i(2,00000002)$seconds$
+	:i if $ObjectExists$$id$ = $particle_warn_anchor$
+		:i $DestroyScreenElement$$id$ = $particle_warn_anchor$
+	:i endif
+:i endfunction
+:i function $RefreshFPSDisplay$$interval$ = %f(0.100000)
+	:i while
+		
+		:i if $ObjectExists$$id$ = $fps_anchor$
+			:i $FormatText$$textname$ = $fps$%s(7,"FPS: %d")$d$ =  ($framerate_value$) 
+			:i $SetScreenElementProps$$id$ = $fps_text$$text$ = %GLOBAL%$fps$
+			:i if  ( ($framerate_value$)  < $framerate_warning$) 
+				:i $SetScreenElementProps$$id$ = $fps_text$$rgba$ = :a{%i(255,000000ff)%i(0,00000000)%i(0,00000000)%i(255,000000ff):a}
+			:i else 
+				:i $SetScreenElementProps$$id$ = $fps_text$$rgba$ = :a{%i(0,00000000)%i(255,000000ff)%i(0,00000000)%i(100,00000064):a}
+			:i endif
+		:i else 
+			:i $KillSpawnedScript$$id$ = $RefreshFPSDisplay$
+			:i $change$$toggled_fps_on$ = %i(0,00000000)
+		:i endif
+		:i $wait$%GLOBAL%$interval$$seconds$
+	:i loop_to 
+:i endfunction
+:i $min_particle_process_frame_pcnt$ = %f(999.000000)
+:i $max_particle_process_frame_pcnt$ = %f(0.000000)
+:i $min_particle_render_frame_pcnt$ = %f(999.000000)
+:i $max_particle_render_frame_pcnt$ = %f(0.000000)
+:i $min_particle_sys_count$ = %i(99999,0001869f)
+:i $max_particle_sys_count$ = %i(0,00000000)
+:i $min_particle_num_count$ = %i(99999,0001869f)
+:i $max_particle_num_count$ = %i(0,00000000)
+:i $min_particle_prim_count$ = %i(99999,0001869f)
+:i $max_particle_prim_count$ = %i(0,00000000)
+:i $min_new_particle_process_frame_pcnt$ = %f(999.000000)
+:i $max_new_particle_process_frame_pcnt$ = %f(0.000000)
+:i $min_new_particle_render_frame_pcnt$ = %f(999.000000)
+:i $max_new_particle_render_frame_pcnt$ = %f(0.000000)
+:i $min_new_particle_sys_count$ = %i(99999,0001869f)
+:i $max_new_particle_sys_count$ = %i(0,00000000)
+:i $min_new_particle_num_count$ = %i(99999,0001869f)
+:i $max_new_particle_num_count$ = %i(0,00000000)
+:i function $RefreshParticleTimesDisplay$
+	:i while
+		
+		:i if $ObjectExists$$id$ = $particle_times_anchor$
+			:i $GetCurrentParticleTimes$
+			:i if  (%GLOBAL%$particle_process_frame_pcnt$ >  ($max_particle_process_frame_pcnt$) ) 
+				:i if  (%GLOBAL%$particle_process_frame_pcnt$ < %f(100.000000)) 
+					:i $change$$max_particle_process_frame_pcnt$ = %GLOBAL%$particle_process_frame_pcnt$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$particle_process_frame_pcnt$ <  ($min_particle_process_frame_pcnt$) ) 
+					:i $change$$min_particle_process_frame_pcnt$ = %GLOBAL%$particle_process_frame_pcnt$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$particle_render_frame_pcnt$ >  ($max_particle_render_frame_pcnt$) ) 
+				:i if  (%GLOBAL%$particle_render_frame_pcnt$ < %f(100.000000)) 
+					:i $change$$max_particle_render_frame_pcnt$ = %GLOBAL%$particle_render_frame_pcnt$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$particle_render_frame_pcnt$ <  ($min_particle_render_frame_pcnt$) ) 
+					:i $change$$min_particle_render_frame_pcnt$ = %GLOBAL%$particle_render_frame_pcnt$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$geom_stats_old_particle_systems$ >  ($max_particle_sys_count$) ) 
+				:i $change$$max_particle_sys_count$ = %GLOBAL%$geom_stats_old_particle_systems$
+			:i else 
+				:i if  (%GLOBAL%$geom_stats_old_particle_systems$ <  ($min_particle_sys_count$) ) 
+					:i $change$$min_particle_sys_count$ = %GLOBAL%$geom_stats_old_particle_systems$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$geom_stats_old_particles$ >  ($max_particle_num_count$) ) 
+				:i $change$$max_particle_num_count$ = %GLOBAL%$geom_stats_old_particles$
+			:i else 
+				:i if  (%GLOBAL%$geom_stats_old_particles$ <  ($min_particle_num_count$) ) 
+					:i $change$$min_particle_num_count$ = %GLOBAL%$geom_stats_old_particles$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$geom_stats_old_particle_prims$ >  ($max_particle_prim_count$) ) 
+				:i $change$$max_particle_prim_count$ = %GLOBAL%$geom_stats_old_particle_prims$
+			:i else 
+				:i if  (%GLOBAL%$geom_stats_old_particle_prims$ <  ($min_particle_prim_count$) ) 
+					:i $change$$min_particle_prim_count$ = %GLOBAL%$geom_stats_old_particle_prims$
+				:i endif
+			:i endif
+			:i $FormatText$$textname$ = $test1$%s(35,"Process: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$particle_process_frame_pcnt$$e$ =  ($min_particle_process_frame_pcnt$) $f$ =  ($max_particle_process_frame_pcnt$) 
+			:i $SetScreenElementProps$$id$ = $particle_times_process_text$$text$ = %GLOBAL%$test1$
+			:i $FormatText$$textname$ = $test2$%s(34,"Render: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$particle_render_frame_pcnt$$e$ =  ($min_particle_render_frame_pcnt$) $f$ =  ($max_particle_render_frame_pcnt$) 
+			:i $SetScreenElementProps$$id$ = $particle_times_render_text$$text$ = %GLOBAL%$test2$
+			:i $FormatText$$textname$ = $test3$%s(33,"Total: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ =  (%GLOBAL%$particle_process_frame_pcnt$ + %GLOBAL%$particle_render_frame_pcnt$) $e$ =  ( ($min_particle_process_frame_pcnt$)  +  ($min_particle_render_frame_pcnt$) ) $f$ =  ( ($max_particle_process_frame_pcnt$)  +  ($max_particle_render_frame_pcnt$) ) 
+			:i $SetScreenElementProps$$id$ = $particle_times_total_text$$text$ = %GLOBAL%$test3$
+			:i $FormatText$$textname$ = $test4$%s(44,"Particle Systems: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$geom_stats_old_particle_systems$$e$ =  ($min_particle_sys_count$) $f$ =  ($max_particle_sys_count$) 
+			:i $SetScreenElementProps$$id$ = $particle_times_sys_text$$text$ = %GLOBAL%$test4$
+			:i $FormatText$$textname$ = $test5$%s(42,"Particle Count: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$geom_stats_old_particles$$e$ =  ($min_particle_num_count$) $f$ =  ($max_particle_num_count$) 
+			:i $SetScreenElementProps$$id$ = $particle_times_num_text$$text$ = %GLOBAL%$test5$
+			:i $FormatText$$textname$ = $test6$%s(47,"Particle Primitives: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$geom_stats_old_particle_prims$$e$ =  ($min_particle_prim_count$) $f$ =  ($max_particle_prim_count$) 
+			:i $SetScreenElementProps$$id$ = $particle_times_prims_text$$text$ = %GLOBAL%$test6$
+			:i if  (%GLOBAL%$new_particle_process_frame_pcnt$ >  ($max_new_particle_process_frame_pcnt$) ) 
+				:i if  (%GLOBAL%$new_particle_process_frame_pcnt$ < %f(100.000000)) 
+					:i $change$$max_new_particle_process_frame_pcnt$ = %GLOBAL%$new_particle_process_frame_pcnt$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$new_particle_process_frame_pcnt$ <  ($min_new_particle_process_frame_pcnt$) ) 
+					:i $change$$min_new_particle_process_frame_pcnt$ = %GLOBAL%$new_particle_process_frame_pcnt$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$new_particle_render_frame_pcnt$ >  ($max_new_particle_render_frame_pcnt$) ) 
+				:i if  (%GLOBAL%$new_particle_render_frame_pcnt$ < %f(100.000000)) 
+					:i $change$$max_new_particle_render_frame_pcnt$ = %GLOBAL%$new_particle_render_frame_pcnt$
+				:i endif
+			:i else 
+				:i if  (%GLOBAL%$new_particle_render_frame_pcnt$ <  ($min_new_particle_render_frame_pcnt$) ) 
+					:i $change$$min_new_particle_render_frame_pcnt$ = %GLOBAL%$new_particle_render_frame_pcnt$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$geom_stats_new_particle_systems$ >  ($max_new_particle_sys_count$) ) 
+				:i $change$$max_new_particle_sys_count$ = %GLOBAL%$geom_stats_new_particle_systems$
+			:i else 
+				:i if  (%GLOBAL%$geom_stats_new_particle_systems$ <  ($min_new_particle_sys_count$) ) 
+					:i $change$$min_new_particle_sys_count$ = %GLOBAL%$geom_stats_new_particle_systems$
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$geom_stats_new_particles$ >  ($max_new_particle_num_count$) ) 
+				:i $change$$max_new_particle_num_count$ = %GLOBAL%$geom_stats_new_particles$
+			:i else 
+				:i if  (%GLOBAL%$geom_stats_new_particles$ <  ($min_new_particle_num_count$) ) 
+					:i $change$$min_new_particle_num_count$ = %GLOBAL%$geom_stats_new_particles$
+				:i endif
+			:i endif
+			:i $FormatText$$textname$ = $test1$%s(35,"Process: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$new_particle_process_frame_pcnt$$e$ =  ($min_new_particle_process_frame_pcnt$) $f$ =  ($max_new_particle_process_frame_pcnt$) 
+			:i $SetScreenElementProps$$id$ = $new_particle_times_process_text$$text$ = %GLOBAL%$test1$
+			:i $FormatText$$textname$ = $test2$%s(34,"Render: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$new_particle_render_frame_pcnt$$e$ =  ($min_new_particle_render_frame_pcnt$) $f$ =  ($max_new_particle_render_frame_pcnt$) 
+			:i $SetScreenElementProps$$id$ = $new_particle_times_render_text$$text$ = %GLOBAL%$test2$
+			:i $FormatText$$textname$ = $test3$%s(33,"Total: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ =  (%GLOBAL%$new_particle_process_frame_pcnt$ + %GLOBAL%$new_particle_render_frame_pcnt$) $e$ =  ( ($min_new_particle_process_frame_pcnt$)  +  ($min_new_particle_render_frame_pcnt$) ) $f$ =  ( ($max_new_particle_process_frame_pcnt$)  +  ($max_new_particle_render_frame_pcnt$) ) 
+			:i $SetScreenElementProps$$id$ = $new_particle_times_total_text$$text$ = %GLOBAL%$test3$
+			:i $FormatText$$textname$ = $test4$%s(44,"Particle Systems: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$geom_stats_new_particle_systems$$e$ =  ($min_new_particle_sys_count$) $f$ =  ($max_new_particle_sys_count$) 
+			:i $SetScreenElementProps$$id$ = $new_particle_times_sys_text$$text$ = %GLOBAL%$test4$
+			:i $FormatText$$textname$ = $test5$%s(42,"Particle Count: \c5%d \c0(\c4%e, \c2%f\c0)")$d$ = %GLOBAL%$geom_stats_new_particles$$e$ =  ($min_new_particle_num_count$) $f$ =  ($max_new_particle_num_count$) 
+			:i $SetScreenElementProps$$id$ = $new_particle_times_num_text$$text$ = %GLOBAL%$test5$
+		:i else 
+			:i $KillSpawnedScript$$id$ = $RefreshParticleTimesDisplay$
+			:i $change$$toggled_particle_times_on$ = %i(0,00000000)
+		:i endif
+		:i $wait$%GLOBAL%$interval$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $toggle_wireframe_skins$
+	:i if  ($wireframe_skins$ = %i(1,00000001)) 
+		:i $change$$wireframe_skins$ = %i(0,00000000)
+	:i else 
+		:i $change$$wireframe_skins$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i $free_mem_on$ = %i(0,00000000)
+:i function $show_free_mem$
+	:i if  ($free_mem_on$ = %i(0,00000000)) 
+		:i $change$$free_mem_on$ = %i(1,00000001)
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score_sprite$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $goal_points_text$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i if $ScreenElementExists$$id$ = $goal_points_display$
+			:i $DoScreenElementMorph$$id$ = $goal_points_display$$scale$ = %i(0,00000000)
+		:i endif
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $free_mem_anchor$
+			:i $DestroyScreenElement$$id$ = $free_mem_anchor$
+			:i $wait$%f(0.200000)$seconds$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $free_mem_anchor$
+			:i $pos$ = %vec2(30.000000,40.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $internal_just$ = :a{$left$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $free_mem_anchor$
+			:i $pos$ = %vec2(0.000000,-15.000000)
+			:i $text$ = %s(11,"Free Memory")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(100,00000064)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $free_mem_anchor$
+			:i $id$ = $topdown_heap_text$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $text$ = %s(0,"")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $free_mem_anchor$
+			:i $id$ = $script_heap_text$
+			:i $pos$ = %vec2(0.000000,15.000000)
+			:i $text$ = %s(0,"")
+			:i $font$ = $dialog$
+			:i $rgba$ = :a{%i(58,0000003a)%i(108,0000006c)%i(58,0000003a)%i(100,00000064):a}
+			:i $just$ = :a{$left$$center$:a}
+			:i $scale$ = %f(0.800000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $root_window$$on$
+		:i $SpawnScript$$RefreshFreeMemoryDisplay$
+	:i else 
+		:i $change$$free_mem_on$ = %i(0,00000000)
+		:i $KillSpawnedScript$$name$ = $RefreshFreeMemoryDisplay$
+		:i $wait$%f(0.200000)$seconds$
+		:i if $ObjectExists$$id$ = $free_mem_anchor$
+			:i $DestroyScreenElement$$id$ = $free_mem_anchor$
+		:i endif
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score_sprite$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $the_score$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = $goal_points_text$
+			:i $scale$ = %i(1,00000001)
+		:i :s}
+		:i if $ScreenElementExists$$id$ = $goal_points_display$
+			:i $DoScreenElementMorph$$id$ = $goal_points_display$$scale$ = %i(1,00000001)
+		:i endif
+	:i endif
+:i endfunction
+:i $freemem_script_lowest$ = %i(999999999,3b9ac9ff)
+:i $freemem_main_lowest$ = %i(999999999,3b9ac9ff)
+:i function $RefreshFreeMemoryDisplay$$interval$ = %f(1.000000)
+	:i while
+		
+		:i $DisplayFreeMem$
+		:i $wait$%GLOBAL%$interval$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $UpdateDisplayFreeMemory$
+	:i if $ObjectExists$$id$ = $free_mem_anchor$
+		:i $FormatText$$ChecksumName$ = $context_name$%s(6,"Script")
+		:i if  (%GLOBAL%$id$ = %GLOBAL%$context_name$) 
+			:i $FormatText$$textname$ = $script_heap$%s(30,"Script: %m (%nK) low: %o (%pK)")$m$ = %GLOBAL%$free_mem$$n$ =  (%GLOBAL%$free_mem$ / %i(1024,00000400)) $o$ = $min_free_mem$$p$ =  (%GLOBAL%$min_free_mem$ / %i(1024,00000400)) $UseCommas$
+			:i $SetScreenElementProps$$id$ = $script_heap_text$$text$ = %GLOBAL%$script_heap$
+		:i endif
+		:i $FormatText$$ChecksumName$ = $context_name$%s(8,"Top Down")
+		:i if  (%GLOBAL%$id$ = %GLOBAL%$context_name$) 
+			:i $FormatText$$textname$ = $main_heap$%s(28,"Main: %m (%nK) low: %o (%pK)")$m$ = %GLOBAL%$free_mem$$n$ =  (%GLOBAL%$free_mem$ / %i(1024,00000400)) $o$ = $min_free_mem$$p$ =  (%GLOBAL%$min_free_mem$ / %i(1024,00000400)) $UseCommas$
+			:i $SetScreenElementProps$$id$ = $topdown_heap_text$$text$ = %GLOBAL%$main_heap$
+		:i endif
+	:i else 
+		:i $KillSpawnedScript$$id$ = $RefreshFreeMemoryDisplay$
+		:i $change$$free_mem_on$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $show_defrag_anim_cache$
+	:i $printf$%s(48,"\n\n\n************Before:***********************")
+	:i $dumpheaps$
+	:i $UpdateAnimCache$$defrag$
+	:i $printf$%s(43,"\n************After:***********************")
+	:i $dumpheaps$
+:i endfunction
+:i function $toggle_show_all$
+	:i $show_all$
+:i endfunction
+:i function $toggle_show_polys$$showscript$ = $show_vert$
+	:i %GLOBAL%$showscript$
+	:i $pulse_item$
+:i endfunction
+:i function $launch_keyboard$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_onscreen_keyboard$
+:i endfunction
+:i function $launch_cheats_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_out$$callback$ = $create_cheats_menu$
+:i endfunction
+:i function $create_cheats_menu$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $make_new_menu$:s{
+		:i $padding_scale$ = %i(1,00000001)
+		:i $menu_id$ = $cheats_menu$
+		:i $vmenu_id$ = $cheats_vmenu$
+		:i $menu_title$ = %s(6,"CHEATS")
+		:i $padding_scale$ = %f(0.900000)
+		:i $pos$ = %vec2(230.000000,40.000000)
+		:i $helper_text$ = $generic_helper_text$
+	:i :s}
+	:i $kill_start_key_binding$
+	:i $SetScreenElementProps$:s{$id$ = $cheats_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_debug_options_menu$:s}:a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(11,"Time of Day")$pad_choose_script$ = $launch_timeofday_menu$
+	:i $make_text_sub_menu_item$$text$ = %s(14,"View Cutscenes")$pad_choose_script$ = $launch_view_cutscenes_menu$
+	:i $make_toggle_menu_item$$id$ = $cheats_menu_level_lock$$text$ = %s(17,"Levels unlocked: ")$pad_choose_script$ = $cheats_menu_change_level_lock$
+	:i if $GameModeEquals$$is_career$
+		:i $make_text_sub_menu_item$$text$ = %s(13,"Advance Stage")$pad_choose_script$ = $cheats_menu_advance_stage$
+		:i $make_text_sub_menu_item$$text$ = %s(37,"Give 50 cheat points for this session")$pad_choose_script$ = $give_cheat_points$
+		:i $make_text_sub_menu_item$$text$ = %s(35,"Reset cheat points for this session")$pad_choose_script$ = $reset_cheat_points$
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $make_toggle_menu_item$$id$ = $classic_cheat_points$$text$ = %s(26,"Goals to complete bracket:")$pad_choose_script$ = $cheats_menu_change_classic_points$
+		:i $RunScriptOnScreenElement$$id$ = $classic_cheat_points$$cheats_menu_refresh_classic_points$
+	:i endif
+	:i $make_text_sub_menu_item$$text$ = %s(15,"100 Stat Points")$pad_choose_script$ = $cheats_menu_100_stat_points$
+	:i if $GoalManager_HasActiveGoals$
+		:i $make_text_sub_menu_item$$text$ = %s(17,"Beat current goal")$pad_choose_script$ = $cheats_menu_beat_current_goal$
+	:i endif
+	:i $make_text_sub_menu_item$$text$ = %s(19,"Unlock all chapters")$pad_choose_script$ = $unlock_all_chapters$
+	:i $make_text_sub_menu_item$$text$ = %s(22,"Unlock all stats goals")$pad_choose_script$ = $cheats_menu_UnlockAllStatsGoals$
+	:i $make_text_sub_menu_item$$text$ = %s(22,"Score 5 million points")$pad_choose_script$ = $cheats_menu_score5mil$
+	:i $make_text_sub_menu_item$$text$ = %s(23,"Mark all goals unbeaten")$pad_choose_script$ = $cheats_menu_UnBeatAllGoals$
+	:i $make_text_sub_menu_item$$text$ = %s(20,"Set Difficulty Level")$pad_choose_script$ = $launch_cheats_menu_select_difficulty$
+	:i $RunScriptOnScreenElement$$id$ = $cheats_menu_level_lock$$cheats_menu_check_level_lock$
+	:i $FireEvent$$type$ = $focus$$target$ = $cheats_menu$
+:i endfunction
+:i function $cheats_menu_change_flag$
+	:i $GetTags$
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $UnSetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $toggle_menu_item_off$$id$ = %GLOBAL%$id$
+	:i else 
+		:i $SetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $toggle_menu_item_on$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $cheats_menu_check_flag$
+	:i $GetTags$
+	:i if $GetGlobalFlag$$flag$ = %GLOBAL%$flag$
+		:i $toggle_menu_item_on$$id$ = %GLOBAL%$id$
+	:i else 
+		:i $toggle_menu_item_off$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $cheats_menu_check_level_lock$
+	:i $GetTags$
+	:i if $IntegerEquals$$a$ = $all_levels_unlocked$$b$ = %i(1,00000001)
+		:i $toggle_menu_item_on$$id$ = %GLOBAL%$id$
+	:i else 
+		:i $toggle_menu_item_off$$id$ = %GLOBAL%$id$
+	:i endif
+:i endfunction
+:i function $cheats_menu_change_level_lock$
+	:i $GetTags$
+	:i if $IntegerEquals$$a$ = $all_levels_unlocked$$b$ = %i(1,00000001)
+		:i $toggle_menu_item_off$$id$ = %GLOBAL%$id$
+		:i $change$$all_levels_unlocked$ = %i(0,00000000)
+	:i else 
+		:i if $IntegerEquals$$a$ = $all_levels_unlocked$$b$ = %i(0,00000000)
+			:i $toggle_menu_item_on$$id$ = %GLOBAL%$id$
+			:i $change$$all_levels_unlocked$ = %i(1,00000001)
+			:i $change$$DEMO_BUILD$ = %i(0,00000000)
+			:i $printf$%s(24,"changing demo build to 0")
+		:i endif
+	:i endif
+	:i $pulse_item$
+:i endfunction
+:i function $cheats_menu_refresh_classic_points$
+	:i $GetTags$
+	:i if $IsTrue$$classic_mode_use_cheat_points$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $text$ = %s(6,"     1")
+		:i :s}
+	:i else 
+		:i $GetClassicModeTargetGoalsComplete$
+		:i $FormatText$$textname$ = $goals$%s(7,"     %g")$g$ = %GLOBAL%$target_goals_complete$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+			:i $text$ = %GLOBAL%$goals$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $cheats_menu_change_classic_points$
+	:i $GetTags$
+	:i if $IntegerEquals$$a$ = $classic_mode_use_cheat_points$$b$ = %i(1,00000001)
+		:i $change$$classic_mode_use_cheat_points$ = %i(0,00000000)
+		:i $cheats_menu_refresh_classic_points$ isNull 
+	:i else 
+		:i $change$$classic_mode_use_cheat_points$ = %i(1,00000001)
+		:i $cheats_menu_refresh_classic_points$ isNull 
+	:i endif
+	:i $pulse_item$
+:i endfunction
+:i function $cheats_menu_100_stat_points$
+	:i $AwardStatPoint$%i(100,00000064)
+	:i $pulse_item$
+:i endfunction
+:i function $cheats_menu_UnlockAllGoals$
+	:i $GoalManager_UnlockAllGoals$
+	:i $pulse_item$
+:i endfunction
+:i function $cheats_menu_UnlockAllStatsGoals$
+	:i $Skater$.$StatsManager_UnlockAmGoals$
+	:i $Skater$.$StatsManager_UnlockProGoals$
+	:i $pulse_item$
+:i endfunction
+:i function $cheats_menu_score5mil$
+	:i $Skater$.$SetTrickName$%s(19,"You cheat like Kurt")
+	:i $Skater$.$SetTrickScore$%i(5000000,004c4b40)
+	:i $Skater$.$display$
+:i endfunction
+:i function $cheats_menu_UnBeatAllGoals$
+	:i $GoalManager_UnBeatAllGoals$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_InitializeAllGoals$
+:i endfunction
+:i function $cheats_menu_beat_current_goal$
+	:i if $GoalManager_GetActiveGoalId$
+		:i $exit_pause_menu$
+		:i $GoalManager_WinGoal$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $cheats_menu_advance_stage$
+	:i $exit_pause_menu$
+	:i $wait$%i(1,00000001)$gameframes$
+	:i $change$$total_cheat_points$ = %i(1000,000003e8)
+	:i $GotoNextChapter$
+:i endfunction
+:i function $launch_cheats_menu_select_difficulty$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $cheats_select_difficulty_menu$
+		:i $vmenu_id$ = $cheats_select_difficulty_vmenu$
+		:i $menu_title$ = %s(14,"SET DIFFICULTY")
+		:i $helper_text$ = $generic_helper_text_left_right$
+	:i :s}
+	:i $make_text_sub_menu_item$:s{
+		:i $text$ = %s(4,"Easy")
+		:i $id$ = $cheats_difficulty_easy$
+		:i $pad_choose_script$ = $cheats_menu_set_difficulty$
+		:i $pad_choose_params$ = :s{$difficulty$ = %i(0,00000000):s}
+	:i :s}
+	:i $make_text_sub_menu_item$:s{
+		:i $text$ = %s(6,"Normal")
+		:i $id$ = $cheats_difficulty_normal$
+		:i $pad_choose_script$ = $cheats_menu_set_difficulty$
+		:i $pad_choose_params$ = :s{$difficulty$ = %i(1,00000001):s}
+	:i :s}
+	:i $make_text_sub_menu_item$:s{
+		:i $text$ = %s(4,"Sick")
+		:i $id$ = $cheats_difficulty_sick$
+		:i $pad_choose_script$ = $cheats_menu_set_difficulty$
+		:i $pad_choose_params$ = :s{$difficulty$ = %i(2,00000002):s}
+	:i :s}
+	:i $FireEvent$$type$ = $focus$$target$ = $cheats_select_difficulty_menu$
+:i endfunction
+:i function $cheats_menu_set_difficulty$
+	:i $GoalManager_SetDifficultyLevel$%GLOBAL%$difficulty$
+	:i $GoalManager_UninitializeAllGoals$
+	:i $GoalManager_InitializeAllGoals$
+	:i $launch_cheats_menu$
+:i endfunction
+:i function $create_set_premade_skater_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $make_new_menu$:s{
+		:i $menu_id$ = $set_premade_skater_menu$
+		:i $vmenu_id$ = $set_premade_skater_vmenu$
+		:i $menu_title$ = %s(16,"PRE-MADE SKATERS")
+		:i $type$ = $VScrollingMenu$
+		:i $scrolling_menu_title_id$ = $set_premade_skater_title$
+		:i $num_items_to_show$ = %i(6,00000006)
+		:i $dims$ = %vec2(200.000000,180.000000)
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $set_premade_skater_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$create_test_menu$:s}:a}
+		:i $replace_handlers$
+	:i :s}
+	:i $GetArraySize$$custom_male_appearances$
+	:i $index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$text$ =  ( ($custom_male_appearances$:a{%GLOBAL%$index$:a}) ->$name$) 
+		:i $FormatText$$ChecksumName$ = $id$%s(2,"%i")$i$ = %GLOBAL%$text$
+		:i $make_text_sub_menu_item$:s{
+			:i $text$ = %GLOBAL%$text$
+			:i $id$ = %GLOBAL%$id$
+			:i $pad_choose_script$ = $set_premade_skater$
+			:i $pad_choose_params$ = :s{
+				:i $appearance$ =  ( ($custom_male_appearances$:a{%GLOBAL%$index$:a}) ->$struct$) 
+				:i $female$ =  ( ($custom_male_appearances$:a{%GLOBAL%$index$:a}) ->$female$) 
+			:i :s}
+		:i :s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$$params$ = :s{$final_pos$ = %vec2(320.000000,134.000000):s}
+:i endfunction
+:i function $set_premade_skater$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if NOT $GotParam$$female$
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(1,00000001)
+	:i else 
+		:i $SetSkaterProfileProperty$$player$ = %GLOBAL%$currentSkaterProfileIndex$$is_male$%i(0,00000000)
+	:i endif
+	:i $SetPlayerAppearance$$appearance_structure$ = %GLOBAL%$appearance$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $RefreshSkaterModel$$Skater$ = %i(0,00000000)$profile$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $exit_pause_menu$
+:i endfunction
+:i :end

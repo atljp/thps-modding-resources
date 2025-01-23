@@ -1,0 +1,2959 @@
+
+:i $level_select_current_list_index$ = %i(0,00000000)
+:i function $load_update_level_select_textures_to_main_memory$
+	:i if $GotParam$$unload$
+		:i $printf$%s(55,"load_update_level_select_textures_to_main_memory unload")
+	:i else 
+		:i $printf$%s(48,"load_update_level_select_textures_to_main_memory")
+	:i endif
+	:i $textures$ = :a{
+		:i %s(28,"Update/levelselect/logo_park")
+		:i %s(28,"Update/levelselect/logo_thps")
+		:i %s(29,"Update/levelselect/logo_thps2")
+		:i %s(29,"Update/levelselect/logo_thps3")
+		:i %s(29,"Update/levelselect/logo_thps4")
+		:i %s(28,"Update/levelselect/logo_thug")
+		:i %s(29,"Update/levelselect/logo_thug2")
+		:i %s(33,"Update/levelselect/level_swatch_3")
+		:i %s(36,"Update/levelselect/posters/poster_hi")
+		:i %s(36,"Update/levelselect/posters/poster_nj")
+		:i %s(36,"Update/levelselect/posters/poster_vc")
+		:i %s(36,"Update/levelselect/posters/poster_ny")
+		:i %s(36,"Update/levelselect/posters/poster_sj")
+		:i %s(36,"Update/levelselect/posters/poster_ru")
+		:i %s(41,"Update/levelselect/posters/poster_default")
+		:i :a}
+	:i $load_array_of_textures$ isNull 
+	:i $printf$%s(53,"done load_update_level_select_textures_to_main_memory")
+:i endfunction
+:i function $get_new_level_info_size$
+	:i $GetArraySize$$level_select_tabs$
+	:i %GLOBAL%$num_tabs$ = %GLOBAL%$array_size$
+	:i %GLOBAL%$new_size$ = %i(0,00000000)
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$array$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$levels$) 
+		:i $GetArraySize$%GLOBAL%$array$
+		:i %GLOBAL%$new_size$ = %GLOBAL%$new_size$ + %GLOBAL%$array_size$
+		:i %GLOBAL%$index$ = %GLOBAL%$index$ + %i(1,00000001)
+	:i loop_to %GLOBAL%$num_tabs$
+	:i return
+	$new_size$ = %GLOBAL%$new_size$
+:i endfunction
+:i function $populate_level_info_array$
+	:i $get_new_level_info_size$
+	:i $wait$%i(10,0000000a)$gameframes$
+	:i $ResizeArray$$array$ = $level_select_menu_level_info$$size$ = %i(10,0000000a)
+	:i %GLOBAL%$tmpArray$ = $level_select_menu_level_info$
+	:i $GetArraySize$$level_select_tabs$
+	:i %GLOBAL%$num_tabs$ = %GLOBAL%$array_size$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i %GLOBAL%$level_info_index$ = %i(0,00000000)
+	:i while
+		
+		:i $level_array$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$levels$) 
+		:i $GetArraySize$%GLOBAL%$level_array$
+		:i %GLOBAL%$level_index$ = %i(0,00000000)
+		:i while
+			
+			:i $SetArrayElement$:s{$ArrayName$ = $tmpArray$$index$ = %GLOBAL%$level_info_index$
+				:i $newvalue$ = :s{
+					:i $text$ =  ( (%GLOBAL%$level_array$:a{%GLOBAL%$level_index$:a}) ->$text$) 
+					:i $level$ =  ( (%GLOBAL%$level_array$:a{%GLOBAL%$level_index$:a}) ->$level$) 
+				:i :s}
+			:i :s}
+			:i %GLOBAL%$level_index$ = %GLOBAL%$level_index$ + %i(1,00000001)
+			:i %GLOBAL%$level_info_index$ = %GLOBAL%$level_info_index$ + %i(1,00000001)
+		:i loop_to %GLOBAL%$array_size$
+		:i %GLOBAL%$index$ = %GLOBAL%$index$ + %i(1,00000001)
+	:i loop_to %GLOBAL%$num_tabs$
+:i endfunction
+:i function $launch_level_select_menu$
+	:i $load_update_level_select_textures_to_main_memory$
+	:i $hide_current_goal$
+	:i $menu3d_hide$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $LoadPreFile$%s(19,"mainmenusprites.pre")
+	:i $load_mainmenu_textures_to_main_memory$$no_pre_file$
+	:i $load_cas_textures_to_main_memory$$no_pre_file$
+	:i $UnloadPreFile$%s(19,"mainmenusprites.pre")
+	:i if $ScreenElementExists$$id$ = $main_menu_bg_anchor$
+		:i $DestroyScreenElement$$id$ = $main_menu_bg_anchor$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $the_time$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $the_time$
+			:i $hide$
+		:i :s}
+	:i endif
+	:i if NOT $LevelIs$$Load_MainMenu$
+	:i else 
+		:i $skater$.$hide$
+		:i $KillSkaterCamAnim$$all$
+		:i $PlaySkaterCamAnim$$name$ = $level_select_cam$$play_hold$
+	:i endif
+	:i $load_level_select_textures_to_main_memory$
+	:i $pause_menu_gradient$$off$
+	:i $SetMenuPadMappings$:a{$active$
+		:i $use_as_first$
+		:i :a}
+	:i $create_level_select_menu$ isNull 
+:i endfunction
+:i $level_select_last_level_played$ = $Load_MainMenu$
+:i $level_select_focus_target1$ = %i(0,00000000)
+:i $level_select_focus_target2$ = %i(0,00000000)
+:i function $create_level_select_menu$$pad_back_script$ = $level_select_menu_exit$$level_list$ =  ( ($level_select_tabs$:a{ ($level_select_current_list_index$) :a}) ->$levels$) 
+	:i if  ($in_server_options$ = %i(1,00000001)) 
+		:i $from_server_options$ = $from_server_options$
+		:i $net_pad_back$ = %i(0,00000000)
+		:i $pad_back_script$ = $network_level_select_pad_back$
+	:i else 
+		:i $RemoveParameter$$from_server_options$
+	:i endif
+	:i $GoalManager_HidePoints$
+	:i $hide_current_goal$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $level_select_anchor$
+	:i :s}
+	:i $AssignAlias$$id$ = $level_select_anchor$$alias$ = $current_menu_anchor$
+	:i $change$$level_select_item_current_index$ = %i(4294967295,ffffffff)
+	:i $change$$level_select_focus_target1$ = %i(0,00000000)
+	:i $change$$level_select_focus_target2$ = $null$
+	:i $level_select_build_BG$
+	:i $level_select_create_menu_block$$pad_back_script$ = %GLOBAL%$pad_back_script$ isNull 
+	:i $tab_anchor_pos$ = %vec2(0.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $level_select_anchor$
+		:i $id$ = $tab_anchor$
+		:i $pos$ = %GLOBAL%$tab_anchor_pos$
+	:i :s}
+	:i $RemoveParameter$$text$
+	:i $RemoveParameter$$name$
+	:i $ForEachIn$ ( ($level_select_tabs$:a{ ($level_select_current_list_index$) :a}) ->$levels$) $do$ = $level_select_menu_add_item$$params$ =  isNull 
+	:i $DoScreenElementMorph$$id$ = $level_select_anchor_middle$$pos$ = %vec2(0.000000,240.000000)
+	:i $kill_start_key_binding$
+	:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(22,"\b7/\b4 = Choose Level"):s}
+		:i :s{$text$ = %s(21,"\b6/\b5 = Switch List"):s}
+		:i :s{$text$ = %s(12,"\bm = Select"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :a}
+	:i if $GotParam$$from_server_options$
+		:i $current_menu$.$SetTags$$from_server_options$ = %GLOBAL%$from_server_options$
+	:i endif
+	:i $fireevent$$type$ = $focus$$target$ = $current_menu$
+	:i $SetButtonEventMappings$$block_menu_input$
+	:i $wait$%i(3,00000003)$gameframes$
+	:i $SetScreenElementProps$$id$ = $level_select_scrolling_menu$$reset_window_top$
+	:i $DoScreenElementMorph$$id$ = $level_select_anchor_middle$$pos$ = %vec2(10.000000,240.000000)
+	:i $SetButtonEventMappings$$unblock_menu_input$
+:i endfunction
+:i function $level_select_build_BG$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $level_select_anchor$
+		:i $id$ = $map_anchor$
+		:i $pos$ = %vec2(45.000000,70.000000)
+		:i $z_priority$ = %i(4294967246,ffffffce)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $map_anchor$
+		:i $id$ = $map_mask$
+		:i $pos$ = %vec2(0.000000,0.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $map_mask$
+		:i $texture$ = $level_swatch_3$
+		:i $pos$ = %vec2(237.500000,0.000000)
+		:i $scale$ = %vec2(1.000000,1.400000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $map_mask$
+		:i $texture$ = $poster_default$
+		:i $id$ = $level_poster$
+		:i $pos$ = %vec2(400.000000,0.000000)
+		:i $scale$ = %vec2(1.000000,1.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+:i endfunction
+:i function $level_select_create_menu_block$
+	:i if $ObjectExists$$id$ = $level_select_anchor_middle$
+		:i $DestroyScreenElement$$id$ = $level_select_anchor_middle$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $level_select_anchor$
+		:i $id$ = $level_select_anchor_middle$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(10.000000,240.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $tab_bg$
+		:i $texture$ = $CAT_bar$
+		:i $pos$ = %vec2(480.000000,93.000000)
+		:i $scale$ = %vec2(28.000000,1.300000)
+		:i $z_priority$ = %f(8.000000)
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $page_indicators$
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(355.000000,340.000000)
+		:i $z_priority$ = %f(10.000000)
+	:i :s}
+	:i $GetArraySize$$level_select_tabs$
+	:i $index$ = %i(1,00000001)
+	:i while
+		
+		:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  (%GLOBAL%$index$ - %i(1,00000001)) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $page_indicators$
+			:i $id$ = %GLOBAL%$indicator_id$
+			:i $texture$ = $circle$
+			:i $scale$ = %f(0.800000)
+			:i $alpha$ = %f(0.300000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $pos$ =  (%GLOBAL%$index$ * %vec2(12.000000,0.000000)) 
+		:i :s}
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $_leftarrow$
+		:i $texture$ = $left_arrow$
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $just$ = :a{$left$$center$:a}
+		:i $pos$ = %vec2(360.000000,93.000000)
+		:i $z_priority$ = %f(10.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $_rightarrow$
+		:i $texture$ = $right_arrow$
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $just$ = :a{$right$$center$:a}
+		:i $pos$ = %vec2(600.000000,93.000000)
+		:i $z_priority$ = %f(10.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $tab_title_bg$
+		:i $texture$ = $level_swatch$
+		:i $scale$ = %f(2.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(480.000000,93.000000)
+		:i $z_priority$ = %f(9.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $tab_title_logo$
+		:i $texture$ =  ( ($level_select_tabs$:a{ ($level_select_current_list_index$) :a}) ->$logo$) 
+		:i $scale$ = %f(0.500000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(480.000000,91.000000)
+		:i $z_priority$ = %f(10.000000)
+	:i :s}
+	:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  ($level_select_current_list_index$) 
+	:i %GLOBAL%$indicator_id$.$DoMorph$$alpha$ = %f(1.000000)$time$ = %f(0.050000)
+	:i $RunScriptOnScreenElement$$id$ = $_rightarrow$$do_random_effect$$params$ = :s{$id$ = $_rightarrow$:s}
+	:i $RunScriptOnScreenElement$$id$ = $_leftarrow$$do_random_effect$$params$ = :s{$id$ = $_leftarrow$:s}
+	:i $RunScriptOnScreenElement$$id$ = $tab_title_bg$$do_random_effect$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $level_select_anchor_middle$
+		:i $id$ = $level_select_scrolling_menu$
+		:i $pos$ = %vec2(480.000000,120.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $dims$ = %vec2(300.000000,203.000000)
+	:i :s}
+	:i $theme_background$$parent$ = $level_select_scrolling_menu$$width$ = %f(1.500000)$pos$ = %vec2(0.000000,-15.000000)$num_parts$ = %f(7.100000)$z_priority$ = %i(1,00000001)$dark_menu$ = $dark_menu$$static$ = $static$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $level_select_scrolling_menu$
+		:i $id$ = $level_select_vmenu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$center$:a}
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = %GLOBAL%$pad_back_script$ isNull :s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_left$$level_select_move_tab$$params$ = :s{$left$:s}:s}
+			:i :s{$pad_right$$level_select_move_tab$$params$ = :s{$right$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $padding_scale$ = %f(0.900000)
+		:i $replace_handlers$
+	:i :s}
+	:i $AssignAlias$$id$ = $level_select_vmenu$$alias$ = $current_menu$
+:i endfunction
+:i function $level_select_move_tab$
+	:i if $GotParam$$left$
+		:i %GLOBAL%$old_level_list$ =  ( ($level_select_tabs$:a{ ($level_select_current_list_index$) :a}) ->$levels$) 
+		:i $GetArraySize$%GLOBAL%$old_level_list$
+		:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  ($level_select_current_list_index$) 
+		:i %GLOBAL%$indicator_id$.$DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.000000)
+		:i $generic_menu_scroll_sideways_sound$
+		:i $array_previous_wraparound$$index$ =  ($level_select_current_list_index$) $array$ = $level_select_tabs$
+		:i $change$$level_select_current_list_index$ = %GLOBAL%$index$
+		:i %GLOBAL%$level_list$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$levels$) 
+		:i if $ObjectExists$$id$ = $current_menu$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i if $ObjectExists$$id$ =  ( ( (%GLOBAL%$old_level_list$) :a{%GLOBAL%$i$:a}) ->$level$) 
+					:i $DestroyScreenElement$$id$ =  ( ( (%GLOBAL%$old_level_list$) :a{%GLOBAL%$i$:a}) ->$level$) 
+				:i endif
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+		:i $change$$level_select_item_current_index$ = %i(0,00000000)
+		:i $ForEachIn$%GLOBAL%$level_list$$do$ = $level_select_menu_add_item$$params$ =  isNull 
+		:i $level_select_update_screen$
+		:i $RunScriptOnScreenElement$$id$ = $_leftarrow$$do_arrow_effect$
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(360.000000,91.000000)$alpha$ = %f(0.000000)$scale$ = %f(0.200000)$time$ = %f(0.200000)
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(600.000000,91.000000)$time$ = %f(0.000000)
+		:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  ($level_select_current_list_index$) 
+		:i %GLOBAL%$indicator_id$.$DoMorph$$alpha$ = %f(1.000000)$time$ = %f(0.050000)
+		:i $SetScreenElementProps$$id$ = $tab_title_logo$$texture$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$logo$) 
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(480.000000,91.000000)$alpha$ = %f(1.000000)$scale$ = %f(0.500000)$time$ = %f(0.200000)
+	:i endif
+	:i if $GotParam$$right$
+		:i %GLOBAL%$old_level_list$ =  ( ($level_select_tabs$:a{ ($level_select_current_list_index$) :a}) ->$levels$) 
+		:i $GetArraySize$%GLOBAL%$old_level_list$
+		:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  ($level_select_current_list_index$) 
+		:i %GLOBAL%$indicator_id$.$DoMorph$$alpha$ = %f(0.300000)$time$ = %f(0.000000)
+		:i $generic_menu_scroll_sideways_sound$
+		:i $array_next_wraparound$$index$ =  ($level_select_current_list_index$) $array$ = $level_select_tabs$
+		:i $change$$level_select_current_list_index$ = %GLOBAL%$index$
+		:i %GLOBAL%$level_list$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$levels$) 
+		:i if $ObjectExists$$id$ = $current_menu$
+			:i $i$ = %i(0,00000000)
+			:i while
+				
+				:i if $ObjectExists$$id$ =  ( ( (%GLOBAL%$old_level_list$) :a{%GLOBAL%$i$:a}) ->$level$) 
+					:i $DestroyScreenElement$$id$ =  ( ( (%GLOBAL%$old_level_list$) :a{%GLOBAL%$i$:a}) ->$level$) 
+				:i endif
+				:i %GLOBAL%$i$ =  (%GLOBAL%$i$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+		:i $change$$level_select_item_current_index$ = %i(0,00000000)
+		:i $ForEachIn$%GLOBAL%$level_list$$do$ = $level_select_menu_add_item$$params$ =  isNull 
+		:i $level_select_update_screen$
+		:i $RunScriptOnScreenElement$$id$ = $_rightarrow$$do_arrow_effect$
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(600.000000,91.000000)$alpha$ = %f(0.000000)$scale$ = %f(0.200000)$time$ = %f(0.200000)
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(360.000000,91.000000)$time$ = %f(0.000000)
+		:i $FormatText$$ChecksumName$ = $indicator_id$%s(12,"indicator_%i")$i$ =  ($level_select_current_list_index$) 
+		:i %GLOBAL%$indicator_id$.$DoMorph$$alpha$ = %f(1.000000)$time$ = %f(0.050000)
+		:i $SetScreenElementProps$$id$ = $tab_title_logo$$texture$ =  ( ($level_select_tabs$:a{%GLOBAL%$index$:a}) ->$logo$) 
+		:i $tab_title_logo$.$DoMorph$$pos$ = %vec2(480.000000,91.000000)$alpha$ = %f(1.000000)$scale$ = %f(0.500000)$time$ = %f(0.200000)
+	:i endif
+:i endfunction
+:i function $do_arrow_effect$
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $DoMorph$$scale$ = %f(0.900000)$time$ = %f(0.100000)$rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+	:i $DoMorph$$scale$ = %f(1.000000)$time$ = %f(0.100000)$rgba$ = %GLOBAL%$tab_color$
+:i endfunction
+:i $level_select_menu_level_info$ = :a{
+	:i :s{$text$ = %s(8,"TRAINING")$level$ = $load_TR$:s}
+	:i :s{$text$ = %s(6,"BOSTON")$level$ = $load_BO$:s}
+	:i :s{$text$ = %s(9,"BARCELONA")$level$ = $load_BA$:s}
+	:i :s{$text$ = %s(6,"BERLIN")$level$ = $load_BE$:s}
+	:i :s{$text$ = %s(9,"AUSTRALIA")$level$ = $load_AU$:s}
+	:i :s{$text$ = %s(8,"SKATOPIA")$level$ = $load_ST$:s}
+	:i :s{$text$ = %s(11,"NEW ORLEANS")$level$ = $load_NO$:s}
+	:i :s{$text$ = %s(10,"PRO SKATER")$level$ = $load_SE$:s}
+	:i :s{$text$ = %s(12,"THE TRIANGLE")$level$ = $load_SE2$:s}
+	:i :s{$text$ = %s(10,"NEW JERSEY")$level$ = $load_nj$:s}
+	:i :s{$text$ = %s(9,"MANHATTAN")$level$ = $load_ny$:s}
+	:i :s{$text$ = %s(5,"TAMPA")$level$ = $load_fl$:s}
+	:i :s{$text$ = %s(9,"SAN DIEGO")$level$ = $load_sd$:s}
+	:i :s{$text$ = %s(6,"HAWAII")$level$ = $load_hi$:s}
+	:i :s{$text$ = %s(9,"VANCOUVER")$level$ = $load_vc$:s}
+	:i :s{$text$ = %s(13,"SLAM CITY JAM")$level$ = $load_sj$:s}
+	:i :s{$text$ = %s(6,"MOSCOW")$level$ = $load_ru$:s}
+	:i :s{$text$ = %s(16,"HOTTER THAN HELL")$level$ = $load_hh$:s}
+	:i :s{$text$ = %s(11,"LOS ANGELES")$level$ = $load_la$:s}
+	:i :s{$text$ = %s(6,"CANADA")$level$ = $load_ca$:s}
+	:i :s{$text$ = %s(7,"AIRPORT")$level$ = $load_ap$:s}
+	:i :s{$text$ = %s(6,"HANGAR")$level$ = $load_hn$:s}
+	:i :s{$text$ = %s(9,"SCHOOL II")$level$ = $load_sc2$:s}
+	:i :s{$text$ = %s(6,"VENICE")$level$ = $load_vn$:s}
+	:i :s{$text$ = %s(12,"PHILADELPHIA")$level$ = $load_ph$:s}
+	:i :s{$text$ = %s(12,"DOWNHILL JAM")$level$ = $load_dj$:s}
+	:i :s{$text$ = %s(6,"SCHOOL")$level$ = $load_sc$:s}
+	:i :a}
+:i $level_select_tabs$ = :a{
+	:i :s{
+		:i $logo$ = $logo_thug2$
+		:i $levels$ = $list_level_thug2$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_thug$
+		:i $levels$ = $list_level_thug$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_thps4$
+		:i $levels$ = $list_level_thps4$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_thps3$
+		:i $levels$ = $list_level_thps3$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_thps2$
+		:i $levels$ = $list_level_thps2$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_thps$
+		:i $levels$ = $list_level_thps$
+	:i :s}
+	:i :s{
+		:i $logo$ = $logo_park$
+		:i $levels$ = $list_level_custom$
+	:i :s}
+	:i :a}
+:i $list_level_thug2$ = :a{
+	:i :s{$text$ = %s(8,"TRAINING")$level$ = $load_TR$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(89.000000,82.000000)$level_num$ = $LevelNum_TR$:s}
+	:i :s{$text$ = %s(6,"BOSTON")$level$ = $load_BO$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(135.000000,80.000000)$level_num$ = $LevelNum_BO$:s}
+	:i :s{$text$ = %s(9,"BARCELONA")$level$ = $load_BA$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(223.000000,84.000000)$level_num$ = $LevelNum_BA$:s}
+	:i :s{$text$ = %s(6,"BERLIN")$level$ = $load_BE$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(243.000000,68.000000)$level_num$ = $LevelNum_BE$:s}
+	:i :s{$text$ = %s(9,"AUSTRALIA")$level$ = $load_AU$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(426.000000,194.000000)$level_num$ = $LevelNum_AU$:s}
+	:i :s{$text$ = %s(11,"NEW ORLEANS")$level$ = $load_NO$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(104.000000,94.000000)$level_num$ = $LevelNum_NO$:s}
+	:i :s{$text$ = %s(8,"SKATOPIA")$level$ = $load_ST$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(111.000000,83.000000)$level_num$ = $LevelNum_ST$:s}
+	:i :s{$text$ = %s(10,"PRO SKATER")$level$ = $load_SE$$level_thumb$ = $poster_default$$level_num$ = $LevelNum_SE$:s}
+	:i :s{$text$ = %s(12,"THE TRIANGLE")$level$ = $load_SE2$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(127.000000,105.000000)$level_num$ = $LevelNum_SE2$:s}
+	:i :a}
+:i $list_level_thug$ = :a{
+	:i :s{$text$ = %s(10,"NEW JERSEY")$level$ = $load_nj$$level_thumb$ = $poster_nj$$level_num$ = $LevelNum_NJ$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(9,"MANHATTAN")$level$ = $load_ny$$level_thumb$ = $poster_ny$$level_num$ = $LevelNum_NY$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(5,"TAMPA")$level$ = $load_fl$$level_thumb$ = $poster_default$$level_num$ = $LevelNum_FL$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(9,"SAN DIEGO")$level$ = $load_sd$$level_thumb$ = $poster_default$$level_num$ = $LevelNum_SD$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(6,"HAWAII")$level$ = $load_hi$$level_thumb$ = $poster_hi$$level_num$ = $LevelNum_HI$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(9,"VANCOUVER")$level$ = $load_vc$$level_thumb$ = $poster_vc$$level_num$ = $LevelNum_VC$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(13,"SLAM CITY JAM")$level$ = $load_sj$$level_thumb$ = $poster_sj$$level_num$ = $LevelNum_SJ$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(6,"MOSCOW")$level$ = $load_ru$$level_thumb$ = $poster_ru$$level_num$ = $LevelNum_RU$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :s{$text$ = %s(16,"HOTTER THAN HELL")$level$ = $load_hh$$level_thumb$ = $poster_default$$level_num$ = $LevelNum_HH$$dot_pos$ = %vec2(0.000000,0.000000):s}
+	:i :a}
+:i $list_level_thps4$ = :a{
+	:i :s{$text$ = %s(7,"COLLEGE")$level$ = $load_sch$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_SCH$:s}
+	:i :s{$text$ = %s(13,"SAN FRANCISCO")$level$ = $load_sf2$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_SF2$:s}
+	:i :s{$text$ = %s(8,"ALCATRAZ")$level$ = $load_alc$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_ALC$:s}
+	:i :s{$text$ = %s(4,"KONA")$level$ = $load_kon$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_KON$:s}
+	:i :s{$text$ = %s(8,"SHIPYARD")$level$ = $load_jnk$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_JNK$:s}
+	:i :s{$text$ = %s(6,"LONDON")$level$ = $load_lon$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_LON$:s}
+	:i :s{$text$ = %s(3,"ZOO")$level$ = $load_zoo$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_ZOO$:s}
+	:i :s{$text$ = %s(8,"CARNIVAL")$level$ = $load_cnv$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_CNV$:s}
+	:i :s{$text$ = %s(7,"CHICAGO")$level$ = $load_hof$$level_thumb$ = $sign_secret1$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_HOF$:s}
+	:i :a}
+:i $list_level_thps3$ = :a{
+	:i :s{$text$ = %s(11,"LOS ANGELES")$level$ = $load_la$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(78.000000,102.000000)$level_num$ = $LevelNum_LA$:s}
+	:i :s{$text$ = %s(6,"CANADA")$level$ = $load_ca$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(85.000000,65.000000)$level_num$ = $LevelNum_CA$:s}
+	:i :s{$text$ = %s(7,"AIRPORT")$level$ = $load_ap$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(410.000000,87.000000)$level_num$ = $LevelNum_AP$:s}
+	:i :a}
+:i $list_level_thps2$ = :a{
+	:i :s{$text$ = %s(6,"HANGAR")$level$ = $load_hn$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_HN$:s}
+	:i :s{$text$ = %s(9,"SCHOOL II")$level$ = $load_sc2$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(0.000000,0.000000)$level_num$ = $LevelNum_SC2$:s}
+	:i :s{$text$ = %s(6,"VENICE")$level$ = $load_vn$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(85.000000,65.000000)$level_num$ = $LevelNum_VN$:s}
+	:i :s{$text$ = %s(12,"PHILADELPHIA")$level$ = $load_ph$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(119.000000,80.000000)$level_num$ = $LevelNum_PH$:s}
+	:i :a}
+:i $list_level_thps$ = :a{
+	:i :s{$text$ = %s(12,"DOWNHILL JAM")$level_num$ = $LevelNum_DJ$$level$ = $load_dj$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(165.000000,148.000000):s}
+	:i :s{$text$ = %s(6,"SCHOOL")$level_num$ = $LevelNum_SC$$level$ = $load_sc$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(261.000000,185.000000):s}
+	:i :a}
+:i $list_level_custom$ = :a{
+	:i :s{$text$ = %s(9,"BOARDSHOP")$level_num$ = $LevelNum_boardshop$$level$ = $load_boardshop$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(165.000000,148.000000):s}
+	:i :s{$text$ = %s(6,"SCHOOL")$level_num$ = $LevelNum_SC$$level$ = $load_sc$$level_thumb$ = $poster_default$$dot_pos$ = %vec2(261.000000,185.000000):s}
+	:i :a}
+:i function $level_select_build_signs$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $level_select_anchor$
+		:i $id$ = $sign_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+	:i :s}
+	:i $sign_scale$ = %f(0.500000)
+	:i if $GameModeEquals$$is_classic$
+		:i $bar_bg_scale$ = %vec2(8.000000,2.000000)
+		:i $sign_width$ = %i(50,00000032)
+		:i $hmenu_pos$ =  (%GLOBAL%$sign_width$ * %vec2(0.500000,0.000000)) 
+		:i $hmenu_just$ = :a{$center$$center$:a}
+	:i else 
+		:i $bar_bg_scale$ = %vec2(8.000000,1.500000)
+		:i $sign_width$ = %i(35,00000023)
+		:i $hmenu_pos$ =  (%GLOBAL%$sign_width$ * %vec2(0.500000,0.000000) + %vec2(0.000000,-14.500000)) 
+		:i $hmenu_just$ = :a{$center$$top$:a}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $HMenu$
+		:i $parent$ = $sign_anchor$
+		:i $id$ = $level_menu$
+		:i $pos$ = %GLOBAL%$hmenu_pos$
+		:i $dims$ = %vec2(640.000000,0.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = %GLOBAL%$hmenu_just$
+	:i :s}
+	:i $AssignAlias$$id$ = $level_menu$$alias$ = $current_menu$
+	:i $current_menu$.$SetTags$$item_parent$ = $level_menu$
+	:i $sign_params$ = :s{$width$ = %GLOBAL%$sign_width$$scale$ = %GLOBAL%$sign_scale$:s}
+	:i if $GameModeEquals$$is_classic$
+		:i $index$ = %i(0,00000000)
+		:i $last_bracket$ = %i(4294967295,ffffffff)
+		:i $GetArraySize$%GLOBAL%$level_list$
+		:i while
+			
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) $bracket$
+				:i if NOT  ( ( (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) ->$bracket$)  = %GLOBAL%$last_bracket$) 
+					:i $last_bracket$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) ->$bracket$) 
+					:i $level_select_menu_add_bracket$$index$ = %GLOBAL%$index$$bracket$ = %GLOBAL%$last_bracket$$level_list$ = %GLOBAL%$level_list$%GLOBAL%$sign_params$$size$ = %GLOBAL%$array_size$
+				:i endif
+			:i else 
+				:i $level_select_menu_add_item$%GLOBAL%$sign_params$ (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) 
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i $ForEachIn$%GLOBAL%$level_list$$do$ = $level_select_menu_add_item$$params$ = %GLOBAL%$sign_params$
+	:i endif
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bg_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sign_anchor$
+		:i $id$ = $menu_bar$
+		:i $texture$ = $DE_highlight_bar$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $rgba$ = %GLOBAL%$bg_color$
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %GLOBAL%$bar_bg_scale$
+		:i $z_priority$ = %i(4294967295,ffffffff)
+		:i $alpha$ = %f(0.750000)
+	:i :s}
+	:i if $GameModeEquals$$is_classic$
+		:i $build_big_level_select_arrows$$parent$ = $sign_anchor$$z_priority$ = %i(5,00000005)$arrow_position_shift$ = %vec2(25.000000,0.000000)
+	:i else 
+		:i $build_big_level_select_arrows$$parent$ = $sign_anchor$$z_priority$ = %i(5,00000005)
+	:i endif
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i if $GameModeEquals$$is_classic$
+		:i $tab_anchor_pos$ = %vec2(0.000000,8.000000)
+	:i else 
+		:i $tab_anchor_pos$ = %vec2(0.000000,0.000000)
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $sign_anchor$
+		:i $id$ = $tab_anchor$
+		:i $pos$ = %GLOBAL%$tab_anchor_pos$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %vec2(2.500000,1.800000)
+		:i $pos$ = %vec2(340.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(4294967295,ffffffff)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(50,00000032):a}
+		:i $scale$ = %vec2(2.500000,1.800000)
+		:i $pos$ = %vec2(330.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(4294967291,fffffffb)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(38,00000026):a}
+		:i $scale$ = %vec2(9.500000,12.200000)
+		:i $pos$ = %vec2(370.000000,75.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(28,0000001c):a}
+		:i $scale$ = %vec2(12.500000,0.500000)
+		:i $pos$ = %vec2(450.000000,77.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $tab_anchor$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(48,00000030):a}
+		:i $scale$ = %vec2(12.500000,0.500000)
+		:i $pos$ = %vec2(430.000000,28.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(180,000000b4)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sign_anchor$
+		:i $id$ = $globe_arrow$
+		:i $texture$ = $level_arrow$
+		:i $pos$ = %vec2(75.000000,25.000000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(120,00000078):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %i(0,00000000)
+		:i $z_priority$ = %i(4294967251,ffffffd3)
+		:i $rot_angle$ = %i(100,00000064)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $sign_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(75.000000,25.000000)
+		:i $scale$ = %vec2(-6.500000,1.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967256,ffffffd8)
+	:i :s}
+:i endfunction
+:i function $build_big_level_select_arrows$$pos$ = %vec2(0.000000,0.000000)$scale$ = %i(1,00000001)$z_priority$ = %i(0,00000000)$arrow_position_shift$ = %vec2(0.000000,0.000000)
+	:i $Theme_GetMenuTitleColor$$return_value$ = $arrow_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $rgba$ = %GLOBAL%$arrow_color$
+		:i $scale$ =  (%vec2(2.200000,1.400000) * %GLOBAL%$scale$) 
+		:i $pos$ =  (%vec2(-305.000000,-5.000000) + %GLOBAL%$arrow_position_shift$ + %GLOBAL%$pos$) 
+		:i $rot_angle$ = %i(10,0000000a)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $left_arrow$$level_select_arrow_twitch_effect$$params$ = :s{$rot_angle$ = %i(10,0000000a)$rot_angle_dir$ = %i(4294967295,ffffffff):s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $left_arrow$
+		:i $texture$ = $left_arrow$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(-5.000000,17.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $z_priority$ = %f(-0.500000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$parent$
+		:i $id$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $rgba$ = %GLOBAL%$arrow_color$
+		:i $scale$ =  (%vec2(2.200000,1.400000) * %GLOBAL%$scale$) 
+		:i $pos$ =  (%vec2(305.000000,5.000000) - %GLOBAL%$arrow_position_shift$ + %GLOBAL%$pos$) 
+		:i $rot_angle$ = %i(10,0000000a)
+		:i $just$ = :a{$right$$center$:a}
+		:i $z_priority$ = %GLOBAL%$z_priority$
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $right_arrow$$level_select_arrow_twitch_effect$$params$ = :s{$rot_angle$ = %i(10,0000000a)$rot_angle_dir$ = %i(1,00000001):s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $right_arrow$
+		:i $texture$ = $right_arrow$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(70,00000046):a}
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(22.000000,11.000000)
+		:i $just$ = :a{$right$$center$:a}
+		:i $z_priority$ = %f(-0.500000)
+	:i :s}
+:i endfunction
+:i function $level_select_arrow_blink_left$
+	:i if NOT $ScreenElementExists$$id$ = $left_arrow$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$wait_first$
+		:i $wait$%i(1,00000001)$gameframes$
+	:i endif
+	:i $left_arrow$.$SetTags$$animating$
+	:i $DoScreenElementMorph$$id$ = $left_arrow$$alpha$ = %f(0.150000)$time$ = %i(0,00000000)$scale$ = %f(0.500000)$relative_scale$
+	:i $DoScreenElementMorph$$id$ = $left_arrow$$alpha$ = %i(1,00000001)$time$ = %f(0.150000)$scale$ = %i(1,00000001)$relative_scale$
+:i endfunction
+:i function $level_select_arrow_blink_right$
+	:i if NOT $ScreenElementExists$$id$ = $right_arrow$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$wait_first$
+		:i $wait$%i(1,00000001)$gameframes$
+	:i endif
+	:i $right_arrow$.$SetTags$$animating$
+	:i $DoScreenElementMorph$$id$ = $right_arrow$$alpha$ = %f(0.150000)$time$ = %i(0,00000000)$scale$ = %f(0.500000)$relative_scale$
+	:i $DoScreenElementMorph$$id$ = $right_arrow$$alpha$ = %i(1,00000001)$time$ = %f(0.150000)$scale$ = %i(1,00000001)$relative_scale$
+:i endfunction
+:i function $level_select_arrow_twitch_effect$
+	:i while
+		
+		:i if $GetSingleTag$$animating$
+			:i $wait$%f(0.150000)$seconds$
+			:i $RemoveTags$$tags$ = :a{$animating$:a}
+		:i else 
+			:i $DoMorph$$rot_angle$ =  (%GLOBAL%$rot_angle$ + %i(10,0000000a) * %GLOBAL%$rot_angle_dir$) 
+			:i $wait$%i(1,00000001)$gameframe$
+			:i $DoMorph$$rot_angle$ = %GLOBAL%$rot_angle$
+		:i endif
+		:i $wait_time$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2)
+			 :POS(0) %f(0.250000)
+		:BREAKTO(3)
+			 :POS(1) %f(0.500000)
+		:BREAKTO(3)
+			 :POS(2) %f(2.250000) :POS(3) 
+			:i $wait$%GLOBAL%$wait_time$$seconds$
+		:i loop_to 
+	:i endfunction
+	:i function $level_select_pad_right$
+		:i if NOT $ScreenElementExists$$id$ = $current_menu$
+			:i return
+			
+		:i endif
+		:i $generic_menu_scroll_sideways_sound$
+		:i $level_select_arrow_blink_right$
+	:i endfunction
+	:i function $level_select_pad_left$
+		:i if NOT $ScreenElementExists$$id$ = $current_menu$
+			:i return
+			
+		:i endif
+		:i $generic_menu_scroll_sideways_sound$
+		:i $level_select_arrow_blink_left$
+	:i endfunction
+	:i function $level_select_maybe_play_vert_sound$
+		:i if NOT $ScreenElementExists$$id$ = $current_menu$
+			:i return
+			
+		:i endif
+		:i $generic_menu_up_or_down_sound$ isNull 
+	:i endfunction
+	:i function $level_select_sign_pulse_effect$
+		:i $wait$%f(0.100000)$seconds$
+		:i while
+			
+			:i $DoMorph$$scale$ = %f(2.270000)$relative_scale$$time$ = %f(0.500000)
+			:i $DoMorph$$scale$ = %f(2.130000)$relative_scale$$time$ = %f(0.500000)
+		:i loop_to 
+	:i endfunction
+	:i function $sign_focus$
+		:i $GetTags$
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}$z_priority$ = %i(2,00000002)
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}$scale$ = %f(2.200000)$relative_scale$$alpha$ = %i(1,00000001)$time$ = %f(0.060000)
+			:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}$level_select_sign_pulse_effect$
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = :s{$sign$$child$ = $shadow$:s}:s}$alpha$ = %f(0.500000)$time$ = %f(0.200000)
+		:i else 
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $text$:s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $text$:s}$scale$ = %f(1.500000)$relative_scale$$alpha$ = %i(1,00000001)$time$ = %f(0.080000)
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $sign_unfocus$
+		:i if $current_menu$.$GetSingleTag$$stop_animating$
+			:i return
+			
+		:i endif
+		:i $GetTags$
+		:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}
+			:i $KillSpawnedScript$$name$ = $level_select_sign_pulse_effect$
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}$z_priority$ = %i(1,00000001)
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $sign$:s}$scale$ = %i(1,00000001)$relative_scale$$alpha$ = %f(0.500000)$time$ = %f(0.080000)
+			:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = :s{$sign$$child$ = $shadow$:s}:s}$alpha$ = %i(0,00000000)$time$ = %f(0.200000)
+		:i else 
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = $text$:s}
+				:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = $text$:s}$scale$ = %i(1,00000001)$relative_scale$$alpha$ = %f(0.500000)$time$ = %f(0.080000)
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $GetHeadshotInfo$
+		:i $found$ = %i(0,00000000)
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $ped$ =  ( (%GLOBAL%$level_info$->$special_ped_info$) :a{%GLOBAL%$index$:a}) 
+			:i if  ( (%GLOBAL%$ped$->$type$)  = %GLOBAL%$type$) 
+				:i if $StructureContains$$structure$ = %GLOBAL%$ped$$name$
+					:i $GetSkaterProfileInfoByName$$name$ =  (%GLOBAL%$ped$->$name$) 
+					:i if $GotParam$$found_flag$
+						:i if $GetGlobalFlag$$flag$ = %GLOBAL%$found_flag$
+							:i $found$ = %i(1,00000001)
+						:i endif
+					:i endif
+				:i endif
+				:i continue
+				
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i return
+		$found$ = %GLOBAL%$found$
+	:i endfunction
+	:i function $level_select_build_info_panel_common_bits$
+		:i if $ScreenElementExists$$id$ = $level_select_info_panel$
+			:i $DoScreenElementMorph$$id$ = $level_select_info_panel$$alpha$ = %i(0,00000000)$time$ = %f(0.200000)
+			:i $wait$%f(0.200000)$seconds$
+			:i if $ScreenElementExists$$id$ = $level_select_info_panel$
+				:i $DestroyScreenElement$$id$ = $level_select_info_panel$
+			:i endif
+		:i endif
+		:i if NOT $ScreenElementExists$$id$ = $level_select_anchor_middle$
+			:i return
+			$die$
+		:i endif
+		:i $SetScreenElementLock$$id$ = $level_select_anchor_middle$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $level_select_anchor_middle$
+			:i $id$ = $level_select_info_panel$
+			:i $pos$ = %vec2(480.000000,330.000000)
+		:i :s}
+		:i $Theme_GetHighlightBarColor$$return_value$ = $pts_color$
+		:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+		:i $Theme_GetMenuTitleColor$$return_value$ = $guest_color$
+		:i return
+		 isNull 
+	:i endfunction
+	:i function $level_select_info_panel_fade_in$
+		:i $DoScreenElementMorph$$id$ = $level_select_info_panel$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $level_select_info_panel$$alpha$ = %i(1,00000001)$time$ = %f(0.080000)
+	:i endfunction
+	:i function $level_select_info_add_gaps$
+		:i if  (%GLOBAL%$level_num$ = %GLOBAL%$created_park_number$) 
+			:i return
+			
+		:i endif
+		:i if NOT $ArrayContains$$array$ = $levels_with_gaps$$contains$ = %GLOBAL%$level_num$
+			:i $num_gaps$ = %s(2,"??")
+		:i else 
+			:i $GetLevelGapTotals$$level$ = %GLOBAL%$level_num$
+		:i endif
+		:i if  (%GLOBAL%$num_gaps$ = %i(0,00000000)) 
+			:i $num_gaps$ = %s(2,"??")
+		:i endif
+		:i $FormatText$$textname$ = $gaps$%s(16,"%a/%b GAPS FOUND")$a$ = %GLOBAL%$num_collected_gaps$$b$ = %GLOBAL%$num_gaps$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$gaps$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$tab_color$
+			:i $scale$ = %i(1,00000001)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+	:i endfunction
+	:i function $level_select_info_add_highscore$
+		:i if  (%GLOBAL%$level_num$ = %GLOBAL%$created_park_number$) 
+			:i return
+			
+		:i endif
+		:i if NOT $ArrayContains$$array$ = $levels_with_gaps$$contains$ = %GLOBAL%$level_num$
+			:i return
+			
+		:i endif
+		:i $FormatText$$textname$ = $highScore$%s(17,"HIGHEST SCORE: %a")$a$ =  ( ( (%GLOBAL%$highscores$->$recordtable$) :a{%i(0,00000000):a}) ->$value$) $UseCommas$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$highScore$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$tab_color$
+			:i $scale$ = %i(1,00000001)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+	:i endfunction
+	:i function $level_select_build_info_panel$
+		:i $level_select_build_info_panel_common_bits$ isNull 
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$level_thumb$
+			:i return
+			
+		:i endif
+		:i if  (%GLOBAL%$level_num$ < %i(7,00000007)) 
+			:i $GetCareerLevelScore$$level$ = %GLOBAL%$level_num$
+			:i $FormatText$$textname$ = $score$%s(10,"%a/%b PTS.")$a$ = %GLOBAL%$level_score$$b$ = %GLOBAL%$level_score_total$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $level_select_info_panel$
+				:i $text$ = %GLOBAL%$score$
+				:i $font$ = $small$
+				:i $rgba$ = %GLOBAL%$pts_color$
+				:i $scale$ = %vec2(1.400000,1.600000)
+				:i $pos$ = %vec2(0.000000,0.000000)
+				:i $just$ = :a{$center$$top$:a}
+				:i $z_priority$ = %i(50,00000032)
+			:i :s}
+			:i if $GotParam$$level_prefix$
+				:i $FormatText$$ChecksumName$ = $level_info$%s(8,"Level_%i")$i$ = %GLOBAL%$level_prefix$
+				:i if $StructureContains$$structure$ = %GLOBAL%$level_info$$special_ped_info$
+					:i $GetArraySize$ (%GLOBAL%$level_info$->$special_ped_info$) 
+					:i $CreateScreenElement$:s{
+						:i $type$ = $TextElement$
+						:i $parent$ = $level_select_info_panel$
+						:i $text$ = %s(7,"GUESTS:")
+						:i $font$ = $small$
+						:i $rgba$ = %GLOBAL%$guest_color$
+						:i $scale$ = %f(1.300000)
+						:i $pos$ = %vec2(-75.000000,108.000000)
+						:i $just$ = :a{$center$$top$:a}
+						:i $z_priority$ = %i(50,00000032)
+					:i :s}
+					:i $CreateScreenElement$:s{
+						:i $type$ = $SpriteElement$
+						:i $parent$ = $level_select_info_panel$
+						:i $texture$ = $level_swatch$
+						:i $pos$ = %vec2(0.000000,90.000000)
+						:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(40,00000028):a}
+						:i $just$ = :a{$center$$top$:a}
+						:i $scale$ = %vec2(0.500000,2.000000)
+						:i $z_priority$ = %i(50,00000032)
+					:i :s}
+					:i $GetHeadshotInfo$$type$ = $guest$$level_prefix$ = %GLOBAL%$level_prefix$$array_size$ = %GLOBAL%$array_size$$level_info$ = %GLOBAL%$level_info$
+					:i if  (%GLOBAL%$found$ = %i(1,00000001)) 
+						:i $FormatText$$ChecksumName$ = $headshot$%s(8,"%a_guest")$a$ = %GLOBAL%$level_prefix$
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $level_select_info_panel$
+							:i $texture$ = %GLOBAL%$headshot$
+							:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+							:i $scale$ = %f(0.800000)
+							:i $pos$ = %vec2(0.000000,125.000000)
+							:i $just$ = :a{$center$$center$:a}
+							:i $z_priority$ = %i(55,00000037)
+						:i :s}
+					:i else 
+						:i $CreateScreenElement$:s{
+							:i $type$ = $TextElement$
+							:i $parent$ = $level_select_info_panel$
+							:i $text$ = %s(1,"?")
+							:i $font$ = $small$
+							:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+							:i $scale$ = %i(3,00000003)
+							:i $pos$ = %vec2(0.000000,125.000000)
+							:i $just$ = :a{$center$$center$:a}
+							:i $z_priority$ = %i(55,00000037)
+						:i :s}
+					:i endif
+					:i $CreateScreenElement$:s{
+						:i $type$ = $SpriteElement$
+						:i $parent$ = $level_select_info_panel$
+						:i $texture$ = $level_swatch$
+						:i $pos$ = %vec2(70.000000,90.000000)
+						:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(40,00000028):a}
+						:i $just$ = :a{$center$$top$:a}
+						:i $scale$ = %vec2(0.500000,2.000000)
+						:i $z_priority$ = %i(50,00000032)
+					:i :s}
+					:i $GetHeadshotInfo$$type$ = $flavor$$level_prefix$ = %GLOBAL%$level_prefix$$array_size$ = %GLOBAL%$array_size$$level_info$ = %GLOBAL%$level_info$
+					:i if  (%GLOBAL%$found$ = %i(1,00000001)) 
+						:i $FormatText$$ChecksumName$ = $headshot$%s(9,"%a_secret")$a$ = %GLOBAL%$level_prefix$
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $level_select_info_panel$
+							:i $texture$ = %GLOBAL%$headshot$
+							:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+							:i $scale$ = %f(0.800000)
+							:i $pos$ = %vec2(70.000000,125.000000)
+							:i $just$ = :a{$center$$center$:a}
+							:i $z_priority$ = %i(55,00000037)
+						:i :s}
+					:i else 
+						:i $CreateScreenElement$:s{
+							:i $type$ = $TextElement$
+							:i $parent$ = $level_select_info_panel$
+							:i $text$ = %s(1,"?")
+							:i $font$ = $small$
+							:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+							:i $scale$ = %i(3,00000003)
+							:i $pos$ = %vec2(70.000000,125.000000)
+							:i $just$ = :a{$center$$center$:a}
+							:i $z_priority$ = %i(55,00000037)
+						:i :s}
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $level_select_info_add_gaps$ isNull $pos$ = %vec2(0.000000,40.000000)
+		:i $GetCareerLevelScore$$get_total$
+		:i $FormatText$$textname$ = $score$%s(27,"TOTAL STORY PTS: %a/%b PTS.")$a$ = %GLOBAL%$total_score$$b$ = %GLOBAL%$total_score_potential$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$score$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$pts_color$
+			:i $scale$ = %vec2(1.000000,1.100000)
+			:i $pos$ = %vec2(0.000000,165.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+		:i $level_select_info_panel_fade_in$
+	:i endfunction
+	:i function $level_select_build_classic_info_panel$
+		:i $level_select_build_info_panel_common_bits$ isNull 
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$level_thumb$
+			:i return
+			
+		:i endif
+		:i $GetClassicLevelGoalCount$$level$ = %GLOBAL%$level_num$$get_total$
+		:i $FormatText$$textname$ = $goal_count$%s(11,"%a/10 GOALS")$a$ = %GLOBAL%$classic_goal_count$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$goal_count$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$pts_color$
+			:i $scale$ = %vec2(1.400000,1.600000)
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+		:i $level_select_info_add_gaps$ isNull $pos$ = %vec2(0.000000,40.000000)
+		:i $level_select_info_add_highscore$ isNull $pos$ = %vec2(0.000000,60.000000)
+		:i $FormatText$$textname$ = $goal_count$%s(22,"%a/%b TOTAL GAME GOALS")$a$ = %GLOBAL%$total_goals_complete$$b$ = %GLOBAL%$total_goals_possible$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$goal_count$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$pts_color$
+			:i $scale$ = %vec2(1.000000,1.100000)
+			:i $pos$ = %vec2(0.000000,88.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+		:i if $IsPAL$
+			:i if NOT $English$
+				:i $hide_classic_icon$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if NOT $GotParam$$hide_classic_icon$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = $level_select_info_panel$
+				:i $texture$ = $classic_icon$
+				:i $pos$ = %vec2(0.000000,114.000000)
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(110,0000006e):a}
+				:i $just$ = :a{$center$$top$:a}
+				:i $scale$ =  (%vec2(1.500000,1.100000) * %f(0.900000)) 
+				:i $z_priority$ = %i(50,00000032)
+			:i :s}
+		:i endif
+		:i $GetClassicModeTargetGoalsComplete$
+		:i if  (%GLOBAL%$bracket$ = %i(8,00000008)) 
+			:i if  ( ($GetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$)  OR  ($all_levels_unlocked$ = %i(1,00000001)) ) 
+			:i else 
+				:i $bracket_size$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i if  (%GLOBAL%$bracket_size$ = %i(1,00000001)) 
+			:i $FormatText$:s{
+				:i $textname$ = $goal_remaining_text$
+				:i %s(35,"COMPLETE %g GOALS IN %a TO MOVE ON.")
+				:i $g$ = %GLOBAL%$target_goals_complete$
+				:i $a$ = %GLOBAL%$text$
+			:i :s}
+		:i else 
+			:i $GetArraySize$$level_select_menu_classic_level_info$
+			:i $index$ = %GLOBAL%$first_matching_index$
+			:i while
+				
+				:i if $StructureContains$$structure$ =  ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) $bracket$
+					:i if  ( ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$bracket$)  = %GLOBAL%$bracket$) 
+						:i if $GotParam$$text1$
+							:i $text2$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$text$) 
+							:i continue
+							
+						:i else 
+							:i $text1$ =  ( ($level_select_menu_classic_level_info$:a{%GLOBAL%$index$:a}) ->$text$) 
+						:i endif
+					:i endif
+				:i endif
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$bracket_size$
+			:i if  (%GLOBAL%$bracket$ < %i(8,00000008)) 
+				:i $FormatText$:s{
+					:i $textname$ = $goal_remaining_text$
+					:i %s(41,"COMPLETE %g GOALS IN %a OR %b TO MOVE ON.")
+					:i $g$ = %GLOBAL%$target_goals_complete$
+					:i $a$ = %GLOBAL%$text1$
+					:i $b$ = %GLOBAL%$text2$
+				:i :s}
+			:i else 
+				:i if  (%GLOBAL%$bracket_size$ < %i(2,00000002)) 
+					:i $FormatText$:s{
+						:i $textname$ = $goal_remaining_text$
+						:i %s(35,"COMPLETE %g GOALS IN %a TO MOVE ON.")
+						:i $g$ = %GLOBAL%$target_goals_complete$
+						:i $a$ = %GLOBAL%$text1$
+					:i :s}
+				:i else 
+					:i $FormatText$:s{
+						:i $textname$ = $goal_remaining_text$
+						:i %s(49,"COMPLETE %g GOALS IN %a TO COMPLETE CLASSIC MODE.")
+						:i $g$ = %GLOBAL%$target_goals_complete$
+						:i $a$ = %GLOBAL%$text2$
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+		:i $level_select_get_bracket_status$$bracket$ = %GLOBAL%$bracket$$level_list$ = %GLOBAL%$level_list$$show_all$
+		:i if NOT $GotParam$$beaten$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextBlockElement$
+				:i $parent$ = $level_select_info_panel$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$goal_remaining_text$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i $alpha$ = %i(0,00000000)
+				:i $scale$ = %f(0.860000)
+				:i $pos$ = %vec2(0.000000,185.000000)
+				:i $dims$ = %vec2(250.000000,0.000000)
+				:i $allow_expansion$
+				:i $just$ = :a{$center$$top$:a}
+			:i :s}
+			:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$level_select_classic_goal_flash$
+		:i endif
+		:i $level_select_info_panel_fade_in$
+	:i endfunction
+	:i function $level_select_classic_goal_flash$
+		:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(0,00000000)%i(128,00000080):a}
+		:i while
+			
+			:i $DoMorph$$alpha$ = %i(1,00000001)$time$ = %i(1,00000001)
+			:i $DoMorph$$alpha$ = %i(0,00000000)$time$ = %i(1,00000001)
+		:i loop_to 
+	:i endfunction
+	:i function $level_select_build_highscore_info_panel$
+		:i $level_select_build_info_panel_common_bits$ isNull 
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$level_thumb$
+			:i return
+			
+		:i endif
+		:i $level_select_info_add_gaps$ isNull $pos$ = %vec2(0.000000,25.000000)
+		:i $level_select_info_add_highscore$ isNull $pos$ = %vec2(0.000000,45.000000)
+		:i $level_select_info_panel_fade_in$
+	:i endfunction
+	:i function $level_select_build_online_info_panel$
+		:i $level_select_build_info_panel_common_bits$ isNull 
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$level_thumb$
+			:i return
+			
+		:i endif
+		:i $level_select_info_add_gaps$ isNull $pos$ = %vec2(0.000000,45.000000)
+		:i $level_select_info_panel_fade_in$
+	:i endfunction
+	:i function $level_select_build_creategoals_info_panel$
+		:i $level_select_build_info_panel_common_bits$ isNull 
+		:i if $GotParam$$die$
+			:i return
+			
+		:i endif
+		:i if NOT $GotParam$$level_thumb$
+			:i return
+			
+		:i endif
+		:i $GoalEditor$.$GetNumEditedGoals$$level$ = %GLOBAL%$level$
+		:i if  (%GLOBAL%$NumGoals$ = %i(0,00000000)) 
+			:i $goal_count$ = %s(16,"No Created Goals")
+		:i else 
+			:i $FormatText$$textname$ = $goal_count$%s(11,"%a/10 GOALS")$a$ = %GLOBAL%$NumGoals$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $level_select_info_panel$
+			:i $text$ = %GLOBAL%$goal_count$
+			:i $font$ = $small$
+			:i $rgba$ = %GLOBAL%$pts_color$
+			:i $scale$ = %vec2(1.400000,1.600000)
+			:i $pos$ = %vec2(0.000000,30.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(50,00000032)
+		:i :s}
+		:i $level_select_info_add_gaps$ isNull $pos$ = %vec2(0.000000,100.000000)
+		:i $level_select_info_panel_fade_in$
+	:i endfunction
+	:i $globe_target_x$ = %f(89.000000)
+	:i $globe_target_y$ = %f(0.000000)
+	:i $globe_target_dot_num$ = %i(0,00000000)
+	:i $globe_new_target_x$ = %f(0.000000)
+	:i $globe_state$ = $still$
+	:i $globe_piece_size$ = %i(64,00000040)
+	:i $globe_interpolation$ = %f(0.000000)
+	:i $globe_vel$ = %i(0,00000000)
+	:i $globe_pos$ = %f(0.000000)
+	:i $globe_idle_frames$ = %i(0,00000000)
+	:i function $GetDotNameFromNum$
+		:i $FormatText$$ChecksumName$ = $dot_name$%s(12,"globe_dot_%a")$a$ = %GLOBAL%$num$
+		:i return
+		$dot_name$ = %GLOBAL%$dot_name$
+	:i endfunction
+	:i function $level_select_globe_slice$
+		:i $SetScreenElementLock$$id$ = $globe_sliding_anchor$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $globe_sliding_anchor$
+			:i $local_id$ = %GLOBAL%$slice$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $scale$ = %f(1.010000)
+		:i :s}
+		:i $y$ = %i(0,00000000)
+		:i while
+			
+			:i $FormatText$$ChecksumName$ = $piece$%s(5,"map%a")$a$ =  ( ($level_map_pieces$:a{%GLOBAL%$x$:a}->$tiles$) :a{%GLOBAL%$y$:a}) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}
+				:i $texture$ = %GLOBAL%$piece$
+				:i $pos$ =  (%GLOBAL%$y$ * %vec2(0.000000,64.000000)) 
+				:i $scale$ = %i(1,00000001)
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i $just$ = :a{$center$$top$:a}
+				:i $z_priority$ = %i(4294967246,ffffffce)
+			:i :s}
+			:i $y$ =  (%GLOBAL%$y$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$y_size$
+		:i if $StructureContains$$structure$ =  ($level_map_pieces$:a{%GLOBAL%$x$:a}) $dot_count$
+			:i if  ( ( ($level_map_pieces$:a{%GLOBAL%$x$:a}) ->$dot_count$)  > %i(0,00000000)) 
+				:i $index$ = %i(0,00000000)
+				:i while
+					
+					:i $dot_index$ =  ( ($level_map_pieces$:a{%GLOBAL%$x$:a}) ->$dots$:a{%GLOBAL%$index$:a}) 
+					:i $GetDotNameFromNum$$num$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$dot_index$:a}) ->$level_num$) 
+					:i $CreateScreenElement$:s{
+						:i $type$ = $SpriteElement$
+						:i $parent$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}
+						:i $id$ = %GLOBAL%$dot_name$
+						:i $texture$ = $level_dot$
+						:i $pos$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$dot_index$:a}) ->$dot_local_pos$) 
+						:i $scale$ = %f(0.500000)
+						:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+						:i $just$ = :a{$center$$center$:a}
+						:i $z_priority$ = %i(4294967247,ffffffcf)
+					:i :s}
+					:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to  ($level_map_pieces$:a{%GLOBAL%$x$:a}->$dot_count$) 
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $show_active_globe_dot$
+		:i $GetDotNameFromNum$$num$ =  ($globe_target_dot_num$) 
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$dot_name$
+			:i $DoScreenElementMorph$$id$ = %GLOBAL%$dot_name$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+		:i endif
+		:i $change$$globe_target_dot_num$ = %GLOBAL%$num$
+		:i $GetDotNameFromNum$$num$ =  ($globe_target_dot_num$) 
+		:i $pulse_counter$ = %i(0,00000000)
+		:i while
+			
+			:i if $ScreenElementExists$$id$ = %GLOBAL%$dot_name$
+				:i $DoScreenElementMorph$$id$ = %GLOBAL%$dot_name$$alpha$ = %f(0.200000)$time$ = %f(0.200000)
+				:i $wait$%f(0.300000)$seconds$
+				:i if $ScreenElementExists$$id$ = %GLOBAL%$dot_name$
+					:i $DoScreenElementMorph$$id$ = %GLOBAL%$dot_name$$alpha$ = %i(1,00000001)$time$ = %f(0.200000)
+					:i $wait$%f(0.300000)$seconds$
+					:i if $GotParam$$do_pulse$
+						:i if  (%GLOBAL%$pulse_counter$ > %i(0,00000000)) 
+							:i $pulse_counter$ = %i(0,00000000)
+							:i $SpawnScript$$globe_dot_highlight_pulse$
+							:i return
+							
+						:i else 
+							:i $pulse_counter$ =  (%GLOBAL%$pulse_counter$ + %i(1,00000001)) 
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i $wait$%i(1,00000001)$gameframes$
+		:i loop_to 
+	:i endfunction
+	:i function $globe_dot_highlight_pulse$
+		:i $GetDotNameFromNum$$num$ =  ($globe_target_dot_num$) 
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$dot_name$
+			:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$dot_name$$child$ = $pulse$:s}
+				:i return
+				
+			:i endif
+			:i $SetScreenElementLock$$id$ = %GLOBAL%$dot_name$$off$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$dot_name$
+				:i $local_id$ = $pulse$
+				:i $texture$ = $level_selected_dot$
+				:i $pos$ = %vec2(17.000000,17.000000)
+				:i $scale$ = %i(2,00000002)
+				:i $rgba$ = :a{%i(115,00000073)%i(14,0000000e)%i(13,0000000d)%i(128,00000080):a}
+				:i $just$ = :a{$center$$center$:a}
+				:i $z_priority$ = %i(4294967247,ffffffcf)
+			:i :s}$id$ = %GLOBAL%$id$$scale$ = %i(8,00000008)$alpha$ = %i(0,00000000)$time$ = %f(0.650000)
+			:i $wait$%f(0.700000)$seconds$
+			:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+				:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $draw_globe_arrow$
+		:i if $ScreenElementExists$$id$ = $globe_arrow$
+			:i if $GotParam$$off$
+				:i if $globe_arrow$.$GetSingleTag$$arrow_on$
+					:i $DoScreenElementMorph$$id$ = $globe_arrow$$alpha$ = %i(0,00000000)$rot_angle$ = %i(100,00000064)$scale$ = %i(0,00000000)$time$ = %f(0.120000)
+					:i $globe_arrow$.$RemoveTags$$tags$ = :a{$arrow_on$:a}
+				:i endif
+				:i return
+				
+			:i endif
+			:i if $globe_arrow$.$GetSingleTag$$arrow_on$
+				:i return
+				
+			:i endif
+			:i $globe_arrow$.$SetTags$$arrow_on$ = %i(1,00000001)
+			:i $DoScreenElementMorph$$id$ = $globe_arrow$$scale$ = %i(0,00000000)$rot_angle$ = %i(100,00000064)$time$ = %i(0,00000000)
+			:i $angle$ =  ( ( (%f(0.000894) * $globe_target_y$)  - %f(0.426000))  * $globe_target_y$ + %f(50.500000)) 
+			:i $scale$ =  ($globe_target_y$ * %f(0.004290) + %i(1,00000001)) 
+			:i $DoScreenElementMorph$$id$ = $globe_arrow$$scale$ = %GLOBAL%$scale$$rot_angle$ = %GLOBAL%$angle$$alpha$ = %i(1,00000001)$time$ = %f(0.200000)
+		:i endif
+	:i endfunction
+	:i function $GetAbsGlobeDelta$
+		:i $delta$ =  ($globe_target_x$ - $globe_pos$) 
+		:i if  (%GLOBAL%$delta$ < %i(0,00000000)) 
+			:i $delta$ =  (%f(0.000000) - %GLOBAL%$delta$) 
+		:i endif
+		:i return
+		$delta$ = %GLOBAL%$delta$
+	:i endfunction
+	:i function $level_select_spin_globe$
+		:i if $ScreenElementExists$$id$ = $globe_sliding_anchor$
+			:i $DestroyScreenElement$$id$ = $globe_sliding_anchor$
+		:i endif
+		:i $SetScreenElementLock$$id$ = $map_anchor$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $map_anchor$
+			:i $id$ = $globe_sliding_anchor$
+			:i $pos$ = %vec2(150.000000,4.000000)
+			:i $scale$ = %f(1.128000)
+		:i :s}
+		:i $GetArraySize$$level_map_pieces$
+		:i $x_size$ = %GLOBAL%$array_size$
+		:i $GetArraySize$ ($level_map_pieces$:a{%i(0,00000000):a}->$tiles$) 
+		:i $y_size$ = %GLOBAL%$array_size$
+		:i $piece_size$ =  ($globe_piece_size$) 
+		:i $visible_center$ = %i(180,000000b4)
+		:i $left_edge$ = %i(0,00000000)
+		:i $right_edge$ = %i(200,000000c8)
+		:i $map_width$ =  (%GLOBAL%$piece_size$ * %GLOBAL%$x_size$) 
+		:i while
+			
+			:i if NOT $ScreenElementExists$$id$ = $globe_sliding_anchor$
+				:i return
+				
+			:i endif
+			:i $GetAbsGlobeDelta$
+			:i if  (%GLOBAL%$delta$ >  (%GLOBAL%$map_width$ / %i(2,00000002)) ) 
+				:i if  ($globe_target_x$ > $globe_pos$) 
+					:i $change$$globe_target_x$ =  ($globe_target_x$ - %GLOBAL%$map_width$) 
+				:i else 
+					:i $change$$globe_target_x$ =  ($globe_target_x$ + %GLOBAL%$map_width$) 
+				:i endif
+			:i else 
+				:i if NOT  ($globe_pos$ < %GLOBAL%$map_width$) 
+					:i $change$$globe_pos$ =  ($globe_pos$ - %GLOBAL%$map_width$) 
+					:i $change$$globe_target_x$ =  ($globe_target_x$ - %GLOBAL%$map_width$) 
+				:i else 
+					:i if  ($globe_pos$ < %i(0,00000000)) 
+						:i $change$$globe_pos$ =  ($globe_pos$ + %GLOBAL%$map_width$) 
+						:i $change$$globe_target_x$ =  ($globe_target_x$ + %GLOBAL%$map_width$) 
+					:i endif
+				:i endif
+			:i endif
+			:i $do_globe_state_logic$$delta$ = %GLOBAL%$delta$$idle_threshold$ = %i(5,00000005)
+			:i $position_offset$ = %i(4294967266,ffffffe2)
+			:i %GLOBAL%$start$ =  ($globe_pos$ - %GLOBAL%$visible_center$ + %GLOBAL%$position_offset$) 
+			:i $start$ =  (%GLOBAL%$start$ / %GLOBAL%$piece_size$) 
+			:i $old$ = %GLOBAL%$start$
+			:i $CastToInteger$$start$
+			:i $index$ = %GLOBAL%$start$
+			:i $local$ =  (%GLOBAL%$start$ - %GLOBAL%$old$) 
+			:i $slice_pos$ =  (%GLOBAL%$local$ * %GLOBAL%$piece_size$) 
+			:i if  (%GLOBAL%$slice_pos$ < %i(0,00000000)) 
+				:i $slice_pos$ =  (%GLOBAL%$slice_pos$ + %GLOBAL%$piece_size$) 
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i endif
+			:i while
+				
+				:i if  (%GLOBAL%$index$ < %i(0,00000000)) 
+					:i $index$ =  (%GLOBAL%$index$ + %GLOBAL%$x_size$) 
+				:i endif
+				:i if NOT  (%GLOBAL%$index$ < %GLOBAL%$x_size$) 
+					:i $index$ =  (%GLOBAL%$index$ - %GLOBAL%$x_size$) 
+				:i endif
+				:i $FormatText$$ChecksumName$ = $slice$%s(14,"globe_slice_%a")$a$ = %GLOBAL%$index$
+				:i if  (%GLOBAL%$slice_pos$ >  (%GLOBAL%$visible_center$ * %i(2,00000002) + %GLOBAL%$position_offset$ * %f(0.800000)) ) 
+					:i if $ScreenElementExists$$id$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}
+						:i $DestroyScreenElement$$id$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}
+					:i endif
+				:i else 
+					:i if NOT $ScreenElementExists$$id$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}
+						:i $level_select_globe_slice$$x$ = %GLOBAL%$index$$y$ = %GLOBAL%$y$$y_size$ = %GLOBAL%$y_size$$slice$ = %GLOBAL%$slice$$level_list$ = %GLOBAL%$level_list$
+					:i endif
+					:i $DoScreenElementMorph$$id$ = :s{$globe_sliding_anchor$$child$ = %GLOBAL%$slice$:s}$pos$ =  (%GLOBAL%$slice_pos$ * %vec2(1.000000,0.000000) -  (%GLOBAL%$visible_center$ * %vec2(1.000000,0.000000)) ) $time$ = %i(0,00000000)
+				:i endif
+				:i $slice_pos$ =  (%GLOBAL%$slice_pos$ + %GLOBAL%$piece_size$) 
+				:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$x_size$
+			:i $wait$%i(1,00000001)$frames$
+		:i loop_to 
+	:i endfunction
+	:i function $do_globe_state_logic$
+		:i switch $globe_state$
+			:i case $still$
+				:i if NOT  ($globe_new_target_x$ = $globe_target_x$) 
+					:i $change$$globe_target_x$ =  ($globe_new_target_x$) 
+					:i $change$$globe_state$ = $seeking$
+					:i $change$$globe_interpolation$ = %f(0.000000)
+					:i $change$$globe_vel$ = %i(0,00000000)
+				:i endif
+				:i endcase
+			case $seeking$
+				:i $sin$ ($globe_interpolation$) 
+				:i $new_pos$ =  ( ($globe_target_x$ * %GLOBAL%$sin$)  +  ($globe_pos$ *  (%f(1.000000) - %GLOBAL%$sin$) ) ) 
+				:i $change$$globe_vel$ =  (%GLOBAL%$new_pos$ - $globe_pos$) 
+				:i $change$$globe_pos$ = %GLOBAL%$new_pos$
+				:i $change$$globe_interpolation$ =  ($globe_interpolation$ + %f(0.400000)) 
+				:i if  ($globe_interpolation$ > %i(90,0000005a)) 
+					:i $change$$globe_interpolation$ = %i(90,0000005a)
+				:i endif
+				:i if  (%GLOBAL%$delta$ < %i(7,00000007)) 
+					:i $draw_globe_arrow$
+				:i else 
+					:i $draw_globe_arrow$$off$
+				:i endif
+				:i if  (%GLOBAL%$delta$ < %f(0.900000)) 
+					:i if NOT  ($globe_state$ = $still$) 
+						:i $change$$globe_state$ = $still$
+						:i $SpawnScript$$globe_dot_highlight_pulse$
+						:i $draw_globe_arrow$
+					:i endif
+				:i endif
+				:i endcase
+			case $coasting$
+				:i if  ($globe_vel$ < %i(0,00000000)) 
+					:i $change$$globe_vel$ =  ($globe_vel$ + %f(0.100000)) 
+					:i if  ($globe_vel$ > %i(0,00000000)) 
+						:i $change$$globe_state$ = $seeking$
+						:i $change$$globe_target_x$ =  ($globe_new_target_x$) 
+					:i endif
+				:i else 
+					:i $change$$globe_vel$ =  ($globe_vel$%f(-0.100000)) 
+					:i if  ($globe_vel$ < %i(0,00000000)) 
+						:i $change$$globe_vel$ = %i(0,00000000)
+						:i if  ($globe_idle_frames$ > %GLOBAL%$idle_threshold$) 
+							:i $change$$globe_state$ = $seeking$
+							:i $change$$globe_target_x$ =  ($globe_new_target_x$) 
+						:i else 
+							:i $change$$globe_idle_frames$ =  ($globe_idle_frames$ + %i(1,00000001)) 
+						:i endif
+					:i endif
+				:i endif
+				:i $change$$globe_interpolation$ = %f(0.000000)
+				:i $change$$globe_pos$ =  ($globe_pos$ + $globe_vel$) 
+				:i $change$$globe_vel$ =  ($globe_vel$ * %f(0.900000)) 
+				:i endcase
+			case $spinning$
+				:i $draw_globe_arrow$$off$
+				:i if  ($globe_idle_frames$ > %GLOBAL%$idle_threshold$) 
+					:i if  ($globe_vel$ < %i(0,00000000)) 
+						:i $target_spinning_vel$ = %f(-2.200000)
+					:i else 
+						:i $target_spinning_vel$ = %f(2.200000)
+					:i endif
+					:i if  ($globe_vel$ < %GLOBAL%$target_spinning_vel$) 
+						:i $change$$globe_vel$ =  ($globe_vel$ + %f(0.100000)) 
+						:i if  ($globe_vel$ > %GLOBAL%$target_spinning_vel$) 
+							:i $change$$globe_vel$ = %GLOBAL%$target_spinning_vel$
+						:i endif
+					:i else 
+						:i if  ($globe_vel$ > %GLOBAL%$target_spinning_vel$) 
+							:i $change$$globe_vel$ =  ($globe_vel$%f(-0.100000)) 
+							:i if  ($globe_vel$ < %GLOBAL%$target_spinning_vel$) 
+								:i $change$$globe_vel$ = %GLOBAL%$target_spinning_vel$
+							:i endif
+						:i endif
+					:i endif
+				:i else 
+					:i $change$$globe_idle_frames$ =  ($globe_idle_frames$ + %i(1,00000001)) 
+				:i endif
+				:i $change$$globe_pos$ =  ($globe_pos$ + $globe_vel$) 
+				:i $change$$globe_target_x$ =  ($globe_pos$) 
+				:i $change$$globe_new_target_x$ =  ($globe_new_target_x$) 
+				:i end_switch
+		
+	:i endfunction
+	:i function $level_select_get_info_panel_script$
+		:i if $InSplitScreenGame$
+			:i $info_panel_script$ = $level_select_build_highscore_info_panel$
+		:i else 
+			:i $GetGameMode$
+			:i switch %GLOBAL%$GameMode$
+				:i case $classic$
+					:i $info_panel_script$ = $level_select_build_classic_info_panel$
+					:i endcase
+				case $career$
+					:i $info_panel_script$ = $level_select_build_info_panel$
+					:i endcase
+				case $freeskate$
+					:i endcase
+				case $singlesession$
+					:i $info_panel_script$ = $level_select_build_highscore_info_panel$
+					:i endcase
+				case $net$
+					:i $info_panel_script$ = $level_select_build_online_info_panel$
+					:i endcase
+				case $creategoals$
+					:i $info_panel_script$ = $level_select_build_creategoals_info_panel$
+					:i endcase
+				default 
+					:i $info_panel_script$ = $level_select_build_online_info_panel$
+					:i end_switch
+			
+		:i endif
+		:i return
+		 isNull 
+	:i endfunction
+	:i function $level_select_update_screen$
+		:i if $GotParam$$dot_pos$
+		:i else 
+		:i endif
+		:i if $ScreenElementExists$$id$ = $level_poster$
+			:i $SetScreenElementProps$$id$ = $level_poster$$texture$ = %GLOBAL%$texture$
+		:i else 
+			:i $SetScreenElementProps$$id$ = $level_poster$$texture$ = $white2$
+		:i endif
+		:i $level_select_get_info_panel_script$
+		:i $KillSpawnedScript$$name$ = $level_select_build_info_panel_common_bits$
+		:i $KillSpawnedScript$$name$ = %GLOBAL%$info_panel_script$
+		:i $SpawnScript$%GLOBAL%$info_panel_script$$params$ =  isNull 
+	:i endfunction
+	:i function $level_select_build_title$
+		:i if $ScreenElementExists$$id$ = $current_level_title$
+			:i $DoScreenElementMorph$$id$ = $current_level_title$$alpha$ = %i(0,00000000)$time$ = %f(0.080000)
+			:i $DoScreenElementMorph$$id$ = $current_level_image$$alpha$ = %i(0,00000000)$time$ = %f(0.080000)
+			:i $wait$%f(0.100000)$seconds$
+			:i if NOT $ScreenElementExists$$id$ = $current_level_title$
+				:i return
+				
+			:i endif
+			:i $DestroyScreenElement$$id$ = $current_level_title$
+			:i $DestroyScreenElement$$id$ = $current_level_image$
+		:i endif
+		:i if NOT $ScreenElementExists$$id$ = $tab_anchor$
+			:i return
+			
+		:i endif
+		:i $SetScreenElementLock$$id$ = $tab_anchor$$off$
+		:i $FormatText$$ChecksumName$ = $title_color$%s(19,"%i_MENU_TITLE_COLOR")$i$ =  ($THEME_COLOR_PREFIXES$:a{$current_theme_prefix$:a}) 
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $tab_anchor$
+			:i $id$ = $current_level_title$
+			:i $text$ = %GLOBAL%$text$
+			:i $font$ = $testtitle$
+			:i $rgba$ = %GLOBAL%$title_color$
+			:i $alpha$ = %i(1,00000001)
+			:i $scale$ = %f(1.800000)
+			:i $pos$ = %vec2(155.000000,42.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(6,00000006)
+			:i $shadow$
+			:i $shadow_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $shadow_offs$ = %vec2(0.400000,0.500000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $tab_anchor$
+			:i $id$ = $current_level_image$
+			:i $texture$ = %GLOBAL%$texture$
+			:i $scale$ = %f(2.200000)
+			:i $pos$ = %vec2(320.000000,60.000000)
+			:i $z_priority$ = %i(1,00000001)
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+		:i :s}
+		:i $DoScreenElementMorph$$id$ = $current_level_title$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $current_level_title$$alpha$ = %i(1,00000001)$time$ = %f(0.080000)
+		:i $DoScreenElementMorph$$id$ = $current_level_image$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $current_level_image$$alpha$ = %i(1,00000001)$time$ = %f(0.080000)
+	:i endfunction
+	:i function $dot_to_slice$
+		:i $x$ =  ( (%GLOBAL%$dot$) ->%vec2(1.000000,0.000000)) 
+		:i $x$ =  (%GLOBAL%$x$ /  ($globe_piece_size$) ) 
+		:i $CastToInteger$$x$
+		:i return
+		$slice$ = %GLOBAL%$x$
+	:i endfunction
+	:i function $check_level_dot_valid$
+		:i return
+		$valid$ = %i(1,00000001)
+	:i endfunction
+	:i $level_select_last_gamemode_processed$ = %i(0,00000000)
+	:i $level_select_last_demoflag_processed$ = %i(0,00000000)
+	:i $level_select_last_dot_count$ = %i(0,00000000)
+	:i function $level_select_calculate_dots$
+		:i $map_info$ = $level_map_pieces$
+		:i $GetArraySize$%GLOBAL%$map_info$
+		:i $slice_size$ = %GLOBAL%$array_size$
+		:i $GetArraySize$%GLOBAL%$level_list$
+		:i $level_size$ = %GLOBAL%$array_size$
+		:i $CreateIndexArray$%GLOBAL%$slice_size$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $SetArrayElement$$ArrayName$ = $index_array$$index$ = %GLOBAL%$index$$newvalue$ = %i(0,00000000)
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$slice_size$
+		:i $total_dots$ = %i(0,00000000)
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $check_level_dot_valid$$level_list$ = %GLOBAL%$level_list$$index$ = %GLOBAL%$index$
+			:i if  (%GLOBAL%$valid$ = %i(1,00000001)) 
+				:i $dot_to_slice$$dot$ =  (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}->$dot_pos$) 
+				:i $SetArrayElement$$ArrayName$ = $index_array$$index$ = %GLOBAL%$slice$$newvalue$ =  ( (%GLOBAL%$index_array$:a{%GLOBAL%$slice$:a})  + %i(1,00000001)) 
+				:i $total_dots$ =  (%GLOBAL%$total_dots$ + %i(1,00000001)) 
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$level_size$
+		:i $GetGameMode$
+		:i if  ($level_select_last_gamemode_processed$ = %GLOBAL%$GameMode$) 
+			:i if  ($level_select_last_demoflag_processed$ =  ($demo_build$) ) 
+				:i if  ($level_select_last_dot_count$ = %GLOBAL%$total_dots$) 
+					:i $printf$%s(28,"using existing dot positions")
+					:i return
+					
+				:i endif
+			:i endif
+		:i endif
+		:i $change$$level_select_last_gamemode_processed$ = %GLOBAL%$GameMode$
+		:i $change$$level_select_last_demoflag_processed$ =  ($demo_build$) 
+		:i $change$$level_select_last_dot_count$ = %GLOBAL%$total_dots$
+		:i $printf$%s(29,"calculating new dot positions")
+		:i $dot_count$ =  (%GLOBAL%$index_array$) 
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $slot$ = %i(0,00000000)
+			:i if  ( (%GLOBAL%$dot_count$:a{%GLOBAL%$index$:a})  > %i(0,00000000)) 
+				:i $CreateIndexArray$ (%GLOBAL%$dot_count$:a{%GLOBAL%$index$:a}) 
+				:i $map$ = %i(0,00000000)
+				:i while
+					
+					:i $check_level_dot_valid$$level_list$ = %GLOBAL%$level_list$$index$ = %GLOBAL%$map$
+					:i if  (%GLOBAL%$valid$ = %i(1,00000001)) 
+						:i $dot$ =  (%GLOBAL%$level_list$:a{%GLOBAL%$map$:a}->$dot_pos$) 
+						:i $dot_to_slice$$dot$ = %GLOBAL%$dot$
+						:i $x$ =  ( (%GLOBAL%$dot$) ->%vec2(1.000000,0.000000)) 
+						:i $x$ =  (%GLOBAL%$x$ - %GLOBAL%$slice$ *  ($globe_piece_size$)  -  ($globe_piece_size$ * %f(0.500000)) ) 
+						:i $y$ =  ( (%GLOBAL%$dot$) ->%vec2(0.000000,1.000000)) 
+						:i if  (%GLOBAL%$slice$ = %GLOBAL%$index$) 
+							:i $SetArrayElement$$ArrayName$ = $index_array$$index$ = %GLOBAL%$slot$$newvalue$ = %GLOBAL%$map$
+							:i $SetArrayElement$$ArrayName$ = $level_list$$index$ = %GLOBAL%$map$$newvalue$ = :s{ (%GLOBAL%$level_list$:a{%GLOBAL%$map$:a}) 
+								:i $dot_local_pos$ =  (%GLOBAL%$x$ * %vec2(1.000000,0.000000) + %GLOBAL%$y$ * %vec2(0.000000,1.000000)) 
+							:i :s}
+							:i $slot$ =  (%GLOBAL%$slot$ + %i(1,00000001)) 
+						:i endif
+					:i endif
+					:i $map$ =  (%GLOBAL%$map$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$level_size$
+				:i $SetArrayElement$$ArrayName$ = $map_info$$index$ = %GLOBAL%$index$$newvalue$ = :s{ (%GLOBAL%$map_info$:a{%GLOBAL%$index$:a}) 
+					:i $dot_count$ = %GLOBAL%$slot$
+					:i $dots$ =  (%GLOBAL%$index_array$) 
+				:i :s}
+			:i else 
+				:i $SetArrayElement$$ArrayName$ = $map_info$$index$ = %GLOBAL%$index$$newvalue$ = :s{ (%GLOBAL%$map_info$:a{%GLOBAL%$index$:a}) 
+					:i $dot_count$ = %i(0,00000000)
+				:i :s}
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$slice_size$
+	:i endfunction
+	:i function $level_select_build_map$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $level_select_anchor$
+			:i $id$ = $map_anchor$
+			:i $pos$ = %vec2(45.000000,90.000000)
+			:i $z_priority$ = %i(4294967246,ffffffce)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $map_anchor$
+			:i $id$ = $map_mask$
+			:i $pos$ = %vec2(0.000000,0.000000)
+		:i :s}
+		:i $mask_color$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(-41.000000,268.000000)
+			:i $scale$ = %vec2(1.500000,2.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(11,0000000b)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(70.000000,292.000000)
+			:i $scale$ = %vec2(1.300000,0.800000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(15,0000000f)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $white2$
+			:i $pos$ = %vec2(100.000000,293.000000)
+			:i $scale$ = %vec2(10.000000,1.500000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(180.000000,300.000000)
+			:i $scale$ = %vec2(1.400000,0.500000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967288,fffffff8)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(300.000000,290.000000)
+			:i $scale$ = %vec2(1.150000,1.400000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(340.000000,270.000000)
+			:i $scale$ = %vec2(1.000000,2.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(15,0000000f)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch_2$
+			:i $pos$ = %vec2(460.000000,165.000000)
+			:i $scale$ = %vec2(3.400000,4.500000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967291,fffffffb)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(430.000000,65.000000)
+			:i $scale$ = %vec2(1.000000,3.000000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(28,0000001c):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967276,ffffffec)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(480.000000,50.000000)
+			:i $scale$ = %vec2(2.000000,1.000000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(118,00000076):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967292,fffffffc)
+			:i $z_priority$ = %i(4294967294,fffffffe)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(340.000000,35.000000)
+			:i $scale$ = %vec2(0.500000,1.500000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(20,00000014):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967276,ffffffec)
+			:i $z_priority$ = %i(3,00000003)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(350.000000,260.000000)
+			:i $scale$ = %vec2(1.800000,1.600000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(15,0000000f):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967286,fffffff6)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(-80.000000,45.000000)
+			:i $scale$ = %vec2(1.200000,5.000000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(28,0000001c):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967056,ffffff10)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(-100.000000,205.000000)
+			:i $scale$ = %vec2(1.200000,5.000000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(18,00000012):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967056,ffffff10)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(410.000000,185.000000)
+			:i $scale$ = %vec2(1.800000,4.400000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(22,00000016):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(150,00000096)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(490.000000,254.000000)
+			:i $scale$ = %vec2(1.200000,0.700000)
+			:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(18,00000012):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(170,000000aa)
+			:i $z_priority$ = %i(10,0000000a)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(360.000000,0.000000)
+			:i $scale$ = %vec2(2.000000,3.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(5,00000005)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(200.000000,-5.000000)
+			:i $scale$ = %vec2(1.000000,1.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(18,00000012)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(200.000000,-15.000000)
+			:i $scale$ = %vec2(1.000000,1.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967291,fffffffb)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(80.000000,-5.000000)
+			:i $scale$ = %vec2(1.000000,1.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(4294967286,fffffff6)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $map_mask$
+			:i $texture$ = $level_swatch$
+			:i $pos$ = %vec2(-8.000000,0.000000)
+			:i $scale$ = %vec2(1.000000,3.000000)
+			:i $rgba$ = %GLOBAL%$mask_color$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rot_angle$ = %i(20,00000014)
+		:i :s}
+	:i endfunction
+	:i function $get_num_levels_unlocked$
+		:i $GetArraySize$$level_select_menu_level_info$
+		:i %GLOBAL%$num_unlocked$ = %i(0,00000000)
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+					:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+						:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ) $DEVKIT_ONLY$
+							:i %GLOBAL%$level_num$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+							:i if $GetGlobalFlag$$flag$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$flag$) 
+								:i %GLOBAL%$num_unlocked$ =  (%GLOBAL%$num_unlocked$ + %i(1,00000001)) 
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to  (%GLOBAL%$array_size$) 
+		:i return
+		$num_unlocked$ = %GLOBAL%$num_unlocked$
+	:i endfunction
+	:i function $level_select_should_use_seen_flags$
+		:i if NOT $GameModeEquals$$is_career$
+			:i if NOT $GameModeEquals$$is_classic$
+				:i $use_seen_flags$ = %i(1,00000001)
+			:i endif
+		:i endif
+		:i return
+		$use_seen_flags$ = %GLOBAL%$use_seen_flags$
+	:i endfunction
+	:i $level_select_item_current_index$ = %i(0,00000000)
+	:i function $created_park_menu_add_item$
+		:i $highlight_bar_scale$ = %vec2(1.600000,0.700000)
+		:i $centered$ = $centered$
+		:i $no_bg$ = $no_bg$
+		:i $theme_menu_add_item$ isNull 
+	:i endfunction
+	:i function $level_select_menu_add_item$
+		:i if $GotParam$$spacer$
+			:i $width$ =  (%GLOBAL%$width$ * %f(0.550000)) 
+		:i endif
+		:i $Theme_GetHighlightBarColor$$return_value$ = $bg_color$
+		:i %GLOBAL%$pad_choose_script$ = $level_select_valid_choice$
+		:i %GLOBAL%$can_afford_level$ = %i(0,00000000)
+		:i %GLOBAL%$highlight_bar_scale$ = %vec2(1.600000,0.700000)
+		:i %GLOBAL%$highlight_bar_pos$ = %vec2(0.000000,10.000000)
+		:i %GLOBAL%$no_bg$ = $no_bg$
+		:i %GLOBAL%$texture$ = %GLOBAL%$level_thumb$
+		:i %GLOBAL%$in_locked_group$ = %i(0,00000000)
+		:i $locked$ = %i(0,00000000)
+		:i if  ($in_server_options$ = %i(1,00000001)) 
+			:i $level_callback_script$ = $level_select_menu_exit$
+		:i else 
+			:i $level_callback_script$ = $level_select_change_level$
+		:i endif
+		:i $pad_choose_params$ =  isNull 
+		:i $change$$level_select_item_current_index$ =  ( ($level_select_item_current_index$)  + %i(1,00000001)) 
+		:i $item_parent$ = $current_menu$
+		:i if NOT $ScriptExists$%GLOBAL%$level$
+			:i $focus$ = $not_focusable$
+		:i else 
+			:i $focus$ = :s{$focusable$:s}
+			:i $SetScreenElementProps$$id$ = %GLOBAL%$item_parent$$focusable$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $current_menu$
+			:i $id$ = %GLOBAL%$level$
+			:i $dims$ = %vec2(256.000000,20.000000)
+			:i $event_handlers$ = :a{:s{$pad_choose$$generic_menu_pad_choose_sound$:s}
+				:i :s{$pad_start$$generic_menu_pad_choose_sound$:s}
+				:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+				:i :s{$focus$$level_select_update_screen$$params$ = %GLOBAL%$pad_choose_params$$texture$ = %GLOBAL%$texture$:s}
+				:i :s{$focus$$main_theme_focus_noscale$$params$ = :s{$text_alpha$ = %GLOBAL%$alpha$$highlighted_text_rgba$ = %GLOBAL%$bg_color$:s}:s}
+				:i :s{$unfocus$$main_theme_unfocus_noscale$$params$ = :s{$text_rgba$ = %GLOBAL%$rgba$$text_alpha$ = %GLOBAL%$alpha$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+			:i %GLOBAL%$focus$
+		:i :s}
+		:i if $GotParam$$spacer$
+			:i return
+			
+		:i endif
+		:i if  (%GLOBAL%$focus$ = $not_focusable$) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $font$ = $newtrickfont$
+				:i $scale$ = %f(0.700000)
+				:i $just$ = :a{$center$$top$:a}
+				:i $text$ = %GLOBAL%$text$
+				:i $rgba$ = :a{%i(70,00000046)%i(70,00000046)%i(70,00000046)%i(128,00000080):a}
+				:i $alpha$ = %GLOBAL%$alpha$
+				:i $z_priority$ = %i(4,00000004)
+				:i $pos$ = %vec2(6.000000,0.000000)
+			:i :s}
+		:i else 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $font$ = $newtrickfont$
+				:i $scale$ = %f(0.700000)
+				:i $just$ = :a{$center$$top$:a}
+				:i $text$ = %GLOBAL%$text$
+				:i $rgba$ = %GLOBAL%$rgba$
+				:i $alpha$ = %GLOBAL%$alpha$
+				:i $z_priority$ = %i(4,00000004)
+				:i $pos$ = %vec2(6.000000,0.000000)
+			:i :s}
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$level$
+			:i $texture$ = $DE_highlight_bar$
+			:i $pos$ = %GLOBAL%$highlight_bar_pos$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+			:i $just$ = :a{$center$$center$:a}
+			:i $scale$ = %GLOBAL%$highlight_bar_scale$
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+		:i if $GotParam$$cross_it_out$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$id$
+				:i $texture$ = $streak_2$
+				:i $just$ = :a{$center$$center$:a}
+				:i $z_priority$ = %i(2,00000002)
+			:i :s}
+		:i endif
+	:i endfunction
+	:i function $add_bracket$$type$ = %i(0,00000000)$state$ = $off$
+		:i switch %GLOBAL%$type$
+			:i case %i(1,00000001)
+				:i $pos$ = %vec2(-6.500000,15.000000)
+				:i endcase
+			case %i(2,00000002)
+				:i $pos$ = %vec2(-5.500000,0.000000)
+				:i $angle$ = $flip_v$
+				:i end_switch
+		
+		:i if $GotParam$$reverse$
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(-26.000000,0.000000)) 
+			:i $angle$ = :s{%GLOBAL%$angle$$flip_h$:s}
+		:i endif
+		:i switch %GLOBAL%$state$
+			:i case $off$
+				:i $rgba$ = :a{%i(50,00000032)%i(60,0000003c)%i(110,0000006e)%i(110,0000006e):a}
+				:i $z_priority$ = %i(0,00000000)
+				:i $alpha$ = %i(1,00000001)
+				:i endcase
+			case $unlocked$
+				:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+				:i $z_priority$ = %i(9,00000009)
+				:i $alpha$ = %f(0.800000)
+				:i endcase
+			case $beaten$
+				:i $Theme_GetMenuTitleColor$$return_value$ = $rgba$
+				:i $alpha$ = %f(0.900000)
+				:i $z_priority$ = %i(10,0000000a)
+				:i end_switch
+		
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$id$
+			:i $texture$ = $level_bracket$
+			:i $pos$ = %GLOBAL%$pos$
+			:i $rgba$ = %GLOBAL%$rgba$
+			:i $alpha$ = %GLOBAL%$alpha$
+			:i $just$ = :a{$right$$top$:a}
+			:i $scale$ = %vec2(1.200000,0.550000)
+			:i $z_priority$ = %GLOBAL%$z_priority$
+			:i %GLOBAL%$angle$
+		:i :s}
+	:i endfunction
+	:i function $level_select_get_bracket_status$
+		:i if NOT $GotParam$$bracket$
+			:i return
+			
+		:i endif
+		:i if  (%GLOBAL%$bracket$ > $classic_mode_max_bracket$) 
+			:i return
+			
+		:i endif
+		:i if  (%GLOBAL%$bracket$ < %i(1,00000001)) 
+			:i if NOT $GotParam$$show_all$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $bracket_exists$ = $bracket_exists$
+		:i $FormatText$$ChecksumName$ = $bracket_flag$%s(25,"LEVEL_BRACKET_UNLOCKED_%a")$a$ =  (%GLOBAL%$bracket$ + %i(1,00000001)) 
+		:i if  ( ($GetGlobalFlag$$flag$ = %GLOBAL%$bracket_flag$)  OR  ($all_levels_unlocked$ = %i(1,00000001)) ) 
+			:i $unlocked$ = $unlocked$
+		:i endif
+		:i $level_select_get_bracket_size$$bracket$ = %GLOBAL%$bracket$$level_list$ = %GLOBAL%$level_list$
+		:i $GetClassicModeTargetGoalsComplete$
+		:i if  (%GLOBAL%$bracket_size$ = %i(2,00000002)) 
+			:i $GetClassicLevelGoalCount$$level$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$first_matching_index$:a}) ->$level_num$) 
+			:i if NOT  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+				:i $beaten$ = :s{$beaten$$beaten_top$:s}
+			:i endif
+			:i $GetClassicLevelGoalCount$$level$ =  ( (%GLOBAL%$level_list$:a{ (%GLOBAL%$first_matching_index$ + %i(1,00000001)) :a}) ->$level_num$) 
+			:i if NOT  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+				:i $beaten$ = :s{%GLOBAL%$beaten$$beaten$$beaten_bottom$:s}
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$bracket_size$ = %i(1,00000001)) 
+				:i $GetClassicLevelGoalCount$$level$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$first_matching_index$:a}) ->$level_num$) 
+				:i if NOT  (%GLOBAL%$classic_goal_count$ < %GLOBAL%$target_goals_complete$) 
+					:i $beaten$ = $beaten$
+				:i endif
+			:i endif
+		:i endif
+		:i return
+		:s{%GLOBAL%$unlocked$%GLOBAL%$beaten$%GLOBAL%$bracket_exists$:s}
+	:i endfunction
+	:i function $level_select_get_bracket_size$
+		:i if  (%GLOBAL%$bracket$ > $classic_mode_max_bracket$) 
+			:i return
+			$bracket_size$ = %i(0,00000000)
+		:i endif
+		:i if  (%GLOBAL%$bracket$ < %i(0,00000000)) 
+			:i return
+			$bracket_size$ = %i(0,00000000)
+		:i endif
+		:i $GetArraySize$%GLOBAL%$level_list$
+		:i $count$ = %i(0,00000000)
+		:i $index$ = %GLOBAL%$bracket$
+		:i while
+			
+			:i if $StructureContains$$structure$ =  (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) $bracket$
+				:i $this_bracket$ =  ( (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) ->$bracket$) 
+				:i if  (%GLOBAL%$this_bracket$ = %GLOBAL%$bracket$) 
+					:i $count_me$ = %i(1,00000001)
+					:i if $GotParam$$unlocked_with_se2$
+						:i if  ($all_levels_unlocked$ = %i(0,00000000)) 
+							:i if NOT $GetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$
+								:i $count_me$ = %i(0,00000000)
+								:i $printf$%s(11,"se2 blocked")
+							:i endif
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$count_me$ = %i(1,00000001)) 
+						:i $count$ =  (%GLOBAL%$count$ + %i(1,00000001)) 
+						:i if NOT $GotParam$$first_matching_index$
+							:i $first_matching_index$ = %GLOBAL%$index$
+						:i endif
+					:i endif
+				:i else 
+					:i if  (%GLOBAL%$this_bracket$ > %GLOBAL%$bracket$) 
+						:i return
+						:s{$bracket_size$ = %GLOBAL%$count$$first_matching_index$ = %GLOBAL%$first_matching_index$:s}
+					:i endif
+				:i endif
+			:i endif
+			:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i if  (%GLOBAL%$index$ = %GLOBAL%$array_size$) 
+				:i return
+				:s{$bracket_size$ = %GLOBAL%$count$$first_matching_index$ = %GLOBAL%$first_matching_index$:s}
+			:i endif
+		:i loop_to %GLOBAL%$array_size$
+		:i return
+		:s{$bracket_size$ = %GLOBAL%$count$$first_matching_index$ = %GLOBAL%$first_matching_index$:s}
+	:i endfunction
+	:i function $level_select_menu_add_bracket$
+		:i $level_select_get_bracket_size$$bracket$ = %GLOBAL%$bracket$$level_list$ = %GLOBAL%$level_list$
+		:i if  (%GLOBAL%$bracket_size$ = %i(1,00000001)) 
+			:i $level_select_menu_add_item$ isNull  (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) 
+		:i else 
+			:i $level_select_menu_add_item$ isNull  (%GLOBAL%$level_list$:a{%GLOBAL%$index$:a}) $new_vmenu$
+			:i $top_id$ = %GLOBAL%$container_id$
+			:i $level_select_menu_add_item$ isNull  (%GLOBAL%$level_list$:a{ (%GLOBAL%$index$ + %i(1,00000001)) :a}) $hold_vmenu$
+			:i $bottom_id$ = %GLOBAL%$container_id$
+		:i endif
+		:i $level_select_get_bracket_status$$bracket$ = %GLOBAL%$bracket$$level_list$ = %GLOBAL%$level_list$
+		:i if $GotParam$$bracket_exists$
+			:i if  (%GLOBAL%$bracket_size$ = %i(1,00000001)) 
+				:i if NOT $GotParam$$unlocked$
+					:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(1,00000001)$state$ = $off$
+					:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(2,00000002)$state$ = $off$
+				:i else 
+					:i if NOT $GotParam$$beaten$
+						:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(1,00000001)$state$ = $unlocked$
+						:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(2,00000002)$state$ = $unlocked$
+					:i else 
+						:i if $GotParam$$beaten$
+							:i $level_select_get_bracket_status$$bracket$ =  (%GLOBAL%$bracket$%i(4294967295,ffffffff)) $level_list$ = %GLOBAL%$level_list$
+							:i if $GotParam$$beaten_top$
+								:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(2,00000002)$state$ = $beaten$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(2,00000002)$state$ = $unlocked$
+							:i endif
+							:i if $GotParam$$beaten_bottom$
+								:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(1,00000001)$state$ = $beaten$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$container_id$$type$ = %i(1,00000001)$state$ = $unlocked$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i else 
+				:i if NOT $GotParam$$unlocked$
+					:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $off$
+					:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $off$
+				:i else 
+					:i if NOT $GotParam$$beaten$
+						:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $unlocked$
+						:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $unlocked$
+					:i else 
+						:i if $GotParam$$beaten$
+							:i if $GotParam$$beaten_top$
+								:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $beaten$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $unlocked$
+							:i endif
+							:i if $GotParam$$beaten_bottom$
+								:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $beaten$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $unlocked$
+							:i endif
+						:i endif
+					:i endif
+					:i if  (%GLOBAL%$bracket$ = %i(8,00000008)) 
+						:i if  ( ($GetGlobalFlag$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$)  OR  ($all_levels_unlocked$ = %i(1,00000001)) ) 
+							:i $RemoveParameter$$beaten_top$
+							:i $RemoveParameter$$beaten_bottom$
+							:i $level_select_get_bracket_status$$bracket$ =  (%GLOBAL%$bracket$%i(4294967295,ffffffff)) $level_list$ = %GLOBAL%$level_list$
+							:i if $GotParam$$beaten_top$
+								:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $beaten$$reverse$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$top_id$$type$ = %i(1,00000001)$state$ = $unlocked$$reverse$
+							:i endif
+							:i if $GotParam$$beaten_bottom$
+								:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $beaten$$reverse$
+							:i else 
+								:i $add_bracket$$id$ = %GLOBAL%$bottom_id$$type$ = %i(2,00000002)$state$ = $unlocked$$reverse$
+							:i endif
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $network_level_select_pad_back$
+		:i %GLOBAL%$net_pad_back$ = %i(1,00000001)
+		:i $level_select_menu_exit$ isNull 
+	:i endfunction
+	:i function $kill_level_select_scripts$
+		:i $level_select_get_info_panel_script$
+		:i $KillSpawnedScript$$name$ = $level_select_build_info_panel_common_bits$
+		:i $KillSpawnedScript$$name$ = %GLOBAL%$info_panel_script$
+	:i endfunction
+	:i function $level_select_menu_exit$
+		:i $kill_level_select_scripts$
+		:i $kill_level_select_cams$
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i $load_level_select_textures_to_main_memory$$unload$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $the_time$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $the_time$
+				:i $unhide$
+			:i :s}
+		:i endif
+		:i if $GotParam$$no_new_menu$
+			:i $unhide_current_goal$
+			:i return
+			
+		:i endif
+		:i if $LevelIs$$Load_MainMenu$
+			:i $GoalManager_HideGoalPoints$
+			:i if  ($in_server_options$ = %i(1,00000001)) 
+				:i if NOT $GotParam$$net_pad_back$
+					:i $net_pad_back$ = %i(0,00000000)
+				:i endif
+				:i if  (%GLOBAL%$net_pad_back$ = %i(0,00000000)) 
+					:i $prefs$ = $network$
+					:i $field$ = %s(5,"level")
+					:i $string$ = %GLOBAL%$text$
+					:i $checksum$ = %GLOBAL%$level$
+					:i $select_host_option$ isNull 
+				:i endif
+				:i if $ObjectExists$$id$ = $host_options_menu$
+					:i $DestroyScreenElement$$id$ = $host_options_menu$
+				:i endif
+				:i $KillSkaterCamAnim$$all$
+				:i $create_network_host_options_menu$
+			:i else 
+				:i $GetGameMode$
+				:i switch %GLOBAL%$GameMode$
+					:i case $career$
+						:i $create_gamemode_options_menu$
+						:i endcase
+					case $freeskate$
+						:i endcase
+					case $singlesession$
+						:i endcase
+					case $creategoals$
+						:i endcase
+					case $classic$
+						:i $launch_ss_menu$ isNull $no_animate$
+						:i end_switch
+				
+			:i endif
+		:i else 
+			:i if $GotParam$$end_run$
+				:i $create_end_run_menu$
+			:i else 
+				:i $GoalManager_ShowPoints$
+				:i if $GoalManager_HasActiveGoals$
+					:i $GoalManager_HideGoalPoints$
+					:i if $ScreenElementExists$$id$ = $current_goal$
+						:i $DoScreenElementMorph$:s{
+							:i $id$ = $current_goal$
+							:i $restore_alpha$
+						:i :s}
+					:i endif
+					:i if $ScreenElementExists$$id$ = $current_goal_key_combo_text$
+						:i $DoScreenElementMorph$:s{
+							:i $id$ = $current_goal_key_combo_text$
+							:i $restore_alpha$
+						:i :s}
+					:i endif
+				:i else 
+					:i $GoalManager_ShowGoalPoints$
+				:i endif
+				:i $create_pause_menu$
+			:i endif
+		:i endif
+		:i $load_update_level_select_textures_to_main_memory$$unload$
+	:i endfunction
+	:i $created_park_warning$ = %i(0,00000000)
+	:i function $level_select_created_park_menu$
+		:i $level_menu$.$GetSingleTag$$from_server_options$
+		:i $DoScreenElementMorph$$id$ = $level_select_info_panel$$time$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+		:i $make_new_skateshop_menu$:s{
+			:i $parent$ = $level_select_anchor_middle$
+			:i $pos$ = %vec2(620.000000,120.000000)
+			:i $internal_just$ = :a{$left$$center$:a}
+			:i $menu_id$ = $created_park_menu$
+			:i $vmenu_id$ = $created_park_vmenu$
+			:i $menu_title$ = %s(0,"")
+		:i :s}
+		:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %f(0.000000)
+		:i $theme_background$$parent$ = $created_park_menu$$id$ = $created_park_bg$$width$ = %f(1.500000)$pos$ = %vec2(710.000000,106.000000)$num_parts$ = %i(3,00000003)$z_priority$ = %i(1,00000001)$dark_menu$ = $dark_menu$$static$ = $static$
+		:i $kill_start_key_binding$
+		:i if $GotParam$$show_warning$
+			:i $change$$created_park_warning$ = %i(1,00000001)
+		:i endif
+		:i $GetCustomParkName$
+		:i if  (%GLOBAL%$name$ = %s(0,"")) 
+			:i %GLOBAL%$name$ = %s(12,"Unnamed park")
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $created_park_menu$
+			:i $pos$ = %vec2(710.000000,110.000000)
+			:i $font$ = $dialog$
+			:i $text$ = %GLOBAL%$name$
+			:i $just$ = :a{$center$$top$:a}
+			:i $scale$ = %i(1,00000001)
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+			:i $not_focusable$
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+		:i $truncate_string$$id$ = %GLOBAL%$id$$max_width$ = %i(200,000000c8)
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $created_park_menu$
+			:i $texture$ = $black$
+			:i $pos$ = %vec2(710.000000,109.000000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(60,0000003c):a}
+			:i $scale$ = %vec2(52.000000,7.000000)
+			:i $just$ = :a{$center$$top$:a}
+			:i $z_priority$ = %i(2,00000002)
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $created_park_vmenu$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+				:i :s{$pad_back$$level_select_created_park_menu_exit$$params$ = :s{$from_server_options$ = %GLOBAL%$from_server_options$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i if $GotParam$$from_server_options$
+			:i $created_park_menu_add_item$:s{$text$ = %sc(9,"Play Park")
+				:i $id$ = $created_park_play_park$
+				:i $pad_choose_script$ = $created_park_launch$
+				:i $pad_choose_params$ = :s{$from_server_options$:s}
+			:i :s}
+		:i else 
+			:i $created_park_menu_add_item$:s{$text$ = %sc(9,"Play Park")
+				:i $id$ = $created_park_play_park$
+				:i $pad_choose_script$ = $created_park_launch$
+				:i $pad_choose_params$ = :s{:s}
+			:i :s}
+		:i endif
+		:i if $GotParam$$from_server_options$
+			:i $created_park_menu_add_item$:s{$text$ = %sc(9,"Load Park")
+				:i $id$ = $created_park_load_park$
+				:i $pad_choose_script$ = $confirm_load_park$
+				:i $pad_choose_params$ = :s{$load_park$$from_server_options$:s}
+			:i :s}
+		:i else 
+			:i $created_park_menu_add_item$:s{$text$ = %sc(9,"Load Park")
+				:i $id$ = $created_park_load_park$
+				:i $pad_choose_script$ = $confirm_load_park$
+				:i $pad_choose_params$ = :s{$load_park$:s}
+			:i :s}
+		:i endif
+		:i if $GotParam$$from_server_options$
+			:i $created_park_menu_add_item$:s{$text$ = %sc(14,"Pre-Made Parks")
+				:i $id$ = $created_park_premade$
+				:i $pad_choose_script$ = $level_select_created_park_menu_exit$
+				:i $pad_choose_params$ = :s{$park_list$$from_server_options$:s}
+			:i :s}
+		:i else 
+			:i $created_park_menu_add_item$:s{$text$ = %sc(14,"Pre-Made Parks")
+				:i $id$ = $created_park_premade$
+				:i $pad_choose_script$ = $level_select_created_park_menu_exit$
+				:i $pad_choose_params$ = :s{$park_list$:s}
+			:i :s}
+		:i endif
+		:i $created_park_menu_add_item$:s{$text$ = %sc(4,"back")
+			:i $id$ = $created_park_back$
+			:i $pad_choose_script$ = $level_select_created_park_menu_exit$
+			:i $pad_choose_params$ = :s{:s}
+		:i :s}
+		:i $fireevent$$type$ = $unfocus$$target$ = $level_menu$
+		:i $fireevent$$type$ = $focus$$target$ = $created_park_vmenu$
+		:i $SetButtonEventMappings$$block_menu_input$
+		:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.150000)
+		:i $wait$%f(0.100000)$seconds$
+		:i $SetButtonEventMappings$$unblock_menu_input$
+	:i endfunction
+	:i function $created_park_menu_add_item$
+		:i $highlight_bar_scale$ = %vec2(1.600000,0.700000)
+		:i $centered$ = $centered$
+		:i $no_bg$ = $no_bg$
+		:i $theme_menu_add_item$ isNull 
+	:i endfunction
+	:i function $created_park_launch$
+		:i if  ($in_server_options$ = %i(1,00000001)) 
+			:i $GetParkEditorMaxPlayers$
+			:i $GetNetworkNumPlayers$
+			:i if $inNetGame$
+				:i if  (%GLOBAL%$num_players$ > %GLOBAL%$MaxPlayers$) 
+					:i $level_select_created_park_menu_exit$$from_server_options$
+					:i $kill_level_select_scripts$
+					:i if $ObjectExists$$id$ = $current_menu_anchor$
+						:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+					:i endif
+					:i $load_level_select_textures_to_main_memory$$unload$
+					:i $goto$$mcmess_ErrorbadParkMaxPlayers$$params$ = :s{$num_players$ = %GLOBAL%$num_players$$MaxPlayers$ = %GLOBAL%$MaxPlayers$$back_script$ = $return_to_created_park_menu$$back_params$ = :s{$from_server_options$:s}:s}
+				:i endif
+			:i endif
+		:i endif
+		:i $GetParkEditorMaxPlayers$
+		:i $GetNetworkNumPlayers$
+		:i if $inNetGame$
+			:i if  (%GLOBAL%$num_players$ > %GLOBAL%$MaxPlayers$) 
+				:i $level_select_created_park_menu_exit$$from_server_options$
+				:i $kill_level_select_scripts$
+				:i if $ObjectExists$$id$ = $current_menu_anchor$
+					:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+				:i endif
+				:i $load_level_select_textures_to_main_memory$$unload$
+				:i $goto$$mcmess_ErrorbadParkMaxPlayers$$params$ = :s{$num_players$ = %GLOBAL%$num_players$$MaxPlayers$ = %GLOBAL%$MaxPlayers$$back_script$ = $return_to_created_park_menu$$back_params$ = :s{$from_server_options$:s}:s}
+			:i endif
+		:i endif
+		:i if  ($in_server_options$ = %i(1,00000001)) 
+			:i $level_select_created_park_menu_exit$$from_server_options$
+			:i $level$ = $load_sk5ed_gameplay$
+			:i $string$ = %s(12,"Created Park")
+			:i $level_select_menu_exit$$from_server_options$$net_pad_back$ = %i(0,00000000) isNull 
+		:i else 
+			:i if $inNetGame$
+				:i $change$$created_park_warning$ = %i(0,00000000)
+				:i $level_select_change_level$$level$ = $load_sk5ed_gameplay$ isNull $show_warning$
+			:i else 
+				:i $level_select_change_level$$level$ = $load_sk5ed_gameplay$ isNull 
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $confirm_load_park$
+		:i $level_select_created_park_menu_exit$
+		:i if $ObjectExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i $load_level_select_textures_to_main_memory$$unload$
+		:i if $GotParam$$from_server_options$
+			:i $change$$still_in_net_area$ = %i(1,00000001)
+			:i if $IsParkUnsaved$
+				:i $menu_confirm_quit$:s{$yes_script$ = $launch_level_select_load_park_sequence$
+					:i $title$ = %s(21,"Replace unsaved park?")
+					:i $text_dims$ = %vec2(330.000000,0.000000)
+					:i $back_script$ = $return_to_created_park_menu$
+					:i $no_script$ = $return_to_created_park_menu$
+					:i $params$ = :s{$from_server_options$:s}
+				:i :s}
+			:i else 
+				:i $launch_level_select_load_park_sequence$
+			:i endif
+		:i else 
+			:i if $IsParkUnsaved$
+				:i if $LevelIs$$Load_MainMenu$
+					:i $no_animate$ = $no_animate$
+				:i endif
+				:i $menu_confirm_quit$:s{$yes_script$ = $launch_level_select_load_park_sequence$
+					:i $title$ = %s(21,"Replace unsaved park?")
+					:i $text_dims$ = %vec2(330.000000,0.000000)
+					:i $no_animate$ = %GLOBAL%$no_animate$
+					:i $back_script$ = $return_to_created_park_menu$
+					:i $no_script$ = $return_to_created_park_menu$
+				:i :s}
+			:i else 
+				:i $launch_level_select_load_park_sequence$
+			:i endif
+		:i endif
+		:i if $LevelIs$$Load_MainMenu$
+			:i $skater$.$hide$
+			:i $KillSkaterCamAnim$$all$
+			:i $PlaySkaterCamAnim$$skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+		:i endif
+	:i endfunction
+	:i $still_in_net_area$ = %i(0,00000000)
+	:i function $return_to_created_park_menu$
+		:i $dialog_box_exit$
+		:i $kill_start_key_binding$
+		:i $launch_level_select_menu$ isNull 
+	:i endfunction
+	:i function $level_select_created_park_menu_exit$
+		:i if $GotParam$$park_list$
+			:i $level_select_created_park_list$ isNull 
+		:i else 
+			:i $SetButtonEventMappings$$block_menu_input$
+			:i $wait$%f(0.200000)$seconds$
+			:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(420.000000,240.000000)$time$ = %f(0.100000)
+			:i $wait$%f(0.100000)$seconds$
+			:i $SetButtonEventMappings$$unblock_menu_input$
+			:i if $ObjectExists$$id$ = $created_park_menu$
+				:i $DestroyScreenElement$$id$ = $created_park_menu$
+			:i endif
+			:i if $ObjectExists$$id$ = $premade_park_menu$
+				:i $DestroyScreenElement$$id$ = $premade_park_menu$
+			:i endif
+		:i endif
+		:i if $GotParam$$launch_level$
+			:i $printf$%s(23,"launching created level")
+		:i endif
+		:i if $GotParam$$load_park$
+			:i $printf$%s(23,"launching created level")
+		:i endif
+		:i if NOT $GotParam$$park_list$
+			:i $AssignAlias$$id$ = $level_select_anchor$$alias$ = $current_menu_anchor$
+			:i $AssignAlias$$id$ = $level_menu$$alias$ = $current_menu$
+			:i if $ScreenElementExists$$id$ = $level_menu$
+				:i $level_menu$.$SetProps$$unblock_events$
+			:i endif
+			:i $DoScreenElementMorph$$id$ = $level_select_info_panel$$time$ = %i(0,00000000)$alpha$ = %i(1,00000001)
+			:i $fireevent$$type$ = $focus$$target$ = $level_menu$
+		:i endif
+	:i endfunction
+	:i $g_hack_push_topdownheap$ = %i(0,00000000)
+	:i function $level_select_created_park_list$
+		:i $printf$%s(30,"level_select_created_park_list")
+		:i if $isNgc$
+			:i $change$$g_hack_push_topdownheap$ = %i(1,00000001)
+		:i endif
+		:i $dialog_box_exit$
+		:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+			:i $dark_menu$ = $dark_menu$
+			:i $delta_pos$ = %vec2(0.000000,0.000000)
+			:i $parent$ = $level_select_anchor_middle$
+		:i else 
+			:i if $ObjectExists$$id$ = $current_menu_anchor$
+				:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+			:i endif
+			:i $delta_pos$ = %vec2(-400.000000,0.000000)
+			:i $parent$ = $root_window$
+		:i endif
+		:i if $GotParam$$in_park_editor$
+			:i $make_new_themed_scrolling_menu$$title$ = %s(14,"PRE-MADE PARKS")
+		:i else 
+			:i $make_new_skateshop_menu$:s{
+				:i $parent$ = %GLOBAL%$parent$
+				:i $pos$ =  (%vec2(620.000000,100.000000) + %GLOBAL%$delta_pos$) 
+				:i $dims$ = %vec2(200.000000,191.000000)
+				:i $internal_just$ = :a{$left$$center$:a}
+				:i $menu_id$ = $premade_park_menu$
+				:i $scrolling_menu_id$ = $premade_park_scrolling_menu$
+				:i $vmenu_id$ = $premade_park_vmenu$
+				:i $menu_title$ = %s(8,"PRE-MADE")
+				:i $type$ = $VScrollingMenu$
+				:i $scrolling_menu_title_id$ = %s(0,"")
+				:i $dont_allow_wrap$ = $dont_allow_wrap$
+				:i $padding_scale$ = %f(0.900000)
+			:i :s}
+			:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+				:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(320.000000,640.000000)
+			:i endif
+		:i endif
+		:i $kill_start_key_binding$
+		:i if NOT $GotParam$$in_park_editor$
+			:i $theme_background$$parent$ = $premade_park_menu$$id$ = $premade_park_bg$$width$ = %f(1.500000)$pos$ =  (%vec2(710.000000,106.000000) + %GLOBAL%$delta_pos$) $num_parts$ = %f(7.500000)$z_priority$ = %i(1,00000001)$dark_menu$ = %GLOBAL%$dark_menu$$static$ = $static$
+		:i endif
+		:i if $GotParam$$in_park_editor$
+			:i $create_helper_text$$generic_helper_text$
+		:i endif
+		:i if $GotParam$$from_server_options$
+			:i $pad_back_params$ = :s{$from_server_options$:s}
+		:i else 
+			:i $pad_back_params$ = :s{:s}
+		:i endif
+		:i if NOT $GotParam$$in_park_editor$
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $premade_park_vmenu$
+				:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $level_select_created_park_list_exit$%GLOBAL%$pad_back_params$:s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i else 
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $sub_menu$
+				:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $level_select_created_park_list_exit$ isNull :s}:s}:a}
+				:i $replace_handlers$
+			:i :s}
+		:i endif
+		:i $GetArraySize$$premade_parks_info$
+		:i $index$ = %i(0,00000000)
+		:i while
+			
+			:i $created_park_menu_add_item$:s{$text$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$name$) 
+				:i $pad_choose_script$ = $maybe_load_premade_park$
+				:i $pad_choose_params$ = :s{%GLOBAL%$pad_back_params$$slot$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$slot$) $max$ =  ($premade_parks_info$:a{%GLOBAL%$index$:a}->$max$) :s}
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+		:i if $ScreenElementExists$$id$ = $level_menu$
+			:i $fireevent$$type$ = $unfocus$$target$ = $level_menu$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $level_select_anchor_middle$
+			:i $SetButtonEventMappings$$block_menu_input$
+			:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %i(0,00000000)
+			:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %f(0.150000)
+			:i $wait$%f(0.250000)$seconds$
+			:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.300000)
+			:i $wait$%f(0.250000)$seconds$
+			:i $fireevent$$type$ = $unfocus$$target$ = $created_park_vmenu$
+			:i $fireevent$$type$ = $focus$$target$ = $premade_park_vmenu$
+			:i $SetButtonEventMappings$$unblock_menu_input$
+		:i endif
+		:i if $GotParam$$in_park_editor$
+			:i $theme_menu_add_item$$text$ = %s(4,"Done")$id$ = $menu_done$$scale$ = %f(1.000000)$pad_choose_script$ = $create_pause_menu$$no_bg$$highlight_bar_scale$ = %vec2(1.700000,0.800000)
+			:i $finish_themed_scrolling_menu$$bg_width$ = %f(1.500000)$time$ = %f(0.200000)
+		:i endif
+		:i if $isNgc$
+			:i $change$$g_hack_push_topdownheap$ = %i(0,00000000)
+		:i endif
+	:i endfunction
+	:i function $maybe_load_premade_park$
+		:i $GetNetworkNumPlayers$
+		:i if $inNetGame$
+			:i if  (%GLOBAL%$num_players$ > %GLOBAL%$max$) 
+				:i $level_select_created_park_menu_exit$$from_server_options$
+				:i $kill_level_select_scripts$
+				:i if $ObjectExists$$id$ = $current_menu_anchor$
+					:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+				:i endif
+				:i $load_level_select_textures_to_main_memory$$unload$
+				:i $goto$$mcmess_ErrorbadParkMaxPlayers$$params$ = :s{$num_players$ = %GLOBAL%$num_players$$MaxPlayers$ = %GLOBAL%$max$$back_script$ = $return_to_created_park_menu$$back_params$ = :s{$from_server_options$:s}:s}
+			:i endif
+		:i endif
+		:i $level_select_created_park_list_exit$ isNull 
+	:i endfunction
+	:i function $level_select_created_park_list_exit$
+		:i if $ObjectExists$$id$ = $level_select_anchor$
+			:i if NOT $GotParam$$slot$
+				:i $SetButtonEventMappings$$block_menu_input$
+				:i $DoScreenElementMorph$$id$ = $premade_park_menu$$pos$ = %vec2(720.000000,240.000000)$time$ = %f(0.300000)
+				:i $wait$%f(0.250000)$seconds$
+				:i $DoScreenElementMorph$$id$ = $created_park_menu$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.150000)
+				:i $wait$%f(0.250000)$seconds$
+				:i $fireevent$$type$ = $focus$$target$ = $created_park_vmenu$
+				:i $SetButtonEventMappings$$unblock_menu_input$
+				:i $AssignAlias$$id$ = $level_select_anchor$$alias$ = $current_menu_anchor$
+			:i endif
+		:i else 
+			:i $in_park_ed$ = %i(1,00000001)
+		:i endif
+		:i if $ObjectExists$$id$ = $premade_park_menu$
+			:i $DestroyScreenElement$$id$ = $premade_park_menu$
+		:i endif
+		:i if $GotParam$$slot$
+			:i $printf$%s(17,"loading from disk")
+			:i if $GotParam$$in_park_ed$
+				:i $printf$%s(18,"in the park editor")
+				:i $parked_load_from_disk$$slot$ = %GLOBAL%$slot$
+			:i else 
+				:i if $GotParam$$from_server_options$
+					:i $LoadParkFromDisk$$slot$ = %GLOBAL%$slot$$block_rebuild$
+					:i $created_park_launch$$from_server_options$
+				:i else 
+					:i $LoadParkFromDisk$$slot$ = %GLOBAL%$slot$$block_rebuild$
+					:i $created_park_launch$
+				:i endif
+			:i endif
+		:i else 
+			:i if $GotParam$$in_park_editor$
+				:i $create_pause_menu$
+			:i endif
+		:i endif
+	:i endfunction
+	:i function $kill_level_select_cams$
+		:i if $LevelIs$$Load_MainMenu$
+			:i $KillSkaterCamAnim$$name$ = $level_select_cam$
+		:i endif
+	:i endfunction
+	:i function $really_change_level$
+		:i if $OnServer$
+			:i $change_level$ isNull 
+		:i else 
+			:i if $IsHost$
+				:i $FCFSRequestChangeLevel$ isNull 
+			:i endif
+		:i endif
+	:i endfunction
+	:i $return_to_level$ = :a{$null$:a}
+	:i function $level_select_change_level$
+		:i $GoalManager_ShowPoints$
+		:i if NOT $GoalManager_HasActiveGoals$
+			:i $GoalManager_ShowGoalPoints$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $level_select_anchor$
+			:i $DestroyScreenElement$$id$ = $level_select_anchor$
+			:i $load_level_select_textures_to_main_memory$$unload$
+		:i endif
+		:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+			:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i endif
+		:i if $LevelIs$$load_sk5ed$
+			:i $load_parked_textures_to_main_memory$$unload$
+		:i endif
+		:i if $LevelIs$$Load_MainMenu$
+			:i $SetColorBufferClear$$clear$ = %i(0,00000000)
+		:i endif
+		:i if $LevelIs$$load_sk5ed_gameplay$
+			:i $RailEditor$.$DestroyEditedRailSectors$$DoNotUpdateSuperSectors$
+		:i endif
+		:i $kill_level_select_cams$
+		:i if $GameModeEquals$$is_career$
+			:i if NOT $GotParam$$dont_end_chapter$
+				:i $SetHighestChapterWithLevel$$level$ = %GLOBAL%$level$
+			:i endif
+			:i if NOT $LevelIs$$Load_MainMenu$
+				:i if  ( (%GLOBAL%$level$ = $load_boardshop$)  OR  (%GLOBAL%$level$ = $load_cas$) ) 
+					:i $temp$ = %GLOBAL%$level$
+					:i $GetCurrentLevel$
+					:i $array$ = $return_to_level$
+					:i $SetArrayElement$$ArrayName$ = $array$$index$ = %i(0,00000000)$newvalue$ = %GLOBAL%$level$
+					:i $level$ = %GLOBAL%$temp$
+				:i endif
+			:i endif
+		:i endif
+		:i if $inNetGame$
+			:i $show_warning$ = %i(1,00000001)
+		:i endif
+		:i if $CD$
+			:i if $IsCustomPark$
+				:i if $isNgc$
+					:i $DisplayLoadingScreen$$Blank$
+				:i endif
+				:i $really_change_level$ isNull 
+			:i else 
+				:i if NOT $LevelIs$%GLOBAL%$level$
+					:i if $isNgc$
+						:i $DisplayLoadingScreen$$Blank$
+					:i endif
+					:i $really_change_level$ isNull 
+				:i else 
+					:i if $GotParam$$chose_same_level_script$
+						:i %GLOBAL%$chose_same_level_script$
+					:i else 
+						:i if $root_window$.$GetSingleTag$$no_exit_pause_menu$
+							:i $level_select_menu_exit$
+							:i return
+							
+						:i endif
+						:i if $GotParam$$end_run$
+							:i $level_select_menu_exit$$end_run$
+							:i return
+							
+						:i endif
+						:i if $InSplitScreenGame$
+							:i $level_select_menu_exit$$end_run$
+							:i return
+							
+						:i endif
+					:i endif
+				:i endif
+			:i endif
+		:i else 
+			:i $really_change_level$ isNull 
+		:i endif
+		:i $level_select_menu_exit$$no_new_menu$
+		:i $exit_pause_menu$
+	:i endfunction
+	:i function $level_select_invalid_choice$
+		:i $printf$%s(7,"locked!")
+	:i endfunction
+	:i function $level_select_valid_choice$
+		:i $GetTags$
+		:i $theme_menu_pad_choose_sound$
+		:i if $GotParam$$level_callback_script$
+			:i %GLOBAL%$level_callback_script$ isNull 
+		:i endif
+	:i endfunction
+	:i function $SetStartingLevelFlags$
+		:i if $IsTrue$$demo_build$
+			:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_7$
+		:i else 
+			:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_TR$
+			:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_TR$
+		:i endif
+		:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_BO$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_BRACKET_UNLOCKED_1$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_BO$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_SEEN_BA$
+	:i endfunction
+	:i $e3_level_select_menu_level_info$ = :a{
+		:i :s{$text$ = %s(6,"BOSTON")$level_num$ = %i(1,00000001)$points_to_unlock$ = %i(0,00000000)$num_am_goals$ = %i(0,00000000)$num_goals$ = %i(0,00000000)$flag$ = $LEVEL_UNLOCKED_BO$$level$ = $load_BO$$level_thumb$ = $sign_boston$$dot_pos$ = %vec2(135.000000,80.000000):s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(2,00000002)$level_thumb$ = $sign_barcelona$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(3,00000003)$level_thumb$ = $sign_berlin$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(4,00000004)$level_thumb$ = $sign_australia$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(5,00000005)$level_thumb$ = $sign_neworleans$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(6,00000006)$level_thumb$ = $sign_skatopia$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(7,00000007)$level_thumb$ = $sign_secret1$$force_locked$:s}
+		:i :a}
+	:i $e3_level_select_menu_classic_level_info$ = :a{
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(12,0000000c)$level_thumb$ = $sign_barcelona$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(13,0000000d)$level_thumb$ = $sign_berlin$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(14,0000000e)$level_thumb$ = $sign_australia$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(15,0000000f)$level_thumb$ = $sign_neworleans$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(16,00000010)$level_thumb$ = $sign_skatopia$$force_locked$:s}
+		:i :s{$text$ = %s(6,"BOSTON")$level_num$ = %i(1,00000001)$num_goals$ = %i(0,00000000)$flag$ = $LEVEL_UNLOCKED_BO$$level$ = $load_BO$$level_thumb$ = $sign_boston$$dot_pos$ = %vec2(135.000000,80.000000):s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(2,00000002)$level_thumb$ = $sign_barcelona$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(3,00000003)$level_thumb$ = $sign_berlin$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(4,00000004)$level_thumb$ = $sign_australia$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(5,00000005)$level_thumb$ = $sign_neworleans$$force_locked$:s}
+		:i :s{$text$ = %s(0,"")$level_num$ = %i(6,00000006)$level_thumb$ = $sign_skatopia$$force_locked$:s}
+		:i :a}
+	:i $classic_mode_max_bracket$ = %i(8,00000008)
+	:i $level_select_menu_classic_level_info$ = :a{
+		:i :s{$text$ = %s(9,"BARCELONA")$level_num$ = $LevelNum_BA$$bracket$ = %i(0,00000000)$flag$ = $LEVEL_BRACKET_UNLOCKED_1$$seen_flag$ = $LEVEL_SEEN_BA$$level$ = $load_BA$$level_thumb$ = $sign_barcelona$$dot_pos$ = %vec2(223.000000,84.000000):s}
+		:i :s{$text$ = %s(9,"AUSTRALIA")$level_num$ = $LevelNum_AU$$bracket$ = %i(1,00000001)$flag$ = $LEVEL_BRACKET_UNLOCKED_2$$seen_flag$ = $LEVEL_SEEN_AU$$level$ = $load_AU$$level_thumb$ = $sign_australia$$dot_pos$ = %vec2(426.000000,194.000000):s}
+		:i :s{$text$ = %s(8,"SKATOPIA")$level_num$ = $LevelNum_ST$$bracket$ = %i(1,00000001)$flag$ = $LEVEL_BRACKET_UNLOCKED_2$$seen_flag$ = $LEVEL_SEEN_ST$$level$ = $load_ST$$level_thumb$ = $sign_skatopia$$dot_pos$ = %vec2(111.000000,83.000000):s}
+		:i :s{$text$ = %s(6,"BERLIN")$level_num$ = $LevelNum_BE$$bracket$ = %i(2,00000002)$flag$ = $LEVEL_BRACKET_UNLOCKED_3$$seen_flag$ = $LEVEL_SEEN_BE$$level$ = $load_BE$$level_thumb$ = $sign_berlin$$dot_pos$ = %vec2(243.000000,68.000000):s}
+		:i :s{$text$ = %s(7,"AIRPORT")$level_num$ = $LevelNum_AP$$bracket$ = %i(3,00000003)$flag$ = $LEVEL_BRACKET_UNLOCKED_4$$seen_flag$ = $LEVEL_SEEN_AP$$level$ = $load_ap$$level_thumb$ = $sign_airport$$dot_pos$ = %vec2(410.000000,87.000000):s}
+		:i :s{$text$ = %s(6,"SCHOOL")$level_num$ = $LevelNum_SC$$bracket$ = %i(3,00000003)$flag$ = $LEVEL_BRACKET_UNLOCKED_4$$seen_flag$ = $LEVEL_SEEN_SC$$level$ = $load_sc$$level_thumb$ = $sign_school$$dot_pos$ = %vec2(261.000000,185.000000):s}
+		:i :s{$text$ = %s(12,"DOWNHILL JAM")$level_num$ = $LevelNum_DJ$$bracket$ = %i(4,00000004)$flag$ = $LEVEL_BRACKET_UNLOCKED_5$$seen_flag$ = $LEVEL_SEEN_DJ$$level$ = $load_dj$$level_thumb$ = $sign_jam$$dot_pos$ = %vec2(165.000000,148.000000):s}
+		:i :s{$text$ = %s(11,"NEW ORLEANS")$level_num$ = $LevelNum_NO$$bracket$ = %i(5,00000005)$flag$ = $LEVEL_BRACKET_UNLOCKED_6$$seen_flag$ = $LEVEL_SEEN_NO$$level$ = $load_NO$$level_thumb$ = $sign_neworleans$$dot_pos$ = %vec2(104.000000,94.000000):s}
+		:i :s{$text$ = %s(8,"TRAINING")$level_num$ = $LevelNum_TR$$bracket$ = %i(5,00000005)$flag$ = $LEVEL_BRACKET_UNLOCKED_6$$seen_flag$ = $LEVEL_SEEN_TR$$level$ = $load_TR$$level_thumb$ = $sign_training$$dot_pos$ = %vec2(89.000000,82.000000):s}
+		:i :s{$text$ = %s(6,"BOSTON")$level_num$ = $LevelNum_BO$$bracket$ = %i(6,00000006)$flag$ = $LEVEL_BRACKET_UNLOCKED_7$$seen_flag$ = $LEVEL_SEEN_BO$$level$ = $load_BO$$level_thumb$ = $sign_boston$$dot_pos$ = %vec2(135.000000,80.000000):s}
+		:i :s{$text$ = %s(6,"CANADA")$level_num$ = $LevelNum_CA$$bracket$ = %i(7,00000007)$flag$ = $LEVEL_BRACKET_UNLOCKED_8$$seen_flag$ = $LEVEL_SEEN_CA$$level$ = $load_ca$$level_thumb$ = $sign_canada$$dot_pos$ = %vec2(85.000000,65.000000):s}
+		:i :s{$text$ = %s(12,"PHILADELPHIA")$level_num$ = $LevelNum_PH$$bracket$ = %i(7,00000007)$flag$ = $LEVEL_BRACKET_UNLOCKED_8$$seen_flag$ = $LEVEL_SEEN_PH$$level$ = $load_ph$$level_thumb$ = $sign_philly$$dot_pos$ = %vec2(119.000000,80.000000):s}
+		:i :s{$spacer$$unlocked_with_se2$$force_locked$$level_num$ = %i(0,00000000):s}
+		:i :s{$text$ = %s(11,"LOS ANGELES")$level_num$ = $LevelNum_LA$$bracket$ = %i(8,00000008)$flag$ = $LEVEL_BRACKET_UNLOCKED_9$$seen_flag$ = $LEVEL_SEEN_LA$$level$ = $load_la$$level_thumb$ = $sign_la$$dot_pos$ = %vec2(78.000000,102.000000):s}
+		:i :s{$text$ = %s(12,"THE TRIANGLE")$level_num$ = $LevelNum_SE2$$bracket$ = %i(8,00000008)$unlocked_with_se2$$flag$ = $GAME_CLASSIC_UNLOCKED_SE2$$seen_flag$ = $LEVEL_SEEN_SE2$$level$ = $load_SE2$$level_thumb$ = $sign_secret2$$dot_pos$ = %vec2(127.000000,105.000000):s}
+		:i :a}
+	:i $premade_parks_info$ = :a{
+		:i :s{$name$ = %s(8,"Iced Out")$slot$ = %i(1,00000001)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(11,"False Pigs.")$slot$ = %i(2,00000002)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(14,"Park of Doom 8")$slot$ = %i(3,00000003)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(12,"Arctic Drill")$slot$ = %i(4,00000004)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(8,"Sik Park")$slot$ = %i(5,00000005)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(7,"England")$slot$ = %i(6,00000006)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(14,"Bubs Oldschool")$slot$ = %i(7,00000007)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(7,"No Idea")$slot$ = %i(8,00000008)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(12,"CTF Showdown")$slot$ = %i(9,00000009)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(12,"Swamp-tastic")$slot$ = %i(10,0000000a)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(12,"I'm Not Dead")$slot$ = %i(11,0000000b)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(14,"Burnin' Rubber")$slot$ = %i(12,0000000c)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(7,"Montana")$slot$ = %i(13,0000000d)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(13,"Daytoner XBLR")$slot$ = %i(14,0000000e)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(10,"CTF Facing")$slot$ = %i(15,0000000f)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(9,"DOOd Land")$slot$ = %i(16,00000010)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(13,"Slacka Land 2")$slot$ = %i(17,00000011)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(10,"Fun Towers")$slot$ = %i(18,00000012)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(8,"Da Hizzy")$slot$ = %i(19,00000013)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(15,"Martian Madness")$slot$ = %i(20,00000014)$max$ = %i(8,00000008):s}
+		:i :s{$name$ = %s(9,"Ji Land 4")$slot$ = %i(21,00000015)$max$ = %i(8,00000008):s}
+		:i :a}
+	:i $level_map_pieces$ = :a{
+		:i :s{$tiles$ = :a{%i(1,00000001);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}:s}
+		:i :s{$tiles$ = :a{%i(2,00000002);%i(3,00000003);%i(4,00000004);%i(0,00000000):a}:s}
+		:i :s{$tiles$ = :a{%i(5,00000005);%i(6,00000006);%i(7,00000007);%i(8,00000008):a}:s}
+		:i :s{$tiles$ = :a{%i(9,00000009);%i(10,0000000a);%i(11,0000000b);%i(0,00000000):a}:s}
+		:i :s{$tiles$ = :a{%i(12,0000000c);%i(13,0000000d);%i(14,0000000e);%i(0,00000000):a}:s}
+		:i :s{$tiles$ = :a{%i(15,0000000f);%i(16,00000010);%i(17,00000011);%i(0,00000000):a}:s}
+		:i :s{$tiles$ = :a{%i(18,00000012);%i(19,00000013);%i(20,00000014);%i(21,00000015):a}:s}
+		:i :s{$tiles$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(0,00000000):a}:s}
+		:i :a}
+	:i :end
+	

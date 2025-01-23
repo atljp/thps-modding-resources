@@ -1,0 +1,52 @@
+In game\skater\manualtricks.qb:
+
+Overwrite these functions: ($Trigger$ = :s{$Release$; ... instead of $Press$)
+
+:i $NoseManualBranches$ = 
+:i :a{:s{$Trigger$ = :s{$Release$;$R2$;%i(200,000000c8):s}$Trick_Gturn$$NGC_Trigger$ = :s{$Press$;$R1$;%i(200,000000c8):s}:s}
+	:i :s{$Trigger$ = $TRIGGER_MANUAL_BRANCHFLIP$$Trick_HalfCabImpossible$:s}
+	:i :s{$Trigger$ = :s{$InOrder$;$Circle$;$Triangle$;%i(300,0000012c):s}$Trick_OneFootNosemanual$:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $Left$;$b$ = $Left$;$R2$;%i(500,000001f4):s}$Scr$ = $NoseManualQuickturn_Setup$:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $Right$;$b$ = $Right$;$R2$;%i(500,000001f4):s}$Scr$ = $NoseManualQuickturn_Setup2$:s}
+	:i :a}
+:i $ManualBranches$ = 
+:i :a{:s{$Trigger$ = :s{$Release$;$R2$;%i(200,000000c8):s}$Trick_Gturn2$$NGC_Trigger$ = :s{$Press$;$R1$;%i(200,000000c8):s}:s}
+	:i :s{$Trigger$ = $TRIGGER_MANUAL_BRANCHFLIP$$Trick_360FlipNoseManual$:s}
+	:i :s{$Trigger$ = :s{$InOrder$;$Circle$;$Triangle$;%i(300,0000012c):s}$Trick_OneFootManual$:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $Left$;$b$ = $Left$;$R2$;%i(500,000001f4):s}$Scr$ = $ManualQuickturn_Setup$:s}
+	:i :s{$Trigger$ = :s{$TripleInOrder$;$a$ = $Right$;$b$ = $Right$;$R2$;%i(500,000001f4):s}$Scr$ = $ManualQuickturn_Setup2$:s}
+	:i :a}
+
+Add these functions:
+
+:i function $NoseManualQuickturn_Setup$
+	:i $ManualLink$$Name$ = %sc(20,"Nose Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn$$Anim$ = $GTurn$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $Manual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $ManualBranches$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $NoseManualQuickturn_Setup2$
+	:i $ManualLink$$Name$ = %sc(20,"Nose Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn2$$Anim$ = $GTurn$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $Manual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $ManualBranches$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $ManualQuickturn_Setup$
+	:i $ManualLink$$Name$ = %sc(15,"Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn$$Anim$ = $GTurn2$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $NoseManual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $NoseManualBranches$$Nollie$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $ManualQuickturn_Setup2$
+	:i $ManualLink$$Name$ = %sc(15,"Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn2$$Anim$ = $GTurn2$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $NoseManual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $NoseManualBranches$$Nollie$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$AllowWallpush$$IsExtra$
+:i endfunction
+
+
+Change rotate time in function $ManualLink$ in branch :i if $GotParam$$RotateY$
+
+:i $Wait$%f(0.500000)$seconds$
+
+
+
+Add this in function $ManualLink$ below :i if $GotParam$$RotateY$
+
+		:i if $GotParam$$Quickturn$
+				:i $Rotate$$y$ = %i(180,000000b4)$duration$ = %f(0.300000)$seconds$
+				:i $Wait$%f(0.300000)$seconds$
+			:i else
+			:i if $GotParam$$Quickturn2$
+				:i $Rotate$$y$ = %i(4294967116,ffffff4C)$duration$ = %f(0.300000)$seconds$
+				:i $Wait$%f(0.300000)$seconds$
+			:i endif	
+		:i endif

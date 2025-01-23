@@ -1,0 +1,399 @@
+
+:i function $game_progress_menu_create$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i if NOT $LevelIs$$Load_MainMenu$
+		:i $PauseMusicAndStreams$%i(1,00000001)
+	:i else 
+		:i $skater$.$remove_skater_from_world$
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $progress_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $progress_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :a}
+	:i :s}
+	:i $kill_start_key_binding$
+	:i $build_theme_sub_title$$title$ = %s(13,"GAME PROGRESS")$no_grad_bar$
+	:i if $LevelIs$$Load_MainMenu$
+		:i $build_top_and_bottom_blocks$
+		:i $make_mainmenu_3d_plane$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $progress_anchor$
+		:i $id$ = $progress_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,640.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $progress_menu$$alias$ = $current_menu_anchor$
+	:i $theme_background$$width$ = %f(6.350000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)
+	:i %GLOBAL%$root_pos$ = %vec2(80.000000,25.000000)
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $Theme_GetIconOnColor$$return_value$ = $icon_color$
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(115.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_progress_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %vec2(210.000000,90.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,75.000000)
+		:i $pos$ = %vec2(380.000000,90.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_progress_menu_up_arrow$$offset$ = %vec2(0.000000,260.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_progress_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ =  (%GLOBAL%$pos$) 
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $vs1$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %vec2(54.000000,110.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $progress_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$menu_vert_blink_arrow$$params$ = :s{$id$ = $view_progress_menu_up_arrow$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}:s}:s}
+			:i :s{$pad_down$$menu_vert_blink_arrow$$params$ = :s{$id$ = $view_progress_menu_down_arrow$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $progress_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $game_progress_menu_exit$:s}:s}:a}
+	:i :s}
+	:i $GetCareerLevelScore$$get_total$
+	:i $FormatText$$TextName$ = $goal_points$%s(7,"%i / %j")$i$ = %GLOBAL%$total_score$$j$ = %GLOBAL%$total_score_potential$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(19," STORY MODE POINTS:")$right_col_text$ = %GLOBAL%$goal_points$
+	:i $GetClassicLevelGoalCount$$get_total$
+	:i $FormatText$$TextName$ = $goal_points$%s(7,"%i / %j")$i$ = %GLOBAL%$total_goals_complete$$j$ = %GLOBAL%$total_goals_possible$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(29," CLASSIC MODE GOALS COMPLETE:")$right_col_text$ = %GLOBAL%$goal_points$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$seperator$
+	:i $GetCompletionStatusText$$mode$ = $GAME_COMPLETED_BEGINNER$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(17," EASY STORY MODE:")$right_col_text$ = %GLOBAL%$completion_status$
+	:i $GetCompletionStatusText$$mode$ = $GAME_COMPLETED_NORMAL$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(19," NORMAL STORY MODE:")$right_col_text$ = %GLOBAL%$completion_status$
+	:i $GetCompletionStatusText$$mode$ = $GAME_COMPLETED_SICK$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(17," SICK STORY MODE:")$right_col_text$ = %GLOBAL%$completion_status$
+	:i $GetCompletionStatusText$$mode$ = $GAME_COMPLETED_CLASSIC_NORMAL$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(21," NORMAL CLASSIC MODE:")$right_col_text$ = %GLOBAL%$completion_status$
+	:i $GetCompletionStatusText$$mode$ = $GAME_COMPLETED_CLASSIC_SICK$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %s(19," SICK CLASSIC MODE:")$right_col_text$ = %GLOBAL%$completion_status$
+	:i $progress_menu_add_item$$id1$ = $progress_vmenu$$seperator$
+	:i $GetArraySize$$level_select_menu_level_info$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_sk5ed_gameplay$) 
+			:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_TestLevel$) 
+				:i if NOT  ( ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level$)  = $load_Default$) 
+					:i if NOT $StructureContains$$structure$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ) $DEVKIT_ONLY$
+						:i %GLOBAL%$level_num$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$level_num$) 
+						:i $GetLevelGapTotals$$level$ = %GLOBAL%$level_num$
+						:i if  (%GLOBAL%$num_gaps$ = %i(0,00000000)) 
+							:i %GLOBAL%$gaps_text$ = %s(6,"0 / ??")
+						:i else 
+							:i $FormatText$$TextName$ = $gaps_text$%s(7,"%i / %j")$i$ = %GLOBAL%$num_collected_gaps$$j$ = %GLOBAL%$num_gaps$
+						:i endif
+						:i if  ($all_levels_unlocked$ = %i(1,00000001)) 
+							:i $show_name$ = %i(1,00000001)
+						:i else 
+							:i $show_name$ = %i(0,00000000)
+							:i if $StructureContains$$structure$ =  ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) $seen_flag$
+								:i if $GetGlobalFlag$$flag$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$seen_flag$) 
+									:i $show_name$ = %i(1,00000001)
+								:i endif
+							:i endif
+						:i endif
+						:i if  (%GLOBAL%$show_name$ = %i(1,00000001)) 
+							:i $FormatText$$TextName$ = $level_text$%s(9," %s GAPS:")$s$ =  ( ($level_select_menu_level_info$:a{%GLOBAL%$index$:a}) ->$text$) 
+						:i else 
+							:i $FormatText$$TextName$ = $level_text$%s(9," %s GAPS:")$s$ = %s(6,"??????")
+						:i endif
+						:i $progress_menu_add_item$$id1$ = $progress_vmenu$$left_col_text$ = %GLOBAL%$level_text$$right_col_text$ = %GLOBAL%$gaps_text$
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to  (%GLOBAL%$array_size$) 
+	:i if $LevelIs$$Load_MainMenu$
+		:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,218.000000)$time$ = %f(0.200000)
+	:i else 
+		:i $DoScreenElementMorph$$id$ = $current_menu_anchor$$pos$ = %vec2(320.000000,240.000000)$time$ = %f(0.200000)
+	:i endif
+	:i $DoScreenElementMorph$$id$ = $progress_vmenu$$time$ = %f(0.200000)$pos$ = %vec2(0.000000,-200.000000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $GetCompletionStatus$
+	:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$mode$) 
+		:i %GLOBAL%$completion_status$ = %i(1,00000001)
+	:i else 
+		:i %GLOBAL%$completion_status$ = %i(0,00000000)
+	:i endif
+	:i return
+	$completion_status$ = %GLOBAL%$completion_status$
+:i endfunction
+:i function $GetCompletionStatusText$
+	:i if  ($GetGlobalFlag$$flag$ = %GLOBAL%$mode$) 
+		:i %GLOBAL%$completion_status$ = %s(9,"COMPLETE!")
+	:i else 
+		:i %GLOBAL%$completion_status$ = %s(12,"NOT FINISHED")
+	:i endif
+	:i return
+	$completion_status$ = %GLOBAL%$completion_status$
+:i endfunction
+:i function $progress_menu_add_item$$choose_script$ = $nullscript$$left_col_text$ = %s(0,"")$right_col_text$ = %s(0,"")
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i %GLOBAL%$anchor_id1$ = %GLOBAL%$id1$
+	:i if $GotParam$$seperator$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$id1$
+			:i $pos$ = %vec2(65.000000,10.000000)
+			:i $dims$ = %vec2(200.000000,20.000000)
+			:i $not_focusable$
+		:i :s}
+		:i %GLOBAL%$anchor_id1$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id1$
+			:i $texture$ = $black$
+			:i $scale$ = %vec2(132.000000,3.300000)
+			:i $pos$ = %vec2(4.000000,0.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(90,0000005a):a}
+			:i $not_focusable$
+		:i :s}
+	:i else 
+		:i if $GotParam$$check_box$
+			:i $Theme_GetUnhighlightedTextColor$$return_value$ = $check_rgba$
+			:i $Theme_GetHighlightedTextColor$$return_value$ = $checkmark_rgba$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = %GLOBAL%$id1$
+				:i $pos$ = %vec2(65.000000,10.000000)
+				:i $dims$ = %vec2(200.000000,25.000000)
+				:i $event_handlers$ = :a{
+					:i :s{$focus$$progress_menu_focus$$params$ = :s{$checkbox_item$ = $checkbox_item$:s}:s}
+					:i :s{$unfocus$$progress_menu_unfocus$$params$ = :s{$checkbox_item$ = $checkbox_item$:s}:s}
+					:i :a}
+			:i :s}
+			:i %GLOBAL%$anchor_id1$ = %GLOBAL%$id$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$left_col_text$
+				:i $pos$ = %vec2(10.000000,0.000000)
+				:i $just$ = :a{$left$$top$:a}
+				:i $rgba$ = %GLOBAL%$off_rgba$
+				:i $scale$ = %f(1.000000)
+			:i :s}
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $texture$ = $checkbox$
+				:i $pos$ =  (%vec2(420.000000,0.000000) + %vec2(0.000000,5.000000)) 
+				:i $just$ = :a{$center$$top$:a}
+				:i $scale$ = %f(0.550000)
+				:i $rgba$ = %GLOBAL%$check_rgba$
+				:i $z_priority$ = %i(5,00000005)
+			:i :s}
+			:i if  (%GLOBAL%$check_box$ = %i(1,00000001)) 
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = %GLOBAL%$id$
+					:i $texture$ = $checkmark$
+					:i $pos$ = %vec2(25.000000,-7.000000)
+					:i $just$ = :a{$center$$top$:a}
+					:i $rgba$ = %GLOBAL%$checkmark_rgba$
+					:i $z_priority$ = %i(6,00000006)
+					:i $scale$ = %f(1.400000)
+				:i :s}
+			:i else 
+				:i $CreateScreenElement$:s{
+					:i $type$ = $SpriteElement$
+					:i $parent$ = %GLOBAL%$id$
+					:i $texture$ = $checkmark$
+					:i $pos$ = %vec2(25.000000,-7.000000)
+					:i $just$ = :a{$center$$top$:a}
+					:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+					:i $z_priority$ = %i(6,00000006)
+					:i $scale$ = %f(1.400000)
+				:i :s}
+			:i endif
+			:i $highlight_angle$ = %i(0,00000000)
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $texture$ = $de_highlight_bar$
+				:i $pos$ = %vec2(262.000000,10.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+				:i $z_priority$ = %i(3,00000003)
+				:i $scale$ = %vec2(4.100000,0.700000)
+				:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+			:i :s}
+		:i else 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $ContainerElement$
+				:i $parent$ = %GLOBAL%$id1$
+				:i $pos$ = %vec2(65.000000,10.000000)
+				:i $dims$ = %vec2(200.000000,25.000000)
+				:i $event_handlers$ = :a{
+					:i :s{$focus$$progress_menu_focus$:s}
+					:i :s{$unfocus$$progress_menu_unfocus$:s}
+					:i :a}
+			:i :s}
+			:i %GLOBAL%$anchor_id1$ = %GLOBAL%$id$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$left_col_text$
+				:i $pos$ = %vec2(10.000000,0.000000)
+				:i $just$ = :a{$left$$top$:a}
+				:i $rgba$ = %GLOBAL%$off_rgba$
+				:i $scale$ = %f(1.000000)
+			:i :s}
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$right_col_text$
+				:i $pos$ = %vec2(420.000000,0.000000)
+				:i $just$ = :a{$center$$top$:a}
+				:i $rgba$ = %GLOBAL%$off_rgba$
+				:i $scale$ = %f(1.000000)
+			:i :s}
+			:i $highlight_angle$ = %i(0,00000000)
+			:i $CreateScreenElement$:s{
+				:i $type$ = $SpriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id1$
+				:i $texture$ = $de_highlight_bar$
+				:i $pos$ = %vec2(262.000000,10.000000)
+				:i $just$ = :a{$center$$center$:a}
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+				:i $z_priority$ = %i(3,00000003)
+				:i $scale$ = %vec2(4.100000,0.700000)
+				:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $progress_menu_focus$
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i :s}
+	:i if $GotParam$$checkbox_item$
+		:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i :s}
+	:i else 
+		:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$text_twitch_effect2$
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+		:i :s}
+		:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = %GLOBAL%$bar_rgba$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $progress_menu_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i :s}
+	:i if $GotParam$$checkbox_item$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $DoScreenElementMorph$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $game_progress_menu_exit$
+	:i if $ObjectExists$$id$ = $progress_anchor$
+		:i $DestroyScreenElement$$id$ = $progress_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon$
+		:i $DestroyScreenElement$$id$ = $box_icon$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $box_icon_2$
+		:i $DestroyScreenElement$$id$ = $box_icon_2$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $ObjectExists$$id$ = $grunge_anchor$
+		:i $DestroyScreenElement$$id$ = $grunge_anchor$
+		:i $wait$%i(1,00000001)$gameframe$
+	:i endif
+	:i if $LevelIs$$Load_MainMenu$
+		:i $create_setup_options_menu$
+	:i else 
+		:i $create_your_options_menu$
+	:i endif
+:i endfunction
+:i :end

@@ -1,0 +1,167 @@
+$Goal_SkateTheLine_GenericParams$ = :s{
+	:i $goal_text$ = %s(15,"Skate the line!")
+	:i $view_goals_text$ = %s(27,"Generic skate the line text")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_skate_the_line_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_skate_the_line_activate$
+	:i $deactivate$ = $goal_skate_the_line_deactivate$
+	:i $expire$ = $goal_skate_the_line_expire$
+	:i $fail$ = $goal_skate_the_line_fail$
+	:i $success$ = $goal_skate_the_line_success$
+	:i $restart_node$ = $TRG_G_SKATETHELINE_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_SKATETHELINE_Pro$
+	:i $record_type$ = $score$
+	:i $play_goal_start_sound$
+	:i $SkateTheLine$
+:i :s}
+:i function $goal_skate_the_line_init$
+	:i if NOT $GotParam$$goal_objects$
+		:i $script_assert$%s(37,"goal_objects array not defined for %s")$s$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_init$ isNull 
+:i endfunction
+:i function $goal_skate_the_line_activate$
+	:i if $GotParam$$no_cam_anim$
+		:i $goal_passive_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i else 
+		:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_skate_the_line_deactivate$
+	:i $goal_deactivate$ isNull 
+	:i $goal_skate_the_line_colors_stop$ isNull $stop_all$
+	:i if $ScreenElementExists$$id$ = $skate_the_line_message$
+		:i $DestroyScreenElement$$id$ = $skate_the_line_message$
+	:i endif
+:i endfunction
+:i function $goal_skate_the_line_expire$
+	:i $goal_expire$ isNull 
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_skate_the_line_fail$
+	:i $goal_fail$ isNull 
+:i endfunction
+:i function $goal_skate_the_line_success$
+	:i $goal_success$ isNull 
+:i endfunction
+:i function $goal_skate_the_line_next_cluster$
+	:i if NOT $GotParam$$keep_last$
+		:i $goal_skate_the_line_colors_stop$ isNull 
+		:i if $GotParam$$text$
+			:i if $ScreenElementExists$$id$ = $current_goal$
+				:i $DestroyScreenElement$$id$ = $current_goal$
+			:i endif
+			:i $create_panel_block$$id$ = $skate_the_line_message$$text$ = %GLOBAL%$text$$style$ = $panel_message_goal$
+		:i endif
+	:i endif
+	:i $goal_skate_the_line_spawn_blinking$ isNull 
+	:i if $GotParam$$first_spot_params$
+		:i $goal_skate_the_line_spawn_blinking$ isNull %GLOBAL%$first_spot_params$$goal_objects_index$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $goal_skate_the_line_spawn_blinking$
+	:i if $GotParam$$trick_objects$
+		:i $GetArraySize$%GLOBAL%$trick_objects$
+		:i %GLOBAL%$index$ = %i(0,00000000)
+		:i while
+			
+			:i $FormatText$:s{
+				:i $ChecksumName$ = $colors_script_id$
+				:i %s(35,"%s_goal_skate_the_line_colors_%i.%d")
+				:i $s$ = %GLOBAL%$goal_name$
+				:i $i$ = %GLOBAL%$goal_objects_index$
+				:i $d$ = %GLOBAL%$index$
+			:i :s}
+			:i %GLOBAL%$script_params$ =  (%GLOBAL%$trick_objects$:a{%GLOBAL%$index$:a}) 
+			:i $SpawnScript$:s{
+				:i $goal_skate_the_line_colors$
+				:i $id$ = %GLOBAL%$colors_script_id$
+				:i $params$ = %GLOBAL%$script_params$
+			:i :s}
+			:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+		:i loop_to %GLOBAL%$array_size$
+	:i else 
+		:i if NOT  ( ($GotParam$$name$)  OR  ($GotParam$$prefix$) ) 
+			:i return
+			
+		:i endif
+		:i $FormatText$$ChecksumName$ = $colors_script_id$%s(29,"%s_goal_skate_the_line_colors")$s$ = %GLOBAL%$goal_name$
+		:i $SpawnScript$:s{
+			:i $goal_skate_the_line_colors$
+			:i $id$ = %GLOBAL%$colors_script_id$
+			:i $params$ = %GLOBAL%$script_params$
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_skate_the_line_colors_stop$
+	:i $GetArraySize$%GLOBAL%$goal_objects$
+	:i %GLOBAL%$goal_objects_array_size$ = %GLOBAL%$array_size$
+	:i %GLOBAL%$goal_objects_index$ = %i(0,00000000)
+	:i while
+		
+		:i %GLOBAL%$goal_object$ =  (%GLOBAL%$goal_objects$:a{%GLOBAL%$goal_objects_index$:a}) 
+		:i if $StructureContains$$structure$ = %GLOBAL%$goal_object$$trick_objects$
+			:i %GLOBAL%$trick_objects$ =  (%GLOBAL%$goal_object$->$trick_objects$) 
+			:i $GetArraySize$%GLOBAL%$trick_objects$
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i %GLOBAL%$should_stop$ = %i(0,00000000)
+			:i if $GotParam$$stop_all$
+				:i %GLOBAL%$should_stop$ = %i(1,00000001)
+			:i else 
+				:i %GLOBAL%$num_flags_set$ = %i(0,00000000)
+				:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+				:i if NOT  (%GLOBAL%$goal_objects_index$ =  (%GLOBAL%$num_flags_set$ - %i(1,00000001)) ) 
+					:i %GLOBAL%$should_stop$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$should_stop$ = %i(1,00000001)) 
+				:i while
+					
+					:i $FormatText$:s{
+						:i $ChecksumName$ = $colors_script_id$
+						:i %s(35,"%s_goal_skate_the_line_colors_%i.%d")
+						:i $s$ = %GLOBAL%$goal_name$
+						:i $i$ = %GLOBAL%$goal_objects_index$
+						:i $d$ = %GLOBAL%$index$
+					:i :s}
+					:i $KillSpawnedScript$$id$ = %GLOBAL%$colors_script_id$
+					:i %GLOBAL%$script_params$ =  (%GLOBAL%$trick_objects$:a{%GLOBAL%$index$:a}) 
+					:i $SetLightGroup$%GLOBAL%$script_params$
+					:i $SetObjectColor_CurrentTOD$%GLOBAL%$script_params$
+					:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+				:i loop_to %GLOBAL%$array_size$
+			:i endif
+		:i else 
+			:i %GLOBAL%$should_stop$ = %i(0,00000000)
+			:i if $GotParam$$stop_all$
+				:i %GLOBAL%$should_stop$ = %i(1,00000001)
+			:i else 
+				:i %GLOBAL%$num_flags_set$ = %i(0,00000000)
+				:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+				:i if NOT  (%GLOBAL%$goal_objects_index$ =  (%GLOBAL%$num_flags_set$ - %i(1,00000001)) ) 
+					:i %GLOBAL%$should_stop$ = %i(1,00000001)
+				:i endif
+			:i endif
+			:i if  (%GLOBAL%$should_stop$ = %i(1,00000001)) 
+				:i $FormatText$$ChecksumName$ = $colors_script_id$%s(29,"%s_goal_skate_the_line_colors")$s$ = %GLOBAL%$goal_name$
+				:i $KillSpawnedScript$$id$ = %GLOBAL%$colors_script_id$
+				:i $SetLightGroup$%GLOBAL%$goal_object$
+				:i $SetObjectColor_CurrentTOD$%GLOBAL%$goal_object$
+			:i endif
+		:i endif
+		:i %GLOBAL%$goal_objects_index$ =  (%GLOBAL%$goal_objects_index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$goal_objects_array_size$
+:i endfunction
+:i function $goal_skate_the_line_colors$
+	:i $SetLightGroup$ isNull $light_group$ = $goal_skate_the_line_colors$
+	:i while
+		
+		:i $printstruct$ isNull 
+		:i $SetObjectColor$$color$ =  (%i(255,000000ff) +  (%i(255,000000ff) * %i(256,00000100))  +  (%i(120,00000078) * %i(65536,00010000)) )  isNull 
+		:i $wait$%f(0.500000)$seconds$
+		:i $SetObjectColor$$color$ =  (%i(254,000000fe) +  (%i(163,000000a3) * %i(256,00000100))  +  (%i(90,0000005a) * %i(65536,00010000)) )  isNull 
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i :end

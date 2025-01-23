@@ -1,0 +1,2610 @@
+
+:i $skater_ambient_color$ = :a{%i(105,00000069);%i(85,00000055);%i(85,00000055):a}
+:i $skater_diffuse_color1$ = :a{%i(28,0000001c);%i(28,0000001c);%i(28,0000001c):a}
+:i $skater_diffuse_color2$ = :a{%i(10,0000000a);%i(10,0000000a);%i(10,0000000a):a}
+:i $mainmneu_cam_offset$ = %vec3(-25.000000,51.000000,-40.000000)
+:i $spin_menu_pos$ = %vec2(46.000000,214.000000)
+:i function $mainmenu_startup$
+	:i $printf$%s(49,"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	:i $printf$%s(49,"X                                               X")
+	:i $printf$%s(49,"X        Main Menu Startup                      X")
+	:i $printf$%s(49,"X                                               X")
+	:i $printf$%s(49,"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	:i $LoadAsset$%s(34,"models\mainmenu_bg\mainmenu_bg.tex")
+	:i $LoadAsset$%s(34,"models\mainmenu_bg\mainmenu_bg.mdl")$nocollision$ = %i(1,00000001)$parent$ = $models\mainmenu_bg\mainmenu_bg.tex$
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $Randomize$
+	:i $SetScoreDegradation$%i(0,00000000)
+	:i $change$$main_menu_ok_to_go$ = %i(0,00000000)
+	:i $SpawnScript$$maybe_auto_load_from_memory_card$
+:i endfunction
+:i function $mainmenu_LoadingSounds$
+	:i $LoadSound$%s(20,"Skateshop\BoardsFlip")$vol$ = %i(100,00000064)$dropoff$ = %i(150,00000096)
+	:i $LoadSound$%s(19,"terrains\olliewood2")$vol$ = %i(100,00000064)$dropoff$ = %i(150,00000096)
+	:i $LoadSound$%s(19,"terrains\olliewood3")$vol$ = %i(100,00000064)$dropoff$ = %i(150,00000096)
+	:i $LoadSound$%s(18,"terrains\landwood2")$vol$ = %i(100,00000064)$dropoff$ = %i(150,00000096)
+	:i $LoadSound$%s(18,"terrains\landwood3")$vol$ = %i(100,00000064)$dropoff$ = %i(150,00000096)
+	:i $LoadSound$%s(21,"Shared\Menu\CheatGood")
+	:i $LoadSound$%s(20,"Shared\Menu\CheatBad")
+:i endfunction
+:i function $Default_Goals$
+	:i if $InMultiplayerGame$
+		:i $Add_MultiPlayer_Mode_Goals$
+	:i endif
+	:i if NOT $InSplitScreenGame$
+		:i if NOT $GameModeEquals$$Is_SingleSession$
+		:i endif
+	:i endif
+	:i if NOT $InSplitScreenGame$
+		:i if NOT $GameModeEquals$$Is_SingleSession$
+			:i if NOT $InNetGame$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $TOD_Script$
+	:i switch %GLOBAL%$current_tod$
+		:i case $morning$
+			:i endcase
+		case $day$
+			:i endcase
+		case $evening$
+			:i endcase
+		case $night$
+			:i endcase
+		default 
+			:i $printf$%s(18,"### no tod set ###")
+			:i end_switch
+	
+:i endfunction
+:i function $launch_main_menu$
+	:i if  ($main_menu_jump_to_cas$ = %i(1,00000001)) 
+		:i $cas_mainmenu_startup$
+		:i return
+		
+	:i endif
+	:i if  ($main_menu_return_to_createamodes$ = %i(1,00000001)) 
+		:i $change$$main_menu_return_to_createamodes$ = %i(0,00000000)
+		:i $create_createamodes_menu$$launched$ = $launched$
+	:i else 
+		:i $create_main_menu$$launched$ = $launched$
+	:i endif
+	:i if NOT $GetGlobalFlag$$flag$ = $SOUNDS_SONGORDER_RANDOM$
+		:i $PlaySongsInOrder$
+	:i else 
+		:i $PlaySongsRandomly$
+	:i endif
+	:i $PauseMusic$%i(0,00000000)
+	:i $pause_trick_text$
+	:i $SetColorBufferClear$$clear$ = %i(1,00000001)
+:i endfunction
+:i function $xbox_autoload_message$
+	:i if  ($attempted_xbox_autoload$ = %i(0,00000000)) 
+		:i $change$$attempted_xbox_autoload$ = %i(1,00000001)
+		:i $change$$DoAutoload$ = %i(1,00000001)
+		:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu$
+		:i $create_dialog_box$:s{$title$ = %s(9,"Load Game")
+			:i $text$ = %s(29,"Load last Game Progress save?")
+			:i $text_dims$ = %vec2(350.000000,0.000000)
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+			:i $text_rgba$ = :a{%i(88,00000058)%i(105,00000069)%i(112,00000070)%i(128,00000080):a}
+			:i $text_scale$ = %i(1,00000001)
+			:i $no_bg$ = $no_bg$
+			:i $buttons$ = :a{:s{$font$ = $small$$text$ = %s(3,"Yes")$pad_choose_script$ = $yes_xbox_autoload$:s}
+				:i :s{$font$ = $small$$text$ = %s(2,"No")$pad_choose_script$ = $no_xbox_autoload$:s}
+				:i :a}
+		:i :s}
+	:i endif
+:i endfunction
+:i function $yes_xbox_autoload$
+	:i $mark_first_input_received$ isNull 
+	:i $dialog_box_exit$
+	:i $change$$DoAutoload$ = %i(0,00000000)
+:i endfunction
+:i function $no_xbox_autoload$
+	:i $mark_first_input_received$ isNull 
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu$
+	:i $change$$no_load$ = %i(1,00000001)
+	:i $CheckForCardOnBootup$
+	:i $change$$DoAutoload$ = %i(0,00000000)
+	:i $Debounce$$X$%f(0.300000)
+	:i $UnpauseMusicAndStreams$
+	:i $create_main_menu$
+:i endfunction
+:i function $main_menu_startup_wait_and_signal_clear$
+	:i $change$$dont_unhide_loading_screen$ = %i(1,00000001)
+	:i $PauseSkaters$
+	:i $wait$%i(10,0000000a)$gameframes$
+	:i $change$$dont_unhide_loading_screen$ = %i(0,00000000)
+	:i if NOT $IsTrue$$main_menu_jump_to_cas$
+		:i $play_no_skater_cam$
+	:i endif
+	:i $change$$main_menu_ok_to_go$ = %i(1,00000001)
+:i endfunction
+:i function $main_menu_wait_until_all_clear$
+	:i while
+		
+		:i if $ObjectExists$$id$ = $skatercam0$
+			:i if $ObjectExists$$id$ = $skater$
+				:i if $LocalSkaterExists$
+					:i if $IsTrue$$main_menu_ok_to_go$
+						:i return
+						
+					:i endif
+				:i endif
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $create_main_menu$
+	:i $change$$main_menu_return_to_createamodes$ = %i(0,00000000)
+	:i $SetNetworkMode$
+	:i $UnpauseMusicAndStreams$
+	:i $UnPauseObjects$
+	:i $change$$in_options_menu$ = %i(0,00000000)
+	:i $SetNetworkMode$
+	:i $SetMemThreadSafe$$off$
+	:i $main_menu_wait_until_all_clear$
+	:i $spin_menu_skater_script$$reset$
+	:i $KillSpawnedScript$$name$ = $TemporarilyDisableInput$
+	:i $SpawnScript$$TemporarilyDisableInput$$params$ = :s{$time$ = %i(400,00000190):s}
+	:i $SetMenuPadMappings$:a{$active$
+		:i $use_as_first$
+		:i :a}
+	:i $make_spin_menu$$pos$ = $spin_menu_pos$$menu_id$ = $main_menu$$vmenu_id$ = $main_vmenu$
+	:i $spin_menu_visible$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$reset_attract_mode_timer$:s}
+			:i :s{$pad_down$$reset_attract_mode_timer$:s}
+			:i :a}
+	:i :s}
+	:i if NOT $IsXBox$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $current_menu_anchor$
+			:i $texture$ = $white3$
+			:i $id$ = $main_menu_gradient$
+			:i $scale$ = %vec2(11.000000,6.000000)
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(60,0000003c):a}
+			:i $pos$ = %vec2(300.000000,-10.000000)
+			:i $rot_angle$ = %i(0,00000000)
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $mm_icon$
+		:i $texture$ = %GLOBAL%$main_icon$
+		:i $just$ = :a{$center$$center$:a}
+		:i $pos$ = %vec2(42.000000,70.000000)
+		:i $scale$ = %vec2(1.400000,1.400000)
+		:i $rot_angle$ = %i(4294967266,ffffffe2)
+		:i $z_priority$ = %i(12,0000000c)
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $add_main_menu_items$
+	:i $GetScreenElementChildren$$id$ = $current_menu$
+	:i $GetArraySize$%GLOBAL%$children$
+	:i if  ( (%GLOBAL%$array_size$ * %i(2,00000002))  < %i(17,00000011)) 
+		:i %GLOBAL%$num_blanks$ =  (%i(8,00000008) - %GLOBAL%$array_size$) 
+		:i if  (%GLOBAL%$num_blanks$ > %i(0,00000000)) 
+			:i while
+				
+				:i $make_spin_menu_item$:s{
+					:i $blank$
+				:i :s}
+			:i loop_to %GLOBAL%$num_blanks$
+		:i endif
+		:i $add_main_menu_items$$copy$
+		:i if  (%GLOBAL%$num_blanks$ > %i(0,00000000)) 
+			:i while
+				
+				:i $make_spin_menu_item$:s{
+					:i $blank$
+				:i :s}
+			:i loop_to %GLOBAL%$num_blanks$
+		:i endif
+	:i endif
+	:i $change$$spin_menu_cycle$ = %i(1,00000001)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $attract_container$
+		:i $event_handlers$ = :a{:s{$pad_back$$reset_attract_mode_timer$:s}
+			:i :s{$pad_left$$reset_attract_mode_timer$:s}
+			:i :s{$pad_right$$reset_attract_mode_timer$:s}
+			:i :a}
+	:i :s}
+	:i $create_helper_text$$generic_helper_text_no_back$
+	:i $spin_menu_init$
+	:i $FireEvent$$type$ = $focus$$target$ = $attract_container$
+	:i $unpauseskaters$
+	:i $UnpauseMusicAndStreams$
+	:i $spin_menu_camera_init$
+	:i $pulse_blur$$speed$ = %i(2,00000002)$start$ = %i(255,000000ff)
+	:i $KillSpawnedScript$$name$ = $attract_mode_timer$
+	:i $SpawnScript$$attract_mode_timer$
+	:i if $isNgc$
+		:i $MemPushContext$$TopDownHeap$
+	:i endif
+	:i $SpawnSecondControllerCheck$
+	:i if $isNgc$
+		:i $MemPopContext$
+	:i endif
+	:i if  ($layer_infos_need_resetting$ = %i(1,00000001)) 
+		:i $edit_graphic_reset_layer_infos$
+		:i $edit_graphic_apply_graphic_from_save$
+		:i $change$$layer_infos_need_resetting$ = %i(0,00000000)
+	:i endif
+	:i $wait$%i(5,00000005)$gameframe$
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $spin_menu_init$
+	:i $FireEvent$$type$ = $focus$$target$ = $main_vmenu$$data$ = :s{$grid_index$ =  ($spin_menu_selected_index$) :s}
+	:i $SetScreenElementProps$$id$ = $root_window$$tags$ = :s{$menu_state$ = $on$:s}
+	:i if NOT  ($spin_menu_selected_index$ = %i(0,00000000)) 
+		:i $change$$spin_menu_angle$ =  (%f(-22.500000) * $spin_menu_selected_index$) 
+		:i $change$$spin_menu_dir$ = %i(4294967295,ffffffff)
+		:i $DoScreenElementMorph$$id$ = $current_menu$$rot_angle$ = $spin_menu_angle$$time$ = %i(0,00000000)
+		:i $spin_menu_spin_geometry$$rot_angle$ = $spin_menu_angle$$spin_time$ = %i(0,00000000)$no_wait$
+	:i endif
+:i endfunction
+:i function $add_test_spin_menu_items$
+	:i %GLOBAL%$index$ = %i(1,00000001)
+	:i while
+		
+		:i $FormatText$$TextName$ = $text$%s(14,"   --::     %i")$i$ = %GLOBAL%$index$
+		:i $FormatText$$ChecksumName$ = $id$%s(6,"ITEM%i")$i$ = %GLOBAL%$index$
+		:i $make_spin_menu_item$:s{
+			:i $text1$ = %GLOBAL%$text$
+			:i $highlight_text$ = %GLOBAL%$text$
+			:i $id$ = %GLOBAL%$id$
+			:i $pad_choose_script$ = $main_menu_exit$
+			:i $pad_choose_params$ = :s{
+				:i $new_menu_script$ = $create_gamemode_options_menu$
+				:i $change_gamemode$ = $change_gamemode_career$
+				:i $hold_camera$
+			:i :s}
+			:i $focus_params$ = :s{$attract_timer$:s}
+			:i $mark_first_input$
+			:i $helper_text$ = %GLOBAL%$text$
+			:i $icon$ = $mainicon_story$
+		:i :s}
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(16,00000010)
+:i endfunction
+:i function $add_main_menu_items$
+	:i $demo_build_item_active$ = %i(1,00000001)
+	:i if $OnXbox$
+		:i if $GotParam$$copy$
+			:i %GLOBAL%$id$ = $menu_net2$
+		:i else 
+			:i %GLOBAL%$id$ = $menu_net$
+		:i endif
+		:i if NOT  ($DEMO_BUILD$) 
+			:i if $NetworkAdaptorInstalled$
+				:i $make_spin_menu_item$:s{
+					:i $text1$ = %s(20,"         Multiplayer")
+					:i $highlight_text$ = %s(11,"MULTIPLAYER")
+					:i $id$ = %GLOBAL%$id$
+					:i $pad_choose_script$ = $main_menu_exit$
+					:i $pad_choose_params$ = :s{
+						:i $new_menu_script$ = $select_network_play_multi$
+						:i $change_gamemode$ = $change_gamemode_net$
+						:i $hold_camera$
+						:i $do_loading_logo$
+					:i :s}
+					:i $mark_first_input$
+					:i $focus_params$ = :s{$attract_timer$:s}
+					:i $helper_text$ = %s(23,"Play the game online...")
+					:i $icon$ = $mainicon_online$
+				:i :s}
+			:i else 
+				:i if NOT $CD$
+					:i $make_spin_menu_item$:s{
+						:i $text1$ = %s(20,"         Multiplayer")
+						:i $highlight_text$ = %s(11,"MULTIPLAYER")
+						:i $id$ = %GLOBAL%$id$
+						:i $pad_choose_script$ = $main_menu_exit$
+						:i $pad_choose_params$ = :s{
+							:i $new_menu_script$ = $select_network_play_multi$
+							:i $change_gamemode$ = $change_gamemode_net$
+							:i $hold_camera$
+							:i $do_loading_logo$
+						:i :s}
+						:i $mark_first_input$
+						:i $focus_params$ = :s{$attract_timer$:s}
+						:i $helper_text$ = %s(23,"Play the game online...")
+						:i $icon$ = $mainicon_online$
+					:i :s}
+				:i else 
+					:i $make_spin_menu_item$:s{
+						:i $text1$ = %s(20,"         Multiplayer")
+						:i $highlight_text$ = %s(11,"MULTIPLAYER")
+						:i $id$ = %GLOBAL%$id$
+						:i $pad_choose_script$ = $main_menu_exit$
+						:i $pad_choose_params$ = :s{
+							:i $new_menu_script$ = $select_network_play_multi$
+							:i $change_gamemode$ = $change_gamemode_net$
+							:i $hold_camera$
+							:i $do_loading_logo$
+						:i :s}
+						:i $mark_first_input$
+						:i $active$ = %i(0,00000000)
+						:i $focus_params$ = :s{$attract_timer$:s}
+						:i $helper_text$ = %s(23,"Play the game online...")
+						:i $icon$ = $mainicon_online$
+					:i :s}
+				:i endif
+			:i endif
+		:i else 
+			:i $make_spin_menu_item$:s{
+				:i $text1$ = %s(20,"         Multiplayer")
+				:i $highlight_text$ = %s(11,"MULTIPLAYER")
+				:i $id$ = %GLOBAL%$id$
+				:i $active$ = %i(0,00000000)
+				:i $helper_text$ = %s(23,"Play the game online...")
+				:i $icon$ = $mainicon_online$
+			:i :s}
+		:i endif
+	:i endif
+	:i if $GotParam$$copy$
+		:i %GLOBAL%$id$ = $menu_singlesess2$
+	:i else 
+		:i %GLOBAL%$id$ = $menu_singlesess$
+	:i endif
+	:i $make_spin_menu_item$:s{
+		:i $blank$
+	:i :s}
+	:i $make_spin_menu_item$:s{
+		:i $blank$
+	:i :s}
+	:i $make_spin_menu_item$:s{
+		:i $text1$ = %s(21,"           High Score")
+		:i $text2$ = %s(21,"           Free Skate")
+		:i $highlight_text$ = %s(23,"HIGH SCORE / FREE SKATE")
+		:i $id$ = %GLOBAL%$id$
+		:i $pad_choose_script$ = $main_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $launch_select_skater_menu$
+			:i $change_gamemode$ = $change_gamemode_singlesession$
+			:i $hold_camera$
+			:i $do_loading_logo$
+		:i :s}
+		:i $focus_params$ = :s{$attract_timer$:s}
+		:i $mark_first_input$
+		:i $helper_text$ = %s(38,"Skate around or go for a high score...")
+		:i $icon$ = $mainicon_score$
+		:i $active$ = %GLOBAL%$demo_build_item_active$
+	:i :s}
+	:i if $GotParam$$copy$
+		:i %GLOBAL%$id$ = $main_menu_2_player_option2$
+	:i else 
+		:i %GLOBAL%$id$ = $main_menu_2_player_option$
+	:i endif
+	:i $make_spin_menu_item$:s{
+		:i $text1$ = %s(17,"         2 Player")
+		:i $highlight_text$ = %s(8,"2 PLAYER")
+		:i $id$ = %GLOBAL%$id$
+		:i $pad_choose_script$ = $main_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $launch_select_skater_menu$
+			:i $change_gamemode$ = $change_gamemode_freeskate_2p$
+			:i $hold_camera$
+			:i $do_loading_logo$
+		:i :s}
+		:i $mark_first_input$
+		:i $focus_params$ = :s{$attract_timer$:s}
+		:i $helper_text$ = %s(30,"Play the game with a friend...")
+		:i $icon$ = $mainicon_2player$
+		:i $active$ = %GLOBAL%$demo_build_item_active$
+	:i :s}
+	:i if $GotParam$$copy$
+		:i %GLOBAL%$id$ = $menu_createamodes2$
+	:i else 
+		:i %GLOBAL%$id$ = $menu_createamodes$
+	:i endif
+	:i $make_spin_menu_item$:s{
+		:i $text1$ = %s(22,"        Create-A-Modes")
+		:i $highlight_text$ = %s(14,"CREATE-A-MODES")
+		:i $id$ = %GLOBAL%$id$
+		:i $pad_choose_script$ = $main_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $create_createamodes_menu$
+			:i $change_gamemode$ = $change_gamemode_singlesession$
+			:i $hold_camera$
+		:i :s}
+		:i $focus_params$ = :s{$attract_timer$:s}
+		:i $mark_first_input$
+		:i $helper_text$ = %s(24,"Create custom content...")
+		:i $icon$ = $mainicon_mode$
+	:i :s}
+	:i if $GotParam$$copy$
+		:i %GLOBAL%$id$ = $menu_options2$
+	:i else 
+		:i %GLOBAL%$id$ = $menu_options$
+	:i endif
+	:i $make_spin_menu_item$:s{
+		:i $text1$ = %s(21,"         Game Options")
+		:i $highlight_text$ = %s(12,"GAME OPTIONS")
+		:i $id$ = %GLOBAL%$id$
+		:i $pad_choose_script$ = $main_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $create_setup_options_menu$
+			:i $hold_camera$
+		:i :s}
+		:i $mark_first_input$
+		:i $focus_params$ = :s{$attract_timer$:s}
+		:i $helper_text$ = %s(26,"Change the game options...")
+		:i $icon$ = $mainicon_options$
+	:i :s}
+	:i if $GotParam$$copy$
+		:i %GLOBAL%$id$ = $menu_quit2$
+	:i else 
+		:i %GLOBAL%$id$ = $menu_quit$
+	:i endif
+	:i $make_spin_menu_item$:s{
+		:i $text1$ = %s(12,"        Quit")
+		:i $highlight_text$ = %s(4,"QUIT")
+		:i $id$ = %GLOBAL%$id$
+		:i $pad_choose_script$ = $main_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $main_menu_exit_game$
+			:i $hold_camera$
+		:i :s}
+		:i $focus_params$ = :s{$attract_timer$:s}
+		:i $mark_first_input$
+		:i $helper_text$ = %s(16,"Quit the game...")
+		:i $icon$ = $mainicon_mode$
+	:i :s}
+:i endfunction
+:i function $build_frontend_menu_title$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $current_menu_title$
+		:i $pos$ = %vec2(700.000000,30.000000)
+	:i :s}
+	:i $Theme_GetSupportPieceColor$$return_value$ = $tab_color$
+	:i $FormatText$$ChecksumName$ = $mainmenu_icon$%s(6,"%i_new")$i$ =  ($THEME_PREFIXES$:a{$current_theme_prefix$:a}) 
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_title$
+		:i $texture$ = $goal_tab$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %vec2(1.000000,1.250000)
+		:i $pos$ = %vec2(30.000000,0.000000)
+		:i $alpha$ = %i(1,00000001)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_title$
+		:i $texture$ = $goal_tab_extra$
+		:i $rgba$ = %GLOBAL%$tab_color$
+		:i $scale$ = %vec2(7.000000,1.250000)
+		:i $pos$ = %vec2(80.000000,0.000000)
+		:i $alpha$ = %i(1,00000001)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$id$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(9,"MAIN MENU")
+		:i $rgba$ = :a{%i(85,00000055);%i(30,0000001e);%i(0,00000000);%i(128,00000080):a}
+		:i $pos$ = %vec2(-3.000000,1.000000)
+		:i $scale$ = %vec2(0.200000,1.300000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_title$
+		:i $texture$ = %GLOBAL%$mainmenu_icon$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(2,00000002)%i(30,0000001e):a}
+		:i $scale$ = %vec2(1.250000,1.250000)
+		:i $pos$ = %vec2(185.000000,-20.000000)
+		:i $alpha$ = %i(1,00000001)
+		:i $rot_angle$ = %i(10,0000000a)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(10,0000000a)
+	:i :s}
+	:i $Theme_GetAltColor$$return_value$ = $grad_color$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_title$
+		:i $texture$ = $goal_grad$
+		:i $rgba$ = %GLOBAL%$grad_color$
+		:i $scale$ = %vec2(9.000000,1.000000)
+		:i $pos$ = %vec2(-30.000000,40.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4,00000004)
+		:i $alpha$ = %f(0.800000)
+		:i $flip_v$
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = $current_menu_title$$pos$ = %vec2(380.000000,30.000000)$time$ = %f(0.300000)
+:i endfunction
+:i function $spin_menu_skater_script$
+	:i $select_skater_get_current_skater_name$
+	:i if NOT  (%GLOBAL%$current_skater$ = $custom$) 
+		:i $load_pro_skater$:s{$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)$name$ = $custom$:s}
+	:i endif
+	:i $unpauseskaters$
+	:i $skater$.$Obj_GetID$
+	:i $MakeSkaterGoto$$SpinMenuSkaterIdle$$params$ =  isNull 
+	:i $skater$.$hide$
+:i endfunction
+:i function $spin_menu_camera_init$
+	:i $skater$.$Obj_GetID$
+	:i $SetActiveCamera$$id$ = $skatercam0$
+	:i $skater$.$unhide$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$:s{$name$ = $mainmenu_camera02$
+		:i $skater$ = %i(0,00000000)
+		:i $targetID$ = %GLOBAL%$objId$
+		:i $targetOffset$ = $mainmneu_cam_offset$
+		:i $positionOffset$ = %vec3(0.000000,0.000000,160.000000)
+		:i $play_hold$
+		:i $frames$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i $spin_menu_skater_idling$ = %i(0,00000000)
+:i $spin_menu_skater_transitioning$ = %i(0,00000000)
+:i function $SpinMenuGetSkaterAnim$
+	:i if  ($spin_menu_skater_transitioning$) 
+		:i $change$$spin_menu_skater_transitioning$ = %i(0,00000000)
+		:i return
+		$anim$ = $FrontEnd_Spin2Wheel$
+	:i endif
+	:i if  ($spin_menu_skater_idling$) 
+		:i return
+		$anim$ = select(2f,3, 01 00 01 00 01 00) :OFFSET(0):OFFSET(1):OFFSET(2)
+			 :POS(0) $FrontEnd_Wheel_Idle_1$
+		:BREAKTO(3)
+			 :POS(1) $FrontEnd_Wheel_Idle_2$
+		:BREAKTO(3)
+			 :POS(2) $FrontEnd_Wheel_Idle_3$ :POS(3) 
+		:i else 
+			:i return
+			$anim$ = select(2f,2, 03 00 01 00) :OFFSET(4):OFFSET(5)
+				 :POS(4) $FrontEnd_Wheel_Spin_Idle$
+			:BREAKTO(6)
+				 :POS(5) $FrontEnd_Wheel_Spin_Idle2$ :POS(6) 
+			:i endif
+		:i endfunction
+		:i function $SpinMenuSkaterIdle$
+			:i if $GotParam$$reset$
+				:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$
+				:i $TurnOffSpecialItem$
+				:i $SwitchOnBoard$
+				:i $ClearExceptions$
+				:i $Obj_MoveToNode$$name$ = $trg_playerrestart$$Orient$$NoReset$
+				:i if NOT $Obj_HasModelLights$
+					:i $script_assert$%s(19,"No skater lighting!")
+				:i endif
+				:i $Obj_SetLightAmbientColor$:s{
+					:i $r$ =  ($skater_ambient_color$:a{%i(0,00000000):a}) 
+					:i $g$ =  ($skater_ambient_color$:a{%i(1,00000001):a}) 
+					:i $b$ =  ($skater_ambient_color$:a{%i(2,00000002):a}) 
+				:i :s}
+				:i $Obj_SetLightDiffuseColor$:s{
+					:i $index$ = %i(0,00000000)
+					:i $r$ =  ($skater_diffuse_color1$:a{%i(0,00000000):a}) 
+					:i $g$ =  ($skater_diffuse_color1$:a{%i(1,00000001):a}) 
+					:i $b$ =  ($skater_diffuse_color1$:a{%i(2,00000002):a}) 
+				:i :s}
+				:i $Obj_SetLightDiffuseColor$:s{
+					:i $index$ = %i(1,00000001)
+					:i $r$ =  ($skater_diffuse_color2$:a{%i(0,00000000):a}) 
+					:i $g$ =  ($skater_diffuse_color2$:a{%i(1,00000001):a}) 
+					:i $b$ =  ($skater_diffuse_color2$:a{%i(2,00000002):a}) 
+				:i :s}
+				:i $CancelRotateDisplay$
+				:i $DisablePlayerInput$
+				:i $SetRollingFriction$%i(10000,00002710)
+				:i $SetSpeed$%i(0,00000000)
+				:i if $flipped$
+					:i $flip$
+				:i endif
+				:i $PausePhysics$
+			:i endif
+			:i while
+				
+				:i $SpinMenuGetSkaterAnim$
+				:i $PlayAnim$$anim$ = %GLOBAL%$anim$$Blendperiod$ = %f(0.200000)
+				:i $Obj_WaitAnimFinished$
+			:i loop_to 
+		:i endfunction
+		:i function $SpinMenuSkaterAction$
+			:i $change$$spin_menu_skater_transitioning$ = %i(0,00000000)
+			:i if  ($spin_menu_skater_idling$) 
+				:i $change$$spin_menu_skater_idling$ = %i(0,00000000)
+			:i endif
+			:i if $GotParam$$up$
+				:i %GLOBAL%$anim$ = $FrontEnd_Wheel_Spin_Dwn$
+			:i else 
+				:i if $GotParam$$down$
+					:i %GLOBAL%$anim$ = $FrontEnd_Wheel_Spin_Up$
+				:i else 
+					:i if $GotParam$$spin$
+						:i %GLOBAL%$anim$ = $FrontEnd_Wheel_Spin_Hard$
+					:i endif
+				:i endif
+			:i endif
+			:i if $GotParam$$anim$
+				:i $PlayAnim$$anim$ = %GLOBAL%$anim$$Blendperiod$ = %f(0.200000)
+				:i $Obj_WaitAnimFinished$
+			:i endif
+			:i $MakeSkaterGoto$$SpinMenuSkaterIdle$
+		:i endfunction
+		:i function $shadow_skater_script2$
+			:i if $GotParam$$launched$
+				:i $wait$%i(30,0000001e)$gameframes$
+			:i endif
+			:i $unpauseskaters$
+			:i $SetActiveCamera$$id$ = $skatercam0$
+			:i $skater$.$Obj_GetID$
+			:i $MakeSkaterGoto$$ShadowSkaterFreestyleAI$$params$ =  isNull 
+			:i $targetOffset$ = $mainmneu_cam_offset$
+			:i $positionOffset$ = %vec3(0.000000,0.000000,160.000000)
+			:i $KillSkaterCamAnim$$all$
+			:i $PlaySkaterCamAnim$:s{$name$ = $mainmenu_camera02$
+				:i $skater$ = %i(0,00000000)
+				:i $targetID$ = %GLOBAL%$objId$
+				:i $targetOffset$ = %GLOBAL%$targetOffset$
+				:i $positionOffset$ = %GLOBAL%$positionOffset$
+				:i $play_hold$
+				:i $frames$ = %i(1,00000001)
+			:i :s}
+		:i endfunction
+		:i function $ShadowSkaterAI$
+			:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$
+			:i $TurnOffSpecialItem$
+			:i $SwitchOnBoard$
+			:i $ClearExceptions$
+			:i if NOT $Obj_HasModelLights$
+				:i $script_assert$%s(19,"No skater lighting!")
+			:i endif
+			:i $SetSpeed$%i(0,00000000)
+			:i $SetRollingFriction$%i(999,000003e7)
+			:i $Obj_SetLightAmbientColor$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+			:i $CancelRotateDisplay$
+			:i $DisablePlayerInput$
+			:i $SetRollingFriction$%i(0,00000000)
+			:i $Obj_MoveToNode$$name$ = $trg_playerrestart$$Orient$$NoReset$
+			:i $ShadowSkaterOptionsTricks$
+		:i endfunction
+		:i function $ShadowSkaterOptionsTricks$
+			:i $KillSpawnedScript$$name$ = $skaterDoOptionsTricks$
+			:i if  ($in_options_menu$ = %i(1,00000001)) 
+				:i $wait$%i(5,00000005)$gameframes$
+				:i $SpawnScript$$skaterDoOptionsTricks$
+			:i endif
+		:i endfunction
+		:i function $skaterDoOptionsTricks$
+			:i $skater$.$ShadowSkaterOptionsTrickScript$
+		:i endfunction
+		:i function $ShadowSkaterOptionsTrickScript$
+			:i $SetSpeed$%i(0,00000000)
+			:i $SetRollingFriction$%i(999,000003e7)
+			:i $SetSpeed$%i(1,00000001)
+			:i $SetRollingFriction$%i(5,00000005)
+			:i $type$ =  (select(40,2, 01 00 01 00) :OFFSET(7):OFFSET(8)
+				 :POS(7) %i(0,00000000)
+			:BREAKTO(9)
+				 :POS(8) %i(1,00000001) :POS(9) ) 
+				:i if  (%GLOBAL%$type$ = %i(0,00000000)) 
+					:i $PlayAnim$:s{$anim$ = $crouchidle$$speed$ = %f(1.000000)$Blendperiod$ = %f(0.200000)$cycle$:s}
+					:i $wait$%f(1.300000)$seconds$
+					:i $PlayAnim$:s{$anim$ = $ollie$$speed$ = %f(1.000000)$Blendperiod$ = %i(0,00000000):s}
+					:i $Jump$$no_sound$
+					:i $WaitAnim$%i(20,00000014)$percent$
+					:i $anim$ =  (select(40,10, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(10):OFFSET(11):OFFSET(12):OFFSET(13):OFFSET(14):OFFSET(15):OFFSET(16):OFFSET(17):OFFSET(18):OFFSET(19)
+						 :POS(10) $_360Flip$
+					:BREAKTO(20)
+						 :POS(11) $kickflip$
+					:BREAKTO(20)
+						 :POS(12) $heelflip$
+					:BREAKTO(20)
+						 :POS(13) $impossible$
+					:BREAKTO(20)
+						 :POS(14) $Hardflip$
+					:BREAKTO(20)
+						 :POS(15) $varialkickflip$
+					:BREAKTO(20)
+						 :POS(16) $varialheelflip$
+					:BREAKTO(20)
+						 :POS(17) $PopShoveItBS$
+					:BREAKTO(20)
+						 :POS(18) $NollieKickflip$
+					:BREAKTO(20)
+						 :POS(19) $PopShoveIt$ :POS(20) ) 
+						:i $PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %f(1.000000)$Blendperiod$ = %f(0.200000):s}
+						:i $Obj_WaitAnimFinished$
+						:i $PlayAnim$:s{$anim$ = $crouchidle$$speed$ = %f(1.000000)$Blendperiod$ = %f(0.200000)$cycle$:s}
+					:i else 
+						:i $anim$ =  (select(40,2, 01 00 01 00) :OFFSET(21):OFFSET(22)
+							 :POS(21) $NoseManual_Range$
+						:BREAKTO(23)
+							 :POS(22) $Manual_Range$ :POS(23) ) 
+							:i $PlayAnim$:s{$anim$ = $crouchidle$$speed$ = %f(1.000000)$Blendperiod$ = %f(0.200000)$cycle$:s}
+							:i $wait$%f(0.600000)$seconds$
+							:i $PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %f(1.000000)$from$ = %i(20,00000014)$to$ = %i(60,0000003c)$Blendperiod$ = %f(0.500000):s}
+							:i $Obj_WaitAnimFinished$
+							:i $PlayAnim$:s{$anim$ = %GLOBAL%$anim$$speed$ = %f(1.000000)$backwards$$from$ = %i(20,00000014)$to$ = %i(60,0000003c)$Blendperiod$ = %f(0.200000):s}
+							:i $Obj_WaitAnimFinished$
+							:i $PlayAnim$:s{$anim$ = $crouchidle$$speed$ = %f(1.000000)$Blendperiod$ = %f(0.200000)$cycle$:s}
+						:i endif
+					:i endfunction
+					:i function $ShadowSkaterFreestyleAI$
+						:i $KillSpawnedScript$$name$ = $ShadowSkaterOptionsTrickScript$
+						:i if $GotParam$$make_it_safe$
+							:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$
+							:i $TurnOffSpecialItem$
+							:i $SwitchOnBoard$
+							:i $ClearExceptions$
+							:i $Obj_MoveToNode$$name$ = $trg_playerrestart$$Orient$$NoReset$
+							:i if NOT $GotParam$$leave_lights$
+								:i if NOT $Obj_HasModelLights$
+									:i $script_assert$%s(19,"No skater lighting!")
+								:i endif
+								:i $Obj_SetLightAmbientColor$:s{
+									:i $r$ =  ($skater_ambient_color$:a{%i(0,00000000):a}) 
+									:i $g$ =  ($skater_ambient_color$:a{%i(1,00000001):a}) 
+									:i $b$ =  ($skater_ambient_color$:a{%i(2,00000002):a}) 
+								:i :s}
+								:i $Obj_SetLightDiffuseColor$:s{
+									:i $index$ = %i(0,00000000)
+									:i $r$ =  ($skater_diffuse_color1$:a{%i(0,00000000):a}) 
+									:i $g$ =  ($skater_diffuse_color1$:a{%i(1,00000001):a}) 
+									:i $b$ =  ($skater_diffuse_color1$:a{%i(2,00000002):a}) 
+								:i :s}
+								:i $Obj_SetLightDiffuseColor$:s{
+									:i $index$ = %i(1,00000001)
+									:i $r$ =  ($skater_diffuse_color2$:a{%i(0,00000000):a}) 
+									:i $g$ =  ($skater_diffuse_color2$:a{%i(1,00000001):a}) 
+									:i $b$ =  ($skater_diffuse_color2$:a{%i(2,00000002):a}) 
+								:i :s}
+							:i endif
+							:i $CancelRotateDisplay$
+							:i $DisablePlayerInput$
+							:i $SetRollingFriction$%i(10000,00002710)
+							:i $SetSpeed$%i(0,00000000)
+							:i $flip$
+						:i else 
+							:i $Obj_WaitAnimFinished$
+						:i endif
+						:i while
+							
+							:i $PlayAnim$$anim$ = $Ped_M_Idle1$
+							:i $wait$%i(2,00000002)$second$
+						:i loop_to 
+					:i endfunction
+					:i function $ShadowSkaterTauntAI$
+						:i $printf$%s(26,"script ShadowSkaterTauntAI")
+						:i $KillSpawnedScript$$name$ = $ShadowSkaterOptionsTrickScript$
+						:i if $GotParam$$make_it_safe$
+							:i $SkaterInit$$NoEndRun$$ReturnControl$$NoAnims$
+							:i $TurnOffSpecialItem$
+							:i $SwitchOnBoard$
+							:i $ClearExceptions$
+							:i if NOT $Obj_HasModelLights$
+								:i $script_assert$%s(19,"No skater lighting!")
+							:i endif
+							:i $Obj_SetLightAmbientColor$$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+							:i $Obj_SetLightDiffuseColor$$index$ = %i(0,00000000)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+							:i $Obj_SetLightDiffuseColor$$index$ = %i(1,00000001)$r$ = %i(0,00000000)$g$ = %i(0,00000000)$b$ = %i(0,00000000)
+							:i $CancelRotateDisplay$
+							:i $DisablePlayerInput$
+							:i $SetRollingFriction$%i(10000,00002710)
+							:i $SetSpeed$%i(0,00000000)
+							:i $Obj_MoveToPos$%vec3(0.000000,0.000000,0.000000)
+							:i if NOT $flipped$
+								:i $flip$
+							:i endif
+						:i else 
+							:i $Obj_WaitAnimFinished$
+						:i endif
+						:i $PlayAnim$$anim$ = $Idle$$cycle$
+					:i endfunction
+					:i $ped_profile_list$ = :a{
+						:i :s{
+							:i $display_name$ = %s(15,"THPS1 Tony Hawk")
+							:i $ped_appearance_structure$ = $appearance_thps_hawk$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_THPS$
+							:i $tag_texture$ = %s(12,"tags\thps_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(8,"The Hand")
+							:i $skater_profile$ = $Hand$
+							:i $ped_appearance_structure$ = $appearance_hand$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_HAND$
+							:i $tag_texture$ = %s(11,"tags\hnd_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Jesse James")
+							:i $skater_profile$ = $JesseJamesSkater$
+							:i $ped_appearance_structure$ = $Ped_segwayrider$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_JESSEJAMES$
+							:i $tag_texture$ = %s(11,"tags\jam_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Natas Kaupas")
+							:i $ped_appearance_structure$ = $Ped_Natas$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_NATAS$
+							:i $tag_texture$ = %s(11,"tags\nts_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Phil Margera")
+							:i $ped_appearance_structure$ = $Phil_Gagged$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PHIL$
+							:i $tag_texture$ = %s(12,"tags\phil_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(7,"Steve-O")
+							:i $skater_profile$ = $SteveoSkater$
+							:i $ped_appearance_structure$ = $Ped_mechbull$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_STEVEO$
+							:i $tag_texture$ = %s(11,"tags\stv_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(18,"Nigel Beaverhausen")
+							:i $ped_appearance_structure$ = $Nigel_Costume$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_NIGEL$
+							:i $tag_texture$ = %s(11,"tags\bev_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Paulie Ryan")
+							:i $skater_profile$ = $PaulieSkater$
+							:i $ped_appearance_structure$ = $paulie_full$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PAULIE$
+							:i $tag_texture$ = %s(12,"tags\paul_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(9,"Aborigine")
+							:i $ped_appearance_structure$ = $Ped_aborigine$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(14,"tags\aborigine")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(5,"Alien")
+							:i $ped_appearance_structure$ = $Ped_Alien$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP1$
+							:i $tag_texture$ = %s(10,"tags\alien")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Alien Doctor")
+							:i $ped_appearance_structure$ = $Ped_AlienDoctor$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP2$
+							:i $tag_texture$ = %s(13,"tags\alien_dr")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Alien Leader")
+							:i $ped_appearance_structure$ = $Ped_AlienLeader$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP4$
+							:i $tag_texture$ = %s(17,"tags\alien_leader")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"Australian Cop")
+							:i $ped_appearance_structure$ = $Ped_copaussie$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(11,"tags\OZ_cop")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(7,"Bigfoot")
+							:i $ped_appearance_structure$ = $Ped_Bigfoot$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP5$
+							:i $tag_texture$ = %s(12,"tags\bigfoot")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Bigfoot One")
+							:i $ped_appearance_structure$ = $Ped_Bigfoot_graf$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(14,"tags\bigfoot_1")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Boat Captain")
+							:i $ped_appearance_structure$ = $Ped_boatcaptain$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP2$
+							:i $tag_texture$ = %s(14,"tags\boat_capt")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(5,"Boxer")
+							:i $ped_appearance_structure$ = $Ped_Boxer$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(10,"tags\boxer")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(16,"Bratwurst Vendor")
+							:i $ped_appearance_structure$ = $Ped_Bratwurst$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(16,"tags\brat_vendor")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(10,"Camera Man")
+							:i $ped_appearance_structure$ = $Ped_CameraMan$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(15,"tags\camera_man")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(19,"Construction Worker")
+							:i $ped_appearance_structure$ = $Ped_Construction_Worker_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(24,"tags\construction_worker")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Corn Vendor")
+							:i $ped_appearance_structure$ = $Ped_Corn_Vendor_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(16,"tags\corn_vendor")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Cut Chemist")
+							:i $ped_appearance_structure$ = $Ped_CutChemist$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(16,"tags\cut_chemist")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(12,"Flute Player")
+							:i $ped_appearance_structure$ = $Ped_FluteGuy$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(17,"tags\flute_player")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(9,"Geeky Kid")
+							:i $ped_appearance_structure$ = $Ped_Nerdkid$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP1$
+							:i $tag_texture$ = %s(14,"tags\geeky_kid")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(10,"German Cop")
+							:i $ped_appearance_structure$ = $Ped_germancop$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(15,"tags\german_cop")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"German Drunk 1")
+							:i $ped_appearance_structure$ = $Ped_germandrunk$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP3$
+							:i $tag_texture$ = %s(19,"tags\german_drunk_1")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"German Drunk 2")
+							:i $ped_appearance_structure$ = $Ped_germandrunk01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(19,"tags\german_drunk_2")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"German Drunk 3")
+							:i $ped_appearance_structure$ = $Ped_germandrunk02$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(19,"tags\german_drunk_3")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Graffiti Punk")
+							:i $ped_appearance_structure$ = $Ped_Grafiti_Punker_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(18,"tags\graffiti_punk")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Guitar Player")
+							:i $ped_appearance_structure$ = $Ped_guitarist$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(14,"tags\guitarist")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Horn Player")
+							:i $ped_appearance_structure$ = $Ped_jazzman1$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(16,"tags\horn_player")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(18,"Hospital Attendant")
+							:i $ped_appearance_structure$ = $Ped_attendant$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(14,"tags\attendant")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(3,"Imp")
+							:i $ped_appearance_structure$ = $Ped_Imp$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP5$
+							:i $tag_texture$ = %s(8,"tags\imp")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Inline Skater")
+							:i $ped_appearance_structure$ = $Ped_rollerblader$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP4$
+							:i $tag_texture$ = %s(18,"tags\inline_skater")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(9,"Lifeguard")
+							:i $ped_appearance_structure$ = $Ped_Lifeguard$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(14,"tags\lifeguard")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Lounge Singer")
+							:i $ped_appearance_structure$ = $Ped_loungesinger$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(18,"tags\lounge_singer")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Lost Soul 1")
+							:i $ped_appearance_structure$ = $Ped_LostSoul01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP2$
+							:i $tag_texture$ = %s(16,"tags\lost_soul_1")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Lost Soul 2")
+							:i $ped_appearance_structure$ = $Ped_LostSoul02$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(16,"tags\lost_soul_2")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(11,"Lost Soul 3")
+							:i $ped_appearance_structure$ = $Ped_LostSoul03$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(16,"tags\lost_soul_3")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(5,"Mayan")
+							:i $ped_appearance_structure$ = $Ped_Mayan$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(10,"tags\mayan")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(15,"Mayan Tiki Mask")
+							:i $ped_appearance_structure$ = $Ped_TikiMan$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(15,"tags\mayan_mask")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(18,"Metal Detector Guy")
+							:i $ped_appearance_structure$ = $Ped_metaldetector$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(19,"tags\metal_detector")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(4,"Mime")
+							:i $ped_appearance_structure$ = $Ped_mime$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP3$
+							:i $tag_texture$ = %s(9,"tags\mime")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(9,"Paramedic")
+							:i $ped_appearance_structure$ = $Ped_Paramedic_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(14,"tags\paramedic")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(6,"Pirate")
+							:i $ped_appearance_structure$ = $Ped_Pirate$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(11,"tags\pirate")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(8,"Ramp Kid")
+							:i $ped_appearance_structure$ = $Ped_Ramp_Kid_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP4$
+							:i $tag_texture$ = %s(13,"tags\ramp_kid")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(21,"Revolutionary Soldier")
+							:i $ped_appearance_structure$ = $Ped_Soldier_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(12,"tags\soldier")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"Security Guard")
+							:i $ped_appearance_structure$ = $Ped_Security_Guard_01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(19,"tags\security_guard")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(7,"Skaboto")
+							:i $ped_appearance_structure$ = $Ped_Skaboto$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(12,"tags\skaboto")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Skatopia Punk")
+							:i $ped_appearance_structure$ = $Ped_Skatopiaguy$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(18,"tags\skatopia_punk")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"Space Monkey 1")
+							:i $ped_appearance_structure$ = $Ped_dalek$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP1$
+							:i $tag_texture$ = %s(12,"tags\dalek_1")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"Space Monkey 2")
+							:i $ped_appearance_structure$ = $Ped_dalekPink$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP5$
+							:i $tag_texture$ = %s(12,"tags\dalek_2")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(14,"Space Monkey 3")
+							:i $ped_appearance_structure$ = $Ped_dalekBlue$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(12,"tags\dalek_3")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Voodoo Doctor")
+							:i $ped_appearance_structure$ = $Ped_witchdoctor$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP6$
+							:i $tag_texture$ = %s(14,"tags\voodoo_dr")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(13,"Wiener Vendor")
+							:i $ped_appearance_structure$ = $Ped_Wienerman$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP8$
+							:i $tag_texture$ = %s(15,"tags\wiener_man")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(8,"Zombie 1")
+							:i $ped_appearance_structure$ = $Ped_zombiemale01$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP3$
+							:i $tag_texture$ = %s(12,"tags\zombie1")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(8,"Zombie 2")
+							:i $ped_appearance_structure$ = $Ped_zombiemale02$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PEDGROUP7$
+							:i $tag_texture$ = %s(12,"tags\zombie2")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(4,"Nick")
+							:i $ped_appearance_structure$ = $appearance_Nick_SecretGuy$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_SECRETPC2$
+							:i $tag_texture$ = %s(11,"tags\cas_01")
+						:i :s}
+						:i :s{
+							:i $display_name$ = %s(5,"Price")
+							:i $ped_appearance_structure$ = $appearance_Price_SecretGuy$
+							:i $ped_group_flag$ = $SKATER_UNLOCKED_PRICE_PC$
+							:i $tag_texture$ = %s(11,"tags\cas_01")
+						:i :s}
+						:i :a}
+					:i $Cheat_Array_PS2$ = :a{
+						:i :s{$c1$ = %i(545841905,2088e2f1)$c2$ = %i(84713469,050c9ffd)$CheatScript$ = $cheat_unlock_always_special$:s};
+						:i :s{$c1$ = %i(3711019585,dd31aa41)$c2$ = %i(3054307067,b60d06fb)$CheatScript$ = $cheat_unlock_perfect_rail$:s};
+						:i :s{$c1$ = %i(2949274725,afca5c65)$c2$ = %i(703699882,29f19baa)$CheatScript$ = $cheat_unlock_perfect_skitch$:s};
+						:i :s{$c1$ = %i(3071836421,b7188105)$c2$ = %i(715658530,2aa81522)$CheatScript$ = $cheat_unlock_perfect_manual$:s};
+						:i :s{$c1$ = %i(55099068,0348bebc)$c2$ = %i(1958650257,74bea191)$CheatScript$ = $cheat_unlock_moon_grav$:s};
+						:i :s{$c1$ = %i(1344548858,50242ffa)$c2$ = %i(3367857572,c8bd6da4)$CheatScript$ = $cheat_unlock_pedgroup1$:s};
+						:i :s{$c1$ = %i(285918770,110ac632)$c2$ = %i(1603341981,5f910e9d)$CheatScript$ = $cheat_unlock_pedgroup2$:s};
+						:i :s{$c1$ = %i(2898188072,acbed728)$c2$ = %i(3221746841,c007f499)$CheatScript$ = $cheat_unlock_pedgroup3$:s};
+						:i :s{$c1$ = %i(2512474469,95c15165)$c2$ = %i(3654128643,d9cd9403)$CheatScript$ = $cheat_unlock_pedgroup4$:s};
+						:i :s{$c1$ = %i(2601453484,9b0f07ac)$c2$ = %i(4066103935,f25bd27f)$CheatScript$ = $cheat_unlock_pedgroup5$:s};
+						:i :s{$c1$ = %i(1891226589,70b9d3dd)$c2$ = %i(3440304909,cd0ee30d)$CheatScript$ = $cheat_unlock_pedgroup6$:s};
+						:i :s{$c1$ = %i(845877638,326b1186)$c2$ = %i(3750166191,df86feaf)$CheatScript$ = $cheat_unlock_pedgroup7$:s};
+						:i :s{$c1$ = %i(4241276889,fcccbfd9)$c2$ = %i(3317945329,c5c3d3f1)$CheatScript$ = $cheat_unlock_pedgroup8$:s};
+						:i :s{$c1$ = %i(170978007,0a30ead7)$c2$ = %i(3728756172,de404dcc)$CheatScript$ = $cheat_give_shrek$:s};
+						:i :s{$c1$ = %i(1519669830,5a945246)$c2$ = %i(2289210477,8872946d)$CheatScript$ = $cheat_give_soldier$:s};
+						:i :s{$c1$ = %i(1932251332,732bd0c4)$c2$ = %i(2016179590,782c7586)$CheatScript$ = $cheat_give_phil$:s};
+						:i :s{$c1$ = %i(3679856488,db562768)$c2$ = %i(2560207368,9899aa08)$CheatScript$ = $cheat_give_hand$:s};
+						:i :s{$c1$ = %i(3244735968,c166bde0)$c2$ = %i(826772284,31478b3c)$CheatScript$ = $cheat_give_paulie$:s};
+						:i :s{$c1$ = %i(4076420267,f2f93cab)$c2$ = %i(3946278836,eb376fb4)$CheatScript$ = $cheat_give_nigel$:s};
+						:i :s{$c1$ = %i(308960353,126a5c61)$c2$ = %i(486659919,1d01d74f)$CheatScript$ = $cheat_give_steveo$:s};
+						:i :s{$c1$ = %i(3020727404,b40ca46c)$c2$ = %i(190985262,0b62342e)$CheatScript$ = $cheat_give_jesse$:s};
+						:i :s{$c1$ = %i(1518124631,5a7cbe57)$c2$ = %i(2063664936,7b010728)$CheatScript$ = $cheat_give_thps$:s};
+						:i :s{$c1$ = %i(3400553658,cab054ba)$c2$ = %i(872184104,33fc7928)$CheatScript$ = $cheat_give_natas$:s};
+						:i :s{$c1$ = %i(732008750,2ba1912e)$c2$ = %i(1439874859,55d2bf2b)$CheatScript$ = $cheat_unlockmovies$:s};
+						:i :s{$c1$ = %i(3856893232,e5e38530)$c2$ = %i(226203349,0d7b96d5)$CheatScript$ = $cheat_reallygivelevels$:s};
+						:i :s{$c1$ = %i(3438557768,ccf43a48)$c2$ = %i(1701196796,656633fc)$CheatScript$ = $cheat_give_story_skaters$:s};
+						:i :s{$c1$ = %i(91444980,057356f4)$c2$ = %i(392468884,17649994)$CheatScript$ = $unlock_all_cheats$:s};
+						:i :s{$c1$ = %i(3488527622,cfeeb506)$c2$ = %i(3906434068,e8d77414)$CheatScript$ = $cheat_select_shift$:s};
+						:i :s{$c1$ = %i(2801886057,a7016369)$c2$ = %i(1180396759,465b6cd7)$CheatScript$ = $cheat_sce_patchtest$:s};
+						:i :a}
+					:i $Cheat_Array_Xbox$ = :a{
+						:i :s{$c1$ = %i(545841905,2088e2f1)$c2$ = %i(84713469,050c9ffd)$CheatScript$ = $cheat_unlock_always_special$:s};
+						:i :s{$c1$ = %i(3711019585,dd31aa41)$c2$ = %i(3054307067,b60d06fb)$CheatScript$ = $cheat_unlock_perfect_rail$:s};
+						:i :s{$c1$ = %i(2949274725,afca5c65)$c2$ = %i(703699882,29f19baa)$CheatScript$ = $cheat_unlock_perfect_skitch$:s};
+						:i :s{$c1$ = %i(3071836421,b7188105)$c2$ = %i(715658530,2aa81522)$CheatScript$ = $cheat_unlock_perfect_manual$:s};
+						:i :s{$c1$ = %i(55099068,0348bebc)$c2$ = %i(1958650257,74bea191)$CheatScript$ = $cheat_unlock_moon_grav$:s};
+						:i :s{$c1$ = %i(1344548858,50242ffa)$c2$ = %i(3367857572,c8bd6da4)$CheatScript$ = $cheat_unlock_pedgroup1$:s};
+						:i :s{$c1$ = %i(285918770,110ac632)$c2$ = %i(1603341981,5f910e9d)$CheatScript$ = $cheat_unlock_pedgroup2$:s};
+						:i :s{$c1$ = %i(2898188072,acbed728)$c2$ = %i(3221746841,c007f499)$CheatScript$ = $cheat_unlock_pedgroup3$:s};
+						:i :s{$c1$ = %i(2512474469,95c15165)$c2$ = %i(3654128643,d9cd9403)$CheatScript$ = $cheat_unlock_pedgroup4$:s};
+						:i :s{$c1$ = %i(2601453484,9b0f07ac)$c2$ = %i(4066103935,f25bd27f)$CheatScript$ = $cheat_unlock_pedgroup5$:s};
+						:i :s{$c1$ = %i(1891226589,70b9d3dd)$c2$ = %i(3440304909,cd0ee30d)$CheatScript$ = $cheat_unlock_pedgroup6$:s};
+						:i :s{$c1$ = %i(845877638,326b1186)$c2$ = %i(3750166191,df86feaf)$CheatScript$ = $cheat_unlock_pedgroup7$:s};
+						:i :s{$c1$ = %i(4241276889,fcccbfd9)$c2$ = %i(3317945329,c5c3d3f1)$CheatScript$ = $cheat_unlock_pedgroup8$:s};
+						:i :s{$c1$ = %i(3991866747,edef0d7b)$c2$ = %i(3431030795,cc81600b)$CheatScript$ = $cheat_give_shrek$:s};
+						:i :s{$c1$ = %i(1056673164,3efb8d8c)$c2$ = %i(3562619754,d459436a)$CheatScript$ = $cheat_give_soldier$:s};
+						:i :s{$c1$ = %i(183490368,0aefd740)$c2$ = %i(912427169,366288a1)$CheatScript$ = $cheat_give_phil$:s};
+						:i :s{$c1$ = %i(4278218099,ff006d73)$c2$ = %i(460243178,1b6ec0ea)$CheatScript$ = $cheat_give_hand$:s};
+						:i :s{$c1$ = %i(2961936924,b08b921c)$c2$ = %i(1370788918,51b49436)$CheatScript$ = $cheat_give_paulie$:s};
+						:i :s{$c1$ = %i(3618474361,d7ad8979)$c2$ = %i(4227995280,fc021690)$CheatScript$ = $cheat_give_nigel$:s};
+						:i :s{$c1$ = %i(12676939,00c16f4b)$c2$ = %i(2859445862,aa6fae66)$CheatScript$ = $cheat_give_steveo$:s};
+						:i :s{$c1$ = %i(3693276075,dc22ebab)$c2$ = %i(3542577000,d3276f68)$CheatScript$ = $cheat_give_jesse$:s};
+						:i :s{$c1$ = %i(170735393,0a2d3721)$c2$ = %i(1091967566,41161a4e)$CheatScript$ = $cheat_give_thps$:s};
+						:i :s{$c1$ = %i(371805994,16294f2a)$c2$ = %i(2699095323,a0e0ed1b)$CheatScript$ = $cheat_give_natas$:s};
+						:i :s{$c1$ = %i(2110743987,7dcf65b3)$c2$ = %i(1158170091,450845eb)$CheatScript$ = $unlock_PC_secret_character1$:s};
+						:i :s{$c1$ = %i(3312404063,c56f465f)$c2$ = %i(3697898195,dc6972d3)$CheatScript$ = $unlock_PC_secret_character2$:s};
+						:i :s{$c1$ = %i(475224047,1c5357ef)$c2$ = %i(3097259218,b89c6cd2)$CheatScript$ = $cheat_unlockmovies$:s};
+						:i :s{$c1$ = %i(3333700241,c6b43a91)$c2$ = %i(720938718,2af8a6de)$CheatScript$ = $cheat_reallygivelevels$:s};
+						:i :s{$c1$ = %i(634158371,25cc7d23)$c2$ = %i(2630408535,9cc8d957)$CheatScript$ = $cheat_give_story_skaters$:s};
+						:i :s{$c1$ = %i(2418308621,9024760d)$c2$ = %i(1905700282,7196adba)$CheatScript$ = $unlock_all_cheats$:s};
+						:i :s{$c1$ = %i(3488527622,cfeeb506)$c2$ = %i(3906434068,e8d77414)$CheatScript$ = $cheat_select_shift$:s};
+						:i :a}
+					:i $Cheat_Array_Gamecube$ = :a{
+						:i :s{$c1$ = %i(545841905,2088e2f1)$c2$ = %i(84713469,050c9ffd)$CheatScript$ = $cheat_unlock_always_special$:s};
+						:i :s{$c1$ = %i(3711019585,dd31aa41)$c2$ = %i(3054307067,b60d06fb)$CheatScript$ = $cheat_unlock_perfect_rail$:s};
+						:i :s{$c1$ = %i(2949274725,afca5c65)$c2$ = %i(703699882,29f19baa)$CheatScript$ = $cheat_unlock_perfect_skitch$:s};
+						:i :s{$c1$ = %i(3071836421,b7188105)$c2$ = %i(715658530,2aa81522)$CheatScript$ = $cheat_unlock_perfect_manual$:s};
+						:i :s{$c1$ = %i(55099068,0348bebc)$c2$ = %i(1958650257,74bea191)$CheatScript$ = $cheat_unlock_moon_grav$:s};
+						:i :s{$c1$ = %i(1344548858,50242ffa)$c2$ = %i(3367857572,c8bd6da4)$CheatScript$ = $cheat_unlock_pedgroup1$:s};
+						:i :s{$c1$ = %i(285918770,110ac632)$c2$ = %i(1603341981,5f910e9d)$CheatScript$ = $cheat_unlock_pedgroup2$:s};
+						:i :s{$c1$ = %i(2898188072,acbed728)$c2$ = %i(3221746841,c007f499)$CheatScript$ = $cheat_unlock_pedgroup3$:s};
+						:i :s{$c1$ = %i(2512474469,95c15165)$c2$ = %i(3654128643,d9cd9403)$CheatScript$ = $cheat_unlock_pedgroup4$:s};
+						:i :s{$c1$ = %i(2601453484,9b0f07ac)$c2$ = %i(4066103935,f25bd27f)$CheatScript$ = $cheat_unlock_pedgroup5$:s};
+						:i :s{$c1$ = %i(1891226589,70b9d3dd)$c2$ = %i(3440304909,cd0ee30d)$CheatScript$ = $cheat_unlock_pedgroup6$:s};
+						:i :s{$c1$ = %i(845877638,326b1186)$c2$ = %i(3750166191,df86feaf)$CheatScript$ = $cheat_unlock_pedgroup7$:s};
+						:i :s{$c1$ = %i(4241276889,fcccbfd9)$c2$ = %i(3317945329,c5c3d3f1)$CheatScript$ = $cheat_unlock_pedgroup8$:s};
+						:i :s{$c1$ = %i(170978007,0a30ead7)$c2$ = %i(3728756172,de404dcc)$CheatScript$ = $cheat_give_shrek$:s};
+						:i :s{$c1$ = %i(649428403,26b57db3)$c2$ = %i(3196419628,be857e2c)$CheatScript$ = $cheat_give_soldier$:s};
+						:i :s{$c1$ = %i(128307069,07a5cf7d)$c2$ = %i(928653172,375a1f74)$CheatScript$ = $cheat_give_phil$:s};
+						:i :s{$c1$ = %i(379679930,16a174ba)$c2$ = %i(1875427755,6fc8c1ab)$CheatScript$ = $cheat_give_hand$:s};
+						:i :s{$c1$ = %i(2873308624,ab4335d0)$c2$ = %i(1181521849,466c97b9)$CheatScript$ = $cheat_give_paulie$:s};
+						:i :s{$c1$ = %i(948655059,388b53d3)$c2$ = %i(3325556448,c637f6e0)$CheatScript$ = $cheat_give_nigel$:s};
+						:i :s{$c1$ = %i(3647077222,d961fb66)$c2$ = %i(264051307,0fbd1a6b)$CheatScript$ = $cheat_give_steveo$:s};
+						:i :s{$c1$ = %i(1449630157,566799cd)$c2$ = %i(1853352064,6e77e880)$CheatScript$ = $cheat_give_jesse$:s};
+						:i :s{$c1$ = %i(2117264192,7e32e340)$c2$ = %i(933696620,37a7146c)$CheatScript$ = $cheat_give_thps$:s};
+						:i :s{$c1$ = %i(3960925249,ec16ec41)$c2$ = %i(602512449,23e99c41)$CheatScript$ = $cheat_give_natas$:s};
+						:i :s{$c1$ = %i(952447539,38c53233)$c2$ = %i(1258891340,4b09284c)$CheatScript$ = $cheat_unlockmovies$:s};
+						:i :s{$c1$ = %i(2285987002,884164ba)$c2$ = %i(1671116804,639b3804)$CheatScript$ = $cheat_reallygivelevels$:s};
+						:i :s{$c1$ = %i(1603485155,5f933de3)$c2$ = %i(3723807037,ddf4c93d)$CheatScript$ = $cheat_give_story_skaters$:s};
+						:i :s{$c1$ = %i(14630830,00df3fae)$c2$ = %i(2269670929,87486e11)$CheatScript$ = $unlock_all_cheats$:s};
+						:i :s{$c1$ = %i(3488527622,cfeeb506)$c2$ = %i(3906434068,e8d77414)$CheatScript$ = $cheat_select_shift$:s};
+						:i :a}
+					:i function $create_createamodes_menu$
+						:i if  ($DEMO_BUILD$ = %i(1,00000001)) 
+						:i endif
+						:i $main_menu_wait_until_all_clear$
+						:i $change$$main_menu_return_to_createamodes$ = %i(1,00000001)
+						:i $make_new_roundbar_menu$$title$ = %s(14,"CREATE-A-MODES")$pos$ = %vec2(130.000000,100.000000)$use_icons$$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_main_menu$:s}
+						:i if $GotParam$$launched$
+							:i $spin_menu_skater_script$$reset$
+						:i else 
+							:i $MakeSkaterGoto$$SpinMenuSkaterIdle$$params$ = :s{$reset$:s}
+						:i endif
+						:i $change$$cas_cam_angle$ = %i(0,00000000)
+						:i $cas_setup_rotating_camera$$cam_anim$ = $create_modes_camera$
+						:i $pulse_blur$$speed$ = %i(2,00000002)$start$ = %i(255,000000ff)
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(15,"CREATE-A-SKATER")
+							:i $id$ = $menu_cas$
+							:i $pad_choose_script$ = $createamodes_menu_exit$
+							:i $pad_choose_params$ = :s{
+								:i $new_menu_script$ = $cas_mainmenu_startup$
+								:i $change_cas_from_main$
+							:i :s}
+							:i $icon$ = $mainicon_cas$
+						:i :s}
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(13,"CREATE-A-PARK")
+							:i $id$ = $menu_parked$
+							:i $pad_choose_script$ = $createamodes_menu_exit$
+							:i $pad_choose_params$ = :s{
+								:i $new_menu_script$ = $launch_park_editor$
+							:i :s}
+							:i $icon$ = $mainicon_cap$
+							:i %GLOBAL%$demo_build_item_active$
+						:i :s}
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(16,"CREATE-A-GRAPHIC")
+							:i $id$ = $menu_cagr$
+							:i $pad_choose_script$ = $createamodes_menu_exit$
+							:i $pad_choose_params$ = :s{
+								:i $new_menu_script$ = $edit_graphic_launch_cagr$
+							:i :s}
+							:i $icon$ = $mainicon_cagr$
+						:i :s}
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(13,"CREATE-A-GOAL")
+							:i $id$ = $menu_creategoals$
+							:i $pad_choose_script$ = $createamodes_menu_exit$
+							:i $pad_choose_params$ = :s{
+								:i $new_menu_script$ = $create_select_goals_menu$
+								:i $change_gamemode$ = $change_gamemode_creategoals$
+							:i :s}
+							:i $icon$ = $mainicon_cag$
+							:i %GLOBAL%$demo_build_item_active$
+						:i :s}
+						:i $add_roundbar_menu_item$:s{
+							:i $text$ = %s(14,"CREATE-A-TRICK")
+							:i $id$ = $menu_cat$
+							:i $pad_choose_script$ = $createamodes_menu_exit$
+							:i $pad_choose_params$ = :s{
+								:i $new_menu_script$ = $cat_launch_bo$
+								:i $change_gamemode$ = $change_gamemode_singlesession$
+								:i $set_cat_mode_flag$
+							:i :s}
+							:i $icon$ = $mainicon_cat$
+							:i %GLOBAL%$demo_build_item_active$
+						:i :s}
+						:i $draw_menu_background$$create_mode$
+						:i $roundbar_menu_finish$$build_pause_parts$ = %i(0,00000000)
+					:i endfunction
+					:i function $createamodes_menu_exit$
+						:i if $GotParam$$change_cas_from_main$
+							:i $change$$entered_cas_from_main$ = %i(1,00000001)
+						:i endif
+						:i if $GotParam$$set_cat_mode_flag$
+							:i $change$$launch_to_createatrick$ = %i(1,00000001)
+						:i else 
+							:i $change$$launch_to_createatrick$ = %i(0,00000000)
+						:i endif
+						:i if $ObjectExists$$id$ = $current_menu_anchor$
+							:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+						:i endif
+						:i %GLOBAL%$new_menu_script$ isNull 
+					:i endfunction
+					:i function $cancel_quit_game$
+						:i $dialog_box_exit$
+						:i $create_main_menu$
+					:i endfunction
+					:i function $confirm_quit_game$
+						:i $menu_confirm_quit$:s{
+							:i $yes_script$ = $quit_game$
+							:i $back_script$ = $cancel_quit_game$
+							:i $no_script$ = $cancel_quit_game$
+						:i :s}
+					:i endfunction
+					:i function $main_menu_exit_game$
+						:i $menu_confirm_quit$:s{
+							:i $yes_script$ = $quit_game$
+							:i $back_script$ = $cancel_quit_game$
+							:i $no_script$ = $cancel_quit_game$
+						:i :s}
+					:i endfunction
+					:i function $quit_game$
+						:i $QuitGame$
+					:i endfunction
+					:i function $create_gamemode_options_menu$
+						:i $dialog_box_exit$
+						:i if $GotParam$$change_gamemode$
+							:i %GLOBAL%$change_gamemode$
+						:i endif
+						:i $change$$cas_cam_angle$ = %i(0,00000000)
+						:i $cas_setup_rotating_camera$$cam_anim$ = $story_mode_menu$
+						:i if $GameModeEquals$$is_classic$
+							:i $mode_text$ = %s(12,"CLASSIC MODE")
+							:i $mode_flag$ = $CLASSIC_STARTED$
+							:i $continue_script$ = $launch_select_skater_menu$
+						:i else 
+							:i $mode_text$ = %s(10,"STORY MODE")
+							:i $mode_flag$ = $CAREER_STARTED$
+							:i $continue_script$ = $story_options_change_level$
+						:i endif
+						:i $make_new_roundbar_menu$$title$ =  (%GLOBAL%$mode_text$ + %s(8," OPTIONS")) $pos$ = %vec2(130.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_main_menu$:s}$vmenu_id$ = $career_options_vmenu$
+						:i if $GameModeEquals$$is_career$
+							:i if NOT $CD$
+								:i $add_roundbar_menu_item$:s{
+									:i $text$ = %s(12,"LEVEL SELECT")
+									:i $id$ = $ss_play_level$
+									:i $pad_choose_script$ = $gamemode_options_menu_exit$
+									:i $pad_choose_params$ = :s{
+										:i $new_menu_script$ = $launch_level_select_menu$
+									:i :s}
+								:i :s}
+							:i endif
+						:i endif
+						:i if $GetGlobalFlag$$flag$ = %GLOBAL%$mode_flag$
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(9,"CONTINUE ") + %GLOBAL%$mode_text$) 
+								:i $id$ = $ss_continue_story$
+								:i $pad_choose_script$ = $gamemode_options_menu_exit$
+								:i $pad_choose_params$ = :s{
+									:i $new_menu_script$ = %GLOBAL%$continue_script$
+									:i $continue_story$
+								:i :s}
+							:i :s}
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(10,"START NEW ") + %GLOBAL%$mode_text$) 
+								:i $id$ = $ss_new_story$
+								:i $pad_choose_script$ = $gamemode_overwrite_warning$
+							:i :s}
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(18,"LOAD GAME PROGRESS")) 
+								:i $id$ = $ss_load_story$
+								:i $pad_choose_script$ = $gamemode_overwrite_warning$
+								:i $pad_choose_params$ = :s{
+									:i $load$
+									:i $pad_choose_script$ = $launch_career_menu_load_game_sequence$
+								:i :s}
+							:i :s}
+						:i else 
+							:i $reset_gamemode$
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(9,"CONTINUE ") + %GLOBAL%$mode_text$) 
+								:i $id$ = $ss_continue_story$
+								:i $pad_choose_script$ = $null_script$
+								:i $not_focusable$
+							:i :s}
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(10,"START NEW ") + %GLOBAL%$mode_text$) 
+								:i $id$ = $ss_new_story$
+								:i $pad_choose_script$ = $gamemode_options_menu_exit$
+								:i $pad_choose_params$ = :s{
+									:i $new_menu_script$ = $create_gamemode_difficulty_menu$
+								:i :s}
+							:i :s}
+							:i $add_roundbar_menu_item$:s{
+								:i $text$ =  (%s(18,"LOAD GAME PROGRESS")) 
+								:i $id$ = $ss_load_story$
+								:i $pad_choose_script$ = $gamemode_options_menu_exit$
+								:i $pad_choose_params$ = :s{
+									:i $new_menu_script$ = $launch_career_menu_load_game_sequence$
+									:i $from_career$
+								:i :s}
+							:i :s}
+						:i endif
+						:i if NOT $GameModeEquals$$is_classic$
+							:i $draw_menu_background$$story_mode$$story_wdt$
+						:i else 
+							:i $draw_menu_background$$story_mode$
+						:i endif
+						:i $roundbar_menu_finish$$build_pause_parts$ = %i(0,00000000)
+					:i endfunction
+					:i function $gamemode_options_menu_exit$
+						:i if $GotParam$$show_skater$
+							:i $skater$.$unhide$
+						:i endif
+						:i $dialog_box_exit$
+						:i if $ObjectExists$$id$ = $current_menu_anchor$
+							:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+						:i endif
+						:i if $GameModeEquals$$is_classic$
+							:i if $GotParam$$just_started_game$
+								:i $GetInitialsString$
+								:i if $StringEquals$$a$ = %GLOBAL%$string$$b$ = %s(3,"ABC")
+									:i $high_scores_menu_enter_initials$ isNull $allow_back$$keyboard_cancel_script$ = $create_gamemode_difficulty_menu$
+									:i return
+									
+								:i endif
+							:i endif
+						:i endif
+						:i $safe_callback$ = %GLOBAL%$new_menu_script$
+						:i $RemoveParameter$$new_menu_script$
+						:i %GLOBAL%$safe_callback$ isNull 
+					:i endfunction
+					:i function $gamemode_overwrite_warning$$pad_choose_script$ = $gamemode_options_menu_exit$
+						:i if $GameModeEquals$$is_classic$
+							:i $mode_text$ = %s(12,"Classic Mode")
+						:i else 
+							:i $mode_text$ = %s(10,"Story Mode")
+						:i endif
+						:i if $GotParam$$load$
+							:i $mode_text$ = %s(13,"Game progress")
+							:i $FormatText$:s{
+								:i $TextName$ = $title$
+								:i %s(7,"Load %m")
+								:i $m$ = %GLOBAL%$mode_text$
+							:i :s}
+							:i $extra_text$ = %s(13,"\n Continue? ")
+						:i else 
+							:i $FormatText$:s{
+								:i $TextName$ = $title$
+								:i %s(12,"Start New %m")
+								:i $m$ = %GLOBAL%$mode_text$
+							:i :s}
+							:i $extra_text$ = %s(75,"\n\nNote: Items unlocked from beating the game will not be lost.\nContinue?")
+						:i endif
+						:i $FormatText$:s{
+							:i $TextName$ = $text$
+							:i %sc(65,"Warning !\nAny unsaved changes to your current %m will be lost.%e")
+							:i $m$ = %GLOBAL%$mode_text$
+							:i $e$ = %GLOBAL%$extra_text$
+						:i :s}
+						:i $FireEvent$$type$ = $unfocus$$target$ = $current_menu_anchor$
+						:i $DoScreenElementMorph$$id$ = $career_options_vmenu$$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+						:i $create_snazzy_dialog_box$:s{
+							:i $title$ = %GLOBAL%$title$
+							:i $text$ = %GLOBAL%$text$
+							:i $text_dims$ = %vec2(400.000000,0.000000)
+							:i $no_bg$
+							:i $pad_back_script$ = $cancel_gamemode_overwrite$
+							:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"No")$pad_choose_script$ = $cancel_gamemode_overwrite$:s}
+								:i :s{$font$ = $small$$text$ = %sc(3,"Yes")
+									:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+									:i $pad_choose_params$ = 
+									:i :s{
+										:i $new_menu_script$ = $reset_gamemode$
+										:i $create_difficulty_menu$
+									:i :s}
+								:i :s}
+								:i :a}
+						:i :s}
+					:i endfunction
+					:i function $cancel_gamemode_overwrite$
+						:i $dialog_box_exit$
+						:i $DoScreenElementMorph$$id$ = $career_options_vmenu$$alpha$ = %i(1,00000001)$time$ = %f(0.100000)
+						:i $FireEvent$$type$ = $focus$$target$ = $current_menu_anchor$
+						:i $SetScreenElementLock$$id$ = $current_menu_anchor$$off$
+						:i $create_helper_text$$generic_helper_text$
+					:i endfunction
+					:i function $reset_gamemode$
+						:i if $GameModeEquals$$is_classic$
+							:i $printf$%s(17,"RESETTING CLASSIC")
+							:i $UnsetGlobalFlag$$flag$ = $CLASSIC_STARTED$
+							:i $clear_flag_array$ = $CLASSIC_CLEAR_GLOBAL_FLAGS$
+							:i $need_flags_cleared$ = %i(1,00000001)
+							:i $reset_mode$ = $classic$
+						:i else 
+							:i $printf$%s(15,"RESETTING STORY")
+							:i $SetCurrentChapter$$chapter$ = %i(0,00000000)
+							:i $ResetChapterStatus$
+							:i $ForEachSkaterName$$do$ = $ResetToDefaultProfile$$params$ = :s{$partial$ = $stats_and_tricks$:s}
+							:i $GetCurrentSkaterProfileIndex$
+							:i $UpdateTrickMappings$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+							:i $UnsetGlobalFlag$$flag$ = $CAREER_STARTED$
+							:i $clear_flag_array$ = $STORY_CLEAR_GLOBAL_FLAGS$
+							:i $need_flags_cleared$ = %i(1,00000001)
+							:i $reset_mode$ = $career$
+						:i endif
+						:i $CareerReset$%GLOBAL%$reset_mode$
+						:i $GoalManager_ResetCareer$%GLOBAL%$reset_mode$
+						:i if  (%GLOBAL%$need_flags_cleared$ = %i(1,00000001)) 
+							:i $index$ = %i(0,00000000)
+							:i while
+								
+								:i if $ArrayContains$$array$ = %GLOBAL%$clear_flag_array$$contains$ = %GLOBAL%$index$
+									:i $UnsetGlobalFlag$$flag$ = %GLOBAL%$index$
+								:i endif
+								:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+							:i loop_to %i(512,00000200)
+						:i endif
+						:i $SetStartingLevelFlags$
+						:i if $GotParam$$create_difficulty_menu$
+							:i $create_gamemode_difficulty_menu$
+						:i endif
+					:i endfunction
+					:i function $create_gamemode_difficulty_menu$
+						:i $dialog_box_exit$
+						:i $skater$.$hide$
+						:i if $GotParam$$from_ss_menu$
+							:i $new_menu_script$ = $launch_ss_menu$
+						:i else 
+							:i $new_menu_script$ = $create_gamemode_options_menu$
+						:i endif
+						:i $make_new_roundbar_menu$:s{
+							:i $pad_back_script$ = $generic_menu_pad_back$
+							:i $pad_back_params$ = :s{$callback$ = $gamemode_options_menu_exit$$new_menu_script$ = %GLOBAL%$new_menu_script$$no_animate$$show_skater$:s}
+							:i $pos$ = %vec2(100.000000,100.000000)
+							:i $dims$ = %vec2(230.000000,480.000000)
+							:i $additional_create_script$ = $pause_create_tipbox$
+							:i $additional_focus_script$ = $pause_focus_tipbox$
+							:i $additional_unfocus_script$ = $pause_unfocus_tipbox$
+							:i $internal_text_just$ = $right$
+							:i $helper_text$ = %GLOBAL%$helper$
+						:i :s}
+						:i $build_theme_sub_title$$title$ = %s(10,"DIFFICULTY")
+						:i $starting_difficulty$ = %i(0,00000000)
+						:i if NOT $GameModeEquals$$is_classic$
+							:i $add_roundbar_menu_item$:s{$text$ = %sc(4,"Easy")
+								:i $pad_choose_script$ = $gamemode_options_menu_exit$
+								:i $pad_choose_params$ = :s{$new_menu_script$ = $set_gamemode_difficulty$$dif$ = %GLOBAL%$starting_difficulty$$from_ss_menu$ = %GLOBAL%$from_ss_menu$:s}
+								:i $tip_text$ = %s(65,"Less difficult goals for those fairly new to the Tony Hawk series")
+								:i $additional_width$ = %vec2(100.000000,0.000000)
+							:i :s}
+							:i $starting_difficulty$ = %i(1,00000001)
+						:i endif
+						:i $add_roundbar_menu_item$:s{$text$ = %sc(6,"Normal")
+							:i $pad_choose_script$ = $gamemode_options_menu_exit$
+							:i $pad_choose_params$ = :s{$new_menu_script$ = $set_gamemode_difficulty$$dif$ = %GLOBAL%$starting_difficulty$$from_ss_menu$ = %GLOBAL%$from_ss_menu$:s}
+							:i $tip_text$ = %s(58,"Challenging goals for the average to good Tony Hawk player")
+							:i $additional_width$ = %vec2(100.000000,0.000000)
+							:i $tag_grid_x$ = %i(1,00000001)
+						:i :s}
+						:i if NOT $GotParam$$from_ss_menu$
+							:i $add_roundbar_menu_item$:s{$text$ = %sc(4,"Sick")
+								:i $pad_choose_script$ = $gamemode_options_menu_exit$
+								:i $pad_choose_params$ = :s{$new_menu_script$ = $set_gamemode_difficulty$$dif$ =  (%GLOBAL%$starting_difficulty$ + %i(1,00000001)) $from_ss_menu$ = %GLOBAL%$from_ss_menu$:s}
+								:i $tip_text$ = %s(59,"For hardcore veterans who have mastered the Tony Hawk games")
+								:i $additional_width$ = %vec2(100.000000,0.000000)
+							:i :s}
+						:i endif
+						:i if NOT $GameModeEquals$$is_classic$
+							:i $draw_menu_background$$story_mode$$story_wdt$$difficulty$
+						:i else 
+							:i $draw_menu_background$$story_mode$$difficulty$
+						:i endif
+						:i $roundbar_menu_finish$$data$ = :s{$grid_index$ = %i(1,00000001):s}
+					:i endfunction
+					:i function $set_gamemode_difficulty$
+						:i $GoalManager_SetDifficultyLevel$%GLOBAL%$dif$
+						:i if $GameModeEquals$$is_classic$
+							:i $pad_choose_script$ = $launch_select_skater_menu$
+							:i $SetGlobalFlag$$flag$ = $CLASSIC_STARTED$
+						:i endif
+						:i if $GameModeEquals$$is_career$
+							:i $pad_choose_script$ = $story_options_change_level$
+							:i $ResetArcadeScores$
+							:i $skater$.$StatsManager_ReInit$
+						:i endif
+						:i if $GotParam$$set_flag$
+							:i $SetGlobalFlag$$flag$ = %GLOBAL%$flag$
+						:i endif
+						:i if NOT $GotParam$$from_ss_menu$
+							:i $skater$.$remove_skater_from_world$
+							:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+							:i $gamemode_options_menu_exit$:s{$new_menu_script$ = %GLOBAL%$pad_choose_script$$kill_all$$just_started_game$:s}
+						:i else 
+							:i $launch_ss_menu$$no_animate$
+						:i endif
+					:i endfunction
+					:i $spin_menu_angles$ = :a{
+						:i %f(0.000000)
+						:i %f(22.500000)
+						:i %f(45.000000)
+						:i %f(67.500000)
+						:i %f(90.000000)
+						:i %f(112.500000)
+						:i %f(135.000000)
+						:i %f(157.500000)
+						:i %f(180.000000)
+						:i %f(202.500000)
+						:i %f(225.000000)
+						:i %f(247.500000)
+						:i %f(270.000000)
+						:i %f(292.500000)
+						:i %f(315.000000)
+						:i %f(337.000000)
+						:i :a}
+					:i $spin_menu_angle_index$ = %i(0,00000000)
+					:i $spin_menu_angle$ = %f(0.000000)
+					:i $spin_menu_dir$ = %i(0,00000000)
+					:i $spin_menu_cycle$ = %i(1,00000001)
+					:i $spin_menu_unhighlighted_text$ = :a{%i(10,0000000a)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+					:i $spin_menu_disabled_text$ = :a{%i(30,0000001e)%i(20,00000014)%i(20,00000014)%i(58,0000003a):a}
+					:i $spin_menu_spin_time$ = %f(0.150000)
+					:i $spin_menu_selected_index$ = %i(0,00000000)
+					:i function $spin_menu_mark_selected$
+						:i $GetTags$
+						:i $change$$spin_menu_selected_index$ = %GLOBAL%$tag_grid_x$
+					:i endfunction
+					:i function $make_spin_menu$
+						:i $change$$spin_menu_angle_index$ = %i(0,00000000)
+						:i $change$$spin_menu_angle$ = %f(0.000000)
+						:i $spin_menu_spin_geometry$$rot_angle$ = %f(0.000000)$spin_time$ = %f(0.000000)$no_wait$
+						:i $change$$spin_menu_dir$ = %i(0,00000000)
+						:i $change$$spin_menu_item_index$ = %i(0,00000000)
+						:i if $ObjectExists$$id$ = $current_menu_anchor$
+							:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+						:i endif
+						:i $kill_start_key_binding$
+						:i $SetScreenElementLock$$id$ = $root_window$$off$
+						:i $CreateScreenElement$:s{
+							:i $type$ = $ContainerElement$
+							:i $parent$ = $root_window$
+							:i $id$ = %GLOBAL%$menu_id$
+							:i $font$ = $small$
+							:i $pos$ = %vec2(320.000000,240.000000)
+							:i $scale$ = %i(1,00000001)
+							:i $dims$ = %vec2(640.000000,480.000000)
+							:i $focusable_child$ = %GLOBAL%$vmenu_id$
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $VMenu$
+							:i $parent$ = %GLOBAL%$menu_id$
+							:i $id$ = %GLOBAL%$vmenu_id$
+							:i $font$ = $small$
+							:i $just$ = :a{$center$$center$:a}
+							:i $pos$ = %GLOBAL%$pos$
+							:i $padding_scale$ = %i(0,00000000)
+							:i $dims$ = %vec2(1.000000,1.000000)
+							:i $internal_just$ = :a{$center$$center$:a}
+							:i $event_handlers$ = :a{
+								:i :s{$pad_up$$spin_the_menu$$params$ = :s{$up$:s}:s}
+								:i :s{$pad_down$$spin_the_menu$$params$ = :s{$down$:s}:s}
+								:i :a}
+						:i :s}
+						:i $AssignAlias$$id$ = %GLOBAL%$menu_id$$alias$ = $current_menu_anchor$
+						:i $AssignAlias$$id$ = %GLOBAL%$vmenu_id$$alias$ = $current_menu$
+						:i $build_roundbar$ isNull 
+					:i endfunction
+					:i $spin_menu_item_index$ = %i(0,00000000)
+					:i function $make_spin_menu_item$$pad_choose_script$ = $null_script$$active$ = %i(1,00000001)
+						:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_color$
+						:i if  (%GLOBAL%$active$ = %i(1,00000001)) 
+							:i %GLOBAL%$rgba$ = $spin_menu_unhighlighted_text$
+						:i else 
+							:i %GLOBAL%$rgba$ = $spin_menu_disabled_text$
+						:i endif
+						:i $CreateScreenElement$:s{
+							:i $type$ = $ContainerElement$
+							:i $parent$ = $current_menu$
+							:i $id$ = %GLOBAL%$id$
+							:i $just$ = :a{$center$$center$:a}
+							:i $internal_just$ = :a{$center$$center$:a}
+							:i $event_handlers$ = :a{
+								:i :s{$focus$$spin_menu_item_focus$$params$ = %GLOBAL%$focus_params$:s}
+								:i :s{$unfocus$$spin_menu_item_unfocus$:s}
+								:i :s{$pad_start$$spin_menu_mark_selected$:s}
+								:i :s{$pad_choose$$spin_menu_mark_selected$:s}
+								:i :s{$pad_start$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+								:i :s{$pad_choose$%GLOBAL%$pad_choose_script$$params$ = %GLOBAL%$pad_choose_params$:s}
+								:i :a}
+							:i $dims$ = %vec2(1.000000,1.000000)
+							:i $tags$ = :s{$tag_grid_x$ =  ($spin_menu_item_index$) :s}
+						:i :s}
+						:i %GLOBAL%$container_id$ = %GLOBAL%$id$
+						:i $change$$spin_menu_item_index$ =  ($spin_menu_item_index$ + %i(1,00000001)) 
+						:i if $GotParam$$blank$
+							:i $SetScreenElementProps$:s{
+								:i $id$ = %GLOBAL%$container_id$
+								:i $tags$ = :s{$blank$:s}
+							:i :s}
+							:i $CreateScreenElement$:s{
+								:i $type$ = $SpriteElement$
+								:i $parent$ = %GLOBAL%$container_id$
+								:i $texture$ = $goal_complete_line$
+								:i $pos$ = %vec2(90.000000,5.000000)
+								:i $scale$ = %i(1,00000001)
+								:i $rgba$ = :a{%i(20,00000014);%i(40,00000028);%i(40,00000028);%i(70,00000046):a}
+								:i $just$ = :a{$left$$center$:a}
+								:i $z_priority$ = %i(1,00000001)
+							:i :s}
+						:i else 
+							:i if $GotParam$$text2$
+								:i $pos1$ = %vec2(0.000000,-8.000000)
+								:i $pos2$ = %vec2(0.000000,8.000000)
+							:i else 
+								:i $pos1$ = %vec2(0.000000,0.000000)
+							:i endif
+							:i $CreateScreenElement$:s{
+								:i $type$ = $TextElement$
+								:i $parent$ = %GLOBAL%$container_id$
+								:i $font$ = $small$
+								:i $text$ = %GLOBAL%$text1$
+								:i $rgba$ = %GLOBAL%$rgba$
+								:i $just$ = :a{$left$$top$:a}
+								:i $internal_just$ = :a{$left$$center$:a}
+								:i $pos$ = %GLOBAL%$pos1$
+								:i $z_priority$ = %i(1,00000001)
+							:i :s}
+							:i if $GotParam$$text2$
+								:i $CreateScreenElement$:s{
+									:i $type$ = $TextElement$
+									:i $parent$ = %GLOBAL%$container_id$
+									:i $font$ = $small$
+									:i $text$ = %GLOBAL%$text2$
+									:i $rgba$ = %GLOBAL%$rgba$
+									:i $just$ = :a{$left$$top$:a}
+									:i $internal_just$ = :a{$left$$center$:a}
+									:i $pos$ = %GLOBAL%$pos2$
+									:i $z_priority$ = %i(1,00000001)
+								:i :s}
+							:i endif
+						:i endif
+						:i $SetScreenElementProps$:s{
+							:i $id$ = %GLOBAL%$container_id$
+							:i $rot_angle$ =  ($spin_menu_angles$:a{$spin_menu_angle_index$:a}) 
+							:i $tags$ = :s{
+								:i $active$ = %GLOBAL%$active$
+								:i $helper_text$ = %GLOBAL%$helper_text$
+								:i $highlight_text$ = %GLOBAL%$highlight_text$
+								:i $icon$ = %GLOBAL%$icon$
+							:i :s}
+						:i :s}
+						:i $change$$spin_menu_angle_index$ =  ($spin_menu_angle_index$ + %i(1,00000001)) 
+						:i if $GotParam$$mark_first_input$
+							:i $SetScreenElementProps$:s{
+								:i $id$ = %GLOBAL%$container_id$
+								:i $event_handlers$ = :a{
+									:i :s{$pad_choose$$mark_first_input_received$:s}
+									:i :s{$pad_start$$mark_first_input_received$:s}
+									:i :a}
+							:i :s}
+						:i endif
+					:i endfunction
+					:i function $build_roundbar$
+						:i $Theme_GetPauseBarColor$$return_value$ = $bar_color$
+						:i %GLOBAL%$pos$ =  (%GLOBAL%$pos$ + %vec2(60.000000,-3.000000)) 
+						:i $CreateScreenElement$:s{
+							:i $type$ = $ContainerElement$
+							:i $parent$ = $current_menu_anchor$
+							:i $id$ = $roundbar_bar$
+							:i $pos$ = %GLOBAL%$pos$
+							:i $just$ = :a{$left$$center$:a}
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_left$
+							:i $pos$ = %vec2(0.000000,0.000000)
+							:i $just$ = :a{$left$$top$:a}
+							:i $scale$ = %i(1,00000001)
+							:i $texture$ = $roundbar_tip_left$
+							:i $z_priority$ = %i(2,00000002)
+							:i $rgba$ = %GLOBAL%$bar_color$
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_middle$
+							:i $pos$ = %vec2(32.000000,0.000000)
+							:i $just$ = :a{$left$$top$:a}
+							:i $scale$ = %vec2(1.000000,1.000000)
+							:i $texture$ = $roundbar_middle$
+							:i $z_priority$ = %i(2,00000002)
+							:i $rgba$ = %GLOBAL%$bar_color$
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_right$
+							:i $pos$ = %vec2(64.000000,0.000000)
+							:i $just$ = :a{$left$$top$:a}
+							:i $scale$ = %i(1,00000001)
+							:i $texture$ = $roundbar_tip_right$
+							:i $z_priority$ = %i(2,00000002)
+							:i $rgba$ = %GLOBAL%$bar_color$
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_accent$
+							:i $texture$ = $roundbar_highlight$
+							:i $pos$ = %vec2(32.000000,15.000000)
+							:i $rgba$ = %GLOBAL%$bar_color$
+							:i $just$ = :a{$center$$center$:a}
+							:i $scale$ = %vec2(2.750000,1.000000)
+							:i $z_priority$ = %i(3,00000003)
+							:i $alpha$ = %i(0,00000000)
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $TextElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_text$
+							:i $pos$ = %vec2(20.000000,0.000000)
+							:i $just$ = :a{$left$$top$:a}
+							:i $text$ = %s(0,"")
+							:i $font$ = $small$
+							:i $scale$ = %vec2(1.500000,1.500000)
+							:i $z_priority$ = %i(4,00000004)
+							:i $rgba$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+						:i :s}
+						:i $CreateScreenElement$:s{
+							:i $type$ = $SpriteElement$
+							:i $parent$ = $roundbar_bar$
+							:i $id$ = $roundbar_icon$
+							:i $pos$ = %vec2(0.000000,0.000000)
+							:i $texture$ = $white2$
+							:i $scale$ = %f(0.600000)
+							:i $rgba$ = :a{%i(128,00000080);%i(128,00000080);%i(128,00000080);%i(128,00000080):a}
+							:i $just$ = :a{$left$$top$:a}
+							:i $z_priority$ = %i(4,00000004)
+						:i :s}
+					:i endfunction
+					:i function $spin_menu_item_focus$
+						:i $GetTags$
+						:i if $GotParam$$attract_timer$
+							:i $reset_attract_mode_timer$
+						:i endif
+						:i if $GotParam$$blank$
+							:i $spin_menu__reset_input_timer$
+							:i $wait$%i(1,00000001)$gameframe$
+							:i if  ($spin_menu_dir$ > %i(0,00000000)) 
+								:i if  ($spin_menu_cycle$ = %i(1,00000001)) 
+									:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+								:i else 
+									:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+								:i endif
+							:i else 
+								:i if  ($spin_menu_dir$ < %i(0,00000000)) 
+									:i if  ($spin_menu_cycle$ = %i(1,00000001)) 
+										:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+									:i else 
+										:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+									:i endif
+								:i endif
+							:i endif
+						:i else 
+							:i if  (%GLOBAL%$active$ = %i(0,00000000)) 
+								:i $spin_menu__reset_input_timer$
+								:i $wait$%i(1,00000001)$gameframe$
+								:i if  ($spin_menu_dir$ > %i(0,00000000)) 
+									:i $current_menu$.$GetTags$
+									:i if  ( ($spin_menu_cycle$ = %i(0,00000000))  AND  (%GLOBAL%$tag_selected_index$ = %i(0,00000000)) ) 
+										:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+									:i else 
+										:i $FireEvent$$type$ = $pad_up$$target$ = $current_menu$
+									:i endif
+								:i else 
+									:i $FireEvent$$type$ = $pad_down$$target$ = $current_menu$
+								:i endif
+							:i else 
+								:i if NOT  ($spin_menu_dir$ = %i(0,00000000)) 
+									:i $Menu_SFX_Wheel_Click_Short$
+								:i endif
+								:i $do_roundbar_highlight$ isNull 
+							:i endif
+						:i endif
+					:i endfunction
+					:i function $do_roundbar_highlight$
+						:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(0,00000000)$time$ = $spin_menu_spin_time$
+						:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+							:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$alpha$ = %i(0,00000000)$time$ = $spin_menu_spin_time$
+						:i endif
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $roundbar_text$
+							:i $text$ = %GLOBAL%$highlight_text$
+						:i :s}
+						:i $GetScreenElementDims$$id$ = $roundbar_text$
+						:i %GLOBAL%$bar_mid_width$ =  (%GLOBAL%$width$ + %i(26,0000001a)) 
+						:i %GLOBAL%$bar_mid_width_scale$ =  ( (%vec2(1.000000,0.000000) *  (%GLOBAL%$bar_mid_width$ / %f(32.000000)) )  + %vec2(0.000000,1.000000)) 
+						:i %GLOBAL%$bar_right_pos$ =  (%vec2(1.000000,0.000000) *  (%GLOBAL%$bar_mid_width$ + %i(20,00000014)) ) 
+						:i $DoScreenElementMorph$$id$ = $roundbar_middle$$scale$ = %GLOBAL%$bar_mid_width_scale$$time$ = %i(0,00000000)
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $roundbar_right$
+							:i $pos$ = %GLOBAL%$bar_right_pos$
+						:i :s}
+						:i %GLOBAL%$icon_pos$ =  ( (%vec2(1.000000,0.000000) *  (%GLOBAL%$width$ + %i(26,0000001a)) )  +  (%vec2(0.000000,1.000000) * %i(3,00000003)) ) 
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $roundbar_icon$
+							:i $texture$ = %GLOBAL%$icon$
+							:i $pos$ = %GLOBAL%$icon_pos$
+						:i :s}
+						:i $KillSpawnedScript$$name$ = $do_roundbar_highlight_accent$
+						:i $RunScriptOnScreenElement$$id$ = $roundbar_accent$$do_roundbar_highlight_accent$$params$ = :s{$right$ =  (%GLOBAL%$bar_mid_width$ + %i(20,00000014)) :s}
+					:i endfunction
+					:i function $do_roundbar_highlight_accent$
+						:i $GetTags$
+						:i $SetScreenElementProps$:s{
+							:i $id$ = %GLOBAL%$id$
+							:i $pos$ = %vec2(32.000000,15.000000)
+							:i $z_priority$ = %i(5,00000005)
+						:i :s}
+						:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %vec2(2.750000,1.000000)$time$ = %i(0,00000000)
+						:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+						:i %GLOBAL%$pos$ =  ( (%vec2(1.000000,0.000000) * %GLOBAL%$right$)  +  (%vec2(0.000000,1.000000) * %i(15,0000000f)) ) 
+						:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$pos$ = %GLOBAL%$pos$$time$ = %f(0.300000)
+						:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %f(0.200000)$time$ = %f(0.300000)
+						:i $wait$%f(0.300000)$seconds$
+						:i %GLOBAL%$width$ =  (%GLOBAL%$right$ - %i(32,00000020)) 
+						:i %GLOBAL%$center$ =  ( (%GLOBAL%$width$ / %i(2,00000002))  + %i(32,00000020)) 
+						:i %GLOBAL%$pos$ =  ( (%vec2(1.000000,0.000000) * %GLOBAL%$center$)  +  (%vec2(0.000000,1.000000) * %i(15,0000000f)) ) 
+						:i $SetScreenElementProps$:s{
+							:i $id$ = %GLOBAL%$id$
+							:i $pos$ = %GLOBAL%$pos$
+							:i $z_priority$ = %i(3,00000003)
+						:i :s}
+						:i %GLOBAL%$scale_width$ =  (%GLOBAL%$width$ / %f(14.000000)) 
+						:i %GLOBAL%$scale$ =  ( (%vec2(1.000000,0.000000) * %GLOBAL%$scale_width$)  +  (%vec2(0.000000,1.000000) * %f(1.250000)) ) 
+						:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$scale$ = %GLOBAL%$scale$$time$ = %i(0,00000000)
+						:i while
+							
+							:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(1,00000001)$time$ = %f(0.300000)
+							:i $wait$%f(0.300000)$seconds$
+							:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$alpha$ = %i(0,00000000)$time$ = %f(0.300000)
+							:i $wait$%f(0.300000)$seconds$
+						:i loop_to 
+					:i endfunction
+					:i function $spin_menu_item_unfocus$
+						:i $GetTags$
+						:i if NOT $GotParam$$blank$
+							:i if  (%GLOBAL%$active$ = %i(1,00000001)) 
+								:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$alpha$ = %i(1,00000001)$time$ = $spin_menu_spin_time$
+								:i if $ScreenElementExists$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+									:i $DoScreenElementMorph$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$alpha$ = %i(1,00000001)$time$ = $spin_menu_spin_time$
+								:i endif
+							:i endif
+						:i endif
+					:i endfunction
+					:i $spin_menu_input_enabled$ = %i(1,00000001)
+					:i function $spin_menu_input_timer$
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $current_menu$
+							:i $disable_pad_handling$
+						:i :s}
+						:i $change$$spin_menu_input_enabled$ = %i(0,00000000)
+						:i $wait$$spin_menu_spin_time$$seconds$
+						:i $change$$spin_menu_input_enabled$ = %i(1,00000001)
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $current_menu$
+							:i $enable_pad_handling$
+						:i :s}
+					:i endfunction
+					:i function $spin_menu__reset_input_timer$
+						:i $KillSpawnedScript$$name$ = $spin_menu_input_timer$
+						:i $change$$spin_menu_input_enabled$ = %i(1,00000001)
+						:i $SetScreenElementProps$:s{
+							:i $id$ = $current_menu$
+							:i $enable_pad_handling$
+						:i :s}
+					:i endfunction
+					:i function $spin_the_menu$
+						:i if  ( ($spin_menu_input_enabled$ = %i(1,00000001))  OR  ($spin_menu_auto_spin$ = %i(1,00000001)) ) 
+							:i if $GotParam$$down$
+								:i %GLOBAL%$diff$ = %f(-22.500000)
+								:i $change$$spin_menu_dir$ = %i(4294967295,ffffffff)
+							:i else 
+								:i %GLOBAL%$diff$ = %f(22.500000)
+								:i $change$$spin_menu_dir$ = %i(1,00000001)
+							:i endif
+							:i if  ($spin_menu_cycle$ = %i(0,00000000)) 
+								:i $current_menu$.$GetTags$
+								:i $GetScreenElementChildren$$id$ = $current_menu$
+								:i $GetArraySize$%GLOBAL%$children$
+								:i if  (%GLOBAL%$tag_selected_index$ = %i(0,00000000) AND $GotParam$$up$) 
+									:i return
+									
+								:i endif
+								:i if  (%GLOBAL%$tag_selected_index$ =  (%GLOBAL%$array_size$ - %i(0,00000000))  AND $GotParam$$down$) 
+									:i return
+									
+								:i endif
+								:i if  (%GLOBAL%$tag_selected_index$ =  (%GLOBAL%$array_size$ - %i(1,00000001))  AND $GotParam$$down$) 
+									:i return
+									
+								:i endif
+								:i if  (%GLOBAL%$tag_selected_index$ =  (%GLOBAL%$array_size$ - %i(0,00000000))  AND $GotParam$$up$) 
+									:i return
+									
+								:i endif
+							:i endif
+							:i $change$$spin_menu_angle$ =  ($spin_menu_angle$ + %GLOBAL%$diff$) 
+							:i $SpawnScript$$spin_menu_input_timer$
+							:i $DoScreenElementMorph$$id$ = $current_menu$$rot_angle$ = $spin_menu_angle$$time$ = $spin_menu_spin_time$
+							:i $spin_menu_spin_geometry$$rot_angle$ = $spin_menu_angle$
+							:i $MakeSkaterGoto$$SpinMenuSkaterAction$$params$ =  isNull 
+							:i $pulse_blur$$speed$ = %i(4,00000004)$start$ = %i(180,000000b4)
+						:i endif
+					:i endfunction
+					:i function $spin_menu_spin_geometry$$spin_time$ = $spin_menu_spin_time$
+						:i if NOT $GotParam$$no_wait$
+							:i $wait$%i(2,00000002)$gameframes$
+						:i endif
+						:i %GLOBAL%$angle$ =  (%vec3(0.000000,0.000000,1.000000) * %GLOBAL%$rot_angle$) 
+						:i $wol_inner_ring$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+						:i $wol_inner_star$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+						:i $wol_tag$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+						:i $wol_outer_ring$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+						:i %GLOBAL%$index$ = %i(1,00000001)
+						:i while
+							
+							:i $FormatText$$ChecksumName$ = $model_id$%s(10,"wol_pie_%i")$i$ = %GLOBAL%$index$
+							:i %GLOBAL%$model_id$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+							:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to %i(16,00000010)
+						:i %GLOBAL%$index$ = %i(1,00000001)
+						:i while
+							
+							:i $FormatText$$ChecksumName$ = $model_id$%s(16,"wol_lightbulb_%i")$i$ = %GLOBAL%$index$
+							:i %GLOBAL%$model_id$.$Obj_Rotate$$absolute$ = %GLOBAL%$angle$$time$ = %GLOBAL%$spin_time$
+							:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to %i(28,0000001c)
+					:i endfunction
+					:i function $spin_menu_visible$$on$ = %i(1,00000001)
+						:i if  (%GLOBAL%$on$) 
+							:i %GLOBAL%$action$ = $unhide$
+						:i else 
+							:i %GLOBAL%$action$ = $hide$
+						:i endif
+						:i $wol_inner_ring$.%GLOBAL%$action$
+						:i $wol_inner_star$.%GLOBAL%$action$
+						:i $wol_tag$.%GLOBAL%$action$
+						:i $wol_outer_ring$.%GLOBAL%$action$
+						:i %GLOBAL%$index$ = %i(1,00000001)
+						:i while
+							
+							:i $FormatText$$ChecksumName$ = $model_id$%s(10,"wol_pie_%i")$i$ = %GLOBAL%$index$
+							:i %GLOBAL%$model_id$.%GLOBAL%$action$
+							:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to %i(16,00000010)
+						:i %GLOBAL%$index$ = %i(1,00000001)
+						:i while
+							
+							:i $FormatText$$ChecksumName$ = $model_id$%s(16,"wol_lightbulb_%i")$i$ = %GLOBAL%$index$
+							:i %GLOBAL%$model_id$.%GLOBAL%$action$
+							:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+						:i loop_to %i(28,0000001c)
+					:i endfunction
+					:i function $draw_menu_background$
+						:i $CreateScreenElement$:s{
+							:i $type$ = $ContainerElement$
+							:i $parent$ = $current_menu_anchor$
+							:i $id$ = $arrow_sign_container$
+							:i $pos$ = %vec2(0.000000,0.000000)
+						:i :s}
+						:i if $GotParam$$story_mode$
+							:i %GLOBAL%$bg_text$ = $new_bg_1$
+							:i %GLOBAL%$bg_angle$ = %i(128,00000080)
+							:i %GLOBAL%$bg_flip$ = $flip_v$
+							:i %GLOBAL%$bg_scale$ = %f(1.500000)
+							:i %GLOBAL%$bg_pos$ = %vec2(-40.000000,120.000000)
+							:i %GLOBAL%$bg_rgba$ = :a{%i(73,00000049)%i(22,00000016)%i(107,0000006b)%i(70,00000046):a}
+							:i %GLOBAL%$arrow_text$ = $new_graf_arrow$
+							:i %GLOBAL%$arrow_angle$ = %i(0,00000000)
+							:i %GLOBAL%$arrow_flip$ = $flip_v$
+							:i %GLOBAL%$arrow_scale$ = %f(0.850000)
+							:i %GLOBAL%$arrow_pos$ = %vec2(340.000000,250.000000)
+							:i %GLOBAL%$arrow_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(35,00000023):a}
+							:i %GLOBAL%$arrow_z$ = %i(4294967294,fffffffe)
+							:i %GLOBAL%$drip_text$ = select(2f,2, 01 00 01 00) :OFFSET(24):OFFSET(25)
+								 :POS(24) $new_drip_2$
+							:BREAKTO(26)
+								 :POS(25) $new_drip_4$ :POS(26) 
+								:i %GLOBAL%$drip_angle$ = %i(0,00000000)
+								:i %GLOBAL%$drip_flip$ = $no$
+								:i %GLOBAL%$drip_scale$ = %vec2(0.800000,1.500000)
+								:i %GLOBAL%$drip_pos$ = %vec2(580.000000,70.000000)
+								:i %GLOBAL%$drip_rgba$ = :a{%i(126,0000007e)%i(49,00000031)%i(3,00000003)%i(120,00000078):a}
+								:i %GLOBAL%$drip_z$ = %i(100,00000064)
+								:i if $GotParam$$difficulty$
+									:i %GLOBAL%$drip_pos$ = %vec2(587.000000,73.000000)
+								:i endif
+								:i %GLOBAL%$spray_text$ = $new_icon_5$
+								:i %GLOBAL%$spray_angle$ = %i(0,00000000)
+								:i %GLOBAL%$spray_flip$ = $no$
+								:i %GLOBAL%$spray_scale$ = %f(1.400000)
+								:i %GLOBAL%$spray_pos$ = %vec2(150.000000,47.000000)
+								:i %GLOBAL%$spray_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(80,00000050):a}
+								:i %GLOBAL%$spray_z$ = %i(4294967292,fffffffc)
+								:i %GLOBAL%$sign_pos$ = %vec2(700.000000,50.000000)
+								:i if $GotParam$$story_wdt$
+									:i %GLOBAL%$the_logo$ = $wdt_logo_big$
+								:i else 
+									:i %GLOBAL%$the_logo$ = $wdt_logo_big_2$
+								:i endif
+								:i if $Checksumequals$$a$ = %GLOBAL%$the_logo$$b$ = $wdt_logo_big_2$
+									:i %GLOBAL%$logo_rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+									:i %GLOBAL%$logo_scale$ = %vec2(2.500000,1.500000)
+									:i %GLOBAL%$logo_pos$ = %vec2(535.000000,155.000000)
+									:i %GLOBAL%$logo_angle$ = %i(4294967262,ffffffde)
+								:i else 
+									:i %GLOBAL%$logo_pos$ = %vec2(610.000000,195.000000)
+									:i %GLOBAL%$logo_scale$ = %f(0.800000)
+									:i %GLOBAL%$logo_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+									:i %GLOBAL%$logo_angle$ = %i(0,00000000)
+								:i endif
+								:i $CreateScreenElement$:s{
+									:i $type$ = $SpriteElement$
+									:i $parent$ = $arrow_sign_container$
+									:i $id$ = $sign$
+									:i $texture$ = $menu_sign$
+									:i $pos$ = %GLOBAL%$sign_pos$
+									:i $just$ = :a{$right$$top$:a}
+									:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}
+									:i $z_priority$ = %i(4294967295,ffffffff)
+									:i $rot_angle$ = %i(4294967286,fffffff6)
+									:i $scale$ = %f(1.700000)
+								:i :s}
+								:i $CreateScreenElement$:s{
+									:i $type$ = $SpriteElement$
+									:i $parent$ = $arrow_sign_container$
+									:i $id$ = $wdt_logo$
+									:i $texture$ = %GLOBAL%$the_logo$
+									:i $pos$ = %GLOBAL%$logo_pos$
+									:i $just$ = :a{$right$$top$:a}
+									:i $rgba$ = %GLOBAL%$logo_rgba$
+									:i $z_priority$ = %i(0,00000000)
+									:i $scale$ = %GLOBAL%$logo_scale$
+									:i $rot_angle$ = %GLOBAL%$logo_angle$
+								:i :s}
+							:i endif
+							:i if $GotParam$$options_mode$
+								:i %GLOBAL%$bg_text$ = $new_bg_1$
+								:i %GLOBAL%$bg_angle$ = %i(70,00000046)
+								:i %GLOBAL%$bg_flip$ = $flip_v$
+								:i %GLOBAL%$bg_scale$ = %f(1.500000)
+								:i %GLOBAL%$bg_pos$ = %vec2(610.000000,130.000000)
+								:i %GLOBAL%$bg_rgba$ = :a{%i(62,0000003e)%i(105,00000069)%i(122,0000007a)%i(50,00000032):a}
+								:i %GLOBAL%$arrow_text$ = $new_graf_arrow$
+								:i %GLOBAL%$arrow_angle$ = %i(2,00000002)
+								:i %GLOBAL%$arrow_flip$ = $no$
+								:i %GLOBAL%$arrow_scale$ = %f(0.900000)
+								:i %GLOBAL%$arrow_pos$ = %vec2(220.000000,18.000000)
+								:i %GLOBAL%$arrow_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(35,00000023):a}
+								:i %GLOBAL%$arrow_z$ = %i(4294967294,fffffffe)
+								:i %GLOBAL%$drip_text$ = select(2f,2, 01 00 01 00) :OFFSET(27):OFFSET(28)
+									 :POS(27) $new_drip_2$
+								:BREAKTO(29)
+									 :POS(28) $new_drip_4$ :POS(29) 
+									:i %GLOBAL%$drip_angle$ = %i(0,00000000)
+									:i %GLOBAL%$drip_flip$ = $no$
+									:i %GLOBAL%$drip_scale$ = %vec2(2.000000,2.500000)
+									:i %GLOBAL%$drip_pos$ = %vec2(507.000000,83.000000)
+									:i %GLOBAL%$drip_rgba$ = :a{%i(20,00000014)%i(70,00000046)%i(92,0000005c)%i(128,00000080):a}
+									:i %GLOBAL%$drip_z$ = %i(1,00000001)
+									:i %GLOBAL%$spray_text$ = $new_icon_1$
+									:i %GLOBAL%$spray_angle$ = %i(0,00000000)
+									:i %GLOBAL%$spray_flip$ = $no$
+									:i %GLOBAL%$spray_scale$ = %f(1.600000)
+									:i %GLOBAL%$spray_pos$ = %vec2(60.000000,80.000000)
+									:i %GLOBAL%$spray_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(50,00000032):a}
+									:i %GLOBAL%$spray_z$ = %i(4294967292,fffffffc)
+								:i endif
+								:i if $GotParam$$create_mode$
+									:i %GLOBAL%$bg_text$ = $new_bg_2$
+									:i %GLOBAL%$bg_angle$ = %i(20,00000014)
+									:i %GLOBAL%$bg_flip$ = $no$
+									:i %GLOBAL%$bg_scale$ = %vec2(1.200000,0.800000)
+									:i %GLOBAL%$bg_pos$ = %vec2(450.000000,0.000000)
+									:i %GLOBAL%$bg_rgba$ = :a{%i(62,0000003e)%i(105,00000069)%i(122,0000007a)%i(60,0000003c):a}
+									:i %GLOBAL%$arrow_text$ = $new_graf_arrow$
+									:i %GLOBAL%$arrow_angle$ = %f(179.899994)
+									:i %GLOBAL%$arrow_flip$ = $no$
+									:i %GLOBAL%$arrow_scale$ = %f(1.100000)
+									:i %GLOBAL%$arrow_pos$ = %vec2(550.000000,200.000000)
+									:i %GLOBAL%$arrow_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(25,00000019):a}
+									:i %GLOBAL%$arrow_z$ = %i(4294967294,fffffffe)
+									:i %GLOBAL%$drip_text$ = select(2f,2, 01 00 01 00) :OFFSET(30):OFFSET(31)
+										 :POS(30) $new_drip_1$
+									:BREAKTO(32)
+										 :POS(31) $new_drip_3$ :POS(32) 
+										:i %GLOBAL%$drip_angle$ = %i(60,0000003c)
+										:i %GLOBAL%$drip_flip$ = $no$
+										:i %GLOBAL%$drip_scale$ = %f(0.700000)
+										:i %GLOBAL%$drip_pos$ = %vec2(295.000000,42.000000)
+										:i %GLOBAL%$drip_rgba$ = :a{%i(126,0000007e)%i(49,00000031)%i(3,00000003)%i(108,0000006c):a}
+										:i %GLOBAL%$drip_z$ = %i(1,00000001)
+										:i %GLOBAL%$spray_text$ = $new_icon_4$
+										:i %GLOBAL%$spray_angle$ = %i(0,00000000)
+										:i %GLOBAL%$spray_flip$ = $no$
+										:i %GLOBAL%$spray_scale$ = %f(2.200000)
+										:i %GLOBAL%$spray_pos$ = %vec2(80.000000,100.000000)
+										:i %GLOBAL%$spray_rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(40,00000028):a}
+										:i %GLOBAL%$spray_z$ = %i(4294967292,fffffffc)
+									:i endif
+									:i %GLOBAL%$bg_text$ = select(2f,2, 01 00 01 00) :OFFSET(33):OFFSET(34)
+										 :POS(33) $new_bg_1$
+									:BREAKTO(35)
+										 :POS(34) $new_bg_2$ :POS(35) 
+										:i %GLOBAL%$bg_rgba$ = select(2f,2, 01 00 01 00) :OFFSET(36):OFFSET(37)
+											 :POS(36) :a{%i(62,0000003e)%i(105,00000069)%i(122,0000007a)%i(60,0000003c):a}
+										:BREAKTO(38)
+											 :POS(37) :a{%i(73,00000049)%i(22,00000016)%i(107,0000006b)%i(70,00000046):a} :POS(38) 
+											:i $FormatText$$ChecksumName$ = $spray_text_name$%s(11,"new_icon_%i")$i$ = select(2f,10, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(39):OFFSET(40):OFFSET(41):OFFSET(42):OFFSET(43):OFFSET(44):OFFSET(45):OFFSET(46):OFFSET(47):OFFSET(48)
+													 :POS(39) %i(1,00000001)
+												:BREAKTO(49)
+													 :POS(40) %i(2,00000002)
+												:BREAKTO(49)
+													 :POS(41) %i(3,00000003)
+												:BREAKTO(49)
+													 :POS(42) %i(4,00000004)
+												:BREAKTO(49)
+													 :POS(43) %i(5,00000005)
+												:BREAKTO(49)
+													 :POS(44) %i(6,00000006)
+												:BREAKTO(49)
+													 :POS(45) %i(7,00000007)
+												:BREAKTO(49)
+													 :POS(46) %i(8,00000008)
+												:BREAKTO(49)
+													 :POS(47) %i(9,00000009)
+												:BREAKTO(49)
+													 :POS(48) %i(10,0000000a) :POS(49) 
+												:i %GLOBAL%$spray_text$ = %GLOBAL%$spray_text_name$
+												:i %GLOBAL%$circle_rot$ = %i(0,00000000)
+												:i %GLOBAL%$circle_pos$ = %vec2(0.000000,70.000000)
+												:i $CreateScreenElement$:s{
+													:i $type$ = $SpriteElement$
+													:i $parent$ = $current_menu_anchor$
+													:i $id$ = $bg$
+													:i $texture$ = %GLOBAL%$bg_text$
+													:i $rot_angle$ = %GLOBAL%$bg_angle$
+													:i $pos$ = %GLOBAL%$bg_pos$
+													:i $scale$ = %GLOBAL%$bg_scale$
+													:i %GLOBAL%$bg_flip$
+													:i $z_priority$ = %f(-4.500000)
+													:i $rgba$ = %GLOBAL%$bg_rgba$
+												:i :s}
+												:i $CreateScreenElement$:s{
+													:i $type$ = $SpriteElement$
+													:i $parent$ = $arrow_sign_container$
+													:i $id$ = $graf_arrow$
+													:i $texture$ = %GLOBAL%$arrow_text$
+													:i $rot_angle$ = %GLOBAL%$arrow_angle$
+													:i $pos$ = %GLOBAL%$arrow_pos$
+													:i $scale$ = %GLOBAL%$arrow_scale$
+													:i %GLOBAL%$arrow_flip$
+													:i $z_priority$ = %GLOBAL%$arrow_z$
+													:i $rgba$ = %GLOBAL%$arrow_rgba$
+												:i :s}
+												:i $CreateScreenElement$:s{
+													:i $type$ = $SpriteElement$
+													:i $parent$ = $current_menu_anchor$
+													:i $id$ = $drip$
+													:i $texture$ = %GLOBAL%$drip_text$
+													:i $just$ = :a{$center$$top$:a}
+													:i $rot_angle$ = %GLOBAL%$drip_angle$
+													:i $pos$ = %GLOBAL%$drip_pos$
+													:i $scale$ = %GLOBAL%$drip_scale$
+													:i %GLOBAL%$drip_flip$
+													:i $z_priority$ = %GLOBAL%$drip_z$
+													:i $rgba$ = %GLOBAL%$drip_rgba$
+												:i :s}
+												:i $CreateScreenElement$:s{
+													:i $type$ = $SpriteElement$
+													:i $parent$ = $current_menu_anchor$
+													:i $id$ = $spray_icon$
+													:i $texture$ = %GLOBAL%$spray_text$
+													:i $rot_angle$ = %GLOBAL%$spray_angle$
+													:i $pos$ = %GLOBAL%$spray_pos$
+													:i $scale$ = %GLOBAL%$spray_scale$
+													:i %GLOBAL%$spray_flip$
+													:i $z_priority$ = %GLOBAL%$spray_z$
+													:i $rgba$ = %GLOBAL%$spray_rgba$
+												:i :s}
+												:i $CreateScreenElement$:s{
+													:i $type$ = $SpriteElement$
+													:i $parent$ = $current_menu_anchor$
+													:i $id$ = $circle_drip_icon$
+													:i $texture$ = $circle_drip$
+													:i $rot_angle$ = %GLOBAL%$circle_rot$
+													:i $pos$ = %GLOBAL%$circle_pos$
+													:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(40,00000028):a}
+													:i $z_priority$ = %i(4294967292,fffffffc)
+												:i :s}
+												:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$icon_drop$$params$ = :s{$orig_pos$ = %GLOBAL%$spray_pos$
+													:i $orig_rot$ = %GLOBAL%$spray_angle$
+													:i $orig_scale$ = %GLOBAL%$spray_scale$
+													:i $orig_flip$ = %GLOBAL%$spray_flip$
+													:i $orig_rgba$ = %GLOBAL%$spray_rgba$
+													:i $orig_z$ = %GLOBAL%$spray_z$
+												:i :s}
+												:i $RunScriptOnScreenElement$$id$ = $circle_drip_icon$$circle_rotation$$params$ = :s{$orig_pos$ = %GLOBAL%$circle_pos$:s}
+												:i if NOT $GotParam$$create_mode$
+													:i if $GotParam$$story_mode$
+														:i $RunScriptOnScreenElement$$id$ = $arrow_sign_container$$slide_in$$params$ = :s{$right$$orig_pos$ = %vec2(0.000000,0.000000):s}
+														:i $RunScriptOnScreenElement$$id$ = $drip$$paint_dripping$
+														:i $RunScriptOnScreenElement$$id$ = $wdt_logo$$do_random_effect$$params$ = :s{$orig_rot$ = %GLOBAL%$logo_angle$:s}
+													:i else 
+														:i $RunScriptOnScreenElement$$id$ = $arrow_sign_container$$slide_in$$params$ = :s{$some_wait$$top$$orig_pos$ = %vec2(0.000000,0.000000):s}
+														:i $RunScriptOnScreenElement$$id$ = $drip$$paint_dripping$$params$ = :s{$some_wait$:s}
+													:i endif
+												:i else 
+													:i $RunScriptOnScreenElement$$id$ = $arrow_sign_container$$slide_in$$params$ = :s{$some_wait$$right$$orig_pos$ = %vec2(0.000000,0.000000):s}
+													:i $RunScriptOnScreenElement$$id$ = $drip$$paint_twitch$$params$ = :s{$orig_rot$ = %GLOBAL%$drip_angle$:s}
+												:i endif
+											:i endfunction
+											:i function $icon_drop$$orig_pos$ = %vec2(0.000000,0.000000)
+												:i while
+													
+													:i $spray_icon$.$DoMorph$$time$ = %i(0,00000000)$pos$ =  (%GLOBAL%$orig_pos$ + %vec2(0.000000,-150.000000)) 
+													:i $spray_icon$.$DoMorph$$time$ = %f(0.150000)$pos$ = %GLOBAL%$orig_pos$
+													:i $wait$%f(0.150000)$seconds$
+													:i while
+														
+														:i $spray_icon$.$DoMorph$$time$ = %f(0.010000)$rot_angle$ = %GLOBAL%$orig_rot$$alpha$ = %i(1,00000001)$pos$ = %GLOBAL%$orig_pos$
+														:i $ran_xjump$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(50):OFFSET(51):OFFSET(52):OFFSET(53):OFFSET(54):OFFSET(55):OFFSET(56)
+															 :POS(50) %vec2(-3.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(51) %vec2(-2.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(52) %vec2(-1.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(53) %vec2(0.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(54) %vec2(1.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(55) %vec2(2.000000,0.000000)
+														:BREAKTO(57)
+															 :POS(56) %vec2(3.000000,0.000000) :POS(57) 
+															:i $ran_yjump$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(58):OFFSET(59):OFFSET(60):OFFSET(61):OFFSET(62):OFFSET(63):OFFSET(64)
+																 :POS(58) %vec2(0.000000,-3.000000)
+															:BREAKTO(65)
+																 :POS(59) %vec2(0.000000,-2.000000)
+															:BREAKTO(65)
+																 :POS(60) %vec2(0.000000,-1.000000)
+															:BREAKTO(65)
+																 :POS(61) %vec2(0.000000,0.000000)
+															:BREAKTO(65)
+																 :POS(62) %vec2(0.000000,1.000000)
+															:BREAKTO(65)
+																 :POS(63) %vec2(2.000000,0.000000)
+															:BREAKTO(65)
+																 :POS(64) %vec2(3.000000,0.000000) :POS(65) 
+																:i $add_angle$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(66):OFFSET(67):OFFSET(68):OFFSET(69):OFFSET(70):OFFSET(71):OFFSET(72)
+																	 :POS(66) %i(4294967290,fffffffa)
+																:BREAKTO(73)
+																	 :POS(67) %i(4294967292,fffffffc)
+																:BREAKTO(73)
+																	 :POS(68) %i(4294967294,fffffffe)
+																:BREAKTO(73)
+																	 :POS(69) %i(0,00000000)
+																:BREAKTO(73)
+																	 :POS(70) %i(2,00000002)
+																:BREAKTO(73)
+																	 :POS(71) %i(4,00000004)
+																:BREAKTO(73)
+																	 :POS(72) %i(6,00000006) :POS(73) 
+																	:i $ran_time$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(74):OFFSET(75):OFFSET(76):OFFSET(77):OFFSET(78)
+																		 :POS(74) %f(0.020000)
+																	:BREAKTO(79)
+																		 :POS(75) %f(0.030000)
+																	:BREAKTO(79)
+																		 :POS(76) %f(0.040000)
+																	:BREAKTO(79)
+																		 :POS(77) %f(0.050000)
+																	:BREAKTO(79)
+																		 :POS(78) %f(0.060000) :POS(79) 
+																		:i $ran_alpha$ = select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(80):OFFSET(81):OFFSET(82):OFFSET(83)
+																			 :POS(80) %f(0.400000)
+																		:BREAKTO(84)
+																			 :POS(81) %f(0.600000)
+																		:BREAKTO(84)
+																			 :POS(82) %f(0.800000)
+																		:BREAKTO(84)
+																			 :POS(83) %i(1,00000001) :POS(84) 
+																			:i $spray_icon$.$DoMorph$$time$ = %GLOBAL%$ran_time$$alpha$ = %GLOBAL%$ran_alpha$$rot_angle$ =  (%GLOBAL%$orig_rot$ + %GLOBAL%$add_angle$) $pos$ =  (%GLOBAL%$orig_pos$ + %GLOBAL%$ran_xjump$ + %GLOBAL%$ran_yjump$) 
+																			:i $wait$%f(0.040000)
+																		:i loop_to select(2f,3, 01 00 01 00 01 00) :OFFSET(85):OFFSET(86):OFFSET(87)
+																			 :POS(85) %i(20,00000014)
+																		:BREAKTO(88)
+																			 :POS(86) %i(25,00000019)
+																		:BREAKTO(88)
+																			 :POS(87) %i(30,0000001e) :POS(88) 
+																			:i $spray_icon$.$DoMorph$$time$ = %i(0,00000000)$pos$ = %GLOBAL%$orig_pos$
+																			:i $spray_icon$.$DoMorph$$time$ = %f(0.200000)$pos$ =  (%GLOBAL%$orig_pos$ + %vec2(-500.000000,0.000000)) 
+																			:i $wait$select(2f,4, 01 00 01 00 01 00 01 00) :OFFSET(89):OFFSET(90):OFFSET(91):OFFSET(92)
+																				 :POS(89) %i(1,00000001)
+																			:BREAKTO(93)
+																				 :POS(90) %i(2,00000002)
+																			:BREAKTO(93)
+																				 :POS(91) %i(3,00000003)
+																			:BREAKTO(93)
+																				 :POS(92) %i(4,00000004) :POS(93) $seconds$
+																				:i $DestroyScreenElement$$id$ = $spray_icon$
+																				:i $FormatText$$ChecksumName$ = $spray_text_name$%s(11,"new_icon_%i")$i$ = select(2f,10, 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(94):OFFSET(95):OFFSET(96):OFFSET(97):OFFSET(98):OFFSET(99):OFFSET(100):OFFSET(101):OFFSET(102):OFFSET(103)
+																						 :POS(94) %i(1,00000001)
+																					:BREAKTO(104)
+																						 :POS(95) %i(2,00000002)
+																					:BREAKTO(104)
+																						 :POS(96) %i(3,00000003)
+																					:BREAKTO(104)
+																						 :POS(97) %i(4,00000004)
+																					:BREAKTO(104)
+																						 :POS(98) %i(5,00000005)
+																					:BREAKTO(104)
+																						 :POS(99) %i(6,00000006)
+																					:BREAKTO(104)
+																						 :POS(100) %i(7,00000007)
+																					:BREAKTO(104)
+																						 :POS(101) %i(8,00000008)
+																					:BREAKTO(104)
+																						 :POS(102) %i(9,00000009)
+																					:BREAKTO(104)
+																						 :POS(103) %i(10,0000000a) :POS(104) 
+																					:i $CreateScreenElement$:s{
+																						:i $type$ = $SpriteElement$
+																						:i $parent$ = $current_menu_anchor$
+																						:i $id$ = $spray_icon$
+																						:i $texture$ = %GLOBAL%$spray_text_name$
+																						:i $rot_angle$ = %GLOBAL%$orig_rot$
+																						:i $pos$ = %GLOBAL%$orig_pos$
+																						:i $scale$ = %GLOBAL%$orig_scale$
+																						:i %GLOBAL%$orig_flip$
+																						:i $z_priority$ = %GLOBAL%$orig_z$
+																						:i $rgba$ = %GLOBAL%$orig_rgba$
+																					:i :s}
+																				:i loop_to 
+																			:i endfunction
+																			:i function $paint_dripping$
+																				:i if $GotParam$$some_wait$
+																					:i $add_time$ = %f(0.200000)
+																				:i else 
+																					:i $add_time$ = %i(0,00000000)
+																				:i endif
+																				:i $wait$%GLOBAL%$add_time$$seconds$
+																				:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %vec2(1.000000,0.200000)
+																				:i $DoMorph$$time$ = %i(2,00000002)$scale$ = %vec2(1.000000,2.000000)
+																			:i endfunction
+																			:i function $slide_in$$orig_pos$ = %vec2(200.000000,200.000000)
+																				:i if $GotParam$$some_wait$
+																					:i $add_time$ = %f(0.200000)
+																				:i else 
+																					:i $add_time$ = %i(0,00000000)
+																				:i endif
+																				:i if $GotParam$$right$
+																					:i $DoMorph$$time$ = %i(0,00000000)$pos$ =  (%GLOBAL%$orig_pos$ + %vec2(400.000000,0.000000)) 
+																					:i $wait$%GLOBAL%$add_time$$seconds$
+																					:i $DoMorph$$time$ = %f(0.200000)$pos$ = %GLOBAL%$orig_pos$
+																				:i endif
+																				:i if $GotParam$$top$
+																					:i $top_location$ = select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(105):OFFSET(106):OFFSET(107):OFFSET(108):OFFSET(109)
+																						 :POS(105) %vec2(-100.000000,0.000000)
+																					:BREAKTO(110)
+																						 :POS(106) %vec2(-50.000000,0.000000)
+																					:BREAKTO(110)
+																						 :POS(107) %vec2(0.000000,0.000000)
+																					:BREAKTO(110)
+																						 :POS(108) %vec2(50.000000,0.000000)
+																					:BREAKTO(110)
+																						 :POS(109) %vec2(100.000000,0.000000) :POS(110) 
+																						:i $DoMorph$$time$ = %i(0,00000000)$pos$ =  (%GLOBAL%$orig_pos$ - %vec2(0.000000,100.000000) + %GLOBAL%$top_location$) 
+																						:i $wait$%GLOBAL%$add_time$$seconds$
+																						:i $DoMorph$$time$ = %f(0.200000)$pos$ =  (%GLOBAL%$orig_pos$ + %GLOBAL%$top_location$) 
+																					:i endif
+																				:i endfunction
+																				:i function $circle_rotation$
+																					:i $end_pos$ =  (%GLOBAL%$orig_pos$ + select(2f,6, 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(111):OFFSET(112):OFFSET(113):OFFSET(114):OFFSET(115):OFFSET(116)
+																						 :POS(111) %vec2(100.000000,0.000000)
+																					:BREAKTO(117)
+																						 :POS(112) %vec2(150.000000,0.000000)
+																					:BREAKTO(117)
+																						 :POS(113) %vec2(200.000000,0.000000)
+																					:BREAKTO(117)
+																						 :POS(114) %vec2(250.000000,0.000000)
+																					:BREAKTO(117)
+																						 :POS(115) %vec2(300.000000,0.000000)
+																					:BREAKTO(117)
+																						 :POS(116) %vec2(350.000000,0.000000) :POS(117) ) 
+																						:i $DoMorph$$time$ = %i(0,00000000)$rot_angle$ = %i(0,00000000)$pos$ =  (%GLOBAL%$end_pos$ - %vec2(500.000000,0.000000)) 
+																						:i $wait$select(2f,3, 01 00 01 00 01 00) :OFFSET(118):OFFSET(119):OFFSET(120)
+																							 :POS(118) %i(3,00000003)
+																						:BREAKTO(121)
+																							 :POS(119) %i(4,00000004)
+																						:BREAKTO(121)
+																							 :POS(120) %i(5,00000005) :POS(121) $seconds$
+																							:i $DoMorph$$time$ = %i(1,00000001)$rot_angle$ = %i(1800,00000708)$pos$ = %GLOBAL%$end_pos$
+																							:i $wait$select(2f,5, 01 00 01 00 01 00 01 00 01 00) :OFFSET(122):OFFSET(123):OFFSET(124):OFFSET(125):OFFSET(126)
+																								 :POS(122) %i(2,00000002)
+																							:BREAKTO(127)
+																								 :POS(123) %i(3,00000003)
+																							:BREAKTO(127)
+																								 :POS(124) %i(4,00000004)
+																							:BREAKTO(127)
+																								 :POS(125) %i(5,00000005)
+																							:BREAKTO(127)
+																								 :POS(126) %i(6,00000006) :POS(127) $seconds$
+																								:i $DoMorph$$time$ = %i(0,00000000)$rot_angle$ = %i(1800,00000708)
+																								:i $DoMorph$$time$ = %f(0.200000)$rot_angle$ = %i(720,000002d0)
+																								:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %GLOBAL%$end_pos$
+																								:i $DoMorph$$time$ = %f(0.200000)$pos$ =  (%GLOBAL%$end_pos$ + %vec2(1000.000000,0.000000)) 
+																							:i endfunction
+																							:i function $paint_twitch$
+																								:i while
+																									
+																									:i $DoMorph$$time$ = %i(0,00000000)$rot_angle$ = %GLOBAL%$orig_rot$
+																									:i $add_angle$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(128):OFFSET(129):OFFSET(130):OFFSET(131):OFFSET(132):OFFSET(133):OFFSET(134)
+																										 :POS(128) %i(4294967293,fffffffd)
+																									:BREAKTO(135)
+																										 :POS(129) %i(4294967294,fffffffe)
+																									:BREAKTO(135)
+																										 :POS(130) %i(4294967295,ffffffff)
+																									:BREAKTO(135)
+																										 :POS(131) %i(0,00000000)
+																									:BREAKTO(135)
+																										 :POS(132) %i(1,00000001)
+																									:BREAKTO(135)
+																										 :POS(133) %i(2,00000002)
+																									:BREAKTO(135)
+																										 :POS(134) %i(3,00000003) :POS(135) 
+																										:i $ran_time$ = select(2f,7, 01 00 01 00 01 00 01 00 01 00 01 00 01 00) :OFFSET(136):OFFSET(137):OFFSET(138):OFFSET(139):OFFSET(140):OFFSET(141):OFFSET(142)
+																											 :POS(136) %f(0.060000)
+																										:BREAKTO(143)
+																											 :POS(137) %f(0.070000)
+																										:BREAKTO(143)
+																											 :POS(138) %f(0.080000)
+																										:BREAKTO(143)
+																											 :POS(139) %f(0.090000)
+																										:BREAKTO(143)
+																											 :POS(140) %f(0.100000)
+																										:BREAKTO(143)
+																											 :POS(141) %f(0.120000)
+																										:BREAKTO(143)
+																											 :POS(142) %f(0.500000) :POS(143) 
+																											:i $DoMorph$$time$ = %GLOBAL%$ran_time$$rot_angle$ =  (%GLOBAL%$orig_rot$ + %GLOBAL%$add_angle$) 
+																										:i loop_to 
+																									:i endfunction
+																									:i :end
+																									

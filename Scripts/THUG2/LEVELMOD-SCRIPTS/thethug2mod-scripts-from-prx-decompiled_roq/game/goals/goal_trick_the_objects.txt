@@ -1,0 +1,86 @@
+
+:i $Goal_TrickObjects_GenericParams$ = :s{
+	:i $goal_text$ = %s(18,"Trick the objects!")
+	:i $view_goals_text$ = %s(30,"Generic trick the objects text")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_trick_the_objects_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_trick_the_objects_activate$
+	:i $deactivate$ = $goal_trick_the_objects_deactivate$
+	:i $expire$ = $goal_trick_the_objects_expire$
+	:i $fail$ = $goal_trick_the_objects_fail$
+	:i $success$ = $goal_trick_the_objects_success$
+	:i $restart_node$ = $TRG_G_TRICKOBJECTS_RestartNode$
+	:i $trigger_obj_id$ = $TRG_G_TRICKOBJECTS_Pro$
+	:i $record_type$ = $score$
+	:i $play_goal_start_sound$
+	:i $TrickObjects$
+:i :s}
+:i function $goal_trick_the_objects_init$
+	:i if NOT $GotParam$$trick_object_prefix$
+		:i $script_assert$%s(38,"trick_object_prefix not defined for %s")$s$ = %GLOBAL%$goal_id$
+	:i endif
+	:i if NOT $GotParam$$goal_objects$
+		:i $script_assert$%s(37,"goal_objects array not defined for %s")$s$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_init$ isNull 
+:i endfunction
+:i function $goal_trick_the_objects_activate$
+	:i if $GotParam$$no_cam_anim$
+		:i $goal_passive_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i else 
+		:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i endif
+	:i $goal_trick_the_objects_colors_start$ isNull 
+:i endfunction
+:i function $goal_trick_the_objects_deactivate$
+	:i $goal_trick_the_objects_colors_stop$ isNull 
+	:i $goal_deactivate$ isNull 
+:i endfunction
+:i function $goal_trick_the_objects_expire$
+	:i $goal_expire$ isNull 
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_trick_the_objects_fail$
+	:i $goal_fail$ isNull 
+:i endfunction
+:i function $goal_trick_the_objects_success$
+	:i $goal_success$ isNull 
+:i endfunction
+:i function $goal_trick_the_objects_start_combo$
+	:i $SetException$:s{
+		:i $EX$ = $SkaterExitCombo$
+		:i $scr$ = $goal_trick_the_objects_combo_end$
+		:i $params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+		:i $Group$ = $goal_trick_the_objects$
+	:i :s}
+:i endfunction
+:i function $goal_trick_the_objects_combo_end$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+	:i $ClearExceptionGroup$$goal_trick_the_objects$
+:i endfunction
+:i function $goal_trick_the_objects_colors$
+	:i $SetLightGroup$$light_group$ = $goal_trick_the_objects_colors$$prefix$ = %GLOBAL%$prefix$
+	:i while
+		
+		:i $SetObjectColor$$prefix$ = %GLOBAL%$prefix$$color$ =  (%i(255,000000ff) +  (%i(255,000000ff) * %i(256,00000100))  +  (%i(120,00000078) * %i(65536,00010000)) ) 
+		:i $wait$%f(0.500000)$seconds$
+		:i $SetObjectColor$$prefix$ = %GLOBAL%$prefix$$color$ =  (%i(254,000000fe) +  (%i(163,000000a3) * %i(256,00000100))  +  (%i(90,0000005a) * %i(65536,00010000)) ) 
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $goal_trick_the_objects_colors_start$
+	:i $FormatText$$ChecksumName$ = $objects_colors_script_id$%s(32,"%s_goal_trick_the_objects_colors")$s$ = %GLOBAL%$goal_name$
+	:i $SpawnScript$:s{
+		:i $goal_trick_the_objects_colors$
+		:i $id$ = %GLOBAL%$objects_colors_script_id$
+		:i $params$ = :s{$prefix$ = %GLOBAL%$trick_object_prefix$:s}
+	:i :s}
+:i endfunction
+:i function $goal_trick_the_objects_colors_stop$
+	:i $FormatText$$ChecksumName$ = $objects_colors_script_id$%s(32,"%s_goal_trick_the_objects_colors")$s$ = %GLOBAL%$goal_name$
+	:i $KillSpawnedScript$$id$ = %GLOBAL%$objects_colors_script_id$
+	:i $SetLightGroup$$light_group$ = %GLOBAL%$trick_object_light_group$$prefix$ = %GLOBAL%$trick_object_prefix$
+	:i $SetObjectColor_CurrentTOD$$prefix$ = %GLOBAL%$trick_object_prefix$
+:i endfunction
+:i :end

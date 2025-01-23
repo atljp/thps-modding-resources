@@ -1,0 +1,205 @@
+
+:i function $create_model_from_appearance$
+	:i $LockCurrentSkaterProfileIndex$%i(1,00000001)
+	:i $ModelClearAllGeoms$
+	:i $process_cas_command$$cas_command$ = $ModelRunScript$$editable_list$ = $master_editable_list$$target$ = $disqualify_script$
+	:i $process_cas_command$$cas_command$ = $ModelAddGeom$$editable_list$ = $master_editable_list$
+	:i $process_cas_command$$cas_command$ = $GeomReplaceTexture$$editable_list$ = $master_editable_list$
+	:i $model_apply_created_graphics$
+	:i $model_apply_scale$
+	:i $process_cas_command$$cas_command$ = $model_hide_geom$$editable_list$ = $master_editable_list$
+	:i $ModelRemovePolys$
+	:i $model_apply_face_texture$
+	:i $ModelPropagateHeadColor$
+	:i $process_cas_command$$cas_command$ = $GeomModulateColor$$editable_list$ = $master_editable_list$
+	:i $allocate_uv_matrix_params$
+	:i $set_uv_from_appearance$
+	:i $ModelFinalize$
+	:i $LockCurrentSkaterProfileIndex$%i(0,00000000)
+:i endfunction
+:i function $create_ped_model_from_appearance$
+	:i $LockCurrentSkaterProfileIndex$%i(1,00000001)
+	:i $ModelClearAllGeoms$
+	:i $process_cas_command$$cas_command$ = $ModelAddGeom$$editable_list$ = $ped_editable_list$
+	:i $model_apply_scale$
+	:i $ModelRemovePolys$
+	:i $process_cas_command$$cas_command$ = $GeomModulateColor$$editable_list$ = $ped_editable_list$
+	:i $ModelFinalize$
+	:i $LockCurrentSkaterProfileIndex$%i(0,00000000)
+:i endfunction
+:i function $replace_cutscene_skater_from_appearance$
+	:i $LockCurrentSkaterProfileIndex$%i(1,00000001)
+	:i $process_cas_command$$cas_command$ = $GeomReplaceTexture$$editable_list$ = $master_editable_list$
+	:i $model_apply_face_texture$
+	:i $ModelPropagateHeadColor$
+	:i $process_cas_command$$cas_command$ = $GeomModulateColor$$editable_list$ = $master_editable_list$
+	:i $LockCurrentSkaterProfileIndex$%i(0,00000000)
+:i endfunction
+:i $face_map_points_saved$ = %i(0,00000000)
+:i $original_model_face_points$ = :s{
+	:i $left_eye$ = :a{%i(51,00000033)%i(61,0000003d):a}
+	:i $right_eye$ = :a{%i(84,00000054)%i(61,0000003d):a}
+	:i $nose$ = :a{%i(67,00000043)%i(84,00000054):a}
+	:i $lips$ = :a{%i(67,00000043)%i(99,00000063):a}
+	:i $width$ = %i(128,00000080)
+	:i $height$ = %i(128,00000080)
+:i :s}
+:i function $model_apply_face_texture$
+	:i $ModelApplyFaceTexture$$src$ = %s(18,"CS_NSN_facemap.png")
+:i endfunction
+:i function $model_apply_scale$
+	:i %GLOBAL%$standard_scaling$ = %i(1,00000001)
+	:i $ModelResetScale$
+	:i if $AppearanceAllowScalingCheat$
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_KID$
+			:i $ModelApplyBodyShape$$body_shape$ = $kid_scale_info$
+			:i $ModelApplyObjectScale$$body_shape$ = $kid_scale_info$
+			:i %GLOBAL%$standard_scaling$ = %i(0,00000000)
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_BIGHEAD$
+			:i $ModelApplyBodyShape$$body_shape$ = $bighead_scale_info$$is_bighead_cheat$
+			:i $ModelApplyObjectScale$$body_shape$ = $bighead_scale_info$
+			:i %GLOBAL%$standard_scaling$ = %i(0,00000000)
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $CHEAT_GORILLA$
+			:i $ModelApplyBodyShape$$body_shape$ = $gorilla_scale_info$
+			:i $ModelApplyObjectScale$$body_shape$ = $gorilla_scale_info$
+			:i %GLOBAL%$standard_scaling$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$standard_scaling$ = %i(1,00000001)) 
+		:i $ModelApplyBodyShape$
+		:i $ModelApplyObjectScale$
+		:i $process_cas_command$$cas_command$ = $ModelApplyBoneScale$$editable_list$ = $master_scaling_list$
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $CHEAT_HOVERBOARD$
+		:i $ModelApplyBodyShape$$body_shape$ = $hoverboard_scale_info$
+	:i endif
+:i endfunction
+:i function $model_apply_created_graphics$
+	:i $GeomSetCreatedTexture$$part$ = $hat_logo$
+	:i $GeomSetCreatedTexture$$part$ = $front_logo$
+	:i $GeomSetCreatedTexture$$part$ = $back_logo$
+	:i $GeomSetCreatedTexture$$part$ = $deck_graphic$
+:i endfunction
+:i function $model_hide_geom$
+	:i %GLOBAL%$invisible$ = %i(0,00000000)
+	:i if NOT $InNetGame$
+		:i if $AppearanceAllowScalingCheat$
+			:i if $GetGlobalFlag$$flag$ = $CHEAT_INVISIBLE$
+				:i %GLOBAL%$invisible$ = %i(1,00000001)
+			:i endif
+		:i endif
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_head$
+		:i $ModelHideGeom$$part$ = %GLOBAL%$part$%GLOBAL%$invisible$
+		:i return
+		
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_m_hair$
+		:i $ModelHideGeom$$part$ = %GLOBAL%$part$%GLOBAL%$invisible$
+		:i return
+		
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_head$
+		:i $ModelHideGeom$$part$ = %GLOBAL%$part$%GLOBAL%$invisible$
+		:i return
+		
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $skater_f_hair$
+		:i $ModelHideGeom$$part$ = %GLOBAL%$part$%GLOBAL%$invisible$
+		:i return
+		
+	:i endif
+	:i if $ChecksumEquals$$a$ = %GLOBAL%$part$$b$ = $body$
+		:i $ModelHideGeom$$part$ = %GLOBAL%$part$%GLOBAL%$invisible$
+		:i return
+		
+	:i endif
+:i endfunction
+:i function $preload_model_from_appearance$
+	:i $ModelClearAllGeoms$
+	:i $process_cas_command$$cas_command$ = $ModelAddGeom$$editable_list$ = $master_editable_list$
+:i endfunction
+:i function $color_model_from_appearance$
+	:i $ModelPropagateHeadColor$
+	:i $process_cas_command$$cas_command$ = $GeomModulateColor$$editable_list$ = $master_editable_list$
+:i endfunction
+:i function $scale_model_from_appearance$
+	:i $model_apply_scale$
+:i endfunction
+:i function $hide_model_from_appearance$
+	:i $process_cas_command$$cas_command$ = $model_hide_geom$$editable_list$ = $master_editable_list$
+:i endfunction
+:i function $allocate_uv_matrix_params$
+	:i $GetArraySize$$master_uv_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $GeomAllocateUVMatrixParams$ ($master_uv_list$:a{%GLOBAL%$index$:a}) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $set_uv_from_appearance$
+	:i $GetArraySize$$master_uv_list$
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i $GeomSetUVOffset$ ($master_uv_list$:a{%GLOBAL%$index$:a}) 
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+:i endfunction
+:i function $process_cas_command$$editable_list$ = $master_editable_list$
+	:i $ForEachIn$%GLOBAL%$editable_list$$do$ = %GLOBAL%$cas_command$$params$ =  isNull 
+:i endfunction
+:i function $preselect_random_parts$
+	:i $PreSelectRandomPedMHeads$$num$ = %GLOBAL%$num_m_heads$
+	:i $PreSelectRandomPedMTorsos$$num$ = %GLOBAL%$num_m_torsos$
+	:i $PreSelectRandomPedMLegs$$num$ = %GLOBAL%$num_m_legs$
+	:i $PreSelectRandomPedMAccessories$$num$ = %GLOBAL%$num_m_accessories$
+	:i $PreSelectRandomPedFHeads$$num$ = %GLOBAL%$num_f_heads$
+	:i $PreSelectRandomPedFTorsos$$num$ = %GLOBAL%$num_f_torsos$
+	:i $PreSelectRandomPedFLegs$$num$ = %GLOBAL%$num_f_legs$
+	:i $PreSelectRandomPedFAccessories$$num$ = %GLOBAL%$num_f_accessories$
+:i endfunction
+:i function $PreSelectRandomPedMHeads$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_m_head$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedMTorsos$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_m_torso$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedMLegs$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_m_legs$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedMAccessories$$num$ = %i(8,00000008)
+	:i $PreselectRandomPedestrians$$part$ = $ped_m_accessories$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedFHeads$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_f_head$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedFTorsos$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_f_torso$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedFLegs$$num$ = %i(2,00000002)
+	:i $PreselectRandomPedestrians$$part$ = $ped_f_legs$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $PreSelectRandomPedFAccessories$$num$ = %i(3,00000003)
+	:i $PreselectRandomPedestrians$$part$ = $ped_f_accessories$$num$ = %GLOBAL%$num$
+:i endfunction
+:i function $model_apply_custom_logos$$player$ = %i(0,00000000)
+	:i %GLOBAL%$logo_parts$ = :a{$hat_logo$$front_logo$$back_logo$$deck_graphic$:a}
+	:i %GLOBAL%$index$ = %i(0,00000000)
+	:i while
+		
+		:i if $GetPlayerAppearancePart$$player$ = %GLOBAL%$player$$part$ =  (%GLOBAL%$logo_parts$:a{%GLOBAL%$index$:a}) 
+			:i if $ChecksumEquals$$a$ = %GLOBAL%$desc_id$$b$ = $CreatedGraphic$
+				:i $ApplyCustomLogoToPart$:s{
+					:i $player$ = %GLOBAL%$player$
+					:i $part$ =  (%GLOBAL%$logo_parts$:a{%GLOBAL%$index$:a}) 
+				:i :s}
+			:i endif
+		:i endif
+		:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %i(4,00000004)
+:i endfunction
+:i :end

@@ -1,0 +1,483 @@
+
+:i function $launch_gap_menu$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_gap_menu$ isNull 
+:i endfunction
+:i function $create_gap_menu$$back_script$ = $gap_menu_exit_to_pause_menu$$choose_script$ = $nullscript$
+	:i $menu3d_hide$
+	:i $SetMusicVolume$$MusicVolOutsideBox$
+	:i $PauseMusic$%i(0,00000000)
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $hide_current_goal$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $gap_anchor$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $gap_anchor$$alias$ = $current_menu_anchor$
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b7/\b4 = Select"):s}
+			:i :s{$text$ = %s(10,"\bn = Back"):s}
+			:i :a}
+	:i :s}
+	:i $kill_start_key_binding$
+	:i $build_theme_sub_title$$title$ = %s(13,"GAP CHECKLIST")
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $gap_anchor$
+		:i $id$ = $gap_menu$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+	:i :s}
+	:i $AssignAlias$$id$ = $gap_menu$$alias$ = $current_menu_anchor$
+	:i $theme_background$$width$ = %f(6.350000)$pos$ = %vec2(320.000000,85.000000)$num_parts$ = %f(10.500000)
+	:i %GLOBAL%$root_pos$ = %vec2(80.000000,25.000000)
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_gaps_menu_top_bar$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(85,00000055):a}
+		:i $scale$ = %vec2(130.000000,7.000000)
+		:i $pos$ = %vec2(65.000000,87.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = %GLOBAL%$id$$offset$ = %vec2(6.000000,-25.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Score")
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(15.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(4,"Name")
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(115.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_gaps_menu_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(168.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,"Times")
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_gaps_menu_top_bar$$offset$ = %vec2(60.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(355.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $scale$ = %vec2(2.000000,68.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_gaps_menu_top_bar$$offset$ = %vec2(0.000000,250.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $black$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $scale$ = %vec2(124.000000,6.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_gaps_menu_up_arrow$$offset$ = %vec2(0.000000,260.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $view_gaps_menu_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $GetStackedScreenElementPos$$Y$$id$ = $view_gaps_menu_top_bar$$offset$ = %vec2(20.000000,5.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $current_menu_anchor$
+		:i $dims$ = %vec2(640.000000,245.000000)
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = %GLOBAL%$id$
+		:i $id$ = $gap_vmenu$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $dont_allow_wrap$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$set_which_arrow$$params$ = :s{$arrow$ = $view_gaps_menu_up_arrow$:s}:s}
+			:i :s{$pad_down$$set_which_arrow$$params$ = :s{$arrow$ = $view_gaps_menu_down_arrow$:s}:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$id$ = $gap_vmenu$$alias$ = $current_menu$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $current_menu$
+		:i $event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = %GLOBAL%$back_script$:s}:s}:a}
+	:i :s}
+	:i $AddGapsToMenu$$initial_scale$ = %f(0.800000)$choose_script$ = %GLOBAL%$choose_script$
+	:i $generic_menu_animate_in$$force$$pos$ = %vec2(320.000000,240.000000)
+	:i $FireEvent$$type$ = $focus$$target$ = $current_menu$
+:i endfunction
+:i function $gap_menu_add_item$$choose_script$ = $nullscript$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba2$
+	:i if $GotParam$$first_item$
+		:i $focus_params$ = :s{$first_item$:s}
+	:i else 
+		:i if $GotParam$$last_item$
+			:i $focus_params$ = :s{$last_item$:s}
+		:i endif
+	:i endif
+	:i if $IsNGC$
+		:i $heap$ = $topdown$
+	:i else 
+		:i $heap$ = $frontend$
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $current_menu$
+		:i $dims$ = %vec2(200.000000,20.000000)
+		:i $event_handlers$ = :a{:s{$focus$$gap_menu_focus$$params$ = :s{%GLOBAL%$focus_params$$times$ = %GLOBAL%$times$:s}:s}
+			:i :s{$unfocus$$gap_menu_unfocus$$params$ = :s{$times$ = %GLOBAL%$times$:s}:s}
+			:i :s{$focus$$gap_menu_focus_show_gap$$params$ =  isNull :s}
+			:i :s{$pad_choose$%GLOBAL%$choose_script$$params$ = :s{$gap_number$ = %GLOBAL%$gap_number$$times$ = %GLOBAL%$times$:s}:s}
+			:i :a}
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+	:i if  (%GLOBAL%$times$ > %i(0,00000000)) 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $alpha$ = %f(1.000000)
+	:i else 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+		:i $alpha$ = %f(0.400000)
+	:i endif
+	:i $FormatText$$TextName$ = $gap_score$%s(2,"%i")$i$ = %GLOBAL%$gap_score$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$gap_score$
+		:i $pos$ = %vec2(13.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $scale$ = %f(0.800000)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$gap_name$
+		:i $pos$ = %vec2(55.000000,0.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $scale$ = %f(0.800000)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i if  (%GLOBAL%$times$ > %i(99999,0001869f)) 
+		:i %GLOBAL%$times$ = %i(99999,0001869f)
+	:i endif
+	:i $FormatText$$TextName$ = $times$%s(2,"%i")$i$ = %GLOBAL%$times$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $font$ = $small$
+		:i $text$ = %GLOBAL%$times$
+		:i $pos$ = %vec2(444.000000,0.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $scale$ = %f(0.800000)
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+	:i $highlight_angle$ = %i(0,00000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = %GLOBAL%$anchor_id$
+		:i $texture$ = $de_highlight_bar$
+		:i $pos$ = %vec2(232.000000,10.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+		:i $z_priority$ = %i(3,00000003)
+		:i $scale$ = %vec2(4.100000,0.700000)
+		:i $rot_angle$ =  (%GLOBAL%$highlight_angle$ / %i(4,00000004)) 
+		:i $heap$ = %GLOBAL%$heap$
+	:i :s}
+:i endfunction
+:i function $gap_menu_focus_show_gap$
+	:i if  (%GLOBAL%$times$ > %i(0,00000000)) 
+		:i if NOT $ObjectExists$$id$ = $menu_cam$
+			:i $create_menu_camera$
+		:i endif
+		:i $menu_cam$.$UnPause$
+		:i $menu_cam$.$Obj_SetPosition$$position$ =  (%GLOBAL%$skater_start_pos$ + %vec3(0.000000,80.000000,0.000000)) 
+		:i $dir_x$ =  (%GLOBAL%$skater_start_dir$->%vec3(-1.000000,0.000000,0.000000)) 
+		:i $dir_y$ = %f(0.100000)
+		:i $dir_z$ =  (%GLOBAL%$skater_start_dir$->%vec3(0.000000,0.000000,-1.000000)) 
+		:i $dir$ =  (%GLOBAL%$dir_x$ * %vec3(1.000000,0.000000,0.000000) + %GLOBAL%$dir_y$ * %vec3(0.000000,1.000000,0.000000) + %GLOBAL%$dir_z$ * %vec3(0.000000,0.000000,1.000000)) 
+		:i $menu_cam$.$Obj_SetOrientation$$dir$ = %GLOBAL%$dir$
+		:i $SetActiveCamera$$id$ = $menu_cam$
+	:i else 
+		:i $restore_skater_camera$
+	:i endif
+:i endfunction
+:i function $gap_menu_focus$
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $text_rgba$
+	:i if  (%GLOBAL%$times$ > %i(0,00000000)) 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i else 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$text_twitch_effect2$
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(1.000000)
+	:i :s}
+	:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}
+		:i $rgba$ = %GLOBAL%$bar_rgba$
+	:i :s}
+	:i if $GotParam$$first_item$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_gaps_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_gaps_menu_up_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i :s}
+	:i endif
+	:i if $GotParam$$last_item$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_gaps_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(0,00000000):a}
+		:i :s}
+	:i else 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $view_gaps_menu_down_arrow$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+		:i :s}
+	:i endif
+	:i $gap_vmenu$.$GetTags$
+	:i if $GotParam$$arrow_id$
+		:i $menu_vert_blink_arrow$:s{$id$ = %GLOBAL%$arrow_id$:s}
+	:i endif
+:i endfunction
+:i function $gap_menu_unfocus$
+	:i $GetTags$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+	:i $KillSpawnedScript$$name$ = $text_twitch_effect2$
+	:i if  (%GLOBAL%$times$ > %i(0,00000000)) 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i else 
+		:i $rgba$ = %GLOBAL%$text_rgba$
+	:i endif
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(0.800000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(0.800000)
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $scale$ = %f(0.800000)
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(3,00000003):s}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(0,00000000):a}
+	:i :s}
+:i endfunction
+:i function $gap_menu_exit_to_pause_menu$
+	:i if  ($FadeTempMusicVol$ < %i(0,00000000)) 
+		:i $change$$FadeTempMusicVol$ = %i(0,00000000)
+	:i endif
+	:i if  ($FadeTempMusicVol$ > %i(100,00000064)) 
+		:i $change$$FadeTempMusicVol$ = %i(100,00000064)
+	:i endif
+	:i $SetMusicVolume$$FadeTempMusicVol$
+	:i $PauseMusic$%i(1,00000001)
+	:i $root_window$.$SetTags$$need_music_zone_refresh$
+	:i $GoalManager_ShowPoints$
+	:i if NOT $GoalManager_HasActiveGoals$
+		:i $GoalManager_ShowGoalPoints$
+	:i endif
+	:i $restore_skater_camera$
+	:i $restore_start_key_binding$
+	:i $AssignAlias$$id$ = $gap_anchor$$alias$ = $current_menu_anchor$
+	:i if $CustomParkMode$$testing$
+		:i $create_pause_menu$
+	:i else 
+		:i $create_your_options_menu$
+	:i endif
+:i endfunction
+:i function $got_gap_for_first_time$
+	:i if $InMultiplayerGame$
+		:i return
+		
+	:i endif
+	:i $printf$%GLOBAL%$gap_text$
+	:i if $GotParam$$multiple_new_gaps$
+		:i $FormatText$$TextName$ = $text$%s(11,"Found Gaps:")
+		:i $SetScreenElementProps$$id$ = $first_time_goal_info_title$$text$ = %GLOBAL%$text$
+		:i if  (%GLOBAL%$multiple_new_gaps$ < %i(9,00000009)) 
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = $first_time_goal_info$
+				:i $font$ = $small$
+				:i $text$ = %GLOBAL%$gap_text$
+				:i $pos$ =  (%vec2(0.000000,20.000000) * %GLOBAL%$multiple_new_gaps$) 
+				:i $just$ = :a{$left$$top$:a}
+				:i $line_spacing$ = %f(0.800000)
+				:i $rgba$ = :a{%i(20,00000014)%i(98,00000062)%i(114,00000072)%i(108,0000006c):a}
+				:i $shadow$
+				:i $shadow_rgba$ = $UI_text_shadow_color$
+				:i $shadow_offs$ = $UI_text_shadow_offset$
+				:i $allow_expansion$
+				:i $z_priority$ = %i(4294967291,fffffffb)
+			:i :s}
+		:i else 
+			:i if  (%GLOBAL%$multiple_new_gaps$ = %i(9,00000009)) 
+				:i $CreateScreenElement$:s{
+					:i $type$ = $TextElement$
+					:i $parent$ = $first_time_goal_info$
+					:i $font$ = $small$
+					:i $text$ = %s(3,"...")
+					:i $pos$ =  (%vec2(0.000000,20.000000) * %GLOBAL%$multiple_new_gaps$) 
+					:i $just$ = :a{$left$$top$:a}
+					:i $line_spacing$ = %f(0.800000)
+					:i $rgba$ = :a{%i(20,00000014)%i(98,00000062)%i(114,00000072)%i(108,0000006c):a}
+					:i $shadow$
+					:i $shadow_rgba$ = $UI_text_shadow_color$
+					:i $shadow_offs$ = $UI_text_shadow_offset$
+					:i $allow_expansion$
+					:i $z_priority$ = %i(4294967291,fffffffb)
+				:i :s}
+			:i endif
+		:i endif
+	:i else 
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ObjectExists$$id$ = $first_time_goal_info$
+			:i $DestroyScreenElement$$id$ = $first_time_goal_info$
+		:i else 
+			:i $SpawnSound$$found_gap_success_sound$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $first_time_goal_info$
+			:i $pos$ = %vec2(25.000000,90.000000)
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $first_time_goal_info$
+			:i $id$ = $first_time_goal_info_title$
+			:i $font$ = $small$
+			:i $text$ = %s(11,"FOUND GAPS:")
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $line_spacing$ = %f(0.800000)
+			:i $rgba$ = :a{%i(20,00000014)%i(98,00000062)%i(114,00000072)%i(108,0000006c):a}
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i $allow_expansion$
+			:i $z_priority$ = %i(4294967291,fffffffb)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $first_time_goal_info$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$gap_text$
+			:i $pos$ = %vec2(0.000000,20.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $line_spacing$ = %f(0.800000)
+			:i $rgba$ = :a{%i(20,00000014)%i(98,00000062)%i(114,00000072)%i(108,0000006c):a}
+			:i $shadow$
+			:i $shadow_rgba$ = $UI_text_shadow_color$
+			:i $shadow_offs$ = $UI_text_shadow_offset$
+			:i $allow_expansion$
+			:i $z_priority$ = %i(4294967291,fffffffb)
+		:i :s}
+		:i $RunScriptOnScreenElement$$id$ = $first_time_goal_info$$goal_message_got_gap$$params$ =  isNull 
+	:i endif
+:i endfunction
+:i :end

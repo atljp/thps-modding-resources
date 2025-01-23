@@ -1,0 +1,1735 @@
+
+:i function $join_chosen$
+	:i if $FoundServers$
+		:i $StopServerList$
+		:i $SetJoinMode$$JOIN_MODE_PLAY$
+		:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $game_list_up_arrow$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $game_list_down_arrow$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $build_theme_sub_title$$title$ = %s(9,"GAME INFO")$parent$ = $server_list_anchor$
+		:i $hide_internet_only_menus$$keep_chat$
+		:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+		:i $change$$current_lobby_focus$ = %i(1,00000001)
+		:i $AssignAlias$$id$ = $server_list_menu$$alias$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $observe_chosen$
+	:i if $FoundServers$
+		:i $StopServerList$
+		:i $SetJoinMode$$JOIN_MODE_OBSERVE$
+		:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+		:i $build_theme_sub_title$$title$ = %s(9,"GAME INFO")$parent$ = $server_list_anchor$
+		:i $hide_internet_only_menus$$keep_chat$
+		:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+		:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+		:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+		:i $change$$current_lobby_focus$ = %i(1,00000001)
+		:i $AssignAlias$$id$ = $server_list_menu$$alias$ = $current_menu$
+	:i endif
+:i endfunction
+:i function $user_list_chosen$
+	:i $StopServerList$
+	:i $DoScreenElementMorph$$id$ = $user_list_up_arrow$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i $DoScreenElementMorph$$id$ = $user_list_down_arrow$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $lobby_player_list_menu$
+	:i $change$$current_lobby_focus$ = %i(2,00000002)
+	:i $AssignAlias$$id$ = $lobby_player_list_menu$$alias$ = $current_menu$
+:i endfunction
+:i function $refresh_chosen$
+	:i $RefreshServerList$
+	:i if $InInternetMode$
+		:i $FillPlayerList$
+	:i endif
+:i endfunction
+:i function $refocus_actions_menu$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $server_list_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+	:i $change$$current_lobby_focus$ = %i(0,00000000)
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+	:i $build_theme_sub_title$$title$ = %s(7,"ACTIONS")$parent$ = $server_list_anchor$
+	:i if $InInternetMode$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+		:i $DoScreenElementMorph$$id$ = $user_list_up_arrow$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $user_list_down_arrow$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $game_list_up_arrow$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $game_list_down_arrow$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i if $ObjectExists$$id$ = $console_message_vmenu$
+			:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i endif
+		:i $DoScreenElementMorph$$id$ = $buddy_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $refocus_gamelist_menu$
+	:i $SetScreenElementProps$$id$ = $game_list_up_arrow$$alpha$ = %i(1,00000001)
+	:i $SetScreenElementProps$$id$ = $game_list_down_arrow$$alpha$ = %i(1,00000001)
+	:i $FireEvent$$type$ = $unfocus$$target$ = $server_desc_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $server_list_menu$
+:i endfunction
+:i function $back_from_internet_options$
+	:i $CleanUpTopStats$
+	:i $StatsLogOff$
+	:i $ProfileLogOff$
+	:i $SetNetworkMode$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $select_skater_relight_skater$
+	:i $create_ss_menu$
+:i endfunction
+:i function $create_profile_warning_dialog$
+	:i $create_dialog_box$:s{$title$ = %s(15,"GameSpy Profile")
+		:i $text$ = %s(130,"Would you like to create a GameSpy profile? When logged in with a profile, you can find friends more easily and track high scores.")
+		:i $buttons$ = :a{:s{$text$ = %s(3,"Yes")$pad_choose_script$ = $launch_profile_menu$:s}
+			:i :s{$text$ = %s(4," No ")$pad_choose_script$ = $create_internet_options$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $hide_internet_only_menus$
+	:i if $InInternetMode$
+		:i if NOT $GotParam$$keep_chat$
+			:i if $ObjectExists$$id$ = $console_message_vmenu$
+				:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+			:i endif
+			:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+		:i endif
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $create_internet_options$
+	:i $ClearMemcardDataForUpload$
+	:i $dialog_box_exit$
+	:i $Skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$Skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$profile_warning_shown$
+	:i if  (%GLOBAL%$checksum$ = $boolean_false$) 
+		:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(21,"profile_warning_shown")$checksum$ = $boolean_true$$string$ = %s(3,"Yes")
+		:i $create_profile_warning_dialog$
+		:i return
+		
+	:i endif
+	:i $change$$in_net_lobby$ = %i(0,00000000)
+	:i $change$$has_accepted_dnas$ = %i(1,00000001)
+	:i $make_new_themed_sub_menu$$title$ = %s(16,"INTERNET OPTIONS")$skateshop_pos$ = %vec2(355.000000,78.000000)
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_options$:s}:s}
+			:i :a}
+	:i :s}
+	:i $theme_menu_add_item$:s{
+		:i $text$ = %s(11,"Play Online")
+		:i $id$ = $menu_play_online$
+		:i $pad_choose_script$ = $play_online_chosen$
+		:i $centered$
+		:i $focus_script$ = $internet_options_focus$
+		:i $focus_params$ = :s{$texture$ = $io_play$:s}
+		:i $unfocus_script$ = $internet_options_unfocus$
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = $menu_play_online$
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$PlayHelperDesc$$params$ = :s{$play_online_helper_desc$:s}:s}
+			:i :s{$unfocus$$StopHelperDesc$:s}
+			:i :a}
+	:i :s}
+	:i if NOT $ProfileLoggedIn$
+		:i if $IsTrue$$DEMO_BUILD$
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(20,"Login/Create Profile")
+				:i $id$ = $menu_create_profile$
+				:i $not_focusable$ = $not_focusable$
+				:i $centered$
+			:i :s}
+		:i else 
+			:i $theme_menu_add_item$:s{
+				:i $text$ = %s(20,"Login/Create Profile")
+				:i $id$ = $menu_create_profile$
+				:i $pad_choose_script$ = $launch_profile_menu$
+				:i $centered$
+				:i $focus_script$ = $internet_options_focus$
+				:i $focus_params$ = :s{$texture$ = $io_login$:s}
+				:i $unfocus_script$ = $internet_options_unfocus$
+			:i :s}
+			:i $SetScreenElementProps$:s{
+				:i $id$ = $menu_create_profile$
+				:i $event_handlers$ = :a{
+					:i :s{$focus$$PlayHelperDesc$$params$ = :s{$login_profile_helper_desc$:s}:s}
+					:i :s{$unfocus$$StopHelperDesc$:s}
+					:i :a}
+			:i :s}
+		:i endif
+	:i else 
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(20,"Change GameSpy Login")
+			:i $id$ = $menu_create_profile$
+			:i $pad_choose_script$ = $launch_profile_menu$
+			:i $centered$
+			:i $focus_script$ = $internet_options_focus$
+			:i $focus_params$ = :s{$texture$ = $io_login$:s}
+			:i $unfocus_script$ = $internet_options_unfocus$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $menu_create_profile$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$PlayHelperDesc$$params$ = :s{$login_profile_helper_desc$:s}:s}
+				:i :s{$unfocus$$StopHelperDesc$:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i if $IsTrue$$DEMO_BUILD$
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(6,"Upload")
+			:i $id$ = $menu_upload$
+			:i $not_focusable$ = $not_focusable$
+			:i $centered$
+		:i :s}
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(8,"Download")
+			:i $id$ = $menu_download$
+			:i $not_focusable$ = $not_focusable$
+			:i $centered$
+			:i $last_menu_item$ = $last_menu_item$
+		:i :s}
+	:i else 
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(13,"Save Settings")
+			:i $id$ = $menu_save$
+			:i $pad_choose_script$ = $launch_save_internet_settings$
+			:i $centered$
+			:i $focus_script$ = $internet_options_focus$
+			:i $focus_params$ = :s{$texture$ = $io_settings$:s}
+			:i $unfocus_script$ = $internet_options_unfocus$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $menu_save$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$PlayHelperDesc$$params$ = :s{$save_settings_helper_desc$:s}:s}
+				:i :s{$unfocus$$StopHelperDesc$:s}
+				:i :a}
+		:i :s}
+		:i $theme_menu_add_item$:s{
+			:i $text$ = %s(12,"Online Stats")
+			:i $id$ = $menu_stats$
+			:i $pad_choose_script$ = $download_stats$
+			:i $centered$
+			:i $focus_script$ = $internet_options_focus$
+			:i $focus_params$ = :s{$texture$ = $io_stats$:s}
+			:i $unfocus_script$ = $internet_options_unfocus$
+			:i $last_menu_item$ = $last_menu_item$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $menu_stats$
+			:i $event_handlers$ = :a{
+				:i :s{$focus$$PlayHelperDesc$$params$ = :s{$online_stats_helper_desc$:s}:s}
+				:i :s{$unfocus$$StopHelperDesc$:s}
+				:i :a}
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $texture$ = $satellite$
+		:i $scale$ = %i(1,00000001)
+		:i $pos$ = %vec2(55.000000,210.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $rot_angle$ = %i(4294967246,ffffffce)
+		:i $alpha$ = %f(0.300000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $internet_options_icon$
+		:i $texture$ = $io_play$
+		:i $scale$ = %f(1.500000)
+		:i $pos$ = %vec2(210.000000,275.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %i(0,00000000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $z_priority$ = %i(2,00000002)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $satellite_beam$
+		:i $texture$ = $satellite_beam$
+		:i $scale$ = %i(3,00000003)
+		:i $pos$ = %vec2(130.000000,130.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rot_angle$ = %i(10,0000000a)
+		:i $alpha$ = %f(0.100000)
+		:i $rgba$ = %GLOBAL%$rgba$
+		:i $z_priority$ = %i(1,00000001)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $current_menu_anchor$
+		:i $id$ = $globe$
+		:i $texture$ = $globe$
+		:i $scale$ = %f(1.300000)
+		:i $pos$ = %vec2(300.000000,480.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.400000)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $internet_options_focus$
+	:i $SetScreenElementProps$$id$ = $internet_options_icon$$texture$ = %GLOBAL%$texture$
+	:i $main_theme_focus$ isNull 
+	:i $DoScreenElementMorph$$id$ = $internet_options_icon$$relative_scale$$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)$pos$ = %vec2(130.000000,130.000000)
+	:i $DoScreenElementMorph$$id$ = $satellite_beam$$relative_scale$$scale$ = %i(0,00000000)$alpha$ = %f(0.100000)
+	:i $DoScreenElementMorph$$id$ = $internet_options_icon$$relative_scale$$scale$ = %f(1.100000)$time$ = %f(0.200000)$alpha$ = %i(1,00000001)$pos$ = %vec2(210.000000,265.000000)
+	:i $DoScreenElementMorph$$id$ = $satellite_beam$$relative_scale$$scale$ = %i(1,00000001)$time$ = %f(0.200000)
+	:i $RunScriptOnScreenElement$$id$ = $satellite_beam$$satellite_beam_flicker$
+:i endfunction
+:i function $internet_options_unfocus$
+	:i $KillSpawnedScript$$name$ = $satellite_beam_flicker$
+	:i $DoScreenElementMorph$$id$ = $internet_options_icon$$alpha$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $satellite_beam$$alpha$ = %i(0,00000000)
+	:i $main_theme_unfocus$ isNull 
+:i endfunction
+:i function $satellite_beam_flicker$$time$ = %f(0.050000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $satellite_beam$$alpha$ = %f(0.300000)$time$ = %GLOBAL%$time$
+		:i $DoScreenElementMorph$$id$ = $internet_options_icon$$alpha$ = %f(0.800000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $satellite_beam$$alpha$ = %f(0.080000)$time$ = %GLOBAL%$time$
+		:i $DoScreenElementMorph$$id$ = $internet_options_icon$$alpha$ = %f(0.500000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $rotate_internet_options_globe$$time$ = %f(60.000000)$num_rots$ = %i(10,0000000a)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $globe$$rot_angle$ =  (%i(360,00000168) * %GLOBAL%$num_rots$) $time$ =  (%GLOBAL%$time$ * %GLOBAL%$num_rots$) 
+		:i $wait$ (%GLOBAL%$time$ * %GLOBAL%$num_rots$) $seconds$
+		:i $DoScreenElementMorph$$id$ = $globe$$rot_angle$ = %i(0,00000000)
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $get_upload_description$
+	:i $printf$%s(29,"script get_upload_description")
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_onscreen_keyboard$:s{$allow_cancel$
+		:i $keyboard_cancel_script$ = $create_internet_options$
+		:i $keyboard_done_script$ = $upload_content$
+		:i $type$ = %GLOBAL%$type$
+		:i $filename$ = %GLOBAL%$filename$
+		:i $keyboard_title$ = %s(17,"ENTER DESCRIPTION")
+		:i $text$ = %s(0,"")
+		:i $max_length$ = %i(50,00000032)
+		:i $text_block$
+	:i :s}
+:i endfunction
+:i function $upload_content$
+	:i $printf$%s(17,"Uploading content")
+	:i if $ObjectExists$$id$ = $keyboard_anchor$
+		:i $GetTextElementString$$id$ = $keyboard_current_string$
+		:i $destroy_onscreen_keyboard$
+	:i endif
+	:i $GetSummaryInfo$%GLOBAL%$type$$VaultData$ = %i(1,00000001)
+	:i if $GotParam$$type$
+		:i switch %GLOBAL%$type$
+			:i case $OptionsAndPros$
+				:i $typename$ = $skaters$
+				:i endcase
+			case $cat$
+				:i $typename$ = $tricks$
+				:i $calculate_cat_score$$get_values$$return_it$
+				:i endcase
+			case $createdgoals$
+				:i $typename$ = $goals$
+				:i endcase
+			case $park$
+				:i $typename$ = $parks$
+				:i endcase
+			case $CreatedGraphic$
+				:i $typename$ = $tags$
+				:i endcase
+			default 
+				:i $printf$%s(20,"Bad upload file type")
+				:i $printstruct$ isNull 
+				:i return
+				
+				:i end_switch
+		
+	:i else 
+		:i $printf$%s(24,"Missing upload file type")
+		:i $printstruct$ isNull 
+		:i return
+		
+	:i endif
+	:i $create_dialog_box$:s{$title$ = %s(14,"Uploading file")
+		:i $text$ = %s(20,"Starting transfer...")
+		:i $buttons$ = :a{:s{$text$ = %s(6,"cancel")$pad_choose_script$ = $cancel_upload_file$:s}
+			:i :a}
+	:i :s}
+	:i $GetMemcardDataForUpload$
+	:i $UploadFile$:s{$description$ = %GLOBAL%$string$$type$ = %GLOBAL%$typename$$filename$ = %GLOBAL%$filename$$score$ = %GLOBAL%$score$$is_male$ = %GLOBAL%$is_male$
+		:i $num_goals$ = %GLOBAL%$num_edited_goals$$num_gaps$ = %GLOBAL%$num_gaps$$num_pieces$ = %GLOBAL%$num_pieces$$theme$ = %GLOBAL%$theme$$tod_script$ = %GLOBAL%$tod_script$
+		:i $width$ = %GLOBAL%$width$$length$ = %GLOBAL%$length$
+	:i :s}
+:i endfunction
+:i function $cancel_upload_file$
+	:i $CancelFileTransfer$
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $back_from_transfer_dialog$
+:i endfunction
+:i function $LaunchUploadCompleteDialog$
+	:i $ClearMemcardDataForUpload$
+	:i $net_vault_menu_exit$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(15,"Upload Complete")
+		:i $text$ = %s(0,"")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_from_transfer_dialog$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $back_from_directory_listing$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_internet_options$
+:i endfunction
+:i function $play_online_chosen$
+	:i $CleanUpTopStats$
+	:i $spawn_lobby_list$
+:i endfunction
+:i function $spawn_lobby_list$
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $sub_menu$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(24,"Connecting to OpenSpy...")
+		:i $no_bg$
+		:i $pos$ = %vec2(237.000000,250.000000)
+	:i :s}
+	:i $LobbyConnect$
+:i endfunction
+:i function $cancel_lobby_list$
+	:i $CancelLobbyConnect$
+	:i $LobbyDisconnect$
+	:i $create_internet_options$
+:i endfunction
+:i function $back_from_internet_menu$
+	:i $kill_buddy_message_icon$
+	:i $console_destroy$
+	:i $LeaveLobby$
+	:i $StopServerList$
+	:i $FreeServerList$
+	:i $LobbyDisconnect$
+	:i $create_internet_options$
+:i endfunction
+:i function $back_from_network_select_menu$
+	:i $SetNetworkMode$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+	:i if NOT $GotParam$$no_menu$
+		:i $launch_ss_menu$
+	:i endif
+:i endfunction
+:i function $disconnect_from_internet$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $DisconnectFromInternet$$callback$ = $failed_internet_connection$
+:i endfunction
+:i function $maybe_show_disclaimer$
+	:i if $IsTrue$$SignedDisclaimer$
+		:i $signed_disclaimer$
+	:i else 
+		:i $show_disclaimer$
+	:i endif
+:i endfunction
+:i function $show_disclaimer$
+	:i $PauseMusicAndStreams$
+	:i $Skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$Skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+	:i $dialog_box_exit$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $on_rgba$
+	:i $Theme_GetUnhighlightedTextColor$$return_value$ = $off_rgba$
+	:i if $ScreenElementExists$$id$ = $disclaimer_anchor$
+		:i $DestroyScreenElement$$id$ = $disclaimer_anchor$
+	:i endif
+	:i $SetScreenElementLock$$Off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $parent$ = $root_window$
+		:i $id$ = $disclaimer_anchor$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_down$$disclaimer_scroll_down$:s}
+			:i :s{$pad_up$$disclaimer_scroll_up$:s}
+			:i :a}
+	:i :s}
+	:i $AssignAlias$$alias$ = $current_menu_anchor$$id$ = $disclaimer_anchor$
+	:i $build_top_and_bottom_blocks$$parent$ = $disclaimer_anchor$
+	:i $make_mainmenu_3d_plane$$parent$ = $disclaimer_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $disclaimer_anchor$
+		:i $font$ = $small$
+		:i $text$ = %s(12,"Terms of Use")
+		:i $pos$ = %vec2(320.000000,40.000000)
+		:i $scale$ = %f(2.000000)
+		:i $rgba$ = %GLOBAL%$on_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $disclaimer_anchor$
+		:i $id$ = $down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $pos$ = %vec2(320.000000,350.000000)
+		:i $scale$ = %f(1.000000)
+		:i $rgba$ = %GLOBAL%$off_rgba$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $hmenu$
+		:i $parent$ = $disclaimer_anchor$
+		:i $dims$ = %vec2(300.000000,20.000000)
+		:i $id$ = $disclaimer_hmenu$
+		:i $pos$ = %vec2(360.000000,350.000000)
+		:i $z_priority$ = %i(20,00000014)
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$back_from_disclaimer$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $disclaimer_hmenu$
+		:i $font$ = $dialog$
+		:i $text$ = %s(7,"Decline")
+		:i $dims$ = %vec2(150.000000,20.000000)
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$disclaimer_focus$:s}
+			:i :s{$unfocus$$disclaimer_unfocus$:s}
+			:i :s{$pad_choose$$back_from_disclaimer$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $disclaimer_hmenu$
+		:i $font$ = $dialog$
+		:i $text$ = %s(6,"Accept")
+		:i $dims$ = %vec2(150.000000,20.000000)
+		:i $rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(50,00000032):a}
+		:i $event_handlers$ = :a{
+			:i :s{$focus$$disclaimer_focus$:s}
+			:i :s{$unfocus$$disclaimer_unfocus$:s}
+			:i :s{$pad_choose$$signed_disclaimer$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $disclaimer_anchor$
+		:i $id$ = $black_mask$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(90.000000,5.000000)
+		:i $pos$ = %vec2(0.000000,335.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(255,000000ff):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(4294967293,fffffffd)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $disclaimer_anchor$
+		:i $id$ = $disclaimer_vmenu$
+		:i $pos$ = %vec2(150.000000,80.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $z_priority$ = %i(4294967292,fffffffc)
+		:i $dont_allow_wrap$
+		:i $padding_scale$ = %f(0.700000)
+	:i :s}
+	:i if  ( ($IsPal$)  AND  ($English$) ) 
+		:i %GLOBAL%$disclaimer_text$ = $online_disclaimer_english$
+	:i else 
+		:i %GLOBAL%$disclaimer_text$ = $online_disclaimer$
+	:i endif
+	:i $CreateMultipleTextElements$:s{
+		:i $parent$ = $disclaimer_vmenu$
+		:i $text$ = %GLOBAL%$disclaimer_text$
+		:i $font$ = $small$
+		:i $rgba$ = %GLOBAL%$off_rgba$
+		:i $scale$ = %i(1,00000001)
+		:i $width$ = %i(500,000001f4)
+	:i :s}
+	:i $create_helper_text$$helper_text_elements$ = :a{:s{$text$ = %s(16,"\b6/\b5 = Select"):s}
+		:i :s{$text$ = %s(12,"\b4 = Scroll"):s}
+		:i :s{$text$ = %s(10,"\bn = Back"):s}
+		:i :s{$text$ = %s(12,"\bm = Accept"):s}
+		:i :a}
+	:i $FireEvent$$type$ = $focus$$target$ = $disclaimer_hmenu$
+	:i $FireEvent$$type$ = $focus$$target$ = $disclaimer_anchor$
+	:i $wait$%i(2,00000002)$gameframes$
+:i endfunction
+:i function $disclaimer_scroll_down$
+	:i $GetTags$
+	:i $GetScreenElementPosition$$id$ = $disclaimer_vmenu$
+	:i if NOT  (%GLOBAL%$ScreenElementPos$->%vec2(0.000000,1.000000) < %i(4294966996,fffffed4)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $disclaimer_vmenu$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(0.000000,-20.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $disclaimer_scroll_up$
+	:i $GetTags$
+	:i $GetScreenElementPosition$$id$ = $disclaimer_vmenu$
+	:i if NOT  (%GLOBAL%$ScreenElementPos$->%vec2(0.000000,1.000000) > %i(60,0000003c)) 
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $disclaimer_vmenu$
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ + %vec2(0.000000,20.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $disclaimer_focus$
+	:i $GetTags$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$rgba$ = %GLOBAL%$rgba$$scale$ = %f(1.200000)
+:i endfunction
+:i function $disclaimer_unfocus$
+	:i $GetTags$
+	:i $DoScreenElementMorph$$id$ = %GLOBAL%$id$$rgba$ = :a{%i(50,00000032)%i(50,00000032)%i(50,00000032)%i(50,00000032):a}$scale$ = %i(1,00000001)
+:i endfunction
+:i function $signed_disclaimer$
+	:i if $ScreenElementExists$$id$ = $disclaimer_anchor$
+		:i $DestroyScreenElement$$id$ = $disclaimer_anchor$
+	:i endif
+	:i $change$$SignedDisclaimer$ = %i(1,00000001)
+	:i $chose_internet$
+:i endfunction
+:i function $back_from_disclaimer$
+	:i $dialog_box_exit$
+	:i if $ScreenElementExists$$id$ = $disclaimer_anchor$
+		:i $DestroyScreenElement$$id$ = $disclaimer_anchor$
+	:i endif
+	:i $create_ss_menu$$no_animate$
+:i endfunction
+:i $online_disclaimer$ = :a{
+	:i %s(156,"THUG 2 Terms of Use for Online Play:  I have read the Terms of Use for THUG 2 Online Play at www.thug2online.com and I agree to abide by these Terms of Use.")
+	:i %s(1," ")
+	:i %s(444,"This Software uses 'DNAS' (Dynamic Network Authentication System), a proprietary authentication system created by Sony Computer Entertainment Inc. ('SCEI'). 'DNAS' retrieves information about a user's hardware and software for authentication, copy protection, account blocking, system, rules, or game management and other purposes. The information collected does not identify the user personally and will not be shared with any non-SCE company.")
+	:i %s(459,"A PUBLISHER CAN COMBINE THIS INFORMATION WITH PERSONALLY IDENTIFYING INFORMATION FROM THE PUBLISHER'S RECORDS IF THE USER PROVIDES THE PERSONALLY IDENTIFYING INFORMATION.  BEFORE PROVIDING ANY PERSONAL INFORMATION TO A PUBLISHER, PLEASE BE SURE TO REVIEW THE PUBLISHER'S PRIVACY POLICY AND TERMS AND CONDITIONS OF USE.  DO NOT PROVIDE PERSONALLY IDENTIFYING INFORMATION TO A PUBLISHER UNLESS YOU ACCEPT THE CONDITIONS OF USE AND TERMS OF THEIR PRIVACY POLICY.")
+	:i %s(441,"SCEI, Sony Computer Entertainment America ('SCEA') and their affiliates cannot guarantee the continuous operation of the 'DNAS' servers. SCEA shall not be liable for any delay or failure of the 'DNAS' servers to perform.  If you receive a message during login identifying a 'DNAS' authentication error, please contact SCEA Consumer Services at 1-866-466-5333.  For additional information concerning 'DNAS', visit www.us.playstation.com/DNAS.")
+	:i %s(478,"In the event of a systems incompatibility or inoperability with DNAS, the sole liability of SCEI, SCEA and their affiliates shall be limited to the repair or replacement of the user's affected game software, console or peripherals at the option of SCEA.  SCEA, its parents, affiliates, or licensed Publishers shall not be liable for any delays, system failures, authentication failures, or system outages, which may, from time to time, affect online game play or access thereto.")
+	:i :a}
+:i $online_disclaimer_english$ = :a{
+	:i %s(156,"THUG 2 Terms of Use for Online Play:  I have read the Terms of Use for THUG 2 Online Play at www.thug2online.com and I agree to abide by these Terms of Use.")
+	:i %s(1," ")
+	:i %s(467,"This Software uses 'DNAS' (Dynamic Network Authentication System), a proprietary authentication system created by Sony Computer Entertainment Inc. ('SCEI'). 'DNAS' retrieves information about a user's hardware and software for authentication, copy protection, account blocking, system, rules, or game management and other purposes. SCEI, Sony Computer Entertainment Europe ('SCEE') and their affiliates cannot guarantee the continuous operation of the 'DNAS' servers.")
+	:i %s(337,"SCEE shall not be liable for any delay or failure of the 'DNAS' servers to perform. If you receive a message during login identifying a 'DNAS' authentication error, please contact your local PlayStation Customer Care line on the number provided in the software manual. For additional information concerning 'DNAS', visit PlayStation.com.")
+	:i %s(477,"In the event of a systems incompatibility or inoperability with DNAS, the sole liability of SCEI, SCEE and their affiliates shall be limited to the repair or replacement of the user's affected game software, console or peripherals at the option of SCEE. SCEE, its parents, affiliates, or licensed Publishers shall not be liable for any delays, system failures, authentication failures, or system outages, which may, from time to time, affect online game play or access thereto.")
+	:i :a}
+:i function $create_network_select_menu$
+	:i $printf$%s(33,"script create_network_select_menu")
+	:i $make_new_menu$$menu_id$ = $network_select_menu$$pos$ = %vec2(227.000000,109.000000)$vmenu_id$ = $network_select_vmenu$$menu_title$ = %s(7,"NETWORK")$helper_text$ = $generic_helper_text$
+	:i $kill_start_key_binding$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$name$ = $SS_MenuCam$$play_hold$
+	:i $SetScreenElementProps$:s{$id$ = $network_select_vmenu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_network_select_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $main_menu_add_item$:s{
+		:i $text$ = %s(8,"Internet")
+		:i $id$ = $menu_network_select_internet$
+		:i $pad_choose_script$ = $network_select_menu_exit$
+		:i $pad_choose_params$ = :s{$callback$ = $show_disclaimer$:s}
+	:i :s}
+	:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+	:i switch %GLOBAL%$checksum$
+		:i case $device_sony_modem$
+			:i endcase
+		case $device_usb_modem$
+			:i $do_nothing$
+			:i endcase
+		default 
+			:i $main_menu_add_item$:s{
+				:i $text$ = %s(3,"LAN")
+				:i $id$ = $menu_network_select_lan$
+				:i $pad_choose_script$ = $network_select_menu_exit$
+				:i $pad_choose_params$ = :s{$callback$ = $launch_network_select_lan_games_menu$:s}
+			:i :s}
+			:i end_switch
+	
+	:i if $IsOnline$
+		:i $GetPreferenceChecksum$$pref_type$ = $network$$device_type$
+		:i switch %GLOBAL%$checksum$
+			:i case $device_sony_modem$
+				:i endcase
+			case $device_usb_modem$
+				:i $main_menu_add_item$$text$ = %s(13,"Hang Up Modem")$id$ = $menu_network_select_hang_up$$pad_choose_script$ = $disconnect_from_internet$
+				:i end_switch
+		
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$animate_in$
+:i endfunction
+:i function $network_select_menu_exit$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+		:i $wait$%i(1,00000001)$frame$
+	:i endif
+	:i %GLOBAL%$callback$
+:i endfunction
+:i function $make_server_list_menu$
+	:i $create_console$
+	:i $console_unhide$
+	:i $Skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$Skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+	:i $SetScreenElementLock$$id$ = $root_window$$Off$
+	:i $change$$in_net_lobby$ = %i(1,00000001)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $server_list_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(0,00000000)
+		:i $focusable_child$ = $actions_menu$
+	:i :s}
+	:i $build_theme_sub_title$$title$ = %s(7,"ACTIONS")$parent$ = $server_list_anchor$
+	:i $build_top_and_bottom_blocks$$parent$ = $server_list_anchor$
+	:i $make_mainmenu_3d_plane$$parent$ = $server_list_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $globe$
+		:i $texture$ = $globe$
+		:i $scale$ = %f(1.300000)
+		:i $pos$ = %vec2(300.000000,480.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $alpha$ = %f(0.400000)
+		:i $z_priority$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $actions_menu_anchor$
+		:i $pos$ = %vec2(320.000000,280.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $theme_background$$width$ = %i(1,00000001)$pos$ = %vec2(320.000000,60.000000)$num_parts$ = %i(5,00000005)$parent$ = $actions_menu_anchor$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $actions_menu_anchor$
+		:i $id$ = $actions_menu$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(330.000000,85.000000)
+		:i $dims$ = %vec2(222.000000,170.000000)
+		:i $just$ = :a{$center$$top$:a}
+		:i $internal_just$ = :a{$center$$top$:a}
+		:i $event_handlers$ = :a{:s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $game_list_menu_anchor$
+		:i $dims$ = %vec2(300.000000,300.000000)
+		:i $pos$ = %vec2(450.000000,100.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $theme_background$$width$ = %f(1.300000)$pos$ = %vec2(70.000000,0.000000)$num_parts$ = %i(5,00000005)$parent$ = $game_list_menu_anchor$$id$ = $bg_box_vmenu2$$bg_rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(100,00000064)%i(100,00000064):a}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VScrollingMenu$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $id$ = $server_list_scrolling_menu$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(-15.000000,56.000000)
+		:i $dims$ = %vec2(440.000000,130.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_list_scrolling_menu$
+		:i $id$ = $server_list_menu$
+		:i $scale$ = %f(0.900000)
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $dims$ = %vec2(440.000000,300.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $event_handlers$ = :a{
+			:i :s{$pad_up$$server_blink_up_arrow$:s}
+			:i :s{$pad_down$$server_blink_down_arrow$:s}
+			:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+			:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+			:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+			:i :a}
+		:i $dont_allow_wrap$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(5,"GAMES")
+		:i $scale$ = %f(1.300000)
+		:i $pos$ = %vec2(0.000000,10.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $texture$ = $white2$
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $scale$ = %vec2(25.100000,4.000000)
+		:i $pos$ = %vec2(-30.000000,10.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+		:i $z_priority$ = %i(3,00000003)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $id$ = $lobby_game_list_title$
+		:i $font$ = $dialog$
+		:i $text$ = %s(3,": 0")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(100.000000,14.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $id$ = $game_list_up_arrow$
+		:i $texture$ = $up_arrow$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(140.000000,15.000000)
+		:i $not_focusable$
+		:i $scale$ = %i(0,00000000)
+		:i $z_priority$ = %i(4,00000004)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $game_list_menu_anchor$
+		:i $id$ = $game_list_down_arrow$
+		:i $texture$ = $down_arrow$
+		:i $just$ = :a{$left$$top$:a}
+		:i $pos$ = %vec2(140.000000,155.000000)
+		:i $not_focusable$
+		:i $scale$ = %i(0,00000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $server_list_anchor$
+		:i $id$ = $server_desc_menu_anchor$
+		:i $scale$ = %i(0,00000000)
+		:i $pos$ = %vec2(320.000000,280.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $theme_background$$width$ = %i(1,00000001)$pos$ = %vec2(320.000000,60.000000)$num_parts$ = %i(5,00000005)$parent$ = $server_desc_menu_anchor$$id$ = $bg_box_vmenu4$
+	:i $theme_background$$width$ = %i(1,00000001)$pos$ = %vec2(130.000000,60.000000)$num_parts$ = %i(5,00000005)$parent$ = $server_desc_menu_anchor$$id$ = $bg_box_vmenu5$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(7,"PLAYERS")
+		:i $scale$ = %f(1.200000)
+		:i $pos$ = %vec2(45.000000,68.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_desc_player_number$
+		:i $font$ = $dialog$
+		:i $text$ = %s(5,": 0/0")
+		:i $scale$ = %f(1.000000)
+		:i $pos$ = %vec2(170.000000,65.000000)
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_desc_menu$
+		:i $pos$ = %vec2(320.000000,70.000000)
+		:i $dims$ = %vec2(200.000000,170.000000)
+		:i $scale$ = %f(0.900000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $Vmenu$
+		:i $parent$ = $server_desc_menu_anchor$
+		:i $id$ = $server_player_menu$
+		:i $pos$ = %vec2(50.000000,110.000000)
+		:i $dims$ = %vec2(200.000000,100.000000)
+		:i $scale$ = %f(0.800000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+		:i $not_focusable$
+	:i :s}
+	:i if $InInternetMode$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $game_list_menu_anchor$
+			:i $z_priority$ = %i(100,00000064)
+			:i $pos$ = %vec2(-320.000000,-20.000000)
+			:i $texture$ = $gslogo$$scale$ = %f(1.100000)
+			:i $alpha$ = %i(1,00000001)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_list_anchor$
+			:i $id$ = $player_list_anchor$
+			:i $dims$ = %vec2(300.000000,300.000000)
+			:i $pos$ = %vec2(50.000000,100.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $theme_background$$width$ = %i(1,00000001)$pos$ = %vec2(80.000000,0.000000)$num_parts$ = %i(5,00000005)$parent$ = $player_list_anchor$$id$ = $bg_box_vmenu3$$bg_rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(100,00000064)%i(100,00000064):a}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $VScrollingMenu$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $player_list_scrolling_menu$
+			:i $pos$ = %vec2(0.000000,55.000000)
+			:i $dims$ = %vec2(200.000000,110.000000)
+			:i $just$ = :a{$left$$top$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $Vmenu$
+			:i $parent$ = $player_list_scrolling_menu$
+			:i $id$ = $lobby_player_list_menu$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $dims$ = %vec2(200.000000,0.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $internal_just$ = :a{$left$$top$:a}
+			:i $scale$ = %f(0.800000)
+			:i $event_handlers$ = :a{
+				:i :s{$pad_up$$user_blink_up_arrow$:s}
+				:i :s{$pad_down$$user_blink_down_arrow$:s}
+				:i :s{$pad_up$$generic_menu_up_or_down_sound$$params$ = :s{$up$:s}:s}
+				:i :s{$pad_down$$generic_menu_up_or_down_sound$$params$ = :s{$down$:s}:s}
+				:i :s{$pad_back$$generic_menu_pad_back_sound$:s}
+				:i :a}
+			:i $dont_allow_wrap$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $player_list_anchor$
+			:i $font$ = $testtitle$
+			:i $text$ = %s(5,"USERS")
+			:i $scale$ = %f(1.300000)
+			:i $pos$ = %vec2(20.000000,10.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $z_priority$ = %i(5,00000005)
+			:i $not_focusable$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $player_list_anchor$
+			:i $texture$ = $white2$
+			:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+			:i $scale$ = %vec2(22.799999,4.000000)
+			:i $pos$ = %vec2(-11.000000,10.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $z_priority$ = %i(4,00000004)
+			:i $not_focusable$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $lobby_player_list_title$
+			:i $font$ = $dialog$
+			:i $text$ = %s(3,": 0")
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(115.000000,14.000000)
+			:i $just$ = :a{$left$$top$:a}
+			:i $z_priority$ = %i(5,00000005)
+			:i $not_focusable$
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $user_list_up_arrow$
+			:i $texture$ = $up_arrow$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(-5.000000,17.000000)
+			:i $not_focusable$
+			:i $scale$ = %i(0,00000000)
+			:i $z_priority$ = %i(5,00000005)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $player_list_anchor$
+			:i $id$ = $user_list_down_arrow$
+			:i $texture$ = $down_arrow$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(-5.000000,155.000000)
+			:i $not_focusable$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(-114.000000,90.000000)
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_list_anchor$
+			:i $id$ = $buddy_list_anchor$
+			:i $dims$ = %vec2(640.000000,480.000000)
+			:i $pos$ = %GLOBAL%$pos$
+			:i $scale$ = %i(0,00000000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_list_anchor$
+			:i $id$ = $chat_box_anchor$
+			:i $dims$ = %vec2(640.000000,480.000000)
+			:i $pos$ = %vec2(320.000000,240.000000)
+			:i $just$ = :a{$center$$center$:a}
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = $chat_box_anchor$
+			:i $texture$ = $chat_bracket$
+			:i $just$ = :a{$left$$top$:a}
+			:i $pos$ = %vec2(30.000000,220.000000)
+			:i $scale$ = %vec2(1.400000,2.400000)
+		:i :s}
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $globe$$rotate_internet_options_globe$
+	:i if $InInternetMode$
+		:i $DoScreenElementMorph$$id$ = $player_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $FillPlayerList$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+		:i $DoScreenElementMorph$$id$ = $chat_box_anchor$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+		:i $DoScreenElementMorph$$id$ = $buddy_list_anchor$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $AssignAlias$$id$ = $server_list_anchor$$alias$ = $current_menu_anchor$
+	:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+:i endfunction
+:i function $server_list_menu_add_item$
+	:i $printf$%s(32,"script server_list_menu_add_item")
+	:i if $ObjectExists$$id$ = $server_list_menu$
+		:i $highlight_bar_scale$ = %vec2(1.800000,0.600000)
+		:i $highlight_bar_pos$ = %vec2(96.000000,-6.000000)
+		:i $focus_script$ = $server_list_focus$
+		:i %GLOBAL%$server_id$ = %GLOBAL%$id$
+		:i $SetScreenElementLock$$id$ = $server_list_menu$$Off$
+		:i $FormatText$$ChecksumName$ = $mode_name$%GLOBAL%$mode$
+		:i $FormatText$$ChecksumName$ = $mode_attack$%s(12,"Trick Attack")
+		:i $FormatText$$ChecksumName$ = $mode_score$%s(15,"Score Challenge")
+		:i $FormatText$$ChecksumName$ = $mode_mambo$%s(11,"Combo Mambo")
+		:i $FormatText$$ChecksumName$ = $mode_slap$%s(5,"Slap!")
+		:i $FormatText$$ChecksumName$ = $mode_koth$%s(16,"King of the Hill")
+		:i $FormatText$$ChecksumName$ = $mode_graffiti$%s(8,"Graffiti")
+		:i $FormatText$$ChecksumName$ = $mode_goal$%s(11,"Goal Attack")
+		:i $FormatText$$ChecksumName$ = $mode_ctf$%s(16,"Capture the Flag")
+		:i $FormatText$$ChecksumName$ = $mode_fire$%s(9,"FireFight")
+		:i $FormatText$$ChecksumName$ = $mode_elim$%s(10,"Elimiskate")
+		:i $FormatText$$ChecksumName$ = $mode_hunt$%s(14,"Scavenger Hunt")
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $server_list_menu$
+			:i $id$ = %GLOBAL%$server_id$
+			:i $dims$ = %vec2(200.000000,20.000000)
+			:i $event_handlers$ = :a{:s{$focus$$server_list_focus$$params$ = :s{$id$ = %GLOBAL%$server_id$:s}:s}
+				:i :s{$unfocus$$server_list_unfocus$:s}
+				:i :s{$pad_choose$$choose_selected_server$$params$ = :s{$id$ = %GLOBAL%$server_id$:s}:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i %GLOBAL%$anchor_id$ = %GLOBAL%$id$
+		:i $Theme_GetUnhighlightedTextColor$$return_value$ = $text_rgba$
+		:i $Theme_GetIconOnColor$$return_value$ = $icon_rgba$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $font$ = $small$
+			:i $text$ = %GLOBAL%$text$
+			:i $scale$ = %f(1.000000)
+			:i $pos$ = %vec2(10.000000,-5.000000)
+			:i $just$ = :a{$left$$center$:a}
+			:i $rgba$ = %GLOBAL%$text_rgba$
+		:i :s}
+		:i %GLOBAL%$text_id$ = %GLOBAL%$id$
+		:i $truncate_string$$id$ = %GLOBAL%$text_id$$max_width$ = %i(200,000000c8)
+		:i switch %GLOBAL%$mode_name$
+			:i case %GLOBAL%$mode_attack$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(9,"2p_attack")
+				:i endcase
+			case %GLOBAL%$mode_score$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(8,"2p_score")
+				:i endcase
+			case %GLOBAL%$mode_mambo$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(8,"2p_mambo")
+				:i endcase
+			case %GLOBAL%$mode_slap$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_slap")
+				:i endcase
+			case %GLOBAL%$mode_koth$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_koth")
+				:i endcase
+			case %GLOBAL%$mode_graffiti$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(11,"2p_graffiti")
+				:i endcase
+			case %GLOBAL%$mode_goal$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_goal")
+				:i endcase
+			case %GLOBAL%$mode_ctf$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_flag")
+				:i endcase
+			case %GLOBAL%$mode_fire$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_fire")
+				:i endcase
+			case %GLOBAL%$mode_elim$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_elim")
+				:i endcase
+			case %GLOBAL%$mode_hunt$
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_hunt")
+				:i endcase
+			default 
+				:i $FormatText$$ChecksumName$ = $gametype_icon$%s(7,"2p_free")
+				:i end_switch
+		
+		:i $Theme_GetHighlightBarColor$$return_value$ = $bar_rgba$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $texture$ = $de_highlight_bar$
+			:i $pos$ = %GLOBAL%$highlight_bar_pos$
+			:i $scale$ = %GLOBAL%$highlight_bar_scale$
+			:i $just$ = :a{$center$$center$:a}
+			:i $rgba$ = %GLOBAL%$bar_rgba$
+			:i $alpha$ = %i(0,00000000)
+			:i $z_priority$ = %i(3,00000003)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = %GLOBAL%$text_id$
+			:i $rgba$ = %GLOBAL%$icon_rgba$
+			:i $texture$ = %GLOBAL%$gametype_icon$
+			:i $scale$ = %f(0.700000)
+			:i $pos$ = %vec2(-14.000000,10.000000)
+			:i $just$ = :a{$center$$center$:a}
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $server_list_menu$$on$
+		:i $update_lobby_server_list$
+	:i endif
+:i endfunction
+:i function $player_list_add_item$$rank$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = %GLOBAL%$id$
+		:i return
+		
+	:i endif
+	:i if $ObjectExists$$id$ = $lobby_player_list_menu$
+		:i $SetScreenElementLock$$id$ = $lobby_player_list_menu$$Off$
+		:i $main_menu_add_item$:s{
+			:i $parent$ = $lobby_player_list_menu$
+			:i $highlight_bar_scale$ = %vec2(1.800000,0.600000)
+			:i $highlight_bar_pos$ = %vec2(97.000000,-6.000000)
+			:i $text_just$ = :a{$left$$center$:a}
+			:i $text_pos$ = %vec2(35.000000,-5.000000)
+			:i $pad_choose_script$ = %GLOBAL%$pad_choose_script$
+			:i $pad_choose_params$ = %GLOBAL%$pad_choose_params$
+			:i $focus_script$ = $player_list_focus$
+			:i $unfocus_script$ = $player_list_unfocus$
+			:i $text$ = %GLOBAL%$text$
+			:i $id$ = %GLOBAL%$id$
+		:i :s}
+		:i $FormatText$$ChecksumName$ = $rank_texture$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = %GLOBAL%$id$
+			:i $texture$ = %GLOBAL%$rank_texture$
+			:i $scale$ = %f(0.700000)
+			:i $alpha$ = %f(0.800000)
+			:i $pos$ = %vec2(10.000000,-3.000000)
+		:i :s}
+		:i $SetScreenElementLock$$id$ = $lobby_player_list_menu$$on$
+		:i $update_lobby_player_list$
+	:i endif
+:i endfunction
+:i function $player_list_focus$
+	:i $GetTags$
+	:i $main_menu_focus$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$theme_highlight_sweep$
+:i endfunction
+:i function $player_list_unfocus$
+	:i $GetTags$
+	:i $main_menu_unfocus$
+	:i $kill_theme_highlight_sweep$$id$ = %GLOBAL%$id$
+:i endfunction
+:i function $player_list_update_rank$
+	:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+		:i if $GotParam$$rank$
+			:i $FormatText$$ChecksumName$ = $rank_icon$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+			:i $SetScreenElementProps$$id$ = :s{%GLOBAL%$id$$child$ = %i(2,00000002):s}$texture$ = %GLOBAL%$rank_icon$
+		:i endif
+	:i endif
+:i endfunction
+:i function $net_game_info_add_item$$parent$ = $server_desc_menu$$dims$ = %vec2(300.000000,16.000000)
+	:i if $ObjectExists$$id$ = %GLOBAL%$parent$
+		:i $Theme_GetUnhighlightedTextColor$$return_value$ = $rgba$
+		:i $SetScreenElementLock$$id$ = %GLOBAL%$parent$$Off$
+		:i if $GotParam$$value$
+			:i $dims$ = %vec2(300.000000,32.000000)
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = %GLOBAL%$parent$
+			:i $dims$ = %GLOBAL%$dims$
+		:i :s}
+		:i $anchor_id$ = %GLOBAL%$id$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = %GLOBAL%$anchor_id$
+			:i $text$ = %GLOBAL%$name$
+			:i $font$ = $small$
+			:i $just$ = :a{$center$$top$:a}
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $rgba$ = %GLOBAL%$rgba$
+		:i :s}
+		:i if $GotParam$$value$
+			:i $CreateScreenElement$:s{
+				:i $type$ = $spriteElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $texture$ = $white2$
+				:i $just$ = :a{$center$$top$:a}
+				:i $pos$ = %vec2(0.000000,18.000000)
+				:i $scale$ = %vec2(26.000000,2.250000)
+				:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(80,00000050):a}
+			:i :s}
+			:i $CreateScreenElement$:s{
+				:i $type$ = $TextElement$
+				:i $parent$ = %GLOBAL%$anchor_id$
+				:i $text$ = %GLOBAL%$value$
+				:i $font$ = $dialog$
+				:i $just$ = :a{$center$$top$:a}
+				:i $pos$ = %vec2(0.000000,15.000000)
+			:i :s}
+		:i endif
+	:i endif
+:i endfunction
+:i function $net_game_info_add_player$$rank$ = %i(1,00000001)
+	:i if $ObjectExists$$id$ = $server_player_menu$
+		:i $FormatText$$ChecksumName$ = $id$%s(4,"%a%b")$a$ = %GLOBAL%$name$$b$ = %GLOBAL%$value$
+		:i $SetScreenElementLock$$id$ = $server_player_menu$$Off$
+		:i if $ScreenElementExists$$id$ = %GLOBAL%$id$
+			:i $DestroyScreenElement$$id$ = %GLOBAL%$id$
+		:i endif
+		:i $main_menu_add_item$:s{
+			:i $parent$ = $server_player_menu$
+			:i $text$ = %GLOBAL%$value$
+			:i $highlight_bar_scale$ = %vec2(1.800000,0.600000)
+			:i $highlight_bar_pos$ = %vec2(97.000000,-6.000000)
+			:i  isNull 
+		:i :s}
+		:i if  ( (%GLOBAL%$rank$ < %i(0,00000000))  OR  (%GLOBAL%$rank$ > %i(10,0000000a)) ) 
+			:i %GLOBAL%$rank$ = %i(0,00000000)
+		:i endif
+		:i $FormatText$$ChecksumName$ = $rank_texture$%s(7,"rank_%i")$i$ = %GLOBAL%$rank$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $spriteElement$
+			:i $parent$ = %GLOBAL%$id$
+			:i $texture$ = %GLOBAL%$rank_texture$
+			:i $scale$ = %f(0.700000)
+			:i $alpha$ = %f(0.800000)
+			:i $pos$ = %vec2(10.000000,-3.000000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $net_game_info_update_player_title$
+	:i $SetScreenElementProps$$id$ = $server_desc_player_number$$text$ = %GLOBAL%$text$
+:i endfunction
+:i function $update_lobby_player_list$
+	:i if $ScreenElementExists$$id$ = $lobby_player_list_menu$
+		:i if NOT  ($current_lobby_focus$ = %i(2,00000002)) 
+			:i if $ScreenElementExists$$id$ = $lobby_player_list_title$
+				:i $NumPlayersInLobby$
+				:i $FormatText$$textname$ = $title_text$%s(4,": %n")$n$ = %GLOBAL%$num_players$
+				:i $SetScreenElementProps$$id$ = $lobby_player_list_title$$text$ = %GLOBAL%$title_text$
+			:i endif
+			:i $SetScreenElementProps$$id$ = $player_list_scrolling_menu$$reset_window_top$
+		:i endif
+	:i endif
+:i endfunction
+:i function $update_lobby_server_list$
+	:i $printf$%s(31,"script update_lobby_server_list")
+	:i if $ScreenElementExists$$id$ = $server_list_menu$
+		:i if NOT  ($current_lobby_focus$ = %i(1,00000001)) 
+			:i if $ScreenElementExists$$id$ = $lobby_game_list_title$
+				:i $NumServersInLobby$
+				:i $FormatText$$textname$ = $title_text$%s(4,": %n")$n$ = %GLOBAL%$num_servers$
+				:i $SetScreenElementProps$$id$ = $lobby_game_list_title$$text$ = %GLOBAL%$title_text$
+			:i endif
+			:i $SetScreenElementProps$$id$ = $server_list_scrolling_menu$$reset_window_top$
+		:i endif
+	:i endif
+:i endfunction
+:i function $server_list_focus$
+	:i $generic_menu_update_arrows$$menu_id$ = $server_list_menu$$up_arrow_id$ = $game_list_up_arrow$$down_arrow_id$ = $game_list_down_arrow$
+	:i $main_menu_focus$
+	:i $RunScriptOnScreenElement$$id$ = %GLOBAL%$id$$theme_highlight_sweep$
+	:i if $RetrieveServerInfo$ isNull 
+		:i $describe_selected_server$ isNull 
+	:i endif
+:i endfunction
+:i function $server_list_unfocus$
+	:i $GetTags$
+	:i $kill_theme_highlight_sweep$$id$ = %GLOBAL%$id$
+	:i $main_menu_unfocus$
+:i endfunction
+:i function $user_blink_up_arrow$
+	:i $RunScriptOnScreenElement$$id$ = $user_list_up_arrow$$menu_blink_arrow$
+:i endfunction
+:i function $user_blink_down_arrow$
+	:i $RunScriptOnScreenElement$$id$ = $user_list_down_arrow$$menu_blink_arrow$
+:i endfunction
+:i function $server_blink_up_arrow$
+	:i $RunScriptOnScreenElement$$id$ = $game_list_up_arrow$$menu_blink_arrow$
+:i endfunction
+:i function $server_blink_down_arrow$
+	:i $RunScriptOnScreenElement$$id$ = $game_list_down_arrow$$menu_blink_arrow$
+:i endfunction
+:i function $back_from_game_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $server_desc_menu_anchor$.$DoMorph$$scale$ = %i(0,00000000)
+	:i $destroy_server_desc_children$
+	:i $refocus_actions_menu$
+:i endfunction
+:i function $back_from_user_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $refocus_actions_menu$
+:i endfunction
+:i function $back_from_buddy_list$
+	:i $actions_menu_anchor$.$DoMorph$$scale$ = %i(1,00000001)
+	:i $refocus_actions_menu$
+:i endfunction
+:i $already_tried$ = %i(0,00000000)
+:i function $create_network_select_games_menu$
+	:i if $IsInternetGameHost$
+		:i if  ($already_tried$ = %i(1,00000001)) 
+			:i $QuitGame$
+			:i return
+			
+		:i endif
+	:i endif
+	:i if $IsJoiningInternetGame$
+		:i if  ($already_tried$ = %i(1,00000001)) 
+			:i if NOT $TryJoinServerIPSuccess$
+				:i $QuitGame$
+				:i return
+				
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$already_tried$ = %i(1,00000001)
+	:i $KillSkaterCamAnim$$all$
+	:i $Skater$.$reset_model_lights$
+	:i $Skater$.$remove_skater_from_world$
+	:i $KillSkaterCamAnim$$all$
+	:i $PlaySkaterCamAnim$$Skater$ = %i(0,00000000)$name$ = $mainmenu_camera03$$play_hold$
+	:i if $GotParam$$play_cam$
+		:i $PlaySkaterCamAnim$$name$ = $SS_MenuCam$$play_hold$
+	:i endif
+	:i $dialog_box_exit$
+	:i $make_server_list_menu$
+	:i $create_helper_text$$generic_helper_text$$pos$ = %vec2(0.000000,0.000000)
+	:i if NOT $OnXbox$
+		:i $SetNetworkMode$$LAN_MODE$
+	:i endif
+	:i if $IsInternetGameHost$
+		:i $host_net_chosen$
+	:i else 
+		:i if $IsXbox$
+			:i if $ProfileLoggedIn$
+				:i if $AnyBuddyMessagesLeft$
+					:i $flash_buddy_message_icon$
+				:i endif
+			:i endif
+		:i endif
+		:i if $InInternetMode$
+			:i $SetScreenElementProps$:s{$id$ = $actions_menu$$event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_internet_menu$:s}:s}
+					:i :a}
+			:i :s}
+			:i $SetScreenElementProps$:s{$id$ = $lobby_player_list_menu$$event_handlers$ = :a{
+					:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_user_list$:s}:s}
+					:i :a}
+			:i :s}
+		:i else 
+			:i if NOT $OnXbox$
+				:i $SetScreenElementProps$:s{$id$ = $actions_menu$$event_handlers$ = :a{
+						:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_multiplayer_menu$:s}:s}
+						:i :a}
+				:i :s}
+			:i else 
+				:i $SetScreenElementProps$:s{$id$ = $actions_menu$$event_handlers$ = :a{
+						:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_network_menu$:s}:s}
+						:i :a}
+				:i :s}
+			:i endif
+		:i endif
+		:i $SetScreenElementProps$:s{$id$ = $server_list_menu$$event_handlers$ = :a{
+				:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_game_list$:s}:s}
+				:i :a}
+		:i :s}
+		:i $highlight_bar_scale$ = %vec2(1.500000,0.600000)
+		:i if $InInternetMode$
+			:i if $CanHostGame$
+				:i $theme_menu_add_item$$text$ = %s(10," Host Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i else 
+				:i $theme_menu_add_item$$text$ = %s(10," Host Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$not_focusable$
+			:i endif
+		:i else 
+			:i $theme_menu_add_item$$text$ = %s(10," Host Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_host$$pad_choose_script$ = $host_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$
+		:i endif
+		:i if $InInternetMode$
+			:i $theme_menu_add_item$$text$ = %s(10," Join Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_join$$pad_choose_script$ = $join_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i $theme_menu_add_item$$text$ = %s(13," Observe Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_observe$$pad_choose_script$ = $observe_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i $theme_menu_add_item$$text$ = %s(8," Refresh")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_refresh$$pad_choose_script$ = $refresh_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+		:i else 
+			:i $theme_menu_add_item$$text$ = %s(10," Join Game")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_join$$pad_choose_script$ = $join_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$
+			:i $theme_menu_add_item$$text$ = %s(8," Refresh")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_refresh$$pad_choose_script$ = $refresh_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$
+		:i endif
+		:i if $InInternetMode$
+			:i $theme_menu_add_item$$text$ = %s(10," User List")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_user_list$$pad_choose_script$ = $user_list_chosen$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i if $ProfileLoggedIn$
+				:i $pad_choose$ = $launch_homie_list$
+			:i else 
+				:i $pad_choose$ = $no_profile_homie_list_prompt$
+			:i endif
+			:i $theme_menu_add_item$$text$ = %s(11," Homie List")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_buddy_list$$pad_choose_script$ = %GLOBAL%$pad_choose$$pad_choose_params$ = :s{$from_lobby$:s}$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i $theme_menu_add_item$$text$ = %s(19," Enter Chat Message")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $fmenu_network_select_chat$$pad_choose_script$ = $create_lobby_onscreen_kb$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i if $ProfileLoggedIn$
+				:i $theme_menu_add_item$$text$ = %s(14," View Messages")$parent$ = $actions_menu$$no_bg$$centered$$id$ = $menu_network_select_view$$pad_choose_script$ = $view_buddy_messages$$highlight_bar_scale$ = %GLOBAL%$highlight_bar_scale$$focus_script$ = $check_keyboard_focus$$unfocus_script$ = $check_keyboard_unfocus$
+			:i endif
+		:i endif
+		:i $add_no_servers_found_message$$refocus$
+		:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+		:i $SetScreenElementLock$$id$ = $current_menu_anchor$$Off$
+		:i $create_helper_text$$generic_helper_text$
+		:i $SetScreenElementLock$$id$ = $current_menu_anchor$$on$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $server_list_menu$
+		:i $FireEvent$$type$ = $unfocus$$target$ = $server_desc_menu$
+		:i if $InInternetMode$
+			:i $FireEvent$$type$ = $unfocus$$target$ = $lobby_player_list_menu$
+		:i endif
+		:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+		:i $change$$current_lobby_focus$ = %i(0,00000000)
+		:i $AssignAlias$$id$ = $actions_menu$$alias$ = $current_menu$
+		:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+		:i if $GotParam$$focus_on_enter_message$
+			:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$set_enter_message_focus$
+		:i endif
+		:i if NOT $TryJoinServerIPSuccess$
+			:i if $IsJoiningInternetGame$
+				:i $check_join_internet_ip$
+				:i return
+				
+			:i endif
+			:i $RefreshServerList$$force_refresh$
+		:i endif
+		:i $change$$check_for_unplugged_controllers$ = %i(1,00000001)
+		:i if $GotParam$$focus_on_enter_message$
+			:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$set_enter_message_focus$
+		:i endif
+		:i if $TryJoinServerIPSuccess$
+			:i $ForceServerListRefresh$
+			:i $join_chosen$
+			:i $GetScreenElementProps$$id$ = :s{$server_list_menu$$child$ = %i(0,00000000):s}
+			:i $FireEvent$$type$ = $pad_choose$$target$ = %GLOBAL%$id$
+		:i endif
+	:i endif
+:i endfunction
+:i function $set_enter_message_focus$
+	:i $menu_onscreen$ isNull 
+	:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$$data$ = :s{$child_id$ = $menu_network_select_chat$:s}
+:i endfunction
+:i function $back_to_server_list_from_buddy_list$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $create_network_select_games_menu$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $create_remove_players_menu$
+	:i $make_new_menu$$menu_id$ = $remove_players_menu$$vmenu_id$ = $remove_players_vmenu$$menu_title$ = %s(20,"REMOVE WHICH PLAYER?")
+	:i $SetScreenElementProps$:s{$id$ = $remove_players_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $FillRemovePlayersMenu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $create_xbox_online_menu$
+	:i $make_new_menu$$menu_id$ = $xbox_online_menu$$vmenu_id$ = $xbox_online_vmenu$$menu_title$ = %s(13,"THUG 2 ONLINE")
+	:i $SetScreenElementProps$:s{$id$ = $xbox_online_menu$$event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(9,"Play Live")$id$ = $menu_xonline_play_live$$pad_choose_script$ = $do_nothing$
+	:i $make_text_sub_menu_item$$text$ = %s(7,"Friends")$id$ = $menu_xonline_friends$$pad_choose_script$ = $launch_buddy_list$
+	:i $make_text_sub_menu_item$$text$ = %s(8,"Sign Out")$id$ = $menu_xonline_sign_out$$pad_choose_script$ = $sign_out$
+	:i $make_text_sub_menu_item$$text$ = %s(15,"Free More Space")$id$ = $menu_xonline_dashboard$$pad_choose_script$ = $go_to_xbox_dashboard$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_onscreen$
+:i endfunction
+:i function $create_profile_menu$
+	:i $Theme_GetHighlightedTextColor$$return_value$ = $rgba$
+	:i $build_top_and_bottom_blocks$
+	:i $make_mainmenu_3d_plane$
+	:i $SetScreenElementLock$$id$ = $menu_parts_anchor$$Off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $menu_parts_anchor$
+		:i $id$ = $profile_options_anchor$
+		:i $pos$ = %vec2(-5.000000,800.000000)
+	:i :s}
+	:i $make_new_menu$:s{$menu_id$ = $profile_options_menu$
+		:i $vmenu_id$ = $profile_options_vmenu$
+		:i $parent$ = $profile_options_anchor$
+		:i $pos$ = %vec2(80.000000,85.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $profile_options_anchor$
+		:i $font$ = $testtitle$
+		:i $text$ = %s(13,"LOGIN/PROFILE")
+		:i $scale$ = %f(1.500000)
+		:i $pos$ = %vec2(65.000000,86.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(98,00000062):a}
+		:i $not_focusable$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $profile_options_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(32.500000,5.000000)
+		:i $pos$ = %vec2(39.000000,82.000000)
+		:i $just$ = :a{$left$$top$:a}
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $not_focusable$
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $profile_options_menu$$event_handlers$ = :a{:s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $back_from_profile_options$:s}:s}:a}:s}
+	:i $profile_options_add_item$$text$ = %s(0,"")$not_focusable$ = $not_focusable$
+	:i $GetPreferenceString$$pref_type$ = $network$$profile_email$
+	:i $profile_options_add_item$$text$ = %s(13,"Email Address")$id$ = $network_profile_email$$pad_choose_script$ = $launch_email_keyboard$$pad_choose_params$ = :s{$field$ = %s(13,"profile_email")$text$ = %GLOBAL%$ui_string$$title$ = %s(13,"EMAIL ADDRESS")$min_length$ = %i(1,00000001)$max_length$ = %i(50,00000032):s}
+	:i $profile_options_add_item$$text$ = %GLOBAL%$ui_string$$id$ = $network_profile_email_string$$not_focusable$ = $not_focusable$$font$ = $dialog$$box_it_up$ = $box_it_up$$ignore_width$$scale$ = %f(0.740000)
+	:i $GetPreferenceString$$pref_type$ = $network$$profile_password$
+	:i $GetPreferencePassword$$pref_type$ = $network$$profile_password$
+	:i $profile_options_add_item$$text$ = %s(8,"Password")$id$ = $network_profile_password$$pad_choose_script$ = $launch_onscreen_keyboard_from_profile_menu$$pad_choose_params$ = :s{$field$ = %s(16,"profile_password")$text$ = %GLOBAL%$ui_string$$title$ = %s(16,"PROFILE PASSWORD")$min_length$ = %i(1,00000001)$max_length$ = %i(10,0000000a)$password$:s}
+	:i $profile_options_add_item$$text$ = %GLOBAL%$password_string$$id$ = $network_profile_password_string$$not_focusable$ = $not_focusable$$font$ = $dialog$$box_it_up$ = $box_it_up$$ignore_width$
+	:i $GetPreferenceString$$pref_type$ = $network$$profile_password_confirm$
+	:i $GetPreferencePassword$$pref_type$ = $network$$profile_password_confirm$
+	:i $profile_options_add_item$$text$ = %s(16,"Confirm Password")$id$ = $network_profile_password_confirm$$pad_choose_script$ = $launch_onscreen_keyboard_from_profile_menu$$pad_choose_params$ = :s{$field$ = %s(24,"profile_password_confirm")$text$ = %GLOBAL%$ui_string$$title$ = %s(16,"CONFIRM PASSWORD")$min_length$ = %i(1,00000001)$max_length$ = %i(10,0000000a)$password$:s}
+	:i $profile_options_add_item$$text$ = %GLOBAL%$password_string$$id$ = $network_profile_password_confirm_string$$not_focusable$ = $not_focusable$$font$ = $dialog$$box_it_up$ = $box_it_up$$ignore_width$
+	:i $GetPreferenceString$$pref_type$ = $network$$profile_email$
+	:i if  (%GLOBAL%$ui_string$ = %s(0,"")) 
+		:i $profile_options_add_item$$text$ = %s(12,"Login/Create")$id$ = $network_profile_create$$pad_choose_script$ = $profile_options_confirm_messagebox$$not_focusable$$last_menu_item$ = $last_menu_item$
+	:i else 
+		:i $GetPreferenceString$$pref_type$ = $network$$profile_password$
+		:i if  (%GLOBAL%$ui_string$ = %s(0,"")) 
+			:i $profile_options_add_item$$text$ = %s(12,"Login/Create")$id$ = $network_profile_create$$pad_choose_script$ = $profile_options_confirm_messagebox$$not_focusable$$last_menu_item$ = $last_menu_item$
+		:i else 
+			:i $pw_string$ = %GLOBAL%$ui_string$
+			:i $GetPreferenceString$$pref_type$ = $network$$profile_password_confirm$
+			:i if  (%GLOBAL%$pw_string$ = %GLOBAL%$ui_string$) 
+				:i $profile_options_add_item$$text$ = %s(12,"Login/Create")$id$ = $network_profile_create$$pad_choose_script$ = $profile_options_confirm_messagebox$$last_menu_item$ = $last_menu_item$
+			:i else 
+				:i $profile_options_add_item$$text$ = %s(12,"Login/Create")$id$ = $network_profile_create$$pad_choose_script$ = $profile_options_confirm_messagebox$$not_focusable$$last_menu_item$ = $last_menu_item$
+			:i endif
+		:i endif
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $spriteElement$
+		:i $parent$ = $profile_options_anchor$
+		:i $z_priority$ = %i(100,00000064)
+		:i $pos$ = %vec2(132.000000,68.000000)
+		:i $texture$ = $gslogo$$scale$ = %f(1.100000)
+		:i $alpha$ = %i(1,00000001)
+	:i :s}
+	:i $RunScriptOnScreenElement$$lobby_list_animate_in$$id$ = $profile_options_anchor$$params$ = :s{$id$ = $profile_options_anchor$:s}
+	:i $FireEvent$$type$ = $unfocus$$target$ = $sub_menu$
+	:i $FireEvent$$type$ = $focus$$target$ = $profile_options_menu$
+	:i $AssignAlias$$id$ = $menu_parts_anchor$$alias$ = $current_menu_anchor$
+:i endfunction
+:i function $profile_options_add_item$
+	:i $theme_menu_add_item$:s{$parent$ = $profile_options_vmenu$$centered$ isNull $menu$ = %i(2,00000002):s}
+:i endfunction
+:i function $launch_onscreen_keyboard_from_profile_menu$
+	:i $RunScriptOnScreenElement$$id$ = $current_menu_anchor$$menu_offscreen$$callback$ = $create_onscreen_keyboard$$callback_params$ = :s{$allow_cancel$$in_profile_options$$keyboard_cancel_script$ = $profile_setup_back_from_keyboard$$keyboard_done_script$ = $set_profile_setting$$keyboard_title$ = %GLOBAL%$title$ isNull :s}
+:i endfunction
+:i function $profile_options_confirm_messagebox$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $profile_options_menu$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %s(8,"Warning!")
+		:i $text$ = %s(70,"You are about to send this information over the network. Are you sure?")
+		:i $text_dims$ = %vec2(400.000000,0.000000)
+		:i $no_bg$
+		:i $buttons$ = :a{:s{$font$ = $small$$text$ = %sc(2,"No")
+				:i $pad_choose_script$ = $profile_options_confirm_messagebox_no$
+			:i :s}
+			:i :s{$font$ = $small$$text$ = %sc(3,"Yes")
+				:i $pad_choose_script$ = $profile_options_confirm_messagebox_yes$
+			:i :s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $profile_options_confirm_messagebox_yes$
+	:i $dialog_box_exit$$no_pad_start$
+	:i $create_profile$
+:i endfunction
+:i function $profile_options_confirm_messagebox_no$
+	:i $dialog_box_exit$$no_pad_start$
+	:i $FireEvent$$type$ = $focus$$target$ = $profile_options_menu$
+:i endfunction
+:i function $profile_setup_back_from_keyboard$
+	:i $destroy_onscreen_keyboard$
+	:i $launch_profile_menu$
+:i endfunction
+:i function $set_profile_setting$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetPreferencesFromUI$$prefs$ = $network$ isNull 
+	:i $destroy_onscreen_keyboard$
+	:i $launch_profile_menu$
+:i endfunction
+:i function $create_profile$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $CreateProfile$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(14,"Please Wait...")
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $log_in_profile$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(13,"Logging in...")
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $stats_log_in_profile$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(29,"Connecting to stats server...")
+		:i $no_animate$
+	:i :s}
+:i endfunction
+:i function $back_to_profile_menu$
+	:i $dialog_box_exit$
+	:i $launch_profile_menu$
+:i endfunction
+:i function $create_wrong_profile_password_dialog$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = %s(14,"WRONG PASSWORD")
+		:i $text$ = %s(58,"The password you have entered is invalid for this account.")
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $back_to_profile_menu$:s}
+			:i :a}
+	:i :s}
+:i endfunction
+:i function $profile_logged_in$
+	:i $printf$%s(24,"script profile_logged_in")
+	:i $SetPreferencesFromUI$$prefs$ = $network$$field$ = %s(15,"profile_success")$string$ = %s(3,"Yes")$checksum$ = $boolean_true$
+	:i $dialog_box_exit$
+	:i $StatsLogIn$
+:i endfunction
+:i function $stats_logged_in$
+	:i $dialog_box_exit$
+	:i $create_dialog_box$:s{$title$ = $net_status_msg$
+		:i $text$ = %s(19,"Retrieving stats...")
+		:i $no_animate$
+	:i :s}
+	:i $RetrievePersonalStats$
+:i endfunction
+:i function $stats_retrieved$
+	:i $dialog_box_exit$
+	:i $create_internet_options$
+:i endfunction
+:i function $no_profile_homie_list_prompt$
+	:i $FireEvent$$type$ = $unfocus$$target$ = $actions_menu$
+	:i if $ObjectExists$$id$ = $console_message_vmenu$
+		:i $DoScreenElementMorph$$id$ = $console_message_vmenu$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $FormatText$$textname$ = $msg_text$%s(60,"Cannot access homie list without logging into GameSpy first.")
+	:i $create_dialog_box$:s{$title$ = %s(20,"PLAYER NOT LOGGED IN")
+		:i $text$ = %GLOBAL%$msg_text$
+		:i $buttons$ = :a{:s{$text$ = %s(2,"ok")$pad_choose_script$ = $cancel_view_homies$:s}
+			:i :a}
+		:i $text_dims$ = %vec2(260.000000,0.000000)
+		:i $no_bg$ = $no_bg$
+	:i :s}
+:i endfunction
+:i function $cancel_view_homies$
+	:i $dialog_box_exit$
+	:i $FireEvent$$type$ = $focus$$target$ = $actions_menu$
+	:i $SetScreenElementLock$$id$ = $server_list_anchor$$Off$
+	:i $create_helper_text$$generic_helper_text$
+	:i $SetScreenElementLock$$id$ = $server_list_anchor$$on$
+:i endfunction
+:i function $lobby_remove_buddy$
+	:i $RemoveBuddy$ isNull 
+	:i $FillBuddyList$$clear_list$$allow_remove$
+	:i $launch_homie_list$
+:i endfunction
+:i function $select_network_play_multi$
+	:i $dialog_box_exit$
+	:i if $GotParam$$change_gamemode$
+		:i %GLOBAL%$change_gamemode$
+	:i endif
+	:i $change$$cas_cam_angle$ = %i(0,00000000)
+	:i $cas_setup_rotating_camera$$cam_anim$ = $story_mode_menu$
+	:i $make_new_roundbar_menu$:s{$pos$ = %vec2(130.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_main_menu$:s}$vmenu_id$ = $multiplayer_options_vmenu$:s}
+	:i $build_theme_sub_title$$title$ = %s(11,"MULTIPLAYER")
+	:i $add_roundbar_menu_item$:s{
+		:i $text$ =  (%s(12,"Network Play")) 
+		:i $id$ = $mm_multi_play$
+		:i $pad_choose_script$ = $gamemode_options_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $select_xbox_multiplayer$
+			:i $change_gamemode$ = $change_gamemode_net$
+		:i :s}
+	:i :s}
+	:i $add_roundbar_menu_item$:s{
+		:i $text$ =  (%s(11,"Online Play")) 
+		:i $id$ = $mm_net_play$
+		:i $pad_choose_script$ = $gamemode_options_menu_exit$
+		:i $pad_choose_params$ = :s{
+			:i $new_menu_script$ = $select_network_play$
+			:i $change_gamemode$ = $change_gamemode_net$
+		:i :s}
+	:i :s}
+	:i $roundbar_menu_finish$$build_pause_parts$ = %i(0,00000000)
+:i endfunction
+:i function $select_network_play$
+	:i $change$$network_connection_type$ = $internet$
+	:i $change_gamemode_net$
+	:i $GoalManager_SetDifficultyLevel$%i(1,00000001)
+	:i $UseNetworkPreferences$
+	:i $net_setup_from_net_play_successful$
+:i endfunction
+:i function $create_network_menu_exit$
+	:i $console_hide$
+	:i if $ObjectExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i %GLOBAL%$new_menu_script$ isNull 
+:i endfunction
+:i :end

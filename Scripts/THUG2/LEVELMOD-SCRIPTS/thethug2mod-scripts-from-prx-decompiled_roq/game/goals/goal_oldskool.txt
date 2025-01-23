@@ -1,0 +1,92 @@
+
+:i function $initialize_oldskool_icons$
+	:i $GetCurrentLevel$
+	:i switch %GLOBAL%$level$
+		:i case $load_nj$
+			:i %GLOBAL%$level_num$ = %i(1,00000001)
+			:i $FormatText$$ChecksumName$ = $oldskool_icon$%s(22,"TRG_NJ_OLDSKOOL_ICON01")
+			:i %GLOBAL%$gFlag$ = $LEVEL_UNLOCKED_SC2$
+			:i endcase
+		case $load_hi$
+			:i %GLOBAL%$level_num$ = %i(5,00000005)
+			:i $FormatText$$ChecksumName$ = $oldskool_icon$%s(22,"TRG_HI_OLDSKOOL_ICON01")
+			:i %GLOBAL%$gFlag$ = $LEVEL_UNLOCKED_VN$
+			:i endcase
+		case $load_ru$
+			:i %GLOBAL%$level_num$ = %i(8,00000008)
+			:i $FormatText$$ChecksumName$ = $oldskool_icon$%s(22,"TRG_RU_OLDSKOOL_ICON01")
+			:i %GLOBAL%$gFlag$ = $LEVEL_UNLOCKED_HN$
+			:i endcase
+		default 
+			:i return
+			
+			:i end_switch
+	
+	:i if $NodeExists$%GLOBAL%$oldskool_icon$
+		:i if $IsAlive$$name$ = %GLOBAL%$oldskool_icon$
+			:i if $GameModeEquals$$is_career$
+				:i if $GetGlobalFlag$$flag$ = %GLOBAL%$gFlag$
+					:i $kill$$name$ = %GLOBAL%$oldskool_icon$
+				:i endif
+			:i else 
+				:i $kill$$name$ = %GLOBAL%$oldskool_icon$
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $oldskool_icon$
+	:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $Oldskool_Icon_Got$
+	:i $Obj_SetInnerRadius$%i(10,0000000a)
+	:i $Obj_RotY$$speed$ = %i(250,000000fa)
+	:i $Obj_Hover$$Amp$ = %i(10,0000000a)$Freq$ = %i(1,00000001)
+:i endfunction
+:i function $Oldskool_Icon_Got$
+	:i $Obj_ClearExceptions$
+	:i $GetCurrentLevel$
+	:i switch %GLOBAL%$level$
+		:i case $load_nj$
+			:i $unlocked_text$ = %s(82,"Congratulations!\nYou've unlocked an old skool level:\n \c3School 2 from THPS2.\c0")
+			:i endcase
+		case $load_hi$
+			:i $unlocked_text$ = %s(80,"Congratulations!\nYou've unlocked an old skool level:\n \c3Venice from THPS2.\c0")
+			:i endcase
+		case $load_ru$
+			:i $unlocked_text$ = %s(84,"Congratulations!\nYou've unlocked an old skool level:\n \c3The Hangar from THPS2.\c0")
+			:i end_switch
+	
+	:i $PauseGame$
+	:i $pause_rain$
+	:i $PlayStream$$UnlockOldTHPSLevel$$priority$ = $StreamPriorityHighest$
+	:i $create_snazzy_dialog_box$:s{
+		:i $title$ = %s(15,"OLD SKOOL ICON!")
+		:i $title_font$ = $testtitle$
+		:i $text$ = %GLOBAL%$unlocked_text$
+		:i $text_dims$ = %vec2(350.000000,0.000000)
+		:i $buttons$ = :a{
+			:i :s{
+				:i $font$ = $small$$text$ = %sc(2,"Ok")
+				:i $pad_choose_script$ = $Oldskool_Icon_Got_Dlg_Exit$
+				:i $pad_choose_params$ = 
+				:i :s{
+				:i :s}
+			:i :s}
+			:i :a}
+		:i $style$ = $special_dialog_style$
+	:i :s}
+	:i if $LevelIs$$load_nj$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_SC2$
+	:i endif
+	:i if $LevelIs$$load_hi$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_VN$
+	:i endif
+	:i if $LevelIs$$load_ru$
+		:i $SetGlobalFlag$$flag$ = $LEVEL_UNLOCKED_HN$
+	:i endif
+	:i $Die$
+:i endfunction
+:i function $Oldskool_Icon_Got_Dlg_Exit$
+	:i $dialog_box_exit$
+	:i $UnpauseGame$
+	:i $unpause_rain$
+:i endfunction
+:i :end

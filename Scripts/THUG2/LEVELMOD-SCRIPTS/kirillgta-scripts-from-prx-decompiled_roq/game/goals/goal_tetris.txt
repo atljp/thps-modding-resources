@@ -1,0 +1,291 @@
+
+:i $goal_tetris_faded_trick_alpha$ = %f(0.400000)
+:i $goal_tetris_unfaded_trick_alpha$ = %f(1.000000)
+:i $goal_tetris_genericParams$ = :s{
+	:i $goal_text$ = %s(12,"Skate-Tricks")
+	:i $view_goals_text$ = %s(12,"Skate-Tricks")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_tetris_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_tetris_activate$
+	:i $success$ = $goal_tetris_success$
+	:i $fail$ = $goal_tetris_fail$
+	:i $deactivate$ = $goal_tetris_deactivate$
+	:i $expire$ = $goal_tetris_expire$
+	:i $trigger_obj_id$ = $TRG_G_TETRIS_Pro$
+	:i $start_pad_id$ = $G_TETRIS_StartPad$
+	:i $restart_node$ = $TRG_G_TETRIS_RestartNode$
+	:i $trick_time$ = %i(3000,00000bb8)
+	:i $max_tricks$ = %i(15,0000000f)
+	:i $acceleration_interval$ = %i(5,00000005)
+	:i $acceleration_percent$ = %f(0.100000)
+	:i $time_to_stop_adding_tricks$ = %i(5,00000005)
+	:i $tetris$
+	:i $record_type$ = $score$
+:i :s}
+:i function $goal_tetris_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_tetris_activate$
+	:i if NOT $GotParam$$quick_start$
+		:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$wait_to_add_tricks$ = %i(1,00000001):s}
+		:i $SpawnScript$$goal_tetris_wait_and_add_tricks$$params$ =  isNull 
+	:i endif
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $GotParam$$single_combo$
+		:i $SetScoreAccumulation$%i(0,00000000)
+	:i endif
+	:i $create_tetris_menu$
+:i endfunction
+:i function $goal_tetris_wait_and_add_tricks$
+	:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+	:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+		:i return
+		
+	:i endif
+	:i $GoalManager_EditGoal$$name$ = %GLOBAL%$goal_id$$params$ = :s{$wait_to_add_tricks$ = %i(0,00000000):s}
+:i endfunction
+:i function $goal_tetris_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_tetris_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_tetris_deactivate$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i if $ObjectExists$$id$ = $tetris_menu_anchor$
+		:i $RunScriptOnScreenElement$$id$ = $tetris_menu_anchor$$menu_offscreen$$params$ = :s{$menu_id$ = $tetris_menu_anchor$:s}
+	:i endif
+:i endfunction
+:i function $goal_tetris_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $create_tetris_menu$
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $tetris_menu_anchor$
+		:i $font$ = $small$
+		:i $pos$ = %vec2(320.000000,218.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %i(1,00000001)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $VMenu$
+		:i $parent$ = $tetris_menu_anchor$
+		:i $id$ = $tetris_tricks_menu$
+		:i $font$ = $small$
+		:i $padding_scale$ = %f(0.950000)
+		:i $just$ = :a{$right$$bottom$:a}
+		:i $pos$ = %vec2(615.000000,370.000000)
+		:i $internal_just$ = :a{$right$$center$:a}
+		:i $scale$ = %i(1,00000001)
+	:i :s}
+:i endfunction
+:i function $goal_tetris_remove_trick$
+	:i $GetTags$
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %f(0.700000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(85,00000055):a}
+	:i :s}
+	:i if NOT $GotParam$$tricktris$
+		:i $DoMorph$$scale$ = %i(0,00000000)$time$ = %f(0.500000)$scale$ = %i(0,00000000)
+	:i endif
+	:i $Die$
+:i endfunction
+:i function $goal_tetris_add_trick$
+	:i $GetTags$
+	:i $goal_tetris_move_button_text$ isNull 
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.700000)
+	:i $SetProps$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(75,0000004b):a}
+:i endfunction
+:i function $goal_tetris_add_red_trick$
+	:i $GetTags$
+	:i $goal_tetris_move_button_text$ isNull 
+	:i $DoMorph$$time$ = %i(0,00000000)$scale$ = %i(0,00000000)
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(75,0000004b):a}
+	:i :s}
+	:i $DoMorph$$time$ = %f(0.300000)$scale$ = %f(0.800000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(0.600000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.700000)
+:i endfunction
+:i function $goal_tetris_move_button_text$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $just$ = :a{$right$$top$:a}
+	:i :s}
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $pos$ = %vec2(100.000000,0.000000)
+	:i :s}
+	:i if NOT $GotParam$$no_key_combo$
+		:i $GetScreenElementPosition$$id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $just$ = :a{$right$$top$:a}
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = :s{%GLOBAL%$id$$child$ = %i(1,00000001):s}
+			:i $pos$ =  (%GLOBAL%$ScreenElementPos$ - %vec2(10.000000,0.000000)) 
+		:i :s}
+	:i endif
+:i endfunction
+:i function $goal_tetris_turn_trick_red$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(144,00000090)%i(32,00000020)%i(32,00000020)%i(85,00000055):a}
+	:i :s}
+:i endfunction
+:i function $goal_tetris_turn_trick_white$
+	:i $GetTags$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+:i endfunction
+:i function $goal_tetris_reset_trick_container$
+	:i $TerminateObjectsScripts$$id$ = %GLOBAL%$id$
+	:i $SetScreenElementProps$:s{
+		:i $id$ = :s{%GLOBAL%$id$$child$ = %i(0,00000000):s}
+		:i $rgba$ = :a{%i(127,0000007f)%i(102,00000066)%i(0,00000000)%i(75,0000004b):a}
+	:i :s}
+	:i $DoScreenElementMorph$:s{
+		:i $id$ = %GLOBAL%$id$
+		:i $scale$ = %f(0.700000)
+	:i :s}
+:i endfunction
+:i function $goal_tetris_play_trick_removed_sound$
+	:i $wait$%f(0.100000)$seconds$
+	:i $PlaySound$$TetrisAway$$vol$ = %i(125,0000007d)$pitch$ = %i(125,0000007d)
+:i endfunction
+:i $goal_tetris_trick_text$ = :s{
+	:i $Air_CircleD$ = %s(9,"\b4 + \b2")
+	:i $Air_CircleDL$ = %s(9,"\bc + \b2")
+	:i $Air_CircleDR$ = %s(9,"\ba + \b2")
+	:i $Air_CircleL$ = %s(9,"\b6 + \b2")
+	:i $Air_CircleR$ = %s(9,"\b5 + \b2")
+	:i $Air_CircleU$ = %s(9,"\b7 + \b2")
+	:i $Air_CircleUL$ = %s(9,"\bb + \b2")
+	:i $Air_CircleUR$ = %s(9,"\bd + \b2")
+	:i $Air_D_D_Circle$ = %s(13,"\b4 \b4 + \b2")
+	:i $Air_D_D_Square$ = %s(13,"\b4 \b4 + \b1")
+	:i $Air_L_L_Circle$ = %s(13,"\b6 \b6 + \b2")
+	:i $Air_L_L_Square$ = %s(13,"\b6 \b6 + \b1")
+	:i $Air_R_R_Circle$ = %s(13,"\b5 \b5 + \b2")
+	:i $Air_R_R_Square$ = %s(13,"\b5 \b5 + \b1")
+	:i $Air_SquareD$ = %s(9,"\b4 + \b1")
+	:i $Air_SquareDL$ = %s(9,"\bc + \b1")
+	:i $Air_SquareDR$ = %s(9,"\ba + \b1")
+	:i $Air_SquareL$ = %s(9,"\b6 + \b1")
+	:i $Air_SquareR$ = %s(9,"\b5 + \b1")
+	:i $Air_SquareU$ = %s(9,"\b7 + \b1")
+	:i $Air_SquareUL$ = %s(9,"\bb + \b1")
+	:i $Air_SquareUR$ = %s(9,"\bd + \b1")
+	:i $Air_U_U_Circle$ = %s(13,"\b7 \b7 + \b2")
+	:i $Air_U_U_Square$ = %s(13,"\b7 \b7 + \b1")
+	:i $Lip_TriangleD$ = %s(9,"\b4 + \b0")
+	:i $Lip_TriangleDL$ = %s(9,"\bc + \b0")
+	:i $Lip_TriangleDR$ = %s(9,"\ba + \b0")
+	:i $Lip_TriangleL$ = %s(9,"\b6 + \b0")
+	:i $Lip_TriangleR$ = %s(9,"\b5 + \b0")
+	:i $Lip_TriangleU$ = %s(9,"\b7 + \b0")
+	:i $Lip_TriangleUL$ = %s(9,"\bb + \b0")
+	:i $Lip_TriangleUR$ = %s(9,"\bd + \b0")
+	:i $SpAir_D_L_Circle$ = %s(13,"\b4 \b6 + \b2")
+	:i $SpAir_D_L_Square$ = %s(13,"\b4 \b6 + \b1")
+	:i $SpAir_D_R_Circle$ = %s(13,"\b4 \b5 + \b2")
+	:i $SpAir_D_R_Square$ = %s(13,"\b4 \b5 + \b1")
+	:i $SpAir_D_U_Circle$ = %s(13,"\b4 \b7 + \b2")
+	:i $SpAir_D_U_Square$ = %s(13,"\b4 \b7 + \b1")
+	:i $SpAir_L_D_Circle$ = %s(13,"\b6 \b4 + \b2")
+	:i $SpAir_L_D_Square$ = %s(13,"\b6 \b4 + \b1")
+	:i $SpAir_L_R_Circle$ = %s(13,"\b6 \b5 + \b2")
+	:i $SpAir_L_R_Square$ = %s(13,"\b6 \b5 + \b1")
+	:i $SpAir_L_U_Circle$ = %s(13,"\b6 \b7 + \b2")
+	:i $SpAir_L_U_Square$ = %s(13,"\b6 \b7 + \b1")
+	:i $SpAir_R_D_Circle$ = %s(13,"\b5 \b4 + \b2")
+	:i $SpAir_R_D_Square$ = %s(13,"\b5 \b4 + \b1")
+	:i $SpAir_R_L_Circle$ = %s(13,"\b5 \b6 + \b2")
+	:i $SpAir_R_L_Square$ = %s(13,"\b5 \b6 + \b1")
+	:i $SpAir_R_U_Circle$ = %s(13,"\b5 \b7 + \b2")
+	:i $SpAir_R_U_Square$ = %s(13,"\b5 \b7 + \b1")
+	:i $SpAir_U_D_Circle$ = %s(13,"\b7 \b4 + \b2")
+	:i $SpAir_U_D_Square$ = %s(13,"\b7 \b4 + \b1")
+	:i $SpAir_U_L_Circle$ = %s(13,"\b7 \b6 + \b2")
+	:i $SpAir_U_L_Square$ = %s(13,"\b7 \b6 + \b1")
+	:i $SpAir_U_R_Circle$ = %s(13,"\b7 \b5 + \b2")
+	:i $SpAir_U_R_Square$ = %s(13,"\b7 \b5 + \b1")
+	:i $SpGrind_D_L_Triangle$ = %s(13,"\b4 \b6 + \b0")
+	:i $SpGrind_D_R_Triangle$ = %s(13,"\b4 \b5 + \b0")
+	:i $SpGrind_D_U_Triangle$ = %s(13,"\b4 \b7 + \b0")
+	:i $SpGrind_L_D_Triangle$ = %s(13,"\b6 \b4 + \b0")
+	:i $SpGrind_L_R_Triangle$ = %s(13,"\b6 \b5 + \b0")
+	:i $SpGrind_L_U_Triangle$ = %s(13,"\b6 \b7 + \b0")
+	:i $SpGrind_R_D_Triangle$ = %s(13,"\b5 \b4 + \b0")
+	:i $SpGrind_R_L_Triangle$ = %s(13,"\b5 \b6 + \b0")
+	:i $SpGrind_R_U_Triangle$ = %s(13,"\b5 \b7 + \b0")
+	:i $SpGrind_U_D_Triangle$ = %s(13,"\b7 \b4 + \b0")
+	:i $SpGrind_U_L_Triangle$ = %s(13,"\b7 \b6 + \b0")
+	:i $SpGrind_U_R_Triangle$ = %s(13,"\b7 \b5 + \b0")
+	:i $SpLip_D_L_Triangle$ = %s(13,"\b4 \b6 + \b0")
+	:i $SpLip_D_R_Triangle$ = %s(13,"\b4 \b5 + \b0")
+	:i $SpLip_D_U_Triangle$ = %s(13,"\b4 \b7 + \b0")
+	:i $SpLip_L_D_Triangle$ = %s(13,"\b6 \b4 + \b0")
+	:i $SpLip_L_R_Triangle$ = %s(13,"\b6 \b5 + \b0")
+	:i $SpLip_L_U_Triangle$ = %s(13,"\b6 \b7 + \b0")
+	:i $SpLip_R_D_Triangle$ = %s(13,"\b5 \b4 + \b0")
+	:i $SpLip_R_L_Triangle$ = %s(13,"\b5 \b6 + \b0")
+	:i $SpLip_R_U_Triangle$ = %s(13,"\b5 \b7 + \b0")
+	:i $SpLip_U_D_Triangle$ = %s(13,"\b7 \b4 + \b0")
+	:i $SpLip_U_L_Triangle$ = %s(13,"\b7 \b6 + \b0")
+	:i $SpLip_U_R_Triangle$ = %s(13,"\b7 \b5 + \b0")
+	:i $SpLip_U_U_Triangle$ = %s(13,"\b7 \b7 + \b0")
+	:i $SpMan_D_L_Triangle$ = %s(13,"\b4 \b6 + \b0")
+	:i $SpMan_D_R_Triangle$ = %s(13,"\b4 \b5 + \b0")
+	:i $SpMan_D_U_Triangle$ = %s(13,"\b4 \b7 + \b0")
+	:i $SpMan_L_D_Triangle$ = %s(13,"\b6 \b4 + \b0")
+	:i $SpMan_L_R_Triangle$ = %s(13,"\b6 \b5 + \b0")
+	:i $SpMan_L_U_Triangle$ = %s(13,"\b6 \b7 + \b0")
+	:i $SpMan_R_D_Triangle$ = %s(13,"\b5 \b4 + \b0")
+	:i $SpMan_R_L_Triangle$ = %s(13,"\b5 \b6 + \b0")
+	:i $SpMan_R_U_Triangle$ = %s(13,"\b5 \b7 + \b0")
+	:i $SpMan_U_D_Triangle$ = %s(13,"\b7 \b4 + \b0")
+	:i $SpMan_U_L_Triangle$ = %s(13,"\b7 \b6 + \b0")
+	:i $SpMan_U_R_Triangle$ = %s(13,"\b7 \b5 + \b0")
+	:i $Extra_SquareSquareL$ = %s(15,"\b6 + \b1 + \b1")
+:i :s}
+:i $goal_tetris_trick_text_double_tap$ = :s{
+	:i $Air_CircleD$ = %s(15,"\b4 + \b2 + \b2")
+	:i $Air_CircleDL$ = %s(15,"\bc + \b2 + \b2")
+	:i $Air_CircleDR$ = %s(15,"\ba + \b2 + \b2")
+	:i $Air_CircleL$ = %s(15,"\b6 + \b2 + \b2")
+	:i $Air_CircleR$ = %s(15,"\b5 + \b2 + \b2")
+	:i $Air_CircleU$ = %s(15,"\b7 + \b2 + \b2")
+	:i $Air_CircleUL$ = %s(15,"\bb + \b2 + \b2")
+	:i $Air_CircleUR$ = %s(15,"\bd + \b2 + \b2")
+	:i $Air_SquareD$ = %s(15,"\b4 + \b1 + \b1")
+	:i $Air_SquareDL$ = %s(15,"\bc + \b1 + \b1")
+	:i $Air_SquareDR$ = %s(15,"\ba + \b1 + \b1")
+	:i $Air_SquareL$ = %s(15,"\b6 + \b1 + \b1")
+	:i $Air_SquareR$ = %s(15,"\b5 + \b1 + \b1")
+	:i $Air_SquareU$ = %s(15,"\b7 + \b1 + \b1")
+	:i $Air_SquareUL$ = %s(15,"\bb + \b1 + \b1")
+	:i $Air_SquareUR$ = %s(15,"\bd + \b1 + \b1")
+:i :s}
+:i :end

@@ -1,0 +1,405 @@
+
+:i function $refresh_skater_model$
+	:i $GetCurrentSkaterProfileIndex$
+	:i if $LevelIs$$Load_MainMenu$
+		:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+	:i else 
+		:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+:i endfunction
+:i function $refresh_skater_model_for_cheats$
+	:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+	:i if $InSplitScreenGame$
+		:i %GLOBAL%$refresh_both_skaters$ = %i(1,00000001)
+		:i if $LevelIs$$Load_MainMenu$
+			:i %GLOBAL%$refresh_both_skaters$ = %i(0,00000000)
+		:i endif
+	:i endif
+	:i if  (%GLOBAL%$refresh_both_skaters$ = %i(1,00000001)) 
+		:i $RefreshSkaterScale$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterVisibility$$profile$ = %i(0,00000000)$skater$ = %i(0,00000000)
+		:i $RefreshSkaterScale$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+		:i $RefreshSkaterVisibility$$profile$ = %i(1,00000001)$skater$ = %i(1,00000001)
+	:i else 
+		:i $GetCurrentSkaterProfileIndex$
+		:i if $LevelIs$$Load_MainMenu$
+			:i %GLOBAL%$skaterIndex$ = %i(0,00000000)
+		:i else 
+			:i %GLOBAL%$skaterIndex$ = %GLOBAL%$currentSkaterProfileIndex$
+		:i endif
+		:i $RefreshSkaterScale$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+		:i $RefreshSkaterVisibility$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %GLOBAL%$skaterIndex$
+	:i endif
+:i endfunction
+:i function $load_pro_skater$
+	:i $SelectCurrentSkater$$name$ = %GLOBAL%$name$
+	:i if  ( ($LevelIs$$load_cas$)  OR  ($LevelIs$$Load_MainMenu$) ) 
+		:i $skater$.$SwitchOffBoard$
+		:i $no_board$ = $no_board$
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i $RefreshSkaterModel$$profile$ = %GLOBAL%$currentSkaterProfileIndex$$skater$ = %i(0,00000000)$no_board$ = %GLOBAL%$no_board$
+	:i if  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+		:i $UpdateTrickMappings$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i endif
+	:i $GetSkaterProfileInfo$$player$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i $set_correct_graffiti_textures$ isNull 
+:i endfunction
+:i function $set_correct_graffiti_textures$
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(17,"no name specified")
+	:i endif
+	:i $GetCurrentSkaterProfileIndex$
+	:i if NOT  (%GLOBAL%$currentSkaterProfileIndex$ = %i(0,00000000)) 
+		:i return
+		
+	:i endif
+	:i $GetSkaterID$$skater$ = %GLOBAL%$currentSkaterProfileIndex$
+	:i if  (%GLOBAL%$name$ = $custom$) 
+		:i if %GLOBAL%$objID$.$HasCustomTagTexture$
+			:i %GLOBAL%$objID$.$ApplyCustomTagTexture$
+		:i else 
+			:i %GLOBAL%$objID$.$SetGraffitiTexture$%GLOBAL%$tag_texture$
+		:i endif
+	:i else 
+		:i %GLOBAL%$objID$.$SetGraffitiTexture$%GLOBAL%$tag_texture$
+	:i endif
+	:i if NOT $GotParam$$sticker_texture$
+		:i %GLOBAL%$sticker_texture$ = $sticker$
+	:i endif
+	:i %GLOBAL%$objID$.$SetStickerTexture$%GLOBAL%$sticker_texture$
+:i endfunction
+:i function $scalingmenu_get_xyz$
+	:i $GetCurrentSkaterProfileIndex$
+	:i $GetPlayerAppearancePart$$player$ = %GLOBAL%$currentSkaterProfileIndex$$part$ = %GLOBAL%$part$
+	:i if NOT $GotParam$$use_default_scale$
+		:i %GLOBAL%$use_default_scale$ = %i(1,00000001)
+	:i endif
+	:i if NOT $GotParam$$x$
+		:i %GLOBAL%$x$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$y$
+		:i %GLOBAL%$y$ = %i(100,00000064)
+	:i endif
+	:i if NOT $GotParam$$z$
+		:i %GLOBAL%$z$ = %i(100,00000064)
+	:i endif
+	:i if  (%GLOBAL%$use_default_scale$ = %i(1,00000001)) 
+		:i %GLOBAL%$x$ = %i(100,00000064)
+		:i %GLOBAL%$y$ = %i(100,00000064)
+		:i %GLOBAL%$z$ = %i(100,00000064)
+	:i endif
+	:i return
+	$x$ = %GLOBAL%$x$$y$ = %GLOBAL%$y$$z$ = %GLOBAL%$z$
+:i endfunction
+:i $EG_in_create_a_graphic$ = %i(0,00000000)
+:i $EG_TEST_GRAFFITI_AS_SPRITE$ = %i(0,00000000)
+:i $edit_graphic_layer_infos$ = :a{
+	:i :s{
+		:i $texture_id$ = $odd_1$
+		:i $texture_name$ = %s(5,"odd_1")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(0.920000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(90,0000005a);%i(23,00000017);%i(128,00000080):a}
+		:i $layer_id$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_76$
+		:i $texture_name$ = %s(7,"grap_76")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(45,0000002d)
+		:i $pos_y$ = %i(29,0000001d)
+		:i $rot$ = %f(351.869995)
+		:i $scale$ = %f(0.950000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_76$
+		:i $texture_name$ = %s(7,"grap_76")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(22,00000016)
+		:i $pos_y$ = %i(40,00000028)
+		:i $rot$ = %f(181.725006)
+		:i $scale$ = %f(0.806000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(2,00000002)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_30$
+		:i $texture_name$ = %s(6,"ill_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(34,00000022)
+		:i $rot$ = %f(18.584000)
+		:i $scale$ = %f(0.867000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $layer_id$ = %i(6,00000006)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_82$
+		:i $texture_name$ = %s(7,"grap_82")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(16,00000010)
+		:i $pos_y$ = %i(16,00000010)
+		:i $rot$ = %f(331.338013)
+		:i $scale$ = %f(0.478000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(9,00000009)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $odd_15$
+		:i $texture_name$ = %s(6,"odd_15")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(36,00000024)
+		:i $pos_y$ = %i(30,0000001e)
+		:i $rot$ = %f(35.000000)
+		:i $scale$ = %f(0.726000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(30,0000001e);%i(90,0000005a);%i(60,0000003c);%i(92,0000005c):a}
+		:i $layer_id$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_30$
+		:i $texture_name$ = %s(6,"ill_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(33,00000021)
+		:i $rot$ = %f(18.584000)
+		:i $scale$ = %f(0.812000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %i(1,00000001)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(4,00000004)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $odd_16$
+		:i $texture_name$ = %s(6,"odd_16")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(43,0000002b)
+		:i $pos_y$ = %i(49,00000031)
+		:i $rot$ = %f(349.221008)
+		:i $scale$ = %f(0.692000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(180,000000b4);%i(90,0000005a);%i(28,0000001c);%i(128,00000080):a}
+		:i $layer_id$ = %i(5,00000005)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_17$
+		:i $texture_name$ = %s(6,"ill_17")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(50,00000032)
+		:i $pos_y$ = %i(47,0000002f)
+		:i $rot$ = %f(354.907990)
+		:i $scale$ = %f(0.488000)
+		:i $flip_h$ = %i(1,00000001)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(30,0000001e);%i(57,00000039);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(8,00000008)
+	:i :s}
+	:i :a}
+:i $layer_infos_need_resetting$ = %i(0,00000000)
+:i $edit_graphic_layer_infos_copy$ = :a{
+	:i :s{
+		:i $texture_id$ = $odd_1$
+		:i $texture_name$ = %s(5,"odd_1")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %f(0.920000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(90,0000005a);%i(23,00000017);%i(128,00000080):a}
+		:i $layer_id$ = %i(0,00000000)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_76$
+		:i $texture_name$ = %s(7,"grap_76")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(45,0000002d)
+		:i $pos_y$ = %i(29,0000001d)
+		:i $rot$ = %f(351.869995)
+		:i $scale$ = %f(0.950000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(1,00000001)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_76$
+		:i $texture_name$ = %s(7,"grap_76")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(22,00000016)
+		:i $pos_y$ = %i(40,00000028)
+		:i $rot$ = %f(181.725006)
+		:i $scale$ = %f(0.806000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(2,00000002)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_30$
+		:i $texture_name$ = %s(6,"ill_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(34,00000022)
+		:i $rot$ = %f(18.584000)
+		:i $scale$ = %f(0.867000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(0,00000000);%i(128,00000080):a}
+		:i $layer_id$ = %i(6,00000006)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $grap_82$
+		:i $texture_name$ = %s(7,"grap_82")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(16,00000010)
+		:i $pos_y$ = %i(16,00000010)
+		:i $rot$ = %f(331.338013)
+		:i $scale$ = %f(0.478000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(9,00000009)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $odd_15$
+		:i $texture_name$ = %s(6,"odd_15")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(36,00000024)
+		:i $pos_y$ = %i(30,0000001e)
+		:i $rot$ = %f(35.000000)
+		:i $scale$ = %f(0.726000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(30,0000001e);%i(90,0000005a);%i(60,0000003c);%i(92,0000005c):a}
+		:i $layer_id$ = %i(3,00000003)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_30$
+		:i $texture_name$ = %s(6,"ill_30")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(33,00000021)
+		:i $rot$ = %f(18.584000)
+		:i $scale$ = %f(0.812000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(7,00000007)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $none$
+		:i $texture_name$ = %s(0,"")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(32,00000020)
+		:i $pos_y$ = %i(32,00000020)
+		:i $rot$ = %i(0,00000000)
+		:i $scale$ = %i(1,00000001)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(0,00000000);%i(0,00000000);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(4,00000004)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $odd_16$
+		:i $texture_name$ = %s(6,"odd_16")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(43,0000002b)
+		:i $pos_y$ = %i(49,00000031)
+		:i $rot$ = %f(349.221008)
+		:i $scale$ = %f(0.692000)
+		:i $flip_h$ = %i(0,00000000)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(180,000000b4);%i(90,0000005a);%i(28,0000001c);%i(128,00000080):a}
+		:i $layer_id$ = %i(5,00000005)
+	:i :s}
+	:i :s{
+		:i $texture_id$ = $ill_17$
+		:i $texture_name$ = %s(6,"ill_17")
+		:i $string$ = %s(0,"")
+		:i $canvas_id$ = $none$
+		:i $font_id$ = %i(0,00000000)
+		:i $pos_x$ = %i(50,00000032)
+		:i $pos_y$ = %i(47,0000002f)
+		:i $rot$ = %f(354.907990)
+		:i $scale$ = %f(0.488000)
+		:i $flip_h$ = %i(1,00000001)
+		:i $flip_v$ = %i(0,00000000)
+		:i $hsva$ = :a{%i(30,0000001e);%i(57,00000039);%i(60,0000003c);%i(128,00000080):a}
+		:i $layer_id$ = %i(8,00000008)
+	:i :s}
+	:i :a}
+:i :end

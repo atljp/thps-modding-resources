@@ -1,0 +1,128 @@
+
+:i $Goal_Special_GenericParams$ = :s{
+	:i $goal_text$ = %s(25,"Generic Special goal text")
+	:i $view_goals_text$ = %s(18,"Do a special trick")
+	:i $time$ = %i(20,00000014)
+	:i $init$ = $goal_special_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_special_activate$
+	:i $success$ = $goal_special_success$
+	:i $deactivate$ = $goal_special_deactivate$
+	:i $fail$ = $goal_special_fail$
+	:i $expire$ = $goal_special_expire$
+	:i $trigger_obj_id$ = $TRG_G_SPECIAL_Pro$
+	:i $start_pad_id$ = $G_SPECIAL_StartPad$
+	:i $restart_node$ = $TRG_G_SPECIAL_RestartNode$
+	:i $should_remove_trick$ = %i(0,00000000)
+	:i $special$
+	:i $record_type$ = $time$
+:i :s}
+:i $goal_special_tricks_lip$ = :s{
+	:i $SpLip_L_R_Triangle$
+	:i $SpLip_R_L_Triangle$
+	:i $SpLip_D_L_Triangle$
+	:i $SpLip_D_R_Triangle$
+	:i $SpLip_D_U_Triangle$
+	:i $SpLip_L_D_Triangle$
+	:i $SpLip_L_U_Triangle$
+	:i $SpLip_R_D_Triangle$
+	:i $SpLip_R_U_Triangle$
+	:i $SpLip_U_D_Triangle$
+	:i $SpLip_U_L_Triangle$
+	:i $SpLip_U_R_Triangle$
+	:i $SpLip_U_U_Triangle$
+:i :s}
+:i $goal_special_tricks_air$ = :s{
+	:i $SpAir_R_D_Circle$
+	:i $SpAir_L_R_Circle$
+	:i $SpAir_L_D_Circle$
+	:i $SpAir_L_D_Square$
+	:i $SpAir_R_D_Circle$
+	:i $SpAir_R_D_Square$
+	:i $SpAir_D_U_Circle$
+	:i $SpAir_D_U_Square$
+	:i $SpAir_D_L_Circle$
+	:i $SpAir_D_L_Square$
+	:i $SpAir_L_R_Square$
+	:i $SpAir_L_U_Circle$
+	:i $SpAir_L_U_Square$
+	:i $SpAir_D_R_Square$
+	:i $SpAir_R_L_Circle$
+	:i $SpAir_R_L_Square$
+	:i $SpAir_R_U_Circle$
+	:i $SpAir_R_U_Square$
+	:i $SpAir_U_D_Circle$
+	:i $SpAir_U_D_Square$
+	:i $SpAir_U_L_Circle$
+	:i $SpAir_U_L_Square$
+	:i $SpAir_U_R_Circle$
+	:i $SpAir_U_R_Square$
+:i :s}
+:i $goal_special_tricks_grind$ = :s{
+	:i $SpGrind_D_L_Triangle$
+	:i $SpGrind_D_R_Triangle$
+	:i $SpGrind_D_U_Triangle$
+	:i $SpGrind_L_D_Triangle$
+	:i $SpGrind_L_R_Triangle$
+	:i $SpGrind_L_U_Triangle$
+	:i $SpGrind_R_D_Triangle$
+	:i $SpGrind_R_L_Triangle$
+	:i $SpGrind_R_U_Triangle$
+	:i $SpGrind_U_D_Triangle$
+	:i $SpGrind_U_L_Triangle$
+	:i $SpGrind_U_R_Triangle$
+:i :s}
+:i $goal_special_tricks_manual$ = :s{
+	:i $SpMan_D_L_Triangle$
+	:i $SpMan_D_R_Triangle$
+	:i $SpMan_D_U_Triangle$
+	:i $SpMan_L_D_Triangle$
+	:i $SpMan_L_R_Triangle$
+	:i $SpMan_L_U_Triangle$
+	:i $SpMan_R_D_Triangle$
+	:i $SpMan_R_L_Triangle$
+	:i $SpMan_R_U_Triangle$
+	:i $SpMan_U_D_Triangle$
+	:i $SpMan_U_L_Triangle$
+	:i $SpMan_U_R_Triangle$
+:i :s}
+:i function $goal_special_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_special_activate$
+	:i $GoalManager_AddTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_special_deactivate$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_RemoveTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_special_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_special_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_special_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $possibly_add_temp_special_trick$
+	:i if $GoalManager_GetActiveGoalId$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if  ( ($GotParam$$special$)  OR  ($GotParam$$create_a_trick$) ) 
+			:i $GoalManager_AddTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+		:i endif
+	:i endif
+:i endfunction
+:i function $possibly_remove_temp_special_trick$
+	:i if $GoalManager_GetActiveGoalId$
+		:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+		:i if  ( ($GotParam$$special$)  OR  ($GotParam$$create_a_trick$) ) 
+			:i $GoalManager_RemoveTempSpecialTrick$$name$ = %GLOBAL%$goal_id$
+		:i endif
+	:i endif
+:i endfunction
+:i :end

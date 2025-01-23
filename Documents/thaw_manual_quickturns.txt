@@ -1,0 +1,105 @@
+In game\skater\manualtricks.qb.wpc:
+
+Overwrite these functions: ( trigger = { Release r2 200 } ... instead of Press)
+
+NoseManualBranches = [
+    {
+        trigger = { PressTwoAnyOrder left r1 500 }
+        scr = EnterBertStance
+        xbox_trigger = { PressTwoAnyOrder left l1 500 }
+        NGC_Trigger = { PressTwoAnyOrder left l1 500 }
+    }
+    {
+        trigger = { PressTwoAnyOrder RIGHT r1 500 }
+        scr = EnterBertStance
+        xbox_trigger = { PressTwoAnyOrder RIGHT l1 500 }
+        NGC_Trigger = { PressTwoAnyOrder RIGHT l1 500 }
+    }
+    {
+        trigger = { Press r2 200 }
+        Trick_Gturn
+        xbox_trigger = { Press r1 200 }
+        NGC_Trigger = { Press r1 200 }
+    }
+    { trigger = TRIGGER_MANUAL_BRANCHFLIP Trick_HalfCabImpossible }
+    {
+        trigger = { InOrder Circle triangle 300 }
+        Trick_OneFootNosemanual
+    }
+    {
+        trigger = { TripleInOrder left left r2 500 }
+        NoseManualQuickturn_Setup
+    }
+    {
+        trigger = { TripleInOrder right right r2 500 }
+        NoseManualQuickturn_Setup2
+    }
+]
+
+ManualBranches = [
+    {
+        trigger = { PressTwoAnyOrder left r1 500 }
+        scr = EnterBertStance
+        xbox_trigger = { PressTwoAnyOrder left l1 500 }
+        NGC_Trigger = { PressTwoAnyOrder left l1 500 }
+    }
+    {
+        trigger = { PressTwoAnyOrder RIGHT r1 500 }
+        scr = EnterBertStance
+        xbox_trigger = { PressTwoAnyOrder RIGHT l1 500 }
+        NGC_Trigger = { PressTwoAnyOrder RIGHT l1 500 }
+    }
+    {
+        trigger = { Release r2 200 }
+        Trick_Gturn2
+        xbox_trigger = { Press r1 200 }
+        NGC_Trigger = { Press r1 200 }
+    }
+    { trigger = TRIGGER_MANUAL_BRANCHFLIP Trick_360FlipNoseManual }
+    {
+        trigger = { InOrder Circle triangle 300 }
+        Trick_OneFootManual
+    }
+    {
+        trigger = { TripleInOrder left left r2 500 }
+        ManualQuickturn_Setup
+    }
+    {
+        trigger = { TripleInOrder right right r2 500 }
+        ManualQuickturn_Setup2
+    }
+]
+
+Add these functions:
+
+:i function $NoseManualQuickturn_Setup$
+	:i $ManualLink$$Name$ = %sc(20,"Nose Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn$$Anim$ = $GTurn$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $Manual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $ManualBranches$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $NoseManualQuickturn_Setup2$
+	:i $ManualLink$$Name$ = %sc(20,"Nose Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn2$$Anim$ = $GTurn$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $Manual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $ManualBranches$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualBail$$OffMeterBottom$ = $ManualLand$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $ManualQuickturn_Setup$
+	:i $ManualLink$$Name$ = %sc(15,"Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn$$Anim$ = $GTurn2$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $NoseManual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $NoseManualBranches$$Nollie$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$AllowWallpush$$IsExtra$
+:i endfunction
+:i function $ManualQuickturn_Setup2$
+	:i $ManualLink$$Name$ = %sc(15,"Pivot Quickturn")$Score$ = %i(100,00000064)$Quickturn2$$Anim$ = $GTurn2$$BalanceAnim$ = $Manual$$FlipAfter$$BalanceAnim$ = $NoseManual_Range$$Trickslack$ = %i(0,00000000)$PlayCessSound$$extrapercent$ = %i(100,00000064)$ExtraTricks$ = $FlatLandBranches$$ExtraTricks2$ = $NoseManualBranches$$Nollie$$TimeAdd$ = %i(1,00000001)$SpeedMult$ = %f(1.000000)$OffMeterTop$ = $ManualLand$$OffMeterBottom$ = $NoseManualBail$$AllowWallpush$$IsExtra$
+:i endfunction
+
+
+Change rotate time in function $ManualLink$ in branch if GotParam RotateY
+
+wait 0.5000 seconds
+
+
+
+Add this in function $ManualLink$ below :i if $GotParam$$RotateY$
+
+		:i if $GotParam$$Quickturn$
+				:i $Rotate$$y$ = %i(180,000000b4)$duration$ = %f(0.300000)$seconds$
+				:i $Wait$%f(0.300000)$seconds$
+			:i else
+			:i if $GotParam$$Quickturn2$
+				:i $Rotate$$y$ = %i(4294967116,ffffff4C)$duration$ = %f(0.300000)$seconds$
+				:i $Wait$%f(0.300000)$seconds$
+			:i endif	
+		:i endif

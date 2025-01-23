@@ -1,0 +1,1753 @@
+
+:i $PreviousSfxLevel$ = %i(0,00000000)
+:i $cutscene_frame_advance_delay$ = %i(10,0000000a)
+:i $todmanager_temp_tod_changed$ = %i(0,00000000)
+:i $TODManagerActiveBeforeCutscene$ = %i(0,00000000)
+:i function $CutsceneFadeIn$$time$ = %f(0.000000)
+	:i if $IsTrue$$output_cutscene_video$
+		:i $printf$%s(49,"Disabling fades with output_cutscene_video option")
+		:i return
+		
+	:i endif
+	:i $printf$%s(27,"testing cutscene fade in...")
+	:i $KillSpawnedScript$$name$ = $FadeInCutscene$
+	:i $spawnscript$$FadeInCutscene$$params$ = :s{$fadein_time$ = %GLOBAL%$time$:s}
+:i endfunction
+:i function $CutsceneFadeOut$$time$ = %f(0.000000)
+	:i if $IsTrue$$output_cutscene_video$
+		:i $printf$%s(49,"Disabling fades with output_cutscene_video option")
+		:i return
+		
+	:i endif
+	:i $printf$%s(28,"testing cutscene fade out...")
+	:i $FadeOutCutscene$$fadeout_time$ = %GLOBAL%$time$
+:i endfunction
+:i function $FadeInCutscene$
+	:i if NOT $GotParam$$fadein_time$
+		:i $script_assert$%s(14,"no fadein time")
+	:i endif
+	:i if NOT  (%GLOBAL%$fadein_time$ = %i(0,00000000)) 
+		:i $fadetoblack$$on$$time$ = %f(0.000000)$alpha$ = %f(1.000000)
+		:i $fadetoblack$$off$$time$ = %GLOBAL%$fadein_time$
+	:i else 
+		:i $fadetoblack$$off$$time$ = %f(0.000000)
+	:i endif
+:i endfunction
+:i function $FadeOutCutscene$
+	:i $KillSpawnedScript$$name$ = $FadeInCutscene$
+	:i if NOT $GotParam$$fadeout_time$
+		:i $script_assert$%s(15,"no fadeout time")
+	:i endif
+	:i $fadetoblack$$on$$time$ = %GLOBAL%$fadeout_time$$alpha$ = %f(1.000000)
+:i endfunction
+:i $last_screen_mode$ = $standard_screen_mode$
+:i function $CutsceneDestroyUI$
+	:i $ScreenElementSystemCleanup$$no_panel_stuff$
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $CutsceneRestoreUI$
+	:i $ScreenElementSystemCleanup$
+:i endfunction
+:i function $CutsceneHideUI$
+	:i if NOT $GameModeEquals$$is_classic$
+		:i $ResetScore$
+	:i endif
+	:i $speech_box_exit$:s{$anchor_id$ = $goal_start_dialog$$no_pad_start$:s}
+	:i $pause_bloom_on$
+	:i $hide_all_hud_items$$dont_disable_screen_effects$
+	:i $toggle_bullettime$
+	:i $TODManager_SetTempBloomParams$$on$ = %i(0,00000000)
+	:i $SetSlomo$%i(1,00000001)
+	:i $menu3d_hide$
+	:i $kill_start_key_binding$
+:i endfunction
+:i function $CutsceneUnhideUI$
+	:i $show_all_hud_items$
+	:i $restore_start_key_binding$
+:i endfunction
+:i function $cutscene_hide_objects$
+:i endfunction
+:i function $cutscene_unhide_objects$
+:i endfunction
+:i function $UnhideLoResHeads$
+	:i $Skater$.$SwitchOnAtomic$$skater_m_head$
+	:i $Skater$.$SwitchOnAtomic$$skater_f_head$
+:i endfunction
+:i $cutscene_is_playing$ = %i(0,00000000)
+:i function $PreCutscene$
+	:i $change$$cutscene_is_playing$ = %i(1,00000001)
+	:i if $GotParam$$name$
+		:i if $StringEquals$$a$ = %GLOBAL%$name$$b$ = %s(18,"cutscenes\au_5.cut")
+			:i $set_temporary_nude_appearance$
+		:i endif
+	:i endif
+	:i $cutscene_deactivate_tod_manager$
+	:i $UnPauseMusicAndStreams$
+	:i $SetSfxReverb$%i(0,00000000)$mode$ = $REV_MODE_CAVE$
+	:i $KillSpawnedScript$$name$ = $wait_and_check_for_unplugged_controllers$
+	:i $change$$check_for_unplugged_controllers$ = %i(0,00000000)
+	:i $GetValueFromVolume$$sfxvol$
+	:i $change$$PreviousSfxLevel$ = %GLOBAL%$value$
+	:i $change$$PreviousSfxLevel$ =  ($PreviousSfxLevel$ * %i(10,0000000a)) 
+	:i $StopMusic$
+	:i $SetMusicStreamVolume$$PreviousSfxLevel$
+	:i $printf$%s(46,"***Changing Rain Sounds' volumes if playing!!!")
+	:i if $IsSoundPlaying$$TestLight01$
+		:i $printf$%s(54,"****Light Rain sound 01 - setting sound params to zero")
+		:i $SetSoundParams$$TestLight01$$vol$ = %i(0,00000000)
+	:i endif
+	:i if $IsSoundPlaying$$TestLight02$
+		:i $printf$%s(54,"****Light Rain sound 02 - setting sound params to zero")
+		:i $SetSoundParams$$TestLight02$$vol$ = %i(0,00000000)
+	:i endif
+	:i if $IsSoundPlaying$$TestMedium02$
+		:i $printf$%s(55,"****Medium Rain sound 02 - setting sound params to zero")
+		:i $SetSoundParams$$TestMedium02$$vol$ = %i(0,00000000)
+	:i endif
+	:i $printf$%s(42,"***Pausing Rain Sounds with pause_rain!!!!")
+	:i $pause_rain$
+	:i $printf$%s(40,"***Stopping all streams with StopStream!")
+	:i $StopStream$
+	:i $Skater$.$SkaterLoopingSound_TurnOff$
+	:i $printf$%s(36,"***Turned skater's looping sound off")
+	:i $RunScriptOnComponentType$$component$ = $SkaterLoopingSound$$target$ = $SkaterLoopingSound_TurnOff$
+	:i $printf$%s(83,"***Running scr on all SkaterLoopingSound components - SkaterLoopingSound_TurnOff!!!")
+	:i $SetSfxVolume$%i(0,00000000)
+	:i $printf$%s(25,"***Set SFX Volume to Zero")
+	:i $Skater$.$VibrateOff$
+	:i $Skater$.$Obj_KillSpawnedScript$$name$ = $BloodSmall$
+	:i $Skater$.$Obj_KillSpawnedScript$$name$ = $BloodSplat$
+	:i $Skater$.$Obj_KillSpawnedScript$$name$ = $SkaterBloodOn$
+	:i $Skater$.$ResetSkaterParticleSystems$
+	:i $CutsceneHideUI$
+	:i if $ScreenElementExists$$id$ = $current_menu_anchor$
+		:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i endif
+	:i $GoalManager_HidePoints$
+	:i $GoalManager_HideGoalPoints$
+	:i $Skater$.$StatsManager_DeactivateGoals$
+	:i $GoalManager_SetCanStartGoal$%i(0,00000000)
+	:i if  (%GLOBAL%$unload_goals$ = %i(1,00000001)) 
+		:i if  ( ($GameModeEquals$$is_classic$)  OR  ($GameModeEquals$$is_singlesession$)  OR  ($GameModeEquals$$is_creategoals$) ) 
+			:i $GoalManager_PauseAllGoals$
+		:i else 
+			:i if $GameModeEquals$$is_career$
+				:i $GoalManager_UninitializeAllGoals$
+			:i endif
+		:i endif
+	:i endif
+	:i $PauseObjects$
+	:i $PauseSpawnedScripts$
+	:i $Skater$.$SwitchOffAtomic$$skater_m_head$
+	:i $Skater$.$SwitchOffAtomic$$skater_f_head$
+	:i $Skater$.$SwitchOnBoard$
+	:i $Skater$.$Hide$
+	:i $Skater$.$StopSkaterVehicleSounds$
+	:i $KillSpawnedScript$$name$ = $FadeInCutscene$
+	:i if  (%GLOBAL%$unload_anims$ = %i(1,00000001)) 
+		:i if $InPreFile$%s(15,"skaterparts.pre")
+			:i $UnloadPreFile$%s(15,"skaterparts.pre")
+			:i $cutscene_skaterparts_unloaded$ = %i(1,00000001)
+		:i endif
+		:i $do_unload_unloadable$
+	:i endif
+	:i if $isNGC$
+		:i $unload_current_theme$
+	:i endif
+	:i $SetSfxReverb$%i(0,00000000)$mode$ = $REV_MODE_CAVE$
+:i endfunction
+:i function $CutsceneStartVideo$
+	:i $CutsceneHideUI$
+	:i $CutsceneFadeOut$$time$ = %i(0,00000000)
+	:i switch  ($current_screen_mode$) 
+		:i case $standard_screen_mode$
+			:i $cutscene_fake_letterboxing$
+			:i $change$$last_screen_mode$ = $standard_screen_mode$
+			:i endcase
+		case $widescreen_screen_mode$
+			:i $change$$last_screen_mode$ = $widescreen_screen_mode$
+			:i endcase
+		case $letterbox_screen_mode$
+			:i $change$$last_screen_mode$ = $letterbox_screen_mode$
+			:i endcase
+		default 
+			:i $printf$%s(24,"current screen mode = %d")$d$ = $current_screen_mode$
+			:i $script_assert$%s(24,"Unrecognized screen mode")
+			:i end_switch
+	
+:i endfunction
+:i $cutscene_skaterparts_unloaded$ = %i(0,00000000)
+:i function $CutsceneKillObjects$
+	:i if $IsArray$$CutsceneParticleTextures$
+		:i $GetArraySize$$CutsceneParticleTextures$
+		:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+			:i $printf$%s(40,"CutsceneParticleTextures array is empty!")
+		:i else 
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i %GLOBAL%$nameString$ =  ($CutsceneParticleTextures$:a{%GLOBAL%$index$:a}) 
+				:i $UnloadParticleTexture$%GLOBAL%$nameString$
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i if $IsArray$$CutsceneObjectNames$
+		:i $GetArraySize$$CutsceneObjectNames$
+		:i if  (%GLOBAL%$array_size$ = %i(0,00000000)) 
+			:i $printf$%s(35,"CutsceneObjectNames array is empty!")
+		:i else 
+			:i %GLOBAL%$index$ = %i(0,00000000)
+			:i while
+				
+				:i %GLOBAL%$name$ =  ($CutsceneObjectNames$:a{%GLOBAL%$index$:a}) 
+				:i if $CompositeObjectExists$$name$ = %GLOBAL%$name$
+					:i %GLOBAL%$name$.$Die$
+				:i else 
+				:i endif
+				:i %GLOBAL%$index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+			:i loop_to %GLOBAL%$array_size$
+		:i endif
+	:i endif
+	:i $FlushDeadObjects$
+:i endfunction
+:i function $PostCutscene$
+	:i $cutscene_subtitle_cleanup$
+	:i $CutsceneUnhideUI$
+	:i $SetScreenEffectsDOFParams$$on$ = %i(0,00000000)
+	:i $spawnscript$$wait_and_check_for_unplugged_controllers$
+	:i $cutscene_reactivate_tod_manager$
+	:i $restore_start_key_binding$
+	:i $Skater$.$Obj_DisableAmbientLight$
+	:i $TODManager_RestoreCurrentTOD$
+	:i $SetSfxVolume$$PreviousSfxLevel$
+	:i $SetSfxReverb$%i(0,00000000)$mode$ = $REV_MODE_CAVE$
+	:i $printf$%s(38,"*** turning skater looping sound ON!!!")
+	:i $Skater$.$SkaterLoopingSound_TurnOn$
+	:i $printf$%s(82,"***Running scr on all SkaterLoopingSound components - SkaterLoopingSound_TurnOn!!!")
+	:i $RunScriptOnComponentType$$component$ = $SkaterLoopingSound$$target$ = $SkaterLoopingSound_TurnOn$
+	:i if $isNGC$
+		:i $reload_current_theme$
+	:i endif
+	:i if  (%GLOBAL%$reload_anims$ = %i(1,00000001)) 
+		:i if  ($cutscene_skaterparts_unloaded$ = %i(1,00000001)) 
+			:i $LoadPreFile$%s(15,"skaterparts.pre")
+			:i $change$$cutscene_skaterparts_unloaded$ = %i(0,00000000)
+		:i endif
+		:i $do_load_unloadable$
+	:i endif
+	:i $fadetoblack$$off$$time$ = %f(0.000000)
+	:i $kill_cutscene_camera_hud$
+	:i $Skater$.$Unhide$
+	:i $Skater$.$SwitchOnAtomic$$skater_m_head$
+	:i $Skater$.$SwitchOnAtomic$$skater_f_head$
+	:i if $GotParam$$RestartNode$
+		:i $ResetSkaters$$node_name$ = %GLOBAL%$RestartNode$
+	:i endif
+	:i if $GameModeEquals$$is_classic$
+		:i $ResetSkaters$
+	:i endif
+	:i if NOT $Skater$.$IsSkaterOnVehicle$
+		:i if NOT $GotParam$$dont_send_skater_to_hand_brake$
+			:i if NOT $Skater$.$IsInBail$
+				:i if NOT $Skater$.$Walking$
+					:i $Skater$.$OnGroundExceptions$
+					:i $MakeSkaterGoto$$HandBrake$
+					:i $Skater$.$StopBalanceTrick$
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+	:i $UnpauseObjects$
+	:i $UnpauseSpawnedScripts$
+	:i $GoalManager_ShowPoints$
+	:i $GoalManager_ShowGoalPoints$
+	:i $GoalManager_SetCanStartGoal$%i(1,00000001)
+	:i $Skater$.$StatsManager_ActivateGoals$
+	:i if  (%GLOBAL%$reload_goals$ = %i(1,00000001)) 
+		:i if  ( ($GameModeEquals$$is_classic$)  OR  ($GameModeEquals$$is_singlesession$)  OR  ($GameModeEquals$$is_creategoals$) ) 
+			:i $GoalManager_UnPauseAllGoals$
+			:i $show_goal_panel_messages$
+		:i else 
+			:i if $GameModeEquals$$is_career$
+				:i $GoalManager_InitializeAllGoals$
+			:i endif
+		:i endif
+	:i else 
+		:i if $IsXbox$
+			:i $DisplayLoadingScreen$$Freeze$
+		:i else 
+			:i $DisplayLoadingScreen$$Blank$
+		:i endif
+	:i endif
+	:i switch  ($last_screen_mode$) 
+		:i case $standard_screen_mode$
+			:i $cutscene_fake_letterboxing$$remove$
+			:i endcase
+		case $widescreen_screen_mode$
+			:i endcase
+		case $letterbox_screen_mode$
+			:i endcase
+		default 
+			:i $printf$%s(21,"last screen mode = %d")$d$ = %GLOBAL%$last_screen_mode$
+			:i $script_assert$%s(24,"Unrecognized screen mode")
+			:i end_switch
+	
+	:i $SetSfxReverb$%i(0,00000000)$mode$ = $REV_MODE_CAVE$
+	:i $printf$%s(27,"***Unpausing rain sounds!!!")
+	:i $unpause_rain$ isNull 
+	:i if $isNGC$
+		:i if $GotParam$$name$
+			:i if $StringEquals$$a$ = %GLOBAL%$name$$b$ = %s(18,"cutscenes\no_7.cut")
+				:i $RefreshSkaterModel$$profile$ = %i(0,00000000)$Skater$ = %i(0,00000000)
+			:i endif
+		:i endif
+	:i endif
+	:i $change$$cutscene_is_playing$ = %i(0,00000000)
+	:i $AllowBoneLOD$$allow$ = %i(1,00000001)
+:i endfunction
+:i function $cutsceneobj_add_components$
+	:i $CreateComponentFromStructure$$component$ = $cutsceneupdate$
+	:i if $GotParam$$CutsceneDummy$
+		:i return
+		
+	:i endif
+	:i if $GotParam$$skeletonName$
+		:i $CreateComponentFromStructure$$component$ = $skeleton$ isNull $skeleton$ = %GLOBAL%$skeletonName$
+	:i endif
+	:i if $GotParam$$isBlocking$
+		:i if NOT $GotParam$$IsSkinnedModel$
+			:i $CreateComponentFromStructure$$component$ = $model$ isNull $UseModelLights$$max_scene_lights$ = %i(1,00000001)
+		:i else 
+			:i $CreateComponentFromStructure$$component$ = $model$ isNull $UseModelLights$$max_scene_lights$ = %i(1,00000001)
+		:i endif
+	:i else 
+		:i $CreateComponentFromStructure$$component$ = $model$ isNull 
+	:i endif
+	:i if $GotParam$$isBlocking$
+		:i if  (%GLOBAL%$isBlocking$ = %i(0,00000000)) 
+		:i endif
+	:i endif
+:i endfunction
+:i function $cutscene_restore_skater_model_lights$
+	:i $printf$%s(36,"cutscene_restore_skater_model_lights")
+	:i $Obj_DisableAmbientLight$
+	:i $Obj_DisableDiffuseLight$$index$ = %i(0,00000000)
+	:i $Obj_DisableDiffuseLight$$index$ = %i(1,00000001)
+:i endfunction
+:i function $cutsceneobj_init_model$
+	:i if $GotParam$$isBlocking$
+		:i if NOT $GotParam$$CutsceneDummy$
+			:i if $Obj_HasModelLights$
+				:i if NOT $GotParam$$IsSkinnedModel$
+					:i $TODManager_GetCurrentTODParams$
+					:i $Obj_SetLightAmbientColor$:s{
+						:i $r$ =  ( (%GLOBAL%$tod_params$) ->$ambient_red$) 
+						:i $g$ =  ( (%GLOBAL%$tod_params$) ->$ambient_green$) 
+						:i $b$ =  ( (%GLOBAL%$tod_params$) ->$ambient_blue$) 
+					:i :s}
+					:i $Obj_SetLightDiffuseColor$:s{
+						:i $index$ = %i(0,00000000)
+						:i $r$ =  ( (%GLOBAL%$tod_params$) ->$red_0$) 
+						:i $g$ =  ( (%GLOBAL%$tod_params$) ->$green_0$) 
+						:i $b$ =  ( (%GLOBAL%$tod_params$) ->$blue_0$) 
+					:i :s}
+					:i $Obj_SetLightDirection$:s{
+						:i $index$ = %i(0,00000000)
+						:i $heading$ =  ( (%GLOBAL%$tod_params$) ->$heading_0$) 
+						:i $pitch$ =  ( (%GLOBAL%$tod_params$) ->$pitch_0$) 
+					:i :s}
+					:i $Obj_SetLightDiffuseColor$:s{
+						:i $index$ = %i(1,00000001)
+						:i $r$ =  ( (%GLOBAL%$tod_params$) ->$red_0$) 
+						:i $g$ =  ( (%GLOBAL%$tod_params$) ->$green_0$) 
+						:i $b$ =  ( (%GLOBAL%$tod_params$) ->$blue_0$) 
+					:i :s}
+					:i $Obj_SetLightDirection$:s{
+						:i $index$ = %i(1,00000001)
+						:i $heading$ =  ( (%GLOBAL%$tod_params$) ->$heading_1$) 
+						:i $pitch$ =  ( (%GLOBAL%$tod_params$) ->$pitch_1$) 
+					:i :s}
+				:i endif
+			:i endif
+		:i endif
+	:i endif
+:i endfunction
+:i function $draw_cutscene_panel$
+	:i if $ObjectExists$$id$ = $vo_line1$
+		:i $SetScreenElementProps$:s{$id$ = $vo_line1$$text$ = %GLOBAL%$line1$:s}
+	:i else 
+		:i $create_panel_message$$id$ = $vo_line1$$text$ = %GLOBAL%$line1$$style$ = $panel_message_viewobj_line$$params$ = :s{$xy$ = %vec2(40.000000,60.000000):s}
+	:i endif
+	:i if $ObjectExists$$id$ = $vo_line2$
+		:i $SetScreenElementProps$:s{$id$ = $vo_line2$$text$ = %GLOBAL%$line2$:s}
+	:i else 
+		:i $create_panel_message$$id$ = $vo_line2$$text$ = %GLOBAL%$line2$$style$ = $panel_message_viewobj_line$$params$ = :s{$xy$ = %vec2(40.000000,80.000000):s}
+	:i endif
+:i endfunction
+:i function $kill_cutscene_panel$
+	:i if $ObjectExists$$id$ = $vo_line1$
+		:i $RunScriptOnScreenElement$$id$ = $vo_line1$$kill_panel_message$
+	:i endif
+	:i if $ObjectExists$$id$ = $vo_line2$
+		:i $RunScriptOnScreenElement$$id$ = $vo_line2$$kill_panel_message$
+	:i endif
+:i endfunction
+:i function $spawn_next_cutscene$
+	:i $PauseObjects$
+	:i $spawnscript$$start_next_cutscene$$params$ = :s{ isNull :s}
+:i endfunction
+:i function $start_next_cutscene$
+	:i if $GotParam$$Tod_Action$
+		:i $DisplayLoadingScreen$$Freeze$
+	:i endif
+	:i $UnpauseObjects$
+	:i $PlayCutscene$$name$ = %GLOBAL%$name$$unload_anims$ = %GLOBAL%$unload_anims$$reload_anims$ = %GLOBAL%$reload_anims$$exitScript$ = %GLOBAL%$exitScript$
+:i endfunction
+:i $camera_hud_is_hidden$ = %i(0,00000000)
+:i function $show_cutscene_camera_hud$$mins$ = %i(2,00000002)$secs$ = %i(16,00000010)$frames$ = %i(3,00000003)
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $cutscene_camera_hud_anchor$
+	:i endif
+	:i if $GotParam$$for_goal$
+		:i $mins$ = %i(0,00000000)$secs$ = %i(0,00000000)$frames$ = %i(0,00000000)
+		:i $rec_alpha$ = %i(0,00000000)
+		:i $rec_pos$ = %vec2(500.000000,90.000000)
+	:i else 
+		:i if $GotParam$$play$
+			:i $rec_alpha$ = %i(0,00000000)
+		:i else 
+			:i $rec_alpha$ = %i(1,00000001)
+		:i endif
+		:i $rec_pos$ = %vec2(500.000000,50.000000)
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $cutscene_camera_hud_anchor$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $video_screen$
+		:i $texture$ = $videoscreen$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(5.000000,10.000000)
+		:i $alpha$ = %f(0.300000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $camera_hud_line$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %vec2(100.000000,0.100000)
+		:i $alpha$ = %f(0.500000)
+	:i :s}
+	:i if $GotParam$$play$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $TextElement$
+			:i $parent$ = $cutscene_camera_hud_anchor$
+			:i $id$ = $play$
+			:i $pos$ = %GLOBAL%$rec_pos$
+			:i $text$ = %s(4,"PLAY")
+			:i $font$ = $small$
+			:i $just$ = :a{$left$$top$:a}
+			:i $scale$ = %f(1.500000)
+			:i $rgba$ = :a{%i(100,00000064)%i(100,00000064)%i(100,00000064)%i(128,00000080):a}
+			:i $alpha$ = %f(0.800000)
+		:i :s}
+	:i endif
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $rec_anchor$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $alpha$ = %GLOBAL%$rec_alpha$
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $rec_anchor$
+		:i $id$ = $rec$
+		:i $pos$ = %GLOBAL%$rec_pos$
+		:i $text$ = %s(3,"REC")
+		:i $font$ = $small$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %f(1.500000)
+		:i $rgba$ = :a{%i(100,00000064)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = $rec$$offset$ = %vec2(10.000000,16.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $rec_dot$
+		:i $parent$ = $rec_anchor$
+		:i $texture$ = $recdot$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %f(1.500000)
+		:i $alpha$ = %f(0.800000)
+	:i :s}
+	:i $scale$ = %f(1.500000)
+	:i $alpha$ = %f(0.600000)
+	:i $font$ = $dialog$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $mins2$
+		:i $pos$ = %vec2(450.000000,355.000000)
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $mins$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(5.000000,-2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,":")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $secs2$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $secs$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(5.000000,-2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,":")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $frames2$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $cutscene_camera_hud_anchor$
+		:i $id$ = $frames$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+	:i $mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+	:i $secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+	:i $secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+	:i $frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+	:i $frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+	:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+	:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+	:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+	:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+	:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+	:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+	:i $mins$.$SetTags$$frames$ = %GLOBAL%$frames$$secs$ = %GLOBAL%$secs$$mins$ = %GLOBAL%$mins$
+	:i if $GotParam$$fade$
+		:i $RunScriptOnScreenElement$$id$ = $rec_dot$$cutscene_camera_hud_fade_in$
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $video_screen$$flicker_video_screen$
+	:i $RunScriptOnScreenElement$$id$ = $camera_hud_line$$morph_camera_hud_line$
+	:i $RunScriptOnScreenElement$$id$ = $rec_dot$$blink_rec_dot$
+	:i if NOT $GotParam$$for_goal$
+		:i $RunScriptOnScreenElement$$id$ = $secs$$camera_hud_count$
+	:i endif
+:i endfunction
+:i function $kill_cutscene_camera_hud$
+	:i if $GotParam$$fade$
+		:i $RunScriptOnScreenElement$$id$ = $rec_dot$$fadetoblack$$params$ = :s{$on$$time$ = %f(0.500000)$alpha$ = %f(1.000000)$z_priority$ = %i(5,00000005):s}
+		:i $RunScriptOnScreenElement$$id$ = $rec_dot$$really_kill_cutscene_camera_hud$
+	:i else 
+		:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+			:i $DestroyScreenElement$$id$ = $cutscene_camera_hud_anchor$
+		:i endif
+	:i endif
+:i endfunction
+:i function $cutscene_camera_hud_fade_in$
+	:i $fadetoblack$$on$$time$ = %i(0,00000000)$alpha$ = %f(1.000000)$z_priority$ = %i(5,00000005)
+	:i $wait$%f(0.200000)$seconds$
+	:i $fadetoblack$$off$$time$ = %f(0.500000)
+:i endfunction
+:i function $really_kill_cutscene_camera_hud$
+	:i $wait$%f(0.700000)$seconds$
+	:i $fadetoblack$$off$$time$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $cutscene_camera_hud_anchor$
+	:i endif
+:i endfunction
+:i function $hide_cutscene_camera_hud$
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i $DoScreenElementMorph$$id$ = $cutscene_camera_hud_anchor$$alpha$ = %i(0,00000000)
+	:i endif
+:i endfunction
+:i function $unhide_cutscene_camera_hud$
+	:i if $ScreenElementExists$$id$ = $cutscene_camera_hud_anchor$
+		:i $DoScreenElementMorph$$id$ = $cutscene_camera_hud_anchor$$alpha$ = %i(1,00000001)
+	:i endif
+:i endfunction
+:i function $blink_rec_dot$
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $rec_dot$$alpha$ = %f(0.800000)
+		:i $wait$%f(0.500000)$seconds$
+		:i $DoScreenElementMorph$$id$ = $rec_dot$$alpha$ = %i(0,00000000)
+		:i $wait$%f(0.500000)$seconds$
+	:i loop_to 
+:i endfunction
+:i function $flicker_video_screen$$time$ = %f(0.050000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $video_screen$$alpha$ = %f(0.300000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $video_screen$$alpha$ = %f(0.225000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $morph_camera_hud_line$$time$ = %f(1.500000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $camera_hud_line$$pos$ = %vec2(0.000000,480.000000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $camera_hud_line$$pos$ = %vec2(0.000000,0.000000)
+	:i loop_to 
+:i endfunction
+:i function $camera_hud_count$$up$ = %i(1,00000001)
+	:i if  (%GLOBAL%$up$ = %i(1,00000001)) 
+		:i %GLOBAL%$action$ = $camera_hud_count_one$
+	:i else 
+		:i %GLOBAL%$action$ = $camera_hud_count_minus_one$
+	:i endif
+	:i while
+		
+		:i $wait$%i(2,00000002)$gameframes$
+		:i %GLOBAL%$action$
+		:i if $GotParam$$done$
+			:i continue
+			
+		:i endif
+	:i loop_to 
+	:i $mins$.$GetTags$
+	:i %GLOBAL%$callback$%GLOBAL%$callback_params$
+:i endfunction
+:i function $camera_hud_count_one$
+	:i $mins$.$GetTags$
+	:i $frames$ =  (%GLOBAL%$frames$ + %i(1,00000001)) 
+	:i if  (%GLOBAL%$frames$ > %i(29,0000001d)) 
+		:i $frames$ = %i(0,00000000)
+		:i $secs$ =  (%GLOBAL%$secs$ + %i(1,00000001)) 
+		:i if  (%GLOBAL%$secs$ > %i(59,0000003b)) 
+			:i $secs$ = %i(0,00000000)
+			:i $mins$ =  (%GLOBAL%$mins$ + %i(1,00000001)) 
+			:i $mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+			:i $mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+			:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+			:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+		:i endif
+		:i $secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+		:i $secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+		:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+		:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+		:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+		:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+	:i endif
+	:i $frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+	:i $frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+	:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+	:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+	:i $mins$.$SetTags$$frames$ = %GLOBAL%$frames$$secs$ = %GLOBAL%$secs$$mins$ = %GLOBAL%$mins$
+:i endfunction
+:i function $camera_hud_count_minus_one$
+	:i $mins$.$GetTags$
+	:i if  (%GLOBAL%$mins$ < %i(1,00000001)) 
+		:i if  (%GLOBAL%$secs$ < %i(1,00000001)) 
+			:i if  (%GLOBAL%$frames$ < %i(1,00000001)) 
+				:i return
+				$done$ = $done$
+			:i endif
+		:i endif
+	:i endif
+	:i $frames$ =  (%GLOBAL%$frames$ - %i(1,00000001)) 
+	:i if  (%GLOBAL%$frames$ < %i(0,00000000)) 
+		:i $frames$ = %i(29,0000001d)
+		:i $secs$ =  (%GLOBAL%$secs$ - %i(1,00000001)) 
+		:i if  (%GLOBAL%$secs$ < %i(0,00000000)) 
+			:i $secs$ = %i(59,0000003b)
+			:i $mins$ =  (%GLOBAL%$mins$ - %i(1,00000001)) 
+			:i $mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+			:i $mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+			:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+			:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+		:i endif
+		:i $secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+		:i $secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+		:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+		:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+		:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+		:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+	:i endif
+	:i $frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+	:i $frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+	:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+	:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+	:i $mins$.$SetTags$$frames$ = %GLOBAL%$frames$$secs$ = %GLOBAL%$secs$$mins$ = %GLOBAL%$mins$
+:i endfunction
+:i function $camera_hud_breakup_frames$
+	:i if NOT $ScreenElementExists$$id$ = $mins$
+		:i return
+		
+	:i endif
+	:i if  (%GLOBAL%$millisecs$ > %i(60000,0000ea60)) 
+		:i $mins$ =  (%GLOBAL%$millisecs$ / %i(6000,00001770)) 
+		:i $millisecs$ =  (%GLOBAL%$millisecs$ -  (%GLOBAL%$mins$ * %i(6000,00001770)) ) 
+	:i else 
+		:i $mins$ = %i(0,00000000)
+	:i endif
+	:i if  (%GLOBAL%$millisecs$ > %i(1000,000003e8)) 
+		:i $secs$ =  (%GLOBAL%$millisecs$ / %i(1000,000003e8)) 
+		:i $millisecs$ =  (%GLOBAL%$millisecs$ -  (%GLOBAL%$secs$ * %i(1000,000003e8)) ) 
+	:i else 
+		:i $secs$ = %i(0,00000000)
+	:i endif
+	:i $frames$ =  (%GLOBAL%$millisecs$ / %i(17,00000011)) 
+	:i $mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+	:i $mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+	:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+	:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+	:i $secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+	:i $secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+	:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+	:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+	:i $frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+	:i $frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+	:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+	:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+:i endfunction
+:i function $really_kill_cutscene_hangover_hud$
+	:i $setscreenblur$%i(0,00000000)
+	:i $wait$%f(0.700000)$seconds$
+	:i $fadetoblack$$off$$time$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $cutscene_hangover_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $cutscene_hangover_hud_anchor$
+	:i endif
+:i endfunction
+:i function $show_videointro_hud$
+	:i if $ScreenElementExists$$id$ = $videointro_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $videointro_hud_anchor$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $videointro_hud_anchor$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor$
+		:i $id$ = $videointro_black$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(200.000000,200.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(50000,0000c350)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor$
+		:i $id$ = $bg_icon$
+		:i $texture$ = $go_fail$
+		:i $pos$ = %vec2(320.000000,250.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.200000,1.200000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(10,0000000a):a}
+		:i $z_priority$ = %i(500013,0007a12d)
+		:i $rot_angle$ = %i(5,00000005)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $videointro_hud_anchor$
+		:i $id$ = $peralta_name$
+		:i $pos$ = %vec2(150.000000,190.000000)
+		:i $text$ = %s(28,"Peralta Productions Presents")
+		:i $font$ = $dialog$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %f(1.100000)
+		:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(100,00000064):a}
+		:i $z_priority$ = %i(1397,00000575)
+		:i $z_priority$ = %i(50004,0000c354)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $peralta_name$$flicker_textintro$
+	:i $RunScriptOnScreenElement$$id$ = $bg_icon$$flicker_skullintro$
+:i endfunction
+:i function $videointro_hud_fade_in$
+	:i $setscreenblur$%i(70,00000046)
+	:i $fadetoblack$$on$$time$ = %i(0,00000000)$alpha$ = %f(1.000000)$z_priority$ = %i(10000,00002710)
+	:i $make_black_in2$
+	:i $wait$%f(1.400000)$seconds$
+	:i $show_videointro_hud$
+	:i $make_black_out2$
+	:i $wait$%f(0.200000)$seconds$
+	:i $fadetoblack$$off$$time$ = %f(0.500000)
+:i endfunction
+:i function $really_kill_videointro_hud$
+	:i $setscreenblur$%i(1,00000001)
+	:i $make_black_out2$
+	:i $fadetoblack$$off$$time$ = %f(0.300000)
+	:i if $ScreenElementExists$$id$ = $videointro_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $videointro_hud_anchor$
+	:i endif
+:i endfunction
+:i function $flicker_textintro$$time$ = %f(0.050000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $peralta_name$$alpha$ = %i(1,00000001)$time$ = %GLOBAL%$time$$pos$ = %vec2(150.000000,189.000000)
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $peralta_name$$alpha$ = %f(0.700000)$time$ = %GLOBAL%$time$$pos$ = %vec2(150.000000,190.000000)
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $flicker_skullintro$$time$ = %f(0.050000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $bg_icon$$alpha$ = %i(1,00000001)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $bg_icon$$alpha$ = %f(0.700000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+	:i loop_to 
+:i endfunction
+:i function $show_videointro_hud2$
+	:i if $ScreenElementExists$$id$ = $videointro_hud_anchor2$
+		:i $DestroyScreenElement$$id$ = $videointro_hud_anchor2$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $videointro_hud_anchor2$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+		:i $z_priority$ = %i(50,00000032)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $videointro_black2$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(200.000000,200.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(50000,0000c350)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $star1$
+		:i $texture$ = $PA_goals$
+		:i $pos$ = %vec2(100.000000,110.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(2.000000,2.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $rot_angle$ = %i(4294967293,fffffffd)
+		:i $z_priority$ = %i(50003,0000c353)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $star2$
+		:i $texture$ = $PA_goals$
+		:i $pos$ = %vec2(480.000000,310.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(2.000000,2.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.900000)
+		:i $rot_angle$ = %i(4294967289,fffffff9)
+		:i $z_priority$ = %i(50004,0000c354)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $star3$
+		:i $texture$ = $PA_goals$
+		:i $pos$ = %vec2(430.000000,120.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.300000,1.300000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %f(0.800000)
+		:i $rot_angle$ = %i(18,00000012)
+		:i $z_priority$ = %i(50004,0000c354)
+	:i :s}
+	:i $GoalManager_GetTeam$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $team$$name$
+		:i $pos$ = %vec2(310.000000,190.000000)
+		:i $text$ =  (%GLOBAL%$team$->$team_name$) 
+		:i $font$ = $small$
+		:i $just$ = :a{$center$$top$:a}
+		:i $scale$ = %f(2.200000)
+		:i $rgba$ = :a{%i(128,00000080)%i(77,0000004d)%i(0,00000000)%i(100,00000064):a}
+		:i $z_priority$ = %i(50008,0000c358)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $a$
+		:i $pos$ = %vec2(110.000000,120.000000)
+		:i $text$ = %s(1,"A")
+		:i $font$ = $dialog$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %f(1.500000)
+		:i $rgba$ = :a{%i(128,00000080)%i(73,00000049)%i(0,00000000)%i(88,00000058):a}
+		:i $z_priority$ = %i(50009,0000c359)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $videointro_hud_anchor2$
+		:i $id$ = $videoname$
+		:i $pos$ = %vec2(420.000000,245.000000)
+		:i $text$ = %s(5,"VIDEO")
+		:i $font$ = $dialog$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %f(2.500000)
+		:i $rgba$ = :a{%i(128,00000080)%i(73,00000049)%i(0,00000000)%i(78,0000004e):a}
+		:i $z_priority$ = %i(50009,0000c359)
+	:i :s}
+:i endfunction
+:i function $videointro_hud_fade_in2$
+	:i $setscreenblur$%i(20,00000014)
+	:i $fadetoblack$$on$$time$ = %i(0,00000000)$alpha$ = %f(1.000000)$z_priority$ = %i(100000,000186a0)
+	:i $make_black_in$
+	:i $wait$%f(0.025000)$seconds$
+	:i $show_videointro_hud2$
+	:i $make_black_out$
+	:i $wait$%f(0.200000)$seconds$
+	:i $fadetoblack$$off$$time$ = %f(0.200000)
+:i endfunction
+:i function $really_kill_videointro_hud2$
+	:i $setscreenblur$%i(4,00000004)
+	:i if $ScreenElementExists$$id$ = $videointro_hud_anchor2$
+		:i $DestroyScreenElement$$id$ = $videointro_hud_anchor2$
+	:i endif
+:i endfunction
+:i function $make_black_in$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $videointro_black3$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(200.000000,200.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(4560040,004594a8)
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = $videointro_black3$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+:i endfunction
+:i function $kill_black$
+	:i $DestroyScreenElement$$id$ = $videointro_black3$
+:i endfunction
+:i function $make_black_out$
+	:i $DoScreenElementMorph$$id$ = $videointro_black3$$alpha$ = %i(0,00000000)$time$ = %f(0.500000)
+:i endfunction
+:i function $make_black_in2$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $root_window$
+		:i $id$ = $videointro_black4$
+		:i $texture$ = $black$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(200.000000,200.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(160080,00027150)
+	:i :s}
+	:i $DoScreenElementMorph$$id$ = $videointro_black4$$alpha$ = %i(1,00000001)$time$ = %i(0,00000000)
+:i endfunction
+:i function $make_black_out2$
+	:i $DoScreenElementMorph$$id$ = $videointro_black4$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+:i endfunction
+:i function $kill_black2$
+	:i $DestroyScreenElement$$id$ = $videointro_black4$
+:i endfunction
+:i function $show_underground_hud$
+	:i if $ScreenElementExists$$id$ = $underground_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $underground_hud_anchor$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $underground_hud_anchor$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $underground_black$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(-30.000000,63.000000)
+		:i $just$ = :a{$top$$left$:a}
+		:i $scale$ = %vec2(100.000000,38.200001)
+		:i $rgba$ = :a{%i(2,00000002)%i(8,00000008)%i(12,0000000c)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(1000000,000f4240)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $underground_black2$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(240.000000,63.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(100.000000,200.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $z_priority$ = %i(4294967291,fffffffb)
+		:i $alpha$ = %i(1,00000001)
+		:i $z_priority$ = %i(100000000,05f5e100)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $under_1$
+		:i $pos$ = %vec2(52.000000,190.000000)
+		:i $text$ = %s(11,"UNDERGROUND")
+		:i $font$ = $testtitle$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ =  (%i(2,00000002)) 
+		:i $rgba$ = :a{%i(114,00000072)%i(23,00000017)%i(13,0000000d)%i(128,00000080):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(10000003,00989683)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $under_2$
+		:i $pos$ = %vec2(52.000000,190.000000)
+		:i $text$ = %s(11,"UNDERGROUND")
+		:i $font$ = $testtitle$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ =  (%i(3,00000003)) 
+		:i $rgba$ = :a{%i(60,0000003c)%i(60,0000003c)%i(60,0000003c)%i(98,00000062):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(10000003,00989683)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $understar_1$
+		:i $texture$ = $PA_goals$
+		:i $pos$ = %vec2(730.000000,210.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.300000,1.300000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $rot_angle$ = %i(18,00000012)
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $understar_2$
+		:i $texture$ = $PA_goals$
+		:i $pos$ = %vec2(-250.000000,210.000000)
+		:i $just$ = :a{$center$$center$:a}
+		:i $scale$ = %vec2(1.300000,1.300000)
+		:i $rgba$ = :a{%i(128,00000080)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $alpha$ = %i(1,00000001)
+		:i $rot_angle$ = %i(18,00000012)
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $GetTeamNames$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $skater_name_1$
+		:i $pos$ = %vec2(52.000000,70.000000)
+		:i $text$ = %GLOBAL%$team_name1$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %vec2(1.300000,2.000000)
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(98,00000062):a}
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $skater_name_2$
+		:i $pos$ = %vec2(-200.000000,270.000000)
+		:i $text$ = %GLOBAL%$team_name2$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %vec2(1.600000,2.200000)
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(98,00000062):a}
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $skater_name_3$
+		:i $pos$ = %vec2(300.000000,600.000000)
+		:i $text$ = %GLOBAL%$team_name3$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %vec2(2.300000,3.000000)
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(98,00000062):a}
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $skater_name_4$
+		:i $pos$ = %vec2(100.000000,-600.000000)
+		:i $text$ = %GLOBAL%$team_name4$
+		:i $font$ = $small$
+		:i $just$ = :a{$left$;$top$:a}
+		:i $scale$ = %vec2(1.300000,2.000000)
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(98,00000062):a}
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $underground_hud_anchor$
+		:i $id$ = $skater_name_5$
+		:i $pos$ = %vec2(320.000000,170.000000)
+		:i $text$ = %GLOBAL%$team_name5$
+		:i $font$ = $small$
+		:i $just$ = :a{$center$;$center$:a}
+		:i $scale$ = %vec2(1.300000,2.000000)
+		:i $rgba$ = :a{%i(80,00000050)%i(80,00000050)%i(80,00000050)%i(98,00000062):a}
+		:i $alpha$ = %i(0,00000000)
+		:i $z_priority$ = %i(10000001,00989681)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $underground_black2$$fadeinout$
+	:i $build_top_and_bottom_blocks$$parent$ = $underground_hud_anchor$$top_z$ = %i(100000,000186a0)$bot_z$ = %i(100000,000186a0)
+	:i $RunScriptOnScreenElement$$id$ = $under_1$$underground_fly_in$
+	:i $RunScriptOnScreenElement$$id$ = $under_2$$underground_fly_in2$
+	:i $RunScriptOnScreenElement$$id$ = $skater_name_1$$skater_name_fly_1$
+	:i $RunScriptOnScreenElement$$id$ = $skater_name_2$$skater_name_fly_2$
+	:i $RunScriptOnScreenElement$$id$ = $skater_name_3$$skater_name_fly_3$
+	:i $RunScriptOnScreenElement$$id$ = $skater_name_4$$skater_name_fly_4$
+	:i $RunScriptOnScreenElement$$id$ = $skater_name_5$$skater_name_fly_5$
+	:i $RunScriptOnScreenElement$$id$ = $understar_1$$star_fly_1$
+	:i $RunScriptOnScreenElement$$id$ = $understar_2$$star_fly_2$
+:i endfunction
+:i function $underground_fly_in$
+	:i $wait$%i(1,00000001)$second$
+	:i $DoScreenElementMorph$$id$ = $under_1$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$scale$ = %i(8,00000008)
+	:i $DoScreenElementMorph$$id$ = $under_1$$alpha$ = %f(0.900000)$time$ = %f(0.300000)$scale$ = %i(3,00000003)
+	:i $wait$%f(4.500000)$second$
+	:i $DoScreenElementMorph$$id$ = $under_1$$alpha$ = %i(0,00000000)$scale$ = %vec2(20.000000,3.000000)$time$ = %f(0.200000)
+:i endfunction
+:i function $underground_fly_in2$
+	:i $wait$%i(1,00000001)$second$
+	:i $DoScreenElementMorph$$id$ = $under_2$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$pos$ = %vec2(700.000000,190.000000)
+	:i $DoScreenElementMorph$$id$ = $under_2$$alpha$ = %f(0.900000)$time$ = %f(0.400000)$pos$ = %vec2(52.000000,190.000000)
+	:i $wait$%f(3.000000)$second$
+	:i $DoScreenElementMorph$$id$ = $under_2$$alpha$ = %i(0,00000000)$time$ = %f(0.200000)
+:i endfunction
+:i function $skater_name_fly_1$
+	:i $DoScreenElementMorph$$id$ = $skater_name_1$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$pos$ = %vec2(700.000000,70.000000)
+	:i $DoScreenElementMorph$$id$ = $skater_name_1$$alpha$ = %f(0.600000)$time$ = %f(6.200000)$scale$ = %vec2(5.000000,5.000000)$pos$ = %vec2(-650.000000,70.000000)
+:i endfunction
+:i function $skater_name_fly_2$
+	:i $DoScreenElementMorph$$id$ = $skater_name_2$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$pos$ = %vec2(-200.000000,270.000000)
+	:i $DoScreenElementMorph$$id$ = $skater_name_2$$alpha$ = %f(0.500000)$time$ = %f(5.800000)$pos$ = %vec2(1000.000000,270.000000)
+:i endfunction
+:i function $skater_name_fly_3$
+	:i $DoScreenElementMorph$$id$ = $skater_name_3$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$pos$ = %vec2(300.000000,600.000000)
+	:i $DoScreenElementMorph$$id$ = $skater_name_3$$alpha$ = %f(0.550000)$time$ = %f(6.400000)$pos$ = %vec2(300.000000,-600.000000)
+:i endfunction
+:i function $skater_name_fly_4$
+	:i $DoScreenElementMorph$$id$ = $skater_name_4$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)$pos$ = %vec2(100.000000,-600.000000)
+	:i $DoScreenElementMorph$$id$ = $skater_name_4$$alpha$ = %f(0.400000)$time$ = %f(6.200000)$scale$ = %vec2(4.800000,4.800000)$pos$ = %vec2(100.000000,600.000000)
+:i endfunction
+:i function $skater_name_fly_5$
+	:i $wait$%i(2,00000002)$second$
+	:i $DoScreenElementMorph$$id$ = $skater_name_5$$alpha$ = %f(0.700000)$time$ = %i(0,00000000)$scale$ = %i(9,00000009)$pos$ = %vec2(320.000000,170.000000)
+	:i $DoScreenElementMorph$$id$ = $skater_name_5$$alpha$ = %i(0,00000000)$time$ = %f(3.500000)$scale$ = %i(0,00000000)$pos$ = %vec2(320.000000,170.000000)
+:i endfunction
+:i function $star_fly_1$
+	:i $wait$%i(1,00000001)$second$
+	:i $DoScreenElementMorph$$id$ = $understar_1$$alpha$ = %f(0.500000)$time$ = %i(0,00000000)$pos$ = %vec2(730.000000,210.000000)$rot_angle$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $understar_1$$alpha$ = %f(0.950000)$time$ = %f(2.800000)$scale$ = %vec2(2.300000,2.300000)$pos$ = %vec2(-250.000000,210.000000)$rot_angle$ = %i(720,000002d0)
+:i endfunction
+:i function $star_fly_2$
+	:i $wait$%f(1.500000)$second$
+	:i $DoScreenElementMorph$$id$ = $understar_2$$alpha$ = %f(0.500000)$time$ = %i(0,00000000)$pos$ = %vec2(-250.000000,210.000000)$rot_angle$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $understar_2$$alpha$ = %f(0.800000)$time$ = %f(1.800000)$scale$ = %vec2(2.300000,2.300000)$pos$ = %vec2(720.000000,210.000000)$rot_angle$ = %i(4294966576,fffffd30)
+:i endfunction
+:i function $fadeinout$
+	:i $wait$%f(0.600000)$second$
+	:i $DoScreenElementMorph$$id$ = $underground_black2$$alpha$ = %i(0,00000000)$time$ = %i(0,00000000)
+	:i $DoScreenElementMorph$$id$ = $underground_black2$$alpha$ = %i(1,00000001)$time$ = %f(0.200000)
+	:i $DoScreenElementMorph$$id$ = $underground_black2$$alpha$ = %i(0,00000000)$time$ = %f(0.100000)
+:i endfunction
+:i function $GetTeamNames$
+	:i $GoalManager_GetTeam$
+	:i $GetArraySize$$master_skater_list$
+	:i $index$ = %i(0,00000000)
+	:i $index2$ = %i(0,00000000)
+	:i while
+		
+		:i $name$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$name$) 
+		:i if $StructureContains$$structure$ = %GLOBAL%$team$%GLOBAL%$name$
+			:i switch %GLOBAL%$index2$
+				:i case %i(0,00000000)
+					:i $team_name1$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$display_name$) 
+					:i endcase
+				case %i(1,00000001)
+					:i $team_name2$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$display_name$) 
+					:i endcase
+				case %i(2,00000002)
+					:i $team_name3$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$display_name$) 
+					:i endcase
+				case %i(3,00000003)
+					:i $team_name4$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$display_name$) 
+					:i endcase
+				case %i(4,00000004)
+					:i $team_name5$ =  ($master_skater_list$:a{%GLOBAL%$index$:a}->$display_name$) 
+					:i endcase
+				default 
+					:i return
+					
+					:i end_switch
+			
+			:i $index2$ =  (%GLOBAL%$index2$ + %i(1,00000001)) 
+		:i endif
+		:i $index$ =  (%GLOBAL%$index$ + %i(1,00000001)) 
+	:i loop_to %GLOBAL%$array_size$
+	:i $RemoveParameter$$name$
+	:i $RemoveParameter$$team$
+	:i $RemoveParameter$$num_team_members$
+	:i $RemoveParameter$$index$
+	:i $RemoveParameter$$index2$
+	:i $RemoveParameter$$array_size$
+	:i return
+	 isNull 
+:i endfunction
+:i $nightvision_hud_is_hidden$ = %i(0,00000000)
+:i function $nightvision_hud$
+	:i if $ScreenElementExists$$id$ = $nightvision_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $nightvision_hud_anchor$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $nightvision_hud_anchor$
+		:i $parent$ = $root_window$
+		:i $pos$ = %vec2(320.000000,240.000000)
+		:i $dims$ = %vec2(640.000000,480.000000)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $id$ = $nightvision_hud_line$
+		:i $parent$ = $nightvision_hud_anchor$
+		:i $texture$ = $white2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $just$ = :a{$left$$center$:a}
+		:i $scale$ = %vec2(100.000000,0.100000)
+		:i $alpha$ = %f(0.500000)
+	:i :s}
+	:i $RunScriptOnScreenElement$$id$ = $nightvision_hud_line$$morph_nightvision_hud_line$
+:i endfunction
+:i function $really_kill_flicker_nightvision_hud$
+	:i $wait$%f(0.700000)$seconds$
+	:i $fadetoblack$$off$$time$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $nightvision_hud_anchor$
+		:i $DestroyScreenElement$$id$ = $nightvision_hud_anchor$
+	:i endif
+:i endfunction
+:i function $morph_nightvision_hud_line$$time$ = %f(1.500000)
+	:i while
+		
+		:i $DoScreenElementMorph$$id$ = $nightvision_hud_line$$pos$ = %vec2(0.000000,480.000000)$time$ = %GLOBAL%$time$
+		:i $wait$%GLOBAL%$time$$seconds$
+		:i $DoScreenElementMorph$$id$ = $nightvision_hud_line$$pos$ = %vec2(0.000000,0.000000)
+	:i loop_to 
+:i endfunction
+:i function $play_cutscene$
+	:i if $IsObjectScript$
+		:i $Obj_GetId$
+		:i $printf$%s(55,"*******************************************************")
+		:i $printf$%s(55,"Cutscenes should not be launched from object scripts...")
+		:i $printf$%s(11,"Object = %s")$s$ = %GLOBAL%$objID$
+		:i $printf$%s(62,"Spawning cutscene instead, to be played on the following frame")
+		:i $printf$%s(55,"*******************************************************")
+		:i $spawnscript$$play_cutscene_from_gameplay$$params$ = :s{ isNull :s}
+	:i else 
+		:i $PlayCutscene$ isNull 
+	:i endif
+:i endfunction
+:i function $play_cutscene_from_gameplay$
+	:i if NOT $GotParam$$name$
+		:i $script_assert$%s(35,"missing name parameter for cutscene")
+	:i endif
+	:i $PlayCutscene$ isNull 
+:i endfunction
+:i function $cutscene_deactivate_tod_manager$
+	:i $TODManager_GetCurrentTODParams$
+	:i %GLOBAL%$active$ =  (%GLOBAL%$tod_params$->$active$) 
+	:i $change$$TODManagerActiveBeforeCutscene$ = %GLOBAL%$active$
+	:i $TODManager_SetActive$%i(0,00000000)
+:i endfunction
+:i function $cutscene_reactivate_tod_manager$
+	:i if  ($TODManagerActiveBeforeCutscene$ = %i(1,00000001)) 
+		:i $TODManager_SetActive$%i(1,00000001)
+	:i endif
+	:i $TODManager_SetTempBloomParams$$on$ = %i(0,00000000)
+:i endfunction
+:i function $cutscene_set_pad_event_handlers$
+	:i if NOT $CD$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i if $ScreenElementExists$$id$ = $cutscene_anchor$
+			:i $DestroyScreenElement$$id$ = $cutscene_anchor$
+		:i endif
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $cutscene_anchor$
+		:i :s}
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $cutscene_anchor$
+			:i $event_handlers$ = :a{
+				:i :s{$pad_start$$cutscene_pause$:s}
+				:i :a}
+			:i $replace_handlers$
+		:i :s}
+		:i $FireEvent$$type$ = $focus$$target$ = $cutscene_anchor$
+	:i endif
+:i endfunction
+:i function $cutscene_pause$
+	:i $printf$%s(14,"cutscene_pause")
+	:i $PauseCutscene$$toggle$
+:i endfunction
+:i function $cutscene_frame_advance$
+	:i $Cutscene_FrameAdvance$
+:i endfunction
+:i function $cutscene_clear_pad_event_handlers$
+	:i if NOT $CD$
+		:i if $ScreenElementExists$$id$ = $cutscene_anchor$
+			:i $DestroyScreenElement$$id$ = $cutscene_anchor$
+		:i endif
+	:i endif
+:i endfunction
+:i function $cutscene_fake_letterboxing$
+	:i if $ScreenElementExists$$id$ = $letterbox_anchor$
+		:i $DestroyScreenElement$$id$ = $letterbox_anchor$
+	:i endif
+	:i if $GotParam$$remove$
+		:i $SetScreen$$angle$ = %f(72.000000)$aspect$ = %f(1.333333)
+		:i return
+		
+	:i else 
+		:i $SetScreen$$angle$ = %f(88.180000)$aspect$ = %f(1.333333)
+	:i endif
+	:i $SetScreenElementLock$$id$ = $root_window$$off$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $letterbox_anchor$
+		:i $parent$ = $root_window$
+		:i $z_priority$ = %i(999,000003e7)
+		:i $just$ = :a{$center$$center$:a}
+		:i $internal_just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,9.500000)
+		:i $pos$ = %vec2(0.000000,-20.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(15,0000000f)
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $SpriteElement$
+		:i $parent$ = $letterbox_anchor$
+		:i $texture$ = $white2$
+		:i $scale$ = %vec2(100.000000,12.000000)
+		:i $pos$ = %vec2(0.000000,392.000000)
+		:i $rgba$ = :a{%i(0,00000000)%i(0,00000000)%i(0,00000000)%i(128,00000080):a}
+		:i $just$ = :a{$left$$top$:a}
+		:i $z_priority$ = %i(15,0000000f)
+	:i :s}
+:i endfunction
+:i function $cutscene_kill_spawned_script$
+	:i $KillSpawnedScript$$id$ = %GLOBAL%$id$
+:i endfunction
+:i function $create_digital_timer$$pos$ = %vec2(50.000000,100.000000)$scale$ = %f(1.500000)$alpha$ = %f(0.600000)$font$ = $dialog$$rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(128,00000080):a}$mins$ = %i(2,00000002)$secs$ = %i(16,00000010)$frames$ = %i(3,00000003)
+	:i if $ScreenElementExists$$id$ = $digital_timer_anchor$
+		:i $DestroyScreenElement$$id$ = $digital_timer_anchor$
+	:i endif
+	:i $SetScreenElementLock$$off$$id$ = $root_window$
+	:i $CreateScreenElement$:s{
+		:i $type$ = $ContainerElement$
+		:i $id$ = $digital_timer_anchor$
+		:i $parent$ = $root_window$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $just$ = :a{$left$$top$:a}
+	:i :s}
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $mins2$
+		:i $pos$ = %vec2(0.000000,0.000000)
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $mins$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(5.000000,-2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,":")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $secs2$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $secs$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(5.000000,-2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,":")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$left$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,2.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $frames2$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i $GetStackedScreenElementPos$$X$$id$ = %GLOBAL%$id$$offset$ = %vec2(23.000000,0.000000)
+	:i $CreateScreenElement$:s{
+		:i $type$ = $TextElement$
+		:i $parent$ = $digital_timer_anchor$
+		:i $id$ = $frames$
+		:i $pos$ = %GLOBAL%$pos$
+		:i $text$ = %s(1,"0")
+		:i $font$ = %GLOBAL%$font$
+		:i $just$ = :a{$right$$top$:a}
+		:i $scale$ = %GLOBAL%$scale$
+		:i $alpha$ = %GLOBAL%$alpha$
+		:i $rgba$ = %GLOBAL%$rgba$
+	:i :s}
+	:i %GLOBAL%$mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+	:i %GLOBAL%$mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+	:i %GLOBAL%$secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+	:i %GLOBAL%$secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+	:i %GLOBAL%$frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+	:i %GLOBAL%$frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+	:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+	:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+	:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+	:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+	:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+	:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+	:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+	:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+	:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+	:i $mins$.$SetTags$$frames$ = %GLOBAL%$frames$$secs$ = %GLOBAL%$secs$$mins$ = %GLOBAL%$mins$$callback$ = %GLOBAL%$callback$$callback_params$ = %GLOBAL%$callback_params$
+	:i $RunScriptOnScreenElement$$id$ = $secs$$camera_hud_count$$params$ = :s{$up$ = %i(0,00000000):s}
+:i endfunction
+:i function $reset_digital_timer$
+	:i $KillSpawnedScript$$name$ = $camera_hud_count$
+	:i if $ScreenElementExists$$id$ = $mins$
+		:i if $GotParam$$frames$
+			:i if NOT $GotParam$$secs$
+				:i $mins$.$GetSingleTag$$secs$
+			:i endif
+			:i while
+				
+				:i if  (%GLOBAL%$frames$ > %i(29,0000001d)) 
+					:i %GLOBAL%$secs$ =  (%GLOBAL%$secs$ + %i(1,00000001)) 
+					:i %GLOBAL%$frames$ =  (%GLOBAL%$frames$ - %i(29,0000001d)) 
+				:i else 
+					:i continue
+					
+				:i endif
+			:i loop_to 
+			:i %GLOBAL%$frames2$ =  (%GLOBAL%$frames$ / %i(10,0000000a)) 
+			:i %GLOBAL%$frames1$ =  (%GLOBAL%$frames$ -  (%GLOBAL%$frames2$ * %i(10,0000000a)) ) 
+			:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames1$
+			:i $SetScreenElementProps$$id$ = $frames$$text$ = %GLOBAL%$frame_text$
+			:i $FormatText$$textname$ = $frame_text$%s(2,"%f")$f$ = %GLOBAL%$frames2$
+			:i $SetScreenElementProps$$id$ = $frames2$$text$ = %GLOBAL%$frame_text$
+			:i $mins$.$SetTags$$frames$ = %GLOBAL%$frames$
+		:i endif
+		:i if $GotParam$$secs$
+			:i %GLOBAL%$secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+			:i %GLOBAL%$secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+			:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs1$
+			:i $SetScreenElementProps$$id$ = $secs$$text$ = %GLOBAL%$sec_text$
+			:i $FormatText$$textname$ = $sec_text$%s(2,"%s")$s$ = %GLOBAL%$secs2$
+			:i $SetScreenElementProps$$id$ = $secs2$$text$ = %GLOBAL%$sec_text$
+			:i $mins$.$SetTags$$secs$ = %GLOBAL%$secs$
+		:i endif
+		:i if $GotParam$$mins$
+			:i %GLOBAL%$mins2$ =  (%GLOBAL%$mins$ / %i(10,0000000a)) 
+			:i %GLOBAL%$mins1$ =  (%GLOBAL%$mins$ -  (%GLOBAL%$mins2$ * %i(10,0000000a)) ) 
+			:i %GLOBAL%$secs2$ =  (%GLOBAL%$secs$ / %i(10,0000000a)) 
+			:i %GLOBAL%$secs1$ =  (%GLOBAL%$secs$ -  (%GLOBAL%$secs2$ * %i(10,0000000a)) ) 
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins1$
+			:i $SetScreenElementProps$$id$ = $mins$$text$ = %GLOBAL%$min_text$
+			:i $FormatText$$textname$ = $min_text$%s(2,"%m")$m$ = %GLOBAL%$mins2$
+			:i $SetScreenElementProps$$id$ = $mins2$$text$ = %GLOBAL%$min_text$
+			:i $mins$.$SetTags$$mins$ = %GLOBAL%$mins$
+		:i endif
+	:i endif
+	:i $RunScriptOnScreenElement$$id$ = $secs$$camera_hud_count$$params$ = :s{$up$ = %i(0,00000000):s}
+:i endfunction
+:i function $get_digital_timer_time$
+	:i %GLOBAL%$mins$ = %i(0,00000000)
+	:i %GLOBAL%$secs$ = %i(0,00000000)
+	:i %GLOBAL%$frames$ = %i(0,00000000)
+	:i if $ScreenElementExists$$id$ = $mins$
+		:i $mins$.$GetTags$
+	:i endif
+	:i return
+	$mins$ = %GLOBAL%$mins$$secs$ = %GLOBAL%$secs$$frames$ = %GLOBAL%$frames$
+:i endfunction
+:i function $destroy_digital_timer$
+	:i if $ScreenElementExists$$id$ = $digital_timer_anchor$
+		:i $DestroyScreenElement$$id$ = $digital_timer_anchor$
+	:i endif
+:i endfunction
+:i function $cutscene_create_loadscreen$
+	:i if $ScreenElementExists$$id$ = $root_window$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $ContainerElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $loading_logo_anchor$
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $alpha$ = %i(1,00000001)
+			:i $z_priority$ = %i(9999,0000270f)
+		:i :s}
+		:i $Theme_GetAltColor$$return_value$ = $grad_color$
+		:i $pos$ = %vec2(35.000000,310.000000)
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $loading_logo_anchor$
+			:i $texture$ = $goal_grad$
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $scale$ = %vec2(19.000000,0.800000)
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,0.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $flip_v$
+			:i $alpha$ = %f(0.400000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $loading_logo_anchor$
+			:i $texture$ = $goal_grad$
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $scale$ = %vec2(19.000000,0.800000)
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,10.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $flip_v$
+			:i $alpha$ = %f(0.500000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $loading_logo_anchor$
+			:i $texture$ = $goal_grad$
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $scale$ = %vec2(19.000000,0.800000)
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,20.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $flip_v$
+			:i $alpha$ = %f(0.600000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $loading_logo_anchor$
+			:i $texture$ = $goal_grad$
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $scale$ = %vec2(19.000000,0.800000)
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,30.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $flip_v$
+			:i $alpha$ = %f(0.700000)
+		:i :s}
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $loading_logo_anchor$
+			:i $texture$ = $goal_grad$
+			:i $rgba$ = %GLOBAL%$grad_color$
+			:i $scale$ = %vec2(19.000000,0.800000)
+			:i $pos$ =  (%GLOBAL%$pos$ + %vec2(0.000000,40.000000)) 
+			:i $just$ = :a{$left$$top$:a}
+			:i $flip_v$
+			:i $alpha$ = %f(0.800000)
+		:i :s}
+	:i endif
+:i endfunction
+:i function $cutscene_destroy_loadscreen$
+	:i if $ScreenElementExists$$id$ = $loading_logo_anchor$
+		:i $DestroyScreenElement$$id$ = $loading_logo_anchor$
+	:i endif
+:i endfunction
+:i :end

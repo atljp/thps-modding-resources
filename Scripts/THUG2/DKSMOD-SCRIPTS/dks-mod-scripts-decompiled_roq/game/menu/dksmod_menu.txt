@@ -1,0 +1,1032 @@
+
+:i function $create_dks_options_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(21,"\c8MENU - DKS MOD 1.2")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_pause_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $build_pause_menu_parts$
+	:i if NOT $InNetGame$
+		:i $make_theme_menu_item$$text$ = %s(21,"Crie seu Tema \c3-\c0")$id$ = $id_crieseutema_go_menu$$pad_choose_script$ = $create_temas_dksmod_menu$
+	:i endif
+	:i if $InNetGame$
+		:i if $GameModeEquals$$is_lobby$
+			:i if NOT $NetworkGamePending$
+				:i if NOT $ChangeLevelPending$
+					:i $make_theme_menu_item$$text$ = %s(21,"Crie seu Tema \c3-\c0")$id$ = $pode_editar_temas_id$$pad_choose_script$ = $create_temas_dksmod_menu$
+				:i endif
+			:i endif
+		:i else 
+			:i $make_theme_menu_item$$text$ = %s(21,"Crie seu Tema \c2-\c0")$id$ = $nao_pode_editar_temas_id$$pad_choose_script$ = $no_create_temas_dksmod_menu$
+		:i endif
+	:i endif
+	:i $make_theme_menu_item$$text$ = %s(27,"Menu Ligar/Desligar \c3-\c0")$id$ = $id_ligardesligar_dks$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $make_theme_menu_item$$text$ = %s(23,"Menu de Muni?ao \c3-\c0")$id$ = $arma_menu$$pad_choose_script$ = $create_blub_mod_menu$
+	:i $make_theme_menu_item$$text$ = %s(21,"Editar Taunts \c3-\c0")$id$ = $id_item_editartauntsgo_dks$$pad_choose_script$ = $create_dksmod_taunt$
+	:i $make_theme_menu_item$$text$ = %s(24,"Menu de Veiculos \c3-\c0")$id$ = $id_item_veiuculomenugo_dks$$pad_choose_script$ = $create_veiuculo_menu_dksmod$
+	:i $make_theme_menu_item$$text$ = %s(25,"Menu Tempo do Dia \c3-\c0")$id$ = $id_item_dianoitego_dks$$pad_choose_script$ = $create_tempo_do_dia$
+	:i $make_theme_menu_item$$text$ = %s(22,"Menu de Cheats \c3-\c0")$id$ = $menu_cheatsdebug_dks$$pad_choose_script$ = $launch_cheats_menu$
+	:i $make_theme_menu_item$$text$ = %s(21,"Menu de Debug \c3-\c0")$id$ = $menu_debugdebug_dks$$pad_choose_script$ = $create_debug_menu$
+	:i $make_theme_menu_item$$text$ = %s(22,"Menu de Testes \c3-\c0")$id$ = $menu_testesdebug_dks$$pad_choose_script$ = $create_test_menu$
+	:i $make_theme_menu_item$$text$ = %s(24,"Menu de Restarts \c3-\c0")$id$ = $id_menu_restart_go_menu$$pad_choose_script$ = $create_restart_dksmod_menu$
+	:i $make_theme_menu_item$$text$ = %s(24,"Menu de Observer \c3-\c0")$id$ = $id_obervermenu_go_menu$$pad_choose_script$ = $create_observer_dksmod_menu$
+	:i $make_theme_menu_item$$text$ = %s(13,"Proximo \c2->")$id$ = $id_item_proximo_menuprinci$$pad_choose_script$ = $create_dksmod_outros$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_dksmod_outros$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(21,"\c8MENU - DKS MOD 1.2")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i if $IsHost$
+		:i $make_theme_menu_item$$text$ = %s(20,"Menu do Host \c3-\c0")$id$ = $dks_autoserver$$pad_choose_script$ = $create_host_dks_menu$
+	:i endif
+	:i $make_theme_menu_item$$text$ = %s(26,"DKS Chat Mensagens \c3-\c0")$id$ = $id_item_chatmensdks_dks$$pad_choose_script$ = $create_mensagens_dks$
+	:i $make_theme_menu_item$$text$ = %s(23,"Formato da Tela \c3-\c0")$id$ = $id_item_formatodatela$$pad_choose_script$ = $create_display_menu$
+	:i $make_theme_menu_item$$text$ = %s(14,"Anterior \c2<-")$id$ = $id_item_voltar_principalmenu_dks$$pad_choose_script$ = $create_dks_options_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_restart_dksmod_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(19,"\c2Menu de Restarts")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i if $LevelIs$$load_tr$
+		:i $make_theme_menu_item$$text$ = %s(24,"\c4Vamos para New Jersey")$id$ = $id_vamos_a_nj_dksmod$$pad_choose_script$ = $go_vamos_a_nj$
+		:i $make_theme_menu_item$$text$ = %s(22,"\c4Vamos para Training")$id$ = $id_vamos_a_tr_dksmod$$pad_choose_script$ = $go_vamos_a_tr$
+	:i endif
+	:i $make_theme_menu_item$$text$ = %s(14,"Marcar Restart")$id$ = $observer_menu_iniciar$$pad_choose_script$ = $escolher_restart_dks$
+	:i $make_theme_menu_item$$text$ = %s(17,"Voltar ao Restart")$id$ = $observer_menu_sair$$pad_choose_script$ = $voltarao_restart_dks$
+	:i $make_theme_menu_item$$text$ = %s(24,"Menu de restarts padroes")$id$ = $menu_restartsdebug_dks$$pad_choose_script$ = $launch_restart_menu$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_menurestarts_dks$$pad_choose_script$ = $create_dks_options_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $go_vamos_a_nj$
+	:i $exit_pause_menu$
+	:i $Skater$.$vamos_a_nj$
+:i endfunction
+:i function $vamos_a_nj$
+	:i $Rotate$$Y$ = %i(180,000000b4)$duration$ = %f(0.900000)$seconds$
+	:i $TeleportSkaterToNode$$nodename$ = $hj_nj_ClinicSign01$
+	:i $create_net_panel_message$$text$ = %s(74,"\c4Bem vindo a New Jersey!!!\n\n\c8DKS Mod 1.2\n\c2By:\c0 Dark and pedroO!")$style$ = $generic_net_panel_message$
+:i endfunction
+:i function $go_vamos_a_tr$
+	:i $exit_pause_menu$
+	:i $Skater$.$vamos_a_tr$
+:i endfunction
+:i function $vamos_a_tr$
+	:i $Rotate$$Y$ = %i(180,000000b4)$duration$ = %f(0.900000)$seconds$
+	:i $TeleportSkaterToNode$$nodename$ = $TRG_Restart_HighScore$
+	:i $create_net_panel_message$$text$ = %s(83,"\c4Bem vindo novamente a Warehouse!!!\n\n\c8DKS Mod 1.2\n\c2By:\c0 Dark and pedroO!")$style$ = $generic_net_panel_message$
+:i endfunction
+:i function $create_observer_dksmod_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(19,"\c2Menu de observer")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(16,"Iniciar Observer")$id$ = $iniciar_observedksid$$pad_choose_script$ = $iniciar_observer_dks$
+	:i $make_theme_menu_item$$text$ = %s(16,"Sair do Observer")$id$ = $sair_observerdksid$$pad_choose_script$ = $sair_observer_dks$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_observermenu$$pad_choose_script$ = $create_dks_options_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_host_dks_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(7,"\c2Host")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dksmod_outros$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(19,"Numero de jogadores")$id$ = $id_item_host_numjogadores$$pad_choose_script$ = $create_network_host_options_max_players_menu$
+	:i $make_theme_menu_item$$text$ = %s(11,"Auto-server")$id$ = $id_item_autoserver_dks$$pad_choose_script$ = $create_sit_out_menu$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_menuhost$$pad_choose_script$ = $create_dksmod_outros$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $escolher_restart_dks$
+	:i $set_custom_restart$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $voltarao_restart_dks$
+	:i $skip_to_custom_restart$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $iniciar_observer_dks$
+	:i $Skater$.$remove_skater_from_world$
+	:i $EnterSurveyorMode$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $sair_observer_dks$
+	:i $Skater$.$add_skater_to_world$
+	:i $ExitSurveyorMode$
+	:i $exit_pause_menu$
+:i endfunction
+:i function $create_dksmod_taunt$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(13,"EDITAR TAUNTS")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(13,"Texto do 'F1'")$centered$$pad_choose_script$ = $mudar_taunt$$pad_choose_params$ = :s{$string$ = $props_string$$field$ = %s(12,"props_string"):s}
+	:i $make_theme_menu_item$$text$ = %s(13,"Texto do 'F2'")$centered$$pad_choose_script$ = $mudar_taunt$$pad_choose_params$ = :s{$string$ = $your_daddy_string$$field$ = %s(17,"your_daddy_string"):s}
+	:i $make_theme_menu_item$$text$ = %s(13,"Texto do 'F3'")$centered$$pad_choose_script$ = $mudar_taunt$$pad_choose_params$ = :s{$string$ = $get_some_string$$field$ = %s(15,"get_some_string"):s}$last_menu_item$ = $last_menu_item$
+	:i $make_theme_menu_item$$text$ = %s(13,"Texto do 'F4'")$centered$$pad_choose_script$ = $mudar_taunt$$pad_choose_params$ = :s{$string$ = $no_way_string$$field$ = %s(13,"no_way_string"):s}
+	:i $make_theme_menu_item$$text$ = %s(6,"Pronto")$id$ = $id_item_prontoedittauntsmenu$$pad_choose_script$ = $create_dks_options_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $voltar_do_taunt$
+	:i $destroy_onscreen_keyboard$
+	:i $create_dksmod_taunt$
+:i endfunction
+:i function $escolher_novo_taunt$
+	:i $GetTextElementString$$id$ = $keyboard_current_string$
+	:i $SetPreferencesFromUI$$prefs$ = $Taunt$ isNull 
+	:i $destroy_onscreen_keyboard$
+	:i $create_dksmod_taunt$
+:i endfunction
+:i function $mudar_taunt$
+	:i $GetPreferenceString$$pref_type$ = $Taunt$%GLOBAL%$string$
+	:i $DestroyScreenElement$$id$ = $current_menu_anchor$
+	:i $create_onscreen_keyboard$$allow_cancel$$keyboard_cancel_script$ = $voltar_do_taunt$$keyboard_done_script$ = $escolher_novo_taunt$$keyboard_title$ = %s(26,"Entre com a nova taunt....")$field$ = %GLOBAL%$field$$text$ = %GLOBAL%$ui_string$$min_length$ = %i(1,00000001)$max_length$ = %i(100,00000064)
+:i endfunction
+:i function $dksmod_hide_board$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$SetBoardMissing$
+	:i $Skater$.$SetBoardMissing$
+	:i $Skater$.$Display$
+:i endfunction
+:i function $dksmod_unhide_board$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$SetBoardMissing$
+	:i $Skater$.$UnsetBoardMissing$
+	:i $Skater$.$Display$
+:i endfunction
+:i function $dksmod_sk_remove$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$remove_skater_from_world$
+:i endfunction
+:i function $dksmod_sk_add$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$add_skater_to_world$
+:i endfunction
+:i function $dksmod_perde_a_cabeca$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$SetBoardMissing$
+	:i $Skater$.$skaterLoseHead$
+	:i $Skater$.$Display$
+:i endfunction
+:i function $dksmod_exlodir_skater$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$SetBoardMissing$
+	:i $Skater$.$skaterExplode$
+	:i $Skater$.$Display$
+:i endfunction
+:i function $create_onoff_dksmod_menu$
+	:i $hide_current_goal$
+	:i $make_new_themed_sub_menu$$title$ = %s(18,"\c2Ligar/Desligar ")
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(46,"\c2Escolha um op?ao que deseja ligar/desligar."):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_dks_options_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(20,"'WallRide ilimitado'")$id$ = $id_item_wallrideilim_dks$$pad_choose_script$ = $create_dks_wall_menu$
+	:i $make_theme_menu_item$$text$ = %s(20,"'WallJump ilimitado'")$id$ = $id_item_jumpilim_dks$$pad_choose_script$ = $create_dks_walljump$
+	:i $make_theme_menu_item$$text$ = %s(11,"'No Bounds'")$id$ = $id_item_nobounds_dks$$pad_choose_script$ = $create_no_bound_menu$
+	:i $make_theme_menu_item$$text$ = %s(9,"'No Clip'")$id$ = $id_item_noclipmonoff_dks$$pad_choose_script$ = $create_noclip_dksmenu$
+	:i $make_theme_menu_item$$text$ = %s(5,"'FLY'")$id$ = $id_item_flyonoff_dks$$pad_choose_script$ = $create_fly_dksmenu$
+	:i $make_theme_menu_item$$text$ = %s(17,"'Esconder Skater'")$id$ = $id_item_skateronoff_dks$$pad_choose_script$ = $create_skater_on_off_menu$
+	:i $make_theme_menu_item$$text$ = %s(15,"'Esonder Skate'")$id$ = $id_item_skateonoff_dks$$pad_choose_script$ = $create_skate_on_off_menu$
+	:i $make_theme_menu_item$$text$ = %s(2,"  ")$id$ = $id_item_onoff_dks_nada_sele$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_prontoonoff_dks$$pad_choose_script$ = $create_dks_options_menu$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_no_bound_menu$
+	:i $make_new_themed_sub_menu$$title$ = %s(9,"No Bounds")
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(20,"\b7/\b4 = Selecionar"):s}
+			:i :s{$text$ = %s(12,"\bn = Voltar"):s}
+			:i :s{$text$ = %s(13,"\bm = Aceitar"):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i if $GetGlobalFlag$$flag$ = $FORA_DOS_LIMITES$
+		:i $hud_text$ = %s(6,"Ligado")
+	:i else 
+		:i $hud_text$ = %s(9,"Desligado")
+	:i endif
+	:i $theme_menu_add_item$:s{$text$ = %s(3,"   ")
+		:i $id$ = $id_no_bounds_nada_um$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(10,"No Bounds:")
+		:i $extra_text$ = %GLOBAL%$hud_text$
+		:i $id$ = $id_foradoslimites_botao$
+		:i $pad_choose_script$ = $go_fun_fora_dos_limites$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(6,"Pronto")
+		:i $id$ = $id_no_bounds_prontio$
+		:i $pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(3,"   ")
+		:i $id$ = $id_no_bounds_nada_tres$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(3,"   ")
+		:i $id$ = $id_no_bounds_nada_quatro$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(12,"DkS MoD V1.2")
+		:i $id$ = $id_no_bounds_nada_cimco$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(10,"Thanks to:")
+		:i $id$ = $id_no_bounds_nada_seis$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(6,"Dark -")
+		:i $id$ = $id_no_bounds_nada_sete$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(7,"Pedro -")
+		:i $id$ = $id_no_bounds_nada_oito$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(6,"Gone -")
+		:i $id$ = $id_no_bounds_nada_nove$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$:s{$text$ = %s(5,"CHC -")
+		:i $id$ = $id_no_bounds_nada_dez$
+		:i $pad_choose_script$ = $semlink$$not_focusable$
+	:i :s}
+	:i $theme_menu_add_item$$text$ = %s(1," ")$id$ = $id_nadanada_no_bounds_quatrorze$$pad_choose_script$ = $semlink$$not_focusable$$last_menu_item$ = %i(1,00000001)
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $go_fun_fora_dos_limites$
+	:i $fun_fora_dos_limites$
+	:i $create_no_bound_menu$
+:i endfunction
+:i function $fun_fora_dos_limites$
+	:i if NOT $GetGlobalFlag$$flag$ = $FORA_DOS_LIMITES$
+		:i $SetScreenElementProps$$id$ = :s{$id_foradoslimites_botao$$child$ = %i(3,00000003):s}$text$ = %s(9,"Desligado")
+		:i $SetGlobalFlag$$flag$ = $FORA_DOS_LIMITES$
+	:i else 
+		:i $SetScreenElementProps$$id$ = :s{$id_foradoslimites_botao$$child$ = %i(3,00000003):s}$text$ = %s(6,"Ligado")
+		:i $UnsetGlobalFlag$$flag$ = $FORA_DOS_LIMITES$
+	:i endif
+:i endfunction
+:i function $create_dks_walljump$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(21,"\c2Walljump ilimitado")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(5,"Ligar")$id$ = $id_item_awxf$$pad_choose_script$ = $ligar_walljump$
+	:i $make_theme_menu_item$$text$ = %s(8,"Desligar")$id$ = $id_item_dwas$$pad_choose_script$ = $desligar_walljump$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_item_pronto_psydks$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $ligar_walljump$
+	:i $change$$Physics_Disallow_Rewallplant_Duration$ = %i(0,00000000)
+	:i $exit_pause_menu$
+:i endfunction
+:i function $desligar_walljump$
+	:i $change$$Physics_Disallow_Rewallplant_Duration$ = %i(850,00000352)
+	:i $exit_pause_menu$
+:i endfunction
+:i function $create_dks_wall_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(21,"\c2WallRide ilimitado")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(5,"Ligar")$id$ = $ligar_wall_ride$$pad_choose_script$ = $on_ilimitado_wallride$
+	:i $make_theme_menu_item$$text$ = %s(8,"Desligar")$id$ = $desligar_wall_ride$$pad_choose_script$ = $off_ilimitado_wallride$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $pronto_wall_ride$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $on_ilimitado_wallride$
+	:i $change$$Wall_Ride_Delay$ = %i(0,00000000)
+	:i $exit_pause_menu$
+:i endfunction
+:i function $off_ilimitado_wallride$
+	:i $change$$Wall_Ride_Delay$ = %f(0.666000)
+	:i $exit_pause_menu$
+:i endfunction
+:i function $create_noclip_dksmenu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(10,"\c2No Clip")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(5,"Ligar")$id$ = $dksmod_noclipon_idks$$pad_choose_script$ = $dksmod_ligarnoclip$
+	:i $make_theme_menu_item$$text$ = %s(8,"Desligar")$id$ = $dksmod_noclipoff_idks$$pad_choose_script$ = $dksmod_desligarnoclip$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_dksnoclip_pronto$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $dksmod_ligarnoclip$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$MakeSkaterFly$
+	:i $Skater$.$PausePhysics$
+:i endfunction
+:i function $dksmod_desligarnoclip$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$UnpausePhysics$
+:i endfunction
+:i function $create_fly_dksmenu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(6,"\c2FLY")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(5,"Ligar")$id$ = $dksmod_fly_ligar_idks$$pad_choose_script$ = $dksmod_ligar_fly$
+	:i $make_theme_menu_item$$text$ = %s(8,"Desligar")$id$ = $dksmod_fly_desligar_idks$$pad_choose_script$ = $voltarao_restart_dks$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_dksfly_pronto$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_skater_on_off_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(9,"\c2SKATER")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(14,"Remover Skater")$id$ = $id_remover_skater_on$$pad_choose_script$ = $dksmod_sk_remove$
+	:i $make_theme_menu_item$$text$ = %s(16,"Adicionar Skater")$id$ = $id_remover_skater_off$$pad_choose_script$ = $dksmod_sk_add$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_dksfly_pronto$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_skate_on_off_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(7,"\cSKATE")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_onoff_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(16,"Esconder o Skate")$id$ = $dksmod_esconder_o_skate$$pad_choose_script$ = $dksmod_hide_board$
+	:i $make_theme_menu_item$$text$ = %s(15,"Mostrar o Sakte")$id$ = $dksmod_mostrar_o_skate$$pad_choose_script$ = $dksmod_unhide_board$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_dksfly_pronto$$pad_choose_script$ = $create_onoff_dksmod_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $dksmod_ligar_fly$
+	:i $Skater$.$exit_pause_menu$
+	:i $Skater$.$MakeSkaterFly$
+:i endfunction
+:i function $create_mensagens_dks$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(26,"\c2Mensagens - DKS MoD 1.2")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dksmod_outros$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(4,"Spam")$id$ = $id_item_menssa_um$$pad_choose_script$ = $mensagen_dks_um$
+	:i $make_theme_menu_item$$text$ = %s(11,"Game, PORRA")$id$ = $id_item_menssa_dois$$pad_choose_script$ = $mensagen_dks_dois$
+	:i $make_theme_menu_item$$text$ = %s(6,"Vermes")$id$ = $id_item_menssa_trez$$pad_choose_script$ = $mensagen_dks_trez$
+	:i $make_theme_menu_item$$text$ = %s(9,"Sauda?oes")$id$ = $id_item_menssa_quatro$$pad_choose_script$ = $mensagen_dks_quatro$
+	:i $make_theme_menu_item$$text$ = %s(5,"Chato")$id$ = $id_item_menssa_cimco$$pad_choose_script$ = $mensagen_dks_cimco$
+	:i $make_theme_menu_item$$text$ = %s(8,"Corrente")$id$ = $id_item_menssa_seis$$pad_choose_script$ = $mensagen_dks_seis$
+	:i $make_theme_menu_item$$text$ = %s(11,"tommy ralks")$id$ = $id_item_menssa_sete$$pad_choose_script$ = $mensagen_dks_sete$
+	:i $make_theme_menu_item$$text$ = %s(5,"Noobs")$id$ = $id_item_menssa_oito$$pad_choose_script$ = $mensagen_dks_oito$
+	:i $make_theme_menu_item$$text$ = %s(7,"Ronaldo")$id$ = $id_item_menssa_nove$$pad_choose_script$ = $mensagen_dks_nove$
+	:i $make_theme_menu_item$$text$ = %s(9,"\c2Pronto")$id$ = $id_item_prontocameras$$pad_choose_script$ = $create_dksmod_outros$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $mensagen_dks_um$
+	:i $SendChatMessage$$string$ = %s(73,"\c4www.dks-clan.tk v2 -> \c0Tradu?oes, mods e muito mais para Tony Hawks.")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_dois$
+	:i $SendChatMessage$$string$ = %s(76,"Ei admin, seu lazarento, poe um game antes que eu acabe com tua ra?a, porra!")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_trez$
+	:i $SendChatMessage$$string$ = %s(112,"Porra do caralho! Malditos vermes comedores de bosta que nao fazem nada a nao ser fuder com meu game, merdaaa!!!")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_quatro$
+	:i $SendChatMessage$$string$ = %s(49,"Hi, hola, privet, gutten tag, e ai, elo, foda-se.")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_cimco$
+	:i $SendChatMessage$$string$ = %s(112,"Ol?, eu estou tentando jogar no momento. Por que voce, por favor, nao CALA ESSA MERDA DESSA BOCA E JOGA TAMBEM?!")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_seis$
+	:i $SendChatMessage$$string$ = %s(82,"Entre: \c4www.dks-clan.tk\c0 e repasse para 6 servers, senao morrer? em tres dias.")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_sete$
+	:i $SendChatMessage$$string$ = %s(39,"manolo q lecal e?e tommy ralks om laine")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_oito$
+	:i $SendChatMessage$$string$ = %s(150,"Puta que pariu, por que diabos eu to aqui jogando com esse bando de \c7noobs\c0 imprest?veis? Voltem praquela merda de \c7GameVicio\c0, seus ANIMAIS!!")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mensagen_dks_nove$
+	:i $SendChatMessage$$string$ = %s(14,"\c2...Ronaldo.")
+	:i $exit_pause_menu$
+:i endfunction
+:i function $mandar_ladrao_chat$
+	:i $SendChatMessage$$string$ = %s(90,"pessual, vou dizer logu, eu sou homosexual :S, gosto de garotos e gostei muito de voces :P")
+:i endfunction
+:i function $bmf_giveammo$
+	:i $Skater$ = %i(0,00000000)
+	:i $Skater$.$GetAmmo$
+	:i if  (%GLOBAL%$ammo$ = %i(0,00000000)) 
+		:i $Skater$.$SetAmmo$%i(500,000001f4)
+	:i else 
+		:i $Skater$.$SetAmmo$%i(0,00000000)
+		:i $Skater$.$GetAmmo$
+		:i $FormatText$$textname$ = $text$%s(15,"Quantidade (%a)")$a$ = %GLOBAL%$ammo$
+		:i $SetScreenElementProps$$id$ = :s{$bm_giveammo$$child$ = %i(0,00000000):s}$text$ = %GLOBAL%$text$
+	:i endif
+:i endfunction
+:i function $bmf_cycleammo$
+	:i $Skater$ = %i(0,00000000)
+	:i $make_new_roundbar_menu$:s{
+		:i $menu_id$ = $blub__modmenu$
+		:i $vmenu_id$ = $blub__vmodmenu$
+		:i $pad_back_script$ = $create_blub_mod_menu$
+		:i $title$ = %s(15,"Tipo de muni?ao"):s}
+	:i $add_roundbar_menu_item$$text$ = %s(7,"Tomates")$id$ = $bm_giveammo$$pad_choose_script$ = $b_ammotomato$
+	:i $add_roundbar_menu_item$$text$ = %s(8,"Camaroes")$id$ = $bm_ammotype$$pad_choose_script$ = $b_ammoshrimp$
+	:i $add_roundbar_menu_item$$text$ = %s(5,"Ma?as")$id$ = $menu_quit$$pad_choose_script$ = $b_ammoapple$
+	:i $add_roundbar_menu_item$$text$ = %s(14,"Latas de tinta")$id$ = $bm_item1$$pad_choose_script$ = $b_ammopaintcan$
+	:i $add_roundbar_menu_item$$text$ = %s(7,"Colares")$id$ = $bm_item2$$pad_choose_script$ = $b_ammobeads$
+	:i $add_roundbar_menu_item$$text$ = %s(6,"Bombas")$id$ = $bm_item3$$pad_choose_script$ = $b_ammosmokebomb$
+	:i $add_roundbar_menu_item$$text$ = %s(12,"O's de combo")$id$ = $bm_item4$$pad_choose_script$ = $b_ammoos$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $b_ammotomato$
+	:i $b_setammotype$$type$ = $tomato$
+:i endfunction
+:i function $b_ammoshrimp$
+	:i $b_setammotype$$type$ = $shrimp$
+:i endfunction
+:i function $b_ammoapple$
+	:i $b_setammotype$$type$ = $apple$
+:i endfunction
+:i function $b_ammobeads$
+	:i $b_setammotype$$type$ = $beads$
+:i endfunction
+:i function $b_ammosmokebomb$
+	:i $b_setammotype$$type$ = $smokebomb$
+:i endfunction
+:i function $b_ammopaintcan$
+	:i $b_setammotype$$type$ = $paintcan$
+:i endfunction
+:i function $b_ammoos$
+	:i $b_setammotype$$type$ = $b_ammoos$
+:i endfunction
+:i function $b_setammotype$
+	:i $Skater$ = %i(0,00000000)
+	:i $Skater$.$SetAmmoType$%GLOBAL%$type$
+	:i $create_blub_mod_menu$
+:i endfunction
+:i function $create_blub_mod_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(12,"MUNI?AO MENU")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $scrolling$
+	:i $unhide_root_window$
+	:i $Skater$ = %i(0,00000000)
+	:i $Skater$.$GetAmmo$
+	:i $FormatText$$textname$ = $text$%s(15,"Quantidade (%a)")$a$ = %GLOBAL%$ammo$
+	:i $make_theme_menu_item$$text$ = %GLOBAL%$text$$id$ = $bm_giveammo$$pad_choose_script$ = $sair_voltar$
+	:i $Skater$.$GetAmmoType$
+	:i $get_ammo_text$$type$ = %GLOBAL%$ammo_type$
+	:i $FormatText$$textname$ = $text$%s(19,"Tipo de muni?ao: %a")$a$ = %GLOBAL%$ammo_text$
+	:i $make_theme_menu_item$$text$ = %GLOBAL%$text$$id$ = $bm_ammotype$$pad_choose_script$ = $bmf_cycleammo$
+	:i if $IsHost$
+		:i $make_theme_menu_item$$text$ = %s(6,"Pronto")$id$ = $menu_quit$$pad_choose_script$ = $create_dks_options_menu$
+	:i endif
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $sair_voltar$
+	:i $bmf_giveammo$
+	:i $exit_pause_menu$
+	:i $create_blub_mod_menu$
+:i endfunction
+:i function $the_secret_dksmod_menu$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(22,"Secret menu \c8DKS Mod")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $exit_pause_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_text_menu_item$$text$ = %s(19,"Barra de equilibrio")$id$ = $id_secretmenu_balan$$pad_choose_script$ = $launch_cheats_menu_select_difficulty$
+	:i $make_text_menu_item$$text$ = %s(6,"Pontos")$id$ = $id_secretmenu_scorepontos$$pad_choose_script$ = $the_secret_pontos$
+	:i $make_text_menu_item$$text$ = %s(10,"Free skate")$id$ = $id_secretmenu_gofreeskate$$pad_choose_script$ = $aplicar_restart_paineis$
+	:i $make_text_menu_item$$text$ = %s(23,"Balan?o perfeito (HOST)")$id$ = $id_secretmenu_balan_perfeito$$pad_choose_script$ = $secret_menu_balan_perfeito$
+	:i $make_text_menu_item$$text$ = %s(6,"      ")$id$ = $id_secretmenu_readme$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_menu_item$$text$ = %s(21,"\c2Ok, voltar ao jogo")$id$ = $id_secretmenu_pronto$$pad_choose_script$ = $exit_pause_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $secret_menu_balan_perfeito$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(24,"Balan?o perfeito (HOST):")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $the_secret_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(1," ")$id$ = $id_nadanadadasdasd$$pad_choose_script$ = $semlink$$not_focusable$
+	:i $make_cheats_menu_item$$text$ = %s(6,"GRIND:")$cheat_flag$ = $CHEAT_PERFECT_RAIL$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $make_cheats_menu_item$$text$ = %s(6,"MANUAL")$cheat_flag$ = $CHEAT_PERFECT_MANUAL$$pad_choose_script$ = $toggle_cheat$$pad_choose_params$ = :s{$on_callback$ = $nullscript$$off_callback$ = $nullscript$:s}
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $the_secret_pontos$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(6,"Pontos")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $the_secret_dksmod_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_text_menu_item$$text$ = %s(18,"1 Milhao de pontos")$id$ = $id_secretmenu_ummill$$pad_choose_script$ = $score_dks_um_mill$
+	:i $make_text_menu_item$$text$ = %s(19,"5 Milhoes de pontos")$id$ = $id_secretmenu_cimcomill$$pad_choose_script$ = $score_dks_cimco_mill$
+	:i $make_text_menu_item$$text$ = %s(20,"10 Milhoes de pontos")$id$ = $id_secretmenu_dezmill$$pad_choose_script$ = $score_dks_dez_mill$
+	:i $make_text_menu_item$$text$ = %s(20,"20 Milhoes de pontos")$id$ = $id_secretmenu_vintemill$$pad_choose_script$ = $score_dks_vinte_mill$
+	:i $make_text_menu_item$$text$ = %s(8,"--------")$id$ = $id_secretmenu_points_nada$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_menu_item$$text$ = %s(10,"666 pontos")$id$ = $id_pontos_meia_meia_mill$$pad_choose_script$ = $score_dks_meia_meia_meia$
+	:i $make_text_menu_item$$text$ = %s(14,"666.666 pontos")$id$ = $id_meiameiameia_pontos$$pad_choose_script$ = $score_dks_meia_mill$
+	:i $make_text_menu_item$$text$ = %s(18,"666.666.666 pontos")$id$ = $id_meiameiameia_pontos_froreu$$pad_choose_script$ = $score_dks_meia_mill_milhoes$
+	:i $make_text_menu_item$$text$ = %s(21,"\c2Ok, voltar ao jogo")$id$ = $id_secretpontos_pronto$$pad_choose_script$ = $exit_pause_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $score_dks_um_mill$
+	:i $Skater$.$SetTrickName$%s(22,"\c2Viado filho da puta")
+	:i $Skater$.$SetTrickScore$%i(1000000,000f4240)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_cimco_mill$
+	:i $Skater$.$SetTrickName$%s(29,"\c2NO\c8 OO\ cl 000OO \c4 OB!")
+	:i $Skater$.$SetTrickScore$%i(5000000,004c4b40)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_dez_mill$
+	:i $Skater$.$SetTrickName$%s(18,"\c8Ladrao de merda")
+	:i $Skater$.$SetTrickScore$%i(10000000,00989680)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_vinte_mill$
+	:i $Skater$.$SetTrickName$%s(27,"\c2Seu \c3noob \c4de merda!")
+	:i $Skater$.$SetTrickScore$%i(20000000,01312d00)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_meia_meia_meia$
+	:i $Skater$.$SetTrickName$%s(12,"666 from reu")
+	:i $Skater$.$SetTrickScore$%i(666,0000029a)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_meia_mill$
+	:i $Skater$.$SetTrickName$%s(18,"OMG! demO! OMG 666")
+	:i $Skater$.$SetTrickScore$%i(666666,000a2c2a)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $score_dks_meia_mill_milhoes$
+	:i $Skater$.$SetTrickName$%s(33,"OMG! demO! FUDEOOO MO?ADA OMG 666")
+	:i $Skater$.$SetTrickScore$%i(666666666,27bc86aa)
+	:i $Skater$.$Display$
+:i endfunction
+:i function $create_ajuda_dks_menu$
+	:i $hide_current_goal$
+	:i $make_new_themed_sub_menu$$title$ = %s(17,"COMANDOS:        ")
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(39,"\c2Aperte \bm para ir a proxima pagina."):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_text_sub_menu_item$$text$ = %s(30,"\c3.menu\c0 = Menu do DkS MoD.")$id$ = $id_texto_ajuda_dks_doze$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(33,"\c3.marcar\c0 = Marca um restart.")$id$ = $id_texto_ajuda_dks_treze$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(33,"\c3.voltar\c0 = Volta ao restart.")$id$ = $id_texto_ajuda_dks_quatorze$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(36,"\c3.obs\c0 = Inicia o modo observer.")$id$ = $id_texto_ajuda_dks_quinze$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(39,"\c3.obs.sair\c0 = Sai do modo observer.")$id$ = $id_texto_ajuda_dks_dezseis$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(39,"\c3.taunts\c0 = Abre o editor de taunts")$id$ = $id_texto_ajuda_dks_dezsete$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(38,"\c3.nobounds\c0 = ON/OFF do No Bounds.")$id$ = $id_texto_ajuda_dks_dezoito$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(34,"\c3.noclip\c0 = ON/OFF do No Clip.")$id$ = $id_texto_ajuda_dks_deznove$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(36,"\c3.chat\c0 = Abre o chat mensagens.")$id$ = $id_texto_ajuda_dks_vinte$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(40,"\c3.muni?ao\c0 = Abre o Menu de muni?ao.")$id$ = $id_texto_ajuda_dks_vinteum$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(2,"  ")$id$ = $id_texto_ajuda_dks_proximo$$pad_choose_script$ = $create_ajuda_dks_menu_dois$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_ajuda_dks_menu_dois$
+	:i $hide_current_goal$
+	:i $make_new_themed_sub_menu$$title$ = %s(17,"COMANDOS:        ")
+	:i $create_helper_text$:s{$helper_text_elements$ = :a{:s{$text$ = %s(43,"\c2Aperte \bm para voltar a pagina anteior."):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :s{$text$ = %s(1," "):s}
+			:i :a}
+	:i :s}
+	:i $SetScreenElementProps$:s{$id$ = $sub_menu$
+		:i $event_handlers$ = :a{
+			:i :s{$pad_back$$generic_menu_pad_back$$params$ = :s{$callback$ = $exit_pause_menu$:s}:s}
+			:i :a}
+	:i :s}
+	:i $make_text_sub_menu_item$$text$ = %s(36,"\c3.ban\c0 = Abre o menu de Players.")$id$ = $id_texto_ajuda_dks_um$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(40,"\c3.tricks\c0 = Abre o editor de tricks.")$id$ = $id_texto_ajuda_dks_dois$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(41,"\c3.onoff\c0 = Abre o menu on off do mod.")$id$ = $id_texto_ajuda_dks_tres$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(43,"\c3.trapa?a\c0 = Abre um menu com trapa?as.")$id$ = $id_texto_ajuda_dks_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(46,"\c3.game\c0 = Abre o menu iniciar jogo (HOST).")$id$ = $id_texto_ajuda_dks_nove$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(41,"\c3.fuck\c0 = Envia chingamentos no chat.")$id$ = $id_texto_ajuda_dks_cimco$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(44,"\c3.go\c0 = Envia um pedido de game no chat.")$id$ = $id_texto_ajuda_dks_seis$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(43,"\c3.noobs\c0 = Envia a msg 'Noobs' no chat.")$id$ = $id_texto_ajuda_dks_sete$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(46,"\c3.cala\c0 = Envia a msg 'cala boca' no chat.")$id$ = $id_texto_ajuda_dks_oito$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(40,"\c3.carros\c0 = Abre o menu de veiculos.")$id$ = $id_texto_ajuda_dks_carros$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(43,"\c3.tempo\c0 = Abre o menu de tempo do dia.")$id$ = $id_texto_ajuda_dks_tempo$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_text_sub_menu_item$$text$ = %s(5,"     ")$id$ = $id_texto_ajuda_dks_voltar$$pad_choose_script$ = $create_ajuda_dks_menu$
+	:i $finish_themed_sub_menu$
+:i endfunction
+:i function $create_veiuculo_menu_dksmod$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(16,"Menu de Veiculos")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(16,"Desligar Veiculo")$id$ = $id_item_desligar_carromenu$$pad_choose_script$ = $desligar_veiculo$
+	:i $make_theme_menu_item$$text$ = %s(29,"Ford Crown Victoria (Policia)")$id$ = $id_item_policia_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $PoliceCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(16,"Chevrolet Impala")$id$ = $id_item_chevyimpala_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $ImpalaCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(19,"Chevrolet El Camino")$id$ = $id_item_camino_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $ElCaminoCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(8,"Limosine")$id$ = $id_item_limo_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $LimoCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(16,"Pontiac Trans AM")$id$ = $id_item_tramsam_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $TransCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(23,"Mitsubishi Lancer Evo X")$id$ = $id_item_custom_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $CustomCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(10,"Lada Laika")$id$ = $id_item_lada_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $LadaCarSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(9,"Dirig?vel")$id$ = $id_item_blimp_carromenu$$pad_choose_script$ = $ligar_veiculo$$pad_choose_params$ = :s{$VehicleSetup$ = $BlimpSetup$:s}
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_carromenu$$pad_choose_script$ = $create_dks_options_menu$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $desligar_veiculo$
+	:i $exit_pause_menu$
+	:i $Skater$.$GetCameraId$
+	:i if NOT $GameIsPaused$
+		:i %GLOBAL%$CameraId$.$UnPause$
+	:i endif
+	:i $SetActiveCamera$$id$ = %GLOBAL%$CameraId$
+	:i $PlayerVehicle$.$Die$
+	:i $PlayerVehicleCamera$.$Die$
+	:i $Skater$.$UnsetDriving$
+	:i $Skater$.$ReturnBoardToSkater$
+	:i $Skater$.$ResetRigidBodyCollisionRadiusBoost$
+	:i $GoalManager_HideAllGoalPeds$%i(0,00000000)
+	:i $change$$driving_parked_car$ = %i(0,00000000)
+	:i $MakeSkaterGoto$$SkaterInit$
+:i endfunction
+:i function $ligar_veiculo$
+	:i $desligar_veiculo$
+	:i $ToggleUserControlledVehicleMode$$VehicleSetup$ = %GLOBAL%$VehicleSetup$
+:i endfunction
+:i function $create_tempo_do_dia$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(26,"Tempo do dia - DKS Mod 1.2")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_dks_options_menu$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(23,"\c2->\c0 Tempos normais")$id$ = $id_item_normais_tdd$$pad_choose_script$ = $create_tempos_normais$
+	:i $make_theme_menu_item$$text$ = %s(22,"\c2->\c0 Outros Tempos")$id$ = $id_item_outros_tdd$$pad_choose_script$ = $create_outros_tempos$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_dia_noite$$pad_choose_script$ = $create_dks_options_menu$
+	:i $make_theme_menu_item$$text$ = %s(1," ")$id$ = $id_tema_aviso_espacamentoum$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(1," ")$id$ = $id_tema_aviso_espacamentodois$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(33,"\c2Nota:\c0 Se voce salvar o jogo")$id$ = $id_tema_aviso_um_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(25,"apos selecionar um tempo,")$id$ = $id_tema_aviso_dois_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(31,"ele sera carregado toda vez que")$id$ = $id_tema_aviso_tres_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(30,"voce entrar em um jogo online.")$id$ = $id_tema_aviso_quatro_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_tempos_normais$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(14,"Tempos Normais")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_tempo_do_dia$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(9,"Amanhecer")$id$ = $tempo_manha$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_manha$:s}
+	:i $make_theme_menu_item$$text$ = %s(14,"06:00 - 11:00.")$id$ = $id_tema_tddnorm_um_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(3,"Dia")$id$ = $tempo_dia$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_dia$:s}
+	:i $make_theme_menu_item$$text$ = %s(13,"11:00 - 17:00")$id$ = $id_tema_tddnorm_dois_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(9,"Anoitecer")$id$ = $tempo_tarde$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_tarde$:s}
+	:i $make_theme_menu_item$$text$ = %s(13,"17:00 - 20:00")$id$ = $id_tema_tddnorm_tres_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(5,"Noite")$id$ = $tempo_noite$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_noite$:s}
+	:i $make_theme_menu_item$$text$ = %s(13,"20:00 - 06:00")$id$ = $id_tema_tddnorm_quatro_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_item_voltar_dia_noite$$pad_choose_script$ = $create_tempo_do_dia$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $create_outros_tempos$
+	:i $hide_current_goal$
+	:i $make_new_roundbar_menu$$title$ = %s(13,"Outros Tempos")$pos$ = %vec2(200.000000,100.000000)$spacing$ = %i(6,00000006)$pad_back_script$ = $generic_menu_pad_back$$pad_back_params$ = :s{$callback$ = $create_tempo_do_dia$:s}
+	:i $pause_menu_gradient$
+	:i $GoalManager_HideGoalPoints$
+	:i $GoalManager_HidePoints$
+	:i $unhide_root_window$
+	:i $make_theme_menu_item$$text$ = %s(8,"Nice Day")$id$ = $tempo_nicemanha$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_nicemanha$:s}
+	:i $make_theme_menu_item$$text$ = %s(19,"Um dia mais bonito.")$id$ = $id_tema_tdd_um_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(13,"Happy Gay Day")$id$ = $tempo_gayday$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_gayday$:s}
+	:i $make_theme_menu_item$$text$ = %s(27,"Um dia mais \c7fabuloso\c0!")$id$ = $id_tema_tdd_dois_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(10,"Orange Sky")$id$ = $tempo_orangeday$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_orangeday$:s}
+	:i $make_theme_menu_item$$text$ = %s(26,"Um dia mais \cblaranja\c0.")$id$ = $id_tema_tdd_tres_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(10,"Apocalypse")$id$ = $tempo_devilday$$pad_choose_script$ = $mudar_o_tempo$$pad_choose_params$ = :s{$tempo_devilday$:s}
+	:i $make_theme_menu_item$$text$ = %s(27,"Um dia mais \c2satanico\c0!")$id$ = $id_tema_tdd_quatro_quatro$$pad_choose_script$ = $semlink$$not_focusable$ = $not_focusable$
+	:i $make_theme_menu_item$$text$ = %s(6,"Voltar")$id$ = $id_tema_tdd_outros_voltar$$pad_choose_script$ = $create_tempo_do_dia$
+	:i $roundbar_menu_finish$
+:i endfunction
+:i function $mudar_o_tempo$
+	:i if $GotParam$$tempo_dia$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_DIA$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_gayday$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_GAYDAY$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_nicemanha$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_NICEMANHA$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_manha$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_MANHA$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_tarde$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_TARDE$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_orangeday$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_ORANGEDAY$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_noite$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_NOITE$
+		:i $load_mudar_o_tempo$
+	:i endif
+	:i if $GotParam$$tempo_devilday$
+		:i $desmarcar_flags_do_tempo_do_dia$
+		:i $wait$%i(4,00000004)$gameframe$
+		:i $SetGlobalFlag$$flag$ = $TEMPODODIA_DEVILDAY$
+		:i $load_mudar_o_tempo$
+	:i endif
+:i endfunction
+:i function $desmarcar_flags_do_tempo_do_dia$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_DEVILDAY$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_NOITE$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_ORANGEDAY$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_TARDE$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_MANHA$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_NICEMANHA$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_GAYDAY$
+	:i $UnsetGlobalFlag$$flag$ = $TEMPODODIA_DIA$
+:i endfunction
+:i function $load_mudar_o_tempo$
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_DIA$
+		:i $change$$lev_red$ = %i(128,00000080)
+		:i $change$$lev_green$ = %i(128,00000080)
+		:i $change$$lev_blue$ = %i(128,00000080)
+		:i $change$$sky_red$ = %i(128,00000080)
+		:i $change$$sky_green$ = %i(128,00000080)
+		:i $change$$sky_blue$ = %i(128,00000080)
+		:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.260000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.260000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.260000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_GAYDAY$
+		:i $change$$lev_red$ = %i(234,000000ea)
+		:i $change$$lev_green$ = %i(221,000000dd)
+		:i $change$$lev_blue$ = %i(216,000000d8)
+		:i $change$$sky_red$ = %i(255,000000ff)
+		:i $change$$sky_green$ = %i(42,0000002a)
+		:i $change$$sky_blue$ = %i(100,00000064)
+		:i $SetLightAmbientColor$$r$ = %i(110,0000006e)$g$ = %i(110,0000006e)$b$ = %i(120,00000078)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.090000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.090000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.090000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_NICEMANHA$
+		:i $change$$lev_red$ = %i(197,000000c5)
+		:i $change$$lev_green$ = %i(210,000000d2)
+		:i $change$$lev_blue$ = %i(239,000000ef)
+		:i $change$$sky_red$ = %i(194,000000c2)
+		:i $change$$sky_green$ = %i(183,000000b7)
+		:i $change$$sky_blue$ = %i(255,000000ff)
+		:i $SetLightAmbientColor$$r$ = %i(110,0000006e)$g$ = %i(110,0000006e)$b$ = %i(120,00000078)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.060000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.060000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.060000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_MANHA$
+		:i $change$$lev_red$ = %i(64,00000040)
+		:i $change$$lev_green$ = %i(77,0000004d)
+		:i $change$$lev_blue$ = %i(81,00000051)
+		:i $change$$sky_red$ = %i(160,000000a0)
+		:i $change$$sky_green$ = %i(160,000000a0)
+		:i $change$$sky_blue$ = %i(160,000000a0)
+		:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.180000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.180000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.180000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_TARDE$
+		:i $change$$lev_red$ = %i(100,00000064)
+		:i $change$$lev_green$ = %i(95,0000005f)
+		:i $change$$lev_blue$ = %i(74,0000004a)
+		:i $change$$sky_red$ = %i(76,0000004c)
+		:i $change$$sky_green$ = %i(66,00000042)
+		:i $change$$sky_blue$ = %i(50,00000032)
+		:i $SetLightAmbientColor$$r$ = %i(41,00000029)$g$ = %i(42,0000002a)$b$ = %i(45,0000002d)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.210000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.210000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.210000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_ORANGEDAY$
+		:i $change$$lev_red$ = %i(115,00000073)
+		:i $change$$lev_green$ = %i(135,00000087)
+		:i $change$$lev_blue$ = %i(100,00000064)
+		:i $change$$sky_red$ = %i(225,000000e1)
+		:i $change$$sky_green$ = %i(65,00000041)
+		:i $change$$sky_blue$ = %i(10,0000000a)
+		:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.160000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.160000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.160000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_NOITE$
+		:i $change$$lev_red$ = %i(46,0000002e)
+		:i $change$$lev_green$ = %i(59,0000003b)
+		:i $change$$lev_blue$ = %i(69,00000045)
+		:i $change$$sky_red$ = %i(18,00000012)
+		:i $change$$sky_green$ = %i(16,00000010)
+		:i $change$$sky_blue$ = %i(18,00000012)
+		:i $SetLightAmbientColor$$r$ = %i(18,00000012)$g$ = %i(16,00000010)$b$ = %i(18,00000012)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.210000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.210000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.210000)
+	:i endif
+	:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_DEVILDAY$
+		:i $change$$lev_red$ = %i(74,0000004a)
+		:i $change$$lev_green$ = %i(72,00000048)
+		:i $change$$lev_blue$ = %i(75,0000004b)
+		:i $change$$sky_red$ = %i(105,00000069)
+		:i $change$$sky_green$ = %i(5,00000005)
+		:i $change$$sky_blue$ = %i(6,00000006)
+		:i $SetLightAmbientColor$$r$ = %i(45,0000002d)$g$ = %i(38,00000026)$b$ = %i(50,00000032)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(-0.500000)
+		:i $ApplyChangeGamma$$color$ = $red$$change$ = %f(0.190000)
+		:i $ApplyChangeGamma$$color$ = $blue$$change$ = %f(0.190000)
+		:i $ApplyChangeGamma$$color$ = $green$$change$ = %f(0.190000)
+	:i endif
+	:i $dia_e_noite_ferramenta$
+:i endfunction
+:i function $autoload_mudar_o_tempo$
+	:i if $InNetGame$
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_DIA$
+			:i $change$$lev_red$ = %i(128,00000080)
+			:i $change$$lev_green$ = %i(128,00000080)
+			:i $change$$lev_blue$ = %i(128,00000080)
+			:i $change$$sky_red$ = %i(128,00000080)
+			:i $change$$sky_green$ = %i(128,00000080)
+			:i $change$$sky_blue$ = %i(128,00000080)
+			:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_GAYDAY$
+			:i $change$$lev_red$ = %i(234,000000ea)
+			:i $change$$lev_green$ = %i(221,000000dd)
+			:i $change$$lev_blue$ = %i(216,000000d8)
+			:i $change$$sky_red$ = %i(255,000000ff)
+			:i $change$$sky_green$ = %i(42,0000002a)
+			:i $change$$sky_blue$ = %i(100,00000064)
+			:i $SetLightAmbientColor$$r$ = %i(110,0000006e)$g$ = %i(110,0000006e)$b$ = %i(120,00000078)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_NICEMANHA$
+			:i $change$$lev_red$ = %i(197,000000c5)
+			:i $change$$lev_green$ = %i(210,000000d2)
+			:i $change$$lev_blue$ = %i(239,000000ef)
+			:i $change$$sky_red$ = %i(194,000000c2)
+			:i $change$$sky_green$ = %i(183,000000b7)
+			:i $change$$sky_blue$ = %i(255,000000ff)
+			:i $SetLightAmbientColor$$r$ = %i(110,0000006e)$g$ = %i(110,0000006e)$b$ = %i(120,00000078)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_MANHA$
+			:i $change$$lev_red$ = %i(64,00000040)
+			:i $change$$lev_green$ = %i(77,0000004d)
+			:i $change$$lev_blue$ = %i(81,00000051)
+			:i $change$$sky_red$ = %i(160,000000a0)
+			:i $change$$sky_green$ = %i(160,000000a0)
+			:i $change$$sky_blue$ = %i(160,000000a0)
+			:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_TARDE$
+			:i $change$$lev_red$ = %i(100,00000064)
+			:i $change$$lev_green$ = %i(95,0000005f)
+			:i $change$$lev_blue$ = %i(74,0000004a)
+			:i $change$$sky_red$ = %i(76,0000004c)
+			:i $change$$sky_green$ = %i(66,00000042)
+			:i $change$$sky_blue$ = %i(50,00000032)
+			:i $SetLightAmbientColor$$r$ = %i(41,00000029)$g$ = %i(42,0000002a)$b$ = %i(45,0000002d)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_ORANGEDAY$
+			:i $change$$lev_red$ = %i(115,00000073)
+			:i $change$$lev_green$ = %i(135,00000087)
+			:i $change$$lev_blue$ = %i(100,00000064)
+			:i $change$$sky_red$ = %i(225,000000e1)
+			:i $change$$sky_green$ = %i(65,00000041)
+			:i $change$$sky_blue$ = %i(10,0000000a)
+			:i $SetLightAmbientColor$$r$ = %i(50,00000032)$g$ = %i(50,00000032)$b$ = %i(50,00000032)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_NOITE$
+			:i $change$$lev_red$ = %i(46,0000002e)
+			:i $change$$lev_green$ = %i(59,0000003b)
+			:i $change$$lev_blue$ = %i(69,00000045)
+			:i $change$$sky_red$ = %i(18,00000012)
+			:i $change$$sky_green$ = %i(16,00000010)
+			:i $change$$sky_blue$ = %i(18,00000012)
+			:i $SetLightAmbientColor$$r$ = %i(18,00000012)$g$ = %i(16,00000010)$b$ = %i(18,00000012)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+		:i if $GetGlobalFlag$$flag$ = $TEMPODODIA_DEVILDAY$
+			:i $change$$lev_red$ = %i(74,0000004a)
+			:i $change$$lev_green$ = %i(72,00000048)
+			:i $change$$lev_blue$ = %i(75,0000004b)
+			:i $change$$sky_red$ = %i(105,00000069)
+			:i $change$$sky_green$ = %i(5,00000005)
+			:i $change$$sky_blue$ = %i(6,00000006)
+			:i $SetLightAmbientColor$$r$ = %i(45,0000002d)$g$ = %i(38,00000026)$b$ = %i(50,00000032)
+			:i $dia_e_noite_ferramenta$
+		:i endif
+	:i endif
+:i endfunction
+:i :end

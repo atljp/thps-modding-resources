@@ -1,0 +1,210 @@
+
+:i function $align_scale_to_vel_update$$objId$ = $skater$$bone$ = $Bone_Board_Tail$$update_pos$ = %i(0,00000000)$emit_offset$ = %vec3(0.000000,0.500000,0.000000)$emit_scale$ = %f(-1.000000)$pos_offset$ = %vec3(0.000000,-2.000000,0.000000)$base_vel$ = %f(800.000000)$min_vel_range$ = %i(4,00000004)$max_vel_range$ = %i(8,00000008)$base_emit_rate$ = %f(0.000000)
+	:i $pos0_offset$ = %GLOBAL%$pos_offset$
+	:i while
+		
+		:i if $ShouldEmit$
+			:i %GLOBAL%$objId$.$Obj_GetVelocity$
+			:i $NormalizeVector$%GLOBAL%$vel$
+			:i %GLOBAL%$length$ =  (%GLOBAL%$length$ / %GLOBAL%$base_vel$) 
+			:i $SetEmitTarget$$target$ =  (%GLOBAL%$emit_offset$ +  (%GLOBAL%$emit_scale$ * %GLOBAL%$norm$) ) 
+			:i $SetSpeedRange$$min$ =  (%GLOBAL%$min_vel_range$ * %GLOBAL%$length$) $max$ =  (%GLOBAL%$max_vel_range$ * %GLOBAL%$length$) 
+			:i $EmitRate$$rate$ =  (%GLOBAL%$length$ * %GLOBAL%$base_emit_rate$) 
+			:i if NOT  (%GLOBAL%$update_pos$ = %i(0,00000000)) 
+				:i %GLOBAL%$x$ = %i(0,00000000)
+				:i %GLOBAL%$y$ = %i(0,00000000)
+				:i %GLOBAL%$z$ = %i(0,00000000)
+				:i if $GotParam$$get_bone_script$
+					:i %GLOBAL%$get_bone_script$$objId$ = %GLOBAL%$objId$
+				:i endif
+				:i %GLOBAL%$objId$.$Obj_GetBonePosition$$bone$ = %GLOBAL%$bone$
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos0_offset$ + %GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+				:i $setpos$$pos$ = %GLOBAL%$pos_offset$
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$base_emit_rate$ > %f(0.000000)) 
+				:i %GLOBAL%$objId$.$Obj_GetVelocity$
+				:i $NormalizeVector$%GLOBAL%$vel$
+				:i %GLOBAL%$length$ =  (%GLOBAL%$length$ / %GLOBAL%$base_vel$) 
+				:i $EmitRate$$rate$ =  (%GLOBAL%$length$ * %GLOBAL%$base_emit_rate$) 
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $align_scale_size_to_vel_update$$objId$ = $skater$$bone$ = $Bone_Board_Tail$$update_pos$ = %i(0,00000000)$emit_offset$ = %vec3(0.000000,0.500000,0.000000)$emit_scale$ = %f(-1.000000)$pos_offset$ = %vec3(0.000000,-2.000000,0.000000)$base_vel$ = %f(800.000000)$min_vel_range$ = %i(4,00000004)$max_vel_range$ = %i(8,00000008)$base_emit_rate$ = %f(0.000000)
+	:i $pos0_offset$ = %GLOBAL%$pos_offset$
+	:i while
+		
+		:i if $ShouldEmit$
+			:i %GLOBAL%$objId$.$Obj_GetVelocity$
+			:i $NormalizeVector$%GLOBAL%$vel$
+			:i %GLOBAL%$length$ =  (%GLOBAL%$length$ / %GLOBAL%$base_vel$) 
+			:i $SetEmitTarget$$target$ =  (%GLOBAL%$emit_offset$ +  (%GLOBAL%$emit_scale$ * %GLOBAL%$norm$) ) 
+			:i $SetSpeedRange$$min$ =  (%GLOBAL%$min_vel_range$ * %GLOBAL%$length$) $max$ =  (%GLOBAL%$max_vel_range$ * %GLOBAL%$length$) 
+			:i $EmitRate$$rate$ =  (%GLOBAL%$length$ * %GLOBAL%$base_emit_rate$) 
+			:i $SetParticleSizeScale$$scaleSize$ = %GLOBAL%$length$
+			:i if NOT  (%GLOBAL%$update_pos$ = %i(0,00000000)) 
+				:i %GLOBAL%$x$ = %i(0,00000000)
+				:i %GLOBAL%$y$ = %i(0,00000000)
+				:i %GLOBAL%$z$ = %i(0,00000000)
+				:i if $GotParam$$get_bone_script$
+					:i %GLOBAL%$get_bone_script$$objId$ = %GLOBAL%$objId$
+				:i endif
+				:i %GLOBAL%$objId$.$Obj_GetBonePosition$$bone$ = %GLOBAL%$bone$
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos0_offset$ + %GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+				:i $setpos$$pos$ = %GLOBAL%$pos_offset$
+			:i endif
+		:i else 
+			:i if  (%GLOBAL%$base_emit_rate$ > %f(0.000000)) 
+				:i %GLOBAL%$objId$.$Obj_GetVelocity$
+				:i $NormalizeVector$%GLOBAL%$vel$
+				:i %GLOBAL%$length$ =  (%GLOBAL%$length$ / %GLOBAL%$base_vel$) 
+				:i $EmitRate$$rate$ =  (%GLOBAL%$length$ * %GLOBAL%$base_emit_rate$) 
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $align_to_vel_update$$objId$ = $skater$$bone$ = $Bone_Board_Tail$$update_pos$ = %i(0,00000000)$emit_offset$ = %vec3(0.000000,0.500000,0.000000)$emit_scale$ = %f(-1.000000)$pos_offset$ = %vec3(0.000000,-2.000000,0.000000)
+	:i $pos0_offset$ = %GLOBAL%$pos_offset$
+	:i while
+		
+		:i if $ShouldEmit$
+			:i if $CompositeObjectExists$$name$ = %GLOBAL%$objId$
+				:i %GLOBAL%$objId$.$Obj_GetVelocity$
+				:i $NormalizeVector$%GLOBAL%$vel$
+				:i $SetEmitTarget$$target$ =  (%GLOBAL%$emit_offset$ +  (%GLOBAL%$emit_scale$ * %GLOBAL%$norm$) ) 
+				:i if NOT  (%GLOBAL%$update_pos$ = %i(0,00000000)) 
+					:i %GLOBAL%$x$ = %i(0,00000000)
+					:i %GLOBAL%$y$ = %i(0,00000000)
+					:i %GLOBAL%$z$ = %i(0,00000000)
+					:i if $GotParam$$get_bone_script$
+						:i %GLOBAL%$get_bone_script$$objId$ = %GLOBAL%$objId$
+					:i endif
+					:i %GLOBAL%$objId$.$Obj_GetBonePosition$$bone$ = %GLOBAL%$bone$
+					:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos0_offset$ + %GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000)) 
+					:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000)) 
+					:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+					:i $setpos$$pos$ = %GLOBAL%$pos_offset$
+				:i endif
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $align_to_obj_orient$$objId$ = $skater$$bone$ = $Bone_Board_Tail$$update_pos$ = %i(0,00000000)$pos_offset$ = %vec3(0.000000,-2.000000,0.000000)$emit_scale$ = %f(1.000000)
+	:i $pos0_offset$ = %GLOBAL%$pos_offset$
+	:i while
+		
+		:i if $ShouldEmit$
+			:i %GLOBAL%$objId$.$Obj_GetOrientation$
+			:i %GLOBAL%$orient$ =  ( (%GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000))  +  (%GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000))  +  (%GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) ) 
+			:i $NormalizeVector$%GLOBAL%$orient$
+			:i $SetEmitTarget$$target$ =  ( (%GLOBAL%$emit_scale$ * %GLOBAL%$norm$) ) 
+			:i if NOT  (%GLOBAL%$update_pos$ = %i(0,00000000)) 
+				:i %GLOBAL%$x$ = %i(0,00000000)
+				:i %GLOBAL%$y$ = %i(0,00000000)
+				:i %GLOBAL%$z$ = %i(0,00000000)
+				:i %GLOBAL%$objId$.$Obj_GetBonePosition$$bone$ = %GLOBAL%$bone$
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos0_offset$ + %GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000)) 
+				:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+				:i $setpos$$pos$ = %GLOBAL%$pos_offset$
+			:i endif
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $fast_align_to_vel_update$$objId$ = $skater$$bone$ = $Bone_Board_Tail$$update_pos$ = %i(0,00000000)$emit_offset$ = %vec3(0.000000,0.500000,0.000000)$emit_scale$ = %f(-1.000000)$pos_offset$ = %vec3(0.000000,-2.000000,0.000000)
+	:i $pos0_offset$ = %GLOBAL%$pos_offset$
+	:i while
+		
+		:i %GLOBAL%$objId$.$Obj_GetVelocity$
+		:i $NormalizeVector$%GLOBAL%$vel$
+		:i $Obj_SetOrientation$$dir$ = %GLOBAL%$norm$
+		:i if NOT  (%GLOBAL%$update_pos$ = %i(0,00000000)) 
+			:i %GLOBAL%$x$ = %i(0,00000000)
+			:i %GLOBAL%$y$ = %i(0,00000000)
+			:i %GLOBAL%$z$ = %i(0,00000000)
+			:i if $GotParam$$get_bone_script$
+				:i %GLOBAL%$get_bone_script$$objId$ = %GLOBAL%$objId$
+			:i endif
+			:i %GLOBAL%$objId$.$Obj_GetBonePosition$$bone$ = %GLOBAL%$bone$
+			:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos0_offset$ + %GLOBAL%$x$ * %vec3(1.000000,0.000000,0.000000)) 
+			:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$y$ * %vec3(0.000000,1.000000,0.000000)) 
+			:i %GLOBAL%$pos_offset$ =  (%GLOBAL%$pos_offset$ + %GLOBAL%$z$ * %vec3(0.000000,0.000000,1.000000)) 
+			:i $Obj_SetPosition$$position$ = %GLOBAL%$pos_offset$
+		:i endif
+		:i $wait$%i(1,00000001)$gameframe$
+	:i loop_to 
+:i endfunction
+:i function $fast_change_color$$endStartRGBA$ = :a{%i(0,00000000);%i(0,00000000);%i(255,000000ff);%i(128,00000080):a}$endMidRGBA$ = :a{%i(0,00000000);%i(0,00000000);%i(255,000000ff);%i(128,00000080):a}$endEndRGBA$ = :a{%i(0,00000000);%i(0,00000000);%i(255,000000ff);%i(128,00000080):a}$delayStart$ = %f(0.000000)$changeTime$ = %f(2.000000)$stepTime$ = %f(0.100000)
+	:i $wait$%GLOBAL%$delayStart$$seconds$
+	:i $GetParticleParams$
+	:i $JOW_RGBAToVector$$rgba$ =  (%GLOBAL%$ParticleParams$->$StartRGBA$) 
+	:i $beginStartRGB$ = %GLOBAL%$rgb$
+	:i $beginStartAlpha$ = %GLOBAL%$a$
+	:i $JOW_RGBAToVector$$rgba$ = %GLOBAL%$endStartRGBA$
+	:i $endStartRGB$ = %GLOBAL%$rgb$
+	:i $endStartAlpha$ = %GLOBAL%$a$
+	:i $JOW_RGBAToVector$$rgba$ =  (%GLOBAL%$ParticleParams$->$MidRGBA$) 
+	:i $beginMidRGB$ = %GLOBAL%$rgb$
+	:i $beginMidAlpha$ = %GLOBAL%$a$
+	:i $JOW_RGBAToVector$$rgba$ = %GLOBAL%$endMidRGBA$
+	:i $endMidRGB$ = %GLOBAL%$rgb$
+	:i $endMidAlpha$ = %GLOBAL%$a$
+	:i $JOW_RGBAToVector$$rgba$ =  (%GLOBAL%$ParticleParams$->$EndRGBA$) 
+	:i $beginEndRGB$ = %GLOBAL%$rgb$
+	:i $beginEndAlpha$ = %GLOBAL%$a$
+	:i $JOW_RGBAToVector$$rgba$ = %GLOBAL%$endEndRGBA$
+	:i $endEndRGB$ = %GLOBAL%$rgb$
+	:i $endEndAlpha$ = %GLOBAL%$a$
+	:i $curStartRGB$ = %GLOBAL%$beginStartRGB$
+	:i $curStartAlpha$ = %GLOBAL%$beginStartAlpha$
+	:i $curMidRGB$ = %GLOBAL%$beginMidRGB$
+	:i $curMidAlpha$ = %GLOBAL%$beginMidAlpha$
+	:i $curEndRGB$ = %GLOBAL%$beginEndRGB$
+	:i $curEndAlpha$ = %GLOBAL%$beginEndAlpha$
+	:i $step$ =  ( (%GLOBAL%$stepTime$ / %GLOBAL%$changeTime$) ) 
+	:i $stepStartRGB$ =  ( (%GLOBAL%$endStartRGB$ - %GLOBAL%$beginStartRGB$)  * %GLOBAL%$step$) 
+	:i $stepStartAlpha$ =  ( (%GLOBAL%$endStartAlpha$ - %GLOBAL%$beginStartAlpha$)  * %GLOBAL%$step$) 
+	:i $stepMidRGB$ =  ( (%GLOBAL%$endMidRGB$ - %GLOBAL%$beginMidRGB$)  * %GLOBAL%$step$) 
+	:i $stepMidAlpha$ =  ( (%GLOBAL%$endMidAlpha$ - %GLOBAL%$beginMidAlpha$)  * %GLOBAL%$step$) 
+	:i $stepEndRGB$ =  ( (%GLOBAL%$endEndRGB$ - %GLOBAL%$beginEndRGB$)  * %GLOBAL%$step$) 
+	:i $stepEndAlpha$ =  ( (%GLOBAL%$endEndAlpha$ - %GLOBAL%$beginEndAlpha$)  * %GLOBAL%$step$) 
+	:i $curTime$ = %GLOBAL%$step$
+	:i while
+		
+		:i if  (%GLOBAL%$curTime$ > %i(4294967295,ffffffff) AND %GLOBAL%$curTime$ < %GLOBAL%$changeTime$) 
+			:i $curStartRGB$ =  (%GLOBAL%$curStartRGB$ + %GLOBAL%$stepStartRGB$) 
+			:i $curStartAlpha$ =  (%GLOBAL%$curStartAlpha$ + %GLOBAL%$stepStartAlpha$) 
+			:i $curMidRGB$ =  (%GLOBAL%$curMidRGB$ + %GLOBAL%$stepMidRGB$) 
+			:i $curMidAlpha$ =  (%GLOBAL%$curMidAlpha$ + %GLOBAL%$stepMidAlpha$) 
+			:i $curEndRGB$ =  (%GLOBAL%$curEndRGB$ + %GLOBAL%$stepEndRGB$) 
+			:i $curEndAlpha$ =  (%GLOBAL%$curEndAlpha$ + %GLOBAL%$stepEndAlpha$) 
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$curStartRGB$$a$ = %GLOBAL%$curStartAlpha$
+			:i $setStartColor$%GLOBAL%$rgba$
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$curMidRGB$$a$ = %GLOBAL%$curMidAlpha$
+			:i $setMidColor$%GLOBAL%$rgba$
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$curEndRGB$$a$ = %GLOBAL%$curEndAlpha$
+			:i $setEndColor$%GLOBAL%$rgba$
+			:i $curTime$ =  (%GLOBAL%$curTime$ + %GLOBAL%$stepTime$) 
+			:i $wait$%GLOBAL%$stepTime$$seconds$
+		:i else 
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$endStartRGB$$a$ = %GLOBAL%$endStartAlpha$
+			:i $setStartColor$%GLOBAL%$rgba$
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$endMidRGB$$a$ = %GLOBAL%$endMidAlpha$
+			:i $setMidColor$%GLOBAL%$rgba$
+			:i $JOW_VectorToRGBA$$rgb$ = %GLOBAL%$endEndRGB$$a$ = %GLOBAL%$endEndAlpha$
+			:i $setEndColor$%GLOBAL%$rgba$
+			:i continue
+			
+		:i endif
+	:i loop_to 
+:i endfunction
+:i :end

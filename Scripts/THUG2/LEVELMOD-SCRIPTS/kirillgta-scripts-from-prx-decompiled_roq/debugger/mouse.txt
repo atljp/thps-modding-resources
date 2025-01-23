@@ -1,0 +1,54 @@
+
+:i function $UpdateDebuggerMousePosition$
+	:i if NOT $ScreenElementExists$$id$ = $mouse_cursor$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $type$ = $SpriteElement$
+			:i $parent$ = $root_window$
+			:i $id$ = $mouse_cursor$
+			:i $texture$ = $mouse_cursor$
+			:i $rgba$ = :a{%i(128,00000080)%i(128,00000080)%i(128,00000080)%i(85,00000055):a}
+			:i $just$ = :a{$left$$top$:a}
+			:i $z_priority$ = %i(3000001,002dc6c1)
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$$id$ = $mouse_cursor$$pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x$ + %vec2(0.000000,1.000000) * %GLOBAL%$y$) 
+:i endfunction
+:i function $DestroyMouseCursor$
+	:i if $ScreenElementExists$$id$ = $mouse_cursor$
+		:i $DestroyScreenElement$$id$ = $mouse_cursor$
+	:i endif
+	:i $DestroyMouseText$
+:i endfunction
+:i function $DestroyMouseText$
+	:i if $ScreenElementExists$$id$ = $mouse_text$
+		:i $DestroyScreenElement$$id$ = $mouse_text$
+	:i endif
+:i endfunction
+:i function $SetMouseText$
+	:i if NOT $ScreenElementExists$$id$ = $mouse_text$
+		:i $SetScreenElementLock$$id$ = $root_window$$off$
+		:i $CreateScreenElement$:s{
+			:i $id$ = $mouse_text$
+			:i $parent$ = $root_window$
+			:i $type$ = $TextElement$
+			:i $just$ = :a{$center$$bottom$:a}
+			:i $pos$ = %vec2(0.000000,0.000000)
+			:i $font$ = $small$
+			:i $scale$ = %i(1,00000001)
+			:i $text$ = %s(0,"")
+		:i :s}
+	:i endif
+	:i $SetScreenElementProps$$id$ = $mouse_text$$text$ = %GLOBAL%$text$$pos$ =  (%vec2(1.000000,0.000000) * %GLOBAL%$x$ + %vec2(0.000000,1.000000) * %GLOBAL%$y$ - %vec2(0.000000,4.000000)) 
+:i endfunction
+:i function $MouseClickEffect$
+	:i $DoMorph$$id$ = $mouse_text$$scale$ = %f(1.100000)$time$ = %i(0,00000000)
+	:i $wait$%i(2,00000002)$gameframes$
+	:i $DoMorph$$id$ = $mouse_text$$scale$ = %i(1,00000001)$time$ = %i(0,00000000)
+:i endfunction
+:i function $DoMouseClickEffect$
+	:i if $ScreenElementExists$$id$ = $mouse_text$
+		:i $RunScriptOnScreenElement$$id$ = $mouse_text$$MouseClickEffect$
+	:i endif
+:i endfunction
+:i :end

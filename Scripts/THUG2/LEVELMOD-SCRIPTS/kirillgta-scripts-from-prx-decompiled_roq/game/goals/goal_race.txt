@@ -1,0 +1,254 @@
+
+:i $Goal_Race_GenericParams$ = :s{
+	:i $race$
+	:i $goal_text$ = %s(17,"generic race text")
+	:i $view_goals_text$ = %s(9,"Race goal")
+	:i $time$ = %i(120,00000078)
+	:i $init$ = $goal_race_init$
+	:i $uninit$ = $goal_uninit$
+	:i $activate$ = $goal_race_activate$
+	:i $deactivate$ = $goal_race_deactivate$
+	:i $expire$ = $goal_race_expire$
+	:i $success$ = $goal_race_success$
+	:i $fail$ = $goal_race_fail$
+	:i $trigger_obj_id$ = $TRG_G_RACE_Pro$
+	:i $start_pad_id$ = $G_RACE_StartPad$
+	:i $restart_node$ = $TRG_G_RACE_RestartNode$
+	:i $goal_flags$ = :a{$got_1$
+		:i $got_2$
+		:i $got_3$
+		:i $got_4$
+		:i :a}
+	:i $race_waypoints$ = :a{:s{$id$ = $TRG_G_RACE_RaceNav01$$flag$ = $got_1$:s}
+		:i :s{$id$ = $TRG_G_RACE_RaceNav02$$flag$ = $got_2$:s}
+		:i :s{$id$ = $TRG_G_RACE_RaceNav03$$flag$ = $got_3$:s}
+		:i :s{$id$ = $TRG_G_RACE_RaceNav04$$flag$ = $got_4$:s}
+		:i :a}
+	:i $race_total_laps$ = %i(1,00000001)
+	:i $record_type$ = $score$
+:i :s}
+:i function $goal_race_init$
+	:i $goal_init$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_race_create_waypoint$
+	:i $goal_race_remove_waypoint$ isNull 
+	:i if $GotParam$$id$
+		:i $create$$name$ = %GLOBAL%$id$
+		:i %GLOBAL%$id$.$Obj_Invisible$
+		:i $goal_race_create_cones$$name$ = %GLOBAL%$id$
+	:i endif
+	:i if $GotParam$$prefix$
+		:i $create$$prefix$ = %GLOBAL%$prefix$
+		:i $Invisible$$prefix$ = %GLOBAL%$prefix$
+	:i endif
+:i endfunction
+:i function $goal_race_remove_waypoint$
+	:i if $GotParam$$id$
+		:i if $IsAlive$$name$ = %GLOBAL%$id$
+			:i %GLOBAL%$id$.$Die$
+			:i $goal_race_kill_cones$$name$ = %GLOBAL%$id$
+		:i endif
+	:i endif
+:i endfunction
+:i function $goal_race_clear_exceptions$
+	:i if $GotParam$$id$
+		:i %GLOBAL%$id$.$Obj_ClearExceptions$
+	:i endif
+:i endfunction
+:i function $goal_race_activate$
+	:i $goal_start$$goal_id$ = %GLOBAL%$goal_id$
+	:i $ForEachIn$%GLOBAL%$race_waypoints$$do$ = $goal_race_create_waypoint$
+	:i $GoalManager_NextRaceWaypoint$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_race_success$
+	:i $goal_success$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_race_deactivate$
+	:i $FormatText$$ChecksumName$ = $next_waypoint_script_id$%s(26,"%s_next_waypoint_script_id")$s$ = %GLOBAL%$goal_name$
+	:i $KillSpawnedScript$$id$ = %GLOBAL%$next_waypoint_script_id$
+	:i $GoalManager_ResetGoalTrigger$$name$ = %GLOBAL%$goal_id$
+	:i $goal_deactivate$$goal_id$ = %GLOBAL%$goal_id$
+	:i if $ObjectExists$$id$ = $race_arrow$
+		:i $DestroyScreenElement$$id$ = $race_arrow$
+	:i endif
+	:i if $ScreenElementExists$$id$ = $race_lap_message$
+		:i $DestroyScreenElement$$id$ = $race_lap_message$
+	:i endif
+	:i $ForEachIn$%GLOBAL%$race_waypoints$$do$ = $goal_race_clear_exceptions$
+	:i $ForEachIn$%GLOBAL%$race_waypoints$$do$ = $goal_race_remove_waypoint$
+:i endfunction
+:i function $goal_race_expire$
+	:i $goal_expire$$goal_id$ = %GLOBAL%$goal_id$
+	:i $GoalManager_LoseGoal$$name$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_race_fail$
+	:i $goal_fail$$goal_id$ = %GLOBAL%$goal_id$
+:i endfunction
+:i function $goal_race_next_waypoint$
+	:i $wait$%i(1,00000001)$gameframe$
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $GetSkaterId$
+	:i if $GotParam$$id$
+		:i $RunScriptOnObject$$id$ = %GLOBAL%$id$$goal_race_init_waypoint$$params$ = :s{$radius$ = %GLOBAL%$radius$$flag$ = %GLOBAL%$flag$$goal_id$ = %GLOBAL%$goal_id$$last_waypoint$ = %GLOBAL%$last_waypoint$:s}
+	:i endif
+	:i if $ObjectExists$$id$ = $race_arrow$
+		:i $SetScreenElementProps$:s{
+			:i $id$ = $race_arrow$
+			:i $NodeToPointTo$ = %GLOBAL%$id$
+		:i :s}
+	:i else 
+		:i if $GotParam$$first_waypoint$
+			:i if NOT $GotParam$$quick_start$
+				:i $WaitForEvent$$type$ = $goal_cam_anim_post_start_done$
+			:i endif
+			:i if NOT $GoalManager_GoalIsActive$$name$ = %GLOBAL%$goal_id$
+				:i return
+				
+			:i endif
+		:i endif
+		:i $Create3dArrowPointer$:s{
+			:i $id$ = $race_arrow$
+			:i $node$ = %GLOBAL%$id$
+			:i $model$ = %s(9,"HUD_arrow")
+			:i $pos$ = %vec2(320.000000,70.000000)
+			:i $scale$ = %f(0.025000)
+			:i $Tilt$ = %i(7,00000007)
+		:i :s}
+	:i endif
+	:i if $GotParam$$start_lap$
+		:i $goal_race_lap_message$$goal_id$ = %GLOBAL%$goal_id$$lap$ = %GLOBAL%$start_lap$
+	:i endif
+	:i if $GotParam$$added_time$
+		:i $goal_race_add_time_message$$time$ = %GLOBAL%$added_time$
+	:i endif
+	:i if $GotParam$$scr$
+		:i $SpawnScript$%GLOBAL%$scr$$params$ = :s{%GLOBAL%$params$:s}
+	:i endif
+:i endfunction
+:i function $goal_race_init_waypoint$
+	:i $Obj_ClearExceptions$
+	:i if NOT $GotParam$$radius$
+		:i %GLOBAL%$radius$ = %i(16,00000010)
+	:i endif
+	:i $Obj_SetInnerRadius$%GLOBAL%$radius$
+	:i if $GameModeEquals$$is_creategoals$
+		:i $wait$%i(5,00000005)$frame$
+	:i endif
+	:i $Obj_SetException$$ex$ = $ObjectInRadius$$scr$ = $goal_race_got_waypoint$$params$ = :s{$flag$ = %GLOBAL%$flag$$goal_id$ = %GLOBAL%$goal_id$$last_waypoint$ = %GLOBAL%$last_waypoint$:s}
+:i endfunction
+:i function $goal_race_got_waypoint$
+	:i if $GameModeEquals$$is_creategoals$
+		:i if NOT $GoalManager_CanStartGoal$
+			:i return
+			
+		:i endif
+	:i endif
+	:i $Obj_ClearExceptions$
+	:i $GoalManager_SetGoalFlag$$name$ = %GLOBAL%$goal_id$%GLOBAL%$flag$%i(1,00000001)
+	:i if $GotParam$$last_waypoint$
+		:i $SpawnScript$$spawned_safe_goal_win$$params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i else 
+		:i $GoalManager_NextRaceWaypoint$$name$ = %GLOBAL%$goal_id$
+	:i endif
+:i endfunction
+:i function $goal_race_create_cones$$model$ = %s(21,"Mdl_Cone/mdl_cone.mdl")
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = $marker_cone1$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $motion$:s}
+			:i :s{$component$ = $lockobj$:s}
+			:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+			:i :a}
+		:i $params$ = :s{$name$ = %GLOBAL%$mangled_id$:s}
+	:i :s}
+	:i %GLOBAL%$mangled_id$.$Obj_LockToObject$$ObjectName$ = %GLOBAL%$name$%vec3(-60.000000,0.000000,0.000000)
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = $marker_cone2$
+	:i $CreateCompositeObject$:s{
+		:i $Components$ = 
+		:i :a{
+			:i :s{$component$ = $motion$:s}
+			:i :s{$component$ = $lockobj$:s}
+			:i :s{$component$ = $model$$model$ = %GLOBAL%$model$:s}
+			:i :a}
+		:i $params$ = :s{$name$ = %GLOBAL%$mangled_id$:s}
+	:i :s}
+	:i %GLOBAL%$mangled_id$.$Obj_LockToObject$$ObjectName$ = %GLOBAL%$name$%vec3(60.000000,0.000000,0.000000)
+:i endfunction
+:i function $goal_race_kill_cones$
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = $marker_cone1$
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i %GLOBAL%$mangled_id$.$Die$
+	:i endif
+	:i $MangleChecksums$$a$ = %GLOBAL%$name$$b$ = $marker_cone2$
+	:i if $ObjectExists$$id$ = %GLOBAL%$mangled_id$
+		:i %GLOBAL%$mangled_id$.$Die$
+	:i endif
+:i endfunction
+:i function $goal_race_checkpoint_message$
+	:i $FormatText$$TextName$ = $message$%s(11,"CHECKPOINT!")
+	:i $create_panel_message$:s{
+		:i $id$ = $race_checkpoint_message$
+		:i $text$ = %GLOBAL%$message$
+		:i $style$ = $goal_race_checkpoint_message_style$
+	:i :s}
+:i endfunction
+:i function $goal_race_checkpoint_message_style$
+	:i $SetProps$$rgba$ = :a{%i(33,00000021)%i(112,00000070)%i(15,0000000f)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(320.000000,135.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i if $GotParam$$sound$
+		:i $PlaySound$%GLOBAL%$sound$$vol$ = %i(150,00000096)
+	:i endif
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.500000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.500000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(2.000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$pos$ = %vec2(321.000000,136.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$pos$ = %vec2(319.000000,134.000000)$time$ = %f(0.100000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.400000)
+	:i $DoMorph$$time$ = %f(0.150000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $Die$
+:i endfunction
+:i function $goal_race_lap_message$$lap$ = %i(1,00000001)
+	:i $GoalManager_GetGoalParams$$name$ = %GLOBAL%$goal_id$
+	:i $FormatText$$TextName$ = $message$%s(9,"LAP %l/%t")$l$ = %GLOBAL%$lap$$t$ = %GLOBAL%$race_total_laps$
+	:i $create_panel_message$:s{
+		:i $id$ = $race_lap_message$
+		:i $text$ = %GLOBAL%$message$
+		:i $style$ = $goal_race_lap_message_style$
+		:i $params$ = :s{$goal_id$ = %GLOBAL%$goal_id$:s}
+	:i :s}
+:i endfunction
+:i function $goal_race_lap_message_style$
+	:i $SetProps$$rgba$ = :a{%i(110,0000006e)%i(110,0000006e)%i(110,0000006e)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(515.000000,70.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.200000)$scale$ = %f(2.200000)$alpha$ = %i(1,00000001)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(1.300000)
+	:i $alpha$ = %i(1,00000001)
+	:i while
+		
+		:i if  (%GLOBAL%$alpha$ = %i(1,00000001)) 
+			:i $alpha$ = %f(0.300000)
+		:i else 
+			:i $alpha$ = %i(1,00000001)
+		:i endif
+		:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %GLOBAL%$alpha$
+	:i loop_to 
+:i endfunction
+:i function $goal_race_add_time_message$
+	:i $FormatText$$TextName$ = $message$%s(3,"+%t")$t$ = %GLOBAL%$time$
+	:i $create_panel_message$:s{
+		:i $id$ = $race_time_message$
+		:i $text$ = %GLOBAL%$message$
+		:i $style$ = $goal_race_add_time_message_style$
+	:i :s}
+:i endfunction
+:i function $goal_race_add_time_message_style$
+	:i $SetProps$$rgba$ = :a{%i(112,00000070)%i(112,00000070)%i(112,00000070)%i(128,00000080):a}
+	:i $DoMorph$$time$ = %i(0,00000000)$pos$ = %vec2(365.000000,33.000000)$scale$ = %i(0,00000000)$alpha$ = %i(0,00000000)
+	:i $DoMorph$$time$ = %f(0.100000)$scale$ = %f(0.900000)$alpha$ = %i(1,00000001)
+	:i $wait$%f(0.300000)$seconds$
+	:i $DoMorph$$time$ = %f(0.500000)$alpha$ = %i(0,00000000)$rot_angle$ = %i(15,0000000f)
+	:i $Die$
+:i endfunction
+:i :end
