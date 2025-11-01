@@ -8,6 +8,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const Quaternion = require('./math3d/Quaternion');
+
 var currentSkaFlags = 0;
 
 var qTables = {};
@@ -70,11 +72,6 @@ const FLAG_SINGLEBYTEY =                            0x1000;
 const FLAG_SINGLEBYTEZ =                            0x0800;
 const FLAG_SINGLEBYTEMASK =                         0x3800;   // XYZ values masked together
 const FLAG_TRANS_USELOOKUP =                        0x80;
-
-// -----------------------------------------------------
-// THUG2 bones:
-
-// 0: Control_Root
 
 // -----------------------------------------------------
 // THAW bones:
@@ -143,6 +140,43 @@ class QuaternionFrame
         this.y = 0;
         this.z = 0;
         this.signed = false;        // 0x8000 bit.
+        this.longTime = false;      // Stores time as separate value.
+    }
+   
+    // -------------------------------
+    // Set components from float values.
+    // -------------------------------
+    
+    SetComponents(x, y, z)
+    {
+        this.x = Math.floor(x * 16384.0);
+        this.y = Math.floor(y * 16384.0);
+        this.z = Math.floor(z * 16384.0);
+    }
+    
+    // -------------------------------
+    // Rebuilds W component.
+    // -------------------------------
+    
+    GetComponents()
+    {
+        var qX = this.x / 16384.0;
+        var qY = this.y / 16384.0;
+        var qZ = this.z / 16384.0;
+        
+        var sqX = qX * qX;
+        var sqY = qY * qY;
+        var sqZ = qZ * qZ;
+    
+        var sub = ((1.0 - sqX) - sqY) - sqZ;
+        sub = (sub < 0.0) ? 0.0 : sub;
+        
+        var qW = Math.sqrt(sub);
+        
+        if (this.signed)
+            qW = -qW;
+            
+        return [qX, qY, qZ, qW];
     }
     
     // -------------------------------
@@ -159,10 +193,22 @@ class QuaternionFrame
         // ------------------------------
         
         var use_n8 = (currentSkaFlags & nxBONEDANIMFLAGS_USECOMPRESSTABLE_N8);
+        var use_long_time = (currentSkaFlags & nxBONEDANIMFLAGS_LONGFRAMETIMES);
+        
+        // nxBONEDANIMFLAGS_LONGFRAMETIMES stores time as a completely separate value.
+        if (use_long_time)
+        {
+            this.longTime = true;
+            this.time = data.readUInt16LE(off);
+            off += 2;
+        }
         
         // Contains flags, as well as time.
         var flagtime = data.readUInt16LE(off);
-        this.time = (flagtime & 0x07FF);
+        
+        if (!use_long_time)
+            this.time = (flagtime & 0x07FF);
+        
         this.signed = (flagtime & 0x8000) ? true : false;
         
         off += 2;
@@ -289,17 +335,30 @@ class QuaternionFrame
         var zVal = 0;
         
         // We will always use uncompressed values, always.
-        var buf = Buffer.alloc(8);
+        var buf = Buffer.alloc(this.longTime ? 10 : 8);
     
         // No flags, since we don't use single-byte values.
         // If we'd like, we can fix this later, but no.
         
         var flags = 0;
+        var off = 0;
         
-        buf.writeUInt16LE(flags | this.time | (this.signed ? 0x8000 : 0), 0);
-        buf.writeInt16LE(this.x, 2);
-        buf.writeInt16LE(this.y, 4);
-        buf.writeInt16LE(this.z, 6);
+        if (this.longTime)
+        {
+            buf.writeUInt16LE(this.time, off);
+            buf.writeUInt16LE(flags | (this.signed ? 0x8000 : 0), off+2);
+            off += 4;
+        }
+        else
+        {
+            buf.writeUInt16LE(flags | this.time | (this.signed ? 0x8000 : 0), off);
+            off += 2;
+        }
+            
+        buf.writeInt16LE(this.x, off);
+        buf.writeInt16LE(this.y, off+2);
+        buf.writeInt16LE(this.z, off+4);
+        off += 6;
         
         return buf;
     }
@@ -313,6 +372,17 @@ class TranslationFrame
         this.x = 0.0;
         this.y = 0.0;
         this.z = 0.0;
+    }
+    
+    // -------------------------------
+    // Set components from float values.
+    // -------------------------------
+    
+    SetComponents(x, y, z)
+    {
+        this.x = Math.floor(x * 32.0);
+        this.y = Math.floor(y * 32.0);
+        this.z = Math.floor(z * 32.0);
     }
     
     // -------------------------------
@@ -392,6 +462,55 @@ class BonedAnimation
         this.tAllocSize = 0;
         
         this.bones = [];
+        this.partialFlags = [];
+    }
+    
+    AllocQuaternion() { return new QuaternionFrame(); }
+    AllocTranslation() { return new TranslationFrame(); }
+    
+    // -------------------------------
+    // Read partial flags from a file.
+    // -------------------------------
+    
+    ReadPartialFlags(data, off)
+    {
+        var partialBoneCount = data.readUInt32LE(off);
+        off += 4;
+        
+        console.log("Partial anim had " + partialBoneCount + " bones.");
+        
+        var maskCount = Math.floor((partialBoneCount-1) / 32) + 1;
+        console.log("  Had " + maskCount + " masks.");
+        
+        this.partialFlags = [];
+        for (var m=0; m<maskCount*32; m++)
+            this.partialFlags.push(false);
+        
+        var maskOffset = 0;
+        
+        // Flags are ordered from lowest bone to highest bone, from left to right.
+        // Remember that every 32 bits is little endian, so it has to be flipped.
+        
+        for (var m=0; m<maskCount; m++)
+        {
+            var mask = data.readUInt32LE(off);
+            
+            for (var mi=0; mi<32; mi++)
+            {
+                var destIndex = maskOffset + mi;
+                
+                //~ if (destIndex < partialBoneCount)
+                    this.partialFlags[destIndex] = (mask & (1 << mi)) ? true : false;
+            }
+            
+            off += 4;
+            maskOffset += 32;
+        }
+        
+        //~ for (var p=0; p<this.partialFlags.length; p++)
+            //~ console.log(p.toString().padStart(2, " ") + ". " + this.partialFlags[p]);
+            
+        return off;
     }
     
     // -------------------------------
@@ -451,6 +570,143 @@ class BonedAnimation
             this.bones[b].trans_size = data.readUInt16LE(off);
             off += 2;
         }
+        
+        if (this.flags & nxBONEDANIMFLAGS_PARTIALANIM)
+            off = this.ReadPartialFlags(data, off);
+        
+        // ----------------------------------
+        
+        var quatEnd = off + this.qAllocSize;
+        
+        for (var b=0; b<this.numBones; b++)
+        {
+            if (this.bones[b].quat_size)
+            {
+                var nextBone = off + this.bones[b].quat_size;
+                
+                while (off < nextBone)
+                {
+                    var frm = this.AllocQuaternion();
+                    off = frm.Read(data, off);
+                    
+                    this.bones[b].quats.push(frm);
+                }
+                
+                if (off != nextBone)
+                {
+                    console.log("!! ERROR READING QUATS, we're at " + off + ", should be " + nextBone);
+                }
+            }
+        }
+        
+        if (off != quatEnd)
+        {
+            console.log("ERROR: " + off + " did not match quaternion end spot of " + quatEnd + ".");
+            process.exit(1);
+        }
+        
+        // ----------------------------------
+        
+        var transEnd = off + this.tAllocSize;
+        
+        for (var b=0; b<this.numBones; b++)
+        {
+            if (this.bones[b].trans_size)
+            {
+                var nextBone = off + this.bones[b].trans_size;
+                
+                while (off < nextBone)
+                {
+                    var frm = this.AllocTranslation();
+                    off = frm.Read(data, off);
+                    
+                    this.bones[b].translations.push(frm);
+                }
+                
+                if (off != nextBone)
+                {
+                    console.log("!! ERROR READING QUATS, we're at " + off + ", should be " + nextBone);
+                }
+            }
+        }
+        
+        if (off != transEnd)
+        {
+            console.log("ERROR: " + off + " did not match translation end spot of " + transEnd + ".");
+            process.exit(1);
+        }
+        
+        // ----------------------------------
+        
+        console.log("File ended at " + off + ".");
+    }
+    
+    // -------------------------------
+    // Read a THAW .ska file.
+    // -------------------------------
+    
+    ReadTHAW(data)
+    {
+        var off = 0;
+        
+        this.version = data.readUInt32LE(off);
+        off += 4;
+        console.log("Version: " + this.version);
+        
+        this.flags = data.readUInt32LE(off);
+        currentSkaFlags = this.flags;
+        off += 4;
+        console.log("Flags: 0x" + this.flags.toString(16).padStart(8, "0"));
+        
+        this.duration = data.readFloatLE(off);
+        off += 4;
+        console.log("Duration: " + this.duration + " seconds");
+        
+        // ???
+        off ++;
+        
+        this.numBones = data[off]
+        off ++;
+        console.log("Bone Count: " + this.numBones);
+        
+        this.numQKeys = data.readUInt16LE(off);
+        off += 2;
+        console.log("Quaternion Frames: " + this.numQKeys);
+        
+        this.numTKeys = data.readUInt16LE(off);
+        off += 2;
+        console.log("Translation Frames: " + this.numTKeys);
+        
+        this.numCustomAnimKeys = data.readUInt16LE(off);
+        off += 2;
+        console.log("Custom Frames: " + this.numCustomAnimKeys);
+        
+        // Always -1, it seems.
+        off += 20;
+        
+        this.qAllocSize = data.readUInt32LE(off);
+        off += 4;
+        console.log("Q Alloc Size: " + this.qAllocSize);
+        
+        this.tAllocSize = data.readUInt32LE(off);
+        off += 4;
+        console.log("T Alloc Size: " + this.tAllocSize);
+        
+        for (var b=0; b<this.numBones; b++)
+        {
+            this.bones.push({quats: [], translations: [], quat_size: 0, trans_size: 0});
+            this.bones[b].quat_size = data.readUInt16LE(off);
+            off += 2;
+        }
+        
+        for (var b=0; b<this.numBones; b++)
+        {
+            this.bones[b].trans_size = data.readUInt16LE(off);
+            off += 2;
+        }
+
+        if (this.flags & nxBONEDANIMFLAGS_PARTIALANIM)
+            off = this.ReadPartialFlags(data, off);
         
         // ----------------------------------
         
@@ -517,17 +773,6 @@ class BonedAnimation
         // ----------------------------------
         
         console.log("File ended at " + off + ".");
-    }
-    
-    // -------------------------------
-    // Read a THAW .ska file.
-    // -------------------------------
-    
-    ReadTHAW(data)
-    {
-        console.log("Reading THAW anims is not supported yet.");
-        process.exit(1);
-        return;
     }
     
     // -------------------------------
@@ -602,6 +847,38 @@ class BonedAnimation
         for (var b=0; b<this.numBones; b++)
             tSizes.writeUInt16LE(this.bones[b].trans_size, b*2);
         buffers.push(tSizes);
+        
+        // -----------------------------------
+        // Partial animation flags.
+        
+        if (this.flags & nxBONEDANIMFLAGS_PARTIALANIM)
+        {
+            var numMasks = Math.floor((this.partialFlags.length-1) / 32) + 1;
+            console.log("Writing " + numMasks + " partial animation masks...");
+            
+            var maskBuf = Buffer.alloc(4 + (numMasks*4));
+            maskBuf.writeUInt32LE(this.numBones, 0);
+            
+            for (var m=0; m<numMasks; m++)
+            {
+                var mask = 0;
+                var flagOffset = (m*32);
+                
+                for (var mi=0; mi<32; mi++)
+                {
+                    // Within range?
+                    if (flagOffset+mi < this.partialFlags.length)
+                    {
+                        if (this.partialFlags[flagOffset+mi])
+                            mask |= (1 << mi);
+                    }
+                }
+                
+                maskBuf.writeUInt32LE(mask >>> 0, 4 + (m*4));
+            }
+            
+            buffers.push(maskBuf);
+        }
         
         // -----------------------------------
         // Quaternion datas.
@@ -748,10 +1025,17 @@ class AnimConvertCore
         console.log("  Reading compressed lookup tables...");
         
         this.ReadQTable("thaw", "standardkeyQ.bin");
+        this.ReadTTable("thaw", "standardkeyT.bin");
         this.ReadQTable("thug2", "standardkeyQ_thug2.bin");
         this.ReadTTable("thug2", "standardkeyT_thug2.bin");
         this.ReadQTable("thug1", "standardkeyQ_thug1.bin");
         this.ReadTTable("thug1", "standardkeyT_thug1.bin");
+        this.ReadQTable("thps4", "standardkeyQ_thps4.bin");
+        this.ReadTTable("thps4", "standardkeyT_thps4.bin");
+        this.ReadQTable("desa", "standardkeyQ_desa.bin");
+        this.ReadTTable("desa", "standardkeyT_desa.bin");
+        this.ReadQTable("thpg", "standardkeyQ_thpg.bin");
+        this.ReadTTable("thpg", "standardkeyT_thpg.bin");
     }
     
     // -------------------------------
@@ -762,49 +1046,125 @@ class AnimConvertCore
     {
         var mapping = {};
         
-        var lines = fs.readFileSync(mapFile).toString().replace(/\r/g, '\n').split('\n');
+        // ------------------------
+        // JAVASCRIPT FILE
+        // ------------------------
         
-        var highest = 0;
-        
-        for (var line of lines)
+        if (mapFile.toLowerCase().endsWith(".js"))
         {
-            line = line.trim();
+            var result = {};
+            var map = require(mapFile);
             
-            if (line.length <= 0)
-                continue;
-                
-            // Starts with a !, this is an excluder.
-            // This EXCLUDES ALL ANIMATIONS ON THESE BONES.
-            
-            if (line[0] == "!")
+            if (map.bone_mapping == null)
             {
-                var num = line.slice(1, line.length);
-                var toExclude = parseInt(num);
-                
-                mapping["exclude_" + toExclude] = true;
+                console.log("!! Bone map MUST have bone_mapping object! !!");
+                process.exit(1);
             }
             
-            else
-            { 
-                if (line.indexOf(" ") == -1)
-                    continue;
-                    
-                var spl = line.split(" ");
-                if (spl.length != 2)
-                    continue;
-                    
-                var src = parseInt(spl[0]);
-                var dst = parseInt(spl[1]);
-                
-                highest = Math.max(spl[0], highest);
-                
-                mapping[src] = dst;
+            var bm = map.bone_mapping;
+            
+            // Figure out how many bones we have.
+            var highest = 0;
+            
+            for (const key of Object.keys(bm))
+            {
+                var src = parseInt(key);
+                var dst = bm[parseInt(key)];
+
+                highest = Math.max(highest, dst+1);
             }
+            
+            result["max"] = highest;
+            console.log("Mapping file maps to " + (highest+1).toString() + " bones.");
+            
+            for (var b=0; b<highest; b++)
+            {
+                var src = b;
+                var dst = bm[b];
+                
+                if (bm[b] != isNaN)
+                    result[dst] = b;
+                else
+                    result["exclude_" + b.toString()] = true;
+            }
+            
+            if (map.translation_exclude)
+                result["translation_exclude"] = map.translation_exclude;
+            if (map.translation_mods)
+                result["translation_mods"] = map.translation_mods;
+            if (map.quaternion_mods)
+                result["quaternion_mods"] = map.quaternion_mods;
+            if (map.dummy_bones)
+                result["dummy_bones"] = map.dummy_bones;
+                
+            if (map.exclude)
+            {
+                for (const exc of map.exclude)
+                    result["exclude_" + exc.toString()] = true;
+            }
+            
+            return result;
         }
         
-        mapping["max"] = highest;
+        // ------------------------
+        // TEXT FILE
+        // ------------------------
+        
+        else
+        {
+            var lines = fs.readFileSync(mapFile).toString().replace(/\r/g, '\n').split('\n');
+            
+            var highest = 0;
+            
+            for (var line of lines)
+            {
+                line = line.trim();
+                
+                if (line.length <= 0)
+                    continue;
+                    
+                // Starts with a !, this is an excluder.
+                // This EXCLUDES ALL ANIMATIONS ON THESE BONES.
+                
+                if (line[0] == "!")
+                {
+                    var num = line.slice(1, line.length);
+                    var toExclude = parseInt(num);
+                    
+                    mapping["exclude_" + toExclude] = true;
+                }
+                
+                else
+                { 
+                    if (line.indexOf(" ") == -1)
+                        continue;
+                        
+                    var spl = line.split(" ");
+                    if (spl.length != 2)
+                        continue;
+                        
+                    var src = parseInt(spl[0]);
+                    var dst = parseInt(spl[1]);
+                    
+                    highest = Math.max(spl[0], highest);
+                    
+                    mapping[src] = dst;
+                }
+            }
+            
+            mapping["max"] = highest;
+        }
         
         return mapping;
+    }
+    
+    // -------------------------------
+    // Return anim class.
+    // -------------------------------
+    
+    AllocAnimation()
+    {
+        return new BonedAnimation();
     }
     
     // -------------------------------
@@ -815,7 +1175,7 @@ class AnimConvertCore
     {
         console.log("-- Converting " + path.basename(inPath) + "... (" + options.inFormat + " -> " + options.outFormat + ") --");
         
-        var anim = new BonedAnimation();
+        var anim = this.AllocAnimation();
         var data = fs.readFileSync(inPath);
         
         // See which file it is based on version.
@@ -824,13 +1184,13 @@ class AnimConvertCore
         var vers = data.readUInt32LE(0);
         console.log("SKA Version: " + vers);
         
-        if (vers == 1 && (options.inFormat != "thug2" && options.inFormat != "thug1"))
+        if (vers == 1 && (options.inFormat != "thug2" && options.inFormat != "thug1" && options.inFormat != "thps4" && options.inFormat != "desa"))
         {
             console.log("This is NOT a THUG2 file.");
             process.exit(1);
         }
         
-        else if (vers != 1 && options.inFormat != "thaw")
+        else if (vers != 1 && (options.inFormat != "thaw" && options.inFormat != "thpg"))
         {
             console.log("This is NOT a THAW file.");
             process.exit(1);
@@ -841,8 +1201,15 @@ class AnimConvertCore
         else
             anim.ReadTHAW(data);
             
-        // ------------------------------------
-        
+        this.WriteAnimation(anim, outPath, options);
+    }
+    
+    // -------------------------------
+    // Writes animation data to file.
+    // -------------------------------
+    
+    WriteAnimation(anim, outPath, options)
+    {
         if (options.mapFile)
         {
             console.log("Remapping bones...");
@@ -850,6 +1217,7 @@ class AnimConvertCore
             var mapping = this.ReadMapFile(options.mapFile);
             
             var newBones = [];
+            var newFlags = [];
             
             // Loop through the number of DST bones, and
             // find the SRC bone for each.
@@ -858,11 +1226,20 @@ class AnimConvertCore
             
             console.log("  Max bones: " + mapping.max);
             
+            var trn_exc = mapping["translation_exclude"];
+            var trn_mod = mapping["translation_mods"];
+            var qut_exc = mapping["quaternion_exclude"];
+            var qut_mod = mapping["quaternion_mods"];
+            var dummy = mapping["dummy_bones"] || {};
+            
             for (var b=0; b<mapping.max+1; b++)
             {
                 // Didn't have a src bone. Use a blank bone.
                 if (!mapping.hasOwnProperty(b.toString()))
+                {
                     newBones.push({quats: [], translations: [], quat_size: 0, trans_size: 0});
+                    newFlags.push(false);
+                }
                 // Did have a src bone.
                 else
                 {
@@ -876,17 +1253,96 @@ class AnimConvertCore
                         {
                             console.log("Excluding " + b + "...");
                             newBones.push({quats: [], translations: [], quat_size: 0, trans_size: 0});
+                            newFlags.push(false);
                         }
                         else
-                            newBones.push(boneSrc);
+                        {
+                            console.log(b.toString() + " <- " + src);
+                            
+                            var newBone = { quats: boneSrc.quats, translations: boneSrc.translations, quat_size: boneSrc.quat_size, trans_size: boneSrc.trans_size };
+                            
+                            // Should this bone retain translation information?
+                            if (trn_exc && trn_exc.includes(b))
+                            {
+                                console.log("Excluding translations for bone " + b + "...");
+                                newBone.translations = [];
+                            }
+                            
+                            // Modify quaternions
+                            if (qut_mod && qut_mod[b])
+                            {
+                                var mod = qut_mod[b];
+                                var modQuat = new Quaternion(mod[0], mod[1], mod[2], mod[3]);
+                                
+                                for (var q=0; q<newBone.quats.length; q++)
+                                {
+                                    var quat = newBone.quats[q];
+                                    var comps = quat.GetComponents();
+                                    
+                                    var thisQuat = new Quaternion(comps[0], comps[1], comps[2], comps[3]);
+                                    thisQuat = thisQuat.mul(modQuat);
+                                    
+                                    newBone.quats[q].x = Math.floor(thisQuat.x * 16384.0);
+                                    newBone.quats[q].y = Math.floor(thisQuat.y * 16384.0);
+                                    newBone.quats[q].z = Math.floor(thisQuat.z * 16384.0);
+                                }
+                            }
+                            
+                            // Modify translations
+                            if (trn_mod && trn_mod[b])
+                            {
+                                var mod = trn_mod[b];
+                                
+                                for (var t=0; t<newBone.translations.length; t++)
+                                {
+                                    newBone.translations[t].x += Math.floor(mod[0] * 32.0);
+                                    newBone.translations[t].y += Math.floor(mod[1] * 32.0);
+                                    newBone.translations[t].z += Math.floor(mod[2] * 32.0);
+                                }
+                            }
+                            
+                            newBones.push(newBone);
+                            newFlags.push(anim.partialFlags[src] || false);
+                        }
                     }
                     else
+                    {
                         newBones.push({quats: [], translations: [], quat_size: 0, trans_size: 0});
+                        newFlags.push(false);
+                    }
                 }
             }
             
             anim.bones = newBones;
             anim.numBones = newBones.length;
+            anim.partialFlags = newFlags;
+        }
+        
+        // ------------------------------------
+        
+        // Handle dummy bones.
+        if (dummy)
+        {
+            for (var b=0; b<newBones.length; b++)
+            {
+                var dummyData = dummy[b.toString()];
+                
+                if (dummyData && dummyData.quat)
+                {
+                    var q = new QuaternionFrame();
+                    q.time = 0;
+                    q.SetComponents(dummyData.quat[0], dummyData.quat[1], dummyData.quat[2]);
+                    newBones[b].quats = [q];
+                }
+                
+                if (dummyData && dummyData.trans)
+                {
+                    var t = new TranslationFrame();
+                    t.time = 0;
+                    t.SetComponents(dummyData.trans[0], dummyData.trans[1], dummyData.trans[2]);
+                    newBones[b].translations = [t];
+                }
+            }
         }
         
         // ------------------------------------
@@ -916,6 +1372,10 @@ class AnimConvertCore
         
         var inFolder = path.join(__dirname, "in");
         var outFolder = path.join(__dirname, "out");
+        
+        // Ensure in folder exists.
+        if (!fs.existsSync(inFolder))
+            fs.mkdirSync(inFolder);
         
         // Ensure out folder exists.
         if (!fs.existsSync(outFolder))
@@ -956,8 +1416,11 @@ class AnimConvertCore
         var options = {};
         
         var args = process.argv;
-        args.shift();
-        args.shift();
+        var nodeArg = args.shift();
+        var fileArg = args.shift();
+        
+        if (path.basename(fileArg) != path.basename(__filename))
+            return;
 
         if (args.length < 2)
         {
@@ -968,12 +1431,12 @@ class AnimConvertCore
         var inFormat = args.shift();
         var outFormat = args.shift();
         
-        var validIn = (inFormat == "thug2" || inFormat == "thaw" || inFormat == "thug1");
+        var validIn = (inFormat == "thug2" || inFormat == "thaw" || inFormat == "thug1" || inFormat == "thpg" || inFormat == "thps4" || inFormat == "desa");
         var validOut = (outFormat == "thug2" || outFormat == "thaw");
         
         if (!validIn)
         {
-            console.log("Input format must be thug1, thug2, or thaw");
+            console.log("Input format must be thug1, thug2, thpg, thps4, desa, or thaw");
             return;
         }
         
