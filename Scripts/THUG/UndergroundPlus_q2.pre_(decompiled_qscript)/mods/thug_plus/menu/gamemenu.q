@@ -8139,7 +8139,7 @@ SCRIPT create_ksk_menu
 	make_text_sub_menu_item text = "Toggle OB Areas" id = ksk_menu_ob pad_choose_script = ksk_menu_dotest2 
 	make_text_sub_menu_item text = "Toggle Hotkeys" id = ksk_menu_shift pad_choose_script = ksk_menu_toggleshift 
 	make_text_sub_menu_item text = "Level Merge" id = ksk_menu_merge1 pad_choose_script = create_ksk_skybox_menu pad_choose_params = { } 
-	make_text_sub_menu_item text = "Enter Fly Mode" auto_id pad_choose_script = %0x8b6a7c82% 
+	make_text_sub_menu_item text = "Enter Fly Mode" auto_id pad_choose_script = MakeSkaterFly 
 	make_text_sub_menu_item text = "Spawn skater board" auto_id pad_choose_script = ksk_debug_spawn_board 
 	make_text_sub_menu_item text = "Pro Trick Objects" auto_id pad_choose_script = create_pro_trick_objects_menu 
 	make_text_sub_menu_item text = "Done" id = menu_done pad_choose_script = create_pause_menu 

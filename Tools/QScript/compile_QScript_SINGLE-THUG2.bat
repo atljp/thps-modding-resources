@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 if "%~1"=="" (
-    echo No file provided. Drag a .q file onto this script to decompile it.
+    echo No file provided. Drag a .q file onto this script to compile it.
     pause
     exit /b
 )
